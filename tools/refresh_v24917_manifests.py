@@ -32,6 +32,7 @@ RUNTIME = [
     "r1_15a2_td_count_blend_v24917.py",
     "r1_15a2_long_school_generation_v24917.py",
     "r1_15a2_long_od_mask_v24917.py",
+    "r1_15a2_long_profile_incidence_v24917.py",
     "r1_15a2_tdlong1_probe_v24917.py",
     "r1_15a2_intrazonal_penalty_v24917.py",
     "r1_15a2_fast_trial_assignment_v24917.py",

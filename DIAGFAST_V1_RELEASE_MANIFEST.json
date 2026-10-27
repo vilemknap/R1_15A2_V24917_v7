@@ -52,6 +52,7 @@
     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
     "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
     "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
+    "r1_15a2_long_profile_incidence_v24917.py": "c337b5bfd37112238a430c33dbad387363f2ce1974b632b7cb64354aa24840b0",
     "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
     "r1_15a2_mobility_guard_v24917.py": "84b9fa383a2d88699b960e7ffe92ef3e46fe384d2aa07dd499680fc8d5e0f3c8",
     "r1_15a2_mobility_zone_v24917.py": "797920eac4ccfdf2e45141a6bce0d87ea45d430810beba99bcc7054fb20e1b5d",
@@ -89,6 +90,7 @@
     "tests/test_v24917_genfix2.py": "a7ed2b8ec90ffdd0d444cda9e361d403264570a8155422716198574e2e277be1",
     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
+    "tests/test_v24917_long_profile_incidence.py": "94270b0c59831fb9c2cef2294e24e50f93102d6b4a967cbd59ce003500b8c3ce",
     "tests/test_v24917_longguard1.py": "7457bc39c0826704d37f1dfbe7970b95460aae4a92f946c8f908445674581478",
     "tests/test_v24917_mobility_guard.py": "197ced345d06b0d859ec91f2efc7235acf6e5f14810b6c7e2c220f8ae09bf744",
     "tests/test_v24917_mobilityalloc1_solver.py": "9421fe7d9a1a07d9ecf7e6dc6b73f391af87a86aa2e5a666d1fb98fa15578265",
@@ -111,7 +113,7 @@
     "tests/test_v24917_tdrollbackfix1.py": "933942b93d7cc8f6472bc473c5223cc60d07b7cb458a5afbe5d390d1d3a7a03f",
     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
-    "tools/refresh_v24917_manifests.py": "eb1501eb94d0072874ac8eadeac18c82813f28763f795f9940fca38d5b5b25cc",
+    "tools/refresh_v24917_manifests.py": "58c612eeb3a4b69860e86f54b18533122106bf68019d49833cf6a2668cb7b757",
     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
   }
 }
