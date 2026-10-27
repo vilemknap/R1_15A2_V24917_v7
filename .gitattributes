@@ -1,2 +1,37 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve byte-exact sealed authorities and evidence from the verified source.
+V2487_ZONE_COEFFICIENT_AUTHORITY_AUDIT.csv -text -diff
+V24912_COUNTERFACTUAL_REPLAY.csv -text -diff
+V24912_GUARD_AUDIT_MATRIX.csv -text -diff
+V24915_PERF2C_SNAPSHOT_READ_AUDIT.csv -text -diff
+V24915_PERF2_12D_11D_READBACK_DEPENDENCY_AUDIT.csv -text -diff
+V24915_PERF2_READBACK_CALL_GRAPH.csv -text -diff
+authorities/IMPEDANCE_FUNCTIONS.csv -text -diff
+authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv -text -diff
+authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_CURRENT_126_20261022.csv -text -diff
+authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv -text -diff
+authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_CURRENT_362_20261022.csv -text -diff
+authorities/VDF_REGISTRY.csv -text -diff
+authorities/VDF_TYPE_MAPPING.csv -text -diff
+continuation_b0016/ACCEPTED_B_0016_d1211a44ac4d.ver.semantic.json -text -diff
+continuation_b0016/DEMAND_CYCLE_11_RESULT.json -text -diff
+continuation_b0016/EFFECTIVE_CONFIG.json -text -diff
+continuation_b0016/GENERATION_COUNTS_REFERENCE.json -text -diff
+continuation_b0016/LATEST_ACCEPTED_CHECKPOINT.json -text -diff
+continuation_b0016/RUN_STATUS.json -text -diff
+evidence_genfix1/input/05C_PATH_PARITY_SUMMARY.json -text -diff
+evidence_genfix1/input/07B_SOLVER_SUMMARY.json -text -diff
+evidence_genfix1/input/DEMAND_CYCLE_01_RESULT(20261027-000228).json -text -diff
+evidence_genfix1/input/EFFECTIVE_CONFIG(20261027-000229).json -text -diff
+evidence_genfix1/input/GENERATION_BLOCK_RESULT(20261027-000221).json -text -diff
+evidence_genfix1/input/RUN_STATUS(20261027-000228).json -text -diff
+evidence_genfix1/input/STEP1_PLAN_01.json -text -diff
+evidence_genfix1/input/TWO_MODE_CACHE_REUSE(1).json -text -diff
+evidence_genfix1/input/V24917_TIMING.json -text -diff
+provenance/two_mode_live_evidence/15P_PATHLINK_AND_DIAGONAL_PROBE.json -text -diff
+provenance/two_mode_live_evidence/15Q_PATHLINK_THROUGHPUT_SMOKE.json -text -diff
+provenance/two_mode_live_evidence/15R_SAME_MODE_PATHLINK_FINGERPRINT.json -text -diff
+provenance/two_mode_live_evidence/15S_FULL_PATHKEY_AUDIT.json -text -diff
+tests/data/EFFECTIVE_CONFIG_RUN_20261025_175302.json -text -diff
