@@ -1,0 +1,65 @@
+{
+  "calibration_complete": false,
+  "gates": {
+    "child_config_hash_lock": true,
+    "child_runtime_manifest_hash_lock": true,
+    "compileall": true,
+    "focused_tests": true,
+    "full_regression": true,
+    "parent_tree_byte_preserved": true,
+    "parent_v24915_deployment_preflight": true,
+    "source_diff": true,
+    "source_inventory": true
+  },
+  "lineage": {
+    "accepted_count": 9,
+    "next_outer_cycle": 6,
+    "recommended_checkpoint": "ACCEPTED_A_0009_cebb9c7a9349.ver"
+  },
+  "next_required_action": "RUN_CONTROLLED_LIVE_VISUM_BENCHMARK_FROM_ACCEPTED_A0009_AND_COMPARE_PARENT_V24915_VS_PERF1",
+  "offline_blockers": [],
+  "optimizations": {
+    "delta_only_active_flag_writes_exact_restore": true,
+    "duplicate_effective_candidate_elimination": true,
+    "phase_specific_procseq": true,
+    "rollback_diagnostic_reuse_after_exact_proof": true
+  },
+  "overall_offline_pass": true,
+  "parent_release": "R1_15A2_V2_4_9_15_COM_BUSY_RETRY_SAFE_FINALIZER_20261019",
+  "production_blockers": [
+    "LIVE_VISUM_BENCHMARK_AND_ACCEPTANCE_PENDING"
+  ],
+  "production_ready": false,
+  "real_visum_tested": false,
+  "release": "R1_15A2_V2_4_9_15_PERF1_EXACT_SAFE_ACCELERATION_20261019",
+  "schema": "R1_15A2_V24915_PERF1_MACHINE_STATUS_V1",
+  "source": {
+    "added_files": 13,
+    "baseline_files": 723,
+    "implementation_files_before_evidence": 736,
+    "implementation_tree_sha256": "0bc7afddb9025df62d015b829eaec02f2c11604d207fb2366d1f50af5712dad1",
+    "modified_parent_files": 0,
+    "removed_parent_files": 0,
+    "source_patch_sha256": "125affd7287b4b777b6da547c63b7334304971683ef9e329934e25bcf5da7a20"
+  },
+  "speedup_measured_in_live_visum": false,
+  "status": "V24915_PERF1_OFFLINE_VERIFIED_READY_FOR_LIVE_BENCHMARK",
+  "tests": {
+    "compileall_rc": 0,
+    "failed": 0,
+    "focused_passed": 10,
+    "full_passed": 793,
+    "skipped": 4
+  },
+  "unchanged_contract": {
+    "acceptance_changed": false,
+    "assignment_method_changed": false,
+    "calibration_math_changed": false,
+    "candidate_order_changed": false,
+    "candidate_parallelism": false,
+    "direct_od_writes": false,
+    "ipf_tolerance_relaxed": false,
+    "loadversion_rollback": false,
+    "path_cache_semantics_changed": false
+  }
+}

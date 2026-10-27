@@ -1,0 +1,30 @@
+R1 V24917 MOBILITY2 GENFIX2 - START (27. 10. 2026)
+
+1. Rozbalte CELY novy ZIP do kratke cesty, napr. C:\R1.
+   Vznikne C:\R1\R1_V24917_GENFIX2. Neprepisujte jen par souboru stare verze.
+2. Ve Visumu rucne otevrete posledni overeny accepted .ver checkpoint.
+   Nepokracujte v instance/modelu po neoverene obnove.
+3. Scripts -> Run script file -> 01_SPUSTIT_V24917_GENFIX2.py.
+   Spoustet z rozbalene slozky, nikoli z ZIPu; launcher potrebuje predany Visum/COM.
+
+PREFLIGHTIOFIX1 a GENFIX1 zustavaji zachovane. Soubor .ver neni soucasti dodavky.
+Kalibracni options a autority nejsou potichu zmeneny.
+
+Novy build je offline overen: 1536 testu proslo, 4 historicke skipy.
+Zivy Visum/Windows COM nebyl testovan. Pred dlouhym behem provedte kratky
+kontrolovany test odmitnuti a obnovy generation, SUPPLYMIX a TD.
+Podrobnosti a omezeni: GENFIX2_IMPLEMENTATION_CZ.md.
+
+NEBEZPECNA OBNOVA NEZNAMENA PLATEAU:
+GENFIX2_SUPPLYMIX_RECOVERY_NOT_EQUIVALENT_MANUAL_REOPEN -> zastavit, uchovat
+logy a rucne otevrit posledni accepted checkpoint. Nerozsirovat tolerance
+naslepo. GENFIX2_PARENT_PROOF_RETAINED.json uvadi docasnou slozku dukazu.
+
+Pro kopie demand matic musi byt zapisovatelny systemovy temp a dost mista.
+Pri uspesne overenem pokusu se docasne dukazy uklizeji, pri chybe zustavaji.
+
+Offline testy (Python + numpy + scipy + pytest):
+python tools/run_genfix2_checks.py --output C:/R1/GENFIX2_TEST_LOGS
+Sady se spousteji oddelene kvuli zdedenym kolizim conftest.
+
+Toto je uplny novy source build, nikoli dalsi audit bez implementace.

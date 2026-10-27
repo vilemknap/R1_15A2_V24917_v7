@@ -1,0 +1,201 @@
+{
+  "schema": "R1_15A2_V24913_DEVELOPMENT_CHECKPOINT_V1",
+  "checkpoint": "CP67_V24913_SUPPLY_AUDIT_AND_CORE_IMPLEMENTED",
+  "release": "R1_15A2_V2_4_9_13_SUPPLY_ROUTE_CHOICE_READINESS_20261019",
+  "status": "IMPLEMENTED_PENDING_FINAL_PACKAGE_VERIFICATION",
+  "changed_files": [
+    {
+      "path": "r1_15a2_supply.py",
+      "size": 25189,
+      "sha256": "9af418d483edffe2e22c931443adb2e33e5960508d04c343e0a386c47a2a103a"
+    },
+    {
+      "path": "r1_15a2_core.py",
+      "size": 110897,
+      "sha256": "f817aa114eae5a924116b8f73f7d3f22ae6b26742942b74d189a3d75bf6e30ed"
+    },
+    {
+      "path": "r1_15a2_sequence_v23.py",
+      "size": 35627,
+      "sha256": "7116d9cedd4bcfe018873fd464055866e8b3783aeab718e52845d34661def3da"
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v240.py",
+      "size": 38005,
+      "sha256": "68024e1384b674fa667b6ec6dee505bd06c4535bc6db6be1b1303b24a9092307"
+    },
+    {
+      "path": "R1_15A2_CONFIG_V2_4_9_13.json",
+      "size": 62108,
+      "sha256": "508c4e13e91832239391dda52b8a4afd1cad98441c7fdea84cb1d70d5a8d1a88"
+    },
+    {
+      "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_13.py",
+      "size": 39713,
+      "sha256": "07a7813dfa015181cb1a41e3fd7205a467cd15e221ff498c5691976f3373e0f5"
+    },
+    {
+      "path": "R1_15A2_SUPPLY_FROM_CONVERGED_DEMAND_V2_4_9_13.py",
+      "size": 593,
+      "sha256": "7aa1f186eb748871e3a59d4890149e76bed1f9d349eb2e2edeffc841102f3d9b"
+    },
+    {
+      "path": "r1_15a2_supply_handoff_v24913.py",
+      "size": 4570,
+      "sha256": "4dd6179362734ce40bd3ed243442e9ea6f99455dfbd58b7c11d5b78f7d9e2dbc"
+    },
+    {
+      "path": "r1_15a2_safety_v24913.py",
+      "size": 13021,
+      "sha256": "0d8ab262871ed9652bbb540e3cd5ec52c5df3921b863c800e994d74653f7aabe"
+    },
+    {
+      "path": "V24913_SUPPLY_ROUTE_CHOICE_CONTRACT.json",
+      "size": 3236,
+      "sha256": "641697f7751002abf2bce2636db1e4762640b45ce37d9d901b63bc7961b1895c"
+    },
+    {
+      "path": "V24913_RUNTIME_BUNDLE_MANIFEST.json",
+      "size": 10772,
+      "sha256": "b5b825a9c13c018eb32d01c934f569139674df9340c7cdfde13e5cef56bb4f9d"
+    },
+    {
+      "path": "tests/test_v24913_supply_route_choice_readiness.py",
+      "size": 6257,
+      "sha256": "8b641f41a00b65f2d70b8fdecb5f602d7b8a6a5df1283ade0cf2ef245d4b12ab"
+    }
+  ],
+  "supply_limits": {
+    "enabled": true,
+    "lattice": 0.5,
+    "max_step": 8.0,
+    "max_cumulative": 15.0,
+    "absolute_min": -100.0,
+    "absolute_max": 100.0,
+    "minimum_cost_seconds": 0.001,
+    "max_bundle_equivalent_seconds": 360.0,
+    "max_edges": 30,
+    "max_candidates": 40,
+    "max_driver_profiles": 80,
+    "min_geh": 5.0,
+    "min_residual": 100.0,
+    "min_attribution_coverage": 0.9,
+    "min_path_coverage": 0.9,
+    "min_path_volume_coverage": 0.95,
+    "parity_relative_tolerance": 0.02,
+    "parity_absolute_tolerance": 1.0,
+    "prior_lambda": 0.0001,
+    "prior_sigma": 2.0,
+    "passenger_dsegs": [
+      "NATIVE_CW",
+      "NATIVE_CW_noT",
+      "NATIVE_CS",
+      "NATIVE_CS_noT",
+      "NATIVE_CL",
+      "NATIVE_CF",
+      "EXOG_EE_CW",
+      "EXOG_EE_CW_noT",
+      "EXOG_EE_CS",
+      "EXOG_EE_CS_noT",
+      "EXOG_EE_CL",
+      "EXOG_EE_CF"
+    ],
+    "freight_dsegs": [
+      "LNV",
+      "NV"
+    ],
+    "component_matrix_nos": [
+      9101,
+      9102,
+      9103,
+      9104,
+      9105,
+      9106,
+      9107,
+      9108,
+      9109,
+      9110,
+      9111,
+      9112,
+      9113,
+      9114,
+      9115,
+      9116,
+      9117
+    ],
+    "excluded_link_keys": [],
+    "editable_link_types": null,
+    "assignment_operations": [
+      {
+        "no": 20,
+        "operation_type": 101,
+        "dseg_object_path": [
+          "PrTAssignmentParameters"
+        ],
+        "dseg_attribute": "DSEGSET",
+        "expected_dsegs": [
+          "EXOG_EE_CF",
+          "EXOG_EE_CL",
+          "EXOG_EE_CS",
+          "EXOG_EE_CS_NOT",
+          "EXOG_EE_CW",
+          "EXOG_EE_CW_NOT",
+          "LNV",
+          "NATIVE_CF",
+          "NATIVE_CL",
+          "NATIVE_CS",
+          "NATIVE_CS_NOT",
+          "NATIVE_CW",
+          "NATIVE_CW_NOT",
+          "NV"
+        ]
+      }
+    ],
+    "operation_number_attribute": "POSITION",
+    "gap_readback": {
+      "source": "PRT_ASS_QUALITY_LIST",
+      "operation_no": 20,
+      "maximum_gap": 0.005
+    },
+    "link_attributes": {},
+    "impedance_authority_csv": "authorities/IMPEDANCE_FUNCTIONS.csv",
+    "impedance_authority_basis": "USER_SUPPLIED_CURRENT_EXPORTED_SNAPSHOT",
+    "equivalent_seconds_per_addval1": 10.0,
+    "fixed_input_hashes": {
+      "authorities/VDF_REGISTRY.csv": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287",
+      "authorities/VDF_TYPE_MAPPING.csv": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07"
+    },
+    "impedance_file_sha256": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef",
+    "sequence": {
+      "enabled": true,
+      "source": "OFFICIAL_VISUM_SAVED_PRT_ORDERED_PATH_LINKS",
+      "design_mode": "DIVERGE_REJOIN_VOLUME_WEIGHTED_CONTIGUOUS_BRANCHES",
+      "sequence_cap_schedule": [
+        12,
+        8,
+        4,
+        2,
+        1
+      ],
+      "max_unique_sequences": 250000,
+      "max_pairs_per_market": 128,
+      "max_collateral_volume_to_driver_ratio": null,
+      "all_path_impact_required": true,
+      "validation_target_input_allowed": false,
+      "design_only_duplicate_scope_policy": "DIAGNOSTIC_EXCLUDE_CONFLICTED_DRIVERS",
+      "step_units_schedule": [
+        16,
+        8,
+        4,
+        2,
+        1
+      ],
+      "max_store_gib": 20.0,
+      "min_free_disk_gib": 2.0
+    },
+    "assignment_scope_authority": "R1_15A2_ASSIGNMENT_SCOPE_AUTHORITY_V239_OP20_ONLY"
+  },
+  "real_visum_supply_tested": false,
+  "production_ready": false,
+  "created_utc": "2026-10-18T23:31:48.235601+00:00"
+}

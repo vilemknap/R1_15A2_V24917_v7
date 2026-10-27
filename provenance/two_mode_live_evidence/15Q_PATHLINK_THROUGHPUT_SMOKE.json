@@ -1,0 +1,34 @@
+{
+  "apply": false,
+  "assignment_executed": false,
+  "loaded_version_file": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_2022_vraceny_zonalni_atributy_osrm_doplneno_local.ver",
+  "page_size": 256,
+  "results": [
+    {
+      "complete_export": false,
+      "dseg_code": "NATIVE_CW",
+      "elapsed_seconds": 0.437,
+      "link_children": 25095,
+      "pages": 100,
+      "raw_rows": 25600,
+      "route_parents": 505,
+      "rows_per_second": 58581.2356979405,
+      "status": "BOUNDED_SAMPLE_READABLE"
+    },
+    {
+      "complete_export": false,
+      "dseg_code": "NATIVE_CW_noT",
+      "elapsed_seconds": 0.491,
+      "link_children": 25320,
+      "pages": 100,
+      "raw_rows": 25600,
+      "route_parents": 280,
+      "rows_per_second": 52138.492871690425,
+      "status": "BOUNDED_SAMPLE_READABLE"
+    }
+  ],
+  "rows_budget_per_dseg": 25600,
+  "schema": "R1_15A2_15Q_BOUNDED_LINK_RATE_V1",
+  "status": "SAMPLE_PASSED",
+  "writes_to_visum": false
+}

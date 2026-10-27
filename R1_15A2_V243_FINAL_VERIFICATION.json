@@ -1,0 +1,15 @@
+{
+  "release": "R1_15A2_V2_4_3_FULL_OVERNIGHT_COUPLED_DEMAND_HOTFIX_20261016",
+  "purpose": "live V2.4.2 pre-first-iteration directory lifecycle hotfix",
+  "v242_existing_files_changed": [],
+  "v242_existing_files_missing": [],
+  "v242_existing_files_unchanged": true,
+  "offline_tests": "454 passed",
+  "compileall": "PASS",
+  "live_failure_reproduced_from_user_output": "FileNotFoundError before first demand cycle at BASELINE_FULL_RECOMPUTE/20_PROCSEQ_EXECUTION.txt",
+  "hotfixes": [
+    "trial adapter creates every recompute output folder before Procedure Sequence / assignment",
+    "final calibrated version is saved only when controller exposes verified final_state_hash and run status is not failed",
+    "scientific coupled-demand iteration settings unchanged from V2.4.2"
+  ]
+}

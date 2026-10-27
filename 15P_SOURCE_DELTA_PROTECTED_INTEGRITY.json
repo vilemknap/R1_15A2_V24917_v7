@@ -1,0 +1,99 @@
+{
+  "schema": "R1_15A2_V237_15P_STREAMING_OFFDIAG_CANDIDATE_DELTA_V1",
+  "parent_release": "R1_15A2_V237_DESIGN_ONLY_DUPLICATE_QA_NO_COM_RELOAD_20261016",
+  "modified_source_files": [
+    {
+      "path": "r1_15a2_runtime_v1.py",
+      "parent_sha256": "e799c71d580e4f6233562a1b8f89b94e01c6204a854ebd0249fe7c3894a18695",
+      "candidate_sha256": "ca2ab5ebd0ed940d95ff2f6c038788c2c4d9271bd5c840c657c222580d75f262"
+    },
+    {
+      "path": "r1_15a2_sequence_v23.py",
+      "parent_sha256": "29b2a4b9554bf5c745f1aca247d844ac3193416906d0d4e5e8d51e3a193c28ee",
+      "candidate_sha256": "cd20953e769c2dd69be131cc8fcace98c5304d5c8d754dcef2787a113af55414"
+    },
+    {
+      "path": "R1_15A2_CONFIG_V2_3_7.json",
+      "parent_sha256": "3b7516ce1c77a67266d725c39922513ce0de6a0270867593c8a3e36e46e12305",
+      "candidate_sha256": "d19be67278575d5487aca8d3f499ec5a5d65dd8398bf77329092dddb15079e6c"
+    }
+  ],
+  "preserved_protected_sha256": [
+    {
+      "path": "r1_15a2_core.py",
+      "sha256": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7"
+    },
+    {
+      "path": "r1_15a2_multiblock.py",
+      "sha256": "a55f99fad6b5b835ccbffc5e01754b30658e9ff281529e1c900d759242efc726"
+    },
+    {
+      "path": "r1_15a2_com_compat.py",
+      "sha256": "36d7ff10d173d9cdea8edc5f56b3f75cc43dfd5dd4dc6f87a115a952c6484901"
+    },
+    {
+      "path": "r1_15a2_supply_visum.py",
+      "sha256": "6b31f1e73272b0a24376c5483b626315be3f1a062e6e2dabdd11246763fc111d"
+    },
+    {
+      "path": "r1_15a2_supply.py",
+      "sha256": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e"
+    },
+    {
+      "path": "r1_15a2_controller_v22.py",
+      "sha256": "66aebcb5f3deea5997be0e36f95c07a1e7fac20479c3c465054ab04baff97162"
+    },
+    {
+      "path": "r1_15a2_supply_visum_v23.py",
+      "sha256": "62aca522a9240bd53563d8812a95a1fd69c438b3ebf870a3403846a331350db4"
+    },
+    {
+      "path": "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py",
+      "sha256": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e"
+    },
+    {
+      "path": "helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py",
+      "sha256": "1d38bf86a75662c9284a9bbe9983a96cb9166a4446fdaa921c436b48e18bb3d3"
+    },
+    {
+      "path": "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
+      "sha256": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1"
+    },
+    {
+      "path": "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
+      "sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1"
+    },
+    {
+      "path": "authorities/IMPEDANCE_FUNCTIONS.csv",
+      "sha256": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef"
+    },
+    {
+      "path": "authorities/VDF_REGISTRY.csv",
+      "sha256": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287"
+    },
+    {
+      "path": "authorities/VDF_TYPE_MAPPING.csv",
+      "sha256": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07"
+    },
+    {
+      "path": "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6.json",
+      "sha256": "5003204eacf77d3389255bd0710d687dbbfa417cfce68b0a79be7d800bc8c11a"
+    }
+  ],
+  "changes_scope": [
+    "read-only bounded IPrTPathLinkList paging",
+    "streaming per-route path collector SQLite",
+    "offdiagonal interzonal matrix parity",
+    "fail-fast progress diagnostics"
+  ],
+  "constraints": {
+    "apply": false,
+    "gap_epsilon": 0.005,
+    "assignment_operations_approved": false,
+    "full_live_path_export_completed": false
+  },
+  "forensic_probe": {
+    "15P_status": "EVIDENCE_BOUNDED_PROBE_PASSED",
+    "all_samples_bounded_success": true
+  }
+}

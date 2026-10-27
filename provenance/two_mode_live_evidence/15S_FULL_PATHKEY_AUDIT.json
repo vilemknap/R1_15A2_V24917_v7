@@ -1,0 +1,699 @@
+{
+  "schema": "R1_15A2_15S_FULL_PATH_PARENT_KEYS_V1",
+  "status": "FULL_PARENT_KEYS_IDENTICAL_WITHIN_MODE_GEOMETRY_STILL_UNVERIFIED",
+  "loaded_version_file": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_2022_vraceny_zonalni_atributy_osrm_doplneno_local.ver",
+  "apply": false,
+  "assignment_executed": false,
+  "writes_to_visum": false,
+  "pathlink_geometry_full_identity_proven": false,
+  "read_only": true,
+  "max_elapsed_seconds": 180.0,
+  "page_size": 256,
+  "max_parent_rows_per_dseg": 1500000,
+  "results": [
+    {
+      "dseg_code": "NATIVE_CW",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 437190,
+      "positive_volume_rows": 209662,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "ee18c5b65108e10efcce947b46499857e80a005a2841c244e8365ecf3a70de09",
+      "path_keys_and_volumes_sha256": "b5e83f2c9192d01a58126780e9fcb7cf158553203ecada188c0de016e1c8f906",
+      "sum_vol_ap": 115793.589,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1708,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 9.79
+    },
+    {
+      "dseg_code": "NATIVE_CS",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 437190,
+      "positive_volume_rows": 330791,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "ee18c5b65108e10efcce947b46499857e80a005a2841c244e8365ecf3a70de09",
+      "path_keys_and_volumes_sha256": "79769e1b95e14b493013c5bed18ee21c74ca401ee3db00b72254d4a40365a110",
+      "sum_vol_ap": 153999.196,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1708,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 9.89
+    },
+    {
+      "dseg_code": "NATIVE_CF",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 437190,
+      "positive_volume_rows": 12250,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "ee18c5b65108e10efcce947b46499857e80a005a2841c244e8365ecf3a70de09",
+      "path_keys_and_volumes_sha256": "6ca072dbffe0eec35bd616ad7d111faa20716e76c7b49f2f1f527134eb45944a",
+      "sum_vol_ap": 59885.924,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1708,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 9.63
+    },
+    {
+      "dseg_code": "NATIVE_CL",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 437190,
+      "positive_volume_rows": 214683,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "ee18c5b65108e10efcce947b46499857e80a005a2841c244e8365ecf3a70de09",
+      "path_keys_and_volumes_sha256": "f3fbffcd2fa9de9da1a3b52b234c7da9941de4ac8089629f91f34de71c377ae1",
+      "sum_vol_ap": 4266.393,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1708,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 11.09
+    },
+    {
+      "dseg_code": "EXOG_EE_CW",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 437190,
+      "positive_volume_rows": 629,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "ee18c5b65108e10efcce947b46499857e80a005a2841c244e8365ecf3a70de09",
+      "path_keys_and_volumes_sha256": "59503ade8c151bbf03f7d3bf9ff362172deeac2debaa0bba4c19ec7b33f65037",
+      "sum_vol_ap": 18108.061999999998,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1708,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 11.87
+    },
+    {
+      "dseg_code": "EXOG_EE_CS",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 437190,
+      "positive_volume_rows": 622,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "ee18c5b65108e10efcce947b46499857e80a005a2841c244e8365ecf3a70de09",
+      "path_keys_and_volumes_sha256": "f4e9d4aeadcd6467a058606bfc29717c5c9f2c7cee379654eca4107efb8683c8",
+      "sum_vol_ap": 31225.743,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1708,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 12.01
+    },
+    {
+      "dseg_code": "EXOG_EE_CF",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 437190,
+      "positive_volume_rows": 673,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "ee18c5b65108e10efcce947b46499857e80a005a2841c244e8365ecf3a70de09",
+      "path_keys_and_volumes_sha256": "348df5efebc5cadd95b1d6b8092b51cf38212002ece821fad7df40b5ff047aae",
+      "sum_vol_ap": 56497.794,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1708,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 10.51
+    },
+    {
+      "dseg_code": "EXOG_EE_CL",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 437190,
+      "positive_volume_rows": 348,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "ee18c5b65108e10efcce947b46499857e80a005a2841c244e8365ecf3a70de09",
+      "path_keys_and_volumes_sha256": "310f3257c3c5ae1d10c7f77c4a675a13b5077c19e0c491a016c23caa8083ef0a",
+      "sum_vol_ap": 1610.577,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1708,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 11.13
+    },
+    {
+      "dseg_code": "NATIVE_CW_noT",
+      "expected_mode": "C_NOT",
+      "live_mode": "C_NOT",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 426375,
+      "positive_volume_rows": 172067,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "2987ac73cdf996c719048fadbf294ce5a7d2e9849f3f057c2d3fd5aad4abf564",
+      "path_keys_and_volumes_sha256": "4632f6a4bfa765c712e08efbb08e43e5ef76228f2cde8b5aaf4f23e8d9c9ff03",
+      "sum_vol_ap": 38521.4,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1666,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 14.95
+    },
+    {
+      "dseg_code": "NATIVE_CS_noT",
+      "expected_mode": "C_NOT",
+      "live_mode": "C_NOT",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 426375,
+      "positive_volume_rows": 297656,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "2987ac73cdf996c719048fadbf294ce5a7d2e9849f3f057c2d3fd5aad4abf564",
+      "path_keys_and_volumes_sha256": "0028d618a1b98c2eff2d8b0839292f8e9229c3d0e60ca709b7c99c1ff00af96e",
+      "sum_vol_ap": 65734.268,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1666,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 14.94
+    },
+    {
+      "dseg_code": "EXOG_EE_CW_noT",
+      "expected_mode": "C_NOT",
+      "live_mode": "C_NOT",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 426375,
+      "positive_volume_rows": 538,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "2987ac73cdf996c719048fadbf294ce5a7d2e9849f3f057c2d3fd5aad4abf564",
+      "path_keys_and_volumes_sha256": "8f9bb89d81cb861a3d3e8324becd81cdd6fcf3b350a80d479a0171f7317655cc",
+      "sum_vol_ap": 5920.183,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1666,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 14.36
+    },
+    {
+      "dseg_code": "EXOG_EE_CS_noT",
+      "expected_mode": "C_NOT",
+      "live_mode": "C_NOT",
+      "status": "FULL_PARENT_SCAN_COMPLETE",
+      "path_rows": 426375,
+      "positive_volume_rows": 538,
+      "intrazonal_parent_rows": 0,
+      "path_keys_sha256": "2987ac73cdf996c719048fadbf294ce5a7d2e9849f3f057c2d3fd5aad4abf564",
+      "path_keys_and_volumes_sha256": "5e6d0b6f8936c5ece88161aa98d9fbb2b91cd9fa928f53cfccb61c4f70121c20",
+      "sum_vol_ap": 13219.998,
+      "first_keys": [
+        [
+          1,
+          7,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          9,
+          1
+        ]
+      ],
+      "last_keys": [
+        [
+          680,
+          676,
+          1
+        ],
+        [
+          680,
+          678,
+          1
+        ],
+        [
+          680,
+          679,
+          1
+        ]
+      ],
+      "canonical_hash_order": "KEY_SORTED_NOT_COM_PRESENTATION_ORDER",
+      "max_parent_rows_per_dseg": 1500000,
+      "pages": 1666,
+      "effective_page_size": 256,
+      "bounded_signature_verified": true,
+      "fallback_to_80": false,
+      "elapsed_seconds": 14.8
+    }
+  ],
+  "route_filter_source": "HOST_COM_ENUM",
+  "by_mode": {
+    "C": {
+      "dsegs": [
+        "NATIVE_CW",
+        "NATIVE_CS",
+        "NATIVE_CF",
+        "NATIVE_CL",
+        "EXOG_EE_CW",
+        "EXOG_EE_CS",
+        "EXOG_EE_CF",
+        "EXOG_EE_CL"
+      ],
+      "all_dseg_scans_complete": true,
+      "all_parent_keys_identical": true,
+      "segment_specific_volumes_detected": true,
+      "route_count_per_dseg": [
+        437190,
+        437190,
+        437190,
+        437190,
+        437190,
+        437190,
+        437190,
+        437190
+      ],
+      "note": "Matching every parent key DOES NOT prove identical path-link sequences. Geometry reuse remains unapproved."
+    },
+    "C_NOT": {
+      "dsegs": [
+        "NATIVE_CW_noT",
+        "NATIVE_CS_noT",
+        "EXOG_EE_CW_noT",
+        "EXOG_EE_CS_noT"
+      ],
+      "all_dseg_scans_complete": true,
+      "all_parent_keys_identical": true,
+      "segment_specific_volumes_detected": true,
+      "route_count_per_dseg": [
+        426375,
+        426375,
+        426375,
+        426375
+      ],
+      "note": "Matching every parent key DOES NOT prove identical path-link sequences. Geometry reuse remains unapproved."
+    }
+  },
+  "elapsed_seconds": 145.01
+}

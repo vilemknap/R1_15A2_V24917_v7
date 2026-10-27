@@ -1,0 +1,1 @@
+Offline qualification: 165 passed pytest tests, 0 failed, 0 skipped. Compiled modules PASS. Synthetic 12D with 498 CountLocations PASS; ALL model/observed field checks including reverse direction and source value. Real Visum COM not executed.

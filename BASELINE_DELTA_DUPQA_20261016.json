@@ -1,0 +1,100 @@
+{
+  "schema": "R1_15A2_V237_DESIGN_ONLY_DUPQA_NO_RELOAD_DELTA_V1",
+  "source_archive_filename": "R1_15A2_V2_3_7_DESIGN_ONLY_11D_COMPAT_GUARD_20261016.zip",
+  "source_archive_sha256": "46377678c5c1ceb50e3fe14892efb183dca11f135780bf4660e38bd2cba5ab3f",
+  "source_manifest_release": "R1_15A2_V237_DESIGN_ONLY_FIRST_RUN_SAFE_20261016",
+  "base_sources_modified_intentionally": [
+    {
+      "path": "r1_15a2_supply.py",
+      "before_sha256": "c7595ce0be6652d3dbe1e6f73af7adad0e88fead64a9972c74660607e5651228",
+      "after_sha256": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e"
+    },
+    {
+      "path": "r1_15a2_sequence_v23.py",
+      "before_sha256": "6ba3bc757846f192524dc4700ade8f5be1fce93a7afde0aaa704b218f3e3ac0f",
+      "after_sha256": "29b2a4b9554bf5c745f1aca247d844ac3193416906d0d4e5e8d51e3a193c28ee"
+    },
+    {
+      "path": "r1_15a2_supply_visum_v23.py",
+      "before_sha256": "c699bfbd7c5b42d87a77c4ec299aaa8b8b6aab6feccc49a9da444859c893a459",
+      "after_sha256": "62aca522a9240bd53563d8812a95a1fd69c438b3ebf870a3403846a331350db4"
+    },
+    {
+      "path": "r1_15a2_controller_v22.py",
+      "before_sha256": "59744ff3612d313afac7210485c16ad8646233642fd616ed4bec2de44e5c98ba",
+      "after_sha256": "66aebcb5f3deea5997be0e36f95c07a1e7fac20479c3c465054ab04baff97162"
+    },
+    {
+      "path": "R1_15A2_CONFIG_V2_3_7.json",
+      "before_sha256": "20636437d4acf817e689690c05c512f450c75f19a27ce54491240037490ee670",
+      "after_sha256": "3b7516ce1c77a67266d725c39922513ce0de6a0270867593c8a3e36e46e12305"
+    },
+    {
+      "path": "R1_15A2_DESIGN_ONLY_FIRST_RUN_V2_3_7.py",
+      "before_sha256": "bda52d14b6ba74f328f3e30db7773f52a41eda72098a6fddb86249a24d7c32ee",
+      "after_sha256": "1e9fcda15994717daef6f1c3f3246c9872f0afadcb39fa8c882c5b0e22cc2fd9"
+    }
+  ],
+  "unchanged_protected_files_from_predecessor": [
+    {
+      "path": "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
+      "sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1"
+    },
+    {
+      "path": "authorities/R1_CSD2022_APPROVED_408_QA.json",
+      "sha256": "c8f34f5c8a4286d8c6a58998ffabebcbb6945b8c18d7a5e456e73dd0854523ad"
+    },
+    {
+      "path": "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
+      "sha256": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1"
+    },
+    {
+      "path": "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py",
+      "sha256": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e"
+    },
+    {
+      "path": "helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py",
+      "sha256": "1d38bf86a75662c9284a9bbe9983a96cb9166a4446fdaa921c436b48e18bb3d3"
+    },
+    {
+      "path": "r1_15a2_com_compat.py",
+      "sha256": "36d7ff10d173d9cdea8edc5f56b3f75cc43dfd5dd4dc6f87a115a952c6484901"
+    },
+    {
+      "path": "r1_15a2_core.py",
+      "sha256": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7"
+    },
+    {
+      "path": "r1_15a2_runtime_v1.py",
+      "sha256": "e799c71d580e4f6233562a1b8f89b94e01c6204a854ebd0249fe7c3894a18695"
+    },
+    {
+      "path": "r1_15a2_supply_visum.py",
+      "sha256": "6b31f1e73272b0a24376c5483b626315be3f1a062e6e2dabdd11246763fc111d"
+    }
+  ],
+  "critical_unchanged": [
+    "r1_15a2_core.py",
+    "r1_15a2_multiblock.py",
+    "r1_15a2_runtime_v1.py",
+    "r1_15a2_supply_visum.py",
+    "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
+    "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
+    "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py",
+    "helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py"
+  ],
+  "live_visum_tested": false,
+  "offline_tests_passed": 333,
+  "read_only_design_never_attempts_com_loadversion": true,
+  "apply_persistent_locked_off": true,
+  "status": "OFFLINE_CANDIDATE_NOT_PRODUCTION_APPLY",
+  "real_first_run_errors": [
+    "CONFLICTING_DUPLICATE_COUNT",
+    "ROLLBACK_FAILED_34392_COM_REFERENCES"
+  ],
+  "extra_files": [
+    "AUTHORITY_498_DUPLICATE_DIRECTED_EDGE_QA_STATIC.json",
+    "README_DUPLICATE_QA_NO_COM_RELOAD_CZ.md",
+    "tests/test_design_only_duplicate_qa_no_reload.py"
+  ]
+}

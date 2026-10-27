@@ -1,0 +1,44 @@
+{
+  "max_final_projection_log_step": 0.0,
+  "step_model": {
+    "keys": [],
+    "delta_full": [],
+    "available": false,
+    "error": "ValueError('FINAL_CANDIDATE_EFFECT_OPERATOR_UNAVAILABLE')"
+  },
+  "guard": {
+    "release": "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027",
+    "band": [
+      0.75,
+      1.25
+    ],
+    "families": {
+      "WORK": {
+        "ratio_current": 1.25,
+        "ratio_full_step": 1.25,
+        "ratio_after": 1.25,
+        "zones": 2,
+        "rows": 2,
+        "factor": 1.0,
+        "minimum_over_scales": 1.25,
+        "maximum_over_scales": 1.25,
+        "minimum_at_scale": 0.0,
+        "status": "WITHIN_BAND"
+      },
+      "SERVICE": {
+        "ratio_current": 1.0,
+        "ratio_full_step": 1.0,
+        "ratio_after": 1.0,
+        "zones": 2,
+        "rows": 0,
+        "factor": 1.0,
+        "minimum_over_scales": 1.0,
+        "maximum_over_scales": 1.0,
+        "minimum_at_scale": 0.0,
+        "status": "WITHIN_BAND"
+      }
+    },
+    "passes": true,
+    "status": "OK"
+  }
+}

@@ -1,0 +1,6 @@
+R1 15A2 V2.3.1 CSD408
+pytest: 155 passed (13 added to V2.3 141 baseline; 1 full mock COM 12D stage)
+compileall: PASS
+full mock COM-shaped 12D stage: PASS 408/372/36
+LIVE VISUM 2026: NOT RUN
+PRODUCTION READY: FALSE

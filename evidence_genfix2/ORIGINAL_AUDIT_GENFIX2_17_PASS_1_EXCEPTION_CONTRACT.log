@@ -1,0 +1,134 @@
+.........F........                                                       [100%]
+=================================== FAILURES ===================================
+________ test_A10_supply_recovery_must_not_adopt_materially_worse_state ________
+
+a = (<test_v24917_supply_mix.FakeAdapter object at 0x7f00d13a5d10>, 'SUPPLY_ADDVAL1', {'addval1': {'1|2': 0.0, '2|3': 0.0,...266eeddc278dc8ad2306', PosixPath('/tmp/pytest-of-root/pytest-17/test_A10_supply_recovery_must_0/SM/ROLLBACK'), [], ...)
+k = {}
+
+>   def rb_failure(*a,**k):raise RuntimeError('INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER')
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   RuntimeError: INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER
+
+../../audit/R1_V24917_GENFIX1_AUDIT/audit_tests/test_audit_regressions.py:148: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+supply_harness = <function harness.<locals>.make at 0x7f00d141e700>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f00d13d8cb0>
+
+    def test_A10_supply_recovery_must_not_adopt_materially_worse_state(supply_harness,monkeypatch):
+        h=supply_harness(shift=60.);_no_g1b(h,monkeypatch)
+        monkeypatch.setattr(h.ad,'block_gate',lambda *a,**k:{'accepted':False,'reasons':['AUDIT_FORCE_REJECT']})
+        def rb_failure(*a,**k):raise RuntimeError('INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER')
+        monkeypatch.setattr(h.base,'_rollback_candidate',rb_failure)
+        orig=h.ad.assign_for_block
+        def recompute(folder,block):
+            if 'RECOVERY_FULL_RECOMPUTE' in str(folder):
+                h.ad.rows0=[dict(r,model=r['model']*10) for r in h.ad.rows0]
+            return orig(folder,block)
+        monkeypatch.setattr(h.ad,'assign_for_block',recompute)
+>       result=h.run(opts=dict(OPTS,max_trials=1))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../audit/R1_V24917_GENFIX1_AUDIT/audit_tests/test_audit_regressions.py:156: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_supply_mix.py:166: in run
+    return sm.supply_block(ctrl, base, tx, ad, copy.deepcopy(CFG), tmp_path / "SM", control, state,
+r1_15a2_supply_mix_v24917.py:600: in supply_block
+    return _supply_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state, diag,
+r1_15a2_supply_mix_v24917.py:576: in _supply_block_impl
+    return _rollback_or_recover(ctrl, base, tx, adapter, sup_cfg, folder, control, state, diag,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ctrl = <module 'r1_15a2_overnight_controller_coupled_v24915p2_force100' from '/mnt/data/genfix2/work/R1_V24917_GENFIX2/r1_15a2_overnight_controller_coupled_v24915p2_force100.py'>
+base = <module 'r1_15a2_overnight_controller_v24915p2' from '/mnt/data/genfix2/work/R1_V24917_GENFIX2/r1_15a2_overnight_controller_v24915p2.py'>
+tx = <module 'r1_15a2_inplace_transaction_v24915p2' from '/mnt/data/genfix2/work/R1_V24917_GENFIX2/r1_15a2_inplace_transaction_v24915p2.py'>
+adapter = <test_v24917_supply_mix.FakeAdapter object at 0x7f00d13a5d10>
+sup_cfg = {'12d_authority_csv': 'authorities/R1_PROFILE_ROSTER_V24917_CSD.csv', '12d_authority_sha256': '2761b69b7f76e73eb98fe19...V24917_CITY.csv', '12d_city_authority_sha256': 'b5f731dd7555d65874436993ab3a6f2a8261e7fc0f0f54a681fc6fed4495ce38', ...}
+folder = PosixPath('/tmp/pytest-of-root/pytest-17/test_A10_supply_recovery_must_0/SM')
+control = namespace(checkpoint=<function harness.<locals>.<lambda> at 0x7f00d141d620>)
+state = {'addval1': {'1|2': 0.0, '2|3': 0.0, '3|4': 0.0, '4|5': 0.0, ...}, 'dseg_hash': 1, 'dseg_map': {}, 'fixed_link_hash': 1, ...}
+diag = {'d11': {'summary': {}}, 'd12': {'rows': [{'countlocation_no': '900001', 'model': 3000.0, 'observed': 1500.0, 'profile... {'countlocation_no': '910002', 'model': 1002.0, 'observed': 1000.0, 'profile_weight': 1.0, ...}, ...]}, 'signals': {}}
+baseline_value = {'cal_metrics': {'geh_ge20': 2, 'geh_ge30': 1, 'geh_lt10': 30, 'geh_lt5': 30, ...}, 'raw_cal': 2.30719549412228, 'total': 0.0461439098824456}
+baseline_diag_hash = 'e5450dbedf6a8651ca8e8ae06ee60956c5c13afac684266eeddc278dc8ad2306'
+applied = {'assignment_path_hash': 'APH', 'candidate_id': 'SUPPLYMIX_823887af1e51', 'changes': [{'delta': 4.0, 'equivalent_secon...equivalent_seconds': -40.0, 'expected_old': 0.0, 'key': [4, 5], ...}], 'kind': 'V24917_SUPPLYMIX_MERGED_BRANCHES', ...}
+anchors = None, reference = None, policy = None
+rec = {'addval1_value_type': {'error': "AttributeError:'FakeAdapter' object has no attribute 'visum'", 'integer': True, 'sou...model_after': 2520.0, 'model_before': 3000.0, ...}], ...}], 'design_candidates': 10, 'design_skipped_reasons': {}, ...}
+exc = RuntimeError('INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER')
+save = <function _supply_block_impl.<locals>.save at 0x7f00d141e520>
+already_tried = True
+
+    def _rollback_or_recover(ctrl, base, tx, adapter, sup_cfg, folder, control, state, diag, baseline_value,
+                             baseline_diag_hash, applied, anchors, reference, policy, rec, exc, save,
+                             already_tried=False):
+        """Restore and prove the parent. Recovery is NEVER an acceptance path."""
+        from r1_15a2_supply import SupplyContractError
+        import r1_15a2_parent_equivalence_v24917 as eq
+        stop = (not isinstance(exc, Exception)) or isinstance(exc, (base.UserStopRequested, base.TimeBudgetReached))
+        rb_error = exc if already_tried else None
+        if not already_tried:
+            try:
+                with base.recovery_scope(control, "V24917_SUPPLYMIX_ROLLBACK_AFTER_ERROR"):
+                    rb, rolled = base._rollback_candidate(adapter, BLOCK, state, baseline_diag_hash,
+                                                         folder / "ROLLBACK_AFTER_ERROR", [], applied, diag)
+                    live = adapter.snapshot()
+                    if rolled is diag:
+                        rolled = adapter.diagnostics(folder / "ROLLBACK_LIVE_PROOF", "ROLLBACK")
+                    proof = eq.verify_parent(adapter, state, live, diag, rolled)
+                    if adapter.snapshot() != live or not proof["passes"]:
+                        raise SupplyContractError("GENFIX2_SUPPLYMIX_ROLLBACK_NOT_EQUIVALENT")
+            except BaseException as e2:
+                rb_error = e2
+            else:
+                eq.rebind_verified_parent(adapter, live, rolled)
+                value = base.ledger(rolled, live, anchors, policy, reference, sup_cfg)
+                rec.update(status="TRIAL_FAILED_ROLLBACK_VERIFIED", error=str(exc)[:2000],
+                           parent_equivalence=proof, objective_after=value, search_complete=False,
+                           stationarity_confirmed=False)
+                # All model work is complete before fallible logging. An I/O failure
+                # must not trigger a second assignment or hide the primary exception.
+                try:
+                    base.atomic_json(folder / "ROLLBACK_SUMMARY.json", rb)
+                    save()
+                except Exception as io_exc:
+                    if hasattr(exc, "add_note"):
+                        exc.add_note("ROLLBACK_LOG_WRITE_FAILED:" + repr(io_exc))
+                    raise exc
+                if stop or isinstance(exc, OSError):
+                    raise exc
+                return False, state if live == state else live, rolled, value, rec
+        rec["rollback_error"] = str(rb_error)[:2000]
+        with base.recovery_scope(control, "V24917_SUPPLYMIX_FULL_RECOVERY"):
+            live = adapter.snapshot()
+            changes = [{"key": [int(x) for x in k.split("|")]} for k, v in state["addval1"].items()
+                       if live.get("addval1", {}).get(k) != v]
+            if changes:
+                tx.restore_supply_parameters(adapter, state, changes, folder / "RECOVERY_RESTORE")
+            live = adapter.snapshot()
+            for name in set(state) | set(live):
+                if name in ("matrices", "matrix_hash", "state_hash"):
+                    continue
+                if live.get(name) != state.get(name):
+                    raise SupplyContractError("GENFIX2_SUPPLYMIX_RECOVERY_PARAMETER_MISMATCH:" + name) from rb_error
+            gap = base._assign_candidate(adapter, folder / "RECOVERY_FULL_RECOMPUTE", "GENERATION")
+            new_state = adapter.snapshot()
+            new_diag = adapter.diagnostics(folder / "RECOVERY_DIAGNOSTICS", "RECOVERY")
+            proof = eq.verify_parent(adapter, state, new_state, diag, new_diag)
+            if adapter.snapshot() != new_state:
+                proof["passes"] = False
+                proof["diagnostics_changed_model"] = True
+            rec["parent_equivalence"] = proof
+            if not proof["passes"]:
+                rec.update(status="RECOVERY_FAILED_MANUAL_REOPEN_LATEST_ACCEPTED", search_complete=False,
+                           stationarity_confirmed=False, recovery_accepted=False)
+                try:
+                    save()
+                except Exception:
+                    pass
+>               raise SupplyContractError("GENFIX2_SUPPLYMIX_RECOVERY_NOT_EQUIVALENT_MANUAL_REOPEN") from rb_error
+E               r1_15a2_supply.SupplyContractError: GENFIX2_SUPPLYMIX_RECOVERY_NOT_EQUIVALENT_MANUAL_REOPEN
+
+r1_15a2_supply_mix_v24917.py:671: SupplyContractError
+=========================== short test summary info ============================
+FAILED ../../audit/R1_V24917_GENFIX1_AUDIT/audit_tests/test_audit_regressions.py::test_A10_supply_recovery_must_not_adopt_materially_worse_state - r1_15a2_supply.SupplyContractError: GENFIX2_SUPPLYMIX_RECOVERY_NOT_EQUIVALENT_MANUAL_REOPEN
+1 failed, 17 passed in 0.75s

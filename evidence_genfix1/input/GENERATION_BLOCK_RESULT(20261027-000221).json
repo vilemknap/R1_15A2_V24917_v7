@@ -1,0 +1,67 @@
+{
+  "status": "DESIGNING",
+  "attempts": [
+    {
+      "trial": 1,
+      "candidate": {
+        "scale": 1.0
+      },
+      "plan_mode": "LINEAR_FIT",
+      "predicted_rel_improvement": 0.06104293394740563,
+      "rho": 1.0,
+      "status": "FAILED",
+      "error": "V242_GENERATION_TRIAL_PARENT_CHANGED"
+    }
+  ],
+  "objective_before": {
+    "raw_cal": 28.108207604432213,
+    "raw_component_idp": 0.48984021064161376,
+    "terms": {
+      "CSD_CAL": 1.0,
+      "COMPONENT_IDP": 0.0,
+      "ADDVAL1_PRIOR": 0.0
+    },
+    "cal_objective_metric": "WEIGHTED_MEAN_GEH",
+    "cal_objective_key": "objective_geh_mean_weighted",
+    "cal_metrics": {
+      "role": "CALIBRATION",
+      "n": 247,
+      "obs_sum": 1299058.4035403342,
+      "model_sum": 956986.8566636932,
+      "model_obs_ratio": 0.7366773149348862,
+      "profile_sum_role": "DIAGNOSTIC_ONLY_PROFILE_PASSAGE_CHECKSUM",
+      "profile_sum_unique_trip_interpretation_allowed": false,
+      "profile_sum_note": "A trip may cross multiple observed profiles; sums are not unique-trip or total-demand estimates.",
+      "rmse": 3960.2853157604395,
+      "mae": 2107.5244625336777,
+      "objective_geh_mean_weighted": 28.108207604432213,
+      "objective_geh2_mean": 1495.2288059662521,
+      "objective_weight_sum": 241.8,
+      "geh_mean": 28.403148550923117,
+      "geh_lt5": 45,
+      "geh_lt10": 74,
+      "geh_ge20": 136,
+      "geh_ge30": 94
+    },
+    "total": 1.0,
+    "reference_hash": "1ab8228974d05d3593d1073dd98c51e1b90e1ec054b48a5d06eb211e9cac5e36",
+    "validation_used": false
+  },
+  "search_mode": "V24917_STEP1_COMPUTED_STEP_ADOPT_IN_PLACE",
+  "release": "R1_15A2_V24917_STEP1_20261025",
+  "generation_step_stage": {
+    "max_add_log_down": 0.1,
+    "max_add_log_up": 0.1,
+    "max_od_relative_down": 0.2,
+    "max_od_relative_up": 0.2,
+    "name": "SIGNED_EXPLORE",
+    "salary_max_abs_delta_per_block": 0.1,
+    "signed_max_family_global_log_down": 0.1,
+    "signed_max_family_global_log_up": 0.1,
+    "signed_soft_outward_step_factor": 0.25,
+    "through_outer_cycle": 2
+  },
+  "planned_trials": 3,
+  "search_complete": false,
+  "stationarity_confirmed": false
+}

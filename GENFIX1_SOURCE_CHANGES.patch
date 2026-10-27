@@ -1,0 +1,2369 @@
+--- original/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ GENFIX1/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -3,6 +3,7 @@
+   "release": "R1_15A2_DIAGFAST_V2_BULK_NUMPY_20261024",
+   "scope": "IMMUTABLE_SOURCE_IDENTITY_TEST_STATUS_IS_SEPARATE",
+   "files": {
++    "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py": "da8953c4c4da056e092ed546a158ec13bce12590bdb230fd86122f809702f960",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "fbbfe1b140b80bd56a3823992a3b970b7c52ec7dd753ea2a17705218db9af690",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "30a29ad64af5b353a6c91aa5426bdab85acf3f37e97594d0b65860d71fef70c6",
+@@ -42,6 +43,7 @@
+     "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+     "r1_15a2_generation_gate_nonfatal_v1.py": "2ca13966ae4cdedcfee6f5076236ea4c2db97fc04d6cb2f612ffe899cadb6244",
++    "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_long_school_generation_v24917.py": "9a9a384878e4414f7447bfd7ad390b63f45caa5e04cda59d8d7560159750db53",
+     "r1_15a2_mobility_guard_v24917.py": "9413fcb896cd048ab01c7eab253c00d410a1435963c7e5464c717965ae407730",
+@@ -50,16 +52,17 @@
+     "r1_15a2_preflight_iofix_v24917.py": "a843a89df41aaec1ff4d2e9d442cb88b18a4e8273b3e45a8c3498de3800ea6f8",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+     "r1_15a2_rollback_consistency_v24917.py": "9ab528bd3d834018c0ba42e9bbd75cddc3a83ea12949fd15b9d3c3083ed5ab61",
+-    "r1_15a2_runtime_delta_v24917.py": "01ab3081f9eca548eba10728783c487dca03e44fed624abdcecede82f8c180ee",
++    "r1_15a2_runtime_delta_v24917.py": "e9cbf59753f1a7bffcdc2361b1a4789177affe4009d5852c489be70caff9514b",
+     "r1_15a2_severity_relax_v24917.py": "58b1d034364619c88b8bcde7020f681c613ef3f4901253ae844512db6b7a4876",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+-    "r1_15a2_step_search_v24917.py": "4c34ea8bd4d7848ff7d52ceaa988a7b7cc1ed78c172aba0e59cda1594620bfb6",
++    "r1_15a2_snapshot_reads_v24917.py": "90cd8cb09981072d908d8cb022792c6fb6352c45506140724029a0dc8842a7fe",
++    "r1_15a2_step_search_v24917.py": "59a7fac04075b32c50ed3f2fbc4cf61919c9280517b3914d22e692568933bd3a",
+     "r1_15a2_supply_mix_v24917.py": "fde688f6a0782690d3ca8b4e61355c62f556fb55777085166de848b11f35760a",
+     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
+     "r1_15a2_td_count_blend_v24917.py": "987a9170b75b380e8a7709e0733f99deff8761caca84d3911cd4fe7d3ed2c157",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "9b187d72c1724643810c70db7a14a0df1739c14ab2d822dab9464bbd7aebef31",
+-    "r1_15a2_trial_adapter_v24917.py": "111315bc0b288cb34fb9bc1819db2c09db28fafe64df132a143bc2ab6832c0dd",
+-    "r1_15a2_v24917_runtime.py": "ce708315b9f834e5116f6c84189a46cefcb14831b67cd2935f1d4ad729e53823",
++    "r1_15a2_trial_adapter_v24917.py": "4fa4ed69a10567bb0cd3ce0515d874c82e9a30912beb99661e76ea2ab7682a45",
++    "r1_15a2_v24917_runtime.py": "32d66bc3a0f460f56197b740309a09ab8fe30ef58bf2efa9516cbced1823ffe6",
+     "r1_15a2_zonal_count_fit_v24917.py": "bdc08f3203430adf3b43bcdf7ce919582d7b215fcfd4b7bb7882de890fe3522b",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+@@ -67,6 +70,9 @@
+     "tests/test_v24917_boundary_pa.py": "45258311a1616b23ad8823deea13dcdfb5975f0ce2f692bf4ec58b269557c5ed",
+     "tests/test_v24917_combusy2.py": "91c347592c2ddce876454c38ee78c1c4770ab754c0773df7bdf08a9cb26ca2c4",
+     "tests/test_v24917_fast_trial_assignment.py": "9338e030443bf51af70d7ef1572bc95d34622bdfcb7ebe59e72c7408ffb35c19",
++    "tests/test_v24917_generation_state_genfix1.py": "a076bba31a1956bf265ed2fb4bf5b6cc187cfc26ce739cbb28c614b938fa299d",
++    "tests/test_v24917_generation_transaction_genfix1.py": "a3bedd7cc73f963887de33bd4845bf6afdc9add72c755638c763a4487023a0d1",
++    "tests/test_v24917_genfix1_adapter.py": "e0dd242f47d9a391463cf3464ff3bceafe9a46d84431f6a80bef6093479da972",
+     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
+     "tests/test_v24917_mobility_guard.py": "197ced345d06b0d859ec91f2efc7235acf6e5f14810b6c7e2c220f8ae09bf744",
+@@ -74,6 +80,7 @@
+     "tests/test_v24917_preflight2.py": "8c55cd8f64b2c1188bb3211a541c8ed21ad4b65fdcc460ff5ec882b305a8b89c",
+     "tests/test_v24917_rbcons_audit.py": "87866a9f204da550a9f26dc77b088589375ba0f229d740ec62d1bfa48a590ea8",
+     "tests/test_v24917_runtime_install.py": "6dbd16ac2bf3c3e8a2ababc80758af373a1ecd016415d7e96de46f6907a0678a",
++    "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
+     "tests/test_v24917_step_search.py": "f59a5bb441130046c7609e4422475e33139ee56d27603cbdae3aba897a2f8761",
+     "tests/test_v24917_supply_mix.py": "5323389284a6d497db59d5ffabf763d804b6931e70e22f2052822d3814f0ff92",
+     "tests/test_v24917_targeted_catchup.py": "45ef1816caa566cfa49dd351db49cb1bf3430cd86f0b392feb66207524b6fa7d",
+@@ -81,6 +88,6 @@
+     "tests/test_v24917_td_stage_integration.py": "8e4d9636f3472ae5fcc88a28113209458142909467bfc3146f4b206672f86a25",
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "39497c6be4e3d7e4b499eea586cbdb7d4b9c63e3ca142818ed3ea4474f1e3b7c"
++    "tools/refresh_v24917_manifests.py": "e25d26cda5741c742b87f7a48a68d2480dc9277c8dd51f80817f867eaae68ff2"
+   }
+ }
+--- original/V24917_RUNTIME_MANIFEST.json
++++ GENFIX1/V24917_RUNTIME_MANIFEST.json
+@@ -1,15 +1,16 @@
+ {
+   "schema": "R1_15A2_V24917_RUNTIME_MANIFEST_V1",
+-  "release": "R1_15A2_V24917_TARGETED_CATCHUP_ZONALFIT_TGFIX_TDSPARSE_DIAGFAST2_20261025",
++  "release": "R1_15A2_V24917_MOBILITY1_GENFIX1_20261027",
+   "parent_release_manifest": "V24916_PERF2C_RUNTIME_MANIFEST.json",
+   "required_files": {
++    "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "fbbfe1b140b80bd56a3823992a3b970b7c52ec7dd753ea2a17705218db9af690",
+     "r1_15a2_zonal_count_fit_v24917.py": "bdc08f3203430adf3b43bcdf7ce919582d7b215fcfd4b7bb7882de890fe3522b",
+     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
+-    "r1_15a2_trial_adapter_v24917.py": "111315bc0b288cb34fb9bc1819db2c09db28fafe64df132a143bc2ab6832c0dd",
++    "r1_15a2_trial_adapter_v24917.py": "4fa4ed69a10567bb0cd3ce0515d874c82e9a30912beb99661e76ea2ab7682a45",
+     "r1_15a2_active_demand_evidence_v24917.py": "384424b9b39821d32df474cd6e90977902afd10e22fea50ac60364dcf66906e4",
+-    "r1_15a2_runtime_delta_v24917.py": "01ab3081f9eca548eba10728783c487dca03e44fed624abdcecede82f8c180ee",
+-    "r1_15a2_v24917_runtime.py": "ce708315b9f834e5116f6c84189a46cefcb14831b67cd2935f1d4ad729e53823",
++    "r1_15a2_runtime_delta_v24917.py": "e9cbf59753f1a7bffcdc2361b1a4789177affe4009d5852c489be70caff9514b",
++    "r1_15a2_v24917_runtime.py": "32d66bc3a0f460f56197b740309a09ab8fe30ef58bf2efa9516cbced1823ffe6",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_dynamic_11d_files_v24917.py": "04671df2ce0c3502eb0997ead6e4ec87db5634afeaf84a30279c518dbee9ba4b",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+@@ -18,7 +19,7 @@
+     "r1_15a2_long_school_generation_v24917.py": "9a9a384878e4414f7447bfd7ad390b63f45caa5e04cda59d8d7560159750db53",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
+-    "r1_15a2_step_search_v24917.py": "4c34ea8bd4d7848ff7d52ceaa988a7b7cc1ed78c172aba0e59cda1594620bfb6",
++    "r1_15a2_step_search_v24917.py": "59a7fac04075b32c50ed3f2fbc4cf61919c9280517b3914d22e692568933bd3a",
+     "r1_15a2_perf_v24917.py": "bec293a7f6514ad7937a62b7f9241b5c63f4e821a5d5c554ff8f31c5e839c088",
+     "r1_15a2_combusy2_v24917.py": "c0833e7e8e50ade00b29196882733189fff06a426d8b9834faf80db850022204",
+     "r1_15a2_preflight_explain_v24917.py": "7d0ecf8b8588bf7463eee9beeaadf981d7e61d56e8a00b8240437162cbc6d4f0",
+@@ -29,6 +30,8 @@
+     "r1_15a2_rollback_consistency_v24917.py": "9ab528bd3d834018c0ba42e9bbd75cddc3a83ea12949fd15b9d3c3083ed5ab61",
+     "r1_15a2_boundary_pa_v24917.py": "b22307f462f25d0d4c54a8a9706d8407cc2ad9d587273a680e46b1372bcd14b6",
+     "r1_15a2_mobility_guard_v24917.py": "9413fcb896cd048ab01c7eab253c00d410a1435963c7e5464c717965ae407730",
++    "r1_15a2_snapshot_reads_v24917.py": "90cd8cb09981072d908d8cb022792c6fb6352c45506140724029a0dc8842a7fe",
++    "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
+     "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
+     "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
+@@ -51,6 +54,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "30a29ad64af5b353a6c91aa5426bdab85acf3f37e97594d0b65860d71fef70c6",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "48891bf975e2e5a22c26b346a76364b14e8fae90069f7a0d30fb0d7efed08871"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "23490c1be5fd1f5aba4f64a144729dab434f0019086f6d40ce4bd708036950f7"
+   }
+ }
+--- original/r1_15a2_runtime_delta_v24917.py
++++ GENFIX1/r1_15a2_runtime_delta_v24917.py
+@@ -18,8 +18,8 @@
+ import r1_15a2_targeted_generation_v24917 as tg
+ import r1_15a2_profile_roster_v24917 as roster
+ 
+-RELEASE = "R1_15A2_V24917_TARGETED_CATCHUP_ZONALFIT_TGFIX_TDSPARSE_DIAGFAST2_20261025"
+-PACKAGE_REVISION = "V24917_TARGETED_CATCHUP_20261025"
++RELEASE = "R1_15A2_V24917_MOBILITY1_GENFIX1_20261027"
++PACKAGE_REVISION = "V24917_MOBILITY1_GENFIX1_20261027"
+ V24917_KEYS = ("v24917_targeted_generation", "v24917_release_identity")
+ 
+ 
+@@ -41,6 +41,9 @@
+             "GENERATION_GATE_NONFATAL",
+             "SPARSE_TD_AND_STATIONARY_EARLY_STOP",
+             "DIAGFAST_V2_DIRECT_GUARD",
++            "GENFIX1_TRANSIENT_SAFE_EXACT_SNAPSHOT_READS",
++            "GENFIX1_LIVE_GENERATION_PARENT_DIFF",
++            "GENFIX1_RECOVERY_OWNERSHIP_UNTIL_VERIFIED_RECOMPUTE",
+         ],
+         "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+         "acceptance_thresholds_changed_by_v24917": False,
+--- original/r1_15a2_step_search_v24917.py
++++ GENFIX1/r1_15a2_step_search_v24917.py
+@@ -35,7 +35,9 @@
+ 
+ import numpy as np
+ 
+-RELEASE = "R1_15A2_V24917_STEP1_20261025"
++import r1_15a2_generation_state_v24917 as genstate
++
++RELEASE = "R1_15A2_V24917_STEP1_GENFIX1_20261027"
+ _STATE: Dict[str, Any] = {"installed": False, "rho": None, "rho_history": [], "blocks": 0,
+                           "trials": 0, "kept": 0, "exhausted": 0}
+ 
+@@ -242,15 +244,47 @@
+     baseline_value = base.ledger(diag, state, anchors, policy, reference, gen_cfg)
+     rec: Dict[str, Any] = {"status": "DESIGNING", "attempts": [], "objective_before": baseline_value,
+                            "search_mode": "V24917_STEP1_COMPUTED_STEP_ADOPT_IN_PLACE", "release": RELEASE}
++
++    def write_failure(primary):
++        """Keep the model/stop exception authoritative if failure evidence cannot be saved."""
++        path = folder / "GENERATION_BLOCK_RESULT.json"
++        try:
++            base.atomic_json(path, rec)
++        except Exception as io_exc:
++            detail = {"path": str(path), "error": "%s:%s" % (type(io_exc).__name__, str(io_exc)[:1000])}
++            rec.setdefault("failure_record_write_errors", []).append(detail)
++            try:
++                errors = list(getattr(primary, "generation_failure_write_errors", []))
++                errors.append(detail)
++                primary.generation_failure_write_errors = errors
++                add_note = getattr(primary, "add_note", None)
++                if callable(add_note):
++                    add_note("GENERATION_FAILURE_RECORD_WRITE_FAILED: " + detail["error"])
++            except Exception:
++                # Exception metadata is best effort as well; it cannot replace
++                # a COM error or KeyboardInterrupt on older Python/COM hosts.
++                pass
++
+     if gen_cfg.get("performance", {}).get("active_generation_step_stage"):
+         rec["generation_step_stage"] = copy.deepcopy(gen_cfg["performance"]["active_generation_step_stage"])
+-    context = adapter.generation_design(diag, folder / "DESIGN")
+-    if context.get("result") is not None and not context["result"].converged:
+-        raise SupplyContractError("V245_GENERATION_SOLVER_NOT_CONVERGED_NOT_A_PLATEAU")
+-    if context.get("projection") is not None:
+-        fams = context["projection"].family_summaries
+-        if not fams or not all(row.get("converged") for row in fams):
+-            raise SupplyContractError("V245_GENERATION_PROJECTION_NOT_CONVERGED_NOT_A_PLATEAU")
++    design_phase = "BEFORE_DESIGN"
++    try:
++        genstate.require_parent(adapter, state, folder / "DESIGN_PARENT_CHECK", phase=design_phase)
++        design_phase = "GENERATION_DESIGN"
++        context = adapter.generation_design(diag, folder / "DESIGN")
++        design_phase = "GENERATION_SOLVER_CHECK"
++        if context.get("result") is not None and not context["result"].converged:
++            raise SupplyContractError("V245_GENERATION_SOLVER_NOT_CONVERGED_NOT_A_PLATEAU")
++        design_phase = "GENERATION_PROJECTION_CHECK"
++        if context.get("projection") is not None:
++            fams = context["projection"].family_summaries
++            if not fams or not all(row.get("converged") for row in fams):
++                raise SupplyContractError("V245_GENERATION_PROJECTION_NOT_CONVERGED_NOT_A_PLATEAU")
++    except BaseException as exc:
++        rec.update(status="FAILED", failure_phase=design_phase, error=str(exc),
++                   search_complete=False, stationarity_confirmed=False)
++        write_failure(exc)
++        raise
+     max_trials = max(1, len(gen_cfg.get("backtracking_scales") or [1.0, 0.5, 0.25]))
+     limit = int(gen_cfg.get("trial_calibration", {}).get("max_trials_per_block", {}).get("GENERATION", max_trials))
+     max_trials = max(1, min(max_trials, limit))
+@@ -266,180 +300,238 @@
+     baseline_diag_hash = base.diagnostic_hash(diag)
+     applied_rows: Optional[List[Mapping[str, Any]]] = None     # rows of the trial now live in Visum
+     applied_candidate = None
++    # Restoring only parameters leaves matrices and loads at the rejected trial.
++    # Keep recovery ownership independently until a full rollback is verified or
++    # the new live trial is accepted.  Register planned rows before COM writes so
++    # a partial apply failure also remains recoverable.
++    recovery_rows: Optional[List[Mapping[str, Any]]] = None
++    recovery_candidate = None
++    demand_dirty = False
++    rollback_started = False
+     upper = float(opts["max_scale"])
+     _STATE["blocks"] += 1
+ 
++    def own_recovery(rows, candidate):
++        nonlocal recovery_rows, recovery_candidate
++        retained = {(r["attr"], r["zone_no"]): r for r in (recovery_rows or [])}
++        for row in rows:
++            retained.setdefault((row["attr"], row["zone_no"]), dict(row))
++        recovery_rows = list(retained.values())
++        recovery_candidate = dict(candidate)
++
+     def rollback_full(reason):
+-        if applied_rows is None:
++        nonlocal applied_rows, applied_candidate, recovery_rows, recovery_candidate, demand_dirty
++        nonlocal rollback_started
++        if recovery_rows is None:
+             return
++        rollback_started = True
+         with base.recovery_scope(control, "STEP1_FINAL_ROLLBACK"):
+             rb, rolled = base._rollback_candidate(adapter, "GENERATION", state, baseline_diag_hash,
+-                                                  folder / "ROLLBACK", applied_rows, applied_candidate, diag)
++                                                  folder / "ROLLBACK", recovery_rows, recovery_candidate, diag)
+         base.atomic_json(folder / "ROLLBACK_SUMMARY.json", dict(rb, reason=reason))
+         if base.diagnostic_hash(rolled) != baseline_diag_hash:
+             raise SupplyContractError("V242_GENERATION_ROLLBACK_DIAGNOSTIC_CHANGED")
+-
+-    for ordinal in range(1, max_trials + 1):
+-        plan = choose_scale(model, gate, min_rel, opts, upper)
+-        scale = plan["scale"]
+-        if scale is None and model.measured is None:
+-            # the linear model sees no feasible step: measure the full step once
+-            scale = upper
+-            plan["fallback"] = "LINEAR_MODEL_NO_ROBUST_STEP_MEASURE_FULL"
+-        base.atomic_json(folder / ("STEP1_PLAN_%02d.json" % ordinal), plan)
+-        if scale is None:
+-            rec["stop_reason"] = "NO_ROBUST_FEASIBLE_SCALE_BELOW_MEASURED_TRIAL"
+-            break
+-        candidate = {"scale": float(scale)}
+-        trial_folder = folder / ("TRY_%02d" % ordinal)
+-        trial_folder.mkdir(parents=True, exist_ok=True)
+-        control.checkpoint("COUPLED_DEMAND_GENERATION_TRIAL", force=True, trial=ordinal)
+-        attempt: Dict[str, Any] = {"trial": ordinal, "candidate": candidate, "plan_mode": plan["mode"],
+-                                   "predicted_rel_improvement": plan.get("predicted_rel_improvement"),
+-                                   "rho": plan.get("rho")}
+-        mutated = applied_rows is not None
+-        try:
+-            if applied_rows is not None:
+-                # parent parameters back (COM writes only; the next recompute regenerates all demand)
+-                tx.restore_generation_parameters(adapter, state, list(applied_rows),
+-                                                 trial_folder / "RESTORE_PARENT_PARAMETERS")
+-                applied_rows = None
+-            elif adapter.snapshot() != state:
+-                raise SupplyContractError("V242_GENERATION_TRIAL_PARENT_CHANGED")
+-            preview, rows = base._planned_generation_rows(adapter, context, float(scale))
+-            # GATEFIT1: the pre-apply TG gate (P/A balance per family, projection error) is checked
+-            # on the preview, before any write or assignment; shrink the step until it passes.
+-            gate_log = []
+-            pgate = _pre_apply_gate(preview, adapter)
+-            while pgate is not None and not pgate["passes"]:
+-                gate_log.append({"scale": float(scale), "reasons": pgate["reasons"],
+-                                 "pa_gaps": _pa_gaps(preview)})
+-                nxt = float(scale) * 0.75
+-                if nxt < float(opts["min_scale"]):
++        applied_rows = recovery_rows = None
++        applied_candidate = recovery_candidate = None
++        demand_dirty = False
++
++    try:
++        for ordinal in range(1, max_trials + 1):
++            plan = choose_scale(model, gate, min_rel, opts, upper)
++            scale = plan["scale"]
++            if scale is None and model.measured is None:
++                # the linear model sees no feasible step: measure the full step once
++                scale = upper
++                plan["fallback"] = "LINEAR_MODEL_NO_ROBUST_STEP_MEASURE_FULL"
++            base.atomic_json(folder / ("STEP1_PLAN_%02d.json" % ordinal), plan)
++            if scale is None:
++                rec["stop_reason"] = "NO_ROBUST_FEASIBLE_SCALE_BELOW_MEASURED_TRIAL"
++                break
++            candidate = {"scale": float(scale)}
++            trial_folder = folder / ("TRY_%02d" % ordinal)
++            trial_folder.mkdir(parents=True, exist_ok=True)
++            control.checkpoint("COUPLED_DEMAND_GENERATION_TRIAL", force=True, trial=ordinal)
++            attempt: Dict[str, Any] = {"trial": ordinal, "candidate": candidate, "plan_mode": plan["mode"],
++                                       "predicted_rel_improvement": plan.get("predicted_rel_improvement"),
++                                       "rho": plan.get("rho")}
++            try:
++                if applied_rows is not None:
++                    # parent parameters back (COM writes only; the next recompute regenerates all demand)
++                    tx.restore_generation_parameters(adapter, state, list(applied_rows),
++                                                     trial_folder / "RESTORE_PARENT_PARAMETERS")
++                    applied_rows = None
++                elif recovery_rows is None:
++                    genstate.require_parent(adapter, state, trial_folder / "PARENT_CHECK",
++                                            phase="BEFORE_TRIAL_APPLY")
++                preview, rows = base._planned_generation_rows(adapter, context, float(scale))
++                # GATEFIT1: the pre-apply TG gate (P/A balance per family, projection error) is checked
++                # on the preview, before any write or assignment; shrink the step until it passes.
++                gate_log = []
++                pgate = _pre_apply_gate(preview, adapter)
++                while pgate is not None and not pgate["passes"]:
++                    gate_log.append({"scale": float(scale), "reasons": pgate["reasons"],
++                                     "pa_gaps": _pa_gaps(preview)})
++                    nxt = float(scale) * 0.75
++                    if nxt < float(opts["min_scale"]):
++                        break
++                    scale = nxt
++                    candidate = {"scale": float(scale)}
++                    preview, rows = base._planned_generation_rows(adapter, context, float(scale))
++                    pgate = _pre_apply_gate(preview, adapter)
++                if gate_log:
++                    attempt["pre_apply_gate_shrink"] = gate_log
++                    attempt["candidate"] = candidate
++                    _STATE["pre_gate_shrinks"] = _STATE.get("pre_gate_shrinks", 0) + len(gate_log)
++                if pgate is not None and not pgate["passes"]:
++                    attempt["status"] = "REJECTED_PRE_APPLY_GATE_ALL_SCALES"
++                    rec["attempts"].append(attempt)
++                    rec["stop_reason"] = "PRE_APPLY_GATE_NO_FEASIBLE_SCALE"
++                    base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+                     break
+-                scale = nxt
+-                candidate = {"scale": float(scale)}
+-                preview, rows = base._planned_generation_rows(adapter, context, float(scale))
+-                pgate = _pre_apply_gate(preview, adapter)
+-            if gate_log:
+-                attempt["pre_apply_gate_shrink"] = gate_log
+-                attempt["candidate"] = candidate
+-                _STATE["pre_gate_shrinks"] = _STATE.get("pre_gate_shrinks", 0) + len(gate_log)
+-            if pgate is not None and not pgate["passes"]:
+-                attempt["status"] = "REJECTED_PRE_APPLY_GATE_ALL_SCALES"
++                base.atomic_json(trial_folder / ("GENERATION_PREVIEW_%s.json" % str(round(scale, 6)).replace(".", "_")),
++                                 preview)
++                rows = list(rows or [])
++                if not rows:
++                    attempt["status"] = "NO_PARAMETER_CANDIDATE"
++                    rec["attempts"].append(attempt)
++                    rec["stop_reason"] = "NO_PARAMETER_CANDIDATE"
++                    break
++                signature = base._candidate_signature("GENERATION", candidate, rows)
++                if hasattr(adapter, "begin_candidate_readback_context"):
++                    adapter.begin_candidate_readback_context(
++                        state["state_hash"], "GENERATION", signature,
++                        parameter_evidence={"candidate": candidate, "rows": rows})
++                control.checkpoint("TRIAL_APPLY", block="GENERATION", candidate=signature)
++                applied_candidate = candidate
++                applied_rows = rows                       # rollback scope even if the write fails halfway
++                own_recovery(rows, candidate)
++                actual = base._apply_candidate(adapter, "GENERATION", candidate, rows, context, state, trial_folder)
++                applied_rows = list(actual)
++                own_recovery(applied_rows, candidate)
++                control.checkpoint("TRIAL_ASSIGNMENT", block="GENERATION")
++                demand_dirty = True
++                gap = base._assign_candidate(adapter, trial_folder / "ASSIGNMENT", "GENERATION")
++                adapter.parameter_persistence("GENERATION", actual)
++                after = adapter.snapshot()
++                base.assert_freeze(state, after, "GENERATION", rows=actual, candidate=candidate, cfg=gen_cfg)
++                control.checkpoint("TRIAL_DIAGNOSTICS", block="GENERATION")
++                import r1_15a2_perf_v24917 as perf
++                with perf.deferred_archives() as deferred:
++                    after_diag = adapter.diagnostics(trial_folder / "DIAGNOSTICS", "AFTER")
++                    if adapter.snapshot() != after:
++                        raise SupplyContractError("TRIAL_DIAGNOSTICS_CHANGED_MODEL")
++                    after_value = base.ledger(after_diag, after, anchors, policy, reference, gen_cfg)
++                    decision = adapter.block_gate("GENERATION", diag, after_diag, actual)
++                    improvement = baseline_value["total"] - after_value["total"]
++                    decision["shared_ledger_before"] = baseline_value
++                    decision["shared_ledger_after"] = after_value
++                    decision["shared_objective_improvement"] = improvement
++                    minimum = base.number(gen_cfg.get("shared_objective", {}).get("minimum_improvement", 1e-8))
++                    nonmono = decision.get("exploration_nonmonotonic_accepted") is True
++                    decision["shared_objective_monotonicity_bypassed"] = nonmono
++                    if improvement <= minimum and not nonmono:
++                        decision["accepted"] = False
++                        decision.setdefault("reasons", []).append("SHARED_OBJECTIVE_NOT_IMPROVED")
++                    base._write_acceptance(trial_folder / "ACCEPTANCE.json", decision)
++                    deferred.keep = bool(decision.get("accepted"))
++            except BaseException as exc:
++                if isinstance(exc, Exception) and "GENERATION_GATE:" in str(exc):
++                    # gate runs before any zone write: parent parameters back (cheap COM writes), smaller step
++                    if applied_rows is not None:
++                        tx.restore_generation_parameters(adapter, state, list(applied_rows),
++                                                         trial_folder / "RESTORE_AFTER_PRE_APPLY_GATE")
++                        applied_rows = None
++                    if not demand_dirty:
++                        # The known pre-write gate did not execute demand.  Release
++                        # ownership only after proving that restoration is exact.
++                        try:
++                            genstate.require_parent(adapter, state, trial_folder / "PRE_APPLY_GATE_PARENT_CHECK",
++                                                    phase="AFTER_PRE_APPLY_GATE_RESTORE")
++                        except BaseException as restore_exc:
++                            rec.update(status="FAILED", failure_phase="PRE_APPLY_GATE_RESTORE",
++                                       error=str(restore_exc))
++                            attempt.update(status="FAILED", error=str(restore_exc))
++                            rec["attempts"].append(attempt)
++                            write_failure(restore_exc)
++                            rollback_full("PRE_APPLY_GATE_RESTORE_ERROR")
++                            raise
++                        recovery_rows = None
++                        recovery_candidate = None
++                    attempt.update(status="REJECTED_PRE_APPLY_GATE", error=str(exc)[:500])
++                    rec["attempts"].append(attempt)
++                    base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
++                    upper = float(scale) * 0.75
++                    if upper < float(opts["min_scale"]):
++                        rec["stop_reason"] = "PRE_APPLY_GATE_NO_FEASIBLE_SCALE"
++                        break
++                    continue
++                attempt["status"] = "FAILED"
++                attempt["error"] = str(exc)
+                 rec["attempts"].append(attempt)
+-                rec["stop_reason"] = "PRE_APPLY_GATE_NO_FEASIBLE_SCALE"
+-                base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+-                break
+-            base.atomic_json(trial_folder / ("GENERATION_PREVIEW_%s.json" % str(round(scale, 6)).replace(".", "_")),
+-                             preview)
+-            rows = list(rows or [])
+-            if not rows:
+-                attempt["status"] = "NO_PARAMETER_CANDIDATE"
+-                rec["attempts"].append(attempt)
+-                rec["stop_reason"] = "NO_PARAMETER_CANDIDATE"
+-                break
+-            signature = base._candidate_signature("GENERATION", candidate, rows)
+-            if hasattr(adapter, "begin_candidate_readback_context"):
+-                adapter.begin_candidate_readback_context(
+-                    state["state_hash"], "GENERATION", signature,
+-                    parameter_evidence={"candidate": candidate, "rows": rows})
+-            control.checkpoint("TRIAL_APPLY", block="GENERATION", candidate=signature)
+-            mutated = True
+-            applied_candidate = candidate
+-            applied_rows = rows                       # rollback scope even if the write fails halfway
+-            actual = base._apply_candidate(adapter, "GENERATION", candidate, rows, context, state, trial_folder)
+-            applied_rows = list(actual)
+-            control.checkpoint("TRIAL_ASSIGNMENT", block="GENERATION")
+-            gap = base._assign_candidate(adapter, trial_folder / "ASSIGNMENT", "GENERATION")
+-            adapter.parameter_persistence("GENERATION", actual)
+-            after = adapter.snapshot()
+-            base.assert_freeze(state, after, "GENERATION", rows=actual, candidate=candidate, cfg=gen_cfg)
+-            control.checkpoint("TRIAL_DIAGNOSTICS", block="GENERATION")
+-            import r1_15a2_perf_v24917 as perf
+-            with perf.deferred_archives() as deferred:
+-                after_diag = adapter.diagnostics(trial_folder / "DIAGNOSTICS", "AFTER")
+-                if adapter.snapshot() != after:
+-                    raise SupplyContractError("TRIAL_DIAGNOSTICS_CHANGED_MODEL")
+-                after_value = base.ledger(after_diag, after, anchors, policy, reference, gen_cfg)
+-                decision = adapter.block_gate("GENERATION", diag, after_diag, actual)
+-                improvement = baseline_value["total"] - after_value["total"]
+-                decision["shared_ledger_before"] = baseline_value
+-                decision["shared_ledger_after"] = after_value
+-                decision["shared_objective_improvement"] = improvement
+-                minimum = base.number(gen_cfg.get("shared_objective", {}).get("minimum_improvement", 1e-8))
+-                nonmono = decision.get("exploration_nonmonotonic_accepted") is True
+-                decision["shared_objective_monotonicity_bypassed"] = nonmono
+-                if improvement <= minimum and not nonmono:
+-                    decision["accepted"] = False
+-                    decision.setdefault("reasons", []).append("SHARED_OBJECTIVE_NOT_IMPROVED")
+-                base._write_acceptance(trial_folder / "ACCEPTANCE.json", decision)
+-                deferred.keep = bool(decision.get("accepted"))
+-        except BaseException as exc:
+-            if isinstance(exc, Exception) and "GENERATION_GATE:" in str(exc):
+-                # gate runs before any zone write: parent parameters back (cheap COM writes), smaller step
+-                if applied_rows is not None:
+-                    tx.restore_generation_parameters(adapter, state, list(applied_rows),
+-                                                     trial_folder / "RESTORE_AFTER_PRE_APPLY_GATE")
+-                    applied_rows = None
+-                attempt.update(status="REJECTED_PRE_APPLY_GATE", error=str(exc)[:500])
+-                rec["attempts"].append(attempt)
+-                base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+-                upper = float(scale) * 0.75
+-                if upper < float(opts["min_scale"]):
+-                    rec["stop_reason"] = "PRE_APPLY_GATE_NO_FEASIBLE_SCALE"
+-                    break
+-                continue
+-            attempt["status"] = "FAILED"
+-            attempt["error"] = str(exc)
++                rec.update(status="FAILED", failure_phase="GENERATION_TRIAL", error=str(exc))
++                write_failure(exc)
++                if recovery_rows is not None:
++                    rollback_full("TRIAL_ERROR")
++                if not isinstance(exc, Exception) or isinstance(exc, (base.UserStopRequested, base.TimeBudgetReached)):
++                    raise
++                raise SupplyContractError("V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:" + str(exc)) from exc
++            _STATE["trials"] += 1
++            measured_obj = float(after_value.get("raw_cal", after_value.get("cal_metrics", {}).get(
++                "objective_geh_mean_weighted", float("nan"))))
++            attempt.update(status="ELIGIBLE" if decision.get("accepted") else "REJECTED", gap=gap,
++                           decision=decision, counts_objective=after_value,
++                           predicted_objective=model.objective(float(scale)), measured_objective=measured_obj)
++            if plan["mode"] == "LINEAR_FIT":
++                r = model.learn_rho(float(scale), after_diag["d12"]["rows"], opts["rho_bounds"])
++                if r is not None:
++                    old = _STATE["rho"]
++                    _STATE["rho"] = r if old is None else 0.5 * old + 0.5 * r
++                    _STATE["rho_history"].append({"measured": r, "used_next": _STATE["rho"]})
++                    attempt["rho_measured"] = r
+             rec["attempts"].append(attempt)
+             base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+-            if mutated:
+-                rollback_full("TRIAL_ERROR")
+-            if not isinstance(exc, Exception) or isinstance(exc, (base.UserStopRequested, base.TimeBudgetReached)):
+-                raise
+-            raise SupplyContractError("V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:" + str(exc)) from exc
+-        _STATE["trials"] += 1
+-        measured_obj = float(after_value.get("raw_cal", after_value.get("cal_metrics", {}).get(
+-            "objective_geh_mean_weighted", float("nan"))))
+-        attempt.update(status="ELIGIBLE" if decision.get("accepted") else "REJECTED", gap=gap,
+-                       decision=decision, counts_objective=after_value,
+-                       predicted_objective=model.objective(float(scale)), measured_objective=measured_obj)
+-        if plan["mode"] == "LINEAR_FIT":
+-            r = model.learn_rho(float(scale), after_diag["d12"]["rows"], opts["rho_bounds"])
+-            if r is not None:
+-                old = _STATE["rho"]
+-                _STATE["rho"] = r if old is None else 0.5 * old + 0.5 * r
+-                _STATE["rho_history"].append({"measured": r, "used_next": _STATE["rho"]})
+-                attempt["rho_measured"] = r
+-        rec["attempts"].append(attempt)
++            if decision.get("accepted"):
++                _STATE["kept"] += 1
++                cache_transition = None
++                if hasattr(adapter, "accepted_state_changed"):
++                    cache_transition = adapter.accepted_state_changed(
++                        after, after_diag, reason="V242_ACCEPTED_GENERATION_STATE_CHANGED", phase="DEMAND")
++                elif hasattr(adapter, "invalidate_cache"):
++                    adapter.invalidate_cache("V242_ACCEPTED_GENERATION_STATE_CHANGED", clear_proof=True)
++                rec.update(status="ACCEPTED", gap=gap, candidate=candidate, rows=len(actual),
++                           objective_after=after_value, path_epoch_transition=cache_transition,
++                           search_complete=True, adopted_in_place=True, early_stop_trial=ordinal,
++                           early_stop_policy="STEP1_FIRST_ELIGIBLE_KEPT")
++                base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
++                recovery_rows = None
++                recovery_candidate = None
++                demand_dirty = False
++                return True, after, after_diag, after_value, rec
++            model.set_measured(float(scale), after_diag["d12"]["rows"])
++            upper = float(scale) * 0.95
++            if upper < float(opts["min_scale"]):
++                rec["stop_reason"] = "SCALE_BELOW_MINIMUM"
++                break
++        rollback_full("SEARCH_EXHAUSTED")
++        _STATE["exhausted"] += 1
++        rec["search_complete"] = True
++        rec["stationarity_confirmed"] = True
++        rec["status"] = "CONFIGURED_GENERATION_SEARCH_EXHAUSTED"
+         base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+-        if decision.get("accepted"):
+-            _STATE["kept"] += 1
+-            cache_transition = None
+-            if hasattr(adapter, "accepted_state_changed"):
+-                cache_transition = adapter.accepted_state_changed(
+-                    after, after_diag, reason="V242_ACCEPTED_GENERATION_STATE_CHANGED", phase="DEMAND")
+-            elif hasattr(adapter, "invalidate_cache"):
+-                adapter.invalidate_cache("V242_ACCEPTED_GENERATION_STATE_CHANGED", clear_proof=True)
+-            rec.update(status="ACCEPTED", gap=gap, candidate=candidate, rows=len(actual),
+-                       objective_after=after_value, path_epoch_transition=cache_transition,
+-                       search_complete=True, adopted_in_place=True, early_stop_trial=ordinal,
+-                       early_stop_policy="STEP1_FIRST_ELIGIBLE_KEPT")
+-            base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+-            return True, after, after_diag, after_value, rec
+-        model.set_measured(float(scale), after_diag["d12"]["rows"])
+-        upper = float(scale) * 0.95
+-        if upper < float(opts["min_scale"]):
+-            rec["stop_reason"] = "SCALE_BELOW_MINIMUM"
+-            break
+-    rollback_full("SEARCH_EXHAUSTED")
+-    _STATE["exhausted"] += 1
+-    rec["search_complete"] = True
+-    rec["stationarity_confirmed"] = True
+-    rec["status"] = "CONFIGURED_GENERATION_SEARCH_EXHAUSTED"
+-    base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+-    return False, state, diag, baseline_value, rec
++        return False, state, diag, baseline_value, rec
++    except BaseException as exc:
++        # Planning, checkpoints, and acceptance bookkeeping also run while the
++        # previous rejected assignment may still be live.  Every exceptional
++        # exit must pass through the same transaction owner, including stops.
++        rec.update(status="FAILED", search_complete=False, stationarity_confirmed=False)
++        rec.setdefault("failure_phase", "GENERATION_SEARCH")
++        rec.setdefault("error", str(exc))
++        try:
++            write_failure(exc)
++        finally:
++            if recovery_rows is not None and not rollback_started:
++                rollback_full("SEARCH_ERROR")
++        raise
+ 
+ 
+ def install(print_fn=print) -> Dict[str, Any]:
+--- original/r1_15a2_trial_adapter_v24917.py
++++ GENFIX1/r1_15a2_trial_adapter_v24917.py
+@@ -2,8 +2,9 @@
+ """V24917 adapter: targeted, coarse catch-up Generation on top of V24916 ACTIVE.
+ 
+ Inherited unchanged: assignment, dynamic DIS skims, 12D/11D (+dynamic 11D
+-overlay), snapshot/readback, rollback, TD targeting, support-risk gate and all
+-acceptance logic.  Changed:
++overlay), TD targeting, support-risk gate and acceptance logic.  GENFIX1
++hardens full snapshot reads and uncached Generation parent checks while
++preserving the exact semantic schema.  Generation design changes:
+ 
+ 1. FlowBundle evidence builder replaced by the fixed V24917 subclass, so
+    Generation/TD targeting evidence is actually published (V24916 NameError).
+@@ -39,8 +40,10 @@
+ import r1_15a2_boundary_pa_v24917 as bdpa
+ import r1_15a2_mobility_guard_v24917 as mguard
+ import r1_15a2_intrazonal_penalty_v24917 as izpen
+-
+-RELEASE = "R1_15A2_V24917_TARGETED_CATCHUP_ADAPTER_V1_20261025"
++import r1_15a2_snapshot_reads_v24917 as snapshot_reads
++import r1_15a2_com_busy_snapshot_hotfix_v24916 as snapshot_retry
++
++RELEASE = "R1_15A2_V24917_MOBILITY1_GENFIX1_ADAPTER_20261027"
+ 
+ 
+ class VisumAdapter(_V24916ActiveAdapter):
+@@ -53,6 +56,46 @@
+             self.v24916_active_evidence = _FixedEvidenceBuilder.from_parent(self.v24916_active_evidence)
+         self.v24917_status = {"release": RELEASE, "designs": 0, "fit_fallbacks": 0,
+                               "last_phase": None, "last_ratio": None}
++
++    # ------------------------------------------------------- GENFIX1 snapshot
++    def legacy_snapshot_from_live_visum(self):
++        """Read the unchanged semantic schema without masking transient COM errors.
++
++        PERF2's candidate bundle still reuses successful snapshots within its
++        established mutation/assignment epoch.  Every full read now goes through
++        the strict V24917 reader, including the read used to build that bundle.
++        A rejected optional COM read must never become an empty input in a hash.
++        """
++        self._sync_readback_telemetry()
++        self._record_snapshot_event("LEGACY_SNAPSHOT_TOTAL")
++        result = snapshot_reads.strict_snapshot(self)
++        self.last_perf2c_snapshot_parity = {
++            "status": "V24917_STRICT_FULL_SNAPSHOT",
++            "state_hash": result.get("state_hash"),
++            "public_snapshot_schema_changed": False,
++            "cross_call_cache": False,
++            "transient_read_errors_use_defaults": False,
++            "unsafe_legacy_fallback": False,
++        }
++        self._record_snapshot_event(
++            "V24917_STRICT_FULL_SNAPSHOT", state_hash=result.get("state_hash"))
++        return result
++
++    def generation_guard_snapshot(self):
++        """Force a live parent check, including uncached M9002 penalties.
++
++        Generation design is not a candidate-readback epoch.  Its integrity
++        boundary must read Visum even when the preceding accepted candidate has
++        left a reusable PERF2 bundle or PERF3 penalty entry in memory.
++        """
++        def read_live():
++            result = self.legacy_snapshot_from_live_visum()
++            if izpen.active():
++                result = dict(result)
++                result[izpen.SNAPSHOT_KEY] = izpen.penalty_dict(izpen.read_penalty(self.visum))
++                result[izpen.BASE_KEY] = izpen.base_sha(izpen.STATE["base"])
++            return result
++        return snapshot_retry._read_retry(self, "V24917_GENERATION_PARENT_SNAPSHOT", read_live)
+ 
+     # ------------------------------------------------------- IZPEN1 snapshot
+     def snapshot(self):
+--- original/r1_15a2_v24917_runtime.py
++++ GENFIX1/r1_15a2_v24917_runtime.py
+@@ -17,7 +17,7 @@
+ from types import SimpleNamespace
+ from typing import Any, Dict
+ 
+-RELEASE = "R1_15A2_V24917_RUNTIME_INSTALL_V1_20261025"
++RELEASE = "R1_15A2_V24917_MOBILITY1_GENFIX1_RUNTIME_20261027"
+ _STATE: Dict[str, Any] = {}
+ 
+ 
+@@ -109,6 +109,13 @@
+     if _STATE:
+         return _STATE
+     status = {"release": RELEASE}
++    import r1_15a2_snapshot_reads_v24917 as snapshot_reads
++    status["snapshot_reads"] = {
++        "enabled": True, "release": snapshot_reads.RELEASE,
++        "public_snapshot_schema_changed": False,
++        "transient_errors_use_default_values": False,
++        "generation_parent_check": "UNCACHED_LIVE_EXACT_EQUALITY",
++    }
+     status["multiblock"] = tg.patch_multiblock()
+     import r1_15a2_finecdf_gapfix_v24917 as gapfix
+     status["finecdf_gapfix"] = gapfix.install()
+--- original/tools/refresh_v24917_manifests.py
++++ GENFIX1/tools/refresh_v24917_manifests.py
+@@ -10,6 +10,7 @@
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ RUNTIME = [
++    "01_SPUSTIT_V24917_GENFIX1.py",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py",
+     "r1_15a2_zonal_count_fit_v24917.py",
+     "r1_15a2_targeted_generation_v24917.py",
+@@ -36,6 +37,8 @@
+     "r1_15a2_rollback_consistency_v24917.py",
+     "r1_15a2_boundary_pa_v24917.py",
+     "r1_15a2_mobility_guard_v24917.py",
++    "r1_15a2_snapshot_reads_v24917.py",
++    "r1_15a2_generation_state_v24917.py",
+     "R1_VDF_DIAGNOSTIC.py",
+     "R1_VDF_EDIT.py",
+     "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py",
+--- /dev/null
++++ GENFIX1/01_SPUSTIT_V24917_GENFIX1.py
+@@ -0,0 +1,39 @@
++# -*- coding: utf-8 -*-
++"""V24917 MOBILITY1 + GENFIX1; preserves the PREFLIGHTIOFIX1 entry point.
++
++Open the accepted .ver in Visum, then run this script through Scripts.
++It does not create a Visum instance or load a model automatically.
++"""
++from __future__ import annotations
++
++import importlib.util
++from pathlib import Path
++
++HERE = Path(__file__).resolve().parent
++PARENT_LAUNCHER = "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py"
++RELEASE = "R1_15A2_V24917_MOBILITY1_GENFIX1_20261027"
++
++
++def load_parent():
++    spec = importlib.util.spec_from_file_location(
++        "_r1_v24917_genfix1_parent", HERE / PARENT_LAUNCHER)
++    if spec is None or spec.loader is None:
++        raise RuntimeError("V24917_GENFIX1_PARENT_LAUNCHER_UNAVAILABLE")
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def main():
++    visum, com = globals().get("Visum"), globals().get("COM")
++    if visum is None and com is None:
++        raise RuntimeError("NO_INJECTED_VISUM")
++    parent = load_parent()
++    parent.Visum = visum
++    parent.COM = com
++    print("=== " + RELEASE + " ===")
++    return parent.main()
++
++
++if __name__ == "__main__" or globals().get("Visum") is not None or globals().get("COM") is not None:
++    main()
+--- /dev/null
++++ GENFIX1/r1_15a2_generation_state_v24917.py
+@@ -0,0 +1,259 @@
++# -*- coding: utf-8 -*-
++"""GENFIX1: exact Generation parent guard with bounded mismatch evidence.
++
++The guard reads live state when the adapter provides generation_guard_snapshot.
++It never rebases the accepted parent, restores parameters, or relaxes equality.
++Evidence contains fingerprints and bounded samples, never full matrix values.
++"""
++from __future__ import annotations
++
++import math
++import numbers
++from pathlib import Path
++from typing import Any, Mapping
++
++from r1_15a2_controller_v22 import atomic_json
++from r1_15a2_supply import SupplyContractError
++
++
++SCHEMA = "R1_15A2_V24917_GENERATION_PARENT_GENFIX1"
++SAMPLE_LIMIT = 100
++TEXT_LIMIT = 1000
++_MISSING = object()
++_CORE_KEYS = frozenset((
++    "addval1", "addval_hash", "fixed_link_hash", "matrix_hash", "matrices",
++    "dseg_map", "dseg_hash", "generation_hash", "generation_values",
++    "td_values", "td_hash", "operations_hash", "state_hash",
++))
++
++
++def _equal(before: Any, current: Any) -> bool:
++    """Use the same exact object equality as the existing parent-state guard."""
++    if before is _MISSING or current is _MISSING:
++        return before is current
++    try:
++        return bool(before == current)
++    except (TypeError, ValueError):
++        # An invalid/ambiguous snapshot payload is never accepted as equal.
++        return False
++
++
++def _mapping(value: Any) -> Mapping:
++    return value if isinstance(value, Mapping) else {}
++
++
++def _keys(before: Mapping, current: Mapping):
++    return sorted(set(before) | set(current), key=lambda key: (str(type(key)), str(key)))
++
++
++def _safe(value: Any, depth: int = 0) -> Any:
++    """Bound evidence recursively and make scalar/numpy scalar values JSON-safe."""
++    if value is _MISSING:
++        return None
++    if value is None or isinstance(value, bool):
++        return value
++    if isinstance(value, str):
++        return value if len(value) <= TEXT_LIMIT else value[:TEXT_LIMIT] + "...[truncated]"
++    if isinstance(value, numbers.Integral):
++        return int(value)
++    if isinstance(value, numbers.Real):
++        result = float(value)
++        return result if math.isfinite(result) else {"nonfinite": str(result)}
++    if depth >= 6:
++        return {"type": type(value).__name__, "detail": "DEPTH_LIMIT"}
++    if isinstance(value, Mapping):
++        keys = sorted(value, key=str)
++        result = {str(key): _safe(value[key], depth + 1) for key in keys[:SAMPLE_LIMIT]}
++        if len(keys) > SAMPLE_LIMIT:
++            result["__total_keys__"] = len(keys)
++            result["__truncated__"] = True
++        return result
++    if isinstance(value, (list, tuple)):
++        sample = [_safe(item, depth + 1) for item in value[:SAMPLE_LIMIT]]
++        if len(value) > SAMPLE_LIMIT:
++            return {"sample": sample, "total_items": len(value), "truncated": True}
++        return sample
++    # Numpy scalars such as bool_ are not all numbers.Real subclasses.
++    if getattr(value, "ndim", None) == 0 and callable(getattr(value, "item", None)):
++        return _safe(value.item(), depth + 1)
++    if hasattr(value, "shape") and hasattr(value, "dtype"):
++        # Snapshot extensions may be malformed; do not dump a matrix or ndarray.
++        return {"type": type(value).__name__, "shape": list(value.shape),
++                "dtype": str(value.dtype), "values_omitted": True}
++    return {"type": type(value).__name__, "text": str(value)[:TEXT_LIMIT]}
++
++
++def _change(key_name: str, key: Any, before: Any, current: Any):
++    return {key_name: _safe(key), "before_present": before is not _MISSING,
++            "current_present": current is not _MISSING,
++            "before": _safe(before), "current": _safe(current)}
++
++
++def _mapping_changes(before: Any, current: Any, key_name: str = "key"):
++    before, current = _mapping(before), _mapping(current)
++    count, sample = 0, []
++    for key in _keys(before, current):
++        old, new = before.get(key, _MISSING), current.get(key, _MISSING)
++        if not _equal(old, new):
++            count += 1
++            if len(sample) < SAMPLE_LIMIT:
++                sample.append(_change(key_name, key, old, new))
++    return {"changed_count": count, "sample": sample, "truncated": count > len(sample)}
++
++
++def _generation_changes(before: Any, current: Any):
++    before, current = _mapping(before), _mapping(current)
++    attrs, sample, count = [], [], 0
++    for attr in _keys(before, current):
++        old_attr, new_attr = before.get(attr, _MISSING), current.get(attr, _MISSING)
++        if _equal(old_attr, new_attr):
++            continue
++        attrs.append(str(attr))
++        old_map, new_map = _mapping(old_attr), _mapping(new_attr)
++        for zone in _keys(old_map, new_map):
++            old, new = old_map.get(zone, _MISSING), new_map.get(zone, _MISSING)
++            if not _equal(old, new):
++                count += 1
++                if len(sample) < SAMPLE_LIMIT:
++                    row = _change("zone_no", zone, old, new)
++                    row["attribute"] = str(attr)
++                    sample.append(row)
++    return {"changed_attribute_count": len(attrs),
++            "changed_attributes": attrs[:SAMPLE_LIMIT],
++            "changed_value_count": count, "sample": sample,
++            "truncated": count > len(sample) or len(attrs) > SAMPLE_LIMIT}
++
++
++def _indexed_rows(value: Any, key: str):
++    result = {}
++    if not isinstance(value, (list, tuple)):
++        return result
++    for position, row in enumerate(value):
++        identity = row.get(key) if isinstance(row, Mapping) else None
++        # Include an occurrence discriminator so duplicate identities are not lost.
++        label = str(identity) if identity is not None else "position:%d" % position
++        unique = label
++        occurrence = 1
++        while unique in result:
++            occurrence += 1
++            unique = "%s#%d" % (label, occurrence)
++        result[unique] = row
++    return result
++
++
++def _row_changes(before: Any, current: Any, key: str, *, matrix: bool = False):
++    before, current = _indexed_rows(before, key), _indexed_rows(current, key)
++    count, sample = 0, []
++    matrix_fields = ("matrix_no", "rows", "cols", "sha256_float64_le")
++    for identity in _keys(before, current):
++        old, new = before.get(identity, _MISSING), current.get(identity, _MISSING)
++        if _equal(old, new):
++            continue
++        count += 1
++        if len(sample) >= SAMPLE_LIMIT:
++            continue
++        if matrix:
++            # Even an unexpected payload cannot place matrix cell values in the audit.
++            old = ({name: old.get(name) for name in matrix_fields}
++                   if isinstance(old, Mapping) else old)
++            new = ({name: new.get(name) for name in matrix_fields}
++                   if isinstance(new, Mapping) else new)
++        sample.append(_change(key, identity, old, new))
++    return {"changed_count": count, "sample": sample, "truncated": count > len(sample)}
++
++
++def _operation_view(adapter: Any):
++    result = {"view": "CURRENT_ONLY", "before_inventory_available": False}
++    if not hasattr(adapter, "visum"):
++        return dict(result, status="UNAVAILABLE_NO_VISUM")
++    try:
++        import r1_15a2_com_compat as com
++        rows = com.operation_rows(adapter.visum)
++        sample = [{str(key): _safe(value) for key, value in row.items() if key != "object"}
++                  for row in rows[:SAMPLE_LIMIT]]
++        return dict(result, status="READ", total_count=len(rows), sample=sample,
++                    truncated=len(rows) > len(sample))
++    except Exception as exc:
++        return dict(result, status="READ_FAILED", error_type=type(exc).__name__,
++                    error=str(exc)[:TEXT_LIMIT])
++
++
++def snapshot_diff(expected: Mapping, current: Mapping):
++    """Return a bounded exact-state diff; hashes alone never decide equality."""
++    expected, current = _mapping(expected), _mapping(current)
++    changed = [key for key in _keys(expected, current)
++               if not _equal(expected.get(key, _MISSING), current.get(key, _MISSING))]
++    hashes = [key for key in changed if str(key).endswith("_hash") and key != "state_hash"]
++    extensions = [key for key in changed if key not in _CORE_KEYS]
++    return {
++        "changed_top_level_count": len(changed),
++        "changed_top_level_keys": [_safe(key) for key in changed[:SAMPLE_LIMIT]],
++        "changed_hash_domains": [_safe(key) for key in hashes[:SAMPLE_LIMIT]],
++        "hash_domains": {str(key): {"before": _safe(expected.get(key, _MISSING)),
++                                    "current": _safe(current.get(key, _MISSING))}
++                         for key in hashes[:SAMPLE_LIMIT]},
++        "matrices": _row_changes(expected.get("matrices"), current.get("matrices"),
++                                  "matrix_no", matrix=True),
++        "generation_values": _generation_changes(expected.get("generation_values"),
++                                                  current.get("generation_values")),
++        "td_values": _row_changes(expected.get("td_values"), current.get("td_values"), "component"),
++        "dseg_map": _mapping_changes(expected.get("dseg_map"), current.get("dseg_map"), "dseg"),
++        "addval1": _mapping_changes(expected.get("addval1"), current.get("addval1"), "link"),
++        "extensions": {"changed_count": len(extensions), "sample": [
++            _change("key", key, expected.get(key, _MISSING), current.get(key, _MISSING))
++            for key in extensions[:SAMPLE_LIMIT]], "truncated": len(extensions) > SAMPLE_LIMIT},
++        "sample_limit": SAMPLE_LIMIT,
++    }
++
++
++def _write_preserving_failure(path: Path, payload: Any, primary: BaseException):
++    try:
++        atomic_json(path, payload)
++    except Exception as exc:
++        # An unavailable evidence directory must not replace the scientific/COM failure.
++        try:
++            primary.generation_parent_audit_error = "%s:%s" % (type(exc).__name__, str(exc)[:TEXT_LIMIT])
++        except Exception:
++            pass
++
++
++def require_parent(adapter: Any, expected_state: Mapping, folder: Any, *, phase: str):
++    """Read and verify the exact accepted parent; return that live snapshot on pass.
++
++    Uses the optional uncached adapter API. Fallback keeps existing mock/adapter
++    compatibility. A mismatch is recorded, then raises the original guard code.
++    """
++    folder = Path(folder)
++    fresh = getattr(adapter, "generation_guard_snapshot", None)
++    use_fresh = callable(fresh)
++    reader = fresh if use_fresh else adapter.snapshot
++    audit = {"schema": SCHEMA, "phase": str(phase),
++             "snapshot_source": "generation_guard_snapshot" if use_fresh else "snapshot",
++             "expected_state_hash": _safe(_mapping(expected_state).get("state_hash")),
++             "exact_object_equality_required": True, "parent_rebased": False}
++    try:
++        current = reader()
++    except BaseException as exc:
++        audit.update(status="SNAPSHOT_READ_FAILED", passes=False,
++                     error_type=type(exc).__name__, error=str(exc)[:TEXT_LIMIT])
++        _write_preserving_failure(folder / "GENERATION_PARENT_CHECK.json", audit, exc)
++        raise
++    audit["current_state_hash"] = _safe(_mapping(current).get("state_hash"))
++    if _equal(current, expected_state):
++        audit.update(status="EXACT_PARENT_MATCH", passes=True)
++        atomic_json(folder / "GENERATION_PARENT_CHECK.json", audit)
++        return current
++
++    audit.update(status="PARENT_STATE_CHANGED", passes=False)
++    error = SupplyContractError("V242_GENERATION_TRIAL_PARENT_CHANGED")
++    _write_preserving_failure(folder / "GENERATION_PARENT_CHECK.json", audit, error)
++    try:
++        detail = dict(audit, **snapshot_diff(expected_state, current))
++        if "operations_hash" in detail["changed_hash_domains"]:
++            detail["operation_inventory"] = _operation_view(adapter)
++    except Exception as exc:
++        # Malformed state should still fail closed if optional detail extraction fails.
++        detail = dict(audit, diff_error_type=type(exc).__name__, diff_error=str(exc)[:TEXT_LIMIT])
++    _write_preserving_failure(folder / "GENERATION_PARENT_DIFF.json", detail, error)
++    raise error
++
+--- /dev/null
++++ GENFIX1/r1_15a2_snapshot_reads_v24917.py
+@@ -0,0 +1,383 @@
++"""GENFIX1: exact snapshot reads without swallowing transient COM failures.
++
++The sealed PERF2C implementation uses compatibility fallbacks for optional
++COM attributes and parameter object spellings.  Those fallbacks also catch
++RPC_E_CALL_REJECTED / RPC_E_SERVERCALL_RETRYLATER and can publish an incomplete
++snapshot as if the live model had changed.  This additive reader preserves
++the successful PERF2C payload and its exact hashes, but lets those two busy
++errors reach the existing bounded whole-snapshot retry scope.
++
++No global patches, assignments, parameter writes, approximate comparison or
++fallback to the permissive reader are performed here.  Unsupported optional
++members retain their historical compatibility behavior.
++"""
++from __future__ import annotations
++
++import hashlib
++import inspect
++import math
++from typing import Any, Dict, List, Sequence, Tuple
++
++import numpy as np
++
++import r1_15a2_com_busy_snapshot_hotfix_v24916 as combusy
++import r1_15a2_com_compat as com
++import r1_15a2_core as core
++import r1_15a2_multiblock as mb
++import r1_15a2_runtime_v1 as rt
++import r1_15a2_single_pass_snapshot_v24915p2c as parent
++import r1_15a2_visum_parameters as vp
++from r1_15a2_supply import SupplyContractError, canonical_hash, integer, key_text
++
++
++RELEASE = "R1_15A2_V24917_GENFIX1_STRICT_SNAPSHOT_READS_20261027"
++
++
++def _raise_if_busy(exc: Exception) -> None:
++    if com.is_retryable_com_error(exc):
++        raise exc
++
++
++def _att(obj: Any, name: str, default: Any = None) -> Any:
++    """rt.att compatibility, except that a busy COM server is never a value."""
++    try:
++        value = obj.AttValue(name)
++        return default if value is None else value
++    except Exception as exc:
++        _raise_if_busy(exc)
++        return default
++
++
++def _collection_items(collection: Any, label: str = "collection") -> List[Any]:
++    """com.collection_items with transient Count failures also propagated."""
++    try:
++        values = com.member_value(getattr(collection, "GetAll"))
++        if values is None:
++            raise RuntimeError("GetAll returned None")
++        rows = list(values)
++    except Exception as exc:
++        _raise_if_busy(exc)
++        raise RuntimeError("COM_GETALL_FAILED:%s:%s" % (label, exc)) from exc
++    try:
++        count_member = getattr(collection, "Count")
++    except Exception as exc:
++        _raise_if_busy(exc)
++        count_member = None  # IOperations does not expose Count.
++    if count_member is not None:
++        count = com.exact_int(com.member_value(count_member), label + ".Count")
++        if count != len(rows):
++            raise RuntimeError("INCOMPLETE_COM_COLLECTION:%s:%s/%s" %
++                               (label, len(rows), count))
++    return rows
++
++
++def _dseg_bindings(visum: Any) -> List[Dict[str, Any]]:
++    rows: List[Dict[str, Any]] = []
++    for ds in _collection_items(visum.Net.DemandSegments):
++        code = rt.sval(_att(ds, "CODE", "")).strip()
++        if not code:
++            continue
++        matrix_no: Any = ""
++        try:
++            matrix = ds.ODMatrix
++            if matrix is not None:
++                matrix_no = rt.ival(_att(matrix, "NO", None), "")
++        except Exception as exc:
++            _raise_if_busy(exc)
++        rows.append({"code": code, "norm_code": rt.norm_code(code),
++                     "object": ds, "matrix_no": matrix_no})
++    return rows
++
++
++def _operation_records(visum: Any) -> List[parent.OperationRecord]:
++    records: List[parent.OperationRecord] = []
++    operations = _collection_items(visum.Procedures.Operations, "Operations")
++    for position, op in enumerate(operations, 1):
++        operation_type_raw = op.AttValue("OPERATIONTYPE")
++        records.append(parent.OperationRecord(
++            position=position,
++            obj=op,
++            operation_type_raw=operation_type_raw,
++            operation_type=com.exact_int(operation_type_raw, "OPERATIONTYPE"),
++            active=int(com.active_bool(op.AttValue("ACTIVE"))),
++            comment=str(_att(op, "COMMENT", "")),
++            name=str(_att(op, "NAME", "")),
++        ))
++    if not records:
++        raise RuntimeError("EMPTY_OPERATION_LIST")
++    return records
++
++
++def _find_td_operation(records: Sequence[parent.OperationRecord],
++                       required_codes: Sequence[str]):
++    """Parent TD resolution order, preserving genuine unsupported fallbacks."""
++    best = None
++    audit: List[Dict[str, Any]] = []
++    for record in records:
++        row: Dict[str, Any] = {
++            "index": record.position,
++            "operation_type": mb.sval(record.operation_type_raw),
++            "active": int(record.active),
++            "comment": record.comment,
++            "selected": 0,
++        }
++        if record.operation_type != 46:
++            audit.append(row)
++            continue
++        params = None
++        source = ""
++        for prop in ("TripDistributionParameters", "TripDistributionParameter"):
++            try:
++                params = getattr(record.obj, prop)
++                if params is not None:
++                    source = prop
++                    break
++            except Exception as exc:
++                _raise_if_busy(exc)
++        row["parameter_source"] = source
++        row["parameter_status"] = "OK" if params is not None else "UNREADABLE"
++        score = 100 if record.active else 0
++        dset = ""
++        if params is not None:
++            for attr in ("DSTRATSET", "DStratSet", "DEMANDSTRATUMSET"):
++                dset = mb.sval(_att(params, attr, ""))
++                if dset:
++                    break
++            tokens = com.code_set(dset, "DSTRATSET") if dset else set()
++            score += sum(1 for code in required_codes if code.upper() in tokens)
++        row["dstratset"] = dset
++        if params is not None and (best is None or score > best[0]):
++            best = (score, record.obj, params, row)
++        audit.append(row)
++    if best is None:
++        return None, None, audit
++    required_upper = {code.upper() for code in required_codes}
++    complete_active = [
++        row for row in audit
++        if row.get("active") and row.get("parameter_status") == "OK"
++        and required_upper <= (com.code_set(row["dstratset"])
++                               if row.get("dstratset") else set())
++    ]
++    if len(complete_active) > 1:
++        for row in complete_active:
++            row["resolution_error"] = "AMBIGUOUS_ACTIVE_OPERATION_SCOPE"
++        return None, None, audit
++    best[3]["selected"] = 1
++    return best[1], best[2], audit
++
++
++def _dstrat_object(params: Any, code: str, prefixes: Sequence[str]):
++    names: List[str] = []
++    for prefix in prefixes:
++        names.extend((prefix + "DStratParameters", prefix + "DStratParas"))
++    names.extend(("DStratParameters", "DStratParas"))
++    for name in names:
++        try:
++            obj = getattr(params, name)
++        except Exception as exc:
++            _raise_if_busy(exc)
++            continue
++        if (getattr(obj, "_oleobj_", None) is None and
++                (inspect.ismethod(obj) or inspect.isfunction(obj) or inspect.isbuiltin(obj))):
++            try:
++                value = obj(code)
++                if value is not None:
++                    return value, name + "(code)"
++            except Exception as exc:
++                _raise_if_busy(exc)
++        for method in ("ItemByKey", "Item"):
++            try:
++                value = getattr(obj, method)(code)
++                if value is not None:
++                    return value, name + "." + method
++            except Exception as exc:
++                _raise_if_busy(exc)
++        try:
++            for value in _collection_items(obj):
++                live = mb.sval(_att(value, "DEMANDSTRATUMCODE", "") or
++                               _att(value, "CODE", ""))
++                if live == code:
++                    return value, name + " iteration"
++        except Exception as exc:
++            _raise_if_busy(exc)
++    return None, "NOT_FOUND"
++
++
++def _read_any(obj: Any, attrs: Sequence[str]):
++    for name in attrs:
++        try:
++            value = obj.AttValue(name)
++            if value not in (None, ""):
++                return name, value, "AttValue"
++        except Exception as exc:
++            _raise_if_busy(exc)
++    for name in attrs:
++        try:
++            value = getattr(obj, name)
++            if value not in (None, ""):
++                return name, value, "property"
++        except Exception as exc:
++            _raise_if_busy(exc)
++    return "", None, "NOT_READ"
++
++
++def _td_snapshot(records: Sequence[parent.OperationRecord]):
++    required = [item["dstrat_code"] for item in mb.COMPONENT_REGISTRY.values()]
++    _op, params, operation_rows = _find_td_operation(records, required)
++    if params is None:
++        raise RuntimeError("Could not locate readable Trip Distribution operation")
++    selected = [row for row in operation_rows if int(row.get("selected", 0) or 0) == 1]
++    if not selected or int(selected[0].get("active", 0) or 0) != 1:
++        raise RuntimeError("Selected Trip Distribution operation is inactive or unresolved")
++    dset = mb.sval(selected[0].get("dstratset"))
++    tokens = com.code_set(dset) if dset else set()
++    missing = [code for code in required if code.upper() not in tokens]
++    if missing:
++        raise RuntimeError("Trip Distribution DStratSet misses: %s" % ",".join(missing))
++
++    rows: List[Dict[str, Any]] = []
++    for component, registry in mb.COMPONENT_REGISTRY.items():
++        d_obj, _source = _dstrat_object(params, registry["dstrat_code"], ("TripDistribution",))
++        if d_obj is None:
++            rows.append({"component": component, "current_b": None,
++                         "current_c": None, "status": "DSTRAT_NOT_FOUND"})
++            continue
++        grav = d_obj
++        for prop in ("GravitationParameters", "GravityParameters", "DistributionParameters"):
++            try:
++                candidate = getattr(d_obj, prop)
++                if candidate is not None:
++                    grav = candidate
++                    break
++            except Exception as exc:
++                _raise_if_busy(exc)
++        _b_attr, b_raw, _b_mode = _read_any(grav, vp.TD_B_ATTRS)
++        _c_attr, c_raw, _c_mode = _read_any(grav, vp.TD_C_ATTRS)
++        b_value = mb.fval(b_raw, None)
++        c_value = mb.fval(c_raw, None)
++        status = "OK" if b_value is not None and c_value is not None else "PARAM_READ_INCOMPLETE"
++        rows.append({"component": component, "current_b": b_value,
++                     "current_c": c_value, "status": status})
++    return rows, operation_rows
++
++
++class _ReadContext(parent.SnapshotReadContext):
++    """Same per-call memoization and telemetry keys as the parent reader."""
++
++    def dseg_bindings(self):
++        return self.get_once("dseg_bindings", lambda: _dseg_bindings(self.visum))
++
++    def operation_records(self):
++        return self.get_once("operation_records", lambda: _operation_records(self.visum))
++
++    def td_and_operations(self):
++        def load():
++            records = self.operation_records()
++            td_rows, audit = _td_snapshot(records)
++            # This parent helper is pure: it never calls COM.
++            return td_rows, parent._inventory_from_records(records, audit)
++        return self.get_once("td_and_operations", load)
++
++
++def _matrix_fingerprint(matrix: Any) -> Tuple[Dict[str, Any], float]:
++    values = matrix.GetValues()
++    array = np.asarray(values, dtype="<f8")
++    if array.ndim != 2:
++        raise RuntimeError("matrix array is not 2D: shape=%r" % (array.shape,))
++    if not np.all(np.isfinite(array)) or np.any(array < 0):
++        raise RuntimeError("Demand matrix contains nonfinite or negative values")
++    contiguous = np.ascontiguousarray(array, dtype="<f8")
++    total = float(np.sum(contiguous))
++    row = {
++        "matrix_no": rt.ival(_att(matrix, "NO", None), ""),
++        "rows": int(contiguous.shape[0]),
++        "cols": int(contiguous.shape[1]),
++        "sha256_float64_le": hashlib.sha256(contiguous.tobytes(order="C")).hexdigest(),
++    }
++    return row, total
++
++
++def _snapshot_once(adapter: Any) -> Dict[str, Any]:
++    context = _ReadContext(adapter)
++    links = context.links()
++    fixed: List[Dict[str, Any]] = []
++    addval_values: Dict[str, float] = {}
++    for key, row in sorted(links.items()):
++        addval_values[key_text(key)] = row["addval1"]
++        fixed.append({name: value for name, value in row.items()
++                      if name not in ("addval1", "object", "eligible")})
++
++    dseg_rows = context.dseg_bindings()
++    if len({row["norm_code"] for row in dseg_rows}) != len(dseg_rows):
++        raise SupplyContractError("DUPLICATE_DSEG_IDENTITY")
++    dseg_map = {row["norm_code"]: row.get("matrix_no") for row in dseg_rows}
++    required = {core.norm_code(value) for value in
++                (adapter.cfg["supply"]["passenger_dsegs"] +
++                 adapter.cfg["supply"].get("freight_dsegs", []))}
++    if not required <= set(dseg_map):
++        raise SupplyContractError("REQUIRED_DEMAND_SEGMENT_MISSING:" +
++                                  ",".join(sorted(required - set(dseg_map))))
++    unbound = sorted(code for code in required if dseg_map[code] in (None, ""))
++    if unbound:
++        raise SupplyContractError("REQUIRED_DSEG_ODMATRIX_UNREADABLE:" + ",".join(unbound))
++    numbers = {integer(row["matrix_no"]) for row in dseg_rows
++               if row.get("matrix_no") not in (None, "")}
++    numbers.update(integer(value) for value in
++                   adapter.cfg["supply"].get("component_matrix_nos", []))
++    matrix_rows: List[Dict[str, Any]] = []
++    for matrix_no in sorted(numbers):
++        matrix = adapter.visum.Net.Matrices.ItemByKey(matrix_no)
++        row, matrix_sum = _matrix_fingerprint(matrix)
++        expected_zones = adapter.cfg.get("expected_zones")
++        if expected_zones is not None and (row["rows"], row["cols"]) != (
++                int(expected_zones), int(expected_zones)):
++            raise SupplyContractError("DEMAND_MATRIX_AXIS_SHAPE_MISMATCH:%s" % matrix_no)
++        if not math.isfinite(matrix_sum) or matrix_sum < 0:
++            raise SupplyContractError("NONFINITE_OR_NEGATIVE_DEMAND")
++        matrix_rows.append(row)
++    if not matrix_rows:
++        raise SupplyContractError("EMPTY_DEMAND_FINGERPRINT")
++
++    generation_values = context.generation_values()
++    td_values, operations = context.td_and_operations()
++    if (len(td_values) != len(mb.COMPONENT_REGISTRY) or
++            any(row.get("status") != "OK" for row in td_values)):
++        raise SupplyContractError("COMPONENT_PARAMETER_SNAPSHOT_FAILED")
++    td_values = sorted(td_values, key=lambda row: row["component"])
++    result: Dict[str, Any] = {
++        "addval1": addval_values,
++        "addval_hash": canonical_hash(addval_values),
++        "fixed_link_hash": canonical_hash(fixed),
++        "matrix_hash": canonical_hash(matrix_rows),
++        "matrices": matrix_rows,
++        "dseg_map": dseg_map,
++        "dseg_hash": canonical_hash(dseg_map),
++        "generation_hash": canonical_hash(generation_values),
++        "generation_values": generation_values,
++        "td_values": td_values,
++        "td_hash": canonical_hash(td_values),
++        "operations_hash": canonical_hash(operations),
++    }
++    result["state_hash"] = canonical_hash(result)
++    telemetry_payload = context.telemetry()
++    telemetry_payload.update({
++        "state_hash": result["state_hash"],
++        "matrix_count": len(matrix_rows),
++        "dseg_count": len(dseg_rows),
++        "generation_attribute_count": len(generation_values),
++        "operation_count": len(operations),
++    })
++    adapter.last_perf2c_snapshot_telemetry = telemetry_payload
++    telemetry = getattr(adapter, "telemetry", None)
++    if telemetry is not None:
++        telemetry.event("PERF2C_SINGLE_PASS_EXACT_SNAPSHOT", **telemetry_payload)
++    return result
++
++
++def strict_snapshot(adapter: Any) -> Dict[str, Any]:
++    """Read one exact snapshot; retry a busy read, never publish its defaults."""
++    return combusy._read_retry(adapter, "V24917_STRICT_FULL_SNAPSHOT",
++                              lambda: _snapshot_once(adapter))
++
++
++__all__ = ["RELEASE", "strict_snapshot"]
+--- /dev/null
++++ GENFIX1/tests/test_v24917_generation_state_genfix1.py
+@@ -0,0 +1,220 @@
++# -*- coding: utf-8 -*-
++"""GENFIX1 live parent guard: reject drift and retain bounded forensic evidence."""
++import copy
++import json
++from types import SimpleNamespace
++
++import numpy as np
++import pytest
++
++import r1_15a2_generation_state_v24917 as guard
++from r1_15a2_supply import SupplyContractError
++
++
++def state():
++    return {
++        "state_hash": "parent", "matrix_hash": "matrix-old", "generation_hash": "generation-old",
++        "td_hash": "td-old", "operations_hash": "operations-old", "dseg_hash": "dseg-old",
++        "fixed_link_hash": "fixed", "addval_hash": "addval-old", "addval1": {"1|1|2": 0.0},
++        "matrices": [{"matrix_no": 9101, "rows": 2, "cols": 2, "sha256_float64_le": "od-old"}],
++        "generation_values": {"ADD_PROD_W": {"1": 1.0, "2": 1.5}},
++        "td_values": [{"component": "WORK_E_C", "current_b": -0.1, "current_c": -0.2, "status": "OK"}],
++        "dseg_map": {"NATIVE_CW": 9101},
++        "v24917_iz_penalty": {"1": 0.0}, "v24917_ic_base_sha": "base-old",
++    }
++
++
++def read(folder, name):
++    return json.loads((folder / name).read_text(encoding="utf-8"))
++
++
++def test_exact_parent_passes_uses_fallback_and_never_changes_expected(tmp_path):
++    expected = state()
++    before = copy.deepcopy(expected)
++    current = copy.deepcopy(expected)
++    adapter = SimpleNamespace(snapshot=lambda: current, generation_guard_snapshot=None)
++    assert guard.require_parent(adapter, expected, tmp_path, phase="BEFORE_DESIGN") is current
++    assert expected == before
++    check = read(tmp_path, "GENERATION_PARENT_CHECK.json")
++    assert check["passes"] and check["status"] == "EXACT_PARENT_MATCH"
++    assert check["snapshot_source"] == "snapshot" and check["parent_rebased"] is False
++    assert not (tmp_path / "GENERATION_PARENT_DIFF.json").exists()
++
++
++@pytest.mark.parametrize("domain,field,detail", [
++    ("matrix", "matrices", "matrices"),
++    ("generation", "generation_values", "generation_values"),
++    ("td", "td_values", "td_values"),
++    ("operations", "operations_hash", None),
++    ("dseg", "dseg_map", "dseg_map"),
++    ("addval", "addval1", "addval1"),
++    ("extension", "v24917_iz_penalty", "extensions"),
++    ("base_extension", "v24917_ic_base_sha", "extensions"),
++])
++def test_true_mutations_rejected_even_if_state_hash_is_unchanged(tmp_path, domain, field, detail):
++    expected = state()
++    before = copy.deepcopy(expected)
++    current = copy.deepcopy(expected)
++    if domain == "matrix":
++        current["matrices"][0]["sha256_float64_le"] = "od-new"
++    elif domain == "generation":
++        current["generation_values"]["ADD_PROD_W"]["2"] = 1.6
++    elif domain == "td":
++        current["td_values"][0]["current_c"] = -0.25
++    elif domain == "operations":
++        current["operations_hash"] = "operations-new"
++    elif domain == "dseg":
++        current["dseg_map"]["NATIVE_CW"] = 9102
++    elif domain == "addval":
++        current["addval1"]["1|1|2"] = 0.1
++    elif domain == "extension":
++        current["v24917_iz_penalty"]["1"] = 0.1
++    else:
++        current["v24917_ic_base_sha"] = "base-new"
++    adapter = SimpleNamespace(snapshot=lambda: current)
++    with pytest.raises(SupplyContractError, match="^V242_GENERATION_TRIAL_PARENT_CHANGED$"):
++        guard.require_parent(adapter, expected, tmp_path, phase="AFTER_DESIGN")
++    assert expected == before
++    diff = read(tmp_path, "GENERATION_PARENT_DIFF.json")
++    assert diff["changed_top_level_keys"] == [field]
++    assert diff["expected_state_hash"] == diff["current_state_hash"] == "parent"
++    assert not diff["passes"] and diff["parent_rebased"] is False
++    if detail:
++        assert len(diff[detail]["sample"]) == 1
++    if domain == "matrix":
++        row = diff["matrices"]["sample"][0]
++        assert row["before"]["sha256_float64_le"] == "od-old"
++        assert row["current"]["sha256_float64_le"] == "od-new"
++    if domain == "operations":
++        assert diff["changed_hash_domains"] == ["operations_hash"]
++        assert diff["operation_inventory"]["status"] == "UNAVAILABLE_NO_VISUM"
++
++
++def test_optional_live_api_wins_over_stale_cached_snapshot(tmp_path):
++    expected, current = state(), state()
++    current["generation_values"]["ADD_PROD_W"]["1"] = 2.0
++    calls = []
++
++    def cached():
++        calls.append("cached")
++        return expected
++
++    def live():
++        calls.append("live")
++        return current
++
++    adapter = SimpleNamespace(snapshot=cached, generation_guard_snapshot=live)
++    with pytest.raises(SupplyContractError, match="PARENT_CHANGED"):
++        guard.require_parent(adapter, expected, tmp_path, phase="BEFORE_APPLY")
++    assert calls == ["live"]
++    assert read(tmp_path, "GENERATION_PARENT_CHECK.json")["snapshot_source"] == "generation_guard_snapshot"
++
++
++def test_generation_samples_are_bounded_but_total_count_is_exact(tmp_path):
++    expected, current = state(), state()
++    n = guard.SAMPLE_LIMIT + 37
++    expected["generation_values"] = {"ADD_PROD_W": {str(i): 1.0 for i in range(n)}}
++    current["generation_values"] = {"ADD_PROD_W": {str(i): 1.01 for i in range(n)}}
++    with pytest.raises(SupplyContractError):
++        guard.require_parent(SimpleNamespace(snapshot=lambda: current), expected, tmp_path, phase="AFTER_DESIGN")
++    part = read(tmp_path, "GENERATION_PARENT_DIFF.json")["generation_values"]
++    assert part["changed_value_count"] == n and part["truncated"] is True
++    assert len(part["sample"]) == guard.SAMPLE_LIMIT
++    assert part["changed_attributes"] == ["ADD_PROD_W"]
++
++
++def test_added_removed_values_and_same_hash_new_extension_are_reported(tmp_path):
++    expected, current = state(), state()
++    del current["generation_values"]["ADD_PROD_W"]["1"]
++    current["generation_values"]["ADD_PROD_W"]["3"] = 1.25
++    current["new_extension"] = {"x": True}
++    with pytest.raises(SupplyContractError):
++        guard.require_parent(SimpleNamespace(snapshot=lambda: current), expected, tmp_path, phase="AFTER_DESIGN")
++    diff = read(tmp_path, "GENERATION_PARENT_DIFF.json")
++    by_zone = {row["zone_no"]: row for row in diff["generation_values"]["sample"]}
++    assert not by_zone["1"]["current_present"] and by_zone["1"]["before_present"]
++    assert not by_zone["3"]["before_present"] and by_zone["3"]["current_present"]
++    assert diff["extensions"]["sample"][0]["key"] == "new_extension"
++
++
++def test_read_failure_is_audited_and_original_exception_reraised(tmp_path):
++    error = RuntimeError("COM disconnected")
++
++    def read_live():
++        raise error
++
++    with pytest.raises(RuntimeError) as caught:
++        guard.require_parent(SimpleNamespace(snapshot=read_live), state(), tmp_path, phase="BEFORE_DESIGN")
++    assert caught.value is error
++    check = read(tmp_path, "GENERATION_PARENT_CHECK.json")
++    assert check["status"] == "SNAPSHOT_READ_FAILED"
++    assert check["error_type"] == "RuntimeError" and check["error"] == "COM disconnected"
++
++
++def test_audit_write_failure_does_not_replace_primary_mismatch(tmp_path, monkeypatch):
++    current = state()
++    current["operations_hash"] = "changed"
++
++    def fail_write(*args, **kwargs):
++        raise OSError("disk full")
++
++    monkeypatch.setattr(guard, "atomic_json", fail_write)
++    with pytest.raises(SupplyContractError, match="^V242_GENERATION_TRIAL_PARENT_CHANGED$") as caught:
++        guard.require_parent(SimpleNamespace(snapshot=lambda: current), state(), tmp_path, phase="AFTER_DESIGN")
++    assert "disk full" in caught.value.generation_parent_audit_error
++
++
++def test_audit_write_failure_does_not_replace_snapshot_read_error(tmp_path, monkeypatch):
++    primary = RuntimeError("COM failed")
++
++    def reader():
++        raise primary
++
++    def writer(*args, **kwargs):
++        raise OSError("disk full")
++
++    monkeypatch.setattr(guard, "atomic_json", writer)
++    with pytest.raises(RuntimeError) as caught:
++        guard.require_parent(SimpleNamespace(snapshot=reader), state(), tmp_path, phase="BEFORE_DESIGN")
++    assert caught.value is primary
++    assert "disk full" in primary.generation_parent_audit_error
++
++
++def test_operation_inventory_current_only_and_read_errors_do_not_mask_mismatch(tmp_path, monkeypatch):
++    import r1_15a2_com_compat as com
++    current = state()
++    current["operations_hash"] = "changed"
++    adapter = SimpleNamespace(snapshot=lambda: current, visum=object())
++    monkeypatch.setattr(com, "operation_rows", lambda v: [
++        {"no": 1, "type": 45, "active": 0, "comment": "TG", "object": object()}])
++    with pytest.raises(SupplyContractError):
++        guard.require_parent(adapter, state(), tmp_path / "ok", phase="AFTER_DESIGN")
++    view = read(tmp_path / "ok", "GENERATION_PARENT_DIFF.json")["operation_inventory"]
++    assert view["view"] == "CURRENT_ONLY" and view["before_inventory_available"] is False
++    assert view["sample"][0]["active"] == 0 and "object" not in view["sample"][0]
++
++    def fail_inventory(v):
++        raise RuntimeError("COM rejected inventory")
++
++    monkeypatch.setattr(com, "operation_rows", fail_inventory)
++    with pytest.raises(SupplyContractError, match="PARENT_CHANGED"):
++        guard.require_parent(adapter, state(), tmp_path / "error", phase="AFTER_DESIGN")
++    view = read(tmp_path / "error", "GENERATION_PARENT_DIFF.json")["operation_inventory"]
++    assert view["status"] == "READ_FAILED" and "COM rejected" in view["error"]
++
++
++def test_numpy_scalars_are_safe_and_large_matrix_values_are_never_dumped(tmp_path):
++    expected, current = state(), state()
++    current["generation_values"]["ADD_PROD_W"]["1"] = np.float64(1.1)
++    current["matrices"][0]["sha256_float64_le"] = "new"
++    current["matrices"][0]["values"] = [[999999.0] * 300] * 300
++    current["scalar_extension"] = {"flag": np.bool_(True), "number": np.int64(4)}
++    with pytest.raises(SupplyContractError):
++        guard.require_parent(SimpleNamespace(snapshot=lambda: current), expected, tmp_path, phase="AFTER_DESIGN")
++    text = (tmp_path / "GENERATION_PARENT_DIFF.json").read_text(encoding="utf-8")
++    diff = json.loads(text)
++    assert "999999" not in text
++    assert len(text) < 12000
++    assert diff["generation_values"]["sample"][0]["current"] == 1.1
++    assert diff["extensions"]["sample"][0]["current"] == {"flag": True, "number": 4}
++
+--- /dev/null
++++ GENFIX1/tests/test_v24917_generation_transaction_genfix1.py
+@@ -0,0 +1,311 @@
++# -*- coding: utf-8 -*-
++"""GENFIX1: parameter-only restoration must retain ownership of live demand.
++
++These tests use separate parameter and assigned-demand states.  A cheap COM
++parameter restore cannot repair the latter; the real rollback transaction must
++execute and verify the parent recomputation before the block exits.
++"""
++import json
++from contextlib import contextmanager
++from types import SimpleNamespace
++
++import pytest
++
++import r1_15a2_step_search_v24917 as step
++from test_v24917_step_search import harness, opts  # noqa: F401 (shared behavioral fixture)
++
++
++@contextmanager
++def _raises_contract_error(*, match):
++    # Launcher tests deliberately reload runtime modules.  The guard and STEP1
++    # may then retain different legitimate class objects with the same contract.
++    # Assert the complete exception identity by module/name plus the error text,
++    # rather than coupling the test to a collection-time Python class object.
++    with pytest.raises(Exception, match=match) as caught:
++        yield caught
++    assert type(caught.value).__module__ == "r1_15a2_supply"
++    assert type(caught.value).__name__ == "SupplyContractError"
++
++
++def _contract_error(message):
++    from r1_15a2_supply import SupplyContractError
++    return SupplyContractError(message)
++
++
++def _saved_result(harness):
++    return json.loads((harness.folder / "GENERATION_BLOCK_RESULT.json").read_text(encoding="utf-8"))
++
++
++def _assert_verified_parent(harness, trial_assignments):
++    ad = harness.ad
++    assert ad.g == ad.g0
++    assert ad.vol_g == ad.g0
++    assert ad.snapshot() == harness.state
++    assert len(ad.assignments) == trial_assignments + 1
++    assert sum("ROLLBACK" in path for path in ad.assignments) == 1
++    assert ad.diags[-1] == "ROLLBACK"
++    proof = json.loads((harness.folder / "ROLLBACK" / "ROLLBACK_VERIFICATION.json")
++                       .read_text(encoding="utf-8"))
++    assert proof["snapshot_equal"] and proof["diagnostic_equal"] and proof["passes"]
++
++
++@pytest.mark.parametrize("next_preview", ["gate_exhausted", "no_rows", "exception"])
++def test_rejected_assignment_then_unapplied_trial_recomputes_parent(harness, monkeypatch, next_preview):
++    ad = harness.ad
++    original_preview = ad.generation_preview
++    pending_demand_seen = []
++
++    def preview(context, scale):
++        result = original_preview(context, scale)
++        if not ad.assignments:
++            return result
++        # The first assigned trial was rejected by the real acceptance gate.
++        # Parameters have already been reset, but demand is still that trial's.
++        assert ad.g == ad.g0
++        assert ad.vol_g != ad.g0
++        pending_demand_seen.append(True)
++        if next_preview == "exception":
++            raise RuntimeError("preview failed after parameters-only restoration")
++        if next_preview == "no_rows":
++            return {"candidate_rows": []}
++        result["summary"] = {"estimated_pa_delta_by_family": {
++            "WORK": {"estimated_prod_delta": 1000.0, "estimated_att_delta": 1000.0,
++                     "estimated_abs_gap": 50.0}}}
++        return result
++
++    monkeypatch.setattr(ad, "generation_preview", preview)
++    if next_preview == "exception":
++        with _raises_contract_error(match="NOT_A_PLATEAU:preview failed"):
++            harness.run()
++        rec = _saved_result(harness)
++        assert rec["status"] == "FAILED"
++        assert rec["failure_phase"] == "GENERATION_TRIAL"
++        assert rec["attempts"][-1]["status"] == "FAILED"
++        assert rec["search_complete"] is False and rec["stationarity_confirmed"] is False
++    else:
++        changed, state, diag, _value, rec = harness.run()
++        assert changed is False
++        assert state == harness.state and diag == harness.diag
++        assert rec["status"] == "CONFIGURED_GENERATION_SEARCH_EXHAUSTED"
++        expected = ("REJECTED_PRE_APPLY_GATE_ALL_SCALES" if next_preview == "gate_exhausted"
++                    else "NO_PARAMETER_CANDIDATE")
++        assert rec["attempts"][-1]["status"] == expected
++    assert pending_demand_seen
++    assert rec["attempts"][0]["status"] == "REJECTED"
++    _assert_verified_parent(harness, trial_assignments=1)
++
++
++@pytest.mark.parametrize("after_rejected_assignment", [False, True])
++def test_partial_generation_write_is_owned_before_apply_returns(harness, monkeypatch,
++                                                               after_rejected_assignment):
++    ad = harness.ad
++    original_apply = ad.apply_generation
++    original_preview = ad.generation_preview
++    calls = []
++
++    def apply(context, scale, folder):
++        calls.append(scale)
++        if after_rejected_assignment and len(calls) == 1:
++            return original_apply(context, scale, folder)
++        rows = original_preview(context, scale)["candidate_rows"]
++        for row in rows[:2]:
++            ad.g[str(row["zone_no"])] = row["proposed"]
++        assert ad.g != ad.g0
++        raise RuntimeError("partial COM generation write failed")
++
++    monkeypatch.setattr(ad, "apply_generation", apply)
++    with _raises_contract_error(match="NOT_A_PLATEAU:partial COM generation write failed"):
++        harness.run()
++    rec = _saved_result(harness)
++    assert rec["status"] == "FAILED"
++    assert rec["attempts"][-1]["status"] == "FAILED"
++    assert len(calls) == 1 + int(after_rejected_assignment)
++    _assert_verified_parent(harness, trial_assignments=int(after_rejected_assignment))
++
++
++def test_parent_mismatch_is_reported_before_any_design(harness, monkeypatch):
++    def forbidden_design(*_args, **_kwargs):
++        pytest.fail("design ran against a changed accepted parent")
++
++    monkeypatch.setattr(harness.ad, "generation_design", forbidden_design)
++    harness.ad.g["1"] = 1.1
++    with _raises_contract_error(match="V242_GENERATION_TRIAL_PARENT_CHANGED"):
++        harness.run()
++    rec = _saved_result(harness)
++    assert rec["status"] == "FAILED" and rec["failure_phase"] == "BEFORE_DESIGN"
++    assert rec["attempts"] == []
++    assert harness.ad.assignments == []
++    assert harness.ad.g["1"] == 1.1  # guard never silently adopts or overwrites unexpected state
++
++
++@pytest.mark.parametrize("failure", ["exception", "interrupt", "solver", "projection"])
++def test_design_failures_are_saved_and_original_errors_propagate(harness, monkeypatch, failure):
++    sentinel = KeyboardInterrupt("design interrupted") if failure == "interrupt" else RuntimeError("design failed")
++
++    def design(_diag, _folder):
++        if failure in ("exception", "interrupt"):
++            raise sentinel
++        if failure == "solver":
++            return {"result": SimpleNamespace(converged=False), "projection": None}
++        return {"result": None, "projection": SimpleNamespace(family_summaries=[{"converged": False}])}
++
++    monkeypatch.setattr(harness.ad, "generation_design", design)
++    if failure in ("exception", "interrupt"):
++        with pytest.raises(type(sentinel)) as caught:
++            harness.run()
++        assert caught.value is sentinel
++        phase = "GENERATION_DESIGN"
++    else:
++        token = "SOLVER" if failure == "solver" else "PROJECTION"
++        with _raises_contract_error(match="V245_GENERATION_%s_NOT_CONVERGED_NOT_A_PLATEAU" % token):
++            harness.run()
++        phase = "GENERATION_%s_CHECK" % token
++    rec = _saved_result(harness)
++    assert rec["status"] == "FAILED" and rec["failure_phase"] == phase
++    assert rec["search_complete"] is False and rec["stationarity_confirmed"] is False
++    assert harness.ad.assignments == [] and harness.ad.snapshot() == harness.state
++
++
++def test_post_design_parent_mismatch_still_blocks_the_trial(harness, monkeypatch):
++    original = harness.ad.generation_design
++
++    def design(diag, folder):
++        context = original(diag, folder)
++        harness.ad.g["1"] = 1.1
++        return context
++
++    monkeypatch.setattr(harness.ad, "generation_design", design)
++    with _raises_contract_error(match="V242_GENERATION_TRIAL_PARENT_CHANGED"):
++        harness.run()
++    rec = _saved_result(harness)
++    assert rec["status"] == "FAILED"
++    assert rec["attempts"][0]["status"] == "FAILED"
++    assert harness.ad.assignments == []
++    assert harness.ad.g["1"] == 1.1
++
++
++@pytest.mark.parametrize("failure", ["plan_error", "plan_interrupt"])
++def test_search_planning_failure_after_rejection_cannot_abandon_live_trial(harness, monkeypatch, failure):
++    original = step.choose_scale
++    sentinel = (KeyboardInterrupt("stop between generation trials") if failure == "plan_interrupt"
++                else RuntimeError("next scale could not be planned"))
++
++    def choose(model, *args, **kwargs):
++        if model.measured is not None:
++            assert harness.ad.vol_g != harness.ad.g0
++            raise sentinel
++        return original(model, *args, **kwargs)
++
++    monkeypatch.setattr(step, "choose_scale", choose)
++    with pytest.raises(type(sentinel)) as caught:
++        harness.run()
++    assert caught.value is sentinel
++    rec = _saved_result(harness)
++    assert rec["status"] == "FAILED" and rec["failure_phase"] == "GENERATION_SEARCH"
++    assert rec["attempts"][0]["status"] == "REJECTED"
++    _assert_verified_parent(harness, trial_assignments=1)
++
++
++class _SimulatedComError(Exception):
++    hresult = -2147418111
++
++
++def _break_failure_record_writes(harness, monkeypatch):
++    original = harness.base.atomic_json
++
++    def write(path, payload):
++        if str(path).endswith("GENERATION_BLOCK_RESULT.json") and payload.get("status") == "FAILED":
++            raise OSError("failure-record disk is full")
++        return original(path, payload)
++
++    monkeypatch.setattr(harness.base, "atomic_json", write)
++
++
++def _assert_failure_record_error_attached(primary):
++    errors = getattr(primary, "generation_failure_write_errors", [])
++    assert errors
++    assert all(item["path"].endswith("GENERATION_BLOCK_RESULT.json") for item in errors)
++    assert any("OSError:failure-record disk is full" in item["error"] for item in errors)
++    if callable(getattr(primary, "add_note", None)):
++        assert any("GENERATION_FAILURE_RECORD_WRITE_FAILED" in note
++                   for note in primary.__notes__)
++
++
++@pytest.mark.parametrize("failure", ["com", "interrupt"])
++def test_design_primary_error_survives_failure_record_io_error(harness, monkeypatch, failure):
++    primary = (_SimulatedComError("COM disconnected in generation design") if failure == "com"
++               else KeyboardInterrupt("stop generation design"))
++
++    def design(*_args):
++        raise primary
++
++    monkeypatch.setattr(harness.ad, "generation_design", design)
++    _break_failure_record_writes(harness, monkeypatch)
++    with pytest.raises(type(primary)) as caught:
++        harness.run()
++    assert caught.value is primary
++    _assert_failure_record_error_attached(primary)
++    assert harness.ad.assignments == [] and harness.ad.snapshot() == harness.state
++
++
++@pytest.mark.parametrize("failure", ["error", "interrupt"])
++def test_dirty_demand_rollback_runs_when_planning_error_cannot_be_logged(harness, monkeypatch, failure):
++    original = step.choose_scale
++    primary = (RuntimeError("next step planning failed") if failure == "error"
++               else KeyboardInterrupt("stop between assigned generation trials"))
++
++    def choose(model, *args, **kwargs):
++        if model.measured is not None:
++            assert harness.ad.vol_g != harness.ad.g0
++            raise primary
++        return original(model, *args, **kwargs)
++
++    monkeypatch.setattr(step, "choose_scale", choose)
++    _break_failure_record_writes(harness, monkeypatch)
++    with pytest.raises(type(primary)) as caught:
++        harness.run()
++    assert caught.value is primary
++    _assert_failure_record_error_attached(primary)
++    _assert_verified_parent(harness, trial_assignments=1)
++
++
++def test_partial_apply_com_error_keeps_original_cause_when_failure_logging_fails(harness, monkeypatch):
++    ad = harness.ad
++    primary = _SimulatedComError("COM partial parameter write failed")
++
++    def apply(context, scale, _folder):
++        row = ad.generation_preview(context, scale)["candidate_rows"][0]
++        ad.g[str(row["zone_no"])] = row["proposed"]
++        raise primary
++
++    monkeypatch.setattr(ad, "apply_generation", apply)
++    _break_failure_record_writes(harness, monkeypatch)
++    with _raises_contract_error(match="NOT_A_PLATEAU:COM partial parameter write failed") as caught:
++        harness.run()
++    assert caught.value.__cause__ is primary
++    _assert_failure_record_error_attached(primary)
++    _assert_failure_record_error_attached(caught.value)
++    _assert_verified_parent(harness, trial_assignments=0)
++
++
++def test_preapply_restore_error_survives_logging_failure_and_still_rolls_back(harness, monkeypatch):
++    primary = _SimulatedComError("COM read failed after pre-apply restoration")
++    original_guard = step.genstate.require_parent
++
++    def require_parent(adapter, expected, folder, *, phase):
++        if phase == "AFTER_PRE_APPLY_GATE_RESTORE":
++            raise primary
++        return original_guard(adapter, expected, folder, phase=phase)
++
++    def apply(*_args):
++        raise _contract_error("GENERATION_GATE:GENERATION_PA_GAP_WORK")
++
++    monkeypatch.setattr(step.genstate, "require_parent", require_parent)
++    monkeypatch.setattr(harness.ad, "apply_generation", apply)
++    _break_failure_record_writes(harness, monkeypatch)
++    with pytest.raises(_SimulatedComError) as caught:
++        harness.run()
++    assert caught.value is primary
++    _assert_failure_record_error_attached(primary)
++    _assert_verified_parent(harness, trial_assignments=0)
++
+--- /dev/null
++++ GENFIX1/tests/test_v24917_genfix1_adapter.py
+@@ -0,0 +1,91 @@
++"""GENFIX1 integration: full reads, uncached parent checks, and entry point."""
++from __future__ import annotations
++
++import copy
++import importlib.util
++from pathlib import Path
++from types import SimpleNamespace
++
++import numpy as np
++import pytest
++
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def test_v17_full_read_uses_strict_snapshot(monkeypatch):
++    import r1_15a2_trial_adapter_v24917 as a17
++    adapter = a17.VisumAdapter.__new__(a17.VisumAdapter)
++    events = []
++    monkeypatch.setattr(adapter, "_sync_readback_telemetry", lambda: None)
++    monkeypatch.setattr(adapter, "_record_snapshot_event", lambda *a, **k: events.append((a, k)))
++    expected = {"state_hash": "exact", "generation_values": {"ADD_PROD_W": {"1": 1.0}}}
++    calls = []
++    monkeypatch.setattr(a17.snapshot_reads, "strict_snapshot", lambda ad: calls.append(ad) or expected)
++    assert adapter.legacy_snapshot_from_live_visum() is expected
++    assert calls == [adapter]
++    assert adapter.last_perf2c_snapshot_parity["unsafe_legacy_fallback"] is False
++    assert adapter.last_perf2c_snapshot_parity["transient_read_errors_use_defaults"] is False
++    assert events[-1][0] == ("V24917_STRICT_FULL_SNAPSHOT",)
++
++
++def test_generation_guard_bypasses_candidate_and_penalty_caches(monkeypatch):
++    import r1_15a2_trial_adapter_v24917 as a17
++    adapter = a17.VisumAdapter.__new__(a17.VisumAdapter)
++    adapter.visum = object()
++    payload = {"state_hash": "live", "matrix_hash": "changed-matrix"}
++    before = copy.deepcopy(payload)
++    monkeypatch.setattr(adapter, "legacy_snapshot_from_live_visum", lambda: payload)
++    monkeypatch.setattr(adapter, "snapshot", lambda: pytest.fail("Candidate bundle must not be consulted"))
++    monkeypatch.setattr(a17.izpen, "active", lambda: True)
++    monkeypatch.setattr(a17.izpen, "extend_snapshot", lambda *a: pytest.fail("Penalty cache must not be consulted"))
++    monkeypatch.setattr(a17.izpen, "STATE", {"zones": [611], "base": np.eye(2)})
++    monkeypatch.setattr(a17.izpen, "read_penalty", lambda v: np.array([2.5]))
++    result = adapter.generation_guard_snapshot()
++    assert result[a17.izpen.SNAPSHOT_KEY] == {"611": 2.5}
++    assert result[a17.izpen.BASE_KEY] == a17.izpen.base_sha(np.eye(2))
++    assert payload == before
++
++
++def test_generation_guard_without_iz_preserves_snapshot_schema(monkeypatch):
++    import r1_15a2_trial_adapter_v24917 as a17
++    adapter = a17.VisumAdapter.__new__(a17.VisumAdapter)
++    payload = {"state_hash": "live"}
++    monkeypatch.setattr(adapter, "legacy_snapshot_from_live_visum", lambda: payload)
++    monkeypatch.setattr(a17.izpen, "active", lambda: False)
++    assert adapter.generation_guard_snapshot() is payload
++
++
++def _launcher():
++    spec = importlib.util.spec_from_file_location("genfix1_test_launcher", ROOT / "01_SPUSTIT_V24917_GENFIX1.py")
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def test_genfix1_launcher_preserves_preflight_entry_and_injected_session(monkeypatch):
++    launcher = _launcher()
++    parent = SimpleNamespace(main=lambda: "completed")
++    live = object()
++    monkeypatch.setattr(launcher, "load_parent", lambda: parent)
++    launcher.Visum = live
++    assert launcher.main() == "completed"
++    assert parent.Visum is live and parent.COM is None
++    assert launcher.PARENT_LAUNCHER == "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py"
++
++
++def test_genfix1_launcher_supports_com_injection(monkeypatch):
++    launcher = _launcher()
++    parent = SimpleNamespace(main=lambda: "completed")
++    live = object()
++    monkeypatch.setattr(launcher, "load_parent", lambda: parent)
++    launcher.COM = live
++    assert launcher.main() == "completed"
++    assert parent.COM is live and parent.Visum is None
++
++
++def test_genfix1_launcher_without_visum_fails_before_loading_parent(monkeypatch):
++    launcher = _launcher()
++    monkeypatch.setattr(launcher, "load_parent", lambda: pytest.fail("No model was provided"))
++    with pytest.raises(RuntimeError, match="NO_INJECTED_VISUM"):
++        launcher.main()
+--- /dev/null
++++ GENFIX1/tests/test_v24917_snapshot_reads_genfix1.py
+@@ -0,0 +1,323 @@
++"""GENFIX1 snapshot regressions: failed COM reads are not model changes."""
++from __future__ import annotations
++
++import copy
++
++import pytest
++
++from conftest import FakeAttr, FakeCollection
++from test_supply_visum_v22 import small_cfg, state_visum
++import r1_15a2_com_compat as com
++import r1_15a2_single_pass_snapshot_v24915p2c as parent
++import r1_15a2_snapshot_reads_v24917 as strict
++from r1_15a2_supply_visum import VisumAdapter as SupplyAdapter
++
++
++class Busy(RuntimeError):
++    def __init__(self, hresult):
++        super().__init__("synthetic COM snapshot read failure")
++        self.hresult = hresult
++
++
++class ReadFault:
++    """COM-shaped wrapper that rejects a selected read, without model writes."""
++
++    def __init__(self, inner, member, hresult, *, attribute=False, times=1):
++        self.inner = inner
++        self.member = member
++        self.hresult = hresult
++        self.attribute = attribute
++        self.times = times
++        self.hits = 0
++
++    def _check(self, name, attribute):
++        if name == self.member and self.attribute == attribute:
++            self.hits += 1
++            if self.hits <= self.times:
++                raise Busy(self.hresult)
++
++    def AttValue(self, name):
++        self._check(name, True)
++        return self.inner.AttValue(name)
++
++    def __getattr__(self, name):
++        self._check(name, False)
++        return getattr(self.inner, name)
++
++
++def _adapter():
++    cfg = copy.deepcopy(small_cfg())
++    retry = {
++        "enabled": True,
++        "max_attempts": 3,
++        "initial_delay_seconds": 0.0,
++        "max_delay_seconds": 0.0,
++        "backoff_factor": 1.0,
++        "max_elapsed_seconds": 10.0,
++    }
++    cfg["com_resilience"] = dict(
++        retry, scoped_policies={"startup_snapshot_read": dict(retry)})
++    return SupplyAdapter(state_visum(), cfg)
++
++
++def _original(adapter):
++    # Other suites may have installed the old whole-snapshot retry globally.
++    # Unwrap it to demonstrate the underlying legacy read contract directly.
++    fn = parent.single_pass_exact_snapshot
++    while getattr(fn, "_r1_v24916_combusy_original", None) is not None:
++        fn = fn._r1_v24916_combusy_original
++    return fn(adapter)
++
++
++@pytest.mark.parametrize("hresult", [
++    com.RPC_E_CALL_REJECTED, com.RPC_E_SERVERCALL_RETRYLATER,
++])
++def test_original_swallowed_comment_busy_manufactures_false_state_change(hresult):
++    adapter = _adapter()
++    expected = _original(adapter)
++    operations = adapter.visum.Procedures.Operations
++    operations.items[0] = ReadFault(
++        operations.items[0], "COMMENT", hresult, attribute=True)
++    observed = _original(adapter)
++
++    assert observed["operations_hash"] != expected["operations_hash"]
++    assert observed["state_hash"] != expected["state_hash"]
++    for key in set(expected) - {"operations_hash", "state_hash"}:
++        assert observed[key] == expected[key]
++    assert _original(adapter) == expected  # no live model edit ever occurred
++
++
++def _with_optional_dseg(adapter):
++    segments = adapter.visum.Net.DemandSegments
++    items = list(segments.items) + [FakeAttr(
++        CODE="DIAGNOSTIC_ONLY", ODMatrix=adapter.visum.Net.Matrices.ItemByKey(3))]
++    adapter.visum.Net.DemandSegments = FakeCollection(items)
++
++
++def _inject(adapter, location, hresult, times=1):
++    visum = adapter.visum
++    operations = visum.Procedures.Operations
++    segments = visum.Net.DemandSegments
++    params = operations.items[1].TripDistributionParameters
++    collection = params.TripDistributionDStratParameters
++
++    def fault(obj, member, *, attribute=False):
++        return ReadFault(obj, member, hresult, attribute=attribute, times=times)
++
++    if location in ("COMMENT", "NAME"):
++        proxy = fault(operations.items[0], location, attribute=True)
++        operations.items[0] = proxy
++    elif location == "OPTIONAL_DSEG_CODE":
++        proxy = fault(segments.items[-1], "CODE", attribute=True)
++        segments.items[-1] = proxy
++    elif location == "OPTIONAL_DSEG_BINDING":
++        proxy = fault(segments.items[-1], "ODMatrix")
++        segments.items[-1] = proxy
++    elif location == "BOUND_MATRIX_NO":
++        proxy = fault(segments.items[-1].ODMatrix, "NO", attribute=True)
++        segments.items[-1].ODMatrix = proxy
++    elif location == "FINGERPRINT_MATRIX_NO":
++        proxy = fault(visum.Net.Matrices.ItemByKey(9101), "NO", attribute=True)
++        visum.Net.Matrices.keys[9101] = proxy
++    elif location == "DSEG_COLLECTION_COUNT":
++        proxy = fault(segments, "Count")
++        visum.Net.DemandSegments = proxy
++    elif location == "TD_PARAMETERS":
++        proxy = fault(operations.items[1], "TripDistributionParameters")
++        operations.items[1] = proxy
++    elif location == "TD_DSTRATSET":
++        proxy = fault(params, "DSTRATSET", attribute=True)
++        operations.items[1].TripDistributionParameters = proxy
++    elif location == "TD_DSTRAT_COLLECTION":
++        proxy = fault(params, "TripDistributionDStratParameters")
++        operations.items[1].TripDistributionParameters = proxy
++    elif location == "TD_ITEMBYKEY":
++        proxy = fault(collection, "ItemByKey")
++        params.TripDistributionDStratParameters = proxy
++    elif location in ("TD_GRAVITY", "TD_B", "TD_C"):
++        target = collection.ItemByKey("1_WORK_E_C")
++        member = {"TD_GRAVITY": "GravitationParameters",
++                  "TD_B": "PARA_B", "TD_C": "PARA_C"}[location]
++        proxy = fault(target, member, attribute=location != "TD_GRAVITY")
++        collection.keys["1_WORK_E_C"] = proxy
++        collection.items[0] = proxy
++    else:
++        raise AssertionError(location)
++    return proxy
++
++
++@pytest.mark.parametrize("hresult", [
++    com.RPC_E_CALL_REJECTED, com.RPC_E_SERVERCALL_RETRYLATER,
++])
++@pytest.mark.parametrize("location", [
++    "COMMENT", "NAME", "OPTIONAL_DSEG_CODE", "OPTIONAL_DSEG_BINDING",
++    "BOUND_MATRIX_NO", "FINGERPRINT_MATRIX_NO", "DSEG_COLLECTION_COUNT",
++    "TD_PARAMETERS", "TD_DSTRATSET", "TD_DSTRAT_COLLECTION", "TD_ITEMBYKEY",
++    "TD_GRAVITY", "TD_B", "TD_C",
++])
++def test_transient_optional_reads_retry_the_whole_snapshot(location, hresult):
++    adapter = _adapter()
++    _with_optional_dseg(adapter)
++    expected = _original(adapter)
++    proxy = _inject(adapter, location, hresult)
++
++    actual = strict.strict_snapshot(adapter)
++
++    assert actual == expected
++    assert proxy.hits >= 2
++    events = adapter.r1_com_busy_read_retry_events
++    assert len(events) == 1
++    assert events[0]["event"] == "RETRY"
++    assert events[0]["label"] == "V24917_STRICT_FULL_SNAPSHOT"
++    assert adapter._r1_combusy_read_retry_depth == 0
++
++
++@pytest.mark.parametrize("hresult", [
++    com.RPC_E_CALL_REJECTED, com.RPC_E_SERVERCALL_RETRYLATER,
++])
++def test_persistent_busy_is_propagated_without_a_permissive_fallback(hresult, monkeypatch):
++    adapter = _adapter()
++    proxy = _inject(adapter, "COMMENT", hresult, times=20)
++
++    def forbidden(*_args, **_kwargs):
++        raise AssertionError("unsafe snapshot fallback")
++
++    monkeypatch.setattr(parent, "single_pass_exact_snapshot", forbidden)
++    with pytest.raises(Exception) as caught:
++        strict.strict_snapshot(adapter)
++    assert com.is_retryable_com_error(caught.value)
++    assert proxy.hits == 3
++    assert adapter._r1_combusy_read_retry_depth == 0
++    assert adapter.r1_com_busy_read_retry_events[-1]["event"] == "EXHAUSTED"
++    assert not hasattr(adapter, "last_perf2c_snapshot_telemetry")
++
++
++def test_stable_reads_are_exact_including_telemetry_and_unsupported_name():
++    adapter = _adapter()
++    expected = _original(adapter)
++    old_telemetry = adapter.last_perf2c_snapshot_telemetry
++    actual = strict.strict_snapshot(adapter)
++    assert actual == expected
++    assert set(actual) == set(expected)
++    telemetry = adapter.last_perf2c_snapshot_telemetry
++    assert set(telemetry) == set(old_telemetry)
++    for key in set(telemetry) - {"loader_seconds"}:
++        assert telemetry[key] == old_telemetry[key]
++    assert telemetry["cross_call_cache"] is False
++    assert not getattr(adapter, "r1_com_busy_read_retry_events", [])
++    # Fake operations, like live IOperation, do not expose NAME at all.
++    with pytest.raises(KeyError):
++        adapter.visum.Procedures.Operations.items[0].AttValue("NAME")
++
++
++@pytest.mark.parametrize("domain", [
++    "ADDVAL", "FIXED_LINK", "MATRIX", "GENERATION", "TD", "OPERATIONS", "DSEG",
++])
++def test_genuine_model_changes_remain_visible_and_exactly_match_parent(domain):
++    adapter = _adapter()
++    before = strict.strict_snapshot(adapter)
++    visum = adapter.visum
++    if domain == "ADDVAL":
++        visum.Net.Links.items[0].SetAttValue("ADDVAL1", 0.5)
++    elif domain == "FIXED_LINK":
++        visum.Net.Links.items[0].SetAttValue("LENGTH", 2.0)
++    elif domain == "MATRIX":
++        visum.Net.Matrices.ItemByKey(9101).values[0, 1] += 0.00001
++    elif domain == "GENERATION":
++        visum.Net.Zones.rows[0]["ADD_PROD_W"] = 1.25
++    elif domain == "TD":
++        params = visum.Procedures.Operations.items[1].TripDistributionParameters
++        params.TripDistributionDStratParameters.ItemByKey("1_WORK_E_C").SetAttValue("PARA_C", -0.2)
++    elif domain == "OPERATIONS":
++        visum.Procedures.Operations.items[-1].SetAttValue("ACTIVE", 0)
++    else:
++        visum.Net.DemandSegments.items[0].ODMatrix = visum.Net.Matrices.ItemByKey(2)
++    after = strict.strict_snapshot(adapter)
++    assert after == _original(adapter)
++    assert after["state_hash"] != before["state_hash"]
++
++
++@pytest.mark.parametrize("invalid", [float("nan"), float("inf"), -1.0])
++def test_invalid_matrix_cells_fail_without_retry(invalid):
++    adapter = _adapter()
++    adapter.visum.Net.Matrices.ItemByKey(9101).values[0, 1] = invalid
++    with pytest.raises(RuntimeError, match="nonfinite or negative"):
++        strict.strict_snapshot(adapter)
++    assert not getattr(adapter, "r1_com_busy_read_retry_events", [])
++
++
++def test_local_reader_does_not_patch_parent_read_helpers():
++    saved = (parent._read_dseg_bindings, parent._read_operation_records,
++             parent._read_td_snapshot_from_records, parent.single_pass_exact_snapshot)
++    strict.strict_snapshot(_adapter())
++    assert saved == (parent._read_dseg_bindings, parent._read_operation_records,
++                     parent._read_td_snapshot_from_records, parent.single_pass_exact_snapshot)
++
++
++class EnumerationOnly:
++    def __init__(self, values):
++        self.values = values
++
++    @property
++    def GetAll(self):
++        return tuple(self.values)
++
++
++class PropertyOnlyParameters:
++    def __init__(self, b, c):
++        self.PARA_B = b
++        self.PARA_C = c
++
++    def AttValue(self, name):
++        raise AttributeError(name)
++
++
++@pytest.mark.parametrize("hresult", [
++    com.RPC_E_CALL_REJECTED, com.RPC_E_SERVERCALL_RETRYLATER,
++])
++@pytest.mark.parametrize("access", ["function", "enumeration", "property"])
++def test_td_compatibility_routes_retry_busy_reads_without_switching_routes(access, hresult):
++    adapter = _adapter()
++    params = adapter.visum.Procedures.Operations.items[1].TripDistributionParameters
++    collection = params.TripDistributionDStratParameters
++    if access == "function":
++        params.TripDistributionDStratParameters = lambda code: collection.ItemByKey(code)
++        expected = _original(adapter)
++        calls = []
++
++        def function(code):
++            calls.append(code)
++            if len(calls) == 1:
++                raise Busy(hresult)
++            return collection.ItemByKey(code)
++
++        params.TripDistributionDStratParameters = function
++    elif access == "enumeration":
++        enum = EnumerationOnly(list(collection.items))
++        params.TripDistributionDStratParameters = enum
++        expected = _original(adapter)
++        enum.values[0] = ReadFault(enum.values[0], "DEMANDSTRATUMCODE", hresult,
++                                   attribute=True)
++    else:
++        obj = collection.ItemByKey("1_WORK_E_C")
++        obj.GravitationParameters = PropertyOnlyParameters(0.0, -0.1)
++        expected = _original(adapter)
++        obj.GravitationParameters = ReadFault(obj.GravitationParameters, "PARA_B", hresult)
++    assert strict.strict_snapshot(adapter) == expected
++    assert len(adapter.r1_com_busy_read_retry_events) == 1
++    assert adapter.r1_com_busy_read_retry_events[0]["event"] == "RETRY"
++
++
++def test_genuinely_unsupported_td_spellings_keep_legacy_fallbacks():
++    adapter = _adapter()
++    op = adapter.visum.Procedures.Operations.items[1]
++    params = op.TripDistributionParameters
++    del op._attrs["TripDistributionParameters"]
++    op.TripDistributionParameter = params
++    params._attrs["DStratSet"] = params._attrs.pop("DSTRATSET")
++    collection = params._attrs.pop("TripDistributionDStratParameters")
++    params.DStratParas = collection
++    first = collection.ItemByKey("1_WORK_E_C")
++    first.GravityParameters = PropertyOnlyParameters(0.0, -0.1)
++    assert strict.strict_snapshot(adapter) == _original(adapter)
++    assert not getattr(adapter, "r1_com_busy_read_retry_events", [])

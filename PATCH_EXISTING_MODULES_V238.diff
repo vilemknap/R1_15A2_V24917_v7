@@ -1,0 +1,89 @@
+--- V237/R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py
++++ V238/R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py
+@@ -305,14 +305,20 @@
+     return signals, source
+ 
+ 
+-def path_guidance_design(visum, out_dir, cfg, baseline_12d, zones, actuatable_zones):
++def path_guidance_design(visum, out_dir, cfg, baseline_12d, zones, actuatable_zones,
++                         incidence_and_export=None, progress_callback=None):
+     """Build fresh actual-path incidence and P/A guidance for one generation block."""
+     out_dir = Path(out_dir)
+-    station_map, pair_authority = rt.load_kordon_inputs(cfg)
+-    incidence, export_summary = rt.export_actual_paths_and_build_incidence(
+-        visum, out_dir, cfg, baseline_12d["rows"], actuatable_zones,
+-        station_map=station_map, pair_authority=pair_authority,
+-    )
++    if incidence_and_export is None:
++        station_map, pair_authority = rt.load_kordon_inputs(cfg)
++        incidence, export_summary = rt.export_actual_paths_and_build_incidence(
++            visum, out_dir, cfg, baseline_12d["rows"], actuatable_zones,
++            station_map=station_map, pair_authority=pair_authority,
++        )
++    else:
++        incidence, export_summary = incidence_and_export
++        if cfg.get("apply"):
++            raise RuntimeError("PRECOMPUTED_DESIGN_INCIDENCE_FORBIDS_APPLY")
+     write_json(out_dir / "05_INCIDENCE_SUMMARY.json", {
+         k: v for k, v in incidence.items() if k not in (
+             "profiles", "variables", "projection_base_variables", "q_current", "incidence",
+@@ -337,11 +343,15 @@
+             raise RuntimeError("Actual-path incidence/parity gate failed")
+         if cfg.get("require_dseg_path_volume_parity_for_apply", True) and not dseg_ok:
+             raise RuntimeError("Saved path totals do not match OD matrix totals")
++    if progress_callback: progress_callback("GENERATION_PREPARE_GUIDANCE")
+     problem = core.prepare_guidance_problem(incidence, cfg, include_pair_observations=bool(cfg.get("enable_kordon_pairs", False)))
++    if progress_callback: progress_callback("GENERATION_NUMERICAL_SOLVE")
+     result = core.solve_guidance(problem, cfg)
++    if progress_callback: progress_callback("GENERATION_PA_PROJECTION")
+     projection = core.project_guidance_to_add(
+         problem, result, zones, cfg, all_variable_meta=incidence["projection_base_variables"],
+     )
++    if progress_callback: progress_callback("GENERATION_DIAGNOSTIC_EXPORT")
+     write_csv(out_dir / "06_OBJECTIVE_ROWS_LINEAR_FIT.csv", rt.objective_rows_with_fit(problem, result))
+     write_csv(out_dir / "06B_DROPPED_OBJECTIVE_ROWS.csv", problem.dropped_objective_rows)
+     write_json(out_dir / "06C_SELECTION_SUMMARY.json", problem.selection_summary)
+--- V237/r1_15a2_controller_v22.py
++++ V238/r1_15a2_controller_v22.py
+@@ -242,10 +242,14 @@
+                 out = folder / ("DESIGN_" + block); out.mkdir()
+                 rec = {"block": block}
+                 try:
++                    checkpoint = getattr(adapter, "design_checkpoint", None)
++                    if checkpoint is not None:
++                        checkpoint("DESIGN_" + block)
+                     if block == "SUPPLY_ADDVAL1":
+                         design = adapter.supply_design(diag, out, state)
+                         scope_qa = design.get("duplicate_scope_audit", {})
+                         rec.update(status="DESIGNED", candidates=len(design["candidates"]),
++                                   provisional_geometry=bool(design.get("provisional", False)),
+                                    conflicting_same_source_groups=scope_qa.get("conflicting_same_source_groups", 0),
+                                    overlapping_directed_link_group_count=scope_qa.get("overlapping_directed_link_group_count", 0),
+                                    duplicate_scope_review_required=bool(
+@@ -263,8 +267,9 @@
+                         rec.update(status="DESIGNED" if design["candidate_rows"] else "NO_COMPONENT_CANDIDATE",
+                                    candidates=len(design["candidate_rows"]))
+                 except Exception as exc:
+-                    rec.update(status="BLOCKED", error=str(exc),
+-                               error_type=type(exc).__name__)
++                    rec.update(status="STOPPED" if getattr(exc, "stop_design_run", False) else "BLOCKED",
++                               error=str(exc), error_type=type(exc).__name__,
++                               stop_design_run=bool(getattr(exc, "stop_design_run", False)))
+                 # Verify even after a failed design. Snapshot failure or drift
+                 # stops immediately; NEVER LoadVersion over live COM references.
+                 try:
+@@ -282,8 +287,14 @@
+                 rec["model_unchanged"] = True
+                 rec["rollback_action"] = "NOT_REQUIRED_READ_ONLY"
+                 result["blocks"].append(rec)
++                atomic_json(folder / "RUN_STATUS.json", result)
++                if rec.get("stop_design_run"):
++                    result["status"] = "DESIGN_ONLY_STOPPED"
++                    result["stop_reason"] = rec["error"]
++                    return result
+             result["status"] = (
+                 "DESIGN_ONLY_BLOCKERS" if any(x["status"] == "BLOCKED" for x in result["blocks"]) else
++                "DESIGN_ONLY_COMPLETE_PROVISIONAL_GEOMETRY" if any(x.get("provisional_geometry") for x in result["blocks"]) else
+                 "DESIGN_ONLY_NEEDS_DUPLICATE_SCOPE_QA" if any(
+                     x.get("duplicate_scope_review_required") for x in result["blocks"]) else
+                 "DESIGN_ONLY_READY_FOR_LIVE_APPLY_GATE")

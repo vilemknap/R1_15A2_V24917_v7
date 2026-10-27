@@ -1,0 +1,94 @@
+{
+  "v24917": {
+    "release": "R1_15A2_V24917_MOBILITY2_GENFIX2_ADAPTER_20261027",
+    "phase": "CATCH_UP",
+    "overlay_phase": null,
+    "model_obs_ratio": 0.6,
+    "raw_fit_summary": null,
+    "fit_summary": null,
+    "flowbundle_mask": {
+      "status": "OFF",
+      "non_target_factor": 1.0
+    },
+    "bounds_count": 0,
+    "long_school": {
+      "status": "INACTIVE",
+      "activation": {
+        "active": false
+      }
+    },
+    "long_school_search_incomplete": false,
+    "longguard1_parent": {
+      "status": "UNVERIFIED",
+      "release": "R1_15A2_V24917_LONGGUARD1_20261027",
+      "long_generation_permitted": false,
+      "fine_cdf_verified": false,
+      "error": "RuntimeError:LONGGUARD1_DYNAMIC_SKIMS_UNAVAILABLE",
+      "long_above_200_permitted": true
+    },
+    "longguard1_long_step_deferred": false,
+    "boundary": null,
+    "mobilityzone1": {
+      "release": "R1_15A2_V24917_MOBILITYZONE1_20261027",
+      "status": "PROJECTED",
+      "rows_clipped": 2,
+      "changes": [
+        {
+          "zone_no": 1,
+          "family": "WORK",
+          "before_log_step": 0.4054651081081644,
+          "after_log_step": 0.0
+        },
+        {
+          "zone_no": 2,
+          "family": "WORK",
+          "before_log_step": 0.4054651081081644,
+          "after_log_step": 0.0
+        }
+      ],
+      "unavailable": {},
+      "out_of_band_parent": [],
+      "target_satisfied": true
+    },
+    "mobility_guard": {
+      "release": "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027",
+      "band": [
+        0.75,
+        1.25
+      ],
+      "families": {
+        "WORK": {
+          "ratio_current": 1.25,
+          "ratio_full_step": 1.25,
+          "ratio_after": 1.25,
+          "zones": 2,
+          "rows": 2,
+          "factor": 1.0,
+          "minimum_over_scales": 1.25,
+          "maximum_over_scales": 1.25,
+          "minimum_at_scale": 0.0,
+          "status": "WITHIN_BAND"
+        },
+        "SERVICE": {
+          "ratio_current": 1.0,
+          "ratio_full_step": 1.0,
+          "ratio_after": 1.0,
+          "zones": 2,
+          "rows": 0,
+          "factor": 1.0,
+          "minimum_over_scales": 1.0,
+          "maximum_over_scales": 1.0,
+          "minimum_at_scale": 0.0,
+          "status": "WITHIN_BAND"
+        }
+      },
+      "passes": true,
+      "status": "OK"
+    },
+    "solver_converged": true,
+    "proposal_usable": true,
+    "status": "FIT_FALLBACK_PARENT_PROPOSAL",
+    "error": "RuntimeError:AUDIT_FIT_FAILURE"
+  },
+  "ratio_of_returned_proposal": 1.25
+}

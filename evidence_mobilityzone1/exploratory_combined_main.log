@@ -1,0 +1,274 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 13%]
+........................................................................ [ 18%]
+........................................................................ [ 22%]
+........................................................................ [ 27%]
+........................................................................ [ 31%]
+........................................................................ [ 36%]
+........................................................................ [ 40%]
+......................................s.s..........s................s... [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+........................................................................ [ 58%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 72%]
+........................................................................ [ 77%]
+........F............................................................... [ 81%]
+............................................................F........... [ 86%]
+........................................................................ [ 90%]
+..........................................FF............................ [ 95%]
+........................................................................ [ 99%]
+.....                                                                    [100%]
+=================================== FAILURES ===================================
+______________________ test_launcher_prepare_and_install _______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_launcher_prepare_and_inst0')
+
+    def test_launcher_prepare_and_install(tmp_path):
+        env = dict(os.environ, LOCALAPPDATA=str(tmp_path / "lad"))
+        env.pop("R1_DIAGFAST_DISABLE", None)
+        proc = subprocess.run([sys.executable, "-c", SCRIPT, str(ROOT), str(tmp_path)],
+                              capture_output=True, text=True, env=env, cwd=str(ROOT), timeout=600)
+>       assert proc.returncode == 0, proc.stderr[-4000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 22, in <module>
+E             mod, installed = v17.prepare(fake_visum, None, print_fn=lambda *a: None, v16=v16)
+E                              ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/mnt/data/mobilityzone1_resume/R1_MOBILITYZONE1/01_SPUSTIT_V24917_TARGETED_CATCHUP.py", line 62, in prepare
+E             v17_manifest = verify_v24917_manifest()
+E           File "/mnt/data/mobilityzone1_resume/R1_MOBILITYZONE1/01_SPUSTIT_V24917_TARGETED_CATCHUP.py", line 46, in verify_v24917_manifest
+E             raise RuntimeError("V24917_RUNTIME_MANIFEST_FAIL:" + ",".join(bad[:20]))
+E         RuntimeError: V24917_RUNTIME_MANIFEST_FAIL:DIAGFAST_V1_RELEASE_MANIFEST.json
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/pyvenv/bin/python', '-c', '\nimport json, sys, importlib.util\nfrom pathlib import Path\n...MANIFEST_FAIL:" + ",".join(bad[:20]))\nRuntimeError: V24917_RUNTIME_MANIFEST_FAIL:DIAGFAST_V1_RELEASE_MANIFEST.json\n').returncode
+
+tests/test_v24917_runtime_install.py:66: AssertionError
+_________ test_adapter_fit_error_falls_back_to_parent_without_overlay __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f318a859be0>
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_adapter_fit_error_falls_b0')
+mb = <module 'r1_15a2_multiblock' from '/mnt/data/mobilityzone1_resume/R1_MOBILITYZONE1/r1_15a2_multiblock.py'>
+real_cfg = {'12d_authority_csv': 'authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv', '12d_authority_sha256': '7d455781f3b6e...UTHORITY_90.csv', '12d_city_authority_sha256': '85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1', ...}
+
+    def test_adapter_fit_error_falls_back_to_parent_without_overlay(monkeypatch, tmp_path, mb, real_cfg):
+        import r1_15a2_core as core
+        inc, zones = synthetic_incidence(n_zones=6)
+        parent = core.ProjectionResult(rows=[{"zone_no": 1, "family": "WORK", "role": "PROD", "log_step": 0.001}],
+                                       family_summaries=[{"family": "WORK", "converged": True}], weighted_rmse=0.0)
+        ad, seen = _adapter(monkeypatch, real_cfg, zones, [], {"incidence": inc, "projection": parent})
+>       ctx = ad.generation_design({"d12": {"rows": inc["profiles"]}}, tmp_path)   # no zone rows -> no actuators
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_targeted_catchup.py:346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_trial_adapter_v24917.py:198: in generation_design
+    mz = zguard.capture(mz_rows, mg_opts, mz_families, mz_errors,
+r1_15a2_mobility_zone_v24917.py:99: in capture
+    by_zone = zone_map(rows)
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+rows = []
+
+    def zone_map(rows):
+        out = {}
+        for row in rows:
+            raw = finite(row.get("zone_no"), "zone_no")
+            if raw != int(raw) or raw <= 0 or int(raw) in out:
+                raise ValueError("MOBILITYZONE1_INVALID_OR_DUPLICATE_ZONE")
+            out[int(raw)] = row
+        if not out:
+>           raise ValueError("MOBILITYZONE1_EMPTY_ZONE_COVERAGE")
+E           ValueError: MOBILITYZONE1_EMPTY_ZONE_COVERAGE
+
+r1_15a2_mobility_zone_v24917.py:62: ValueError
+______ test_failed_full_proof_overrides_legacy_pass_and_preserves_details ______
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_failed_full_proof_overrid0')
+
+    def test_failed_full_proof_overrides_legacy_pass_and_preserves_details(tmp_path):
+        ad=ArrayAdapter();before=ad.snapshot();baseline=diagnostics();ad.diag['signals']['WORK']['cdf_rmse']=2.
+        ctrl=NS(_td_expected_freeze=lambda *a:None,atomic_json=atomic_json)
+        def original(*args):
+            atomic_json(tmp_path/'ROLLBACK_ALL_TD_RESULT.json',{'passes':True,'gap':.004})
+            return ad.snapshot(),copy.deepcopy(ad.diag)
+        with pytest.raises(SupplyContractError,match='FULL_PARENT_PROOF_FAILED:signals.WORK.cdf_rmse') as err:
+>           tr.wrap_rollback_td_all(original,ctrl)(ad,before,baseline,tmp_path,{})
+
+tests/test_v24917_tdrollbackfix1.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+adapter = <test_v24917_genfix2.ArrayAdapter object at 0x7f318953ea90>
+before = {'addval1': {}, 'dseg_hash': 'D', 'fixed_link_hash': 'L', 'generation_values': {'ADD_PROD_W': {'1': 1.0, '2': 1.0}}, ...}
+baseline_diag = {'d11': {'summary': {'component_dist_summary_rows': [{'component': 'WORK', 'mean': 10.0}], 'created_at': 'T1', 'output..._no': '1', 'model': 1000.0, 'observed': 1200.0, 'profile_weight': 1.0, ...}]}, 'signals': {'WORK': {'cdf_rmse': 0.12}}}
+folder = PosixPath('/tmp/pytest-of-root/pytest-2/test_failed_full_proof_overrid0')
+cfg = {}
+
+    @functools.wraps(orig)
+    def _rollback_td_all(adapter, before, baseline_diag, folder, cfg=None):
+        import r1_15a2_parent_equivalence_v24917 as eq
+        try:
+            state, diag = orig(adapter, before, baseline_diag, folder, cfg)
+        except Exception as exc:
+            if "V242_TD_ROLLBACK_NOT_IDENTICAL" not in str(exc):
+                raise
+            folder = Path(folder)
+            try:
+                rec = tolerant_check(ctrl, adapter, before, baseline_diag, folder, cfg)
+            except Exception as exc2:
+                rec = {"release": RELEASE, "status": "REFUSED_CHECK_ERROR", "error": repr(exc2)[:2000]}
+            public = {k: v for k, v in rec.items() if not k.startswith("_")}
+            ctrl.atomic_json(folder / "TDROLLBACK1_TOLERANT_RESULT.json", public)
+            _STATE["events"].append({k: public.get(k) for k in ("status", "changed_matrix_count")})
+            del _STATE["events"][:-50]
+            if rec.get("status") != "PARAMETER_EXACT_NUMERICALLY_EQUIVALENT_RECOMPUTE":
+                _STATE["refused"] += 1
+                if "parent_equivalence" in rec:
+                    evidence = _write_final_proof(ctrl, folder, before, rec.get("_state", before),
+                                                  rec["parent_equivalence"], "NUMERIC_RECOMPUTE_REFUSED")
+                    raise _proof_failure(rec["parent_equivalence"], evidence,
+                                         prefix="V242_TD_ROLLBACK_NOT_IDENTICAL") from exc
+                raise
+            state, diag = rec["_state"], rec["_diag"]
+            proof = rec["parent_equivalence"]
+            mode = "BYTE_BOUND_NUMERIC_RECOMPUTE"
+        else:
+            if adapter is None or baseline_diag is None:
+                return state, diag  # compatibility for pure dispatcher tests
+            if diag is baseline_diag:
+                diag = adapter.diagnostics(Path(folder) / "TDROLLBACKFIX1_LIVE_DIAGNOSTICS", "ROLLBACK")
+            try:
+                proof = eq.verify_parent(adapter, before, state, baseline_diag, diag,
+                                         allow_td=True, ctrl=ctrl, cfg=cfg, folder=folder)
+            except Exception as exc:
+                proof = {"passes": False,
+                         "parameter_differences": ["PARENT_PROOF_EVALUATION_ERROR:" + type(exc).__name__ + ":" + str(exc)],
+                         "matrix_proof": {"passes": False, "reason": "PROOF_EVALUATION_INCOMPLETE"},
+                         "diagnostics": {"passes": False, "component_differences": []}}
+            mode = "LEGACY_EQUALITY_PLUS_FULL_PARENT_PROOF"
+        # Always read through the live reader when available, not a cached bundle.
+        try:
+            stable = _live_snapshot(adapter) == state
+        except Exception as exc:
+            stable = False
+            proof["parameter_differences"].append("FINAL_LIVE_READ:" + type(exc).__name__ + ":" + str(exc))
+        proof["live_snapshot_stable"] = stable
+        if not stable:
+            proof["passes"] = False
+            proof["parameter_differences"].append("LIVE_SNAPSHOT_NOT_EQUAL_RETURNED_STATE")
+        if proof["passes"]:
+            try:
+                proof["parent_cache_rebind"] = eq.rebind_verified_parent(adapter, state, diag)
+            except Exception as exc:
+                proof["passes"] = False
+                proof["parameter_differences"].append("PARENT_CACHE_REBIND:" + type(exc).__name__ + ":" + str(exc))
+        evidence_path = _write_final_proof(ctrl, folder, before, state, proof, mode)
+        if not proof["passes"]:
+            _STATE["refused"] += 1
+>           raise _proof_failure(proof, evidence_path)
+E           r1_15a2_supply.SupplyContractError: GENFIX2_TD_ROLLBACK_FULL_PARENT_PROOF_FAILED:signals.WORK.cdf_rmse:NUMERIC;proof=/tmp/pytest-of-root/pytest-2/test_failed_full_proof_overrid0/TDROLLBACKFIX1_PARENT_PROOF.json
+
+r1_15a2_td_rollback_tolerant_v24917.py:280: SupplyContractError
+__________ test_cached_equal_snapshot_does_not_waive_fresh_live_read ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_cached_equal_snapshot_doe0')
+
+    def test_cached_equal_snapshot_does_not_waive_fresh_live_read(tmp_path):
+        ad=ArrayAdapter();before=ad.snapshot();baseline=diagnostics()
+        ad.generation_guard_snapshot=lambda:dict(before, generation_hash='CHANGED')
+        ctrl=NS(_td_expected_freeze=lambda *a:None,atomic_json=atomic_json)
+        with pytest.raises(SupplyContractError,match='LIVE_SNAPSHOT_NOT_EQUAL'):
+>           tr.wrap_rollback_td_all(lambda *args:(before,baseline),ctrl)(ad,before,baseline,tmp_path,{})
+
+tests/test_v24917_tdrollbackfix1.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+adapter = <test_v24917_genfix2.ArrayAdapter object at 0x7f3188e7bd10>
+before = {'addval1': {}, 'dseg_hash': 'D', 'fixed_link_hash': 'L', 'generation_values': {'ADD_PROD_W': {'1': 1.0, '2': 1.0}}, ...}
+baseline_diag = {'d11': {'summary': {'component_dist_summary_rows': [{'component': 'WORK', 'mean': 10.0}], 'created_at': 'T1', 'output..._no': '1', 'model': 1000.0, 'observed': 1200.0, 'profile_weight': 1.0, ...}]}, 'signals': {'WORK': {'cdf_rmse': 0.12}}}
+folder = PosixPath('/tmp/pytest-of-root/pytest-2/test_cached_equal_snapshot_doe0')
+cfg = {}
+
+    @functools.wraps(orig)
+    def _rollback_td_all(adapter, before, baseline_diag, folder, cfg=None):
+        import r1_15a2_parent_equivalence_v24917 as eq
+        try:
+            state, diag = orig(adapter, before, baseline_diag, folder, cfg)
+        except Exception as exc:
+            if "V242_TD_ROLLBACK_NOT_IDENTICAL" not in str(exc):
+                raise
+            folder = Path(folder)
+            try:
+                rec = tolerant_check(ctrl, adapter, before, baseline_diag, folder, cfg)
+            except Exception as exc2:
+                rec = {"release": RELEASE, "status": "REFUSED_CHECK_ERROR", "error": repr(exc2)[:2000]}
+            public = {k: v for k, v in rec.items() if not k.startswith("_")}
+            ctrl.atomic_json(folder / "TDROLLBACK1_TOLERANT_RESULT.json", public)
+            _STATE["events"].append({k: public.get(k) for k in ("status", "changed_matrix_count")})
+            del _STATE["events"][:-50]
+            if rec.get("status") != "PARAMETER_EXACT_NUMERICALLY_EQUIVALENT_RECOMPUTE":
+                _STATE["refused"] += 1
+                if "parent_equivalence" in rec:
+                    evidence = _write_final_proof(ctrl, folder, before, rec.get("_state", before),
+                                                  rec["parent_equivalence"], "NUMERIC_RECOMPUTE_REFUSED")
+                    raise _proof_failure(rec["parent_equivalence"], evidence,
+                                         prefix="V242_TD_ROLLBACK_NOT_IDENTICAL") from exc
+                raise
+            state, diag = rec["_state"], rec["_diag"]
+            proof = rec["parent_equivalence"]
+            mode = "BYTE_BOUND_NUMERIC_RECOMPUTE"
+        else:
+            if adapter is None or baseline_diag is None:
+                return state, diag  # compatibility for pure dispatcher tests
+            if diag is baseline_diag:
+                diag = adapter.diagnostics(Path(folder) / "TDROLLBACKFIX1_LIVE_DIAGNOSTICS", "ROLLBACK")
+            try:
+                proof = eq.verify_parent(adapter, before, state, baseline_diag, diag,
+                                         allow_td=True, ctrl=ctrl, cfg=cfg, folder=folder)
+            except Exception as exc:
+                proof = {"passes": False,
+                         "parameter_differences": ["PARENT_PROOF_EVALUATION_ERROR:" + type(exc).__name__ + ":" + str(exc)],
+                         "matrix_proof": {"passes": False, "reason": "PROOF_EVALUATION_INCOMPLETE"},
+                         "diagnostics": {"passes": False, "component_differences": []}}
+            mode = "LEGACY_EQUALITY_PLUS_FULL_PARENT_PROOF"
+        # Always read through the live reader when available, not a cached bundle.
+        try:
+            stable = _live_snapshot(adapter) == state
+        except Exception as exc:
+            stable = False
+            proof["parameter_differences"].append("FINAL_LIVE_READ:" + type(exc).__name__ + ":" + str(exc))
+        proof["live_snapshot_stable"] = stable
+        if not stable:
+            proof["passes"] = False
+            proof["parameter_differences"].append("LIVE_SNAPSHOT_NOT_EQUAL_RETURNED_STATE")
+        if proof["passes"]:
+            try:
+                proof["parent_cache_rebind"] = eq.rebind_verified_parent(adapter, state, diag)
+            except Exception as exc:
+                proof["passes"] = False
+                proof["parameter_differences"].append("PARENT_CACHE_REBIND:" + type(exc).__name__ + ":" + str(exc))
+        evidence_path = _write_final_proof(ctrl, folder, before, state, proof, mode)
+        if not proof["passes"]:
+            _STATE["refused"] += 1
+>           raise _proof_failure(proof, evidence_path)
+E           r1_15a2_supply.SupplyContractError: GENFIX2_TD_ROLLBACK_FULL_PARENT_PROOF_FAILED:LIVE_SNAPSHOT_NOT_EQUAL_RETURNED_STATE;proof=/tmp/pytest-of-root/pytest-2/test_cached_equal_snapshot_doe0/TDROLLBACKFIX1_PARENT_PROOF.json
+
+r1_15a2_td_rollback_tolerant_v24917.py:280: SupplyContractError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_runtime_install.py::test_launcher_prepare_and_install - AssertionError: Traceback (most recent call last):
+    File "<string>", line 22, in <module>
+      mod, installed = v17.prepare(fake_visum, None, print_fn=lambda *a: None, v16=v16)
+                       ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/mnt/data/mobilityzone1_resume/R1_MOBILITYZONE1/01_SPUSTIT_V24917_TARGETED_CATCHUP.py", line 62, in prepare
+      v17_manifest = verify_v24917_manifest()
+    File "/mnt/data/mobilityzone1_resume/R1_MOBILITYZONE1/01_SPUSTIT_V24917_TARGETED_CATCHUP.py", line 46, in verify_v24917_manifest
+      raise RuntimeError("V24917_RUNTIME_MANIFEST_FAIL:" + ",".join(bad[:20]))
+  RuntimeError: V24917_RUNTIME_MANIFEST_FAIL:DIAGFAST_V1_RELEASE_MANIFEST.json
+  
+assert 1 == 0
+ +  where 1 = CompletedProcess(args=['/opt/pyvenv/bin/python', '-c', '\nimport json, sys, importlib.util\nfrom pathlib import Path\n...MANIFEST_FAIL:" + ",".join(bad[:20]))\nRuntimeError: V24917_RUNTIME_MANIFEST_FAIL:DIAGFAST_V1_RELEASE_MANIFEST.json\n').returncode
+FAILED tests/test_v24917_targeted_catchup.py::test_adapter_fit_error_falls_back_to_parent_without_overlay - ValueError: MOBILITYZONE1_EMPTY_ZONE_COVERAGE
+FAILED tests/test_v24917_tdrollbackfix1.py::test_failed_full_proof_overrides_legacy_pass_and_preserves_details - r1_15a2_supply.SupplyContractError: GENFIX2_TD_ROLLBACK_FULL_PARENT_PROOF_FAILED:signals.WORK.cdf_rmse:NUMERIC;proof=/tmp/pytest-of-root/pytest-2/test_failed_full_proof_overrid0/TDROLLBACKFIX1_PARENT_PROOF.json

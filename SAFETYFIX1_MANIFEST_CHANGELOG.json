@@ -1,0 +1,48 @@
+{
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "updated": [],
+    "count": 96
+  },
+  "V24917_RUNTIME_MANIFEST.json": {
+    "updated": [],
+    "count": 59
+  },
+  "GENFIX2_PAYLOAD_MANIFEST.json": {
+    "updated": [
+      "V24916_LAST_BOOTSTRAP_FAILURE.json",
+      "V24916_LAST_RUNS_LOCATION.txt"
+    ],
+    "count": 1222
+  },
+  "TDJOINT1_FILES_SHA256.json": {
+    "updated": [
+      "GENFIX2_PAYLOAD_MANIFEST.json",
+      "V24916_LAST_BOOTSTRAP_FAILURE.json",
+      "V24916_LAST_RUNS_LOCATION.txt"
+    ],
+    "count": 1427
+  },
+  "COSTFIX1_FILES_SHA256.json": {
+    "updated": [
+      "GENFIX2_PAYLOAD_MANIFEST.json",
+      "TDJOINT1_FILES_SHA256.json",
+      "V24916_LAST_BOOTSTRAP_FAILURE.json",
+      "V24916_LAST_RUNS_LOCATION.txt"
+    ],
+    "count": 1431
+  },
+  "IMPORTFIX1_FILES_SHA256.json": {
+    "updated": [
+      "COSTFIX1_FILES_SHA256.json",
+      "GENFIX2_PAYLOAD_MANIFEST.json",
+      "TDJOINT1_FILES_SHA256.json",
+      "V24916_LAST_BOOTSTRAP_FAILURE.json",
+      "V24916_LAST_RUNS_LOCATION.txt",
+      "evidence/A08_supply_dirty_assignment.json",
+      "evidence/A09_supply_io_escapes_rollback.json",
+      "evidence/A11_guard_error_fails_open.json",
+      "evidence/A12_fallback_bypasses_mobility.json"
+    ],
+    "count": 1451
+  }
+}

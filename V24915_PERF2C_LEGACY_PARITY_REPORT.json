@@ -1,0 +1,30 @@
+{
+  "component_hashes": {
+    "addval_hash": "d3dbb7fe42f83310a126751b6661ade1f246c704ce5be9bbbdb2cd68d423aeba",
+    "dseg_hash": "cc1c33db24fa224e1d302f1afc7c270af12272c8a66d443824c5cdbca474ecde",
+    "fixed_link_hash": "f10fe8857fbe37f95113908bcaabfaf3c0e0e231083cbe18e1017a47ae77c470",
+    "generation_hash": "52c280cc5569917b6d630a8c69fce5c471a3e0c992b429f08017711b227cb5c9",
+    "matrix_hash": "e69a5aabb4ba68bbb06bf9630b1a19b78265a5d9a36d99723c3a3f54eaabad91",
+    "operations_hash": "dde8065ba431d51f757ab65b372f3def5b292855b913eb233e3877f1c2e36cdb",
+    "state_hash": "6aa9d55ad6cb0d7ab0fdb8f11d97559fe74458f2a5b2338ec63978f3e2acf153",
+    "td_hash": "f5b5dd461cd6804ab09b406a5d2d0fa211ba752b1521f8f7f990bf927e3661b5"
+  },
+  "created_utc": "2026-10-19T23:17:45.586106+00:00",
+  "cross_call_cache": false,
+  "exact_payload_parity": true,
+  "exact_state_hash_parity": true,
+  "fallback": "PERMANENT_ADAPTER_LOCAL_PARENT_SNAPSHOT_FALLBACK",
+  "matrix_fingerprint_semantics_changed": false,
+  "public_snapshot_schema_changed": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
+  "schema": "R1_15A2_V24915_PERF2C_LEGACY_PARITY_REPORT_V1",
+  "semantic_domains_tested": [
+    "ADDVAL1",
+    "FIXED_LINK",
+    "MATRIX",
+    "GENERATION",
+    "TD_PARAMETER",
+    "OPERATION_RUNTIME_STATE",
+    "DSEG_BINDING"
+  ]
+}

@@ -1,0 +1,135 @@
+[
+  {
+    "path": "CURRENT_RELEASE.txt",
+    "status": "MODIFIED",
+    "parent_sha256": "bcc283492bd1adbebbd3fd138f366518892d3b1ee61eb7ff93542cec9913cb4e",
+    "v2494_sha256": "c9b92bf3d4536ee20b46156ac5d173820030c7177c5e9a8afa1f6a0a70d7058d",
+    "v2494_bytes": 61
+  },
+  {
+    "path": "LIVE_VISUM_ACCEPTANCE_V2_4_9_4_CZ.md",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "45334a83cfb04f5e213ef5384a6824b14f05688c45c2058c3e1724052e3c5049",
+    "v2494_bytes": 2686
+  },
+  {
+    "path": "METHODOLOGY_STATUS_V2494.json",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "4e3f2a43e013dd661a9bc32e4a09f505d52d720e264e13a6e472be83554d9756",
+    "v2494_bytes": 1196
+  },
+  {
+    "path": "R1_15A2_CONFIG_V2_4_9_4.json",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "deb888c4a201a085062193216657598fa9a2ecab7bf59ecef5343eab4b192258",
+    "v2494_bytes": 51817
+  },
+  {
+    "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_4.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "08f3b4ecb828fa6c10ebc49d017fcf2e7b9d4ae7d91f3f7de2122f2a59cfe0dd",
+    "v2494_bytes": 35851
+  },
+  {
+    "path": "R1_15A2_VISUM_COM_PREFLIGHT_V2_3_6_INLINE.py",
+    "status": "MODIFIED",
+    "parent_sha256": "37d2df8a23e76b0614d612b92159a3a34ba570f4fdd8cdc50d9b6dd674f8304c",
+    "v2494_sha256": "425abe2f4e4257c70ee720f73e1c0ff575955b4d7b70bcb4d5a6bb8af10d7e53",
+    "v2494_bytes": 212316
+  },
+  {
+    "path": "README_R1_15A2_V2_4_9_4_PATH_EXPORT_RETRY_SEMANTIC_RESTART_CZ.md",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "656573c52d4d3c1797bae6adf0da7aa74ba54b03532f5443125eba6de39d69ac",
+    "v2494_bytes": 4145
+  },
+  {
+    "path": "V2494_RELEASE_STATUS.json",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "cf9bc6fb24f3ad33ef5401d6536a8ebdf9a033b759553d31afb81269766d78b7",
+    "v2494_bytes": 833
+  },
+  {
+    "path": "VERIFY_PACKAGE_V2_4_9_4.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "a37d1bf6b78dca2bd9ef7e30c9c1e3999a7d76c0b604eb6697a33035090de6f1",
+    "v2494_bytes": 17457
+  },
+  {
+    "path": "r1_15a2_com_compat.py",
+    "status": "MODIFIED",
+    "parent_sha256": "5d870c7d2888f2fccc04a2e162362bb262c8608ae92fcfbadc8357397dda7c74",
+    "v2494_sha256": "46025eb36a13e1039e6718d773122c12a5eda53a62540077f1cd1d0b508ad0fb",
+    "v2494_bytes": 20556
+  },
+  {
+    "path": "r1_15a2_live_api_audit.py",
+    "status": "MODIFIED",
+    "parent_sha256": "506ce24214aff6a8c8382b5111a03658e3d378dab41235bda43f647c5086082e",
+    "v2494_sha256": "b2640ba32beb54e202d0dc1daad23d8cf581cf02d1c44db0aec05d3e38f36692",
+    "v2494_bytes": 37005
+  },
+  {
+    "path": "r1_15a2_overnight_controller_v240.py",
+    "status": "MODIFIED",
+    "parent_sha256": "1778084ee481aa68be5df4d846ccea09ff9187c079657d53968bca2b9ce24b2c",
+    "v2494_sha256": "730226ad4acda1be40f41b7313dba8a936eebd2690bf26c788fd27dbee9b041f",
+    "v2494_bytes": 36761
+  },
+  {
+    "path": "r1_15a2_restart_v2494.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "3e738cc2325dad9139dc69df438adbf8cea71f10318aaac074dc1fb2b4e83d83",
+    "v2494_bytes": 5417
+  },
+  {
+    "path": "r1_15a2_runtime_v1.py",
+    "status": "MODIFIED",
+    "parent_sha256": "f035c4109f928c6008368d7d5b3c1ec77123c02d7672ccbef7bc90dae91a9f00",
+    "v2494_sha256": "ae9dba5c3c2925cc16d0e42f1c8b695ffa460bf0e3fd672ed0a41434d8b5cc62",
+    "v2494_bytes": 107960
+  },
+  {
+    "path": "r1_15a2_safety_v2494.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "ae00f3cce43083990eed02c1f31212371f508aea77b0e6a245d5c99acebd6704",
+    "v2494_bytes": 8139
+  },
+  {
+    "path": "r1_15a2_trial_adapter_v240.py",
+    "status": "MODIFIED",
+    "parent_sha256": "f55e7e4936bb93770fb7ff99d6a485a0695575f1e6c59ba44552e2163c857109",
+    "v2494_sha256": "e0216130f66af3adaddbc6108945207d19b0af9e982747a27f95f36e0cad4015",
+    "v2494_bytes": 39085
+  },
+  {
+    "path": "r1_15a2_two_mode_v238.py",
+    "status": "MODIFIED",
+    "parent_sha256": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+    "v2494_sha256": "3722fabe5b90f7bb0367f840d466c3a6c9de6a6ddb483dda0ec7db8eed6c3d8a",
+    "v2494_bytes": 83255
+  },
+  {
+    "path": "tests/test_v2494_path_export_retry_and_semantic_restart.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "5d6d79f462101592e7721ce4d53ea141e916b0692dfe5b05f1b61ad3ac8b9ada",
+    "v2494_bytes": 8320
+  },
+  {
+    "path": "tests/test_v2494_release.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2494_sha256": "217c25866fd5aeed5b626b6a0af939a73e278207aa28a49ae30e415ecd169aa3",
+    "v2494_bytes": 3684
+  }
+]

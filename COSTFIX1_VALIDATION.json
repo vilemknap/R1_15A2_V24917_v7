@@ -1,0 +1,71 @@
+{
+  "release": "R1_15A2_V24917_SUPPLYMIX_COSTFIX1_20261027",
+  "base_release": "R1_15A2_V24917_GENFIX2_TDJOINT1_20261027",
+  "previous_base_archive_sha256": "9a2667c91eb9d73d8d337723417317f2f63babf3b5855b244b58e55c7099eab9",
+  "scope": "SINGLE_SUPPLYMIX_RUNTIME_MODULE_PLUS_TESTS_AND_REQUIRED_RESEALED_MANIFESTS",
+  "source_changes": [
+    "DIAGFAST_V1_RELEASE_MANIFEST.json",
+    "V24917_RUNTIME_MANIFEST.json",
+    "r1_15a2_supply_mix_v24917.py",
+    "tests/test_v24917_supply_mix.py"
+  ],
+  "run_options_changed": false,
+  "protected_source_files_unchanged": 1059,
+  "authority_files_changed": 0,
+  "visum_live_run": "NOT_PERFORMED",
+  "tests": {
+    "main_without_tdjoint_module": {
+      "passed": 1387,
+      "skipped": 4,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "tdjoint_isolated": {
+      "passed": 51,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "diagfast_isolated": {
+      "passed": 138,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "genfix2_audit_isolated": {
+      "passed": 18,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "total_passed": 1594,
+    "total_skipped": 4,
+    "total_failed": 0,
+    "new_costfix1_test_cases": 7,
+    "note": "Full monolithic run was not considered authoritative because of inherited module reload/isolation interference. The same tests pass in separate completed suites."
+  },
+  "manifests": {
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": 0
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 96,
+      "mismatches": 0
+    },
+    "V24916_PERF2C_RUNTIME_MANIFEST.json": {
+      "files": 50,
+      "mismatches": 0
+    },
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 58,
+      "mismatches": 0
+    }
+  },
+  "methodology": {
+    "negative_generalized_cost_allowed": false,
+    "integer_half_step_rounded_to_extra_discount": false,
+    "reuse_only_saved_path_proof": true,
+    "attempt_assignment_for_unsafe_candidate": false,
+    "raise_or_skip_when_no_safe_legal_branch": "SKIP_WITH_REASON_AND_NO_WRITE",
+    "generation_changed": false,
+    "trip_distribution_changed": false
+  }
+}

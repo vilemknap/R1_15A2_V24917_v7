@@ -1,0 +1,14 @@
+{
+  "schema": "R1_15A2_V2488_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016",
+  "status": "PASS_OFFLINE_REGRESSION_PENDING_FINAL_ARCHIVE_READBACK_AND_REAL_VISUM",
+  "root_cause_fixed": "PERSISTENT_PATH_CACHE_CONTRACT_MISMATCH_CONFIG_SHA256_BEFORE_GENERATION_CACHE",
+  "pytest": "624 passed",
+  "compileall_pass": true,
+  "path_cache_config_digest_role": "PROVENANCE_ONLY",
+  "path_cache_authority": "EXPLICIT_PATH_SEMANTICS_PLUS_REVIEWED_FULL_SOURCE_IMPLEMENTATION_MAP",
+  "incompatible_cache_policy": "PERFORMANCE_MISS_THEN_LEGACY_OR_FRESH_ENUMERATION",
+  "integrity_failures_remain_hard": true,
+  "real_visum_tested": false,
+  "production_ready": false
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "R1_15A2_V239_DELTA_AUDIT_V1",
+  "parent_release": "R1_15A2_V2_3_8_OVERNIGHT_10H_DESIGN_ONLY_20261016",
+  "release": "R1_15A2_V2_3_9_SAFETY_GATES_20261016",
+  "modified_existing_files": [],
+  "new_files": [
+    "R1_15A2_15T_ASSIGNMENT_SCOPE_FULL_GEOMETRY_READONLY.py",
+    "R1_15A2_15U_NO_LOADVERSION_ROLLBACK_SMOKE.py",
+    "R1_15A2_CONFIG_V2_3_9.json",
+    "R1_15A2_V239_ASSIGNMENT_SCOPE_DECISION.json",
+    "README_R1_15A2_V2_3_9_SAFETY_GATES_CZ.md",
+    "START_HERE_V239_SAFETY_GATES_CZ.txt",
+    "V239_BUILD_VERIFICATION.json",
+    "V239_DELTA_AUDIT.json",
+    "V239_PYTEST_OUTPUT.txt",
+    "V239_SOURCE_INTEGRITY.json",
+    "VERIFY_PACKAGE_V2_3_9.py",
+    "r1_15a2_assignment_authority_v239.py",
+    "r1_15a2_full_geometry_gate_v239.py",
+    "r1_15a2_inplace_transaction_v239.py",
+    "tests/test_v239_safety_gates.py"
+  ],
+  "missing_parent_files": [],
+  "protected_unchanged_file_count": 30,
+  "protected_mismatches": [],
+  "passes": true,
+  "note": "V2.3.9 safety gates are additive; no V2.3.8 existing payload file is modified."
+}

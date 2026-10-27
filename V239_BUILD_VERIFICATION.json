@@ -1,0 +1,26 @@
+{
+  "schema": "R1_15A2_V239_BUILD_VERIFICATION_V1",
+  "release": "R1_15A2_V2_3_9_SAFETY_GATES_20261016",
+  "verified_utc": "2026-10-16T02:44:52.945495+00:00",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "pytest": {
+    "passed": 427,
+    "failed": 0,
+    "skipped": 0
+  },
+  "compileall": "PASS",
+  "delta_audit_passes": true,
+  "protected_unchanged_file_count": 30,
+  "assignment_scope_decision": "OP20_ONLY_FOR_SUPPLY_TRIAL_PENDING_LIVE_RECHECK",
+  "full_geometry_gate_implemented": true,
+  "full_geometry_live_pass": false,
+  "no_loadversion_rollback_smoke_implemented": true,
+  "rollback_live_pass": false,
+  "working_copy_ack_required": true,
+  "same_version_sha_required_between_15t_and_15u": true,
+  "same_model_state_hash_required_between_15t_and_15u": true,
+  "production_apply_authorized": false,
+  "live_visum_tested_v239": false,
+  "production_ready": false
+}

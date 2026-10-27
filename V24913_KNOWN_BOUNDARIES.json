@@ -1,0 +1,22 @@
+{
+  "release": "R1_15A2_V2_4_9_13_SUPPLY_ROUTE_CHOICE_READINESS_20261019",
+  "implemented_route_choice_actuator": "LINK_ADDVAL1_ONLY",
+  "frozen_parameters": [
+    "VDF_PARAMETERS",
+    "CAPACITY",
+    "V0PRT",
+    "TURN_ADDVAL",
+    "CONNECTOR_ADDVAL",
+    "NODE_IMPEDANCE_PARAMETERS",
+    "DEMAND_MATRICES_DURING_SUPPLY",
+    "TRIP_GENERATION_PARAMETERS_DURING_SUPPLY",
+    "TRIP_DISTRIBUTION_PARAMETERS_DURING_SUPPLY"
+  ],
+  "not_bundled": [
+    "STRATEGIC_TURN_SHARE_RUNTIME_AUTHORITY",
+    "STRATEGIC_CORDON_PAIR_SHARE_RUNTIME_AUTHORITY",
+    "TRAVEL_TIME_OR_SPEED_CALIBRATION_AUTHORITY"
+  ],
+  "real_visum_supply_tested": false,
+  "production_ready": false
+}

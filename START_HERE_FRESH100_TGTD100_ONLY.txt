@@ -1,0 +1,11 @@
+FRESH100 TGTD100-ONLY
+
+Run:
+R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_FRESH100_TGTD100_ONLY_NO_WALLCLOCK.py
+
+Contract:
+- start cycle 1 / accepted_count 0
+- exactly 100 coupled-demand outer cycles (TG Generation + TD FineCDF)
+- no global wall-clock limit
+- SUPPLY/ADDVAL is never started in this branch
+- after cycle 100 the run stops on the verified demand state

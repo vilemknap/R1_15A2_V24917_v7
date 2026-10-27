@@ -1,0 +1,71 @@
+{
+  "schema": "R1_15A2_V24915_COM_BUSY_RETRY_SAFE_FINALIZER_CONTRACT_V1",
+  "release": "R1_15A2_V2_4_9_15_COM_BUSY_RETRY_SAFE_FINALIZER_20261019",
+  "package_revision": "V24915_COM_BUSY_RETRY_SAFE_FINALIZER_R1",
+  "parent_release": "R1_15A2_V2_4_9_14_DEMAND_CONTINUATION_SUPPLY_READY_20261019",
+  "parent_config_sha256": "0978519bed11bb9330d6d28bc4f5b6db0fe9e714e2d6b100499e7c641eadbade",
+  "live_failure_evidence": {
+    "terminal_status_observed": "FAILED_FINAL_VERIFICATION_MANUAL_REOPEN_REQUIRED",
+    "primary_failure_phase": "REPRESENTATIVE_GEOMETRY",
+    "failed_range_first": 22786049,
+    "failed_range_last": 22788096,
+    "page_size": 2048,
+    "hresult": -2147418111,
+    "message": "Volany odmitl volani.",
+    "generic_attempts_observed": 5,
+    "diagnosis": [
+      "GENERIC_RETRY_LEASE_TOO_SHORT_FOR_LONG_READ_ONLY_PATH_EXPORT",
+      "TRANSIENT_FINAL_SNAPSHOT_FAILURE_WAS_MISCLASSIFIED_AS_MANUAL_REOPEN"
+    ]
+  },
+  "scope_locks": {
+    "demand_continuation_authority_file": "V24914_DEMAND_CONTINUATION_AUTHORITY.json",
+    "demand_continuation_authority_sha256": "cc72705ea1e7618c3fbea3699cd3fe16b712ba9d2ef0407a0abded45a995ad29",
+    "accepted_count_start": 9,
+    "next_outer_cycle": 6,
+    "max_lineage_outer_cycle": 12,
+    "generation_td_acceptance": "UNCHANGED_FROM_V24914",
+    "supply_route_choice_policy": "UNCHANGED_FROM_V24914",
+    "production_apply": false,
+    "direct_od_matrix_writes": false
+  },
+  "com_retry_policy": {
+    "generic": {
+      "max_attempts": 5,
+      "initial_delay_seconds": 0.05,
+      "backoff_factor": 2.0,
+      "max_delay_seconds": 0.8
+    },
+    "bounded_path_export": {
+      "max_attempts": 48,
+      "max_elapsed_seconds": 120.0,
+      "initial_delay_seconds": 0.25,
+      "backoff_factor": 1.7,
+      "max_delay_seconds": 3.0
+    },
+    "final_verification": {
+      "max_attempts": 12,
+      "max_elapsed_seconds": 30.0,
+      "initial_delay_seconds": 0.25,
+      "backoff_factor": 1.8,
+      "max_delay_seconds": 3.0
+    },
+    "retryable_hresult": [
+      -2147418111,
+      -2147417846
+    ],
+    "exact_same_range_required": true,
+    "transient_rpc_never_triggers_page_size_fallback": true,
+    "nontransient_errors_fail_immediately": true
+  },
+  "finalizer_policy": {
+    "transient_retry_exhausted_with_latest_accepted_checkpoint": "FAILED_TRANSIENT_COM_FINAL_VERIFICATION_UNAVAILABLE_RESTART_FROM_LATEST_ACCEPTED_CHECKPOINT",
+    "manual_reopen_required_for_transient_retry_exhaustion": false,
+    "safe_restart_from_latest_accepted_checkpoint": true,
+    "nontransient_or_state_mismatch": "FAIL_CLOSED_MANUAL_REOPEN",
+    "current_session_state_claimed_verified_after_transient_exhaustion": false
+  },
+  "created_utc": "2026-10-19T08:33:32.532564+00:00",
+  "real_visum_tested": false,
+  "production_ready": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "R1_15A2_V24915_PERF2_R6_MACHINE_STATUS_V1",
+  "status": "R6_OFFLINE_VERIFIED_READY_FOR_LIVE_RETRY",
+  "base_release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
+  "base_package_revision": "V24915_PERF2_R5_OVERNIGHT50_B0016_CONTINUATION",
+  "hotfix": "NONFINITE_DIAGNOSTIC_REFERENCE_HASH",
+  "root_cause": "PERF2 evidence canonical_hash rejected valid live diagnostic inf sentinel",
+  "calibration_math_changed": false,
+  "acceptance_changed": false,
+  "diagnostic_method_changed": false,
+  "candidate_math_changed": false,
+  "max_lineage_outer_cycle": 50,
+  "source_checkpoint": "ACCEPTED_B_0016_d1211a44ac4d.ver",
+  "source_semantic_state_hash": "46a0c61d45e55cc9d2a91be0c62839fee7ef9236924e59d6ebc27b62619c63d2",
+  "focused_tests": {"passed": 72, "failed": 0},
+  "full_tests": {"passed": 862, "skipped": 4, "failed": 0, "test_modules": 82},
+  "compileall": "PASS",
+  "runtime_preflight": {"passes": true, "files_checked": 101, "manifest_sha256": "d32d02b878b12cbe6ecf1c662824689736dd0b2a5991d7b84353256914b450bc"},
+  "real_visum_tested": false,
+  "calibration_complete": false,
+  "production_ready": false
+}

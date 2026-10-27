@@ -1,0 +1,105 @@
+{
+  "evidence_id": "R1_LIVE_20261015_TG_NESTED_FORMULA_POP_ZP",
+  "source_sha256": "b0018631a6f3f9948d5c76b1a9d42c5306d750dd6fb7742e7908721dbe046af7",
+  "source_release": "R1_09G_POPULATION_TG_FORMULA_FORENSIC_INLINE_V1_20261015",
+  "source_status": "EVIDENCE_ONLY_NOT_AUTOMATIC_CLEARANCE",
+  "source_attribute_list_column": "FORMULA",
+  "attribute_list_mapping_policy": "Row indices are retained as exported; attribute code for each index not directly exposed by this list",
+  "population_attr": "POP_ZP",
+  "absent_old_attr": "POP_ZP_2022",
+  "value_type": "2",
+  "zone_counts": {
+    "DOMESTIC": 655,
+    "ZAHR_NEIGHBOUR_ACTIVE": 15,
+    "ZAHR_NEIGHBOUR_ZERO": 11
+  },
+  "total_zones": 681,
+  "neighbour_positive_population_zones": 6,
+  "formulas": [
+    {
+      "source_row_index": 833,
+      "formula": "[ADD_ATT_W]*[NUM_PM_SMEAR]*(1+([AV_INCOME]*[ADD_SALARY]-1000)/2700)*[NOT_ZAHR] + [POP_ZP]*[ZAHR_ATR_WORK]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 834,
+      "formula": "[ADD_ATT_S]*[NOT_ZAHR]*([POP_ZP]+0.4*[NUM_PM]+[POP_CENTRALITY_TERM]) + [POP_ZP]*[ZAHR_ATR_SERV]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 835,
+      "formula": "(0.4*[POP_ZP]+0.6*[NUM_PM]+0.2*[PRENOC_SVK])*[NOT_ZAHR]"
+    },
+    {
+      "source_row_index": 836,
+      "formula": "4*[POP_ZP]*[COUNTRY_ADD_FOREIGN_CAL]"
+    },
+    {
+      "source_row_index": 840,
+      "formula": "[ADD_PROD_W]*([H_WORK_E_C]*[E_C]*[NOT_ZAHR])/2.8 + [H_E_C]*[POP_ZP]*[ZAHR_PROD_WORK]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 841,
+      "formula": "[ADD_PROD_W]*([H_WORK_E_NC]*[E_NC]*[NOT_ZAHR])/2.8 + [H_E_NOC]*[POP_ZP]*[ZAHR_PROD_WORK]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 842,
+      "formula": "[ADD_PROD_W]*([H_WORK_NE_C]*[NE_C]*[NOT_ZAHR])/2.8 + [H_NOE_C]*[POP_ZP]*[ZAHR_PROD_WORK]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 843,
+      "formula": "[ADD_PROD_W]*([H_WORK_NE_NC]*[NE_NC]*[NOT_ZAHR])/2.8 + [H_NOE_NOC]*[POP_ZP]*[ZAHR_PROD_WORK]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 844,
+      "formula": "[ADD_PROD_W]*([H_WORK_STUD]*[NUM_VS]*[NOT_ZAHR])/2.8"
+    },
+    {
+      "source_row_index": 845,
+      "formula": "[ADD_PROD_S]*([H_SERVICE_E_C]*[E_C]*[NOT_ZAHR])/2.8*0.9 + [H_E_C]*[POP_ZP]*[ZAHR_PROD_SERV]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 846,
+      "formula": "[ADD_PROD_S]*([H_SERVICE_E_NC]*[E_NC]*[NOT_ZAHR])/2.8*0.9 + [H_E_NOC]*[POP_ZP]*[ZAHR_PROD_SERV]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 847,
+      "formula": "[ADD_PROD_S]*([H_SERVICE_NE_C]*[NE_C]*[NOT_ZAHR])/2.8*0.9 + [H_NOE_C]*[POP_ZP]*[ZAHR_PROD_SERV]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 848,
+      "formula": "[ADD_PROD_S]*([H_SERVICE_NE_NC]*[NE_NC]*[NOT_ZAHR])/2.8*0.9 + [H_NOE_NOC]*[POP_ZP]*[ZAHR_PROD_SERV]*[ZAHR_SUSED]/100"
+    },
+    {
+      "source_row_index": 849,
+      "formula": "[ADD_PROD_S]*([H_SERVICE_STUD]*(0.5*[NUM_PUP]+[NUM_VS])*[NOT_ZAHR])/2.8*0.9"
+    },
+    {
+      "source_row_index": 850,
+      "formula": "[H_LONG_E_C]*[E_C]*[NOT_ZAHR]/2.8*0.2"
+    },
+    {
+      "source_row_index": 851,
+      "formula": "[H_LONG_E_NC]*[E_NC]*[NOT_ZAHR]/2.8*0.2"
+    },
+    {
+      "source_row_index": 852,
+      "formula": "[H_LONG_NE_C]*[NE_C]*[NOT_ZAHR]/2.8*0.2"
+    },
+    {
+      "source_row_index": 853,
+      "formula": "[H_LONG_NE_NC]*[NE_NC]*[NOT_ZAHR]/2.8*0.2"
+    },
+    {
+      "source_row_index": 854,
+      "formula": "[H_LONG_STUD]*[NUM_VS]*[NOT_ZAHR]/2.8*0.2"
+    },
+    {
+      "source_row_index": 855,
+      "formula": "[H_FOREIGN_2]*[POP_ZP]*[COUNTRY_ADD_FOREIGN_CAL]"
+    },
+    {
+      "source_row_index": 856,
+      "formula": "([H_SCHOOL_PUP]*[NUM_PUP]+[H_SCHOOL_STUD_VS_2]*[NUM_VS])*[NOT_ZAHR]/2.8"
+    }
+  ],
+  "note": "Read-only snapshot. Live identity of per-attribute Formula column is not provided by the list. The runtime validates outer TG bindings and all underlying zone inputs; this does not prove unchanged nested formulas if the network has subsequently been modified."
+}

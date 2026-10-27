@@ -1,0 +1,238 @@
+{
+  "schema": "R1_15A2_V248_PACKAGE_VERIFICATION_V1",
+  "status": "PASS",
+  "release": "R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016",
+  "root": "/mnt/data/r1_v248_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016",
+  "manifest_sha256": "be3263bab454e3a237f405610988f0633c61fc6b3b00e2572a05dd234c4d2396",
+  "file_count": 388,
+  "errors": [],
+  "config_validation": {
+    "passes": true,
+    "base_contract": {
+      "passes": true,
+      "base_contract": {
+        "passes": true,
+        "minimum_confirmed_stationary_cycles": 2
+      },
+      "bulk_link_read": true,
+      "adaptive_page_size": 2048,
+      "addval_step_units": [
+        4,
+        2,
+        1
+      ],
+      "generation_step_stages": [
+        "EXPLORE",
+        "FULL_VERIFY"
+      ],
+      "progressive_td_stages": [
+        "EXPLORE",
+        "REFINE",
+        "FULL_VERIFY"
+      ],
+      "path_epoch_limits": {
+        "DEMAND": 4,
+        "SUPPLY": 8
+      },
+      "minimum_confirmed_stationary_cycles": 2
+    },
+    "persistent_path_cache": true,
+    "retained_epoch_checkpoints": 3,
+    "max_total_cache_gib": 24.0,
+    "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
+    "legacy_import": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY"
+  },
+  "launcher": {
+    "release": "R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016",
+    "implementation_hash": "d2978ab510e2c202c8eeaffb738f019fb63651452620cd185a2379846b0be793",
+    "implementation_file_count": 35,
+    "persistent_cache_policy": {
+      "enabled": true,
+      "publication_required": true,
+      "root_policy": "LOCALAPPDATA_UNSYNCED_WITH_PROJECT_FALLBACK",
+      "verify_sha256_on_restore": true,
+      "sqlite_quick_check_on_restore": true,
+      "sqlite_full_integrity_check_on_publish": true,
+      "accepted_state_binding_required_for_descendant_reuse": true,
+      "allow_legacy_v247_import": true,
+      "legacy_import_requires_exact_origin_state": true,
+      "legacy_import_requires_all_profile_flow_parity": true,
+      "retain_epoch_checkpoints": 3,
+      "persistent_store_mode": "IMMUTABLE_READ_ONLY_AFTER_PUBLICATION",
+      "latest_pointer_publish_order": "STORE_THEN_MANIFEST_THEN_BINDING_THEN_INDEX",
+      "max_total_cache_gib": 24.0
+    },
+    "path_epoch_policy": "INITIAL_ENUMERATION_REUSED_UNTIL_LOCAL_PLATEAU_THEN_FRESH_REENUMERATION"
+  },
+  "benchmark": {
+    "schema": "R1_15A2_V248_PERSISTENT_CACHE_SYNTHETIC_USER_BENCHMARK_V1",
+    "status": "PASS",
+    "real_visum_com": false,
+    "enumeration_calls_total": 1,
+    "expected_enumeration_calls": 1,
+    "restart_enumeration_calls": 0,
+    "records": [
+      {
+        "run": 1,
+        "enumerations_after": 1,
+        "elapsed_seconds": 0.010861121000061758,
+        "record": {
+          "schema": "R1_15A2_TWO_MODE_PATH_STORE_V238",
+          "apply_permitted": false,
+          "pathlink_geometry_full_identity_proven": false,
+          "geometry_identity": "PROVISIONAL_SAME_MODE_GEOMETRY_NOT_FULLY_VERIFIED",
+          "status": "INCIDENCE_READY_SEQUENCE_DEFERRED",
+          "parent_hash": "state-origin",
+          "same_run_only": true,
+          "modes": {
+            "C": {
+              "representative_dseg": "NATIVE_CW",
+              "parent_keys_sha256": "d9814d54be4c77af8ee9d9f158d14126b103050acb46b06a9b5866ba941052d3",
+              "parent_count": 2,
+              "dsegs": [
+                "NATIVE_CW"
+              ],
+              "geometry_complete": true,
+              "geometry_routes": 2,
+              "geometry_link_children": 7,
+              "geometry_raw_rows": 9,
+              "zero_link_interzonal_paths": 0,
+              "zero_link_intrazonal_paths": 0,
+              "representative_geometry_sha256": "b4e0c35c2d10457171af2a82e7644658fab575b9d02ec53ad61adcb00a488ac7",
+              "geometry_reads": 1
+            }
+          },
+          "dsegs": [
+            "NATIVE_CW"
+          ],
+          "fatal_errors": [],
+          "edge_dictionary_sha256": "9c6bf590be726ca7df178d58a930fbca9aec31635bc3b3badf6481cc4155335f",
+          "zero_link_paths_by_dseg": [],
+          "zero_link_policy": "EXPLICIT_COMPLETE_PARENT_PRESERVE_VOLUME_NO_LINK_ATTRIBUTION",
+          "connector_topology_proven": false,
+          "export_complete": true,
+          "incidence_ready": true,
+          "sequence_evidence_ready": false,
+          "full_parent_keys_identical_within_mode": true,
+          "dseg_count": 1,
+          "dseg_complete_count": 1,
+          "all_selected_dsegs_complete": true,
+          "dseg_path_volume_parity_passes": true,
+          "path_rows": 2,
+          "positive_segment_paths": 2,
+          "geometry_route_count": 2,
+          "full_geometry_read_count": 1,
+          "pathlink_rows": 7,
+          "memory_strategy": "TWO_MODE_UINT32_GEOMETRY_SQLITE_INDEPENDENT_DSEG_VOLUMES",
+          "new_assignment_executed": false,
+          "derived_design_provisional": true,
+          "path_structure_hash": "dc49755f39b8bd0e69d80b3702a57cffe95592f2cc53f4bce7cea9f4ec3a20ff",
+          "path_basis_hash": "a1ac138f1f461e0774c65ec95c53ea1221e29a5f4752561104386886b3c971ba",
+          "path_basis_comparison_hash": "397a9b6e67859425a73b2716f487cfbc985ccb8c9a959b3504df1d652812eb2a",
+          "path_basis_comparison_rows": 2,
+          "path_basis_comparison_semantics": "DSEG_MODE_OD_SEQUENCE_GEOMETRY_KIND_AGGREGATED_VOLUME_PATH_INDEX_INVARIANT",
+          "persistent_cache_id": "EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+          "persistent_cache_dir": "/mnt/data/r1_v248_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V248_BENCHMARK_OUTPUT/persistent/EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+          "persistent_store_sha256": "1e818ce99d932b7f62d2f67027e99675a48e77709916f01ba07715488c379749"
+        },
+        "persistent_cache_id": "EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+        "descendant_binding": {
+          "schema": "R1_15A2_PERSISTENT_PATH_EPOCH_BINDING_V248",
+          "created_utc": "2026-10-16T14:44:35.550343+00:00",
+          "state_hash": "state-accepted",
+          "cache_id": "EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+          "cache_dir": "/mnt/data/r1_v248_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V248_BENCHMARK_OUTPUT/persistent/EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+          "manifest_sha256": "a16c914356012a29aee872e64f0e9dbe3111147567ae92b44818db98e46b56d4",
+          "origin_state_hash": "state-origin",
+          "immutable_snapshot": {
+            "fixed_link_hash": "fixed",
+            "dseg_hash": "dseg",
+            "operations_hash": "ops"
+          },
+          "path_basis_hash": "a1ac138f1f461e0774c65ec95c53ea1221e29a5f4752561104386886b3c971ba",
+          "path_basis_comparison_hash": "397a9b6e67859425a73b2716f487cfbc985ccb8c9a959b3504df1d652812eb2a",
+          "reason": "SYNTHETIC_ACCEPT",
+          "phase": "DEMAND"
+        }
+      },
+      {
+        "run": 2,
+        "kind": "EXACT_ORIGIN_RESTART",
+        "enumerations_after": 1,
+        "elapsed_seconds": 0.002344966000009663,
+        "record": {
+          "status": "PERSISTENT_PATH_EPOCH_RESTORED",
+          "cache_id": "EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+          "cache_dir": "/mnt/data/r1_v248_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V248_BENCHMARK_OUTPUT/persistent/EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+          "store_size_bytes": 53248,
+          "store_sha256_verified": true,
+          "binding": {
+            "schema": "R1_15A2_PERSISTENT_PATH_EPOCH_BINDING_V248",
+            "created_utc": "2026-10-16T14:44:35.552241+00:00",
+            "state_hash": "state-origin",
+            "cache_id": "EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+            "cache_dir": "/mnt/data/r1_v248_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V248_BENCHMARK_OUTPUT/persistent/EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+            "manifest_sha256": "a16c914356012a29aee872e64f0e9dbe3111147567ae92b44818db98e46b56d4",
+            "origin_state_hash": "state-origin",
+            "immutable_snapshot": {
+              "fixed_link_hash": "fixed",
+              "dseg_hash": "dseg",
+              "operations_hash": "ops"
+            },
+            "path_basis_hash": "a1ac138f1f461e0774c65ec95c53ea1221e29a5f4752561104386886b3c971ba",
+            "path_basis_comparison_hash": "397a9b6e67859425a73b2716f487cfbc985ccb8c9a959b3504df1d652812eb2a",
+            "reason": "CROSS_RUN_PATH_EPOCH_RESTORED",
+            "phase": "RESTORE"
+          },
+          "legacy_imported_from": null,
+          "matched_by": "STATE_BINDING"
+        },
+        "read_only": true
+      },
+      {
+        "run": 3,
+        "kind": "BOUND_ACCEPTED_STATE_RESTART",
+        "enumerations_after": 1,
+        "elapsed_seconds": 0.002370434999875215,
+        "record": {
+          "status": "PERSISTENT_PATH_EPOCH_RESTORED",
+          "cache_id": "EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+          "cache_dir": "/mnt/data/r1_v248_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V248_BENCHMARK_OUTPUT/persistent/EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+          "store_size_bytes": 53248,
+          "store_sha256_verified": true,
+          "binding": {
+            "schema": "R1_15A2_PERSISTENT_PATH_EPOCH_BINDING_V248",
+            "created_utc": "2026-10-16T14:44:35.554744+00:00",
+            "state_hash": "state-accepted",
+            "cache_id": "EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+            "cache_dir": "/mnt/data/r1_v248_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V248_BENCHMARK_OUTPUT/persistent/EPOCH_20261016T144435Z_state-origin_a1ac138f1f46",
+            "manifest_sha256": "a16c914356012a29aee872e64f0e9dbe3111147567ae92b44818db98e46b56d4",
+            "origin_state_hash": "state-origin",
+            "immutable_snapshot": {
+              "fixed_link_hash": "fixed",
+              "dseg_hash": "dseg",
+              "operations_hash": "ops"
+            },
+            "path_basis_hash": "a1ac138f1f461e0774c65ec95c53ea1221e29a5f4752561104386886b3c971ba",
+            "path_basis_comparison_hash": "397a9b6e67859425a73b2716f487cfbc985ccb8c9a959b3504df1d652812eb2a",
+            "reason": "CROSS_RUN_PATH_EPOCH_RESTORED",
+            "phase": "RESTORE"
+          },
+          "legacy_imported_from": null,
+          "matched_by": "STATE_BINDING"
+        },
+        "read_only": true
+      }
+    ],
+    "conclusion": "Both exact-origin and explicitly bound accepted-state restarts reused the immutable SQLite epoch without calling path enumeration."
+  },
+  "compileall_pass": true,
+  "tests": {
+    "returncode": 0,
+    "stdout": "........................................................................ [ 12%]\n........................................................................ [ 24%]\n........................................................................ [ 37%]\n........................................................................ [ 49%]\n........................................................................ [ 61%]\n........................................................................ [ 74%]\n........................................................................ [ 86%]\n........................................................................ [ 99%]\n.....                                                                    [100%]\n581 passed in 9.37s\n",
+    "stderr": ""
+  },
+  "real_visum_tested": false,
+  "production_ready": false,
+  "elapsed_seconds": 15.198
+}

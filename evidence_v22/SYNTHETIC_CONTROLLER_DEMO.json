@@ -1,0 +1,53 @@
+{
+  "scope": "SYNTHETIC_CONTROLLER_WITH_DETERMINISTIC_STUB_NOT_VISUM_NOT_DIAL_B",
+  "live_visum_tested": false,
+  "accepted_blocks": 3,
+  "supply_selected_trial": 2,
+  "final_addval1": {
+    "1|1|2": 0.0,
+    "2|2|3": -1.0
+  },
+  "final_q": 1030.0,
+  "final_b": 0.08,
+  "assignment_stub_calls": 9,
+  "verified_restores": 11,
+  "accepted_ledgers": [
+    {
+      "raw_cal": 2.5641025641025643,
+      "raw_component_idp": 0.7000000000000001,
+      "terms": {
+        "CSD_CAL": 0.01282051282051282,
+        "COMPONENT_IDP": 0.7000000000000001,
+        "ADDVAL1_PRIOR": 2.5e-05
+      },
+      "total": 0.7128455128205129,
+      "reference_hash": "a0e59abe8702a8040b7569f56663f1a092688898192351120441c8b54dda77b8",
+      "validation_used": false
+    },
+    {
+      "raw_cal": 1.0406504065040652,
+      "raw_component_idp": 0.7000000000000001,
+      "terms": {
+        "CSD_CAL": 0.005203252032520325,
+        "COMPONENT_IDP": 0.7000000000000001,
+        "ADDVAL1_PRIOR": 2.5e-05
+      },
+      "total": 0.7052282520325204,
+      "reference_hash": "a0e59abe8702a8040b7569f56663f1a092688898192351120441c8b54dda77b8",
+      "validation_used": false
+    },
+    {
+      "raw_cal": 1.0406504065040652,
+      "raw_component_idp": 0.672,
+      "terms": {
+        "CSD_CAL": 0.005203252032520325,
+        "COMPONENT_IDP": 0.672,
+        "ADDVAL1_PRIOR": 2.5e-05
+      },
+      "total": 0.6772282520325204,
+      "reference_hash": "a0e59abe8702a8040b7569f56663f1a092688898192351120441c8b54dda77b8",
+      "validation_used": false
+    }
+  ],
+  "status": "BOUNDED_CYCLE_LIMIT"
+}

@@ -1,0 +1,36 @@
+{
+  "configured_scope_context": {
+    "component_matrix_nos": 17,
+    "freight_dsegs": 2,
+    "note": "Actual unique live matrix count depends on DSeg-to-matrix bindings and is not inferred offline.",
+    "passenger_dsegs": 12
+  },
+  "live_visum_tested": false,
+  "matrix_getvalues_live_seconds": null,
+  "measured_live_speedup": null,
+  "parameterized_formula": {
+    "consumer_count": "K",
+    "legacy_calls": "N*K",
+    "matrix_count": "N",
+    "perf2_calls": "N",
+    "relative_reduction": "1-(1/K)",
+    "saved_calls": "N*(K-1)"
+  },
+  "release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
+  "scenario": {
+    "bundle_snapshot_consumers": 3,
+    "legacy_matrix_getvalues_calls": 6,
+    "legacy_snapshot_calls": 3,
+    "perf2_legacy_snapshot_calls": 1,
+    "perf2_matrix_getvalues_calls": 2,
+    "relative_call_reduction": 0.6666666666666666,
+    "saved_matrix_getvalues_calls": 4,
+    "semantic_payload_exact": true,
+    "snapshot_consumers": 3,
+    "state_hash_exact": true,
+    "synthetic_matrices": 2
+  },
+  "schema": "R1_15A2_V24915_PERF2_PERFORMANCE_SYNTHETIC_BENCHMARK_V1",
+  "status": "SYNTHETIC_READ_COUNT_PASS_LIVE_WALL_TIME_PENDING",
+  "test": "tests/test_v24915p2_snapshot_parity.py::test_bundle_reuses_one_matrix_read_set_for_three_snapshot_consumers"
+}

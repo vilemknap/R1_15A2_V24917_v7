@@ -1,0 +1,34 @@
+{
+  "added": [
+    "CP18_V2488_CHECKPOINT_STATUS.json",
+    "CP18_V2488_CLOUD_READBACK_VERIFIED.json",
+    "LIVE_VISUM_ACCEPTANCE_V2_4_8_8_CZ.md",
+    "MANIFEST_V2488.json",
+    "METHODOLOGY_STATUS_V2488.json",
+    "R1_15A2_CONFIG_V2_4_8_8.json",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py",
+    "README_R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_CZ.md",
+    "SOURCE_PATCH_V2487_TO_V2488.diff",
+    "START_HERE_V2488_CZ.txt",
+    "V2488_CHANGED_FILES.json",
+    "V2488_IMPLEMENTATION_AND_TEST_REPORT.md",
+    "V2488_LIVE_FAILURE_POSTMORTEM.md",
+    "V2488_RECOVERY_JOURNAL.json",
+    "V2488_RELEASE_STATUS.json",
+    "VERIFY_PACKAGE_V2_4_8_8.py",
+    "r1_15a2_safety_v2488.py",
+    "tests/test_v2488_path_cache_semantic_compat.py",
+    "tests/test_v2488_release.py"
+  ],
+  "base_release": "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
+  "changed": [
+    "CURRENT_RELEASE.txt",
+    "README.md",
+    "r1_15a2_persistent_path_cache_v248.py",
+    "r1_15a2_trial_adapter_v240.py"
+  ],
+  "created_utc": "2026-10-16T20:01:18.219723+00:00",
+  "removed": [],
+  "schema": "R1_15A2_V2488_CHANGED_FILES_V1",
+  "target_release": "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016"
+}

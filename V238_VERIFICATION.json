@@ -1,0 +1,49 @@
+{
+  "release": "R1_15A2_V2_3_8_TWO_MODE_DESIGN_ONLY_20261016",
+  "verified_utc": "2026-10-16T02:01:34.709550+00:00",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "parent_zip_sha256": "c8b16f47587d6470b496135962c6e381436fa31ace4e9403d43933166a4cf20a",
+  "baseline_pytest": {
+    "passed": 348,
+    "failed": 0
+  },
+  "working_tree_pytest": {
+    "passed": 412,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_seconds": 4.02
+  },
+  "new_regression_cases": 64,
+  "compileall": "PASS",
+  "numerical_e2e": "PASS_SYNTHETIC_E2E",
+  "legacy_controller_e2e": "PASS_SYNTHETIC_CONTROLLER",
+  "new_adapter_fake_com_e2e": "PASS_INCLUDED_IN_PYTEST",
+  "protected_unchanged_file_count": 30,
+  "synthetic_benchmark": {
+    "status": "PASS",
+    "source": "SYNTHETIC_PYTHON_GENERATORS_NOT_VISUM_COM",
+    "read_only": true,
+    "segment_count": 12,
+    "parent_volume_records": 60000,
+    "unique_geometry_routes": 10000,
+    "stored_geometric_link_occurrences": 1000000,
+    "expanded_equivalent_link_occurrences": 6000000,
+    "sqlite_bytes": 8605696,
+    "elapsed_seconds": 3.281643743000018,
+    "timings": {
+      "parent_storage_seconds": 0.3505209539999896,
+      "geometry_validation_and_storage_seconds": 2.796124987999974,
+      "flow_and_impact_seconds": 0.13492222700006096
+    },
+    "speedup_claim_for_visum": null,
+    "geometry_identity_proven": false,
+    "apply_permitted": false
+  },
+  "apply_permitted": false,
+  "live_visum_tested": false,
+  "production_ready": false,
+  "pathlink_geometry_full_identity_proven": false,
+  "full_scale_live_runtime_seconds": null,
+  "clean_archive_verification": "RECORDED_IN_EXTERNAL_V238_FINAL_VERIFICATION_JSON"
+}

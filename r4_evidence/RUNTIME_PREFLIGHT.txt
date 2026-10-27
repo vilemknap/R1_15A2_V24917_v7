@@ -1,0 +1,12 @@
+launcher_import=PASS
+config_release=R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019
+package_revision=V24915_PERF2_R4_B0016_RESUME_IDP_AUTHORITY_HOTFIX
+implementation_files=82
+deployment_pass=True
+config_pass=True
+runtime_pass=True
+runtime_files=98
+idp_status=SEALED_IDP_AUTHORITY_ACTIVE
+idp_sha=f68087c249d6f1da2582e2ea1d723a8b3d1a8d99af82ffe5283f63d0de6a0737
+idp_components=11
+idp_rows_exact=True

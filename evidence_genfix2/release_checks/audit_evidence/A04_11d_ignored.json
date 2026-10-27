@@ -1,0 +1,35 @@
+{
+  "before": {
+    "summary": {
+      "component_rmse": 0.1
+    }
+  },
+  "after": {
+    "summary": {
+      "component_rmse": 10.0
+    }
+  },
+  "comparison": {
+    "passes": false,
+    "profile_drift": {
+      "profiles": 30,
+      "missing": [],
+      "violations": 0,
+      "max_abs_diff": 0.0,
+      "max_rel_diff": 0.0,
+      "worst_profile": null,
+      "abs_tol": 0.5,
+      "rel_tol": 0.0001,
+      "identity_errors": []
+    },
+    "weighted_geh_before": 2.508613836503768,
+    "weighted_geh_after": 2.508613836503768,
+    "geh_tol": 0.01,
+    "component_differences": [
+      "d11.component_rmse:NUMERIC",
+      "signals.WORK.objective:NUMERIC"
+    ],
+    "signal_atol": 1e-09,
+    "signal_rtol": 1e-08
+  }
+}

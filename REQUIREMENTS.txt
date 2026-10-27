@@ -1,0 +1,11 @@
+Runtime:
+- PTV Visum 2026 Python 3.13 or Legacy environment with injected Visum/COM
+- NumPy
+- Python standard library (including sqlite3)
+- No generic COM activation or external GetActiveObject fallback
+- PTV Hub cloud-computing mode does not provide COM and is not supported
+
+Development verification:
+- Python 3.13.5
+- NumPy, pytest
+- Offline COM-shaped fixtures are not a live Windows COM backend

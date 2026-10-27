@@ -1,0 +1,18 @@
+{
+  "candidate_acceptance_role": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
+  "production_release": false,
+  "production_ready": false,
+  "working_copy_trial_calibration": true,
+  "survey_reference_role": "SOFT_DIRECTIONAL_REFERENCE_NOT_EXACT_FIT",
+  "exact_curve_match_required": false,
+  "td_acceptance_policy": "MATERIAL_AGGREGATE_SELECTED_IMPROVEMENT_WITH_BOUNDED_COMPONENT_TRADEOFF",
+  "td_soft_reference_plateau_policy": "NO_SAFE_MATERIAL_IMPROVEMENT_AFTER_CONFIGURED_BACKTRACK_IS_VERIFIED_PARENT_PLATEAU",
+  "td_parameter_freeze_policy": "EXACT_FROZEN_CONTEXT_AND_METADATA__NUMERIC_B_C_ABS1E-8_REL1E-10",
+  "td_realization_coordinate": "B_LINEAR_LOG_NEG_C",
+  "td_realization_retry_policy": "NATIVE_20B_IPF_NONCONVERGENCE_OR_SOFT_ACCEPTANCE_BACKTRACK",
+  "ipf_tolerance_policy": "UNCHANGED_NEVER_RELAXED_BY_CALIBRATOR",
+  "hard_network_guard_policy": "CAL_GEH2_OBSERVATION_SET_PROTECTED_PROFILE_SEVERITY_TRANSITION_UNRELAXED",
+  "next_generation_gate": "TD_REALIZATION_OR_VERIFIED_SOFT_REFERENCE_PARENT_PLATEAU_BEFORE_NEXT_GENERATION",
+  "path_cache_policy": "V2489_EXPLICIT_PREDECESSOR_SEMANTIC_COMPATIBILITY",
+  "two_mode_geometry_role": "CANDIDATE_PROPOSAL_ONLY"
+}

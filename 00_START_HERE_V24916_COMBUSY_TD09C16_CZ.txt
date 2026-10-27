@@ -1,0 +1,34 @@
+R1 15A2 V24916 - PROFILE488FIX1 + COMBUSY + TD09C16
+====================================================
+Datum: 2026-10-23
+
+SPUSTENI
+1. Rozbal cely ZIP do nove ciste slozky.
+2. V PTV Visum 2026 otevri pozadovany aktualni .ver.
+3. Scripts -> Run script file...
+4. Spust pouze:
+   00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py
+
+Nespoustej agresivni launchery z donor baliku. Jejich opravy jsou preneseny
+primo do hlavniho V24916 one-click launcheru.
+
+PRENESENE OPRAVY
+- bounded retry pro prechodne COM busy chyby pri read_links/snapshot/PERF2C readbacku;
+- aktivni TD operation muze mit schvalenych 16 native strata bez 4_FOREIGN,
+  nebo historickych 17 strata;
+- 4_FOREIGN zustava frozen, matrix 9116 je hash-guarded a A/B/C musi byt
+  samostatne citelne;
+- IOFIX4 donor nebyl slepe prepsan: aktualni V24916 IOFIX3/PATHFIX3 je jeho
+  prisny nadmnozinovy nastupce a zustava aktivni.
+
+NEZMENENO
+- PROFILE488 = 488 CALIBRATION / 0 VALIDATION;
+- dynamicke DIS skimy po fresh assignmentu;
+- FlowBundle targeting TG a TD component mask;
+- FASTCAL1 parametry;
+- native IPF tolerance;
+- acceptance, rollback, assignment a zadne prime OD writes.
+
+VYSTUPY
+R1_15A2_V16_RUNS vznikne vedle otevreneho .ver/project base. Pri dalsi chybe
+posli LATEST_BOOTSTRAP.json, RUN_STATUS*.json, 00_RESULT*.json a CONSOLE_CAPTURE.log.

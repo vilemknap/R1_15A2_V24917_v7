@@ -1,0 +1,19 @@
+{
+  "schema": "R1_15A2_V2486_TEST_REPORT_V1",
+  "release": "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
+  "updated_utc": "2026-10-16T18:44:24.611515+00:00",
+  "parent_baselines": {
+    "stable_project_root": "601 passed",
+    "generation_saturation": "595 passed"
+  },
+  "targeted_merge_tests": "25 passed before additional hardening",
+  "final_pytest": "607 passed",
+  "compileall_pass": true,
+  "package_verifier_preliminary_pass": true,
+  "real_v2484_failure_replay_pass": true,
+  "run_root_single_double_triple_pass": true,
+  "v2485_cache_compatibility_cases": 2,
+  "preserved_zero_regression_pass": true,
+  "real_visum_tested": false,
+  "production_ready": false
+}

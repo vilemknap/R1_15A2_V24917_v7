@@ -1,0 +1,11 @@
+{
+  "release": "R1_15A2_V2_3_6_LIVE_TG_09F4_PREFEED_REMEDIATION",
+  "all_offline_tests": 281,
+  "all_offline_tests_pass": true,
+  "isolated_inline_test": "TG_LIVE_FORMULAS_POPULATION_PROBE PASS; TG_09F4_OUTER_FORMULAS_AND_TYPED_SCHEMA PASS; P09F4/A09F4 required attrs PASS; output beside ver PASS",
+  "live_v236_visum_tested": false,
+  "apply_permitted": false,
+  "observations": "498 approved: CSD408 + CITY90; 462 CAL and 36 VALID",
+  "patch_scope": "TG COM formula contract and prefeed value/type checks only; diagnostic zone statistics; no model/numeric edits",
+  "sha256_source_preflight": "7ecdd26df75a9040fec55981b2998dc2e9ac3cf444f90d7ddca0de45d0ebcd67"
+}

@@ -1,0 +1,29 @@
+R1 15A2 FRESH100 PROFILE488 FRESHCACHE
+
+Spust v PTV Visum tento skript:
+R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_FRESH100_PROFILE488_FRESHCACHE_SAVEFIX1_NO_WALLCLOCK.py
+
+KALIBRACNI AUTORITA
+- zdroj: authorities/COUNTLOCATION-2026-10-22-02-23-34.xlsx
+- vsech 488 radku tabulky = CALIBRATION
+- zadny VALIDATION split
+- R1 Active z tabulky se nepouziva pro vyber profilu
+- R1 Role z tabulky se nepouziva pro vyber profilu
+- v izolovane working copy se vsech 488 profilu nastavi R1_ACTIVE=1 a R1_ROLE=CALIBRATION
+- observed = R1 Obs RPDI
+- weight = R1 Weight
+- mapping = LinkNo / FromNodeNo / ToNodeNo z tabulky
+
+RUN
+- aktualne otevreny .ver = novy baseline
+- start cycle 1 / accepted_count 0
+- presne 100 TG/TD outer cycles
+- po cyklu 100 konec, zadny ADDVAL
+- bez globalniho wall-clock limitu
+- zadna stara cross-run path cache; prvni path epoch je fresh z aktualni site
+- cache vytvorena uvnitr tohoto runu se muze dale pouzivat v tomtez runu
+
+SAVEFIX1
+- WORKING_START.ver se uklada jen jednou
+- po navazani 488 profilu se druhy checkpoint uklada jako WORKING_PROFILE488_START.ver
+- zadny overwrite existujiciho .ver se neprovadi

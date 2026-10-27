@@ -1,0 +1,12 @@
+{
+  "suite": "diagfast_tests",
+  "exit_code": 0,
+  "seconds": 28.009,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "diagfast_tests"
+  ]
+}

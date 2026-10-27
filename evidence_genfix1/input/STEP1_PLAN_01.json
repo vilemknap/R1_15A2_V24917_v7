@@ -1,0 +1,150 @@
+{
+  "scale": 1.0,
+  "predicted_rel_improvement": 0.06104293394740563,
+  "objective_before": 28.108207604432213,
+  "grid": [
+    {
+      "scale": 1.0,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.06104293394740563,
+      "reasons": []
+    },
+    {
+      "scale": 0.95,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.05925187276437409,
+      "reasons": []
+    },
+    {
+      "scale": 0.9,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.05732698924313634,
+      "reasons": []
+    },
+    {
+      "scale": 0.85,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.05490215585887965,
+      "reasons": []
+    },
+    {
+      "scale": 0.8,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.05217885017812185,
+      "reasons": []
+    },
+    {
+      "scale": 0.75,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.04940846252683309,
+      "reasons": []
+    },
+    {
+      "scale": 0.7,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.04632241298364608,
+      "reasons": []
+    },
+    {
+      "scale": 0.65,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.04313952999056832,
+      "reasons": []
+    },
+    {
+      "scale": 0.6,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.03994006017190488,
+      "reasons": []
+    },
+    {
+      "scale": 0.55,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.03674211637436819,
+      "reasons": []
+    },
+    {
+      "scale": 0.5,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.03354658548895442,
+      "reasons": []
+    },
+    {
+      "scale": 0.45,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.03035334714374211,
+      "reasons": []
+    },
+    {
+      "scale": 0.4,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.027146500970763734,
+      "reasons": []
+    },
+    {
+      "scale": 0.35,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.02389718020975143,
+      "reasons": []
+    },
+    {
+      "scale": 0.3,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.02064990582085111,
+      "reasons": []
+    },
+    {
+      "scale": 0.25,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.01732353194630734,
+      "reasons": []
+    },
+    {
+      "scale": 0.2,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.013925377632612755,
+      "reasons": []
+    },
+    {
+      "scale": 0.15,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.010514054301339965,
+      "reasons": []
+    },
+    {
+      "scale": 0.1,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.007034771900220936,
+      "reasons": []
+    },
+    {
+      "scale": 0.05,
+      "feasible": true,
+      "robust": true,
+      "predicted_rel_improvement": 0.00352065482192235,
+      "reasons": []
+    }
+  ],
+  "mode": "LINEAR_FIT",
+  "rho": 1.0,
+  "mapped_profiles": 247
+}

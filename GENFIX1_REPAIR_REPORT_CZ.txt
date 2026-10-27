@@ -1,0 +1,213 @@
+R1 15A2 V24917 MOBILITY1 GENFIX1
+Oprava pádu generation — 27. 10. 2026
+============================================================
+
+VÝSLEDEK
+
+Tento balíček opravuje dvě reprodukovatelné chyby zdrojového kódu: převod
+dočasného selhání COM čtení na prázdnou hodnotu snapshotu a ztrátu povinnosti
+obnovit demand/assignment po odmítnutém generačním pokusu. Doplňuje přesnou
+kontrolu živého rodičovského stavu, diagnostiku rozdílu a spolehlivější zápis
+stavu selhání. Obsahuje celý původní balíček s opravami v přídavné vrstvě V24917.
+
+Finální offline ověření: 1 473 testů prošlo, 4 byly přeskočeny, 0 selhalo.
+Všech 425 Python souborů prošlo kontrolou kompilace. Všechny čtyři relevantní
+manifesty souhlasí. Živý kalibrační výpočet v PTV Visum zde proveden nebyl.
+
+Důležité omezení závěru: dodaný log neobsahuje původní a následný snapshot
+ani jejich komponentový rozdíl. Konkrétní atribut, který způsobil historický
+V242_GENERATION_TRIAL_PARENT_CHANGED, proto nelze zpětně jednoznačně určit.
+Reprodukce chyb kódu je doložená; přiřazení jedné z nich konkrétnímu živému
+pádu by bez dalších dat bylo domněnkou.
+
+1. CO JE DOLOŽENO V DODANÉM BĚHU
+
+Vnější chyba:
+V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:V242_GENERATION_TRIAL_PARENT_CHANGED
+
+Pád nastal při prvním pokusu generation, trial=1, scale=1.0. Kontrola rodiče
+selhala před běžným zápisem parametrů kandidáta a před jeho assignmentem.
+Solver konvergoval po 190 iteracích, projekce konvergovala a path parity
+měla PASS. Plánovaný relativní přínos byl 0,06104293394740563, tedy přibližně
+6,10 %. Jde o predikci modelu, nikoli o změřené dosažené zlepšení kalibrace.
+
+Výchozí vážený průměr GEH byl 28,108207604432213. Kalibrační soubor měl
+247 profilů s kladným pozorováním; roster má 248 řádků včetně diagnostického
+řádku s nulovým pozorováním. Tento rozdíl počtů není dokladem poruchy.
+
+GENERATION_DESIGN trval 973,248 s. V generation jsou zaznamenána čtyři
+volání snapshotu v souhrnném čase 56,787 s. Záznam neukazuje volání
+procedure_sequence uvnitř generation. Jediné kumulativně zaznamenané
+volání patří do jiné fáze. Ani kontrolovaný zdrojový řetězec generation_design
+neobsahuje spuštění assignmentu nebo recompute skimu. Hypotéza, že pád
+vyvolal další assignment přímo v designu, není dodanými podklady doložena.
+
+V TWO_MODE_CACHE_REUSE se live_parent_hash i path_epoch_parent_hash shodují
+s rodičem cyklu:
+4a8f41962e1a83520e9cd0a3f2381d8ae792af4c714dffe50181034a869e5294
+
+To lokalizuje zjištěnou neshodu do pozdější kontroly; neurčuje to změněnou
+doménu. Z původního hlášení nelze rozhodnout mezi skutečnou změnou hodnot
+a nekonzistentním přečtením téhož modelu. Stejně tak samotné vytvoření
+další, na DSeg nenavázané matice FlowBundle neprokazuje změnu snapshotu:
+snapshot zahrnuje konkrétní demand matice, nikoli automaticky každou matici.
+
+Konečný RUN_STATUS uvádí accepted_count=0, completed_demand_cycles=0,
+supply_started=false, live_matches_last_accepted=false a požadavek na
+ruční znovuotevření modelu. V tomto neúspěšném běhu nebyl přijat nový krok.
+
+Podklady: evidence_genfix1/input/GENERATION_BLOCK_RESULT(...).json,
+RUN_STATUS(...).json, STEP1_PLAN_01.json, V24917_TIMING.json,
+05C_PATH_PARITY_SUMMARY.json, 07B_SOLVER_SUMMARY.json a TWO_MODE_CACHE_REUSE(1).json.
+Přesná jména a SHA-256 všech podkladů jsou v INPUT_PROVENANCE.json.
+
+2. OPRAVA ČTENÍ SNAPSHOTU
+
+Původní pomocné funkce v některých volitelných COM čteních zachytávaly
+všechny výjimky. Po chybě mohly vrátit prázdný COMMENT/CODE, vynechat DSeg
+nebo použít prázdnou vazbu na matici. Tím vznikl jiný operations_hash,
+dseg_hash nebo celý state_hash, přestože se model nezměnil. Vnější mechanismus
+opakování neviděl výjimku, protože ji vnitřní čtení již potlačilo.
+
+Nový modul r1_15a2_snapshot_reads_v24917.py rozlišuje rozpoznané dočasné
+COM chyby, včetně RPC_E_CALL_REJECTED a RPC_E_SERVERCALL_RETRYLATER.
+Propustí je do stávajícího omezeného opakování celého snapshotu. Částečně
+přečtený stav se při takovém selhání nepublikuje. Pokud počet opakování
+nestačí, čtení skončí chybou a kandidát se nepřijme.
+
+Úspěšná čtení zachovávají původní datový formát a výpočet hashů. Kompatibilní
+fallbacky pro skutečně nepodporované volitelné atributy nebo alternativní
+COM rozhraní zůstávají. Přechodná COM chyba se při nich nově nesmí vydávat
+za nepodporovaný atribut. Oprava je lokální ve V24917 a nemění globálně
+funkce chráněné rodičovské vrstvy.
+
+Regresní testy obsahují přímou reprodukci: původní čtení při dočasném
+selhání čtení neprázdného komentáře vytvoří jiný snapshot; opravené čtení
+se zopakuje a vrátí přesný původní stav. Testují také trvale zaneprázdněný
+COM, vazby DSeg, operace, načítání TD a legitimní kompatibilní fallbacky.
+
+3. OPRAVA TRANSAKCE GENERATION A ROLLBACKU
+
+Původní STEP1 po odmítnutí již přepočteného kandidáta obnovil při přechodu
+na další pokus pouze parametry a nastavil applied_rows=None. Matice a
+assignment přitom ještě odpovídaly odmítnutému kandidátovi. Jestliže další
+pokus skončil bez řádků, vyčerpal bránu nebo vyhodil výjimku, závěrečný
+rollback mohl usoudit, že není co obnovovat. Vrácený rodičovský snapshot
+pak neodpovídal živým výsledkům modelu.
+
+Tato chyba je nezávislá na prvním doloženém pádu před zápisem kandidáta.
+V samostatné reprodukci původního kódu zůstal přepočtený demand na hodnotě
+1,2214027581601699 místo rodičovské 1,0. Protokol původních očekávaně
+neúspěšných testů je v transaction_original_regression.txt.
+
+Oprava odděluje právě aplikované parametry od povinnosti úplné obnovy.
+Recovery záznam vzniká před možným COM zápisem, uchovává původní hodnoty
+všech dotčených atributů/zón a přežije obnovu samotných parametrů. Stav
+demand_dirty eviduje, že již mohl proběhnout assignment. Povinnost obnovy
+končí až po ověřené úplné obnově nebo po úspěšném přijetí a uložení kandidáta.
+
+Při ukončení po odmítnutém přepočteném pokusu proběhne stávající úplný
+rollback včetně regenerace demand, assignmentu a porovnání snapshotu
+i diagnostiky s rodičem. Pokryté jsou také částečné zápisy, chyby plánování,
+checkpointů a přerušení uživatelem. Selhání samotného rollbacku se předá
+volajícímu; nevyvolává automaticky druhý neřízený pokus o rollback.
+
+4. KONTROLA RODIČE A DIAGNOSTIKA
+
+Před generation_design a před aplikací pokusu s čistým rodičem se nově
+čte čerstvý úplný snapshot přímo z Visumu. Kontrola obchází cache kandidáta
+i cache intrazonálních penalizací a zahrnuje živé penalizace a bázi M9002.
+Porovnání vyžaduje přesnou rovnost celého objektu včetně rozšíření adaptéru.
+Přijatý rodič se při neshodě nepřepisuje ani nenahrazuje novým základem.
+
+Vznikají například následující soubory relativně ke složce generation:
+  DESIGN_PARENT_CHECK/GENERATION_PARENT_CHECK.json
+  TRY_01/PARENT_CHECK/GENERATION_PARENT_CHECK.json
+  TRY_01/PARENT_CHECK/GENERATION_PARENT_DIFF.json
+
+Soubor DIFF vzniká při neshodě. Obsahuje rozdílné domény, hashe a rozměry
+matic s jejich čísly, změněné generační atributy/zóny, parametry TD,
+vazby DSeg a další rozdíly rozšíření. Výpis je omezený, nevypisuje celé
+matice. Při změně operations_hash přidává aktuální inventář operací;
+nepředstírá znalost původního inventáře, který starý snapshot neobsahoval.
+
+Při chybě generation se ukládá FAILED a konkrétní fáze. Výjimka při ukládání
+diagnostického JSON nesmí překrýt primární COM chybu nebo přerušení. Chyby
+běžného úspěšného uložení a chyby rollbacku nadále přerušují běh.
+
+5. ROZSAH ZMĚN A INTEGRITA
+
+Původní zdrojový ZIP byl porovnán s implementation_files v EFFECTIVE_CONFIG
+neúspěšného běhu. Po normalizaci Windows oddělovačů cest se shoduje všech
+219 zkontrolovaných souborů. Oprava tedy vychází z doloženého zdroje tohoto
+běhu. Výsledek je v FAILING_RUN_SOURCE_MATCH.json.
+
+Ze všech 1 153 původních souborů zůstává 1 146 bajtově shodných. Chybějící
+původní soubory: 0. Změněno je těchto sedm původních souborů:
+  r1_15a2_step_search_v24917.py
+  r1_15a2_trial_adapter_v24917.py
+  r1_15a2_runtime_delta_v24917.py
+  r1_15a2_v24917_runtime.py
+  tools/refresh_v24917_manifests.py
+  DIAGFAST_V1_RELEASE_MANIFEST.json
+  V24917_RUNTIME_MANIFEST.json
+
+Nově jsou přidány dva opravné moduly, launcher GENFIX1, čtyři soubory
+regresních testů, tento report, návod a důkazní podklady. Manifesty
+přídavné vrstvy byly znovu vytvořeny nad finálními zdroji. Všech 1 059
+souborů chráněného DIAGFAST base manifestu zůstalo nezměněných.
+
+Nastavení MOBILITY1, cíle kalibrace, akceptační prahy, FlowBundle, TD
+a výpočet assignmentu se metodicky nepřenastavují. Kontrola skutečné změny
+rodiče zůstává aktivní a používá původní chybový kód.
+
+6. FINÁLNÍ OVĚŘENÍ
+
+Testy byly spuštěny ve dvou samostatných procesech z finálního balíčku:
+  python -m pytest -q tests             1 335 passed, 4 skipped
+  python -m pytest -q diagfast_tests      138 passed
+  Celkem                               1 473 passed, 4 skipped, 0 failed
+
+Čtyři přeskočené testy jsou starší kontroly manifestů V24912/V24914,
+které byly již nahrazeny V24913/V24915. Nejde o čtyři neprovedené Visum
+testy. Žádná offline sada nenahrazuje ověření v konkrétní živé instanci.
+
+Nové regresní testy GENFIX1: 93 případů
+  čtení snapshotu                         51
+  kontrola rodiče a diagnostika rozdílů     17
+  vlastnictví obnovy a transakce STEP1     19
+  integrace adaptéru                       6
+
+Kontrola kompilace: 425 Python souborů, 0 chyb.
+Manifesty: DIAGFAST base 1 059/1 059; DIAGFAST release 86/86;
+V24916 runtime 50/50; V24917 runtime 52/52. Všechny SHA-256 souhlasí.
+
+Finální výstupy pytest a JUnit jsou v evidence_genfix1/pytest_final_*.
+Souhrny: VALIDATION_SUMMARY.json, PACKAGE_INTEGRITY.json, COMPILE_CHECK.json.
+Zdrojový rozdíl vůči původnímu ZIPu: GENFIX1_SOURCE_CHANGES.patch.
+
+7. SPUŠTĚNÍ VE VISUMU
+
+1) Rozbalte celý ZIP do nové krátké složky, například C:\R1\V24917_GENFIX1.
+2) Ve Visumu znovu otevřete checkpoint z dodaného RUN_STATUS:
+
+C:\Users\vilem_knap\Documents\VISUM\v45\2022\R1_15A2_V16_RUNS\RUN_20261027_003434_537650\CALIBRATION\CHECKPOINTS\ACCEPTED_B_0000_657e914ccec2.ver
+
+   Zaznamenaná velikost: 579 438 000 bajtů.
+   Zaznamenaný SHA-256:
+   aa0eb8e447c26a0251ac317f42e8d8c7ad63b776a9ddf885e43ad5a51e1ee816
+   BEST_SO_FAR_0000_4a8f41962e1a.ver má podle logu shodný obsah.
+
+3) Přes Scripts → Run script file spusťte:
+   01_SPUSTIT_V24917_GENFIX1.py
+
+Launcher zachovává PREFLIGHTIOFIX1 a používá již otevřenou instanci Visumu.
+Nenačítá sám jiný model. Soubor .ver není součástí archivu a v tomto
+prostředí nebyl dostupný; cesta, velikost a hash jsou doloženy logem.
+Nový běh začne od cyklu 1 na znovu otevřeném bezpečném modelu. V původním
+neúspěšném běhu nebyl přijat žádný nový kalibrační krok.
+
+Po úspěšném čerstvém čtení bude dočasná chyba COM obsloužena opakováním.
+Pokud se rodičovský stav skutečně změní nebo COM zůstane nedostupný,
+výpočet správně skončí s podrobnějšími podklady. Dokončení živé generace,
+assignmentu a akceptace kandidáta je potřeba ověřit v následujícím běhu.

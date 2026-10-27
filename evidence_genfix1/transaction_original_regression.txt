@@ -1,0 +1,103 @@
+GENFIX1 — STEP1 transaction ownership regression evidence
+
+Scope
+-----
+This is a separately proven rollback bug. It does not establish which snapshot
+component changed during the uploaded first generation trial.
+
+Original source
+---------------
+File: r1_15a2_step_search_v24917.py from supplied MOBILITY1 FULL ZIP
+Original SHA256: 4c34ea8bd4d7848ff7d52ceaa988a7b7cc1ed78c172aba0e59cda1594620bfb6
+
+Reproduction command
+--------------------
+The original module was loaded from an untouched temporary copy into
+sys.modules["r1_15a2_step_search_v24917"], then pytest was called with:
+
+  PYTHONPATH=/workspace/scratch/3254c11ebeff/analysis_tests/deps python
+  pytest.main([
+      "-q", "tests/test_v24917_generation_transaction_genfix1.py",
+      "-k", "rejected_assignment_then_unapplied_trial", "--tb=short"
+  ])
+
+This process did not modify the patched production files on disk. The common
+behavioral fixture distinguishes current generation parameters (g) from the
+parameters used by the last assignment (vol_g), and uses the real acceptance,
+freeze, and rollback machinery. Trial 1 is genuinely rejected by the real gate.
+
+Actual original results
+-----------------------
+FFF [100%]
+
+1. gate_exhausted
+   test_rejected_assignment_then_unapplied_trial_recomputes_parent[gate_exhausted]
+   Assertion failed: ad.vol_g == ad.g0
+   Assigned trial demand remained 1.2214027581601699 while parent demand was 1.0.
+   Parameters had been restored, but no final demand recomputation occurred.
+
+2. no_rows
+   test_rejected_assignment_then_unapplied_trial_recomputes_parent[no_rows]
+   Assertion failed: ad.vol_g == ad.g0
+   Assigned trial demand remained 1.2214027581601699 while parent demand was 1.0.
+   The controller returned the parent state/diagnostics without restoring live demand.
+
+3. exception
+   test_rejected_assignment_then_unapplied_trial_recomputes_parent[exception]
+   Assertion failed: rec["status"] == "FAILED"
+   Observed rec["status"] == "DESIGNING".
+   The test stopped at this first failed assertion, before later restoration assertions.
+
+3 failed, 10 deselected in 0.71s
+BASELINE_REPRODUCTION_EXPECTED_FAILURE_EXIT 1
+
+Patched verification
+--------------------
+The same three cases pass in the patched test run. Each verifies full live
+snapshot equality, separately checks both parameters and assigned demand,
+requires exactly one full rollback assignment, and checks the rollback JSON
+proof for snapshot_equal, diagnostic_equal, and passes.
+
+At the time of this original-source reproduction, the new test file contained
+13 scenarios covering:
+- rejected assignment followed by gate exhaustion, no rows, or preview exception;
+- partial writes during the first trial and after a rejected assigned trial;
+- unexpected parent drift before design and after design;
+- design exception, interruption, solver failure, and projection failure;
+- next-step planning error and interruption while rejected demand is live.
+
+The combined transaction + existing STEP1 + snapshot-diff tests produced
+42 passed and one import failure in an unrelated adapter smoke test while the
+concurrently authored r1_15a2_snapshot_reads_v24917 module was not yet present.
+All 13 transaction cases passed. After the final ownership-copy and release-label
+edits, the 13 transaction cases plus 17 state-diff cases were rerun:
+
+  30 passed in 1.65s
+
+Final combined validation is recorded by the release owner once all modules
+have been assembled.
+
+Recovery ownership review
+-------------------------
+- Planned recovery rows are copied before the first possible COM parameter write.
+- Recovery rows survive cheap parameter-only restoration and cover the union of
+  attempted attributes/zones, independently of applied_rows.
+- demand_dirty becomes true before attempting native assignment. It remains true
+  across rejected trials and parameter-only restoration.
+- A known pre-write GENERATION_GATE rejection can release recovery ownership only
+  when no assignment has occurred and require_parent proves exact parent equality.
+- Full rollback releases ownership only after the authoritative rollback returns
+  and the diagnostic hash matches the parent.
+- Accepted trials release ownership only after acceptance and publication succeed.
+- The outer failure handler also protects planning/checkpoint/bookkeeping exits.
+- rollback_started prevents an automatic second full rollback if the first one fails.
+- No acceptance threshold, matrix fingerprint, operation hash, or model guard was removed.
+
+Final assembled release validation
+----------------------------------
+After six additional exception-logging regression cases were added, the final
+transaction module has 19 passing cases. All four GENFIX1 modules have 93
+passing cases in the final suite. The fully assembled final package passes
+1335 tests (4 legacy manifest tests skipped) and 138 diagfast_tests. See
+VALIDATION_SUMMARY.json and pytest_final_*.txt/.xml for authoritative results.
+The early concurrent-assembly import failure above is historical only.

@@ -1,0 +1,29 @@
+{
+  "production_release": false,
+  "working_copy_trial_calibration": true,
+  "parent_release": "R1_15A2_V2_4_9_3_METHOD_AND_COM_CORRECTIONS_20261018",
+  "generation_guidance": "SIGNED",
+  "csd_calibration_objective": "OBSERVATION_WEIGHTED_MEAN_GEH",
+  "profile_sum_role": "DIAGNOSTIC_ONLY_PROFILE_PASSAGE_CHECKSUM",
+  "long_acceptance_mode": "GLOBAL_LONG_COMPOSITE",
+  "path_export_com_retry": "SAME_RANGE_BOUNDED_TRANSIENT_RPC_RETRY",
+  "path_export_retryable_hresult": [-2147418111, -2147417846],
+  "path_export_page_size_fallback": "NONTRANSIENT_MEMORY_RANGE_OR_OVERFLOW_ONLY",
+  "raw_ole_invoke_policy": "CENTRAL_WRAPPER_ONLY_IN_ACTIVE_PATH_EXPORT",
+  "restart_authority": "SEMANTIC_MODEL_STATE",
+  "semantic_restart_fields": [
+    "fixed_link_hash",
+    "dseg_hash",
+    "operations_hash",
+    "addval_hash",
+    "matrix_hash",
+    "generation_hash",
+    "td_hash"
+  ],
+  "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+  "raw_ver_sha_used_for_restart_acceptance": false,
+  "cross_release_state_hash_comparison_allowed": false,
+  "checkpoint_semantic_sidecar": true,
+  "real_visum_tested": false,
+  "production_ready": false
+}

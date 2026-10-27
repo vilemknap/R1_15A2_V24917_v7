@@ -1,0 +1,9 @@
+{
+  "group": 6,
+  "files": [
+    "tests/test_v24917_tdrollbackfix1.py"
+  ],
+  "exit_code": 0,
+  "seconds": 2.306039551999902,
+  "expected_cases": 39
+}

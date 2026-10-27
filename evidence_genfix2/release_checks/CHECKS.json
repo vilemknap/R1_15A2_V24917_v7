@@ -1,0 +1,52 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/mnt/data/genfix2/work/R1_V24917_GENFIX2/tests"
+      ],
+      "returncode": 0,
+      "seconds": 55.34
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/mnt/data/genfix2/work/R1_V24917_GENFIX2/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 40.402
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/mnt/data/genfix2/work/R1_V24917_GENFIX2/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 2.824
+    }
+  ],
+  "all_passed": true,
+  "output": "/mnt/data/genfix2/evidence/release_checks",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+}

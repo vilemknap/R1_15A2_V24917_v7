@@ -1,0 +1,190 @@
+--- r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/r1_15a2_two_mode_v238.py	2026-10-16 15:15:11.032007902 +0000
++++ r1_v2482_work/r1_15a2_two_mode_v238.py	2026-10-16 16:04:32.297744905 +0000
+@@ -1170,7 +1170,8 @@
+                             if live_od_matrices is not None else None)
+         if live_od_matrices is not None and set(codes)-set(live_od_matrices):
+             raise SupplyContractError('PATH_EPOCH_LIVE_OD_MATRIX_MISSING')
+-        support_gap_rows=[]
++        zero_share_gap_rows=[]
++        zero_share_live_interzonal={}
+         for code in codes:
+             self.control.checkpoint('GENERATION_INCIDENCE_FROM_CACHE',force=True,dseg_code=code)
+             mutable_code=code in mutable and core.family_from_dseg(code) in ('WORK','SERVICE')
+@@ -1192,6 +1193,7 @@
+             counter=0
+             live_matrix = live_od_matrices.get(code) if live_od_matrices is not None else None
+             if live_matrix is not None:
++                zero_share_live_interzonal[code] = float(np.sum(live_matrix) - np.trace(live_matrix))
+                 if (live_matrix.shape != (int(cfg['expected_zones']),int(cfg['expected_zones'])) or
+                         not np.isfinite(live_matrix).all() or (live_matrix < -1e-10).any()):
+                     raise SupplyContractError('PATH_EPOCH_INVALID_LIVE_OD_MATRIX:' + code)
+@@ -1220,9 +1222,11 @@
+                 stored_zero=float(stored_zero or 0.0)
+                 vol=(float(live_matrix[o-1,d-1]) if live_matrix is not None else stored_vol)
+                 if stored_vol <= core.EPS and vol > core.EPS:
+-                    if int(o) != int(d):
+-                        support_gap_rows.append({'dseg':code,'origin':o,'destination':d,
+-                                                 'live_volume':vol,'epoch_volume':stored_vol})
++                    zero_share_gap = int(o) != int(d)
++                    if zero_share_gap:
++                        zero_share_gap_rows.append({'dseg':code,'origin':int(o),'destination':int(d),
++                                                    'live_volume':vol,'epoch_volume':stored_vol,
++                                                    'path_count':int(npaths)})
+                     # Diagonal demand has no network-link attribution.  A
+                     # diagonal parent row, if present, contributes zero path
+                     # incidence rather than requiring a route split.
+@@ -1233,6 +1237,12 @@
+                 covered+=stored_covered*scale
+                 zero_volume+=stored_zero*scale
+                 act=relation=='ALL_MUTABLE_RELATIONS' or active is None or (o in active and d in active)
++                # A live-positive relation whose enumerated DSeg path rows all have
++                # zero saved volume has geometry but no defensible frozen route
++                # split.  It may contribute to projection base marginals, but it
++                # must never become a path-guidance actuator unless a share exists.
++                if stored_vol <= core.EPS and vol > core.EPS and int(o) != int(d):
++                    act=False
+                 vi=None
+                 if mutable_code:
+                     meta={'dseg_code':code,'family':core.family_from_dseg(code),'origin':o,
+@@ -1254,10 +1264,41 @@
+                 counter+=1
+                 if counter%4096==0:self.control.checkpoint('GENERATION_INCIDENCE_FROM_CACHE',od_rows=counter)
+             if h is not None:raise SupplyContractError('CACHE_INCIDENCE_JOIN_FAILED')
+-        if support_gap_rows:
+-            first=support_gap_rows[0]
+-            raise SupplyContractError('PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:%s:%s:%s' %
+-                                      (first['dseg'],first['origin'],first['destination']))
++        zero_share_audit={
++            'policy':'NONE', 'accepted':True, 'row_count':0, 'volume':0.0,
++            'max_single_od_volume':0.0, 'by_dseg':{}, 'sample_rows':[]}
++        if zero_share_gap_rows:
++            policy=cfg.get('two_mode',{}).get('zero_share_residual_policy',{})
++            if policy.get('enabled') is not True:
++                first=zero_share_gap_rows[0]
++                raise SupplyContractError('PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:%s:%s:%s' %
++                                          (first['dseg'],first['origin'],first['destination']))
++            if self.summary.get('dseg_path_volume_parity_passes') is not True:
++                raise SupplyContractError('PATH_EPOCH_ZERO_SHARE_RESIDUAL_REQUIRES_PATH_PARITY_PASS')
++            limit=float(policy.get('max_dseg_relative_volume',cfg.get('dseg_path_volume_relative_tolerance',0.01)))
++            if not (0.0 < limit <= float(cfg.get('dseg_path_volume_relative_tolerance',0.01))):
++                raise SupplyContractError('PATH_EPOCH_ZERO_SHARE_RESIDUAL_INVALID_TOLERANCE')
++            grouped=defaultdict(lambda:{'rows':0,'volume':0.0,'max_single_od_volume':0.0})
++            for row in zero_share_gap_rows:
++                g=grouped[row['dseg']]; g['rows']+=1; g['volume']+=float(row['live_volume'])
++                g['max_single_od_volume']=max(g['max_single_od_volume'],float(row['live_volume']))
++            offenders=[]; by_dseg={}
++            for code,g in sorted(grouped.items()):
++                denom=max(core.EPS,float(zero_share_live_interzonal.get(code,0.0)))
++                rel=float(g['volume'])/denom
++                by_dseg[code]=dict(g,live_interzonal_volume=denom,relative_volume=rel,limit=limit)
++                if rel > limit + 1e-15: offenders.append((code,rel,float(g['volume'])))
++            if offenders:
++                code,rel,vol=offenders[0]
++                raise SupplyContractError('PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:%s:%s:%s:ZERO_SHARE_RESIDUAL_EXCEEDS_GUIDANCE_TOLERANCE:%.12g:%.12g' %
++                                          (code,zero_share_gap_rows[0]['origin'],zero_share_gap_rows[0]['destination'],rel,vol))
++            zero_share_audit={
++                'policy':'EXISTING_GEOMETRY_ZERO_SHARE_RESIDUAL_EXCLUDED_FROM_GUIDANCE_PRESERVE_BASE_MARGINS',
++                'accepted':True, 'row_count':len(zero_share_gap_rows),
++                'volume':float(sum(float(r['live_volume']) for r in zero_share_gap_rows)),
++                'max_single_od_volume':float(max(float(r['live_volume']) for r in zero_share_gap_rows)),
++                'by_dseg':by_dseg, 'sample_rows':zero_share_gap_rows[:100],
++                'acceptance_authority':'FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D'}
+         profiles=[]
+         for i,p in enumerate(self.profiles):
+             x=dict(p,_profile_index=i,_link_key=core._profile_link_key(p),_link_keys=core._profile_link_keys(p));profiles.append(x)
+@@ -1290,7 +1331,8 @@
+                 'mutable_model':np.zeros(0),'wiggly_skipped_paths':0},
+             'geometry_identity':PROVISIONAL,'provisional':True,'apply_permitted':False,
+             'path_epoch_live_od_reweighted':live_od_matrices is not None,
+-            'intrazonal_path_support_policy':'NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_INCIDENCE'}
++            'intrazonal_path_support_policy':'NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_INCIDENCE',
++            'zero_share_residual_audit':zero_share_audit}
+         summary=dict(self.summary,dsegs=codes,
+             source=('FROZEN_PATH_EPOCH_LIVE_OD_REWEIGHT_NO_COM_REEXPORT'
+                     if live_od_matrices is not None else 'SAME_RUN_TWO_MODE_SQLITE_CACHE_NO_COM_REEXPORT'))
+--- r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/tests/test_v2481_live_run_hotfix.py	2026-10-16 15:15:41.317354160 +0000
++++ r1_v2482_work/tests/test_v2481_live_run_hotfix.py	2026-10-16 16:04:32.297897996 +0000
+@@ -6,7 +6,7 @@
+ 
+ from r1_15a2_trial_adapter_v240 import VisumAdapter as PathEpochAdapter
+ from test_supply_v22 import profile
+-from test_two_mode_v238 import authority, hierarchy, store
++from test_two_mode_v238 import authority, hierarchy, store, SEQS
+ from test_v247_path_epochs import bare_epoch_adapter
+ 
+ 
+@@ -79,3 +79,74 @@
+     assert record["reason"] == "DELETE_DEFERRED_WINDOWS_FILE_LOCK"
+     assert store_path.exists()
+     assert (tmp_path / "audit" / "PATH_EPOCH_STORE_RETENTION.json").is_file()
++
++
++def _zero_share_cfg():
++    return {
++        "expected_zones": 3,
++        "path_export_dsegs": ["NATIVE_CW"],
++        "mutable_dsegs": ["NATIVE_CW"],
++        "mutable_relation_policy": "ALL_MUTABLE_RELATIONS",
++        "dseg_path_volume_relative_tolerance": 0.01,
++        "two_mode": {"zero_share_residual_policy": {
++            "enabled": True,
++            "max_dseg_relative_volume": 0.01,
++            "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
++        }},
++    }
++
++
++def _zero_share_store(tmp_path):
++    c = store(tmp_path, profiles=[profile(model=100)])
++    c.add_parents(
++        "NATIVE_CW", "C",
++        [[1, 2, 1, 100.0], [1, 3, 1, 0.0]],
++        {"matrix_no": 9301, "matrix_total": 100.0, "matrix_diagonal": 0.0,
++         "matrix_interzonal": 100.0, "matrix_sha256": "fake", "matrix_shape": [3, 3]},
++    )
++    c.add_geometry("C", hierarchy(
++        seqs=(SEQS[0], SEQS[0]),
++        keys=((1, 2, 1), (1, 3, 1))))
++    c.prepare_incidence_evidence()
++    return c
++
++
++def test_real_v2481_existing_geometry_zero_share_residual_is_not_reenumerated_when_within_parity_contract(tmp_path):
++    """Live 1->7 analogue: geometry exists, saved DSeg share is zero, residual is tiny.
++
++    The relation remains in projection base marginals but is excluded from sparse
++    path guidance so no route share is invented.  Fresh Visum assignment remains
++    the candidate acceptance authority.
++    """
++    c = _zero_share_store(tmp_path)
++    try:
++        live = np.zeros((3, 3), dtype=float)
++        live[0, 1] = 100.0
++        live[0, 2] = 0.5
++        result, summary = c.incidence(_zero_share_cfg(), None,
++                                      live_od_matrices={"NATIVE_CW": live})
++        assert result["q_current"].tolist() == [100.0]
++        assert len(result["projection_base_variables"]) == 2
++        gap = [m for m in result["projection_base_variables"] if int(m["destination"]) == 3][0]
++        assert gap["q_current"] == pytest.approx(0.5)
++        assert gap["actuatable_relation"] == 0
++        audit = result["zero_share_residual_audit"]
++        assert audit["accepted"] is True
++        assert audit["row_count"] == 1
++        assert audit["volume"] == pytest.approx(0.5)
++        assert audit["by_dseg"]["NATIVE_CW"]["relative_volume"] == pytest.approx(0.5 / 100.5)
++        assert summary["source"] == "FROZEN_PATH_EPOCH_LIVE_OD_REWEIGHT_NO_COM_REEXPORT"
++    finally:
++        c.close()
++
++
++def test_zero_share_residual_above_existing_path_parity_contract_still_fails_closed(tmp_path):
++    c = _zero_share_store(tmp_path)
++    try:
++        live = np.zeros((3, 3), dtype=float)
++        live[0, 1] = 100.0
++        live[0, 2] = 2.0
++        with pytest.raises(Exception, match="PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION.*ZERO_SHARE_RESIDUAL_EXCEEDS_GUIDANCE_TOLERANCE"):
++            c.incidence(_zero_share_cfg(), None, live_od_matrices={"NATIVE_CW": live})
++    finally:
++        c.close()

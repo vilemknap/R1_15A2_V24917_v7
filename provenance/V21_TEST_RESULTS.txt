@@ -1,0 +1,45 @@
+R1 15A2 V2.1 AUDITED — OFFLINE TEST RESULTS
+
+Scope
+-----
+- pure numerical actual-path incidence and solver
+- P/A projection
+- domestic, ADD_SALARY and ZAHR generation materialization
+- component-level b,c design
+- incomplete-authority fail-closed behavior
+- randomized sparse stress
+- COM-style TG/TD operation stubs
+- active operation / DStratSet / formula token gates
+- CAL/VALID isolation
+- selected and nonselected component guards
+- matrix/parameter snapshot comparisons
+- direct OD-write static audit
+- package completeness
+
+Results
+-------
+pytest: 40 passed
+compileall: PASS
+module imports: PASS
+static local-import audit: PASS
+forbidden direct OD write patterns: 0
+synthetic E2E: PASS
+synthetic solver objective: 50.0 -> 45.91564878913078
+synthetic solver converged: true
+component b moved from zero: PASS
+single-application backtracking: PASS
+aggregate LONG target not reused as five component targets: PASS
+explicit synthetic LONG interface test: PASS (SYNTHETIC_TEST_ONLY)
+CAL/VALID isolation: PASS
+TG formula contract and active-operation COM stubs: PASS
+TD parameter apply/readback/persistence COM stubs: PASS
+
+Truth boundary
+--------------
+No live PTV Visum 2026 COM execution was possible in this environment.
+Production TD_COMPONENT_LONG stays fail-closed until an approved per-component
+LONG authority is attached. The bundled aggregate CL curve is guard-only.
+clean ZIP extraction compileall: PASS
+clean ZIP extraction pytest: 40 passed
+clean ZIP extraction synthetic E2E: PASS
+clean ZIP extraction master import/config: PASS

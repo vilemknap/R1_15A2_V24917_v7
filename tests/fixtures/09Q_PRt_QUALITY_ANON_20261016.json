@@ -1,0 +1,52 @@
+[
+  {
+    "dsegcode": "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CS_noT,EXOG_EE_CW,EXOG_EE_CW_noT,LNV,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CS_noT,NATIVE_CW,NATIVE_CW_noT,NV",
+    "iteration": 1,
+    "gap": 0.03598244
+  },
+  {
+    "dsegcode": "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CW,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CW",
+    "iteration": 1,
+    "gap": 0.08898485
+  },
+  {
+    "dsegcode": "EXOG_EE_CS_noT,EXOG_EE_CW_noT,NATIVE_CS_noT,NATIVE_CW_noT",
+    "iteration": 1,
+    "gap": 0.03325277
+  },
+  {
+    "dsegcode": "LNV",
+    "iteration": 1,
+    "gap": 0.00667937
+  },
+  {
+    "dsegcode": "NV",
+    "iteration": 1,
+    "gap": 0.00579314
+  },
+  {
+    "dsegcode": "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CS_noT,EXOG_EE_CW,EXOG_EE_CW_noT,LNV,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CS_noT,NATIVE_CW,NATIVE_CW_noT,NV",
+    "iteration": 2,
+    "gap": 0.00328696
+  },
+  {
+    "dsegcode": "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CW,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CW",
+    "iteration": 2,
+    "gap": 0.01332029
+  },
+  {
+    "dsegcode": "EXOG_EE_CS_noT,EXOG_EE_CW_noT,NATIVE_CS_noT,NATIVE_CW_noT",
+    "iteration": 2,
+    "gap": 0.00275311
+  },
+  {
+    "dsegcode": "LNV",
+    "iteration": 2,
+    "gap": 0.00312692
+  },
+  {
+    "dsegcode": "NV",
+    "iteration": 2,
+    "gap": 0.00125766
+  }
+]

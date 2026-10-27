@@ -1,0 +1,38 @@
+{
+  "accept_reject_equal": true,
+  "accepted_sequence_equal": true,
+  "assignment_count_not_higher": true,
+  "blocks": [
+    "GENERATION",
+    "TD_FINECDF",
+    "SUPPLY_ADDVAL1"
+  ],
+  "candidate_order_equal": true,
+  "counterfactual_replay": "PERF1_VS_PERF2_TD_SOFT_REFERENCE_PLATEAU_EXACT_PASS",
+  "defensive_copy_verified": true,
+  "diagnostic_payload_equal": true,
+  "exact_fields": [
+    "state_hash",
+    "addval_hash",
+    "fixed_link_hash",
+    "matrix_hash",
+    "dseg_hash",
+    "generation_hash",
+    "td_hash",
+    "operations_hash"
+  ],
+  "final_state_hash_equal": true,
+  "legacy_snapshot_payload_equal": true,
+  "limitations": [
+    "Live COM parity benchmark remains mandatory before production readiness"
+  ],
+  "live_visum_tested": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
+  "rollback_sequence_equal": true,
+  "schema": "R1_15A2_V24915_PERF2_LEGACY_PARITY_REPORT_V1",
+  "status": "EXACT_OFFLINE_PARITY_PASS",
+  "test_files": {
+    "counterfactual_replay": "tests/test_v24915p2_counterfactual_replay.py",
+    "snapshot_parity": "tests/test_v24915p2_snapshot_parity.py"
+  }
+}

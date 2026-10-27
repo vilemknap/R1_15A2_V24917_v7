@@ -1,0 +1,29 @@
+[
+  {
+    "case": "explicit_zero_link_parent",
+    "bug_reproduced": true,
+    "exception": "EMPTY_INTERZONAL_GEOMETRY:(15, 57, 1)"
+  },
+  {
+    "case": "generation_config_not_forwarded_to_adapter_gate",
+    "bug_reproduced": true,
+    "original_adapter_cfg_threshold": 0.005,
+    "ledger_cfg_threshold": 1e+30,
+    "source_evidence": "_evaluate_candidate calls adapter.block_gate, which reads self.cfg"
+  },
+  {
+    "case": "stop_blocks_recovery_checkpoints",
+    "bug_reproduced": true,
+    "exception": "USER_STOP_REQUESTED"
+  },
+  {
+    "case": "failed_design_is_skipped_and_can_be_convergence",
+    "source_pattern_confirmed": true,
+    "kind": "STATIC_CONTROL_FLOW_REVIEW"
+  },
+  {
+    "case": "supply_failure_is_wrapped_as_COMPLETED",
+    "source_pattern_confirmed": true,
+    "kind": "STATIC_CONTROL_FLOW_REVIEW"
+  }
+]

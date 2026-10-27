@@ -1,0 +1,185 @@
+{
+  "schema": "R1_15A2_V2483_PACKAGE_VERIFICATION_V1",
+  "status": "PASS",
+  "release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+  "root": "/mnt/data/r1_v2483_work/R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+  "manifest_sha256": "0aac241f089c66c1e8f8f68f48adb4a1f8784406ed9783391dddd7779309fb72",
+  "file_count": 433,
+  "errors": [],
+  "config_validation": {
+    "passes": true,
+    "base_contract": {
+      "passes": true,
+      "base_contract": {
+        "passes": true,
+        "minimum_confirmed_stationary_cycles": 2
+      },
+      "bulk_link_read": true,
+      "adaptive_page_size": 2048,
+      "addval_step_units": [
+        4,
+        2,
+        1
+      ],
+      "generation_step_stages": [
+        "EXPLORE",
+        "FULL_VERIFY"
+      ],
+      "progressive_td_stages": [
+        "EXPLORE",
+        "REFINE",
+        "FULL_VERIFY"
+      ],
+      "path_epoch_limits": {
+        "DEMAND": 4,
+        "SUPPLY": 8
+      },
+      "minimum_confirmed_stationary_cycles": 2
+    },
+    "persistent_path_cache": true,
+    "retained_epoch_checkpoints": 3,
+    "max_total_cache_gib": 24.0,
+    "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
+    "legacy_import": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
+    "zero_share_residual_policy": {
+      "enabled": true,
+      "max_dseg_relative_volume": 0.01,
+      "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
+      "requires_existing_geometry": true,
+      "requires_path_volume_parity_pass": true,
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+    },
+    "explicit_predecessor_read_compatibility": {
+      "enabled": true,
+      "target_release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+      "allowed_contract_differences": [
+        "config_sha256",
+        "path_implementation_files",
+        "contract_hash"
+      ],
+      "predecessors": [
+        {
+          "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+          "source_config_sha256": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "c753e82075e2b521fcd53170f9f2d36c80ba151eb2bd0b6ea07b5cba6103b525",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+          "source_config_sha256": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        }
+      ],
+      "policy": "READ_ONLY_EXACT_PREDECESSOR_STORE_WITH_ALL_NONCONSUMER_CONTRACT_FIELDS_EXACT"
+    }
+  },
+  "launcher": {
+    "release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+    "implementation_hash": "4cbd8257c7e0e18208e3fbd86982da0f3db01cf2a44e59ffd57e089cbe021266",
+    "config_sha256": "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8",
+    "zero_share_policy": {
+      "enabled": true,
+      "max_dseg_relative_volume": 0.01,
+      "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
+      "requires_existing_geometry": true,
+      "requires_path_volume_parity_pass": true,
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+    },
+    "predecessor_cache_compatibility": {
+      "enabled": true,
+      "target_release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+      "allowed_contract_differences": [
+        "config_sha256",
+        "path_implementation_files",
+        "contract_hash"
+      ],
+      "predecessors": [
+        {
+          "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+          "source_config_sha256": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "c753e82075e2b521fcd53170f9f2d36c80ba151eb2bd0b6ea07b5cba6103b525",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+          "source_config_sha256": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        }
+      ],
+      "policy": "READ_ONLY_EXACT_PREDECESSOR_STORE_WITH_ALL_NONCONSUMER_CONTRACT_FIELDS_EXACT"
+    }
+  },
+  "predecessor_compatibility_verification": {
+    "schema": "R1_15A2_V2483_PREDECESSOR_CACHE_COMPATIBILITY_VERIFICATION_V1",
+    "status": "PASS",
+    "target_release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+    "target_config_sha256": "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8",
+    "actual_v2481_contract_validation": {
+      "mode": "EXPLICIT_PREDECESSOR_READ_COMPATIBILITY",
+      "target_release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+      "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+      "source_config_sha256": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+      "target_config_sha256": "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8",
+      "allowed_path_implementation_differences": [
+        "r1_15a2_persistent_path_cache_v248.py",
+        "r1_15a2_trial_adapter_v240.py",
+        "r1_15a2_two_mode_v238.py"
+      ],
+      "policy": "READ_ONLY_STORE_EXACT_DATA_CONTRACT_NO_ROUTE_SHARE_INVENTION"
+    },
+    "predecessor_rule_checks": [
+      {
+        "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+        "config_file": "R1_15A2_CONFIG_V2_4_8_1.json",
+        "config_sha256_expected": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+        "config_sha256_actual": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+        "config_sha256_pass": true,
+        "module_hash_checks": {
+          "r1_15a2_two_mode_v238.py": true,
+          "r1_15a2_trial_adapter_v240.py": true,
+          "r1_15a2_persistent_path_cache_v248.py": true
+        },
+        "passes": true
+      },
+      {
+        "source_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+        "config_file": "R1_15A2_CONFIG_V2_4_8_2.json",
+        "config_sha256_expected": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+        "config_sha256_actual": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+        "config_sha256_pass": true,
+        "module_hash_checks": {
+          "r1_15a2_two_mode_v238.py": true,
+          "r1_15a2_trial_adapter_v240.py": true,
+          "r1_15a2_persistent_path_cache_v248.py": true
+        },
+        "passes": true
+      }
+    ],
+    "all_nonconsumer_contract_fields_must_match": true,
+    "store_integrity_and_basis_readback_remain_required": true,
+    "real_visum_tested": false
+  },
+  "compileall_pass": true,
+  "tests": {
+    "returncode": 0,
+    "stdout": "........................................................................ [ 12%]\n........................................................................ [ 24%]\n........................................................................ [ 36%]\n........................................................................ [ 48%]\n........................................................................ [ 61%]\n........................................................................ [ 73%]\n........................................................................ [ 85%]\n........................................................................ [ 97%]\n.............                                                            [100%]\n589 passed in 8.12s\n",
+    "stderr": ""
+  },
+  "real_visum_tested": false,
+  "production_ready": false,
+  "elapsed_seconds": 13.609
+}

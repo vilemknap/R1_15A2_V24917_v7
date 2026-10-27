@@ -1,0 +1,18 @@
+SAFETYFIX1 – spuštění v PTV Visum 2026
+
+1. Nechte dokončit/ukončete stávající běh. Nepřepisujte běžící Python skripty.
+2. Restartujte Visum, rozbalte celý ZIP do NOVÉ krátké složky (např. C:\R1\SF1).
+3. Otevřete ověřený přijatý .ver model; neotevírejte dočasný nepřijatý TD trial.
+4. Spusťte 01_SPUSTIT_V24917_TDJOINT1.py (65/35), nebo
+   02_SPUSTIT_V24917_TDJOINT1_60_40.py (60/40).
+5. Kontrolujte GENERATION_BLOCK_RESULT.json, TD_FINECDF_BLOCK_RESULT.json,
+   TD_REALIZATION_ATTEMPTS.json a publikovaný TD_ACTIVE_COMPONENT_MASK.json.
+   Při chybě TD joint skóre očekávejte REJECT konkrétního pokusu, ověřený
+   ROLLBACK a pokračování dalším cyklem – ne accepted=true.
+   Při COM výpadku LONG/SCHOOL očekávejte TRANSIENT_COM_EXHAUSTED nebo
+   ATTRIBUTE_READ_UNVERIFIED, ne nepravdivé ATTRIBUTES_MISSING.
+6. Pokud program skončí na neověřeném rollbacku nebo poškozené autoritě,
+   nepokračujte v témže rozpracovaném stavu. Použijte poslední ověřené .ver.
+
+Živý test ve Visumu ještě není proveden. Výpočetní váhy, GEH/IDP metodika,
+calibrační profily a operace assignment nebyly touto opravou změněny.

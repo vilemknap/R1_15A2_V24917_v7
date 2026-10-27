@@ -1,0 +1,28 @@
+{
+  "schema": "R1_15A2_V24915_PERF2C_R3_OVERLAY_MANIFEST_V1",
+  "release": "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_16_25_20261020",
+  "parent_release": "R1_15A2_V2_4_9_15_PERF2C_R2_SINGLE_PASS_EXACT_SNAPSHOT_SUPPLY_TEMP_HOTFIX_20261020",
+  "package_revision": "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_16_25",
+  "files": [
+    {
+      "path": "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_AUTHORITY.json",
+      "size": 2636,
+      "sha256": "d2d3224f3e5e5f82c079285ff0a05594453c393d647cfab7bf9c2f854496941f"
+    },
+    {
+      "path": "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_CONTRACT.json",
+      "size": 1499,
+      "sha256": "85548aa7024b10f41f4ca8e10866d849547a2a8df4746706d0366c9acaae22e2"
+    },
+    {
+      "path": "r1_15a2_demand_extension_b0018_v24915p2c3.py",
+      "size": 9588,
+      "sha256": "1896e99ef77a1baf92eed47ac33fd9f8db9ee7c0776aa8e5090b9817be399bcb"
+    },
+    {
+      "path": "R1_15A2_DEMAND_EXTENSION_B0018_CYCLES16_25_V2_4_9_15_PERF2C_R3.py",
+      "size": 6593,
+      "sha256": "adb2da6e24f76e2b63714f1879532a4e6ee69e3310d873cc1b273f8b94a2ae66"
+    }
+  ]
+}

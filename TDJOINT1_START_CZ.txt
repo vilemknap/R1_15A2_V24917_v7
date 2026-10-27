@@ -1,0 +1,28 @@
+R1 GENFIX2 + TDJOINT1 / 27.10.2026
+==================================
+1. Rozbalte CELY ZIP do nove slozky C:\R1. Vznikne R1_TDJOINT1.
+2. Ve Visumu rucne otevrete posledni overeny accepted checkpoint .ver.
+3. Scripts -> Run script file:
+   01_SPUSTIT_V24917_TDJOINT1.py          = vychozi 65 % counts / 35 % pruzkum
+   02_SPUSTIT_V24917_TDJOINT1_60_40.py    = volitelne 60 % counts / 40 % pruzkum
+   Vyberte jeden spoustec, nikdy oba soucasne v teze instanci.
+4. Zkontrolujte konzoli R1 TDJOINT1: ENABLED a TDJOINT_SUMMARY.json.
+
+GENFIX2 ochrany, native TD, survey krivky, validation=0 a tolerance jsou zachovany.
+Rozdil oproti GENFIX2: jedno spolecne vnitrni skore, male obousmerne komponentove
+sondy, otestovana kombinace nejvyse dvou smeru a nejvyse dva dalsi izolovane plne
+pokusy po odmitnuti kombinace a overenem rollbacku.
+
+R1_RUN_OPTIONS.json:
+ td_joint_enabled=false          vypne novou vrstvu (vnitrni hledani i izolace)
+ td_joint_outer_isolates=false   vypne jen dalsi plne izolovane pokusy
+ td_joint_max_isolates=0/1/2     omezi jejich pocet
+
+Nenastavujte hodnoty za behu. Neupravujte jiz bezici GENFIX1 ani neprepisujte stare
+slozky jednotlivymi soubory. .ver neni prilozen a model se nenacita automaticky.
+
+Nova vrstva ma offline testy, nikoli potvrzeny realny vykon/kompatibilitu ve Visumu.
+Prvni beh kontrolujte: kombinace -> odmitnuti -> rollback -> izolace -> akceptace.
+Je-li navrzena i intrazonalni penalizace, zustava puvodni BC+IZ cesta bez izolaci.
+Podrobnosti a presny rozsah: TDJOINT1_IMPLEMENTACE_CZ.md.
+Aktualni testy: evidence_tdjoint1. Historicke GENFIX reporty nejsou novy test.

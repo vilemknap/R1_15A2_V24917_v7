@@ -1,0 +1,69 @@
+{
+  "schema": "R1_15A2_V2486_CRITICAL_PARITY_V1",
+  "files": [
+    {
+      "path": "r1_15a2_two_mode_v238.py",
+      "unified_sha256": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+      "stable_sha256": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+      "saturation_sha256": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+      "unchanged_from_both": true
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v240.py",
+      "unified_sha256": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+      "stable_sha256": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+      "saturation_sha256": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+      "unchanged_from_both": true
+    },
+    {
+      "path": "r1_15a2_persistent_path_cache_v248.py",
+      "unified_sha256": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
+      "stable_sha256": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
+      "saturation_sha256": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
+      "unchanged_from_both": true
+    },
+    {
+      "path": "r1_15a2_runtime_v1.py",
+      "unified_sha256": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69",
+      "stable_sha256": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69",
+      "saturation_sha256": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69",
+      "unchanged_from_both": true
+    },
+    {
+      "path": "r1_15a2_supply_visum.py",
+      "unified_sha256": "714cc708a2186d48a0cbb9e53f590af5ebd386e27aa13b1766d69e3b5629ebad",
+      "stable_sha256": "714cc708a2186d48a0cbb9e53f590af5ebd386e27aa13b1766d69e3b5629ebad",
+      "saturation_sha256": "714cc708a2186d48a0cbb9e53f590af5ebd386e27aa13b1766d69e3b5629ebad",
+      "unchanged_from_both": true
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v240.py",
+      "unified_sha256": "1778084ee481aa68be5df4d846ccea09ff9187c079657d53968bca2b9ce24b2c",
+      "stable_sha256": "1778084ee481aa68be5df4d846ccea09ff9187c079657d53968bca2b9ce24b2c",
+      "saturation_sha256": "1778084ee481aa68be5df4d846ccea09ff9187c079657d53968bca2b9ce24b2c",
+      "unchanged_from_both": true
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v242.py",
+      "unified_sha256": "dd4e387052c1ef312abff82017769c1034eaa755f7bce7ae1592a912b17fb95c",
+      "stable_sha256": "dd4e387052c1ef312abff82017769c1034eaa755f7bce7ae1592a912b17fb95c",
+      "saturation_sha256": "dd4e387052c1ef312abff82017769c1034eaa755f7bce7ae1592a912b17fb95c",
+      "unchanged_from_both": true
+    },
+    {
+      "path": "r1_15a2_finecdf_bridge_v242.py",
+      "unified_sha256": "eb64589e4c03e9f46ff54ae780c5d06da38824f71b6e902dce0441b779000b13",
+      "stable_sha256": "eb64589e4c03e9f46ff54ae780c5d06da38824f71b6e902dce0441b779000b13",
+      "saturation_sha256": "eb64589e4c03e9f46ff54ae780c5d06da38824f71b6e902dce0441b779000b13",
+      "unchanged_from_both": true
+    },
+    {
+      "path": "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
+      "unified_sha256": "abeb746ff49ac1f0e548e6b7945ec476e5c5e80897e6be1da6e2d42ae442d7d5",
+      "stable_sha256": "abeb746ff49ac1f0e548e6b7945ec476e5c5e80897e6be1da6e2d42ae442d7d5",
+      "saturation_sha256": "abeb746ff49ac1f0e548e6b7945ec476e5c5e80897e6be1da6e2d42ae442d7d5",
+      "unchanged_from_both": true
+    }
+  ],
+  "all_unchanged_from_both": true
+}

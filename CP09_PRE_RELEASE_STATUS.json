@@ -1,0 +1,30 @@
+{
+  "checkpoint": "CP09_PERSISTENT_CACHE_PRE_RELEASE",
+  "checkpoint_lineage_test": "PASS_VER_POINTER_CONTAINS_PATH_EPOCH",
+  "compileall_pass": true,
+  "created_utc": "2026-10-16T14:47:30.345907+00:00",
+  "documentation_complete": true,
+  "key_sha256": {
+    "adapter": "d1b352cb162b1dd5c0e4283167979a233fbed90d4e18265fa69fb9b826d2d69f",
+    "benchmark": "538c329503bc955d65c8a1af128d5115760ddfc3ff70f06304cfaeda41fc7e39",
+    "config": "65177ee070e094b7311d00467809cb6a889740e37aa03d8b6cd291141a50109b",
+    "launcher": "e8ea7ad387cac2a3a7a9748b4ac6e2c229fe0f87b7c108e4561efe8e64c91778",
+    "persistent_manager": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045",
+    "tests": "31ee4da6d0a46f74407f599a9d4ab0c5731707f961df716440dcba7586ceae87"
+  },
+  "legacy_import_test": "PASS_EXACT_STATE_ALL_PROFILE_PARITY_NO_COM_ENUMERATION",
+  "offline_tests": {
+    "failed": 0,
+    "log": "/mnt/data/v248_full_pytest_final_prepack.log",
+    "passed": 581,
+    "skipped": 0
+  },
+  "parent_checkpoint": "CP08_PERSISTENT_CACHE_CORE",
+  "production_ready": false,
+  "real_visum_com_tested": false,
+  "release": "R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016",
+  "retention_test": "PASS_COUNT_AND_BYTE_CAP_INDEX_REWRITE",
+  "schema": "R1_15A2_V248_CP09_PRE_RELEASE_STATUS_V1",
+  "status": "PASS_PRE_RELEASE_OFFLINE_NOT_REAL_VISUM_COM",
+  "synthetic_user_benchmark": "PASS_ONE_FRESH_ENUMERATION_ZERO_RESTART_ENUMERATIONS"
+}

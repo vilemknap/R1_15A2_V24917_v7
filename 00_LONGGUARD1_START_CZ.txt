@@ -1,0 +1,11 @@
+R1_15A2 / LONGGUARD1 (2026-10-27)
+
+1. Restartujte Visum. Otevřete poslední OVĚŘENÝ přijatý checkpoint .ver.
+2. Rozbalte tento celý ZIP do nové samostatné složky.
+3. Spusťte 01_SPUSTIT_V24917_TDJOINT1.py (65/35) nebo 02_SPUSTIT_V24917_TDJOINT1_60_40.py (60/40).
+4. V prvním GENERATION/DESIGN/V24917_TARGETED_GENERATION zkontrolujte LONGGUARD1_PARENT.json.
+5. Pokud je below_100_km kladné, LONG produkce je odložena, nikoli prohlášena za opravenou. WORK/SERVICE/SCHOOL mohou pokračovat.
+6. Pokud je rodič čistý, každý akceptovaný LONG krok musí mít v ACCEPTANCE.json longguard1.passes=true.
+7. Nepoužívejte automatické znovunačítání .ver. Rollback zůstává COM-only ve stejné instanci Visumu.
+
+Důležité: pro trvalý zákaz EXISTUJÍCÍCH LONG OD <100 km bude následně nutná nativní strukturální maska TD; tento balíček nic nepřepisuje přímo do OD matic.

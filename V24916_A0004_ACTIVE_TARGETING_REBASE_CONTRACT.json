@@ -1,0 +1,78 @@
+{
+  "schema": "R1_15A2_V24916_PROFILE488_A0004_ACTIVE_TARGETING_REBASE_CONTRACT_V1",
+  "release": "R1_15A2_V24916_PERF2C_PROFILE488_A0004_CYCLE3_TD_RESUME_IOFIX1_ACTIVE_TARGETING_P2P3_PREFLIGHT_CACHEFIX1_20261022",
+  "package_revision": "V24916_PROFILE488_A0004_CYCLE3_TD_RESUME_IOFIX1_ACTIVE_TARGETING_P2P3_PREFLIGHT_CACHEFIX1",
+  "parent": "R1_15A2_V24915_PERF2C_PROFILE488_A0004_CYCLE3_TD_RESUME_IOFIX1_NO_WALLCLOCK_20261022",
+  "source_checkpoint_name": "ACCEPTED_B_0004_d26d01d6f9a5.ver",
+  "source_checkpoint_sha256": "6347623c247819a9a061adcfdd8176c0af1fd6546b866331114ee5e91049c9bc",
+  "accepted_count_start": 4,
+  "outer_cycle_start": 3,
+  "resume_substep": "TD_FINECDF_V17",
+  "resume_generation_completed": true,
+  "resume_generation_changed": true,
+  "resume_td_completed": false,
+  "td_realization_pending": true,
+  "max_lineage_outer_cycle": 100,
+  "wall_clock_limit_disabled": true,
+  "semantic_state_hash": "c853dba4c29526903c5a16c496d5863e3506a12fcf5a5b8103ba3bb98cb2d97d",
+  "profile_authority": {
+    "expected_12d_rows": 488,
+    "expected_calibration_rows": 488,
+    "expected_validation_rows": 0,
+    "csd_directional_rows": 362,
+    "city_both_rows": 126
+  },
+  "parent_profile_gate_defect_corrected_in_overlay": {
+    "parent_runtime_values": {
+      "expected_12d_rows": 498,
+      "expected_calibration_rows": 462,
+      "expected_validation_rows": 36
+    },
+    "overlay_runtime_values": {
+      "expected_12d_rows": 488,
+      "expected_calibration_rows": 488,
+      "expected_validation_rows": 0
+    },
+    "parent_files_modified": false,
+    "reason": "Parent binds PROFILE488 helper/authorities but retained legacy top-level row-count gates."
+  },
+  "path_cache": {
+    "cross_run_restore_allowed": false,
+    "fresh_recovery_path_epoch_required": true,
+    "resumed_td_policy": "Build fresh accepted-state read-only path epoch before TD targeting if no in-run cache exists."
+  },
+  "targeting": {
+    "generation_flowbundle": true,
+    "td_component_mask": true,
+    "dist_km_context": true,
+    "generation_first_use": "NEXT_GENERATION_SUBSTEP_AFTER_RESUMED_CYCLE3_TD",
+    "td_first_use": "RESUMED_CYCLE3_TD_AFTER_FRESH_PATH_EPOCH",
+    "supply_flowbundle": false,
+    "shortest_imp_oracle": false,
+    "skim_driven_acceptance": false
+  },
+  "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_PROFILE488_12D_PLUS_LIVE_11D",
+  "parent_iofix1_preserved": true,
+  "telemetry_failopen_preserved": true,
+  "offline_validation": {
+    "focused_passed": 70,
+    "full_passed": 975,
+    "full_skipped": 4,
+    "full_failed": 0,
+    "compileall_passed": true,
+    "parent_sha_audit_passed": true,
+    "runtime_manifest_passed": true,
+    "parent_preflights_passed": true
+  },
+  "real_visum_tested": false,
+  "production_ready": false,
+  "preflight_cachefix1": {
+    "fixed_failure": "PERSISTENT_PATH_CACHE_ROOT_MISSING",
+    "read_only_preflight_persistent_cache_initialization": false,
+    "reason": "RUN_* and runtime_persistent_path_cache_root do not exist until calibration launcher allocates them",
+    "step2_calibration_persistent_cache_remains_enabled": true,
+    "a0004_continuation_changed": false,
+    "targeting_changed": false,
+    "acceptance_changed": false
+  }
+}

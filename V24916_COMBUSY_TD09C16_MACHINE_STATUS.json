@@ -1,0 +1,36 @@
+{
+  "combusy_snapshot_retry": true,
+  "dynamic_assignment_skims": true,
+  "fastcal1": true,
+  "flowbundle_targeting": true,
+  "iofix4_downgrade_avoided": true,
+  "parent_release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_20261023",
+  "profile488": [
+    488,
+    488,
+    0
+  ],
+  "real_visum_tested": false,
+  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+  "schema": "R1_15A2_V24916_COMBUSY_TD09C16_MACHINE_STATUS_V1",
+  "status": "PASS_READY_FOR_LIVE_VISUM",
+  "td09c_16_or_17_compatibility": true,
+  "tests": {
+    "compileall": "PASS",
+    "focused_v24916": {
+      "failed": 0,
+      "passed": 111,
+      "skipped": 0
+    },
+    "full_partitioned": {
+      "failed": 0,
+      "partitions": 6,
+      "passed": 1033,
+      "skipped": 4
+    },
+    "runtime_manifest": {
+      "passes": true,
+      "rows": 50
+    }
+  }
+}

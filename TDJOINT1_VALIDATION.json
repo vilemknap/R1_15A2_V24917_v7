@@ -1,0 +1,108 @@
+{
+  "release": "R1_15A2_V24917_GENFIX2_TDJOINT1_20261027",
+  "status": "OFFLINE_TESTED_LIVE_VISUM_VALIDATION_PENDING",
+  "base_zip": "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027_FULL.zip",
+  "base_zip_sha256": "3b50f3f19ad0b381af9376be63ae0e06a2aba4d79a7d1b8cfc6ede670197163d",
+  "base_files": 1223,
+  "source_changes": [
+    "DIAGFAST_V1_RELEASE_MANIFEST.json",
+    "R1_RUN_OPTIONS.json",
+    "V24917_RUNTIME_MANIFEST.json",
+    "r1_15a2_demand_policy_v1.py",
+    "r1_15a2_runtime_delta_v24917.py",
+    "r1_15a2_td_count_blend_v24917.py",
+    "r1_15a2_v24917_runtime.py",
+    "tools/refresh_v24917_manifests.py"
+  ],
+  "source_additions": [
+    "01_SPUSTIT_V24917_TDJOINT1.py",
+    "02_SPUSTIT_V24917_TDJOINT1_60_40.py",
+    "r1_15a2_td_joint_runtime_v24917.py",
+    "r1_15a2_td_joint_v24917.py",
+    "tests/test_v24917_tdjoint1.py"
+  ],
+  "removed_files": [],
+  "python_files_parsed": 435,
+  "syntax_errors": 0,
+  "manifests": [
+    {
+      "file": "DIAGFAST_V1_BASE_MANIFEST.json",
+      "entries": 1059,
+      "mismatches": []
+    },
+    {
+      "file": "DIAGFAST_V1_RELEASE_MANIFEST.json",
+      "entries": 96,
+      "mismatches": []
+    },
+    {
+      "file": "V24916_PERF2C_RUNTIME_MANIFEST.json",
+      "entries": 50,
+      "mismatches": []
+    },
+    {
+      "file": "V24917_RUNTIME_MANIFEST.json",
+      "entries": 58,
+      "mismatches": []
+    }
+  ],
+  "authority_files_preserved": 24,
+  "run_option_changes": {
+    "td_joint_enabled": {
+      "before": null,
+      "after": true
+    },
+    "td_joint_max_isolates": {
+      "before": null,
+      "after": 2
+    },
+    "td_joint_outer_isolates": {
+      "before": null,
+      "after": true
+    }
+  },
+  "tests": {
+    "main": {
+      "passed": 1431,
+      "skipped": 4,
+      "failed": 0,
+      "collected": 1435,
+      "covered": 1435
+    },
+    "diagfast": {
+      "passed": 138
+    },
+    "genfix2_audit": {
+      "passed": 18
+    },
+    "new_tdjoint1_cases": 51,
+    "total_passed_without_duplicate_runs": 1587,
+    "total_skipped": 4,
+    "execution_mode": "PARTITIONED_PYTEST_PROCESSES; EXACT_NODE_COVERAGE_VERIFIED",
+    "monolithic_suite_completed": false,
+    "incomplete_attempts": "Several large or subprocess-driven runs hit tool time limits. Final counts use completed partitioned runs, not incomplete logs.",
+    "audit_collection_note": "Initial audit collection lacked tests/ on PYTHONPATH. Corrected run passed all 18; source tests unchanged."
+  },
+  "default_weights": {
+    "count": 0.65,
+    "survey": 0.35
+  },
+  "optional_launcher_weights": {
+    "count": 0.6,
+    "survey": 0.4
+  },
+  "acceptance_thresholds_modified": false,
+  "validation_profiles_added": false,
+  "native_td_reference_modified": false,
+  "direct_od_matrix_writes_added": false,
+  "live_visum_tested": false,
+  "windows_com_tested": false,
+  "scope_limits": [
+    "existing active-component shortlist retained",
+    "scalar kappa and frozen-path attribution retained",
+    "inner GEH2/FineCDF surrogate remains different from outer live GEH/11D",
+    "outer component isolation skipped when intrazonal-penalty changes pending",
+    "local minimum-radius coordinate poll is not proof of global stationarity",
+    "no persistent empirical sensitivity learner"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "R1_15A2_SEMANTIC_RESTART_AUTHORITY_V2494",
+  "origin": "ACCEPTED_CHECKPOINT_AFTER_SAVE",
+  "semantic_fields": [
+    "fixed_link_hash",
+    "dseg_hash",
+    "operations_hash",
+    "addval_hash",
+    "matrix_hash",
+    "generation_hash",
+    "td_hash"
+  ],
+  "semantic_hashes": {
+    "fixed_link_hash": "83779fb0c29bc3f0e671b2ca3831289175b951a28740f8aff428c4c5b65b3f50",
+    "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+    "operations_hash": "8b7c5a1ffd4b2c3e8f6ab5a6bd6d37bad77a1e5cd6b2f7107e58cf79b2239b00",
+    "addval_hash": "189d17f4081b2d814659a8374f18c0bcd74ae1f79cf3cdbf9c0f38dddd3a7f74",
+    "matrix_hash": "4ffd9c56d8051ee901bcbbd183bf6a6fa631e177fae42518891dce0b996dcfef",
+    "generation_hash": "fb3d5de744e9fb37bc94fa64a2075ad6278d483a97540ab1a7e6151249bc52c3",
+    "td_hash": "1ee9dce7c8fa05082531209cf1292924d332c7af562f66f0fc74a540631ed12a"
+  },
+  "semantic_state_hash": "46a0c61d45e55cc9d2a91be0c62839fee7ef9236924e59d6ebc27b62619c63d2",
+  "snapshot_state_hash_diagnostic": "110a150824ebd264f652dfbba8657853bec196ee04398fbcf8565003e3ac71b9",
+  "version_path_provenance": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24915_RUNS\\RUN_20261019_113447_211124\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0016_d1211a44ac4d.ver",
+  "raw_ver_sha256_provenance": "797d5e3d23338ded3bff8e39a60c8a648c4118d139071bcbd61085d779e8cd65",
+  "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+  "raw_ver_sha_used_for_restart_acceptance": false,
+  "cross_release_snapshot_state_hash_comparison_allowed": false
+}

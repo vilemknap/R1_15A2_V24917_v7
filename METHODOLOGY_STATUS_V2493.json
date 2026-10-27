@@ -1,0 +1,23 @@
+{
+  "production_release": false,
+  "working_copy_trial_calibration": true,
+  "generation_guidance": "SIGNED",
+  "generation_decomposition": "FAMILY_GLOBAL_PLUS_NONLINEAR_CENTERED_ZONE_LOG_EFFECT",
+  "csd_calibration_objective": "OBSERVATION_WEIGHTED_MEAN_GEH",
+  "legacy_geh2_role": "DIAGNOSTIC_AND_PREDECESSOR_COMPATIBILITY_ONLY",
+  "profile_sum_role": "DIAGNOSTIC_ONLY_PROFILE_PASSAGE_CHECKSUM",
+  "profile_sum_unique_trip_interpretation_allowed": false,
+  "individual_severity_metric": "GEH",
+  "long_acceptance_mode": "GLOBAL_LONG_COMPOSITE",
+  "long_native_matrix_count": 5,
+  "long_parameterization": "COMMON_B_OFFSET_AND_COMMON_C_MULTIPLIER",
+  "zone_identity_policy": "READ_ONCE_VERIFY_AND_CACHE_ZONE_NO_TO_COM_ROW_KEY",
+  "zone_write_policy": "SETMULTIATTVALUES_PLUS_READBACK",
+  "com_retry_scope": "TRANSIENT_RPC_CALL_REJECTED_OR_RETRY_LATER_ONLY",
+  "com_signature_fallback": "SEPARATE_FROM_TRANSIENT_RETRY",
+  "candidate_acceptance_role": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+  "td_survey_role": "SOFT_DIRECTIONAL_REFERENCE_NOT_EXACT_FIT",
+  "native_ipf_tolerance_relaxed": false,
+  "real_visum_tested": false,
+  "production_ready": false
+}

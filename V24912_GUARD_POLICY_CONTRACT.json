@@ -1,0 +1,56 @@
+{
+  "schema": "R1_15A2_V24912_GUARD_POLICY_CONTRACT_V1",
+  "release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+  "parent_release": "R1_15A2_V2_4_9_6_EARLY_EXPLORATION_PARETO_ACCEPTANCE_20261018",
+  "policy_level": "BASELINE_RELATIVE_BUDGET_V24912",
+  "policy_scope": "COUPLED_DEMAND_OUTER_CYCLES_1_TO_12",
+  "principle": "ACCEPT_PARETO_PROGRESS_RELATIVE_TO_CURRENT_ACCEPTED_BASELINE_NOT_ABSOLUTE_FINAL_QUALITY",
+  "hard_invariants": [
+    "OBSERVATION_SET_ROLE_AND_OBSERVED_VALUES_UNCHANGED",
+    "FROZEN_MODEL_CONTEXT_AND_SEMANTIC_STATE_IDENTITY",
+    "NATIVE_IPF_TOLERANCE_NEVER_RELAXED",
+    "FRESH_TG_TD_ASSIGNMENT_AND_12D_11D_ACCEPTANCE_AUTHORITY",
+    "TD_PARAMETER_FREEZE_AND_READBACK",
+    "GENERATION_COEFFICIENT_ENVELOPES_AND_PA_CONSISTENCY",
+    "ROLLBACK_AND_FINAL_STATE_VERIFICATION",
+    "PROTECTED_PROFILE_BEFORE_GEH_LT5_TO_AFTER_GEH_GE20",
+    "SINGLE_PROFILE_GEH_INCREASE_GT15",
+    "AFTER_GEH_GT60_WITH_PROFILE_GEH_INCREASE_GT10"
+  ],
+  "threshold_roles": {
+    "GEH20": "CONTINUOUS_SEVERITY",
+    "GEH30": "CONTINUOUS_SEVERITY",
+    "GEH35": "WARNING",
+    "GEH40": "NET_COUNT_BUDGET",
+    "GEH60": "DIAGNOSTIC_THRESHOLD_PLUS_DELTA_GUARD"
+  },
+  "generation": {
+    "max_severity20_relative_degradation": 0.08,
+    "max_severity30_relative_degradation": 0.1,
+    "max_geh40_net_count_increase": 5,
+    "positive_weighted_geh_improvement_floor": 0.0,
+    "max_nonmonotonic_cal_degradation_for_severity_tradeoff": 0.02
+  },
+  "td": {
+    "min_selected_relative_improvement": 0.0025,
+    "max_cal_relative_degradation": 0.05,
+    "min_benefit_cost_ratio": 1.5,
+    "max_selected_component_relative_degradation": 0.2,
+    "max_nonselected_component_relative_degradation": 0.2,
+    "max_severity20_relative_degradation": 0.25,
+    "max_severity30_relative_degradation": 0.3,
+    "max_geh40_net_count_increase": 15
+  },
+  "severity": {
+    "max_single_profile_geh_increase": 15.0,
+    "high_geh_threshold": 60.0,
+    "max_high_geh_increase": 10.0,
+    "protected_before_geh": 5.0,
+    "protected_after_hard_geh": 20.0,
+    "max_protected_catastrophic": 0,
+    "severity_score_power": 2.0
+  },
+  "late_cycle_policy": "NO_AUTOMATIC_TIGHTENING_WITHIN_12_COUPLED_DEMAND_CYCLES",
+  "real_visum_tested": false,
+  "production_ready": false
+}

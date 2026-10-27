@@ -1,0 +1,72 @@
+{
+  "effective": {
+    "early_exploration_through_outer_cycle": 12,
+    "early_td_min_selected_relative_improvement": 0.0025,
+    "native_ipf_tolerance_policy": "UNCHANGED_NEVER_RELAXED_BY_CALIBRATOR",
+    "post_exploration_cal_min_relative_improvement": 1e-05,
+    "td_realization_backtracking_scales": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625,
+      0.03125,
+      0.015625
+    ],
+    "td_selected_min_relative_improvement": 0.0005,
+    "tg_backtracking_scales": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625,
+      0.03125
+    ],
+    "tg_max_trials": 6,
+    "tg_stage_common_log_caps": [
+      0.1,
+      0.06,
+      0.03
+    ],
+    "tg_stage_max_add_log_caps": [
+      0.1,
+      0.06,
+      0.03
+    ],
+    "tg_stage_zone_od_caps": [
+      0.2,
+      0.14,
+      0.08
+    ]
+  },
+  "policy_audit": {
+    "assignment_method_changed": false,
+    "calibration_formulas_changed": false,
+    "dynamic_skim_method_changed": false,
+    "early_exploration_policy_changed": false,
+    "fastcal_policy_hash": "13bd2472e4c7c705b76aa2cd22ac238fc031bc744158d5dab33514766d834a1b",
+    "hard_coefficient_envelopes_changed": false,
+    "native_ipf_tolerance_changed": false,
+    "package_revision": "V24916_DYNAMICSKIM1_FASTCAL1_20261022",
+    "parent_active_overlay_validated": true,
+    "parent_files_modified_on_disk": false,
+    "passes": true,
+    "post_exploration_geh_materiality_changed": true,
+    "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_20261022",
+    "safety_contract_hash": "6e2989e18e039326b9c09c2c82277788cbc71876426351132935d6546474b2d8",
+    "schema": "R1_15A2_V24916_FASTCAL1_CONFIG_DELTA_AUDIT_V1",
+    "td_realization_backtracking_changed": true,
+    "td_selected_objective_materiality_changed": true,
+    "tg_search_envelope_changed": true,
+    "tg_trial_count_changed": true
+  },
+  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_20261022",
+  "schema": "R1_15A2_V24916_FASTCAL1_MACHINE_STATUS_V1",
+  "status": "OFFLINE_PASS_READY_FOR_LIVE_VISUM_FASTCAL1_CANARY",
+  "verification": {
+    "compileall": "PASS",
+    "focused_fastcal_and_dynamic_tests": "29 passed, 0 failed",
+    "full_pytest": "1011 passed, 4 skipped, 0 failed",
+    "runtime_manifest": "47/47 PASS"
+  }
+}

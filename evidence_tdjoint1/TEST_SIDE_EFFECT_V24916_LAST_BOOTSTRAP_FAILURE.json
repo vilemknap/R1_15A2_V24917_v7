@@ -1,0 +1,15 @@
+{
+  "schema": "R1_15A2_V24916_FRESH0_ISOLATED_BOOTSTRAP_V2",
+  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+  "bootstrapfix_revision": "BOOTSTRAPFIX2_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+  "status": "FAILED",
+  "stage": "LIVE_READ_ONLY_PREFLIGHT",
+  "source_version": "/tmp/pytest-of-root/pytest-57/test_oneclick_failure_is_recor0/BASELINE.ver",
+  "isolated_workspace": "/tmp/pytest-of-root/pytest-57/test_oneclick_failure_is_recor0/R1_15A2_V16_RUNS",
+  "expected_runs_root_name": "R1_15A2_V16_RUNS",
+  "package_root": "/mnt/data/tdjoint1/work/R1_TDJOINT1",
+  "exception_type": "RuntimeError",
+  "exception": "PREFLIGHT_FAIL",
+  "traceback": "Traceback (most recent call last):\n  File \"/mnt/data/tdjoint1/work/R1_TDJOINT1/00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py\", line 435, in main\n    authority, manifest = _run_live_preflight(visum, workspace)\n                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"/mnt/data/tdjoint1/work/R1_TDJOINT1/tests/test_v24916_fresh0_isolated.py\", line 205, in <lambda>\n    monkeypatch.setattr(launcher, \"_run_live_preflight\", lambda *a, **k: (_ for _ in ()).throw(RuntimeError(\"PREFLIGHT_FAIL\")))\n                                                                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/data/tdjoint1/work/R1_TDJOINT1/tests/test_v24916_fresh0_isolated.py\", line 205, in <genexpr>\n    monkeypatch.setattr(launcher, \"_run_live_preflight\", lambda *a, **k: (_ for _ in ()).throw(RuntimeError(\"PREFLIGHT_FAIL\")))\nRuntimeError: PREFLIGHT_FAIL\n",
+  "updated_at": "2026-10-27T02:44:29.055767+00:00"
+}

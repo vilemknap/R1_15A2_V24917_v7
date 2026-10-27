@@ -1,0 +1,119 @@
+{
+  "release": "R1_15A2_V24917_MOBILITY1_GENFIX1_20261027",
+  "test_environment": "Offline Linux / Python 3.12; COM mocked in relevant regression tests",
+  "suites": [
+    {
+      "suite": "tests",
+      "passed": 1335,
+      "skipped": 4,
+      "failures": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "process_seconds": 35.03,
+      "skip_details": [
+        {
+          "test": "tests.test_v24912_complete_runtime_bundle.test_v24912_complete_runtime_preflight_passes",
+          "reason": "V24913 intentionally supersedes shared runtime files and owns its own exact manifest"
+        },
+        {
+          "test": "tests.test_v24912_complete_runtime_bundle.test_v24912_runtime_manifest_is_exact",
+          "reason": "V24913 intentionally supersedes shared runtime files and owns its own exact manifest"
+        },
+        {
+          "test": "tests.test_v24912_guard_policy_rebase.test_v24912_safety_validator_accepts_runtime_config_and_pins_parent",
+          "reason": "V24912 runtime manifest is intentionally superseded by V24913 shared-core changes"
+        },
+        {
+          "test": "tests.test_v24914_demand_continuation.test_v24914_config_runtime_bundle_and_v24913_supply_policy_are_hash_locked",
+          "reason": "V24915 intentionally supersedes shared runtime files and owns its own exact manifest"
+        }
+      ],
+      "junit": "pytest_final_tests.xml",
+      "console": "pytest_final_tests.txt"
+    },
+    {
+      "suite": "diagfast_tests",
+      "passed": 138,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "process_seconds": 28.009,
+      "skip_details": [],
+      "junit": "pytest_final_diagfast_tests.xml",
+      "console": "pytest_final_diagfast_tests.txt"
+    }
+  ],
+  "totals": {
+    "passed": 1473,
+    "skipped": 4,
+    "failures": 0,
+    "errors": 0
+  },
+  "new_genfix1_tests": {
+    "total": 93,
+    "by_module": {
+      "tests.test_v24917_generation_state_genfix1": 17,
+      "tests.test_v24917_generation_transaction_genfix1": 19,
+      "tests.test_v24917_genfix1_adapter": 6,
+      "tests.test_v24917_snapshot_reads_genfix1": 51
+    }
+  },
+  "compile": {
+    "checked_python_files": 425,
+    "errors": [],
+    "passes": true
+  },
+  "package_integrity": {
+    "manifests": [
+      {
+        "manifest": "DIAGFAST_V1_BASE_MANIFEST.json",
+        "files": 1059,
+        "passes": true,
+        "mismatches": []
+      },
+      {
+        "manifest": "DIAGFAST_V1_RELEASE_MANIFEST.json",
+        "files": 86,
+        "passes": true,
+        "mismatches": []
+      },
+      {
+        "manifest": "V24916_PERF2C_RUNTIME_MANIFEST.json",
+        "files": 50,
+        "passes": true,
+        "mismatches": []
+      },
+      {
+        "manifest": "V24917_RUNTIME_MANIFEST.json",
+        "files": 52,
+        "passes": true,
+        "mismatches": []
+      }
+    ],
+    "original_files_unchanged": 1146,
+    "original_files_missing": [],
+    "original_files_modified": [
+      "DIAGFAST_V1_RELEASE_MANIFEST.json",
+      "V24917_RUNTIME_MANIFEST.json",
+      "r1_15a2_runtime_delta_v24917.py",
+      "r1_15a2_step_search_v24917.py",
+      "r1_15a2_trial_adapter_v24917.py",
+      "r1_15a2_v24917_runtime.py",
+      "tools/refresh_v24917_manifests.py"
+    ],
+    "unexpected_original_changes": [],
+    "passes": true
+  },
+  "failing_source_match": {
+    "matching_files": 219,
+    "passes": true
+  },
+  "live_visum_validation": {
+    "performed": false,
+    "reason": "PTV Visum and the checkpoint .ver are not available in this environment"
+  },
+  "historical_trigger_confirmed": false,
+  "historical_trigger_limit": "Before/after snapshots and domain diff were not recorded in supplied logs",
+  "passes_offline": true
+}

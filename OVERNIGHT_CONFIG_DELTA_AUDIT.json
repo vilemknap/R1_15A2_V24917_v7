@@ -1,0 +1,22 @@
+{
+  "status": "OFFLINE_CANDIDATE",
+  "origin": "R1_15A2_V2_3_8_TWO_MODE_DESIGN_ONLY_20261016.zip",
+  "purpose": "OVERNIGHT_UNATTENDED_DESIGN_ONLY_10H",
+  "runtime_budget_seconds": 36000,
+  "runtime_budget_hours": 10,
+  "configured_delta": [
+    {
+      "json_path": "/two_mode/max_runtime_seconds",
+      "before": 1800.0,
+      "after": 36000.0
+    }
+  ],
+  "original_config_sha256": "b5573fbd281583c9a3f9c2bcb2180d076d13a759d0d84ea56ad36d0205d6bb20",
+  "overnight_config_sha256": "916957a0677f26a2f1e05812edb4a6225ae8ddb2448a2abd256b0de6c15ad5ac",
+  "protected_unchanged_files": 30,
+  "no_python_source_changes": true,
+  "no_live_visum_test": true,
+  "apply_permitted": false,
+  "assignment_executed": false,
+  "limit_is_cooperative": true
+}

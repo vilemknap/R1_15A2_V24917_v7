@@ -1,0 +1,11 @@
+LIVE FAILURE 2026-10-22
+- failure before cycle 1: SAVEVERSION_REFUSES_EXISTING_FILE: ...\\WORKING_START.ver
+- first SaveVersion had already created WORKING_START.ver
+- PROFILE488 bind then incorrectly attempted a second SaveVersion to the same path
+
+SAVEFIX1
+- first checkpoint remains WORKING_START.ver
+- after binding all 488 calibration profiles, second checkpoint is WORKING_PROFILE488_START.ver
+- runtime overwrite protection remains unchanged
+- PROFILE488 authority, FRESHCACHE, 100x TG/TD, no ADDVAL, no global wall-clock limit are unchanged
+- full regression: 905 passed, 4 skipped

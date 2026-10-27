@@ -1,0 +1,64 @@
+{
+  "schema": "R1_LONGGUARD1_VALIDATION_V1",
+  "date_utc": "2026-10-27",
+  "source_baseline": "R1_15A2_V24917_SAFETYFIX2_TDROLLBACKFIX1_20261027_FULL.zip",
+  "production_modified": [
+    "r1_15a2_trial_adapter_v24917.py",
+    "r1_15a2_long_school_generation_v24917.py"
+  ],
+  "production_added": [
+    "r1_15a2_long_distance_guard_v24917.py"
+  ],
+  "test_modified": [
+    "tests/test_v24917_targeted_catchup.py"
+  ],
+  "test_added": [
+    "tests/test_v24917_longguard1.py"
+  ],
+  "protection": {
+    "minimum_trip_distance_km": 100,
+    "distance_basis": "FRESH_DYNAMIC_VISUM_NATIVE_CL_DIS_KM",
+    "long_matrix_nos": [
+      9111,
+      9112,
+      9113,
+      9114,
+      9115
+    ],
+    "km_over_200_permitted": true,
+    "short_mass_absolute_tolerance": 1e-06,
+    "max_single_LONG_step_up": 0.1,
+    "max_single_LONG_step_down": 0.1,
+    "finecdf_100_to_200_shape_max_relative_degradation": 0.05,
+    "finecdf_100_to_200_shape_absolute_slack": 0.002,
+    "invalid_parent_long_step": "DEFER_AND_CONTINUE_OTHER_GENERATION_FAMILIES",
+    "rollback": "IN_MEMORY_COM_NATIVE_RECOMPUTE_NO_LOADVERSION",
+    "native_structural_mask_introduced": false
+  },
+  "test_results": {
+    "main_isolated_group_passes": [
+      330,
+      311,
+      207,
+      335,
+      351
+    ],
+    "main_passed": 1534,
+    "main_skipped": 4,
+    "main_failed": 0,
+    "diagfast_passed": 138,
+    "diagfast_failed": 0,
+    "genfix2_audit_passed": 18,
+    "genfix2_audit_failed": 0,
+    "unique_passed": 1690,
+    "unique_failed": 0,
+    "targeted_retest_passed": 70,
+    "full_combined_attempt": "INCOMPLETE_TIMED_OUT_AT_79_PERCENT_NOT_COUNTED_AS_PASS",
+    "live_visum_tested": false
+  },
+  "known_limitations": [
+    "The acceptance guard does not repair baseline LONG OD <100 km without a native TD structural support mask.",
+    "LONG_COMPOSITE remains frozen in targeted TD; TDLONG1 is separate future work.",
+    "Numerical 512-node FineCDF covers only 100..200 km, while trips >200 km remain valid."
+  ]
+}

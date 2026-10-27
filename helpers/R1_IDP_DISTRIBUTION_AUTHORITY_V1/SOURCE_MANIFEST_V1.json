@@ -1,0 +1,234 @@
+{
+  "authority_package": "R1_IDP_DISTRIBUTION_AUTHORITY_V1",
+  "completion_status": "PASS_EXTRACTED_AUTHORITY_LONG_MIXTURE_DEFERRED",
+  "component_counts": {
+    "long_components": 5,
+    "summary_components": 17,
+    "target_components": 11
+  },
+  "config_version": "1.4.0",
+  "contract": {
+    "backend_distribution_metric": "DIST_KM",
+    "foreign_policy": "NO_DOMESTIC_IDP_TARGET",
+    "long_policy": "100-200 km purpose basis; mixture pending one-time baseline simplex fit; Hybnost not used as LONG weight",
+    "short_distance_components_finalized_per_metric": 11,
+    "time_metric_role": "DIAGNOSTIC_ONLY"
+  },
+  "exported_at": "2026-10-06T16:11:54.645Z",
+  "extractor": "IDP_AMDY_17_STRATA_EXTRACTOR",
+  "prepared_for": "R1 VISUM STEP 11d v1.3 component distribution baseline",
+  "qa": {
+    "distance_finalized_target_count": 11,
+    "distance_long_basis_curve_count": 30,
+    "foreign_target": "NO_DOMESTIC_IDP_TARGET",
+    "hybnost_semantics": "GLOBAL_NOT_DISTANCE_FILTERED",
+    "long_components_pending_per_metric": 5,
+    "long_sparse_cross": {
+      "distance_density": {
+        "actual_count": 30,
+        "expected_count": 40,
+        "missing": [
+          "E_C/škola",
+          "E_noC/škola",
+          "E_noC/sprievod",
+          "E_noC/súkromné vybavovanie",
+          "noE_C/práca",
+          "noE_C/škola",
+          "noE_C/služobne",
+          "noE_noC/práca",
+          "noE_noC/škola",
+          "noE_noC/sprievod"
+        ],
+        "mode": "sparse-long",
+        "per_socio_available_purposes": {
+          "E_C": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "E_noC": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "služobne",
+            "voľný čas"
+          ],
+          "noE_C": [
+            "bydlisko",
+            "nákupy/služby",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "noE_noC": [
+            "bydlisko",
+            "nákupy/služby",
+            "služobne",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "stud": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "škola",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ]
+        },
+        "unexpected": []
+      },
+      "mobility": {
+        "actual_count": 40,
+        "expected_count": 40,
+        "missing": [],
+        "mode": "sparse-long",
+        "per_socio_available_purposes": {
+          "E_C": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "škola",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "E_noC": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "škola",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "noE_C": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "škola",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "noE_noC": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "škola",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "stud": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "škola",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ]
+        },
+        "unexpected": []
+      },
+      "time_density": {
+        "actual_count": 34,
+        "expected_count": 40,
+        "missing": [
+          "E_C/škola",
+          "E_noC/škola",
+          "E_noC/sprievod",
+          "noE_C/práca",
+          "noE_C/škola",
+          "noE_noC/škola"
+        ],
+        "mode": "sparse-long",
+        "per_socio_available_purposes": {
+          "E_C": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "E_noC": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "služobne",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "noE_C": [
+            "bydlisko",
+            "nákupy/služby",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "noE_noC": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ],
+          "stud": [
+            "bydlisko",
+            "nákupy/služby",
+            "práca",
+            "škola",
+            "služobne",
+            "sprievod",
+            "súkromné vybavovanie",
+            "voľný čas"
+          ]
+        },
+        "unexpected": []
+      }
+    },
+    "long_weight_authority": "BASELINE_SIMPLEX_MIXTURE_REQUIRED",
+    "mobility_interval_vectors_identical": true,
+    "time_finalized_target_count": 11,
+    "time_long_basis_curve_count": 34
+  },
+  "row_counts": {
+    "dist_target_curves": 5632,
+    "long_basis_all": 32768,
+    "long_dist_basis": 15360,
+    "long_time_basis": 17408,
+    "target_curves_all": 11264,
+    "target_summary": 34,
+    "time_diag_curves": 5632,
+    "weights": 80
+  },
+  "script_marketing_version": "V5",
+  "source": "https://idp.gov.sk/",
+  "source_files": {
+    "extract_json": "IDP_AMDY_17_STRATA_EXTRACT_20261006_181154.json",
+    "extractor_script": "Vložený text(7).txt",
+    "long_basis": "IDP_AMDY_17_STRATA_LONG_BASIS_20261006_181154.csv",
+    "raw_curves": "IDP_AMDY_17_STRATA_RAW_CURVES_20261006_181154.csv",
+    "target_curves": "IDP_AMDY_17_STRATA_TARGET_CURVES_20261006_181154.csv",
+    "target_summary": "IDP_AMDY_17_STRATA_TARGET_SUMMARY_20261006_181154.csv",
+    "weights": "IDP_AMDY_17_STRATA_WEIGHTS_20261006_181154.csv"
+  },
+  "status": "PASS"
+}

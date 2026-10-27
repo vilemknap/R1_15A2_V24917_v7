@@ -1,0 +1,17 @@
+{
+  "status": "PASS_OFFLINE_V23",
+  "date": "2026-10-15",
+  "live_visum_tested": false,
+  "production_ready": false,
+  "new_solver": "TRUE_CONTIGUOUS_ACTUAL_SAVED_PATH_BRANCHES",
+  "cal_validation_isolation": true,
+  "all_saved_path_impact_sqlite": true,
+  "original_parent_zip_sha256": "63b581520c0e590415c80bbbed026dba32f708719fc5022627c359eae1a522dd",
+  "parent_tests_plus_new_tests": "141 passed",
+  "no_forbidden_direct_od_or_custom_route": true,
+  "apply_default": false,
+  "assignment_operations_unconfigured": true,
+  "gap_readback_unconfigured": true,
+  "long_component_target_production_authority": false,
+  "truth_boundary": "No live Visum 2026 COM or production assignment was executed."
+}

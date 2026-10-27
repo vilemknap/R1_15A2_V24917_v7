@@ -1,0 +1,20 @@
+{
+  "schema": "R1_15A2_V2494_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_9_4_PATH_EXPORT_RETRY_SEMANTIC_RESTART_20261018",
+  "status": "PASS_SOURCE_AND_OFFLINE_REGRESSION_REAL_VISUM_ACCEPTANCE_PENDING",
+  "focused_tests": "119 passed",
+  "full_pytest": "708 passed",
+  "compileall_pass": true,
+  "same_range_transient_path_export_retry": true,
+  "transient_error_never_page_size_fallback": true,
+  "page_size_fallback_nontransient_only": true,
+  "semantic_restart_authority_enabled": true,
+  "raw_ver_sha_cross_run_gate_disabled": true,
+  "checkpoint_semantic_sidecar_enabled": true,
+  "weighted_mean_geh_retained": true,
+  "global_long_composite_retained": true,
+  "signed_generation_retained": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "next_gate": "BOUNDED_REAL_VISUM_V2494_FROM_USER_SELECTED_B0000"
+}

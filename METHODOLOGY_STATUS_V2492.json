@@ -1,0 +1,17 @@
+{
+  "production_release": false,
+  "working_copy_trial_calibration": true,
+  "generation_guidance": "SIGNED",
+  "generation_decomposition": "FAMILY_GLOBAL_PLUS_NONLINEAR_CENTERED_ZONE_LOG_EFFECT",
+  "domestic_coefficient_hard_envelope": [0.5, 2.0],
+  "domestic_coefficient_soft_band": [0.8, 1.25],
+  "zahr_reference_multiplier_hard_envelope": [0.5, 2.0],
+  "zahr_reference_multiplier_soft_band": [0.7, 1.3],
+  "generation_total_policy": "COMMON_CONSERVATIVE_FAMILY_TOTAL",
+  "opposite_sign_policy": "ZERO_GLOBAL_KEEP_CENTERED_PATTERN",
+  "late_cycle_policy": "DISTRIBUTION_FOCUS_SMALL_SIGNED_ZONE_CORRECTIONS",
+  "td_survey_role": "SOFT_DIRECTIONAL_REFERENCE_NOT_EXACT_FIT",
+  "candidate_acceptance_role": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+  "real_visum_tested": false,
+  "production_ready": false
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "R1_15A2_V245_CP03_LIVE_FAILURE_DIAGNOSIS_V1",
+  "observed_run_status": "FAILED",
+  "phase": "DEMAND_CYCLE_01_GENERATION_TRIAL_01_DIAGNOSTICS_AND_ROLLBACK_DIAGNOSTICS",
+  "accepted_count": 0,
+  "reported_error": "V240_ROLLBACK_FAILED_MANUAL_REOPEN_LATEST_ACCEPTED:GENERATION",
+  "root_cause": "WINDOWS_PATH_LENGTH_OVERFLOW_IN_12D_HELPER_OUTPUT",
+  "failing_file": "01_DETAIL_498_FORENSIC.csv",
+  "observed_failing_path_length_characters": 261,
+  "legacy_max_path_reference": 260,
+  "model_state_after_failure": "LIVE_MATCHES_LAST_ACCEPTED_TRUE",
+  "source_file_unchanged": true,
+  "cp03_fixes": [
+    "SHORT_RUN_ROOT_R1_15A2_V245_RUNS",
+    "SHORT_OS_TEMP_12D_11D_HELPER_EXECUTION",
+    "COMPACT_DURABLE_HELPER_MIRRORS_PLUS_FULL_ZIP_EVIDENCE",
+    "STAGE_LOG_PARENT_SAFE_WRITER",
+    "ROLLBACK_STATE_PROOF_BEFORE_DIAGNOSTIC_IO",
+    "ACCURATE_STATE_RESTORED_DIAGNOSTIC_FAILURE_CLASSIFICATION"
+  ],
+  "offline_test_result": "535_PASSED_0_FAILED",
+  "real_visum_rerun_after_fix": false
+}

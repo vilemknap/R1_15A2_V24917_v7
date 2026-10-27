@@ -1,0 +1,1120 @@
+--- ../base/00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py	2026-10-22 23:41:28.000000000 +0000
++++ 00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py	2026-10-23 20:07:55.176342142 +0000
+@@ -10,7 +10,9 @@
+   run's path basis; no V248 persistent store is consumed or published,
+ - project lock and run tree use short V24916-specific names so a separate
+   Visum process running V24915 does not collide with this release;
+-- IOFIX3/PATHFIX3 uses short opaque temp names and extended-length Windows I/O.
++- IOFIX3/PATHFIX3 uses short opaque temp names and extended-length Windows I/O;
++- transient COM-busy snapshot reads use bounded retry;
++- the active native TD operation may contain approved 16 or historical 17 strata.
+ """
+ from __future__ import annotations
+ 
+@@ -46,6 +48,8 @@
+ import r1_15a2_overnight_controller_coupled_v24915p2_force100 as force100
+ import r1_15a2_perf_telemetry_failopen_hotfix_profile488 as telemetry_failopen
+ import r1_15a2_runtime_io_hotfix_profile488 as runtime_io_hotfix
++import r1_15a2_com_busy_snapshot_hotfix_v24916 as combusy_hotfix
++import r1_15a2_td09c_16or17_hotfix_v24916 as td09c_hotfix
+ from r1_15a2_active_controller_patch_v24916p2c import install as install_controller_patch
+ from r1_15a2_fresh_baseline_live_preflight_v24916p2c import build_live_authority
+ from r1_15a2_runtime_manifest_v24916p2c import verify_runtime_manifest
+@@ -62,11 +66,12 @@
+ )
+ 
+ BOOTSTRAP_SCHEMA = "R1_15A2_V24916_FRESH0_ISOLATED_BOOTSTRAP_V2"
+-BOOTSTRAPFIX_REVISION = "BOOTSTRAPFIX2_FASTCAL1_PROFILE488FIX1_20261023"
++BOOTSTRAPFIX_REVISION = "BOOTSTRAPFIX2_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023"
+ BOOTSTRAP_FILE = "LATEST_BOOTSTRAP.json"
+ BOOTSTRAP_FAILURE_FILE = "BOOTSTRAP_FAILED.json"
+ PACKAGE_LOCATOR_FILE = "V24916_LAST_RUNS_LOCATION.txt"
+ PACKAGE_FAILURE_FILE = "V24916_LAST_BOOTSTRAP_FAILURE.json"
++_ACTIVE_HOTFIX_STATUS = {}
+ 
+ 
+ 
+@@ -217,7 +222,9 @@
+     return row
+ 
+ 
+-def _run_live_preflight(visum, workspace: Path):
++def _run_live_preflight(visum, workspace: Path, combusy_status=None, td09c_status=None):
++    combusy_status = combusy_status or _ACTIVE_HOTFIX_STATUS.get("combusy")
++    td09c_status = td09c_status or _ACTIVE_HOTFIX_STATUS.get("td09c")
+     deployment = dict(parent.preflight_v24915p2_deployment_files(HERE))
+     deployment["perf2c_overlay"] = dict(parent.preflight_v24915p2c_overlay(HERE))
+     deployment["fresh100_profile488_savefix1_parent"] = True
+@@ -232,6 +239,8 @@
+     if not manifest.get("passes"):
+         raise RuntimeError("V24916_FRESH0_ISOLATED_RUNTIME_MANIFEST_FAIL")
+ 
++    td09c_source_preflight = td09c_hotfix.read_only_source_preflight(visum)
++
+     # build_live_authority internally disables persistent path cache for this
+     # read-only preflight, so no cache root is needed or touched here.
+     report = build_live_authority(visum, base_cfg, HERE)
+@@ -250,6 +259,12 @@
+         "structural_preflight_required": True,
+     }
+     report["release"] = RELEASE
++    report["integrated_hotfixes"] = {
++        "com_busy_snapshot_retry": combusy_status or combusy_hotfix.policy_payload(),
++        "td09c_runtime_patch": td09c_status or td09c_hotfix.policy_payload(),
++        "td09c_source_preflight": td09c_source_preflight,
++        "iofix4_import_decision": "CURRENT_V24916_IOFIX3_PATHFIX3_IS_STRICT_SUPERSET_NO_DOWNGRADE",
++    }
+     report["activation_stage"] = "FRESH0_ISOLATED_ACTIVE_GENERATION_AND_TD_TARGETING"
+     report["parallel_isolation"] = {
+         "workspace": str(workspace),
+@@ -269,6 +284,9 @@
+         "parent_fresh100_runtime_passes": bool(parent_runtime.get("passes", True)),
+         "v24916_runtime_manifest_passes": True,
+         "active_config_delta": delta,
++        "com_busy_snapshot_retry_active": bool((combusy_status or {}).get("active", True)),
++        "td09c_16_or_17_compat_active": bool((td09c_status or {}).get("active", True)),
++        "td09c_source_preflight_passes": td09c_source_preflight.get("status") == "PASS",
+     }
+     report.pop("authority_hash", None)
+     report["authority_hash"] = _hash(report)
+@@ -328,6 +346,8 @@
+     telemetry_status = telemetry_failopen.activate()
+     io_status = runtime_io_hotfix.activate()
+     profile488_gate_status = activate_runtime_gate_overlay()
++    combusy_status = combusy_hotfix.activate()
++    td09c_status = td09c_hotfix.activate()
+ 
+     parent.VisumAdapter = ActiveVisumAdapter
+     parent.load_config = active_load_config
+@@ -344,6 +364,8 @@
+         "telemetry_hotfix": telemetry_status,
+         "critical_io_hotfix": io_status,
+         "profile488_gatefix1": profile488_gate_status,
++        "com_busy_snapshot_retry": combusy_status,
++        "td09c_16_or_17_compat": td09c_status,
+         "parent_project_layout_replaced": base_project_layout is not parent._stable_project_layout,
+         "parent_cache_root_resolver_replaced": base_cache_root is not parent._fresh_run_cache_root,
+     }
+@@ -401,6 +423,14 @@
+         stage = "ACTIVATE_TELEMETRY_FAILOPEN"
+         early_telemetry_status = telemetry_failopen.activate()
+ 
++        stage = "ACTIVATE_COMBUSY_SNAPSHOT_RETRY"
++        combusy_status = combusy_hotfix.activate()
++
++        stage = "ACTIVATE_TD09C_16OR17_COMPAT"
++        td09c_status = td09c_hotfix.activate()
++        _ACTIVE_HOTFIX_STATUS.clear()
++        _ACTIVE_HOTFIX_STATUS.update({"combusy": combusy_status, "td09c": td09c_status})
++
+         stage = "LIVE_READ_ONLY_PREFLIGHT"
+         authority, manifest = _run_live_preflight(visum, workspace)
+         _write_bootstrap(
+@@ -415,7 +445,12 @@
+             authority_hash=authority.get("authority_hash"),
+             accepted_count_start=0,
+             outer_cycle_start=1,
+-            active_actuators=["GENERATION_FLOWBUNDLE_TARGETING", "TD_COMPONENT_MASK"],
++            active_actuators=[
++                "GENERATION_FLOWBUNDLE_TARGETING",
++                "TD_COMPONENT_MASK",
++                "COMBUSY_SNAPSHOT_READ_RETRY",
++                "TD09C_16_OR_17_NATIVE_SCOPE_COMPAT",
++            ],
+             external_cache_read_allowed=False,
+             persistent_path_cache_enabled=False,
+             persistent_path_cache_reads_allowed=False,
+@@ -423,6 +458,8 @@
+             com_retry_4to5_compat=com_retry_compat,
+             pathfix3=early_io_status,
+             telemetry_pathfix3=early_telemetry_status,
++            com_busy_snapshot_retry=combusy_status,
++            td09c_16_or_17_compat=td09c_status,
+         )
+ 
+         stage = "INSTALL_ACTIVE_RUNTIME"
+--- ../base/r1_15a2_profile488_gatefix_v24916p2c.py	2026-10-22 23:41:28.000000000 +0000
++++ r1_15a2_profile488_gatefix_v24916p2c.py	2026-10-23 20:06:00.086063156 +0000
+@@ -9,7 +9,8 @@
+ This child overlay keeps those gates fail-closed but binds them to the active
+ PROFILE488 authority: 488 rows, all 488 CALIBRATION, 0 VALIDATION.
+ No 12D/11D metric formula, assignment, FlowBundle, dynamic skim, TG/TD search,
+-or acceptance guard is relaxed.
++or acceptance guard is relaxed. This child release also seals the approved
++read-only COM-busy snapshot retry and V24916-native TD09C 16/17 compatibility.
+ """
+ from __future__ import annotations
+ 
+@@ -19,11 +20,14 @@
+ from typing import Any, Callable, Mapping
+ 
+ import r1_15a2_fastcal_runtime_v24916p2c as base
++import r1_15a2_com_busy_snapshot_hotfix_v24916 as combusy_hotfix
++import r1_15a2_td09c_16or17_hotfix_v24916 as td09c_hotfix
+ from r1_15a2_safety_v24916p2c import build_safety_contract
+ 
+-RELEASE = "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_20261023"
+-PACKAGE_REVISION = "V24916_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_20261023"
++RELEASE = "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023"
++PACKAGE_REVISION = "V24916_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023"
+ PROFILE488_GATE_SCHEMA = "R1_15A2_V24916_PROFILE488_ROW_GATE_FIX_V1"
++INTEGRATED_HOTFIX_SCHEMA = "R1_15A2_V24916_COMBUSY_TD09C16_INTEGRATION_V1"
+ PROFILE488_GATE_CORRECTION = {
+     "expected_12d_rows": 488,
+     "expected_calibration_rows": 488,
+@@ -48,6 +52,28 @@
+         allow_nan=False, default=str).encode("utf-8")).hexdigest()
+ 
+ 
++def _integrated_hotfix_payload() -> dict[str, Any]:
++    return {
++        "schema": INTEGRATED_HOTFIX_SCHEMA,
++        "com_busy_snapshot_retry": combusy_hotfix.policy_payload(),
++        "td09c_16_or_17_native_scope": td09c_hotfix.policy_payload(),
++        "iofix4_import_audit": {
++            "source_branch": "R1_15A2_PROFILE488_AGGRESSIVE_TGTD_V1_FIX1_IOFIX4_BASE_20261022",
++            "decision": "CURRENT_V24916_IOFIX3_PATHFIX3_IS_STRICT_SUPERSET_NO_DOWNGRADE",
++            "short_opaque_temp_names": True,
++            "windows_extended_length_path_io": True,
++            "critical_atomic_publication_retry": True,
++            "telemetry_fail_open": True,
++            "v24916_specific_evidence_writers_protected": True,
++        },
++        "calibration_formulas_changed": False,
++        "assignment_method_changed": False,
++        "dynamic_skim_method_changed": False,
++        "flowbundle_targeting_changed": False,
++        "profile488_authority_changed": False,
++    }
++
++
+ def _policy_payload() -> dict[str, Any]:
+     return {
+         "schema": PROFILE488_GATE_SCHEMA,
+@@ -75,11 +101,16 @@
+         cfg[key] = value
+     cfg["v24916_profile488_gatefix1"] = _policy_payload()
+     cfg["v24916_profile488_gatefix1_hash"] = _hash(cfg["v24916_profile488_gatefix1"])
++    cfg["v24916_integrated_hotfixes"] = _integrated_hotfix_payload()
++    cfg["v24916_integrated_hotfixes_hash"] = _hash(cfg["v24916_integrated_hotfixes"])
+     identity = cfg.setdefault("v24916_release_identity", {})
+     identity["release"] = RELEASE
+     identity["package_revision"] = PACKAGE_REVISION
+     identity["profile488_row_gate_fix"] = True
+     identity["profile488_row_gate"] = [488, 488, 0]
++    identity["com_busy_snapshot_retry"] = True
++    identity["td09c_16_or_17_native_scope"] = True
++    identity["iofix4_compatibility_audited"] = True
+     build_safety_contract(cfg)
+     return cfg
+ 
+@@ -109,6 +140,8 @@
+             normalized.pop(key, None)
+     normalized.pop("v24916_profile488_gatefix1", None)
+     normalized.pop("v24916_profile488_gatefix1_hash", None)
++    normalized.pop("v24916_integrated_hotfixes", None)
++    normalized.pop("v24916_integrated_hotfixes_hash", None)
+     if isinstance(normalized.get("v24916_release_identity"), dict):
+         normalized["v24916_release_identity"] = copy.deepcopy(base_child.get("v24916_release_identity", {}))
+     if normalized != base_child:
+@@ -126,6 +159,7 @@
+         "parent_fastcal1_validated": True,
+         "scientific_formulas_changed": False,
+         "search_policy_changed": False,
++        "integrated_hotfixes": _integrated_hotfix_payload(),
+         "safety_contract_hash": safety.contract_hash,
+     }
+ 
+@@ -212,10 +246,10 @@
+ 
+ 
+ __all__ = [
+-    "RELEASE", "PACKAGE_REVISION", "PROFILE488_GATE_SCHEMA",
++    "RELEASE", "PACKAGE_REVISION", "PROFILE488_GATE_SCHEMA", "INTEGRATED_HOTFIX_SCHEMA",
+     "PROFILE488_GATE_CORRECTION", "AUTHORITY_FILE", "ISOLATION_SCHEMA",
+     "SOURCE_SEMANTIC_POLICY", "EXPECTED_BASELINE_SEMANTIC_STATE_HASH",
+     "RUNS_ROOT_NAME", "LOCK_NAME", "WORKSPACE_NAME", "PRIVATE_CACHE_DIRNAME",
+-    "apply_active_runtime_delta", "validate_active_runtime_delta",
++    "apply_active_runtime_delta", "validate_active_runtime_delta", "_integrated_hotfix_payload",
+     "activate_runtime_gate_overlay", "_profile488_assess_wrapper",
+ ]
+--- /dev/null	2026-10-23 17:07:44.655717114 +0000
++++ r1_15a2_com_busy_snapshot_hotfix_v24916.py	2026-10-23 20:05:27.466294094 +0000
+@@ -0,0 +1,181 @@
++# -*- coding: utf-8 -*-
++"""V24916 read-only COM-busy retry for startup and semantic snapshots.
++
++Ported from the approved Aggressive FIX1 COMBUSY hotfix, but bound directly to
++V24916/PERF2C.  Only transient RPC_E_CALL_REJECTED and
++RPC_E_SERVERCALL_RETRYLATER failures are retried.  The patch is read-only and
++never starts another Visum instance, loads a version, executes a procedure, or
++writes OD/matrix data.
++"""
++from __future__ import annotations
++
++from functools import wraps
++import logging
++from typing import Any, Callable, Dict
++
++import r1_15a2_com_compat as com
++import r1_15a2_supply_visum as supply_visum
++import r1_15a2_single_pass_snapshot_v24915p2c as optimized
++import r1_15a2_trial_adapter_v24915p2c as adapter_mod
++
++RELEASE = "R1_15A2_V24916_COMBUSY_SNAPSHOT_RETRY_V1_20261023"
++SCOPE = "startup_snapshot_read"
++DEFAULTS = {
++    "max_attempts": 64,
++    "initial_delay_seconds": 0.15,
++    "backoff_factor": 1.5,
++    "max_delay_seconds": 1.5,
++    "max_elapsed_seconds": 75.0,
++}
++
++_ACTIVE = False
++
++
++def policy_payload() -> Dict[str, Any]:
++    return {
++        "status": "ACTIVE",
++        "release": RELEASE,
++        "scope": SCOPE,
++        "default_retry": dict(DEFAULTS),
++        "execution": "READ_ONLY_TRANSIENT_COM_RPC_ONLY",
++        "patched_read_paths": [
++            "r1_15a2_supply_visum.VisumAdapter.read_links",
++            "r1_15a2_supply_visum.VisumAdapter.snapshot",
++            "r1_15a2_single_pass_snapshot_v24915p2c.single_pass_exact_snapshot",
++            "r1_15a2_trial_adapter_v24915p2c.single_pass_exact_snapshot",
++        ],
++        "calibration_math_changed": False,
++        "assignment_method_changed": False,
++        "visum_writes_added": False,
++    }
++
++
++def _policy(adapter: Any) -> Dict[str, Any]:
++    raw = dict(
++        getattr(adapter, "com_retry_policy", None)
++        or (getattr(adapter, "cfg", {}) or {}).get("com_resilience", {})
++        or {}
++    )
++    merged = com.scoped_retry_policy(raw, SCOPE)
++    if merged.get("enabled") is True:
++        original_scope = (raw.get("scoped_policies", {}) or {}).get(SCOPE, {}) or {}
++        for key, value in DEFAULTS.items():
++            if key not in original_scope:
++                merged[key] = value
++    return merged
++
++
++def _telemetry(adapter: Any, name: str, label: str, event: Dict[str, Any]) -> None:
++    try:
++        records = getattr(adapter, "r1_com_busy_read_retry_events", None)
++        if records is None:
++            records = []
++            setattr(adapter, "r1_com_busy_read_retry_events", records)
++        if len(records) < 1000:
++            records.append(
++                {
++                    "event": name,
++                    "label": label,
++                    "com_call_label": event.get("label"),
++                    **{k: v for k, v in event.items() if k != "label"},
++                }
++            )
++        if name == "RETRY" and event.get("attempt") in (1, 5, 15, 30, 50):
++            logging.warning(
++                "%s %s: COM busy (%s), retry %s/%s, pause %.3fs",
++                RELEASE,
++                label,
++                event.get("hresult"),
++                event.get("next_attempt"),
++                event.get("max_attempts"),
++                event.get("delay_seconds", 0.0),
++            )
++        if name == "EXHAUSTED":
++            logging.error(
++                "%s %s: COM remained busy after %s attempts (%s)",
++                RELEASE,
++                label,
++                event.get("attempt"),
++                event.get("error"),
++            )
++    except Exception:
++        pass
++
++
++def _read_retry(adapter: Any, label: str, call: Callable[[], Any]) -> Any:
++    # snapshot() calls read_links(); one outer read owns the bounded retry lease.
++    depth = int(getattr(adapter, "_r1_combusy_read_retry_depth", 0))
++    if depth:
++        return call()
++    setattr(adapter, "_r1_combusy_read_retry_depth", depth + 1)
++    try:
++        return com.com_call_with_retry(
++            call,
++            label="%s:%s" % (SCOPE, label),
++            retry_policy=_policy(adapter),
++            on_retry=lambda event: _telemetry(adapter, "RETRY", label, event),
++            on_exhausted=lambda event: _telemetry(adapter, "EXHAUSTED", label, event),
++        )
++    finally:
++        setattr(adapter, "_r1_combusy_read_retry_depth", depth)
++
++
++def _method_retry(method: Callable[..., Any], label: str) -> Callable[..., Any]:
++    @wraps(method)
++    def wrapped(adapter: Any, *args: Any, **kwargs: Any) -> Any:
++        return _read_retry(adapter, label, lambda: method(adapter, *args, **kwargs))
++
++    wrapped._r1_v24916_combusy_original = method  # type: ignore[attr-defined]
++    return wrapped
++
++
++def _optimized_retry(method: Callable[..., Any]) -> Callable[..., Any]:
++    @wraps(method)
++    def wrapped(adapter: Any) -> Any:
++        return _read_retry(
++            adapter,
++            "PERF2C_SINGLE_PASS_SNAPSHOT",
++            lambda: method(adapter),
++        )
++
++    wrapped._r1_v24916_combusy_original = method  # type: ignore[attr-defined]
++    return wrapped
++
++
++def activate() -> Dict[str, Any]:
++    """Install the read-only patch once before the first live snapshot."""
++    global _ACTIVE
++    if _ACTIVE:
++        return {"active": True, "release": RELEASE, "idempotent": True, **policy_payload()}
++
++    for name in ("read_links", "snapshot"):
++        original = getattr(supply_visum.VisumAdapter, name)
++        if getattr(original, "_r1_v24916_combusy_original", None) is not None:
++            raise RuntimeError("V24916_COMBUSY_ALREADY_PATCHED_DIFFERENT_ACTIVATION:" + name)
++        setattr(
++            supply_visum.VisumAdapter,
++            name,
++            _method_retry(original, "SUPPLY_VISUM_" + name.upper()),
++        )
++
++    original_optimized = optimized.single_pass_exact_snapshot
++    if getattr(original_optimized, "_r1_v24916_combusy_original", None) is not None:
++        raise RuntimeError("V24916_COMBUSY_OPTIMIZED_ALREADY_PATCHED")
++    wrapped_optimized = _optimized_retry(original_optimized)
++    optimized.single_pass_exact_snapshot = wrapped_optimized
++    # PERF2C imported this function by value, not through the source module.
++    adapter_mod.single_pass_exact_snapshot = wrapped_optimized
++
++    _ACTIVE = True
++    return {"active": True, "release": RELEASE, "idempotent": False, **policy_payload()}
++
++
++__all__ = [
++    "RELEASE",
++    "SCOPE",
++    "DEFAULTS",
++    "activate",
++    "policy_payload",
++    "_policy",
++    "_read_retry",
++]
+--- /dev/null	2026-10-23 17:07:44.655717114 +0000
++++ r1_15a2_td09c_16or17_hotfix_v24916.py	2026-10-23 20:05:27.467564991 +0000
+@@ -0,0 +1,301 @@
++# -*- coding: utf-8 -*-
++"""V24916 compatibility for one active native TD operation with 16 or 17 strata.
++
++The approved source Procedure Sequence may contain either all historical 17 R1
++strata, or the 16 mutable/native strata with 4_FOREIGN handled separately.
++FOREIGN matrix 9116 remains frozen and hash-guarded; its gravity parameters must
++remain independently readable.  Dynamic assignment skims and all V24916 guards
++are preserved.
++"""
++from __future__ import annotations
++
++from pathlib import Path
++import hashlib
++import inspect
++import math
++from typing import Any, Dict
++
++import r1_15a2_finecdf_bridge_v24916 as bridge
++import r1_15a2_runtime_v1 as rt
++from r1_15a2_supply import SupplyContractError, number
++
++RELEASE = "R1_15A2_V24916_TD09C_16OR17_NATIVE_SCOPE_COMPAT_V1_20261023"
++PARENT_INIT_SHA256 = "d31f106438c58e61dc3cd2f2ba18183570dee8c0885c6b52d55eff2b88a22165"
++_ACTIVE = False
++_PARENT_INIT = bridge.NoDirectMatrixWriteTDAdapter.__init__
++
++APPROVED_NATIVE_CODES = frozenset(
++    (
++        "1_WORK_E_C",
++        "1_WORK_E_noC",
++        "1_WORK_noE_C",
++        "1_WORK_noE_noC",
++        "1_WORK_stud",
++        "2_SERV_E_C",
++        "2_SERV_E_noC",
++        "2_SERV_noE_C",
++        "2_SERV_noE_noC",
++        "2_SERV_stud",
++        "3_LONG_E_C",
++        "3_LONG_E_noC",
++        "3_LONG_noE_C",
++        "3_LONG_noE_noC",
++        "3_LONG_stud",
++        "5_SCHOOL",
++    )
++)
++
++
++def policy_payload() -> Dict[str, Any]:
++    return {
++        "status": "ACTIVE",
++        "release": RELEASE,
++        "allowed_source_scopes": ["FULL17", "NATIVE16_FOREIGN_SEPARATE"],
++        "foreign_dstratum": "4_FOREIGN",
++        "foreign_matrix": 9116,
++        "foreign_native_td_excluded_during_inner": True,
++        "foreign_matrix_hash_guarded": True,
++        "foreign_abc_must_be_independently_readable": True,
++        "dynamic_assignment_skims_preserved": True,
++        "calibration_math_changed": False,
++        "assignment_method_changed": False,
++    }
++
++
++def _codes(raw: Any) -> set[str]:
++    bits = [str(s).strip() for s in str(raw).split(",") if str(s).strip()]
++    if len(bits) != len(set(bits)):
++        raise SupplyContractError("V24916_TD09C_DUPLICATE_DSTRAT_CODE")
++    return set(bits)
++
++
++def _compatible_init(
++    self,
++    visum,
++    ref,
++    root,
++    control=None,
++    telemetry=None,
++    outer_adapter=None,
++):
++    # V24916 constructor prefix, unchanged except for the approved 16/17 scope.
++    self.v = visum
++    self.telemetry = telemetry
++    self.ref = ref
++    self.root = Path(root)
++    self.control = control
++    self.outer_adapter = outer_adapter
++    self.dynamic_skim_enabled = bool(
++        outer_adapter is not None
++        and getattr(outer_adapter, "v24916_dynamic_skims", None) is not None
++    )
++    self.dynamic_skim_epoch = None
++    self.dynamic_eval_index = 0
++    self.n = int(ref.CONFIG["expected_zone_count"])
++    self.ops = rt.get_all(self.v.Procedures.Operations)
++    self.inventory = []
++    self.controls_changed = False
++    self.td_index = None
++    self.td = None
++    self.original_dset = None
++
++    expected_all = {r["dstrat_code"] for r in ref.COMPONENTS}
++    expected_native = {
++        r["dstrat_code"] for r in ref.COMPONENTS if int(r["matrix_no"]) != 9116
++    }
++    if (
++        len(expected_all) != 17
++        or len(expected_native) != 16
++        or expected_all - expected_native != {"4_FOREIGN"}
++    ):
++        raise SupplyContractError(
++            "V24916_TD09C_REFERENCE_STRATA_NOT_APPROVED_17_WITH_FROZEN_FOREIGN"
++        )
++
++    candidates = []
++    read_failures = []
++    for i, op in enumerate(self.ops, 1):
++        typ = int(number(rt.att(op, "OPERATIONTYPE", -1)))
++        active = bool(number(rt.att(op, "ACTIVE", 0)))
++        row = {
++            "index": i,
++            "type": typ,
++            "active": int(active),
++            "comment": str(rt.att(op, "COMMENT", "")),
++            "is_group": typ == int(ref.CONFIG["td_group_type"]),
++        }
++        self.inventory.append(row)
++        if typ != 46:
++            continue
++        try:
++            td = op.TripDistributionParameters
++            raw = str(td.AttValue("DSTRATSET"))
++            codes = _codes(raw)
++        except Exception as exc:
++            row["td09c_error"] = repr(exc)
++            read_failures.append("ROW_%d:%r" % (i, exc))
++            continue
++        row["td09c_stratum_count"] = len(codes)
++        row["td09c_dstratset"] = raw
++        if codes in (expected_all, expected_native):
++            scope = "FULL17" if codes == expected_all else "NATIVE16_FOREIGN_SEPARATE"
++            row["td09c_match"] = scope
++            candidates.append((i, td, raw, scope))
++        else:
++            row["td09c_match"] = "MISMATCH"
++            row["td09c_missing_from_native"] = ",".join(sorted(expected_native - codes))
++            row["td09c_unexpected"] = ",".join(sorted(codes - expected_all))
++
++    ref.write_csv(self.root / "TD_PROCEDURE_INVENTORY.csv", self.inventory)
++    if read_failures:
++        raise SupplyContractError(
++            "V24916_TD09C_DSTRATSET_READ_ERROR:" + ";".join(read_failures)
++        )
++    if len(candidates) != 1:
++        summaries = [
++            "%d:%s" % (r["index"], r.get("td09c_match", "UNREADABLE"))
++            for r in self.inventory
++            if r["type"] == 46
++        ]
++        raise SupplyContractError(
++            "V24916_EXPECTED_ONE_APPROVED_NATIVE_16_OR_FULL_17_TD_OPERATION_FOUND_%d:%s"
++            % (len(candidates), ",".join(summaries))
++        )
++
++    self.td_index, self.td, self.original_dset, self.td09c_scope = candidates[0]
++    if not self.inventory[self.td_index - 1]["active"]:
++        raise SupplyContractError("V242_R1_TD_OPERATION_INACTIVE")
++    self.active_dset = ",".join(
++        r["dstrat_code"] for r in ref.COMPONENTS if int(r["matrix_no"]) != 9116
++    )
++    self.td09c_contract = {
++        "schema": "R1_15A2_V24916_TD09C_NATIVE_SCOPE_16_OR_FULL_17_COMPAT_V1",
++        "selected_index": int(self.td_index),
++        "source_scope": self.td09c_scope,
++        "source_dstratset": self.original_dset,
++        "inner_dstratset": self.active_dset,
++        "foreign_dstratum": "4_FOREIGN",
++        "foreign_matrix": 9116,
++        "foreign_native_execution": False,
++        "foreign_frozen_by_parameter_readback": True,
++        "foreign_frozen_by_matrix_sha256": True,
++        "native_mutable_strata_count": 16,
++        "dynamic_skim_enabled": bool(self.dynamic_skim_enabled),
++    }
++    ref.write_json(self.root / "TD09C_NATIVE_SCOPE_CONTRACT.json", self.td09c_contract)
++
++    # Exact V24916 constructor remainder.
++    pairs = list(self.v.Net.Zones.GetMultiAttValues("NO"))
++    self.zone_order = [int(number(v)) for _k, v in pairs]
++    if len(self.zone_order) != self.n or len(set(self.zone_order)) != self.n:
++        raise SupplyContractError("V242_INVALID_ZONE_ORDER")
++    if set(self.zone_order) != set(range(1, self.n + 1)):
++        raise SupplyContractError("V242_EXPECTED_ZONE_NO_1_681")
++
++    self.generation_guard = self._capture_generation_guard()
++    self.addval_guard = self._capture_addval_guard()
++    self.protected = {no: self.read_matrix(no) for no in (9001, 9697, 9116)}
++    self.protected_hashes = {n: ref.sha_array(a) for n, a in self.protected.items()}
++    if float(self.protected[9697].min()) < 0:
++        raise SupplyContractError("V242_NEGATIVE_DISTANCE_MATRIX")
++    if ref.CONFIG.get("require_2022_patch_preflight", True):
++        ref.verify_2022_osrm_amdy_patched_inputs(
++            self.protected,
++            self.zone_order,
++            self.root / "PATCHED_INPUT_PREFLIGHT.json",
++        )
++    try:
++        self.entry_abc = self.read_abc()
++    except Exception as exc:
++        if self.td09c_scope == "NATIVE16_FOREIGN_SEPARATE":
++            raise SupplyContractError(
++                "V24916_TD09C_16_ONLY_FOREIGN_ABC_READ_FAILED:"
++                + repr(exc)
++                + "; 4_FOREIGN parameter getter must remain independently readable"
++            ) from exc
++        raise
++    self.initial_matrices = self.read_outputs()
++
++
++_compatible_init._v24916_td09c_compat = True  # type: ignore[attr-defined]
++_compatible_init._v24916_td09c_parent = _PARENT_INIT  # type: ignore[attr-defined]
++
++
++def read_only_source_preflight(visum) -> Dict[str, Any]:
++    """Read-only DSTRATSET and frozen FOREIGN authority check before TG writes."""
++    found = []
++    for i, op in enumerate(rt.get_all(visum.Procedures.Operations), 1):
++        typ = int(number(rt.att(op, "OPERATIONTYPE", -1)))
++        if typ != 46 or not bool(number(rt.att(op, "ACTIVE", 0))):
++            continue
++        td = op.TripDistributionParameters
++        raw = str(td.AttValue("DSTRATSET"))
++        codes = _codes(raw)
++        if codes in (APPROVED_NATIVE_CODES, APPROVED_NATIVE_CODES | {"4_FOREIGN"}):
++            found.append((i, td, codes, raw))
++    if len(found) != 1:
++        raise SupplyContractError(
++            "V24916_TD09C_SOURCE_PREFLIGHT_EXPECTED_1_APPROVED_OPERATION_FOUND_%d"
++            % len(found)
++        )
++    index, td, codes, raw = found[0]
++    try:
++        gravity = td.TripDistributionDStratParameters("4_FOREIGN").GravitationParameters
++        values = {}
++        for param in ("PARA_A", "PARA_B", "PARA_C"):
++            value = float(gravity.AttValue(param))
++            if not math.isfinite(value):
++                raise ValueError("NONFINITE_" + param)
++            values[param] = value
++    except Exception as exc:
++        raise SupplyContractError(
++            "V24916_TD09C_FOREIGN_ABC_READONLY_PREFLIGHT_FAILED:" + repr(exc)
++        ) from exc
++    return {
++        "status": "PASS",
++        "selected_operation_index": index,
++        "scope": "NATIVE16_FOREIGN_SEPARATE" if len(codes) == 16 else "FULL17",
++        "source_dstratset": raw,
++        "source_strata_count": len(codes),
++        "foreign_abc_readable": True,
++        "foreign_abc": values,
++        "model_modified": False,
++    }
++
++
++def activate() -> Dict[str, Any]:
++    global _ACTIVE
++    current = bridge.NoDirectMatrixWriteTDAdapter.__init__
++    if getattr(current, "_v24916_td09c_compat", False):
++        _ACTIVE = True
++        return {
++            "active": True,
++            "release": RELEASE,
++            "idempotent": True,
++            "parent_init_sha256": PARENT_INIT_SHA256,
++            **policy_payload(),
++        }
++    actual = hashlib.sha256(inspect.getsource(current).encode("utf-8")).hexdigest()
++    if actual != PARENT_INIT_SHA256:
++        raise RuntimeError("V24916_TD09C_PARENT_BRIDGE_SOURCE_CHANGED:" + actual)
++    bridge.NoDirectMatrixWriteTDAdapter.__init__ = _compatible_init
++    _ACTIVE = True
++    return {
++        "active": True,
++        "release": RELEASE,
++        "idempotent": False,
++        "parent_init_sha256": actual,
++        **policy_payload(),
++    }
++
++
++__all__ = [
++    "RELEASE",
++    "PARENT_INIT_SHA256",
++    "APPROVED_NATIVE_CODES",
++    "activate",
++    "read_only_source_preflight",
++    "policy_payload",
++    "_compatible_init",
++    "_codes",
++]
+--- ../base/V24916_PERF2C_RUNTIME_MANIFEST.json	2026-10-22 23:41:48.000000000 +0000
++++ V24916_PERF2C_RUNTIME_MANIFEST.json	2026-10-23 20:08:08.065530371 +0000
+@@ -1,15 +1,16 @@
+ {
+-  "activation_stage": "FRESH0_ISOLATED_ACTIVE_TARGETING_DYNAMIC_ASSIGNMENT_SKIMS_FASTCAL1_PROFILE488_GATEFIX",
+-  "bootstrapfix_revision": "BOOTSTRAPFIX2_FASTCAL1_PROFILE488FIX1_20261023",
++  "activation_stage": "FRESH0_ISOLATED_ACTIVE_TARGETING_DYNAMIC_ASSIGNMENT_SKIMS_FASTCAL1_PROFILE488_GATEFIX_COMBUSY_TD09C16",
++  "bootstrapfix_revision": "BOOTSTRAPFIX2_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+   "cross_run_cache_restore_allowed": false,
+   "dynamic_skim_revision": "DYNAMICSKIM1_20261022",
+   "external_cache_read_allowed": false,
+   "fastcal_revision": "FASTCAL1_20261022",
++  "integrated_hotfix_revision": "COMBUSY_SNAPSHOT_RETRY_V1__TD09C_16OR17_V1_20261023",
+   "persistent_path_cache_enabled": false,
+   "profile488_gatefix_revision": "PROFILE488FIX1_20261023",
+-  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_20261023",
++  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+   "required_files": {
+-    "00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py": "9790f021d4d4c01f607deab55d46660769bad261687a714c479abd1698dac3dd",
++    "00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py": "b099773c633b5f9008e4da1bdc8cd1f3a30fcfc172e5efa99a4bea6f0ac3854c",
+     "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_FRESH100_PROFILE488_FRESHCACHE_SAVEFIX1_NO_WALLCLOCK.py": "c1aa1f4883810cb2c0ad276f2b53b854b4f7329bf543ecee12865a08dd020441",
+     "authorities/COUNTLOCATION-2026-10-22-02-23-34.xlsx": "0244e311488e88f754a691e8c1d535608a13360e91086ee116d6d9e71bf7f860",
+     "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_CURRENT_126_20261022.csv": "2154cfd4fb080f63ec3f6e233d27bb8d7787a0598febf38c14e7851f3f66a7e0",
+@@ -21,6 +22,7 @@
+     "r1_15a2_active_targeting_runtime_v24916p2c.py": "1a24ceaff9dd169c1aa2d4c6fcecee10279eefc57ad6d7cf0c3d8677bff28541",
+     "r1_15a2_block_classifier_v24916.py": "93bcdbde4179ebffdbfce91e1dde2f577b9cee9f19496e889b779e8e3b715bb4",
+     "r1_15a2_coefficient_ledger_v24916.py": "f3061cfda2d96dfe2c56bf920a9545cb66e5b7e8f4301906740e79311bc8cac4",
++    "r1_15a2_com_busy_snapshot_hotfix_v24916.py": "1415900f5cc5a2fde3c404c3a2d936c9d6b4e1d2cb7c437297cbaad8b1046064",
+     "r1_15a2_demand_evidence_v24916.py": "66e60dbb430c7603934d39410b2ff43fdf6ea9d0baeab569c358a00f5f9d57c4",
+     "r1_15a2_demand_evidence_v24916p2c.py": "675b074bae337a2bd25b493883be745841b8d3615a012a46376cf4f9d447f5be",
+     "r1_15a2_demand_support_v24916.py": "735d9021268809810e56958e9d868e1951e93dc72787ee91e8327a58f8051e6c",
+@@ -43,7 +45,7 @@
+     "r1_15a2_perf_telemetry_failopen_hotfix_profile488.py": "f2c0c59ffc828c4d7875808e49ec03a150b733c31d23c15bee577efab5cf969a",
+     "r1_15a2_persistent_path_cache_v248.py": "78522a1a9d7bd4bcabfb360604fd9c0a6d3415e0d845d935e7c3084aeedb276c",
+     "r1_15a2_procseq_guard_v24916p2c.py": "3ccd772853eaebe01f1eb2db05512a3ba55c3f07ba61128668227b87ff9dd274",
+-    "r1_15a2_profile488_gatefix_v24916p2c.py": "2232c7d7ce29516c32ff6c430746068430f8dec778fe9c97efa80d086d47500f",
++    "r1_15a2_profile488_gatefix_v24916p2c.py": "070b30912ae0f6ba08065e0f9c65ebb786b63186f586559b046098c701d32372",
+     "r1_15a2_runtime_io_hotfix_profile488.py": "18eb285d940398f4918e98ee899c77bc25dc19df4abfa9c89e587c128d978cac",
+     "r1_15a2_runtime_manifest_v24916p2c.py": "bb970938371895a2e844b003ffcdb80a4e4c030293e5ec5b456bf209cac6842e",
+     "r1_15a2_safety_v24916.py": "3179509f016e29e45f649d8b66fe1985b89e732680be08ef58c9412a6b27e175",
+@@ -52,6 +54,7 @@
+     "r1_15a2_skim_v24916.py": "874a7527fbd27dc08b084b6148c419197933351935d9febfc0aea5fed88bc843",
+     "r1_15a2_skim_v24916p2c.py": "dc4bac07a1e58a07f115dcbc9ba6762db28115c6cd687369dd9b41fd2ccf1739",
+     "r1_15a2_supply_temp_sqlite_hotfix_v24915p2c2.py": "ba3a28c85b9e234222357c482b58c56cdf792fdd01edd692ef938cbe5c313f27",
++    "r1_15a2_td09c_16or17_hotfix_v24916.py": "0e4d7c871f460556af3333208cbffd38ff9146bc55560b397980a377d14b4007",
+     "r1_15a2_trial_adapter_v24915p2c.py": "381e543dc833fff85c912ad9849fb03178c8e3f7f0bf6d843e515910abe36d91",
+     "r1_15a2_trial_adapter_v24916.py": "4192780a68ed0a5cd433a7b8751fc69ed185ae018070513340a4c0d4540d650d",
+     "r1_15a2_trial_adapter_v24916p2c.py": "7a4e60d1bd2d1fca03c8f11765895aa42712471019df4353ff8dd2c8786a1c35",
+--- /dev/null	2026-10-23 17:07:44.655717114 +0000
++++ tests/test_v24916_combusy_snapshot_retry.py	2026-10-23 20:07:09.998813333 +0000
+@@ -0,0 +1,144 @@
++# -*- coding: utf-8 -*-
++from __future__ import annotations
++
++import copy
++import pytest
++
++import r1_15a2_com_compat as com
++from r1_15a2_com_busy_snapshot_hotfix_v24916 import activate, policy_payload
++from r1_15a2_supply_visum import VisumAdapter as SupplyAdapter
++from r1_15a2_trial_adapter_v24915p2c import VisumAdapter as Perf2cAdapter
++from tests.test_supply_visum_v22 import small_cfg, state_visum
++
++
++class Busy(RuntimeError):
++    hresult = com.RPC_E_CALL_REJECTED
++
++
++class TryLater(RuntimeError):
++    hresult = com.RPC_E_SERVERCALL_RETRYLATER
++
++
++class NetIntermittent:
++    def __init__(self, inner, *, property_name="Links", times=2, exception_type=Busy):
++        self.inner = inner
++        self.property_name = property_name
++        self.times = times
++        self.exception_type = exception_type
++        self.calls = 0
++
++    def __getattr__(self, name):
++        if name == self.property_name:
++            self.calls += 1
++            if self.calls <= self.times:
++                raise self.exception_type("Volany odmitl volani.")
++        return getattr(self.inner, name)
++
++
++def cfg():
++    result = copy.deepcopy(small_cfg())
++    result["com_resilience"] = {
++        "enabled": True,
++        "max_attempts": 5,
++        "initial_delay_seconds": 0.0,
++        "backoff_factor": 1.0,
++        "max_delay_seconds": 0.0,
++        "max_elapsed_seconds": 10.0,
++        "scoped_policies": {
++            "startup_snapshot_read": {
++                "max_attempts": 5,
++                "initial_delay_seconds": 0.0,
++                "max_delay_seconds": 0.0,
++                "backoff_factor": 1.0,
++                "max_elapsed_seconds": 10.0,
++            }
++        },
++    }
++    return result
++
++
++def test_v24916_combusy_retry_bulk_links_transient_then_passes():
++    activate()
++    visum = state_visum()
++    adapter = SupplyAdapter(visum, cfg())
++    reference = adapter.read_links()
++    proxy = NetIntermittent(visum.Net, property_name="Links", times=2)
++    visum.Net = proxy
++    actual = adapter.read_links()
++    assert actual == reference
++    assert proxy.calls >= 3
++    assert adapter.r1_com_busy_read_retry_events[0]["label"] == "SUPPLY_VISUM_READ_LINKS"
++
++
++def test_v24916_combusy_retry_preserves_legacy_snapshot_hashes():
++    activate()
++    visum = state_visum()
++    adapter = SupplyAdapter(visum, cfg())
++    reference = adapter.snapshot()
++    proxy = NetIntermittent(
++        visum.Net, property_name="Matrices", times=2, exception_type=TryLater
++    )
++    visum.Net = proxy
++    actual = adapter.snapshot()
++    assert actual == reference
++    assert proxy.calls >= 3
++
++
++def test_v24916_combusy_retry_preserves_perf2c_exact_shadow_parity():
++    activate()
++    visum = state_visum()
++    runtime = cfg()
++    runtime.update(
++        {
++            "apply": False,
++            "production_apply": False,
++            "trial_calibration": {"enabled": True},
++            "performance": {
++                "persistent_path_cache": {"enabled": False},
++                "v24915_perf2c_single_pass_snapshot": {
++                    "enabled": True,
++                    "shadow_parity_once": True,
++                    "fallback_to_legacy": True,
++                },
++            },
++        }
++    )
++    adapter = Perf2cAdapter(visum, runtime)
++    first = adapter.legacy_snapshot_from_live_visum()
++    assert adapter.last_perf2c_snapshot_parity["status"] == "EXACT_PARITY_PASS"
++    proxy = NetIntermittent(visum.Net, property_name="Matrices", times=1)
++    visum.Net = proxy
++    actual = adapter.legacy_snapshot_from_live_visum()
++    assert actual == first
++    assert adapter._perf2c_runtime_disabled is False
++    assert any(
++        event["label"] == "PERF2C_SINGLE_PASS_SNAPSHOT"
++        for event in adapter.r1_com_busy_read_retry_events
++    )
++
++
++def test_v24916_combusy_nontransient_error_is_not_retried():
++    activate()
++    visum = state_visum()
++    adapter = SupplyAdapter(visum, cfg())
++
++    class Permanent(ValueError):
++        def __init__(self, _message):
++            super().__init__("PERMANENT_SCHEMA_ERROR")
++
++    proxy = NetIntermittent(
++        visum.Net, property_name="Links", times=50, exception_type=Permanent
++    )
++    visum.Net = proxy
++    with pytest.raises(Permanent):
++        adapter.read_links()
++    assert proxy.calls == 1
++
++
++def test_v24916_combusy_policy_is_read_only_and_bounded():
++    payload = policy_payload()
++    assert payload["execution"] == "READ_ONLY_TRANSIENT_COM_RPC_ONLY"
++    assert payload["visum_writes_added"] is False
++    assert payload["calibration_math_changed"] is False
++    assert payload["default_retry"]["max_attempts"] == 64
++    assert payload["default_retry"]["max_elapsed_seconds"] == 75.0
+--- /dev/null	2026-10-23 17:07:44.655717114 +0000
++++ tests/test_v24916_td09c_native16_compat.py	2026-10-23 20:07:09.999093406 +0000
+@@ -0,0 +1,134 @@
++from __future__ import annotations
++
++import hashlib
++import inspect
++from types import SimpleNamespace
++
++import numpy as np
++import pytest
++
++import r1_15a2_finecdf_bridge_v24916 as bridge
++import r1_15a2_td09c_16or17_hotfix_v24916 as fix
++from r1_15a2_supply import SupplyContractError
++from test_v245_native_bridge import fixture
++
++
++def _prepare(tmp_path, monkeypatch, scope="NATIVE16", dynamic=False):
++    ref, path, sha, visum, cfg, control, grav, mats, calls = fixture(tmp_path)
++    op = visum.Procedures.Operations.items[1]
++    params = op.TripDistributionParameters
++    raw = params.AttValue("DSTRATSET")
++    if scope == "NATIVE16":
++        params.SetAttValue("DSTRATSET", raw.replace("4_FOREIGN,", "").replace(",4_FOREIGN", ""))
++    if scope == "MISSING_SCHOOL":
++        params.SetAttValue("DSTRATSET", raw.replace(",5_SCHOOL", ""))
++    if scope == "EXTRA":
++        params.SetAttValue("DSTRATSET", raw + ",6_OTHER")
++    if scope == "DUPLICATE":
++        params.SetAttValue("DSTRATSET", raw + ",1_WORK_E_C")
++    monkeypatch.setattr(bridge.NoDirectMatrixWriteTDAdapter, "__init__", fix._compatible_init)
++    outer = SimpleNamespace(v24916_dynamic_skims=object()) if dynamic else None
++    return ref, path, sha, visum, cfg, control, grav, mats, calls, outer
++
++
++def test_v24916_native16_preserves_foreign_and_restores_scope(tmp_path, monkeypatch):
++    ref, path, sha, v, cfg, ctl, grav, mats, calls, outer = _prepare(
++        tmp_path, monkeypatch, dynamic=False
++    )
++    p = tmp_path / "inner"
++    p.mkdir()
++    params = v.Procedures.Operations.items[1].TripDistributionParameters
++    original_dset = params.AttValue("DSTRATSET")
++    foreign = mats[9116].values.copy()
++    b = bridge.NoDirectMatrixWriteTDAdapter(v, ref, p, ctl, outer_adapter=outer)
++    assert b.td09c_scope == "NATIVE16_FOREIGN_SEPARATE"
++    assert b.dynamic_skim_enabled is False
++    assert len(b.original_dset.split(",")) == 16
++    assert "4_FOREIGN" not in b.active_dset
++    b.isolate_td()
++    b.execute()
++    b.restore_controls()
++    assert params.AttValue("DSTRATSET") == original_dset
++    assert [op.AttValue("ACTIVE") for op in v.Procedures.Operations.items] == [1, 1, 1]
++    assert np.array_equal(mats[9116].values, foreign)
++    assert (p / "TD09C_NATIVE_SCOPE_CONTRACT.json").is_file()
++
++
++
++def test_v24916_native16_constructor_preserves_dynamic_skim_binding(tmp_path, monkeypatch):
++    ref, path, sha, v, cfg, ctl, grav, mats, calls, outer = _prepare(
++        tmp_path, monkeypatch, dynamic=True
++    )
++    p = tmp_path / "dynamic_inner"
++    p.mkdir()
++    b = bridge.NoDirectMatrixWriteTDAdapter(v, ref, p, ctl, outer_adapter=outer)
++    assert b.td09c_scope == "NATIVE16_FOREIGN_SEPARATE"
++    assert b.dynamic_skim_enabled is True
++    assert b.outer_adapter is outer
++    assert b.dynamic_skim_epoch is None
++    assert b.dynamic_eval_index == 0
++
++def test_v24916_full17_scope_still_supported(tmp_path, monkeypatch):
++    ref, path, sha, v, cfg, ctl, grav, mats, calls, outer = _prepare(
++        tmp_path, monkeypatch, "FULL17"
++    )
++    p = tmp_path / "inner"
++    p.mkdir()
++    b = bridge.NoDirectMatrixWriteTDAdapter(v, ref, p, ctl)
++    assert b.td09c_scope == "FULL17"
++    assert len(b.original_dset.split(",")) == 17
++
++
++@pytest.mark.parametrize("scope", ["MISSING_SCHOOL", "EXTRA", "DUPLICATE"])
++def test_v24916_unauthorized_td_scope_changes_fail_closed(tmp_path, monkeypatch, scope):
++    ref, path, sha, v, cfg, ctl, grav, mats, calls, outer = _prepare(
++        tmp_path, monkeypatch, scope
++    )
++    p = tmp_path / "inner"
++    p.mkdir()
++    with pytest.raises(SupplyContractError, match="EXPECTED_ONE_APPROVED|DUPLICATE_DSTRAT"):
++        bridge.NoDirectMatrixWriteTDAdapter(v, ref, p, ctl)
++    assert not calls
++
++
++def test_v24916_native16_requires_readable_frozen_foreign_abc(tmp_path, monkeypatch):
++    ref, path, sha, v, cfg, ctl, grav, mats, calls, outer = _prepare(tmp_path, monkeypatch)
++    p = tmp_path / "inner"
++    p.mkdir()
++    params = v.Procedures.Operations.items[1].TripDistributionParameters
++    original = params.TripDistributionDStratParameters
++    params.TripDistributionDStratParameters = (
++        lambda name: (_ for _ in ()).throw(KeyError(name))
++        if name == "4_FOREIGN"
++        else original(name)
++    )
++    with pytest.raises(SupplyContractError, match="16_ONLY_FOREIGN_ABC_READ_FAILED"):
++        bridge.NoDirectMatrixWriteTDAdapter(v, ref, p, ctl)
++
++
++def test_v24916_td09c_parent_constructor_hash_is_pinned():
++    assert (
++        hashlib.sha256(inspect.getsource(bridge.NoDirectMatrixWriteTDAdapter.__init__).encode()).hexdigest()
++        == fix.PARENT_INIT_SHA256
++    )
++
++
++def test_v24916_td09c_compat_constructor_has_no_procedure_or_matrix_writes():
++    code = inspect.getsource(fix._compatible_init)
++    assert "SetAttValue(" not in code
++    assert ".SetValues(" not in code
++    assert "Procedures.Execute(" not in code
++
++
++def test_v24916_td09c_readonly_preflight_supports_native16_and_full17(tmp_path, monkeypatch):
++    for kind in ("NATIVE16", "FULL17"):
++        ref, path, sha, v, cfg, ctl, grav, mats, calls, outer = _prepare(
++            tmp_path, monkeypatch, kind
++        )
++        status = fix.read_only_source_preflight(v)
++        assert status["status"] == "PASS"
++        assert status["scope"] == (
++            "NATIVE16_FOREIGN_SEPARATE" if kind == "NATIVE16" else "FULL17"
++        )
++        assert status["model_modified"] is False
++        assert not calls
+--- /dev/null	2026-10-23 17:07:44.655717114 +0000
++++ tests/test_v24916_integrated_hotfixes.py	2026-10-23 20:06:55.154455030 +0000
+@@ -0,0 +1,57 @@
++from __future__ import annotations
++
++from pathlib import Path
++
++import r1_15a2_fresh0_shortroot_parent_v24916 as parent
++import r1_15a2_profile488_gatefix_v24916p2c as release
++import r1_15a2_runtime_io_hotfix_profile488 as current_io
++import r1_15a2_perf_telemetry_failopen_hotfix_profile488 as current_telemetry
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def test_integrated_hotfix_metadata_is_sealed_in_effective_config():
++    base = parent.load_config("FULL")
++    child = release.apply_active_runtime_delta(base)
++    audit = release.validate_active_runtime_delta(child, base)
++    hot = child["v24916_integrated_hotfixes"]
++    assert audit["passes"] is True
++    assert hot["com_busy_snapshot_retry"]["status"] == "ACTIVE"
++    assert hot["td09c_16_or_17_native_scope"]["status"] == "ACTIVE"
++    assert hot["iofix4_import_audit"]["decision"] == (
++        "CURRENT_V24916_IOFIX3_PATHFIX3_IS_STRICT_SUPERSET_NO_DOWNGRADE"
++    )
++    assert child["v24916_release_identity"]["com_busy_snapshot_retry"] is True
++    assert child["v24916_release_identity"]["td09c_16_or_17_native_scope"] is True
++
++
++def test_current_v24916_io_layer_contains_all_iofix4_compatibility_primitives():
++    required = (
++        "_native_path",
++        "_short_temp_path",
++        "critical_atomic_json",
++        "critical_atomic_text",
++        "critical_copy_if_file",
++        "critical_runtime_read_json",
++        "critical_runtime_write_json",
++        "critical_runtime_write_csv",
++        "critical_runtime_read_csv_auto",
++        "replace_with_retry",
++        "audit_run_path_budget",
++    )
++    for name in required:
++        assert hasattr(current_io, name), name
++    assert current_telemetry.critical_io is current_io
++
++
++def test_launcher_activates_both_imported_hotfixes_before_live_preflight():
++    text = (ROOT / "00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py").read_text(
++        encoding="utf-8"
++    )
++    assert text.index("combusy_status = combusy_hotfix.activate()") < text.index(
++        'stage = "LIVE_READ_ONLY_PREFLIGHT"'
++    )
++    assert text.index("td09c_status = td09c_hotfix.activate()") < text.index(
++        'stage = "LIVE_READ_ONLY_PREFLIGHT"'
++    )
++    assert "td09c_hotfix.read_only_source_preflight(visum)" in text

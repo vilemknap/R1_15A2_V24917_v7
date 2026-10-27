@@ -1,0 +1,31 @@
+{
+  "build": "R1_15A2_V2_4_5_CP01_CHECKPOINT_ATOMICITY1",
+  "stage": "CP01",
+  "status": "OFFLINE_CHECKPOINT_ATOMICITY_PASS_LIVE_VISUM_NOT_RUN",
+  "overall_production_pass": false,
+  "live_visum_com": "NOT_RUN",
+  "test_rc": 0,
+  "tests_passed": 532,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "compileall_rc": 0,
+  "base_CP00_sha256": "fa876f2dbc6ee7a5535908f759dd2f6d25e6a6bc8662f284a8f7d790edd90197",
+  "baseline_file_count": 316,
+  "output_files_without_status": 320,
+  "modified_core_files": [
+    "r1_15a2_overnight_controller_v240.py"
+  ],
+  "added_files": [
+    "CP01_RELEASE_NOTES.md",
+    "VERIFY_CHECKPOINTS_V245_CP01.py",
+    "tests/test_v245_checkpoint_atomicity_cp01.py",
+    "tests/test_v245_checkpoint_verifier_cp01.py"
+  ],
+  "removed_files": [],
+  "protected_numerical_core_unchanged": true,
+  "checkpoint_files_prevent_false_canonical_promotion": true,
+  "source_diff_sha256": "e48749daada452e991d1895ce311b27b9fa86f1c42a4dc59f646cff72eedd068",
+  "cloud_upload_status": "PENDING_READBACK",
+  "next_gate": "CP01_CLOUD_HASH_READBACK; THEN LIVE_VISUM_PVT_PRECHECK"
+}

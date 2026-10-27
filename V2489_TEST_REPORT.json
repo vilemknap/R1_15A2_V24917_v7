@@ -1,0 +1,10 @@
+{
+  "compileall_pass": true,
+  "core_before_release_wiring": "636 passed",
+  "created_utc": "2026-10-16T21:16:14.526341+00:00",
+  "final_source_tree": "640 passed",
+  "production_ready": false,
+  "real_visum_tested": false,
+  "schema": "R1_15A2_V2489_TEST_REPORT_V1",
+  "targeted_release_and_td_tests": "16 passed"
+}

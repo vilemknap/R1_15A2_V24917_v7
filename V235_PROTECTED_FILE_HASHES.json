@@ -1,0 +1,19 @@
+{
+  "previous_release_zip_sha256": "858856e3cec7fbfbac68fe98153aba636e553e593f9b6e1c6d9b3fa7a5c7eec5",
+  "protected_sha256": {
+    "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1",
+    "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
+    "authorities/R1_CSD2022_APPROVED_408_QA.json": "c8f34f5c8a4286d8c6a58998ffabebcbb6945b8c18d7a5e456e73dd0854523ad",
+    "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
+    "r1_15a2_controller_v22.py": "59744ff3612d313afac7210485c16ad8646233642fd616ed4bec2de44e5c98ba",
+    "r1_15a2_sequence_v23.py": "6ba3bc757846f192524dc4700ade8f5be1fce93a7afde0aaa704b218f3e3ac0f",
+    "r1_15a2_runtime_v1.py": "44e63547dddc120bab9496ad2fb23835bb50ae01ff5437cd2def06b7ee403c12",
+    "r1_15a2_supply.py": "c7595ce0be6652d3dbe1e6f73af7adad0e88fead64a9972c74660607e5651228",
+    "r1_15a2_supply_visum.py": "7dd9c0bba266f332f4e2067da881372cb5d98684a60f7cb09b0eb096fb54cbae",
+    "r1_15a2_supply_visum_v23.py": "c699bfbd7c5b42d87a77c4ec299aaa8b8b6aab6feccc49a9da444859c893a459",
+    "r1_15a2_com_compat.py": "36d7ff10d173d9cdea8edc5f56b3f75cc43dfd5dd4dc6f87a115a952c6484901",
+    "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e",
+    "helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py": "0e907474dead5dc765c5cdb198019f71945c08c8cb514218861d74c97822667d"
+  },
+  "statement": "Protected CSD/CITY observed datasets and route/TD/IDP numeric core remain byte-identical to V2.3.4"
+}

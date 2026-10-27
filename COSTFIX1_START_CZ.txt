@@ -1,0 +1,19 @@
+R1_15A2 SUPPLYMIX COSTFIX1 – START (27.10.2026)
+
+1. Rozbalte CELY ZIP do nove slozky, napr. C:\R1\R1_TDJOINT1_COSTFIX1.
+   Nemichejte je s bezicim GENFIX1/GENFIX2 ani starou kopii.
+2. Ve Visumu rucne otevrite posledni overeny accepted checkpoint .ver.
+   Po neocekavanem vypnuti PC overte, ze soubor byl opravdu ulozen;
+   samotny RESULT.json a state_hash to nedokazuji.
+3. Scripts -> Run script file -> 01_SPUSTIT_V24917_TDJOINT1.py
+   Pro 60/40 misto toho 02_SPUSTIT_V24917_TDJOINT1_60_40.py.
+4. V logu aktivace kontrolujte 'SUPPLYMIX_COSTFIX1' a na zaver
+   DEMAND_CYCLE_*_SUPPLYMIX/SUPPLYMIX_BLOCK_RESULT.json -> costfix1.
+5. Pri COSTFIX1 'NO_COST_SAFE_CANDIDATE' neni duvod obchazet minimalni cost.
+   Zkoumejte rejected_examples a pripadne chybejici alternativni trasy.
+
+Vaha TD vychozi 65/35; pozorovaci sady a konfigurace beze zmen.
+Oprava supply planu neposkytuje dukaz o lepsim GEH pred zive Visum testy.
+
+Manifests and rollback: 1059 protected files + 4 checked manifests.
+Pouzivejte pouze celou novou slozku se spravnymi zdrojovymi hashi.

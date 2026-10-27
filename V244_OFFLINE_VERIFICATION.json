@@ -1,0 +1,11 @@
+{
+  "release": "R1_15A2_V2_4_4_FULL_OVERNIGHT_NATIVE_MULTI_GUARD_20261016",
+  "status": "OFFLINE_VERIFIED",
+  "tests": "457 passed",
+  "reference_v17_sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82",
+  "reference_v17_expected": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82",
+  "native_multi_policy": "DIAGNOSTIC_ONLY_NATIVE_OUTPUT_AUTHORITY",
+  "file_count": 289,
+  "main": "R1_15A2_FULL_OVERNIGHT_COUPLED_V2_4_4.py",
+  "config": "R1_15A2_CONFIG_V2_4_4.json"
+}

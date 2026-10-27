@@ -1,0 +1,111 @@
+{
+  "scope": "OFFLINE_REAL_PYTHON_CONTROLLERS_SYNTHETIC_NATIVE_BOUNDARIES",
+  "live_visum_tested": false,
+  "production_ready": false,
+  "scenarios": {
+    "complete": {
+      "status": "COMPLETED_CONFIGURED_DEMAND_AND_SUPPLY_SEARCH",
+      "accepted_count": 3,
+      "completed_demand_cycles": 3,
+      "supply_started": true,
+      "final_state_verified": true,
+      "calibration_complete": true,
+      "assignment_fixture_calls": 21,
+      "final_state_hash": "f03b148d54b63f980a99afeee11b5bf45ddbec9d573aec569db9363e05a8b6a2",
+      "load_version_called": false,
+      "direct_od_matrix_writes": false
+    },
+    "generation_failure": {
+      "status": "FAILED",
+      "accepted_count": 0,
+      "completed_demand_cycles": 0,
+      "supply_started": false,
+      "final_state_verified": false,
+      "calibration_complete": false,
+      "assignment_fixture_calls": 1,
+      "final_state_hash": null,
+      "load_version_called": false,
+      "direct_od_matrix_writes": false
+    },
+    "td_failure_after_write": {
+      "status": "FAILED",
+      "accepted_count": 1,
+      "completed_demand_cycles": 0,
+      "supply_started": false,
+      "final_state_verified": false,
+      "calibration_complete": false,
+      "assignment_fixture_calls": 9,
+      "final_state_hash": null,
+      "load_version_called": false,
+      "direct_od_matrix_writes": false
+    },
+    "td_budget": {
+      "status": "DEMAND_SEARCH_INCOMPLETE_SUPPLY_LOCKED:TD_EVALUATION_BUDGET",
+      "accepted_count": 2,
+      "completed_demand_cycles": 0,
+      "supply_started": false,
+      "final_state_verified": true,
+      "calibration_complete": false,
+      "assignment_fixture_calls": 9,
+      "final_state_hash": "5d80d784bcf802daa7dc7af08aba6b150aa3be3e5aba8d9fcb6a3838503314c8",
+      "load_version_called": false,
+      "direct_od_matrix_writes": false
+    },
+    "supply_failure": {
+      "status": "FAILED_SUPPLY:FAILED",
+      "accepted_count": 2,
+      "completed_demand_cycles": 3,
+      "supply_started": true,
+      "final_state_verified": false,
+      "calibration_complete": false,
+      "assignment_fixture_calls": 12,
+      "final_state_hash": null,
+      "load_version_called": false,
+      "direct_od_matrix_writes": false
+    },
+    "stop_after_td": {
+      "status": "DEMAND_SEARCH_INCOMPLETE_SUPPLY_LOCKED:GLOBAL_USERSTOPREQUESTED",
+      "accepted_count": 2,
+      "completed_demand_cycles": 0,
+      "supply_started": false,
+      "final_state_verified": true,
+      "calibration_complete": false,
+      "assignment_fixture_calls": 9,
+      "final_state_hash": "5d80d784bcf802daa7dc7af08aba6b150aa3be3e5aba8d9fcb6a3838503314c8",
+      "load_version_called": false,
+      "direct_od_matrix_writes": false
+    }
+  },
+  "finecdf": {
+    "stop_reason": "MAX_ITERATIONS",
+    "search_complete": false,
+    "objective_start": 2.231113209480637,
+    "objective_final": 0.5543049064796065,
+    "objective_improvement": 1.6768083030010303,
+    "td_evaluations": 9,
+    "changed_components": [
+      "WORK_E_C",
+      "WORK_E_noC",
+      "WORK_noE_C",
+      "WORK_noE_noC",
+      "WORK_stud",
+      "SERV_E_C",
+      "SERV_E_noC",
+      "SERV_noE_C",
+      "SERV_noE_noC",
+      "SERV_stud",
+      "LONG_E_C",
+      "LONG_E_noC",
+      "LONG_noE_C",
+      "LONG_noE_noC",
+      "LONG_stud",
+      "SCHOOL"
+    ],
+    "reference_sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82",
+    "grid_nodes": 512,
+    "fixture_zones": 4,
+    "native_boundary": "SYNTHETIC_ROW_NORMALIZED_RESPONSE_NOT_VISUM_MULTI",
+    "real_681_zone_patch_preflight": "NOT_EXECUTED_IN_THIS_FIXTURE"
+  },
+  "status": "PASS_OFFLINE_DEMONSTRATIONS"
+}

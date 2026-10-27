@@ -1,0 +1,5 @@
+R1 15A2 V24916 FRESH0 runtime location
+stage=FAILED:LIVE_READ_ONLY_PREFLIGHT
+source_ver=/tmp/pytest-of-root/pytest-57/test_oneclick_failure_is_recor0/BASELINE.ver
+runs_root=/tmp/pytest-of-root/pytest-57/test_oneclick_failure_is_recor0/R1_15A2_V16_RUNS
+note=R1_15A2_V16_RUNS is created next to the opened .ver/project base, not necessarily inside this package folder.

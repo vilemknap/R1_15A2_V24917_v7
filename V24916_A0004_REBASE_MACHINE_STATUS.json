@@ -1,0 +1,31 @@
+{
+  "schema": "R1_15A2_V24916_A0004_REBASE_MACHINE_STATUS_V1",
+  "release": "R1_15A2_V24916_PERF2C_PROFILE488_A0004_CYCLE3_TD_RESUME_IOFIX1_ACTIVE_TARGETING_P2P3_PREFLIGHT_CACHEFIX1_20261022",
+  "offline_implementation_complete": true,
+  "offline_regression_passed": true,
+  "parent_sha_audit_passed": true,
+  "focused": {
+    "passed": 70,
+    "failed": 0
+  },
+  "full": {
+    "passed": 975,
+    "skipped": 4,
+    "failed": 0
+  },
+  "compileall": "PASS",
+  "parent_preflight": "PASS",
+  "runtime_manifest": "PASS",
+  "active_delta": "PASS",
+  "accepted_count_start": 4,
+  "outer_cycle_start": 3,
+  "resume_substep": "TD_FINECDF_V17",
+  "real_visum_tested": false,
+  "production_ready": false,
+  "preflight_cachefix1": {
+    "status": "PASS_OFFLINE",
+    "live_failure_fixed": "PERSISTENT_PATH_CACHE_ROOT_MISSING",
+    "preflight_persistent_path_cache_enabled": false,
+    "calibration_persistent_path_cache_policy_changed": false
+  }
+}

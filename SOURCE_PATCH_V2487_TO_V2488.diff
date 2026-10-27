@@ -1,0 +1,2322 @@
+--- /tmp/v2487orig/R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016/r1_15a2_persistent_path_cache_v248.py	2026-10-16 16:33:21.000000000 +0000
++++ r1_15a2_persistent_path_cache_v248.py	2026-10-16 19:57:01.620162906 +0000
+@@ -288,14 +288,13 @@
+         return self._candidate_from_origin(snapshot)
+ 
+     def _explicit_predecessor_contract_compatibility(self, manifest, actual, expected):
+-        """Authorize one exact predecessor cache as a read-only path-data source.
++        """Authorize a reviewed predecessor cache as a read-only path-data source.
+ 
+-        This is intentionally narrower than relaxing the persistent cache contract.
+-        Every storage/topology/profile field must remain exact.  Only the full config
+-        digest and explicitly listed consumer-module hashes may differ, and both the
+-        predecessor release and every predecessor hash are pinned in the target
+-        configuration.  The cache stays immutable and is still subjected to SQLite,
+-        SHA-256, basis, comparison-basis and structure-hash readback checks.
++        Historical releases keep their original exact-config/subset-module bridge.
++        V2.4.8.8 uses the stricter *path semantic* bridge: the complete config
++        digest is provenance only, every explicit path-data field remains exact,
++        and the complete seven-module source implementation map must match a
++        reviewed predecessor release.
+         """
+         rule = self.options.get("explicit_predecessor_read_compatibility", {})
+         if rule.get("enabled") is not True:
+@@ -305,47 +304,110 @@
+         predecessors = rule.get("predecessors")
+         if not isinstance(predecessors, list):
+             return None
++
++        semantic_policy = (
++            "READ_ONLY_EXACT_PATH_DATA_CONTRACT_FULL_SOURCE_IMPL_PIN_"
++            "CONFIG_DIGEST_PROVENANCE_ONLY")
++        if rule.get("policy") != semantic_policy:
++            # Preserve the V2.4.8.3--V2.4.8.7 compatibility semantics exactly.
++            source = None
++            for candidate in predecessors:
++                if (isinstance(candidate, dict) and
++                        manifest.get("release") == candidate.get("source_release") and
++                        actual.get("config_sha256") == candidate.get("source_config_sha256")):
++                    source = candidate
++                    break
++            if source is None or set(actual) != set(expected):
++                return None
++            ignored = {"config_sha256", "path_implementation_files", "contract_hash"}
++            for key in expected:
++                if key in ignored:
++                    continue
++                if actual.get(key) != expected.get(key):
++                    return None
++            actual_impl = actual.get("path_implementation_files")
++            expected_impl = expected.get("path_implementation_files")
++            source_impl = source.get("source_path_implementation_files")
++            if (not isinstance(actual_impl, dict) or
++                    not isinstance(expected_impl, dict) or
++                    not isinstance(source_impl, dict)):
++                return None
++            if set(actual_impl) != set(expected_impl):
++                return None
++            if not source_impl or not set(source_impl).issubset(set(actual_impl)):
++                return None
++            for name, target_hash in expected_impl.items():
++                predecessor_hash = actual_impl.get(name)
++                if name in source_impl:
++                    if predecessor_hash != source_impl.get(name):
++                        return None
++                elif predecessor_hash != target_hash:
++                    return None
++            return {
++                "mode": "EXPLICIT_PREDECESSOR_READ_COMPATIBILITY",
++                "target_release": self.cfg.get("release"),
++                "source_release": manifest.get("release"),
++                "source_config_sha256": actual.get("config_sha256"),
++                "target_config_sha256": expected.get("config_sha256"),
++                "allowed_path_implementation_differences": sorted(source_impl),
++                "policy": "READ_ONLY_STORE_EXACT_DATA_CONTRACT_NO_ROUTE_SHARE_INVENTION",
++            }
++
++        # V2.4.8.8 path-semantic bridge.
+         source = None
+         for candidate in predecessors:
+             if (isinstance(candidate, dict) and
+-                    manifest.get("release") == candidate.get("source_release") and
+-                    actual.get("config_sha256") == candidate.get("source_config_sha256")):
++                    manifest.get("release") == candidate.get("source_release")):
+                 source = candidate
+                 break
+-        if source is None:
+-            return None
+-        if set(actual) != set(expected):
++        if source is None or set(actual) != set(expected):
+             return None
++
++        # config_sha256 and contract_hash are provenance-only for path-cache
++        # compatibility. Every explicit path semantic field remains exact.
+         ignored = {"config_sha256", "path_implementation_files", "contract_hash"}
+         for key in expected:
+             if key in ignored:
+                 continue
+             if actual.get(key) != expected.get(key):
+                 return None
++
+         actual_impl = actual.get("path_implementation_files")
+         expected_impl = expected.get("path_implementation_files")
+         source_impl = source.get("source_path_implementation_files")
+-        if not isinstance(actual_impl, dict) or not isinstance(expected_impl, dict) or not isinstance(source_impl, dict):
++        if (not isinstance(actual_impl, dict) or
++                not isinstance(expected_impl, dict) or
++                not isinstance(source_impl, dict)):
++            return None
++        # The source rule pins the COMPLETE implementation map, not just files
++        # known to have changed. Target code may differ because it only reads the
++        # immutable store; saved path semantics are separately exact above.
++        if set(actual_impl) != set(expected_impl) or set(source_impl) != set(actual_impl):
+             return None
+-        if set(actual_impl) != set(expected_impl):
++        if actual_impl != source_impl:
+             return None
+-        if not source_impl or not set(source_impl).issubset(set(actual_impl)):
++
++        known_cfg = source.get("source_config_sha256s")
++        if known_cfg is None:
++            one = source.get("source_config_sha256")
++            known_cfg = [one] if one else []
++        if not isinstance(known_cfg, list):
+             return None
+-        for name, target_hash in expected_impl.items():
+-            predecessor_hash = actual_impl.get(name)
+-            if name in source_impl:
+-                if predecessor_hash != source_impl.get(name):
+-                    return None
+-            elif predecessor_hash != target_hash:
+-                return None
++        if any((not isinstance(x, str) or len(x) != 64) for x in known_cfg):
++            return None
++        actual_cfg = actual.get("config_sha256")
++        config_digest_recognized = actual_cfg in known_cfg if known_cfg else False
++
+         return {
+-            "mode": "EXPLICIT_PREDECESSOR_READ_COMPATIBILITY",
++            "mode": "EXPLICIT_PREDECESSOR_PATH_SEMANTIC_COMPATIBILITY",
+             "target_release": self.cfg.get("release"),
+             "source_release": manifest.get("release"),
+-            "source_config_sha256": actual.get("config_sha256"),
++            "source_config_sha256": actual_cfg,
++            "source_config_sha256_recognized": bool(config_digest_recognized),
++            "known_source_config_sha256s": known_cfg,
+             "target_config_sha256": expected.get("config_sha256"),
+-            "allowed_path_implementation_differences": sorted(source_impl),
+-            "policy": "READ_ONLY_STORE_EXACT_DATA_CONTRACT_NO_ROUTE_SHARE_INVENTION",
++            "path_implementation_hashes_fully_pinned": True,
++            "policy": "READ_ONLY_STORE_EXACT_PATH_DATA_CONTRACT_FULL_SOURCE_IMPL_PIN",
+         }
+ 
+     def validate_manifest(self, manifest, snapshot, profiles, links, sqlite_schema):
+@@ -353,8 +415,6 @@
+         actual = manifest.get("contract")
+         if not isinstance(actual, dict):
+             raise SupplyContractError("PERSISTENT_PATH_CACHE_CONTRACT_MISSING")
+-        # The live state may be a bound descendant.  The immutable path context,
+-        # code/config contract and profile/link authorities normally remain exact.
+         keys = ("cache_format_version", "sqlite_schema", "config_sha256",
+                 "path_implementation_files", "expected_zones", "path_export_dsegs",
+                 "passenger_dsegs", "representatives",
+@@ -363,17 +423,53 @@
+                 "observation_authority_hash", "profile_order_hash",
+                 "edge_dictionary_sha256", "immutable_snapshot", "contract_hash")
+         mismatches = [key for key in keys if actual.get(key) != expected.get(key)]
+-        if mismatches:
+-            compatibility = self._explicit_predecessor_contract_compatibility(
+-                manifest, actual, expected)
+-            if compatibility is None:
+-                raise SupplyContractError("PERSISTENT_PATH_CACHE_CONTRACT_MISMATCH:" + mismatches[0])
++        rule = self.options.get("explicit_predecessor_read_compatibility", {})
++        semantic_policy = (
++            "READ_ONLY_EXACT_PATH_DATA_CONTRACT_FULL_SOURCE_IMPL_PIN_"
++            "CONFIG_DIGEST_PROVENANCE_ONLY")
++
++        if rule.get("policy") != semantic_policy:
++            # Historical behavior: the full config digest is part of exact
++            # identity and only a pinned predecessor bridge may differ.
++            if mismatches:
++                compatibility = self._explicit_predecessor_contract_compatibility(
++                    manifest, actual, expected)
++                if compatibility is None:
++                    raise SupplyContractError(
++                        "PERSISTENT_PATH_CACHE_CONTRACT_MISMATCH:" + mismatches[0])
++            else:
++                compatibility = {
++                    "mode": "EXACT_CONTRACT",
++                    "source_release": manifest.get("release"),
++                    "target_release": self.cfg.get("release"),
++                }
+         else:
+-            compatibility = {
+-                "mode": "EXACT_CONTRACT",
+-                "source_release": manifest.get("release"),
+-                "target_release": self.cfg.get("release"),
+-            }
++            # V2.4.8.8: a complete config digest changes for unrelated
++            # Generation/TD/Supply controls. It remains provenance, while the
++            # explicit saved-path semantics and reviewed implementation identity
++            # are the restore authority.
++            semantic_keys = tuple(
++                k for k in keys if k not in ("config_sha256", "contract_hash"))
++            semantic_mismatches = [
++                key for key in semantic_keys if actual.get(key) != expected.get(key)]
++            if not semantic_mismatches:
++                compatibility = {
++                    "mode": ("EXACT_CONTRACT" if not mismatches else
++                             "PATH_SEMANTIC_CONFIG_DIGEST_COMPATIBILITY"),
++                    "source_release": manifest.get("release"),
++                    "target_release": self.cfg.get("release"),
++                    "source_config_sha256": actual.get("config_sha256"),
++                    "target_config_sha256": expected.get("config_sha256"),
++                    "full_config_digest_is_provenance_only": bool(mismatches),
++                }
++            else:
++                compatibility = self._explicit_predecessor_contract_compatibility(
++                    manifest, actual, expected)
++                if compatibility is None:
++                    raise SupplyContractError(
++                        "PERSISTENT_PATH_CACHE_CONTRACT_MISMATCH:" +
++                        semantic_mismatches[0])
++
+         if manifest.get("origin_snapshot", {}).get("fixed_link_hash") != snapshot.get("fixed_link_hash"):
+             raise SupplyContractError("PERSISTENT_PATH_CACHE_FIXED_LINK_CONTEXT_CHANGED")
+         return compatibility
+--- /tmp/v2487orig/R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016/r1_15a2_trial_adapter_v240.py	2026-10-16 16:33:21.000000000 +0000
++++ r1_15a2_trial_adapter_v240.py	2026-10-16 19:57:02.402941510 +0000
+@@ -294,11 +294,36 @@
+         if candidate is not None:
+             cache_dir, binding = candidate
+             manifest = self.persistent_path_cache._load_manifest(cache_dir)
+-            collector, record = self._open_persistent_cache(
+-                cache_dir, manifest, diag, snapshot, links, settings, seq)
+-            record["matched_by"] = "STATE_BINDING" if binding is not None else "ORIGIN_STATE_HASH"
+-            atomic_json(Path(folder) / "PERSISTENT_PATH_CACHE_RESTORE.json", record)
+-            return collector, manifest, record
++            try:
++                collector, record = self._open_persistent_cache(
++                    cache_dir, manifest, diag, snapshot, links, settings, seq)
++            except SupplyContractError as exc:
++                message = str(exc)
++                # A semantically incompatible cache is a performance miss, not a
++                # reason to abort a correct calibration. Corruption/integrity/
++                # binding failures remain hard errors. The rejected immutable
++                # cache is retained for forensic evidence and older releases.
++                fallback_policy = self.cfg.get("performance", {}).get(
++                    "persistent_path_cache", {}).get(
++                    "explicit_predecessor_read_compatibility", {}).get(
++                    "incompatible_candidate_policy")
++                if (not message.startswith("PERSISTENT_PATH_CACHE_CONTRACT_MISMATCH:") or
++                        fallback_policy !=
++                        "REJECT_CACHE_AS_PERFORMANCE_MISS_THEN_LEGACY_OR_FRESH_ENUMERATION"):
++                    raise
++                atomic_json(Path(folder) / "PERSISTENT_PATH_CACHE_REJECTED.json", {
++                    "status": "INCOMPATIBLE_PERSISTENT_CACHE_REJECTED",
++                    "cache_id": manifest.get("cache_id"),
++                    "cache_dir": str(cache_dir),
++                    "source_release": manifest.get("release"),
++                    "error": message,
++                    "fallback": "LEGACY_EXACT_STATE_IMPORT_OR_FRESH_ENUMERATION",
++                    "state_hash": snapshot.get("state_hash"),
++                })
++            else:
++                record["matched_by"] = "STATE_BINDING" if binding is not None else "ORIGIN_STATE_HASH"
++                atomic_json(Path(folder) / "PERSISTENT_PATH_CACHE_RESTORE.json", record)
++                return collector, manifest, record
+ 
+         # One-time safe import from a complete V2.4.7/V2.4.5 run. Legacy reuse
+         # is allowed only for the exact origin state and requires all-profile
+--- /tmp/v2487orig/R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016/README.md	2026-10-16 18:39:34.000000000 +0000
++++ README.md	2026-10-16 19:59:40.753437739 +0000
+@@ -1,32 +1,28 @@
+-# R1 15A2 — aktuální release V2.4.8.6
++# R1 15A2 — aktuální release V2.4.8.8
+ 
+-Tento balík sjednocuje dvě paralelní větve V2.4.8.5:
+-
+-1. **STABLE PROJECT ROOT** — nový run se vždy vytváří přímo pod projektovým kořenem, i když je ve Visumu otevřen checkpoint hluboko uvnitř starého run stromu.
+-2. **GENERATION SATURATION** — Generation návrh respektuje skutečné hard bounds aktuátorů před trialem a po ořezu znovu vyváží P/A uvnitř stejné family.
+-
+-Jediný aktuální launcher je:
++Aktuální launcher je:
+ 
+ ```text
+-R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_6.py
++R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py
+ ```
+ 
+-## Zachované mechanismy
+-
+-- persistentní hashovaná path cache v `%LOCALAPPDATA%\R1_15A2_PATH_CACHE_V248`;
+-- exact-state / accepted-state binding;
+-- bounded zero-share support z V2.4.8.2;
+-- vnější project-root normalizace a zákaz vnořeného nového runu;
+-- fresh Visum assignment + live 12D/11D jako jediná acceptance autorita;
+-- in-place rollback bez `LoadVersion`;
+-- progressive FineCDF v1.8 a ADDVAL1 path-epoch politika.
+-
+-## Stav
+-
+-- úplná offline sada: viz `V2486_RELEASE_STATUS.json`;
+-- replay skutečného V2484 Generation pádu: viz `V2486_REAL_V2484_FAILURE_REPLAY.json`;
+-- run-root audit: viz `V2486_RUN_ROOT_DERIVATION_AUDIT.json`;
+-- skutečný PTV Visum acceptance: dosud neproveden;
+-- produkční autorizace: `false`.
++V2.4.8.8 opravuje reálný pád V2.4.8.7 před Generation na
++`PERSISTENT_PATH_CACHE_CONTRACT_MISMATCH:config_sha256`. Plný SHA konfigurace je
++nyní pro persistentní path cache pouze provenance; reuse se autorizuje přes
++explicitní path-data kontrakt a reviewed kompletní source implementation identity.
++Skutečně nekompatibilní cache je výkonový miss a běh smí pokračovat legacy
++exact-state importem nebo fresh enumeration; korupce, SHA, SQLite integrity,
++binding a path-basis chyby zůstávají fail-closed.
++
++Zachováno je:
++
++- persistentní cache `%LOCALAPPDATA%\R1_15A2_PATH_CACHE_V248`;
++- accepted-state path-epoch bindings;
++- zero-share support hotfix;
++- outermost project-root normalizace a zákaz vnořených runů;
++- live Generation koeficienty bez historických stropů 3/10;
++- fresh Visum assignment + live 12D/11D jako acceptance autorita;
++- rollback bez `LoadVersion`.
+ 
+-Začni souborem `START_HERE_V2486_CZ.txt` a živým checklistem `LIVE_VISUM_ACCEPTANCE_V2_4_8_6_CZ.md`.
++Začni `START_HERE_V2488_CZ.txt` a `LIVE_VISUM_ACCEPTANCE_V2_4_8_8_CZ.md`.
++Skutečný V2488 Visum acceptance zatím není uzavřen; `production_ready=false`.
+--- /tmp/v2487orig/R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016/CURRENT_RELEASE.txt	2026-10-16 18:39:34.000000000 +0000
++++ CURRENT_RELEASE.txt	2026-10-16 19:59:40.743600217 +0000
+@@ -1,3 +1,3 @@
+-R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016
+-Launcher: R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_6.py
+-Status: OFFLINE_VERIFIED_NOT_REAL_VISUM_ACCEPTED
++R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016
++Launcher: R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py
++Status: OFFLINE_VERIFIED_PENDING_REAL_VISUM_RESTORE_GATE
+--- /dev/null	2026-10-16 19:06:35.173625826 +0000
++++ R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py	2026-10-16 19:54:59.265542625 +0000
+@@ -0,0 +1,431 @@
++# -*- coding: utf-8 -*-
++"""R1 15A2 V2.4.8.8 path-cache semantic compatibility hotfix: persistent path-epoch calibration.
++
++Extends V2.4.7 with immutable cross-run path-epoch checkpoints and accepted-state bindings.
++Adaptive search can follow a different accepted path than V2.4.5, while every
++candidate still requires the unchanged live assignment and acceptance gates.
++
++Run manually from Visum Scripts > Execute script file, never from Procedure Sequence.
++The source .ver is preserved. The script first saves an isolated working copy,
++then performs real candidate writes, real Visum recomputations, live acceptance,
++and no-LoadVersion in-place rollback for rejected candidates.
++"""
++from __future__ import annotations
++
++from datetime import datetime
++from pathlib import Path
++import contextlib
++import csv
++import json
++import os
++import sys
++import traceback
++
++HERE = Path(__file__).resolve().parent
++if globals().get("Visum") is not None or globals().get("COM") is not None:
++    if getattr(sys, "_r1_15a2_calibration_busy", False):
++        raise RuntimeError("ANOTHER_15A2_RUN_IS_ACTIVE")
++    for name in list(sys.modules):
++        if name.startswith("r1_15a2_"):
++            del sys.modules[name]
++_ORIGINAL_SYS_PATH = list(sys.path)
++# A previous Visum run may have left another release ahead of this directory.
++# Give this complete release first priority even when HERE is already present.
++sys.path[:] = [str(HERE)] + [p for p in sys.path if p != str(HERE)]
++
++import r1_15a2_com_compat as com
++import r1_15a2_live_api_audit as api_audit
++import r1_15a2_runtime_v1 as rt
++import r1_15a2_supply_visum as supply_runtime
++import r1_15a2_visum_parameters as vp
++from r1_15a2_supply import canonical_hash
++from r1_15a2_safety_v248 import final_artifact_name
++from r1_15a2_safety_v2488 import validate_v2488_config
++from r1_15a2_trial_adapter_v243 import VisumAdapter
++from r1_15a2_overnight_controller_v240 import OvernightControl, atomic_json
++from r1_15a2_overnight_controller_v242 import run_overnight_calibration_coupled
++
++RELEASE = "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016"
++
++
++def _is_runs_root(path):
++    name = Path(path).name.upper()
++    return name.startswith("R1_15A2_") and name.endswith("_RUNS")
++
++
++def _run_tree_ancestors(source_ver):
++    """Return qualifying RUNS ancestors from nearest to outermost.
++
++    A directory only qualifies when the source is below its RUN_* child. This
++    avoids treating an unrelated archive directory ending in _RUNS as a live
++    calibration run tree.
++    """
++    source_ver = Path(source_ver).resolve()
++    found = []
++    for candidate in (source_ver.parent,) + tuple(source_ver.parent.parents):
++        if not _is_runs_root(candidate):
++            continue
++        try:
++            rel = source_ver.relative_to(candidate)
++        except ValueError:
++            continue
++        if len(rel.parts) >= 2 and rel.parts[0].upper().startswith("RUN_"):
++            found.append(candidate)
++    return found
++
++
++def _stable_project_layout(source_ver):
++    """Resolve a stable project root from plain, singly nested or repeatedly
++    nested accepted checkpoints.
++
++    V2.4.8.3 nested the next RUNS directory below the loaded checkpoint.
++    V2.4.8.4 fixed one nesting level by taking the nearest RUNS ancestor, but a
++    checkpoint from an already nested failed run still had two RUNS ancestors.
++    The correct project base is the parent of the *outermost* qualifying RUNS
++    ancestor. The loaded .ver remains the immutable source authority.
++    """
++    source_ver = Path(source_ver).resolve()
++    roots = _run_tree_ancestors(source_ver)
++    if roots:
++        outermost = roots[-1]
++        project_base = outermost.parent.resolve()
++        mode = "OUTERMOST_PRIOR_RUN_TREE_NORMALIZED"
++    else:
++        outermost = None
++        project_base = source_ver.parent.resolve()
++        mode = "SOURCE_PARENT"
++    return {
++        "source_version": source_ver,
++        "project_base": project_base,
++        "mode": mode,
++        "detected_run_roots_nearest_first": roots,
++        "outermost_run_root": outermost,
++    }
++
++
++def _stable_project_base(source_ver):
++    layout = _stable_project_layout(source_ver)
++    return layout["project_base"], layout["mode"]
++
++
++def _is_relative_to(path, parent):
++    try:
++        Path(path).resolve().relative_to(Path(parent).resolve())
++        return True
++    except ValueError:
++        return False
++
++
++def _assert_new_run_is_not_nested(run_directory, prior_run_roots):
++    for prior in prior_run_roots:
++        if _is_relative_to(run_directory, prior):
++            raise RuntimeError("V2488_NEW_RUN_STILL_NESTED_UNDER_PRIOR_RUN_TREE:%s" % prior)
++
++
++
++def load_config():
++    path = HERE / "R1_15A2_CONFIG_V2_4_8_8.json"
++    cfg = rt.read_json(path)
++    # Hard locks: working-copy calibration is not production release/apply.
++    cfg["apply"] = False
++    cfg["production_apply"] = False
++    cfg["trial_calibration"]["enabled"] = True
++    cfg["config_path"] = str(path)
++    cfg["config_sha256"] = rt.sha256_file(path)
++    implementation = [
++        "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py",
++        "r1_15a2_trial_adapter_v243.py", "r1_15a2_trial_adapter_v240.py", "r1_15a2_overnight_controller_v240.py",
++        "r1_15a2_overnight_controller_v242.py", "r1_15a2_finecdf_bridge_v242.py",
++        "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
++        "r1_15a2_inplace_transaction_v239.py", "r1_15a2_assignment_authority_v239.py",
++        "r1_15a2_two_mode_v238.py", "r1_15a2_com_compat.py", "r1_15a2_live_api_audit.py",
++        "r1_15a2_controller_v22.py", "r1_15a2_sequence_v23.py", "r1_15a2_supply.py",
++        "r1_15a2_supply_visum.py", "r1_15a2_runtime_v1.py", "r1_15a2_core.py",
++        "r1_15a2_multiblock.py", "r1_15a2_visum_parameters.py", "r1_15a2_safety_v246.py", "r1_15a2_safety_v247.py", "r1_15a2_safety_v248.py", "r1_15a2_safety_v2482.py", "r1_15a2_safety_v2483.py", "r1_15a2_safety_v2485.py", "r1_15a2_safety_v2486.py", "r1_15a2_safety_v2487.py", "r1_15a2_safety_v2488.py", "r1_15a2_persistent_path_cache_v248.py", "r1_15a2_perf_v246.py",
++        "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
++    ]
++    # Include every local runtime module and diagnostic helper, not just the
++    # manually enumerated immediate imports. Old aliases cannot pass as V245.
++    implementation = sorted(set(implementation) |
++                            {str(p.relative_to(HERE)) for p in HERE.glob("r1_15a2_*.py")} |
++                            {str(p.relative_to(HERE)) for p in (HERE / "helpers").glob("*.py")})
++    cfg["implementation_files"] = {name: rt.sha256_file(HERE / name) for name in implementation}
++    cfg["implementation_hash"] = canonical_hash(cfg["implementation_files"])
++    cfg["cp03_live_hotfixes"] = ["SHORT_RUN_ROOT", "SHORT_OS_TEMP_11D_12D_HELPER_WORKSPACES", "ROLLBACK_STATE_EVIDENCE_BEFORE_DIAGNOSTICS"]
++    cfg["cp02_performance_features"] = [
++        "PER_OPERATION_TELEMETRY", "BULK_LINK_COM_READ_WITH_VERIFIED_FALLBACK",
++        "ADAPTIVE_BOUNDED_PATH_PAGING", "LAZY_SUPPLY_SEQUENCE_EVIDENCE",
++        "FIRST_SUFFICIENT_LIVE_CANDIDATE", "ADAPTIVE_GENERATION_STEP_SCHEDULE",
++        "PROGRESSIVE_FINECDF_V18", "ADAPTIVE_FINECDF_TRUST_REGION",
++        "ADDVAL1_STEP_UNITS_4_2_1",
++    ]
++    cfg["v248_persistent_path_cache_features"] = [
++        "INITIAL_PATH_ENUMERATION_ONCE",
++        "FROZEN_PATH_BASIS_REUSED_ACROSS_ACCEPTED_STATES",
++        "LIVE_OD_TOTAL_REWEIGHT_ON_FROZEN_PATH_SHARES",
++        "LIVE_PROFILE_RESIDUAL_REBIND_WITHOUT_COM_REENUMERATION",
++        "REENUMERATE_ONLY_AFTER_COMPLETE_LOCAL_PLATEAU",
++        "FRESH_IDENTICAL_PATH_BASIS_REQUIRED_FOR_STATIONARITY",
++        "NEW_POSITIVE_OD_FORCES_REENUMERATION_NO_INVENTED_SHARE",
++        "IMMUTABLE_SQLITE_CHECKPOINT_AFTER_EVERY_SUCCESSFUL_ENUMERATION",
++        "SHA256_AND_SQLITE_INTEGRITY_VERIFIED_CROSS_RUN_RESTORE",
++        "EXPLICIT_ACCEPTED_STATE_TO_PATH_EPOCH_BINDINGS",
++        "LEGACY_V247_EXACT_STATE_IMPORT_WITH_ALL_PROFILE_FLOW_PARITY",
++        "READ_ONLY_PERSISTENT_STORE_DURING_CALIBRATION",
++        "INTRAZONAL_POSITIVE_OD_NEVER_REQUIRES_NETWORK_PATH_SUPPORT",
++        "WINDOWS_OBSOLETE_SQLITE_DELETE_LOCK_IS_NONFATAL_AFTER_VERIFIED_REFRESH",
++        "ZERO_SAVED_SHARE_EXISTING_GEOMETRY_RESIDUAL_WITHIN_PARITY_IS_GUIDANCE_EXCLUDED",
++        "EXPLICIT_V2481_V2482_READ_ONLY_CACHE_CONTRACT_COMPATIBILITY",
++    ]
++    cfg["v2486_unified_features"] = [
++        "OUTERMOST_PRIOR_RUN_TREE_NORMALIZATION",
++        "NEW_RUN_OUTSIDE_ALL_DETECTED_PRIOR_RUN_ROOTS_POSTCONDITION",
++        "DIRECT_ACTUATOR_CAPACITY_CLIP_BEFORE_GENERATION_TRIAL",
++        "SAME_FAMILY_PA_ROLE_ATTENUATION_PRESERVES_SPATIAL_PATTERN",
++        "SATURATED_REQUESTS_AUDITED_NOT_SILENTLY_DROPPED",
++        "UNCHANGED_FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D_ACCEPTANCE",
++        "READ_ONLY_CACHE_COMPATIBILITY_V2481_THROUGH_BOTH_V2485_BRANCHES",
++    ]
++    cfg["v2487_live_coefficient_features"] = [
++        "LIVE_VISUM_ZONE_ATTRIBUTE_IS_COEFFICIENT_AUTHORITY",
++        "NO_GLOBAL_ABSOLUTE_UPPER_BOUND_FOR_ADD_OR_ZAHR_COEFFICIENTS",
++        "SALARY_USES_CURRENT_VALUE_PLUS_PER_BLOCK_DELTA_AND_FORMULA_DOMAIN",
++        "RELATIVE_LOG_STEP_REMAINS_STAGE_AND_BACKTRACKING_BOUNDED",
++        "FINITE_NONNEGATIVE_MULTIPLICATIVE_DOMAIN_REMAINS_FAIL_CLOSED",
++        "LEGACY_3_AND_10_LIMITS_DISABLED_NOT_RELAXED_TO_NEW_MAGIC_NUMBERS",
++        "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D_ACCEPTANCE_UNCHANGED",
++        "READ_ONLY_CACHE_COMPATIBILITY_V2481_THROUGH_V2486",
++    ]
++    cfg["v2488_path_cache_semantic_compat_features"] = [
++        "FULL_CONFIG_SHA_IS_PROVENANCE_NOT_PATH_DATA_IDENTITY",
++        "EXPLICIT_PATH_SEMANTIC_FIELDS_REMAIN_EXACT",
++        "FULL_SEVEN_MODULE_PATH_IMPLEMENTATION_MAP_REQUIRED_FOR_REVIEWED_PREDECESSOR",
++        "ACTUAL_DEPLOYED_V2482_ZERO_VOLUME_RELEASE_HASHES_PINNED",
++        "INCOMPATIBLE_CACHE_IS_PERFORMANCE_MISS_NOT_CALIBRATION_ABORT",
++        "CORRUPTION_INTEGRITY_BINDING_AND_STORE_HASH_FAILURES_REMAIN_FAIL_CLOSED",
++        "LEGACY_EXACT_STATE_IMPORT_OR_FRESH_ENUMERATION_FALLBACK",
++    ]
++    for module in (com, api_audit, rt, vp, supply_runtime):
++        if Path(module.__file__).resolve().parent != HERE.resolve():
++            raise RuntimeError("V248_MIXED_RELEASE_MODULE:" + module.__name__)
++    for rel, target in ((cfg["tg_dependency_contract_file"], "tg_dependency_contract"),
++                        (cfg["td"]["long_authority_file"], "long_authority")):
++        p = HERE / rel
++        cfg[target] = rt.read_json(p)
++        cfg[target + "_path"] = str(p)
++        cfg[target + "_sha256"] = rt.sha256_file(p)
++    cfg["api_approved_observations"] = []
++    for fn in ("R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv", "R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv"):
++        with (HERE / "authorities" / fn).open(encoding="utf-8-sig", newline="") as h:
++            for r in csv.DictReader(h):
++                cfg["api_approved_observations"].append({
++                    "no": int(r["countlocation_no"]),
++                    "observed": float(r["observed_passenger_cars_O"]),
++                    "role": r["role"], "weight": float(r["live_weight"]),
++                    "edge_key": [int(r[k]) for k in ("current_link_no", "current_from_node_no", "current_to_node_no")],
++                    "direction": r.get("observation_direction", "DIRECTIONAL"),
++                    "countlocation_code": r["countlocation_code"], "profile_id": r["profile_id"],
++                    "period_basis": r["period_basis"],
++                    "observed_scope": r.get("vehicle_scope_original", r.get("vehicle_scope")),
++                })
++    validate_v2488_config(cfg, HERE)
++    return cfg
++
++
++def _main_impl():
++    visum, _ = com.bind_injected(globals())
++    source_ver = Path(str(visum.IO.CurrentVersionFile))
++    if not source_ver.is_file():
++        raise RuntimeError("CURRENT_VERSION_FILE_NOT_FOUND")
++    source_sha_before = rt.sha256_file(source_ver)
++    # Resolve a stable project-level output location before SaveVersion changes
++    # CurrentVersionFile.  A loaded accepted checkpoint may live deep inside a
++    # previous RUNS tree; never nest the next run below that checkpoint folder.
++    project_layout = _stable_project_layout(source_ver)
++    project_base = project_layout["project_base"]
++    project_base_mode = project_layout["mode"]
++    runs = project_base / "R1_15A2_V2488_RUNS"
++    runs.mkdir(parents=True, exist_ok=True)
++    folder = runs / ("RUN_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
++    folder.mkdir()
++    _assert_new_run_is_not_nested(folder, project_layout["detected_run_roots_nearest_first"])
++    (runs / "LATEST_RUN.txt").write_text(str(folder), encoding="utf-8")
++    (folder / "00_RELEASE.txt").write_text(RELEASE + "\n", encoding="utf-8")
++    lock = project_base / ".R1_15A2_FULL_CALIBRATION.lock"
++    have_lock = False
++    adapter = None
++    control = None
++    prior_runtime_visum = getattr(rt, "Visum", None)
++    prior_base_visum = getattr(supply_runtime.base, "Visum", None)
++    result = {"status": "STARTING", "release": RELEASE, "production_apply": False, "trial_writes": True}
++    with (folder / "CONSOLE_CAPTURE.log").open("w", encoding="utf-8") as console:
++        with contextlib.redirect_stdout(console), contextlib.redirect_stderr(console):
++            try:
++                fd = os.open(str(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
++                have_lock = True
++                with os.fdopen(fd, "w", encoding="utf-8") as h:
++                    json.dump({"pid": os.getpid(), "run": str(folder)}, h)
++                have_lock = True
++                sys._r1_15a2_calibration_busy = True
++                cfg = load_config()
++                local_appdata = os.environ.get("LOCALAPPDATA")
++                cache_root = (Path(local_appdata) / "R1_15A2_PATH_CACHE_V248"
++                              if local_appdata else
++                              project_base / "R1_15A2_PATH_CACHE_V248")
++                legacy_roots = [
++                    project_base / "R1_15A2_V2485_RUNS",
++                    project_base / "R1_15A2_V2484_RUNS",
++                    project_base / "R1_15A2_V2483_RUNS",
++                    project_base / "R1_15A2_V2482_RUNS",
++                    project_base / "R1_15A2_V2481_RUNS",
++                    project_base / "R1_15A2_V247_RUNS",
++                    project_base / "R1_15A2_V246_RUNS",
++                    project_base / "R1_15A2_V245_RUNS",
++                    project_base / "R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS",
++                ]
++                cfg["runtime_persistent_path_cache_root"] = str(cache_root)
++                cfg["runtime_legacy_path_cache_roots"] = [str(x) for x in legacy_roots]
++                cfg["runtime_source_version_sha256"] = source_sha_before
++                cfg["runtime_source_version_path"] = str(source_ver)
++                atomic_json(folder / "RUN_ROOT_AUTHORITY.json", {
++                    "source_version": str(source_ver),
++                    "source_parent": str(source_ver.parent),
++                    "project_base": str(project_base),
++                    "project_base_mode": project_base_mode,
++                    "detected_run_roots_nearest_first": [str(x) for x in project_layout["detected_run_roots_nearest_first"]],
++                    "outermost_run_root": (str(project_layout["outermost_run_root"])
++                                             if project_layout["outermost_run_root"] is not None else None),
++                    "normalization_depth": len(project_layout["detected_run_roots_nearest_first"]),
++                    "runs_root": str(runs),
++                    "run_directory": str(folder),
++                    "policy": "OUTERMOST_QUALIFYING_RUNS_ANCESTOR_PARENT; NEVER_NEST_NEW_RUN_UNDER_PRIOR_RUN_TREE",
++                    "postcondition_new_run_outside_all_detected_prior_run_roots": True,
++                })
++                atomic_json(folder / "PERSISTENT_PATH_CACHE_LOCATION.json", {
++                    "root": str(cache_root),
++                    "root_policy": cfg["performance"]["persistent_path_cache"]["root_policy"],
++                    "legacy_roots": [str(x) for x in legacy_roots],
++                    "source_version": str(source_ver),
++                    "source_sha256": source_sha_before,
++                })
++                methodology = {
++                    "production_release": False,
++                    "working_copy_trial_calibration": True,
++                    "csd408_mapping_review_acknowledged": bool(cfg.get("csd408_mapping_review_acknowledged", False)),
++                    "city90_bidirectional_qa_acknowledged": bool(cfg.get("city90_bidirectional_qa_acknowledged", False)),
++                    "two_mode_full_geometry_identity_proven": False,
++                    "two_mode_geometry_role": "CANDIDATE_PROPOSAL_ONLY",
++                    "candidate_acceptance_role": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
++                    "duplicate_policy": cfg.get("supply", {}).get("sequence", {}).get("design_only_duplicate_scope_policy"),
++                    "observation_contract": "498_INDEPENDENT_ROWS_PRESERVED_CAL_VALID_ROLES_UNCHANGED",
++                    "calibration_order": ["COUPLED_DEMAND:GENERATION_THEN_FINECDF_TD_REPEAT", "SUPPLY_ROUTE_CHOICE"],
++                    "supply_addval1_role": "FINAL_ROUTE_CHOICE_LINK_TUNING_AFTER_COUPLED_DEMAND_FIXED_POINT_ONLY",
++                    "trip_generation_and_distribution_relationship": "ONE_COUPLED_DEMAND_PHASE_NOT_INDEPENDENT_PHASES",
++                    "td_authority": "HASH_LOCKED_R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_V1_8_512_POINT_IDP",
++                    "native_multi_guard_policy": "DIAGNOSTIC_ONLY_NATIVE_OUTPUT_AUTHORITY",
++                    "performance_search_semantics": "PERSISTENT_PATH_EPOCH_ADAPTIVE_EXPLICIT_NOT_BITWISE_IDENTICAL",
++                    "path_enumeration_policy": "AUTHORIZED_PERSISTENT_CACHE_OR_FRESH_ENUMERATION_THEN_ONLY_AT_LOCAL_PLATEAU",
++                    "path_epoch_acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
++                    "persistent_path_cache_policy": "HASHED_SQLITE_PLUS_ACCEPTED_STATE_BINDINGS_FAIL_CLOSED",
++                    "stable_project_root_policy": "OUTERMOST_PRIOR_RUN_TREE_NORMALIZED_AND_POSTCONDITION_CHECKED",
++                    "generation_bound_projection_policy": "CLIP_DIRECT_ACTUATOR_CAPACITY_THEN_ATTENUATE_LARGER_PA_ROLE",
++                    "generation_bound_projection_acceptance": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++                    "cp03_live_path_hotfix_retained": True,
++                }
++                atomic_json(folder / "METHODOLOGY_STATUS.json", methodology)
++                result["methodology_status"] = methodology
++                atomic_json(folder / "SOURCE_VERSION_AUTHORITY.json", {
++                    "source_version": str(source_ver), "source_sha256_before": source_sha_before,
++                    "policy": "SOURCE_FILE_MUST_REMAIN_UNTOUCHED_WORK_ONLY_ON_SAVED_COPY",
++                })
++                # Isolate all subsequent writes from the user's source .ver.
++                working = folder / "WORKING_START.ver"
++                working_cp = rt.save_version(visum, working)
++                atomic_json(folder / "WORKING_COPY.json", working_cp)
++                control = OvernightControl(folder, cfg)
++                rt.Visum = visum
++
++                # Full API audit remains read-only and catches COM/schema drift before writes.
++                def td_check():
++                    state = vp.read_td_parameter_state(visum)
++                    return {"passes": all(r["status"] == "OK" for r in state["rows"]),
++                            "rows": state["rows"], "operation_rows": state["operation_rows"]}
++                control.checkpoint("LIVE_API_PREFLIGHT", force=True)
++                report = api_audit.collect_live_api(visum, cfg, folder / "API_PREFLIGHT", extra_checks=(
++                    ("TG_FORMULA_PARAMETER_BINDINGS", lambda: vp.audit_trip_generation_contract(visum, cfg)),
++                    ("TD_COMPONENT_PARAMETER_BINDINGS", td_check),
++                    ("PROCSEQ_TYPE_ORDER", lambda: rt.audit_procseq(visum, folder / "API_PREFLIGHT", cfg)),
++                ))
++                if report["required_failures"]:
++                    result = {"status": "LIVE_API_PREFLIGHT_FAILED", "required_failures": report["required_failures"]}
++                else:
++                    adapter = VisumAdapter(visum, cfg, control)
++                    result = run_overnight_calibration_coupled(adapter, cfg, folder / "CALIBRATION", control, HERE)
++
++                # Save a final deliverable only when the controller exposes a verified live state.
++                final_name = final_artifact_name(result)
++                if adapter is not None and final_name is not None:
++                    try:
++                        live = adapter.snapshot()
++                        if live["state_hash"] != result["final_state_hash"]:
++                            raise RuntimeError("FINAL_LIVE_STATE_DIFFERS_FROM_CONTROLLER_ACCEPTED_STATE")
++                        if rt.sha256_file(source_ver) != source_sha_before:
++                            raise RuntimeError("SOURCE_FILE_CHANGED_BEFORE_FINAL_SAVE")
++                        final_cp = rt.save_version(visum, folder / final_name)
++                        if adapter.snapshot() != live:
++                            raise RuntimeError("SAVEVERSION_CHANGED_VERIFIED_MODEL_STATE")
++                        result["final_accepted_version"] = final_cp
++                    except Exception as exc:
++                        result["final_save_error"] = str(exc)
++                        result["status"] = "FINAL_SAVE_FAILED_USE_LATEST_ACCEPTED_CHECKPOINT"
++                elif adapter is not None:
++                    result["final_accepted_version_not_written"] = "NO_VERIFIED_FINAL_STATE_OR_FAILED_RUN"
++            except BaseException as exc:
++                result = {"status": "FULL_OVERNIGHT_FAILED", "error": str(exc), "traceback": traceback.format_exc(),
++                          "production_apply": False, "trial_writes": True}
++            finally:
++                try:
++                    source_sha_after = rt.sha256_file(source_ver)
++                    result["source_version"] = str(source_ver)
++                    result["source_sha256_before"] = source_sha_before
++                    result["source_sha256_after"] = source_sha_after
++                    result["source_file_unchanged"] = source_sha_after == source_sha_before
++                    if not result["source_file_unchanged"]:
++                        result["status"] = "SOURCE_VERSION_FILE_CHANGED_UNEXPECTEDLY"
++                except Exception as exc:
++                    result["source_integrity_error"] = str(exc)
++                    result["status"] = "FAILED_SOURCE_INTEGRITY_UNVERIFIED"
++                result.update(release=RELEASE, production_apply=False, trial_writes=True,
++                              load_version_called=False, run_directory=str(folder))
++                if adapter is not None:
++                    try:
++                        adapter.close()
++                    except Exception as exc:
++                        result["adapter_close_error"] = str(exc)
++                try:
++                    atomic_json(folder / "00_RESULT.json", result)
++                    (folder / "00_FINAL_STATUS.txt").write_text(str(result.get("status")) + "\n", encoding="utf-8")
++                    if control is not None:
++                        control.finish(result.get("status", "FINISHED"), accepted_count=result.get("accepted_count"))
++                finally:
++                    rt.Visum = prior_runtime_visum
++                    supply_runtime.base.Visum = prior_base_visum
++                    if have_lock:
++                        sys._r1_15a2_calibration_busy = False
++                        try:
++                            lock.unlink()
++                        except OSError:
++                            pass
++                    sys.path[:] = _ORIGINAL_SYS_PATH
++    return result
++
++
++def main():
++    try:
++        return _main_impl()
++    finally:
++        sys.path[:] = _ORIGINAL_SYS_PATH
++
++
++if __name__ == "__main__" or globals().get("Visum") is not None or globals().get("COM") is not None:
++    main()
+--- /dev/null	2026-10-16 19:06:35.173625826 +0000
++++ R1_15A2_CONFIG_V2_4_8_8.json	2026-10-16 19:53:21.708836795 +0000
+@@ -0,0 +1,897 @@
++{
++  "version": "2.4.8.8-path-cache-semantic-compat-tg-td-supply",
++  "apply": false,
++  "run_procseq": true,
++  "max_cycles": 2,
++  "max_accepted_blocks": 1,
++  "block_schedule": [
++    "GENERATION",
++    "TD_FINECDF_V17",
++    "SUPPLY_ADDVAL1"
++  ],
++  "backtracking_scales": [
++    1.0,
++    0.5,
++    0.25
++  ],
++  "calibration_role": "CALIBRATION",
++  "guidance_mode": "POSITIVE_ONLY",
++  "mutable_dsegs": [
++    "NATIVE_CW",
++    "NATIVE_CW_noT",
++    "NATIVE_CS",
++    "NATIVE_CS_noT"
++  ],
++  "path_export_dsegs": [
++    "NATIVE_CW",
++    "NATIVE_CW_noT",
++    "NATIVE_CS",
++    "NATIVE_CS_noT"
++  ],
++  "include_exog_ee_paths": false,
++  "mutable_relation_policy": "BOTH_ENDPOINTS_ACTUATABLE",
++  "explicit_excluded_zone_nos": [],
++  "require_active_tg_td": true,
++  "require_active_assignment": true,
++  "require_parameter_persistence_after_procseq": true,
++  "require_mutable_matrix_change_for_generation_apply": true,
++  "require_rollback_verification": true,
++  "expected_12d_rows": 498,
++  "expected_calibration_rows": 462,
++  "expected_validation_rows": 36,
++  "require_path_parity_for_apply": true,
++  "min_path_link_coverage": 0.98,
++  "min_path_link_volume_coverage": 0.995,
++  "require_dseg_path_volume_parity_for_apply": true,
++  "dseg_path_volume_relative_tolerance": 0.01,
++  "parity_min_model": 100.0,
++  "parity_p95_relative_tolerance": 0.02,
++  "parity_p99_relative_tolerance": 0.05,
++  "min_driver_geh": 10.0,
++  "min_driver_abs_residual": 300.0,
++  "min_mutable_share": 0.3,
++  "protected_geh": 5.0,
++  "protected_warn_geh": 10.0,
++  "protected_hard_geh": 30.0,
++  "overroute_penalty_geh": 5.0,
++  "observed_weight_floor": 100.0,
++  "driver_weight_multiplier": 1.0,
++  "overroute_weight_multiplier": 1.5,
++  "protected_weight_multiplier": 3.0,
++  "neutral_weight_multiplier": 0.35,
++  "min_od_volume": 5.0,
++  "max_solver_variables": 50000,
++  "max_od_relative_up": 0.08,
++  "max_od_relative_down": 0.04,
++  "ridge_lambda": 0.15,
++  "l1_lambda": 0.002,
++  "tiny_od_penalty_power": 0.5,
++  "solver_max_iter": 1200,
++  "solver_tolerance": 1e-07,
++  "solver_check_every": 10,
++  "power_iterations": 35,
++  "projection_method": "MARGINALS",
++  "projection_gain": 1.0,
++  "projection_ridge_volume": 250.0,
++  "projection_ridge_lambda": 0.3,
++  "projection_max_iter": 1200,
++  "projection_tolerance": 1e-08,
++  "projection_min_volume_weight": 1.0,
++  "min_od_guidance_for_projection": 1e-05,
++  "max_add_log_up": 0.04,
++  "max_add_log_down": 0.02,
++  "min_add_log_step": 5e-05,
++  "preserve_zero_add": true,
++  "add_min": 0.0,
++  "add_max": null,
++  "salary": {
++    "enabled": true,
++    "income_attr": "AV_INCOME",
++    "salary_attr": "ADD_SALARY",
++    "work_attraction_attr": "ADD_ATT_W",
++    "formula_offset": 1000.0,
++    "formula_denominator": 2700.0,
++    "factor_floor": 0.05,
++    "salary_min": null,
++    "salary_max": null,
++    "max_abs_delta_per_block": 0.04,
++    "min_eligible_zones": 8,
++    "zone_add_ridge_lambda": 1.0,
++    "basis_ridge_lambda": 0.2,
++    "include_intercept": false
++  },
++  "zahr": {
++    "enabled": true,
++    "domestic_mask_attr": "NOT_ZAHR",
++    "domestic_threshold": 0.5,
++    "neighbour_attr": "ZAHR_SUSED",
++    "population_attr": "POP_ZP",
++    "min": 0.0,
++    "max": null,
++    "preserve_zero": true,
++    "seed_floor": 0.0,
++    "explicit_excluded_zone_nos": []
++  },
++  "td": {
++    "enabled": true,
++    "component_policy": {
++      "WORK": "AUTO",
++      "SERVICE": "AUTO",
++      "SCHOOL": "AUTO",
++      "LONG": "AUTO"
++    },
++    "min_conditioned_volume": 1000.0,
++    "school_min_conditioned_volume": 500.0,
++    "long_min_conditioned_volume": 80.0,
++    "min_l1_for_mutation": 0.06,
++    "mean_relative_deadband": 0.01,
++    "max_components_per_block": 2,
++    "b_shape_gain": 0.4,
++    "c_mean_gain": 0.18,
++    "c_tail_gain": 0.12,
++    "c_b_compensation": 0.35,
++    "max_abs_b_delta": 0.08,
++    "max_abs_c_delta": 0.04,
++    "long_b_gain_multiplier": 0.25,
++    "long_c_gain_multiplier": 0.5,
++    "long_max_abs_b_delta": 0.02,
++    "long_max_abs_c_delta": 0.018,
++    "b_min": 0.0,
++    "b_max": 5.0,
++    "c_min": -3.0,
++    "c_max": 0.0,
++    "td_objective_l1_weight": 1.0,
++    "td_objective_mean_weight": 0.5,
++    "td_objective_rmse_weight": 0.25,
++    "min_selected_component_relative_improvement": 0.002,
++    "max_selected_component_relative_degradation": 0.0,
++    "max_nonselected_component_objective_degradation": 0.01,
++    "max_cal_geh2_relative_degradation": 0.005,
++    "max_global_idp_mean_degradation": 0.002,
++    "max_global_idp_component_degradation": 0.01,
++    "long_authority_file": "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json"
++  },
++  "matrix_scope_by_block": {
++    "GENERATION": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT",
++        "NATIVE_CS",
++        "NATIVE_CS_noT"
++      ],
++      "matrix_nos": [
++        9101,
++        9102,
++        9103,
++        9104,
++        9105,
++        9106,
++        9107,
++        9108,
++        9109,
++        9110
++      ]
++    },
++    "TD_COMPONENT_WORK": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT"
++      ],
++      "matrix_nos": [
++        9101,
++        9102,
++        9103,
++        9104,
++        9105
++      ]
++    },
++    "TD_COMPONENT_SERVICE": {
++      "dseg_codes": [
++        "NATIVE_CS",
++        "NATIVE_CS_noT"
++      ],
++      "matrix_nos": [
++        9106,
++        9107,
++        9108,
++        9109,
++        9110
++      ]
++    },
++    "TD_COMPONENT_SCHOOL": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT"
++      ],
++      "matrix_nos": [
++        9117
++      ]
++    },
++    "TD_COMPONENT_LONG": {
++      "dseg_codes": [
++        "NATIVE_CL"
++      ],
++      "matrix_nos": [
++        9111,
++        9112,
++        9113,
++        9114,
++        9115
++      ]
++    },
++    "TD_FINECDF_V17": {
++      "matrix_nos": [
++        9101,
++        9102,
++        9103,
++        9104,
++        9105,
++        9106,
++        9107,
++        9108,
++        9109,
++        9110,
++        9111,
++        9112,
++        9113,
++        9114,
++        9115,
++        9117
++      ],
++      "dseg_codes": []
++    }
++  },
++  "min_changed_matrices_by_block": {
++    "GENERATION": 1,
++    "TD_COMPONENT_WORK": 1,
++    "TD_COMPONENT_SERVICE": 1,
++    "TD_COMPONENT_SCHOOL": 1,
++    "TD_COMPONENT_LONG": 1,
++    "TD_FINECDF_V17": 1
++  },
++  "min_cal_objective_relative_improvement": 0.001,
++  "max_new_geh20": 0,
++  "max_new_geh30": 0,
++  "max_protected_to_warn": 3,
++  "max_protected_to_hard": 0,
++  "idp_max_mean_degradation": 0.005,
++  "idp_max_component_degradation": 0.02,
++  "max_generation_effect_log_error": 0.01,
++  "max_generation_pa_relative_gap": 0.02,
++  "require_solver_convergence_for_apply": true,
++  "require_projection_convergence_for_apply": true,
++  "tg_dependency_contract_file": "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6.json",
++  "require_tg_dependency_contract_for_apply": true,
++  "enable_kordon_pairs": false,
++  "kordon_pair_role": "DIAGNOSTIC",
++  "kordon_category": "OA",
++  "skip_wiggly_pair_paths": true,
++  "expected_zones": 681,
++  "supply": {
++    "enabled": true,
++    "lattice": 1.0,
++    "max_step": 4.0,
++    "max_cumulative": 4.0,
++    "absolute_min": -50.0,
++    "absolute_max": 50.0,
++    "minimum_cost_seconds": 0.001,
++    "max_bundle_equivalent_seconds": 120.0,
++    "max_edges": 12,
++    "max_candidates": 10,
++    "max_driver_profiles": 24,
++    "min_geh": 10.0,
++    "min_residual": 300.0,
++    "min_attribution_coverage": 0.995,
++    "min_path_coverage": 0.98,
++    "min_path_volume_coverage": 0.995,
++    "parity_relative_tolerance": 0.02,
++    "parity_absolute_tolerance": 1.0,
++    "prior_lambda": 0.0001,
++    "prior_sigma": 2.0,
++    "passenger_dsegs": [
++      "NATIVE_CW",
++      "NATIVE_CW_noT",
++      "NATIVE_CS",
++      "NATIVE_CS_noT",
++      "NATIVE_CL",
++      "NATIVE_CF",
++      "EXOG_EE_CW",
++      "EXOG_EE_CW_noT",
++      "EXOG_EE_CS",
++      "EXOG_EE_CS_noT",
++      "EXOG_EE_CL",
++      "EXOG_EE_CF"
++    ],
++    "freight_dsegs": [
++      "LNV",
++      "NV"
++    ],
++    "component_matrix_nos": [
++      9101,
++      9102,
++      9103,
++      9104,
++      9105,
++      9106,
++      9107,
++      9108,
++      9109,
++      9110,
++      9111,
++      9112,
++      9113,
++      9114,
++      9115,
++      9116,
++      9117
++    ],
++    "excluded_link_keys": [],
++    "editable_link_types": null,
++    "assignment_operations": [
++      {
++        "no": 20,
++        "operation_type": 101,
++        "dseg_object_path": [
++          "PrTAssignmentParameters"
++        ],
++        "dseg_attribute": "DSEGSET",
++        "expected_dsegs": [
++          "EXOG_EE_CF",
++          "EXOG_EE_CL",
++          "EXOG_EE_CS",
++          "EXOG_EE_CS_NOT",
++          "EXOG_EE_CW",
++          "EXOG_EE_CW_NOT",
++          "LNV",
++          "NATIVE_CF",
++          "NATIVE_CL",
++          "NATIVE_CS",
++          "NATIVE_CS_NOT",
++          "NATIVE_CW",
++          "NATIVE_CW_NOT",
++          "NV"
++        ]
++      }
++    ],
++    "operation_number_attribute": "POSITION",
++    "gap_readback": {
++      "source": "PRT_ASS_QUALITY_LIST",
++      "operation_no": 20,
++      "maximum_gap": 0.005
++    },
++    "link_attributes": {},
++    "impedance_authority_csv": "authorities/IMPEDANCE_FUNCTIONS.csv",
++    "impedance_authority_basis": "USER_SUPPLIED_CURRENT_EXPORTED_SNAPSHOT",
++    "equivalent_seconds_per_addval1": 10.0,
++    "fixed_input_hashes": {
++      "authorities/VDF_REGISTRY.csv": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287",
++      "authorities/VDF_TYPE_MAPPING.csv": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07"
++    },
++    "impedance_file_sha256": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef",
++    "sequence": {
++      "enabled": true,
++      "source": "OFFICIAL_VISUM_SAVED_PRT_ORDERED_PATH_LINKS",
++      "design_mode": "DIVERGE_REJOIN_VOLUME_WEIGHTED_CONTIGUOUS_BRANCHES",
++      "sequence_cap_schedule": [
++        8,
++        4,
++        2,
++        1
++      ],
++      "max_unique_sequences": 100000,
++      "max_pairs_per_market": 64,
++      "max_collateral_volume_to_driver_ratio": null,
++      "all_path_impact_required": true,
++      "validation_target_input_allowed": false,
++      "design_only_duplicate_scope_policy": "DIAGNOSTIC_EXCLUDE_CONFLICTED_DRIVERS",
++      "step_units_schedule": [
++        4,
++        2,
++        1
++      ]
++    },
++    "assignment_scope_authority": "R1_15A2_ASSIGNMENT_SCOPE_AUTHORITY_V239_OP20_ONLY"
++  },
++  "shared_objective": {
++    "cal_weight": 1.0,
++    "idp_weight": 1.0,
++    "minimum_improvement": 1e-08,
++    "reference_policy": "FIXED_INITIAL_CAL_SCALE_AND_COMPONENT_WEIGHTS"
++  },
++  "require_all_path_export_dsegs": true,
++  "12d_helper_name": "R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py",
++  "12d_detail_name": "01_DETAIL_498_FORENSIC.csv",
++  "12d_authority_csv": "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
++  "12d_authority_sha256": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1",
++  "csd408_mapping_review_acknowledged": false,
++  "12d_city_authority_csv": "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
++  "12d_city_authority_sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
++  "city90_bidirectional_qa_acknowledged": false,
++  "observation_value_policy": "SEALED_R1_OBS_RPDI_NO_ADDITIONAL_VEHICLE_CONVERSION",
++  "api_audit_only": false,
++  "run_full_com_api_audit": true,
++  "require_verified_bounded_pathlink_com": true,
++  "pathlink_page_size": 256,
++  "pathlink_max_pages": 500000,
++  "path_export_fail_fast": true,
++  "dseg_path_volume_parity_basis": "OFFDIAGONAL_INTERZONAL",
++  "two_mode": {
++    "enabled": true,
++    "design_only": true,
++    "representatives": {
++      "C": "NATIVE_CW",
++      "C_NOT": "NATIVE_CW_noT"
++    },
++    "page_size": 2048,
++    "max_runtime_seconds": 36000.0,
++    "max_parent_rows_per_dseg": 1500000,
++    "max_geometry_rows_per_mode": 100000000,
++    "max_links_per_path": 100000,
++    "commit_routes": 5000,
++    "max_store_gib": 12.0,
++    "min_free_disk_gib": 1.0,
++    "sample_windows": [
++      [
++        1,
++        256
++      ],
++      [
++        8193,
++        8448
++      ],
++      [
++        65537,
++        65792
++      ]
++    ],
++    "progress_interval_seconds": 2.0,
++    "zero_link_policy": "EXPLICIT_COMPLETE_PARENT_PRESERVE_VOLUME_NO_LINK_ATTRIBUTION",
++    "page_size_fallbacks": [
++      1024,
++      512,
++      256,
++      80
++    ],
++    "path_epoch_volume_comparison_decimals": 6,
++    "zero_share_residual_policy": {
++      "enabled": true,
++      "max_dseg_relative_volume": 0.01,
++      "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
++      "requires_existing_geometry": true,
++      "requires_path_volume_parity_pass": true,
++      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
++    }
++  },
++  "safety_gate_release": "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016",
++  "production_apply": false,
++  "trial_calibration": {
++    "enabled": true,
++    "mode": "ISOLATED_WORKING_COPY_REAL_ASSIGNMENT_ACCEPT_REJECT",
++    "max_runtime_seconds": 36000.0,
++    "progress_interval_seconds": 2.0,
++    "max_cycles": 100,
++    "max_accepted_states": 100,
++    "max_trials_per_block": {
++      "SUPPLY_ADDVAL1": 6,
++      "GENERATION": 3,
++      "TD_COMPONENT_WORK": 3,
++      "TD_COMPONENT_SERVICE": 3,
++      "TD_COMPONENT_SCHOOL": 3,
++      "TD_COMPONENT_LONG": 3
++    },
++    "require_reproducible_reapply": true,
++    "rollback_method": "RESTORE_CALIBRATED_PARAMETERS_THEN_REAL_RECOMPUTE_NO_LOADVERSION",
++    "geometry_policy": "PROVISIONAL_TWO_MODE_FOR_PROPOSAL_ONLY_REAL_ASSIGNMENT_DECIDES",
++    "full_network_link_eligibility": true,
++    "global_link_count_cap": null,
++    "phase_order_authority": "COUPLED_DEMAND_GENERATION_THEN_FINECDF_TD_REPEAT__THEN_SUPPLY_ADDVAL1",
++    "supply_start_requires_converged_phases": [
++      "COUPLED_DEMAND"
++    ],
++    "demand_parameters_frozen_during_supply": true,
++    "phase_transition_checkpoint": true,
++    "phase_blocking_error_policy": "FAIL_CLOSED_DO_NOT_ADVANCE_TO_NEXT_PHASE",
++    "methodology_note": "TG_AND_TD_ARE_ONE_COUPLED_DEMAND_PHASE; ADDVAL1_ONLY_AFTER_JOINT_FIXED_POINT",
++    "finecdf_v17_inner_replaces_legacy_td_component_blocks": true,
++    "v243_hotfix": "CREATE_RECOMPUTE_OUTPUT_DIRECTORY_BEFORE_PROCSEQ_AND_REQUIRE_VERIFIED_FINAL_STATE_BEFORE_FINAL_SAVE",
++    "v244_native_multi_guard": "NATIVE_VISUM_MULTI_OUTPUT_IS_AUTHORITY__MARGINALS_DIAGNOSTIC_ONLY__NO_EXTERNAL_STRICT_IPF_REJECT",
++    "technical_error_policy": "FAIL_CLOSED_NOT_STATIONARITY",
++    "final_artifact_policy": "EXPLICIT_VERIFIED_STATE_COMPLETE_OR_PARTIAL_DISTINCT_NAMES",
++    "recovery_policy": "DEFER_COOPERATIVE_STOP_UNTIL_MUTATED_STATE_RESTORED_OR_VERIFIED",
++    "finecdf_v18_adaptive_inner_replaces_v17": true,
++    "cp03_path_length_hotfix_retained": true,
++    "cp02_performance_design_implemented": true,
++    "path_epoch_calibration": true,
++    "path_enumeration_policy": "ENUMERATE_ON_PLATEAU_ONLY_AFTER_INITIAL_BUILD",
++    "v247_path_epoch_policy": "FREEZE_PROPOSAL_PATH_BASIS_ACROSS_ACCEPTED_STATES_REFRESH_ONLY_AT_PLATEAU",
++    "v248_persistent_path_cache_policy": "HASHED_SQLITE_PLUS_STATE_BINDINGS_FAIL_CLOSED",
++    "v2481_live_hotfix": "INTRAZONAL_NO_PATH_SUPPORT_GAP_PLUS_NONFATAL_WINDOWS_SQLITE_RETIRE_LOCK",
++    "v2484_hotfix": "STABLE_PROJECT_RUN_ROOT_WHEN_CURRENT_VERSION_IS_ACCEPTED_CHECKPOINT_INSIDE_PRIOR_RUN_TREE",
++    "v2485_root_hotfix": "OUTERMOST_PRIOR_RUN_TREE_NORMALIZATION_PLUS_RUN_ROOT_POSTCONDITION",
++    "v2485_generation_hotfix": "BOUND_CONSTRAINED_GENERATION_PROJECTION_CLIPS_SATURATED_DIRECT_ACTUATORS_AND_REBALANCES_PA_BEFORE_TRIAL",
++    "v2486_unified_hotfix": "STABLE_PROJECT_ROOT_PLUS_BOUND_CONSTRAINED_GENERATION_PROJECTION_IN_ONE_RELEASE"
++  },
++  "calibration_phases": [
++    {
++      "name": "COUPLED_DEMAND",
++      "blocks": [
++        "GENERATION",
++        "TD_FINECDF_V17"
++      ],
++      "max_cycles": 12,
++      "convergence_rule": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
++      "must_converge_before_next_phase": true
++    },
++    {
++      "name": "SUPPLY_ROUTE_CHOICE",
++      "blocks": [
++        "SUPPLY_ADDVAL1"
++      ],
++      "max_cycles": 100,
++      "convergence_rule": "FULL_SUPPLY_CYCLE_WITH_ZERO_ACCEPTED",
++      "must_converge_before_next_phase": true
++    }
++  ],
++  "release": "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016",
++  "coupled_demand": {
++    "enabled": true,
++    "methodology": "GENERATION_COUNTS_UPDATE_THEN_FINECDF_TD_WITHIN_SAME_OUTER_CYCLE_REPEAT_TO_JOINT_FIXED_POINT",
++    "max_outer_cycles": 12,
++    "convergence_rule": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
++    "generation_objective": "CAL_GEH2_COUNTS_ONLY; IDP_DEFERRED_TO_IMMEDIATE_TD_SUBSTEP",
++    "generation_validation_role": "REPORT_ONLY",
++    "finecdf_td": {
++      "reference_script": "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
++      "reference_sha256": "abeb746ff49ac1f0e548e6b7945ec476e5c5e80897e6be1da6e2d42ae442d7d5",
++      "primary_objective": "512_POINT_ORIGINAL_IDP_CDF_PLUS_MEAN_DISTANCE",
++      "max_iterations": 35,
++      "max_td_evaluations": 180,
++      "max_stagnant_iterations": 6,
++      "max_runtime_seconds": 14400.0,
++      "foreign_fixed": true,
++      "generation_frozen": true,
++      "addval1_frozen": true,
++      "direct_od_matrix_writes": false,
++      "rollback_method": "RESTORE_BC_THEN_RERUN_NATIVE_TD",
++      "native_multi_guard_policy": "DIAGNOSTIC_ONLY_NATIVE_OUTPUT_AUTHORITY",
++      "strict_fixed_marginal_reject": false,
++      "methodological_note": "Do not impose external strict-IPF style marginal equality on native Visum Multi/Lohse-Schnabel balancing; freeze P/A inputs, evaluate the actual native TD output, and retain marginal deviations as diagnostics.",
++      "reference_script_id": "R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_V1_8_20261016",
++      "integration_id": "15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_PROGRESSIVE_ADAPTIVE_FINECDF_V18",
++      "progressive_schedule": [
++        {
++          "name": "EXPLORE",
++          "through_outer_cycle": 2,
++          "max_iterations": 4,
++          "max_td_evaluations": 28,
++          "allow_progress_continue": true
++        },
++        {
++          "name": "REFINE",
++          "through_outer_cycle": 4,
++          "max_iterations": 10,
++          "max_td_evaluations": 60,
++          "allow_progress_continue": true
++        },
++        {
++          "name": "FULL_VERIFY",
++          "through_outer_cycle": 12,
++          "max_iterations": 35,
++          "max_td_evaluations": 180,
++          "allow_progress_continue": false
++        }
++      ]
++    },
++    "supply_start_gate": "COUPLED_DEMAND_JOINT_FIXED_POINT_REQUIRED",
++    "supply_max_cycles": 100,
++    "min_stationary_cycles": 2
++  },
++  "performance": {
++    "release": "V2.4.8",
++    "search_semantics": "PERSISTENT_PATH_EPOCH_ADAPTIVE_EXPLICIT_NOT_BITWISE_IDENTICAL",
++    "telemetry": {
++      "enabled": true,
++      "schema": "R1_15A2_V246_PERFORMANCE_TELEMETRY_V1"
++    },
++    "bulk_link_read": {
++      "enabled": true,
++      "fallback_to_scalar": true,
++      "verify_object_no": true
++    },
++    "lazy_supply_sequence_evidence": {
++      "enabled": true,
++      "policy": "BUILD_INCIDENCE_FOR_TG_DEFER_BRANCH_PAIRS_UNTIL_SUPPLY"
++    },
++    "first_sufficient": {
++      "enabled": true,
++      "generation_min_relative_improvement": 0.001,
++      "supply_min_relative_improvement": 0.001,
++      "gate": "EXISTING_ACCEPTANCE_MUST_PASS_BEFORE_EARLY_STOP"
++    },
++    "native_call_accounting": "INCLUDES_ASSIGNMENT_TD_TG_ROLLBACK_DIAGNOSTICS_SAVEVERSION_PATH_EXPORT",
++    "generation_step_schedule": [
++      {
++        "name": "EXPLORE",
++        "through_outer_cycle": 2,
++        "max_od_relative_up": 0.12,
++        "max_add_log_up": 0.08,
++        "salary_max_abs_delta_per_block": 0.08
++      },
++      {
++        "name": "FULL_VERIFY",
++        "through_outer_cycle": 12,
++        "max_od_relative_up": 0.08,
++        "max_add_log_up": 0.04,
++        "salary_max_abs_delta_per_block": 0.04
++      }
++    ],
++    "path_epochs": {
++      "enabled": true,
++      "policy": "INITIAL_ENUMERATION_REUSED_UNTIL_LOCAL_PLATEAU_THEN_FRESH_REENUMERATION",
++      "live_od_reweighting": true,
++      "live_profile_rebind": true,
++      "new_positive_od_policy": "MANDATORY_REENUMERATION_NO_INVENTED_PATH_SHARE",
++      "stationarity_requires_fresh_identical_basis": true,
++      "max_demand_reenumerations": 4,
++      "max_supply_reenumerations": 8,
++      "basis_hash": "GEOMETRY_PARENT_KEYS_AND_SAVED_PATH_VOLUMES",
++      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++      "initial_enumeration_required": true,
++      "refresh_trigger": "COMPLETE_LOCAL_PLATEAU_ON_CURRENT_PATH_BASIS",
++      "fresh_assignment_acceptance_authority": true,
++      "new_positive_od_without_epoch_support_forces_reenumeration": true,
++      "comparison_basis": "GEOMETRY_PARENT_KEYS_AND_PATH_VOLUMES_ROUNDED_6_DECIMALS",
++      "cleanup_obsolete_sqlite_after_verified_refresh": true,
++      "retain_sqlite_stores": 1,
++      "initial_epoch_source": "AUTHORIZED_PERSISTENT_CACHE_OR_FRESH_ENUMERATION",
++      "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
++      "persistent_epoch_checkpoint_after_every_successful_enumeration": true,
++      "legacy_import_policy": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
++      "persistent_cache_read_only_during_calibration": true,
++      "intrazonal_positive_od_policy": "NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_SUPPORT_GAP",
++      "obsolete_store_windows_lock_policy": "DEFER_CLEANUP_AFTER_VERIFIED_REFRESH_NOT_FATAL",
++      "zero_share_residual_policy": "EXISTING_GEOMETRY_ZERO_SAVED_SHARE_WITHIN_DSEG_PARITY_TOLERANCE_IS_GUIDANCE_EXCLUDED_NOT_REENUMERATED",
++      "predecessor_cache_compatibility_policy": "PATH_SEMANTIC_CONTRACT_EXACT_FULL_SOURCE_IMPL_PIN_CONFIG_DIGEST_PROVENANCE_ONLY",
++      "run_root_policy": "NORMALIZE_TO_PROJECT_BASE_OUTSIDE_PRIOR_R1_15A2_*_RUNS_TREE"
++    },
++    "persistent_path_cache": {
++      "enabled": true,
++      "publication_required": true,
++      "root_policy": "LOCALAPPDATA_UNSYNCED_WITH_PROJECT_FALLBACK",
++      "verify_sha256_on_restore": true,
++      "sqlite_quick_check_on_restore": true,
++      "sqlite_full_integrity_check_on_publish": true,
++      "accepted_state_binding_required_for_descendant_reuse": true,
++      "allow_legacy_v247_import": true,
++      "legacy_import_requires_exact_origin_state": true,
++      "legacy_import_requires_all_profile_flow_parity": true,
++      "retain_epoch_checkpoints": 3,
++      "persistent_store_mode": "IMMUTABLE_READ_ONLY_AFTER_PUBLICATION",
++      "latest_pointer_publish_order": "STORE_THEN_MANIFEST_THEN_BINDING_THEN_INDEX",
++      "max_total_cache_gib": 24.0,
++      "explicit_predecessor_read_compatibility": {
++        "enabled": true,
++        "target_release": "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016",
++        "allowed_contract_differences": [
++          "config_sha256",
++          "path_implementation_files",
++          "contract_hash"
++        ],
++        "predecessors": [
++          {
++            "source_release": "R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016",
++            "source_config_sha256s": [
++              "65177ee070e094b7311d00467809cb6a889740e37aa03d8b6cd291141a50109b"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "16f49575fe83792b2dea530923bfe63a6d9543e7cd9f33e78c7c33b35d5ae9ab",
++              "r1_15a2_trial_adapter_v240.py": "d1b352cb162b1dd5c0e4283167979a233fbed90d4e18265fa69fb9b826d2d69f",
++              "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
++            "source_config_sha256s": [
++              "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "c753e82075e2b521fcd53170f9f2d36c80ba151eb2bd0b6ea07b5cba6103b525",
++              "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
++              "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_2_ZERO_VOLUME_SUPPORT_HOTFIX_20261016",
++            "source_config_sha256s": [
++              "339dc5d273e780e2d6edf0785353483a7e1a03ed459875feacc15cb17c33d6ec"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "afcea8412c505e4fd9367e3e98fafd22b42e2f72b6c1f6b8507ee2d014b8160f",
++              "r1_15a2_trial_adapter_v240.py": "a7cc5a10c2cdda8c823e9b33c2d3e352eb3b7ca850140ba43f3e38ce6b7ef00d",
++              "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
++            "source_config_sha256s": [
++              "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
++              "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
++            "source_config_sha256s": [
++              "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++              "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
++            "source_config_sha256s": [
++              "4137a6e922147cb1810d9249d835a995fa211723de29ed2098bfb90555c1695d"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++              "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
++            "source_config_sha256s": [
++              "709d0eb18d65fdb5cc02a24cdeaf199f53dda63af143f34fb2eda15fbaa55613"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++              "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016",
++            "source_config_sha256s": [
++              "3315c25d3e9f0a1cd6088d47bc9276358ab24c3be4e127906a03da6758a8508f"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++              "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
++            "source_config_sha256s": [
++              "e47c193e13ffab85dff08da524f02ff5c510dfd733276a72c42b1834c1ee033c"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++              "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
++            "source_config_sha256s": [
++              "7cc4b50edde935bab42c13c7be6f99e6653a6e6ad9948a2c2bb19e164e0eee4e"
++            ],
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++              "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
++              "r1_15a2_sequence_v23.py": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
++              "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
++              "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
++              "r1_15a2_runtime_v1.py": "9b9169f08bb5fb1e4c42dbb74ccee2b9aecbb849f21fcb32cbb71a7055117844"
++            }
++          }
++        ],
++        "policy": "READ_ONLY_EXACT_PATH_DATA_CONTRACT_FULL_SOURCE_IMPL_PIN_CONFIG_DIGEST_PROVENANCE_ONLY",
++        "incompatible_candidate_policy": "REJECT_CACHE_AS_PERFORMANCE_MISS_THEN_LEGACY_OR_FRESH_ENUMERATION"
++      }
++    },
++    "stable_project_root": {
++      "enabled": true,
++      "selection": "PARENT_OF_OUTERMOST_QUALIFYING_R1_15A2_*_RUNS_ANCESTOR",
++      "qualifying_child_prefix": "RUN_",
++      "reject_nested_new_run": true,
++      "plain_source_fallback": "SOURCE_PARENT",
++      "source_version_remains_immutable_authority": true,
++      "release_owner": "V2.4.8.8_PATH_CACHE_SEMANTIC_COMPAT"
++    },
++    "generation_bound_constrained_projection": "CONFIGURED_AT_TOP_LEVEL_AND_VALIDATED_FAIL_CLOSED"
++  },
++  "path_epoch_method": {
++    "initial_export": "FIRST_GENERATION_DESIGN_AFTER_BASELINE",
++    "reuse_scope": "GENERATION_AND_SUPPLY_PROPOSAL_ONLY",
++    "demand_reweighting": "CURRENT_OD_TOTALS_ON_FROZEN_PATH_SHARES",
++    "supply_rebinding": "CURRENT_LIVE_PROFILE_RESIDUALS_ON_FROZEN_ROUTE_GEOMETRY",
++    "refresh_trigger": "COMPLETE_NO_ACCEPTED_IMPROVEMENT_CYCLE",
++    "final_stationarity": "FRESH_REENUMERATION_RETURNS_IDENTICAL_PATH_BASIS",
++    "network_acceptance": "EVERY_CANDIDATE_REQUIRES_FRESH_VISUM_ASSIGNMENT_AND_LIVE_DIAGNOSTICS",
++    "cross_run_startup": "RESTORE_HASHED_PATH_EPOCH_BY_EXACT_PATH_SEMANTICS_AND_REVIEWED_SOURCE_IMPL; FULL_CONFIG_DIGEST_IS_PROVENANCE_ONLY",
++    "checkpoint_after_enumeration": "IMMUTABLE_SQLITE_PLUS_MANIFEST_PLUS_SHA256",
++    "accepted_state_lineage": "STATE_HASH_TO_PATH_CACHE_BINDING",
++    "legacy_v247_reuse": "EXACT_STATE_AND_ALL_PROFILE_FLOW_PARITY_ONLY",
++    "incompatible_cache_fallback": "REJECT_IMMUTABLE_CACHE_AND_CONTINUE_TO_LEGACY_OR_FRESH_ENUMERATION; INTEGRITY_FAILURES_REMAIN_FATAL"
++  },
++  "generation_bound_constrained_projection": {
++    "enabled": true,
++    "mode": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP_THEN_DOMAIN_ONLY_PA_REBALANCE",
++    "relative_balance_tolerance": 1e-10,
++    "preserve_spatial_pattern": true,
++    "outward_bound_policy": "NO_GLOBAL_ABSOLUTE_MAX_CURRENT_VALUE_PLUS_RELATIVE_LOG_STEP",
++    "role_balance_policy": "ATTENUATE_ONLY_LARGER_IMPLEMENTABLE_PA_SIDE",
++    "opposite_sign_policy": "FAIL_CLOSED_UNCHANGED_GENERATION_GATE",
++    "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++    "legacy_absolute_upper_bounds_enforced": false,
++    "current_live_values_are_authority": true
++  },
++  "generation_coefficient_authority": {
++    "enabled": true,
++    "mode": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP",
++    "current_value_source": "LIVE_VISUM_ZONE_ATTRIBUTES_AT_EACH_GENERATION_DESIGN",
++    "proposal_rule_multiplicative": "CURRENT_VALUE_TIMES_EXP_REQUESTED_LOG_STEP",
++    "proposal_rule_salary": "CURRENT_VALUE_PLUS_BOUNDED_DELTA",
++    "legacy_absolute_bounds_role": "DISABLED_NOT_ENFORCED",
++    "allow_current_above_legacy_max": true,
++    "allow_proposed_above_legacy_max": true,
++    "absolute_upper_bound": null,
++    "multiplicative_minimum": 0.0,
++    "preserve_zero_policy": "EXISTING_CONFIG_SEMANTICS_ONLY",
++    "salary_domain_policy": "FORMULA_FACTOR_FLOOR_PLUS_PER_BLOCK_DELTA_ONLY",
++    "require_finite_current": true,
++    "require_finite_proposed": true,
++    "relative_step_authority": "GENERATION_STEP_SCHEDULE_AND_BACKTRACKING_SCALE",
++    "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
++  },
++  "methodology": {
++    "generation_coefficient_bounds": "LIVE_CURRENT_VALUE_RELATIVE_STEP_NO_GLOBAL_ABSOLUTE_MAX",
++    "legacy_add_salary_zahr_maxima": "DISABLED_DIAGNOSTIC_ONLY",
++    "persistent_cache_config_identity": "EXPLICIT_PATH_DATA_FIELDS_PLUS_REVIEWED_PATH_IMPLEMENTATION_HASHES_NOT_FULL_CONFIG_SHA",
++    "full_config_sha256_role": "PROVENANCE_ONLY_FOR_PATH_CACHE_RESTORE"
++  }
++}
+--- /dev/null	2026-10-16 19:06:35.173625826 +0000
++++ r1_15a2_safety_v2488.py	2026-10-16 19:55:34.723104944 +0000
+@@ -0,0 +1,210 @@
++# -*- coding: utf-8 -*-
++"""V2.4.8.8 path-cache semantic compatibility safety contract.
++
++Retains V2.4.8.7 live-coefficient authority and stable project-root behavior,
++while fixing cross-release persistent path-cache authorization.  A complete
++configuration digest is provenance only: path-cache reuse is authorized by
++explicit path-data semantics plus a reviewed full implementation-hash map.
++"""
++from __future__ import annotations
++
++from r1_15a2_safety_v248 import *  # noqa: F401,F403
++from r1_15a2_safety_v248 import validate_v248_config
++from r1_15a2_supply import SupplyContractError
++
++RELEASE = "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016"
++
++_SOURCE_CONFIG_DIGESTS = {
++    "R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016": {
++        "65177ee070e094b7311d00467809cb6a889740e37aa03d8b6cd291141a50109b"},
++    "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016": {
++        "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02"},
++    "R1_15A2_V2_4_8_2_ZERO_VOLUME_SUPPORT_HOTFIX_20261016": {
++        "339dc5d273e780e2d6edf0785353483a7e1a03ed459875feacc15cb17c33d6ec"},
++    "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016": {
++        "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f"},
++    "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016": {
++        "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8"},
++    "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016": {
++        "4137a6e922147cb1810d9249d835a995fa211723de29ed2098bfb90555c1695d"},
++    "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016": {
++        "709d0eb18d65fdb5cc02a24cdeaf199f53dda63af143f34fb2eda15fbaa55613"},
++    "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016": {
++        "3315c25d3e9f0a1cd6088d47bc9276358ab24c3be4e127906a03da6758a8508f"},
++    "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016": {
++        "e47c193e13ffab85dff08da524f02ff5c510dfd733276a72c42b1834c1ee033c"},
++    "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016": {
++        "7cc4b50edde935bab42c13c7be6f99e6653a6e6ad9948a2c2bb19e164e0eee4e"},
++}
++
++_PATH_IMPLEMENTATION_MODULES = {
++    "r1_15a2_two_mode_v238.py",
++    "r1_15a2_trial_adapter_v240.py",
++    "r1_15a2_persistent_path_cache_v248.py",
++    "r1_15a2_sequence_v23.py",
++    "r1_15a2_supply.py",
++    "r1_15a2_core.py",
++    "r1_15a2_runtime_v1.py",
++}
++
++
++def _require(condition, code):
++    if not condition:
++        raise SupplyContractError(code)
++
++
++def validate_v2488_config(cfg, package_root=None):
++    base = validate_v248_config(cfg, package_root)
++    _require(cfg.get("release") == RELEASE and cfg.get("safety_gate_release") == RELEASE,
++             "V2488_RELEASE_IDENTITY_MISSING")
++
++    stable = cfg.get("performance", {}).get("stable_project_root", {})
++    _require(stable.get("enabled") is True, "V2488_STABLE_PROJECT_ROOT_DISABLED")
++    _require(stable.get("selection") ==
++             "PARENT_OF_OUTERMOST_QUALIFYING_R1_15A2_*_RUNS_ANCESTOR",
++             "V2488_PROJECT_ROOT_SELECTION_CHANGED")
++    _require(stable.get("qualifying_child_prefix") == "RUN_",
++             "V2488_RUN_TREE_QUALIFIER_CHANGED")
++    _require(stable.get("reject_nested_new_run") is True,
++             "V2488_NESTED_RUN_POSTCONDITION_DISABLED")
++    _require(stable.get("plain_source_fallback") == "SOURCE_PARENT",
++             "V2488_PLAIN_SOURCE_FALLBACK_CHANGED")
++    _require(stable.get("source_version_remains_immutable_authority") is True,
++             "V2488_SOURCE_AUTHORITY_CHANGED")
++
++    zero = cfg.get("two_mode", {}).get("zero_share_residual_policy", {})
++    _require(zero.get("enabled") is True, "V2488_ZERO_SHARE_RESIDUAL_POLICY_DISABLED")
++    _require(zero.get("action") == "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
++             "V2488_ZERO_SHARE_RESIDUAL_ACTION_CHANGED")
++    _require(zero.get("requires_existing_geometry") is True and
++             zero.get("requires_path_volume_parity_pass") is True,
++             "V2488_ZERO_SHARE_SAFETY_GATE_MISSING")
++    _require(zero.get("acceptance_authority") ==
++             "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++             "V2488_ZERO_SHARE_ACCEPTANCE_AUTHORITY_CHANGED")
++    limit = zero.get("max_dseg_relative_volume")
++    base_limit = cfg.get("dseg_path_volume_relative_tolerance")
++    _require(not isinstance(limit, bool) and isinstance(limit, (int, float)) and
++             0.0 < float(limit) <= float(base_limit),
++             "V2488_ZERO_SHARE_RESIDUAL_TOLERANCE_INVALID")
++
++    generation = cfg.get("generation_bound_constrained_projection", {})
++    _require(generation.get("enabled") is True,
++             "V2488_GENERATION_BOUND_CONSTRAINT_DISABLED")
++    _require(generation.get("mode") ==
++             "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP_THEN_DOMAIN_ONLY_PA_REBALANCE",
++             "V2488_GENERATION_BOUND_CONSTRAINT_MODE_CHANGED")
++    _require(generation.get("preserve_spatial_pattern") is True,
++             "V2488_GENERATION_SPATIAL_PATTERN_NOT_LOCKED")
++    tol = generation.get("relative_balance_tolerance")
++    _require(not isinstance(tol, bool) and isinstance(tol, (int, float)) and
++             0.0 < float(tol) <= 1.0e-6,
++             "V2488_GENERATION_BALANCE_TOLERANCE_INVALID")
++    _require(generation.get("outward_bound_policy") ==
++             "NO_GLOBAL_ABSOLUTE_MAX_CURRENT_VALUE_PLUS_RELATIVE_LOG_STEP",
++             "V2488_GENERATION_BOUND_POLICY_CHANGED")
++    _require(generation.get("legacy_absolute_upper_bounds_enforced") is False and
++             generation.get("current_live_values_are_authority") is True,
++             "V2488_LEGACY_ABSOLUTE_BOUNDS_STILL_ACTIVE")
++    _require(generation.get("role_balance_policy") ==
++             "ATTENUATE_ONLY_LARGER_IMPLEMENTABLE_PA_SIDE",
++             "V2488_GENERATION_ROLE_BALANCE_POLICY_CHANGED")
++    _require(generation.get("opposite_sign_policy") ==
++             "FAIL_CLOSED_UNCHANGED_GENERATION_GATE",
++             "V2488_GENERATION_OPPOSITE_SIGN_POLICY_CHANGED")
++    _require(generation.get("acceptance_authority") ==
++             "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++             "V2488_GENERATION_ACCEPTANCE_AUTHORITY_CHANGED")
++
++    authority = cfg.get("generation_coefficient_authority", {}) or {}
++    _require(authority.get("enabled") is True and
++             authority.get("mode") == "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP",
++             "V2488_LIVE_COEFFICIENT_AUTHORITY_DISABLED")
++    _require(authority.get("legacy_absolute_bounds_role") == "DISABLED_NOT_ENFORCED",
++             "V2488_LEGACY_BOUND_ROLE_CHANGED")
++    _require(authority.get("allow_current_above_legacy_max") is True and
++             authority.get("allow_proposed_above_legacy_max") is True,
++             "V2488_ABOVE_LEGACY_MAX_NOT_ALLOWED")
++    _require(authority.get("absolute_upper_bound") is None,
++             "V2488_GLOBAL_ABSOLUTE_UPPER_BOUND_PRESENT")
++    _require(float(authority.get("multiplicative_minimum", -1.0)) == 0.0,
++             "V2488_MULTIPLICATIVE_DOMAIN_CHANGED")
++    _require(authority.get("salary_domain_policy") ==
++             "FORMULA_FACTOR_FLOOR_PLUS_PER_BLOCK_DELTA_ONLY",
++             "V2488_SALARY_DOMAIN_POLICY_CHANGED")
++    _require(authority.get("acceptance_authority") ==
++             "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++             "V2488_COEFFICIENT_ACCEPTANCE_AUTHORITY_CHANGED")
++    _require(cfg.get("add_max") is None and
++             cfg.get("salary", {}).get("salary_min") is None and
++             cfg.get("salary", {}).get("salary_max") is None and
++             cfg.get("zahr", {}).get("max") is None,
++             "V2488_LEGACY_ABSOLUTE_LIMIT_FIELDS_NOT_DISABLED")
++
++    persistent = cfg.get("performance", {}).get("persistent_path_cache", {})
++    compat = persistent.get("explicit_predecessor_read_compatibility", {})
++    _require(compat.get("enabled") is True and compat.get("target_release") == RELEASE,
++             "V2488_PREDECESSOR_CACHE_COMPATIBILITY_DISABLED")
++    _require(compat.get("policy") ==
++             "READ_ONLY_EXACT_PATH_DATA_CONTRACT_FULL_SOURCE_IMPL_PIN_CONFIG_DIGEST_PROVENANCE_ONLY",
++             "V2488_PREDECESSOR_CACHE_POLICY_CHANGED")
++    _require(compat.get("incompatible_candidate_policy") ==
++             "REJECT_CACHE_AS_PERFORMANCE_MISS_THEN_LEGACY_OR_FRESH_ENUMERATION",
++             "V2488_INCOMPATIBLE_CACHE_FALLBACK_POLICY_CHANGED")
++    _require(compat.get("allowed_contract_differences") ==
++             ["config_sha256", "path_implementation_files", "contract_hash"],
++             "V2488_ALLOWED_CONTRACT_DIFFERENCES_CHANGED")
++
++    predecessors = compat.get("predecessors")
++    _require(isinstance(predecessors, list) and
++             len(predecessors) == len(_SOURCE_CONFIG_DIGESTS),
++             "V2488_PREDECESSOR_RULE_COUNT_INVALID")
++    seen = set()
++    for row in predecessors:
++        _require(isinstance(row, dict), "V2488_PREDECESSOR_RULE_INVALID")
++        source_release = row.get("source_release")
++        _require(source_release in _SOURCE_CONFIG_DIGESTS,
++                 "V2488_PREDECESSOR_IDENTITY_CHANGED")
++        digests = row.get("source_config_sha256s")
++        _require(isinstance(digests, list) and set(digests) ==
++                 _SOURCE_CONFIG_DIGESTS[source_release] and
++                 all(isinstance(v, str) and len(v) == 64 for v in digests),
++                 "V2488_PREDECESSOR_CONFIG_PROVENANCE_CHANGED")
++        impl = row.get("source_path_implementation_files")
++        _require(isinstance(impl, dict) and set(impl) == _PATH_IMPLEMENTATION_MODULES and
++                 all(isinstance(v, str) and len(v) == 64 for v in impl.values()),
++                 "V2488_PREDECESSOR_FULL_IMPLEMENTATION_PIN_INVALID")
++        seen.add(source_release)
++    _require(seen == set(_SOURCE_CONFIG_DIGESTS), "V2488_PREDECESSOR_RULE_MISSING")
++
++    # Full-config digest remains present and hash-shaped for provenance, but the
++    # restore authority is the explicit path contract validated in the cache manager.
++    _require(isinstance(cfg.get("config_sha256"), str) and len(cfg["config_sha256"]) == 64,
++             "V2488_CONFIG_PROVENANCE_HASH_MISSING")
++
++    impl = cfg.get("implementation_files", {})
++    required_impl = (
++        "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py",
++        "r1_15a2_safety_v2488.py",
++        "r1_15a2_multiblock.py",
++        "r1_15a2_persistent_path_cache_v248.py",
++        "r1_15a2_trial_adapter_v240.py",
++        "r1_15a2_two_mode_v238.py",
++    ) + tuple(sorted(_PATH_IMPLEMENTATION_MODULES))
++    for name in required_impl:
++        _require(isinstance(impl.get(name), str) and len(impl[name]) == 64,
++                 "V2488_IMPLEMENTATION_HASH_MISSING:" + name)
++
++    return dict(
++        base,
++        zero_share_residual_policy=zero,
++        generation_bound_constrained_projection=generation,
++        generation_coefficient_authority=authority,
++        explicit_predecessor_read_compatibility=compat,
++        stable_project_root=stable,
++        full_config_digest_role="PROVENANCE_ONLY_FOR_PATH_CACHE_COMPATIBILITY",
++        incompatible_cache_policy=compat["incompatible_candidate_policy"],
++    )
++
++
++__all__ = ["validate_v2488_config"]
+--- /dev/null	2026-10-16 19:06:35.173625826 +0000
++++ tests/test_v2488_path_cache_semantic_compat.py	2026-10-16 19:57:12.322909895 +0000
+@@ -0,0 +1,213 @@
++# -*- coding: utf-8 -*-
++"""V2.4.8.8 persistent path-cache semantic compatibility regression tests."""
++from __future__ import annotations
++
++import copy
++import importlib.util
++import json
++from pathlib import Path
++from types import SimpleNamespace
++
++import pytest
++
++from r1_15a2_persistent_path_cache_v248 import (
++    PersistentPathCacheManager, cache_contract,
++)
++from r1_15a2_supply import SupplyContractError
++from r1_15a2_two_mode_v238 import DEFAULT_SETTINGS, SCHEMA
++from test_supply_v22 import profile, links
++from test_v248_persistent_path_cache import cfg as base_cfg, snapshot
++
++ROOT = Path(__file__).resolve().parents[1]
++RELEASE = "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016"
++PATH_MODULES = {
++    "r1_15a2_two_mode_v238.py",
++    "r1_15a2_trial_adapter_v240.py",
++    "r1_15a2_persistent_path_cache_v248.py",
++    "r1_15a2_sequence_v23.py",
++    "r1_15a2_supply.py",
++    "r1_15a2_core.py",
++    "r1_15a2_runtime_v1.py",
++}
++
++
++def released_cfg():
++    launcher = ROOT / "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py"
++    spec = importlib.util.spec_from_file_location("v2488_launcher_test", launcher)
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module, module.load_config()
++
++
++def small_cfg(tmp_path):
++    cfg = base_cfg(tmp_path)
++    cfg["release"] = RELEASE
++    # Test-only target hashes; the compatibility mechanism only needs a complete
++    # target implementation map and reviewed source map.
++    cfg["config_sha256"] = "f" * 64
++    cfg["performance"]["persistent_path_cache"]["explicit_predecessor_read_compatibility"] = {
++        "enabled": True,
++        "target_release": RELEASE,
++        "allowed_contract_differences": [
++            "config_sha256", "path_implementation_files", "contract_hash"],
++        "policy": "READ_ONLY_EXACT_PATH_DATA_CONTRACT_FULL_SOURCE_IMPL_PIN_CONFIG_DIGEST_PROVENANCE_ONLY",
++        "incompatible_candidate_policy":
++            "REJECT_CACHE_AS_PERFORMANCE_MISS_THEN_LEGACY_OR_FRESH_ENUMERATION",
++        "predecessors": [],
++    }
++    return cfg
++
++
++def rows():
++    return [profile(model=600, obs=1000, ident="obs-a")]
++
++
++def make_manifest(contract, release="SOURCE_RELEASE"):
++    return {"contract": copy.deepcopy(contract), "release": release,
++            "origin_snapshot": {"fixed_link_hash": "fixed"}}
++
++
++def test_config_digest_mismatch_alone_is_path_semantic_compatible(tmp_path):
++    cfg = small_cfg(tmp_path)
++    manager = PersistentPathCacheManager(cfg)
++    snap = snapshot()
++    expected = cache_contract(cfg, snap, rows(), links(), SCHEMA)
++    actual = copy.deepcopy(expected)
++    actual["config_sha256"] = "a" * 64
++    # Old contract_hash necessarily differs because it included config_sha256.
++    actual["contract_hash"] = "b" * 64
++    result = manager.validate_manifest(
++        make_manifest(actual, "SAME_PATH_CODE_OTHER_CONFIG"), snap, rows(), links(), SCHEMA)
++    assert result["mode"] == "PATH_SEMANTIC_CONFIG_DIGEST_COMPATIBILITY"
++    assert result["full_config_digest_is_provenance_only"] is True
++
++
++def test_actual_deployed_v2482_zero_volume_release_is_reviewed(tmp_path):
++    _, release_cfg = released_cfg()
++    rule = next(r for r in release_cfg["performance"]["persistent_path_cache"]
++                ["explicit_predecessor_read_compatibility"]["predecessors"]
++                if r["source_release"] ==
++                "R1_15A2_V2_4_8_2_ZERO_VOLUME_SUPPORT_HOTFIX_20261016")
++    assert rule["source_config_sha256s"] == [
++        "339dc5d273e780e2d6edf0785353483a7e1a03ed459875feacc15cb17c33d6ec"]
++    assert set(rule["source_path_implementation_files"]) == PATH_MODULES
++
++
++def test_reviewed_predecessor_full_implementation_map_allows_config_digest_drift(tmp_path):
++    _, release_cfg = released_cfg()
++    source = next(r for r in release_cfg["performance"]["persistent_path_cache"]
++                  ["explicit_predecessor_read_compatibility"]["predecessors"]
++                  if r["source_release"] ==
++                  "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016")
++
++    cfg = small_cfg(tmp_path)
++    cfg["performance"]["persistent_path_cache"]["explicit_predecessor_read_compatibility"] = \
++        copy.deepcopy(release_cfg["performance"]["persistent_path_cache"]
++                      ["explicit_predecessor_read_compatibility"])
++    manager = PersistentPathCacheManager(cfg)
++    snap = snapshot()
++    expected = cache_contract(cfg, snap, rows(), links(), SCHEMA)
++    actual = copy.deepcopy(expected)
++    actual["config_sha256"] = "0" * 64  # deliberately unknown provenance digest
++    actual["contract_hash"] = "1" * 64
++    actual["path_implementation_files"] = copy.deepcopy(
++        source["source_path_implementation_files"])
++    manifest = make_manifest(actual, source["source_release"])
++    result = manager.validate_manifest(manifest, snap, rows(), links(), SCHEMA)
++    assert result["mode"] == "EXPLICIT_PREDECESSOR_PATH_SEMANTIC_COMPATIBILITY"
++    assert result["path_implementation_hashes_fully_pinned"] is True
++    assert result["source_config_sha256_recognized"] is False
++
++
++def test_path_semantic_change_still_fails_closed(tmp_path):
++    _, release_cfg = released_cfg()
++    source = release_cfg["performance"]["persistent_path_cache"] \
++        ["explicit_predecessor_read_compatibility"]["predecessors"][0]
++    cfg = small_cfg(tmp_path)
++    cfg["performance"]["persistent_path_cache"]["explicit_predecessor_read_compatibility"] = \
++        copy.deepcopy(release_cfg["performance"]["persistent_path_cache"]
++                      ["explicit_predecessor_read_compatibility"])
++    manager = PersistentPathCacheManager(cfg)
++    snap = snapshot()
++    actual = copy.deepcopy(cache_contract(cfg, snap, rows(), links(), SCHEMA))
++    actual["path_export_dsegs"] = ["SOMETHING_ELSE"]
++    actual["contract_hash"] = "2" * 64
++    with pytest.raises(SupplyContractError, match="CONTRACT_MISMATCH:path_export_dsegs"):
++        manager.validate_manifest(make_manifest(actual, RELEASE),
++                                  snap, rows(), links(), SCHEMA)
++
++
++def test_unreviewed_path_implementation_hash_still_fails_closed(tmp_path):
++    _, release_cfg = released_cfg()
++    source = release_cfg["performance"]["persistent_path_cache"] \
++        ["explicit_predecessor_read_compatibility"]["predecessors"][0]
++    cfg = small_cfg(tmp_path)
++    cfg["performance"]["persistent_path_cache"]["explicit_predecessor_read_compatibility"] = \
++        copy.deepcopy(release_cfg["performance"]["persistent_path_cache"]
++                      ["explicit_predecessor_read_compatibility"])
++    manager = PersistentPathCacheManager(cfg)
++    snap = snapshot()
++    actual = copy.deepcopy(cache_contract(cfg, snap, rows(), links(), SCHEMA))
++    actual["path_implementation_files"] = copy.deepcopy(source["source_path_implementation_files"])
++    actual["path_implementation_files"]["r1_15a2_two_mode_v238.py"] = "9" * 64
++    actual["contract_hash"] = "3" * 64
++    with pytest.raises(SupplyContractError, match="CONTRACT_MISMATCH:path_implementation_files"):
++        manager.validate_manifest(make_manifest(actual, source["source_release"]),
++                                  snap, rows(), links(), SCHEMA)
++
++
++def _adapter_for_fallback(tmp_path, error_message):
++    import r1_15a2_trial_adapter_v240 as module
++    adapter = module.VisumAdapter.__new__(module.VisumAdapter)
++    manifest = {
++        "cache_id": "CACHE_X", "cache_dir": str(tmp_path / "cache"),
++        "release": "OLD_RELEASE",
++    }
++    (tmp_path / "cache").mkdir()
++
++    class Manager:
++        enabled = True
++        def find_candidate(self, snapshot):
++            return Path(manifest["cache_dir"]), None
++        def _load_manifest(self, cache_dir):
++            return manifest
++        def legacy_candidates(self, snapshot, schema):
++            return []
++
++    adapter.persistent_path_cache = Manager()
++    adapter._open_persistent_cache = lambda *a, **k: (_ for _ in ()).throw(
++        SupplyContractError(error_message))
++    adapter.cfg = {
++        "runtime_source_version_sha256": "a" * 64,
++        "performance": {"persistent_path_cache": {
++            "explicit_predecessor_read_compatibility": {
++                "incompatible_candidate_policy":
++                    "REJECT_CACHE_AS_PERFORMANCE_MISS_THEN_LEGACY_OR_FRESH_ENUMERATION"
++            }
++        }},
++    }
++    adapter.policy = SimpleNamespace()
++    adapter.control = None
++    return adapter
++
++
++def test_contract_mismatch_is_rejected_as_performance_miss_then_falls_back(tmp_path):
++    adapter = _adapter_for_fallback(
++        tmp_path, "PERSISTENT_PATH_CACHE_CONTRACT_MISMATCH:path_implementation_files")
++    folder = tmp_path / "design"
++    result = adapter._try_persistent_restore(
++        {"d12": {"rows": []}}, folder, {"state_hash": "state"}, {}, {}, {})
++    assert result is None
++    rejected = json.loads((folder / "PERSISTENT_PATH_CACHE_REJECTED.json").read_text())
++    assert rejected["status"] == "INCOMPATIBLE_PERSISTENT_CACHE_REJECTED"
++    assert rejected["fallback"] == "LEGACY_EXACT_STATE_IMPORT_OR_FRESH_ENUMERATION"
++    no_match = json.loads((folder / "PERSISTENT_PATH_CACHE_RESTORE.json").read_text())
++    assert no_match["status"] == "NO_AUTHORIZED_PERSISTENT_CACHE_MATCH"
++
++
++def test_integrity_failure_is_not_softened(tmp_path):
++    adapter = _adapter_for_fallback(tmp_path, "PERSISTENT_PATH_CACHE_SHA256_MISMATCH")
++    with pytest.raises(SupplyContractError, match="SHA256_MISMATCH"):
++        adapter._try_persistent_restore(
++            {"d12": {"rows": []}}, tmp_path / "design",
++            {"state_hash": "state"}, {}, {}, {})
+--- /dev/null	2026-10-16 19:06:35.173625826 +0000
++++ tests/test_v2488_release.py	2026-10-16 19:56:14.587149943 +0000
+@@ -0,0 +1,48 @@
++# -*- coding: utf-8 -*-
++from __future__ import annotations
++
++import importlib.util
++from pathlib import Path
++
++from r1_15a2_safety_v2488 import validate_v2488_config
++
++ROOT = Path(__file__).resolve().parents[1]
++RELEASE = "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016"
++
++
++def load_launcher():
++    path = ROOT / "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py"
++    spec = importlib.util.spec_from_file_location("v2488_launcher_release", path)
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def test_v2488_release_config_and_safety_contract():
++    module = load_launcher()
++    cfg = module.load_config()
++    result = validate_v2488_config(cfg, ROOT)
++    assert module.RELEASE == RELEASE == cfg["release"] == cfg["safety_gate_release"]
++    compat = cfg["performance"]["persistent_path_cache"][
++        "explicit_predecessor_read_compatibility"]
++    assert compat["policy"] == \
++        "READ_ONLY_EXACT_PATH_DATA_CONTRACT_FULL_SOURCE_IMPL_PIN_CONFIG_DIGEST_PROVENANCE_ONLY"
++    assert compat["incompatible_candidate_policy"] == \
++        "REJECT_CACHE_AS_PERFORMANCE_MISS_THEN_LEGACY_OR_FRESH_ENUMERATION"
++    assert result["full_config_digest_role"] == \
++        "PROVENANCE_ONLY_FOR_PATH_CACHE_COMPATIBILITY"
++    assert len(compat["predecessors"]) == 10
++
++
++def test_v2488_run_root_stays_at_project_root_for_nested_checkpoint(tmp_path):
++    module = load_launcher()
++    project = tmp_path / "2022"
++    source = project / "R1_15A2_V2481_RUNS" / "RUN_A" / "CALIBRATION" / \
++        "CHECKPOINTS" / "R1_15A2_V2483_RUNS" / "RUN_B" / "CALIBRATION" / \
++        "CHECKPOINTS" / "ACCEPTED.ver"
++    source.parent.mkdir(parents=True)
++    source.write_bytes(b"probe")
++    layout = module._stable_project_layout(source)
++    assert layout["project_base"] == project.resolve()
++    new_run = project / "R1_15A2_V2488_RUNS" / "RUN_TEST"
++    module._assert_new_run_is_not_nested(new_run, layout["detected_run_roots_nearest_first"])
+--- /dev/null	2026-10-16 19:06:35.173625826 +0000
++++ VERIFY_PACKAGE_V2_4_8_8.py	2026-10-16 20:00:01.979275836 +0000
+@@ -0,0 +1,169 @@
++# -*- coding: utf-8 -*-
++"""Independent offline verifier for R1 15A2 V2.4.8.8."""
++from __future__ import annotations
++
++import argparse
++import compileall
++import hashlib
++import importlib.util
++import json
++import shutil
++import subprocess
++import sys
++import tempfile
++import time
++from pathlib import Path
++
++RELEASE = "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016"
++LAUNCHER = "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_8.py"
++MANIFEST = "MANIFEST_V2488.json"
++
++
++def sha256(path):
++    h = hashlib.sha256()
++    with Path(path).open("rb") as f:
++        for chunk in iter(lambda: f.read(8 * 1024 * 1024), b""):
++            h.update(chunk)
++    return h.hexdigest()
++
++
++def _probe(path):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_bytes(b"probe")
++    return path
++
++
++def verify(root, run_tests=False):
++    root = Path(root).resolve()
++    started = time.monotonic()
++    errors = []
++    manifest_path = root / MANIFEST
++    if not manifest_path.is_file():
++        return {"status": "FAILED", "errors": [MANIFEST + " missing"]}
++    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
++    if manifest.get("release") != RELEASE:
++        errors.append("MANIFEST_RELEASE_IDENTITY")
++    for row in manifest.get("files", []):
++        path = root / row["path"]
++        if not path.is_file():
++            errors.append("MISSING:" + row["path"])
++            continue
++        if path.stat().st_size != int(row["bytes"]):
++            errors.append("SIZE:" + row["path"])
++            continue
++        if sha256(path) != row["sha256"]:
++            errors.append("SHA256:" + row["path"])
++
++    inserted = False
++    cfg_result = root_result = None
++    probe_root = Path(tempfile.mkdtemp(prefix="v2488_verify_"))
++    try:
++        sys.path.insert(0, str(root)); inserted = True
++        from r1_15a2_safety_v2488 import validate_v2488_config
++        spec = importlib.util.spec_from_file_location("verify_v2488_launcher", root / LAUNCHER)
++        module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++        cfg = module.load_config()
++        cfg_result = validate_v2488_config(cfg, root)
++        if module.RELEASE != RELEASE or cfg.get("release") != RELEASE:
++            errors.append("LAUNCHER_RELEASE_MISMATCH")
++
++        compat = cfg["performance"]["persistent_path_cache"][
++            "explicit_predecessor_read_compatibility"]
++        releases = {r["source_release"] for r in compat["predecessors"]}
++        required = {
++            "R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016",
++            "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
++            "R1_15A2_V2_4_8_2_ZERO_VOLUME_SUPPORT_HOTFIX_20261016",
++            "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
++            "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
++            "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
++            "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
++            "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016",
++            "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
++            "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
++        }
++        if releases != required:
++            errors.append("PREDECESSOR_SET_NOT_LOCKED")
++        v2482 = next((r for r in compat["predecessors"] if r["source_release"] ==
++                      "R1_15A2_V2_4_8_2_ZERO_VOLUME_SUPPORT_HOTFIX_20261016"), None)
++        if not v2482 or v2482.get("source_config_sha256s") != [
++                "339dc5d273e780e2d6edf0785353483a7e1a03ed459875feacc15cb17c33d6ec"]:
++            errors.append("ACTUAL_V2482_ZERO_VOLUME_IDENTITY_NOT_PINNED")
++        if compat.get("incompatible_candidate_policy") != \
++                "REJECT_CACHE_AS_PERFORMANCE_MISS_THEN_LEGACY_OR_FRESH_ENUMERATION":
++            errors.append("CACHE_FALLBACK_POLICY")
++
++        project = probe_root / "PROJECT"
++        nested = _probe(project / "R1_15A2_V2481_RUNS" / "RUN_A" / "CALIBRATION" /
++                        "CHECKPOINTS" / "R1_15A2_V2483_RUNS" / "RUN_B" /
++                        "CALIBRATION" / "CHECKPOINTS" / "ACCEPTED.ver")
++        layout = module._stable_project_layout(nested)
++        new_run = project / "R1_15A2_V2488_RUNS" / "RUN_TEST"
++        module._assert_new_run_is_not_nested(
++            new_run, layout["detected_run_roots_nearest_first"])
++        root_result = {
++            "project_base": str(layout["project_base"]),
++            "expected": str(project.resolve()),
++            "normalization_depth": len(layout["detected_run_roots_nearest_first"]),
++            "new_run_postcondition": True,
++        }
++        if layout["project_base"] != project.resolve():
++            errors.append("PROJECT_ROOT_NORMALIZATION")
++    except Exception as exc:
++        errors.append("CONFIG_OR_LAUNCHER:%s:%s" % (type(exc).__name__, exc))
++    finally:
++        if inserted:
++            try: sys.path.remove(str(root))
++            except ValueError: pass
++        shutil.rmtree(probe_root, ignore_errors=True)
++
++    compile_ok = compileall.compile_dir(str(root), quiet=1, force=True)
++    if not compile_ok:
++        errors.append("COMPILEALL")
++
++    test_result = None
++    if run_tests:
++        proc = subprocess.run([sys.executable, "-m", "pytest", "-q"], cwd=str(root),
++                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
++                              text=True, encoding="utf-8", errors="replace")
++        lines = proc.stdout.splitlines()
++        test_result = {
++            "returncode": proc.returncode,
++            "tail": lines[-20:],
++        }
++        if proc.returncode != 0:
++            errors.append("PYTEST")
++
++    return {
++        "schema": "R1_15A2_V2488_PACKAGE_VERIFICATION_V1",
++        "release": RELEASE,
++        "status": "PASS" if not errors else "FAILED",
++        "errors": errors,
++        "manifest_file_count": len(manifest.get("files", [])),
++        "manifest_sha256": sha256(manifest_path),
++        "compileall_pass": bool(compile_ok),
++        "config_validation": cfg_result,
++        "run_root_validation": root_result,
++        "pytest": test_result,
++        "elapsed_seconds": round(time.monotonic() - started, 3),
++        "real_visum_tested": False,
++        "production_ready": False,
++    }
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument("root", nargs="?", default=".")
++    ap.add_argument("--run-tests", action="store_true")
++    ap.add_argument("--output")
++    args = ap.parse_args()
++    result = verify(args.root, args.run_tests)
++    text = json.dumps(result, indent=2, sort_keys=True)
++    if args.output:
++        Path(args.output).write_text(text + "\n", encoding="utf-8")
++    print(text)
++    raise SystemExit(0 if result["status"] == "PASS" else 1)
++
++
++if __name__ == "__main__":
++    main()

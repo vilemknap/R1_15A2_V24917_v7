@@ -1,0 +1,67 @@
+{
+  "schema": "R1_15A2_V24915_PERF2_R4_SEALED_IDP_AUTHORITY_MANIFEST_V1",
+  "embedded_zip_sha256": "5bff78aff55a943f8a3bcc458cb76caa2e7b92c829c04d68e3be22bff26578db",
+  "authority_dir": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1",
+  "target_curve_sha256": "f68087c249d6f1da2582e2ea1d723a8b3d1a8d99af82ffe5283f63d0de6a0737",
+  "required_target_components": [
+    "WORK_E_C",
+    "WORK_E_noC",
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "WORK_stud",
+    "SERV_E_C",
+    "SERV_E_noC",
+    "SERV_noE_C",
+    "SERV_noE_noC",
+    "SERV_stud",
+    "SCHOOL"
+  ],
+  "expected_rows_per_target_component": 512,
+  "files": [
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/R1_IDP_COMPONENT_AUTHORITY_STATUS_V1.csv",
+      "sha256": "4896382f310af24376662a062c1b7c036eec16742865f5cedc5e7c13aba6405f",
+      "size": 14212
+    },
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/R1_IDP_DIST_KM_TARGET_CURVES_V1.csv",
+      "sha256": "f68087c249d6f1da2582e2ea1d723a8b3d1a8d99af82ffe5283f63d0de6a0737",
+      "size": 596651
+    },
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/R1_IDP_LONG_DIST_KM_BASIS_V1.csv",
+      "sha256": "4c95dceef13884c5f43a799a00b5f9c68238817cd5df6f74574bd414ecf9133b",
+      "size": 2828210
+    },
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/R1_IDP_LONG_TIME_MIN_DIAGNOSTIC_BASIS_V1.csv",
+      "sha256": "e698c1a4584cfbd61c4e5796830564eab477d26771d81720bc6a635545732ec5",
+      "size": 3239332
+    },
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/R1_IDP_TARGET_SUMMARY_V1.csv",
+      "sha256": "d79f13b520b4a1c156f9e4688afc3620c3400f5e241726e9dc0bc8909aff3f66",
+      "size": 10601
+    },
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/R1_IDP_TIME_MIN_DIAGNOSTIC_CURVES_V1.csv",
+      "sha256": "d3784b286a45ab991157fce20f288f6ae320c34aa57c88319dff4176667bac5e",
+      "size": 603109
+    },
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/R1_IDP_WEIGHTS_GLOBAL_HYBNOST_V1.csv",
+      "sha256": "07f33fa4229acab42ed4545d4f85ed88752f45df103f3e70fcc18a7abeb07b2a",
+      "size": 11397
+    },
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/README_R1_IDP_DISTRIBUTION_AUTHORITY_V1.md",
+      "sha256": "56c323d1b1865ac3b9f0c7cba1f2715184a8aba5b5251d513f3c7c844537c13a",
+      "size": 936
+    },
+    {
+      "path": "helpers/R1_IDP_DISTRIBUTION_AUTHORITY_V1/SOURCE_MANIFEST_V1.json",
+      "sha256": "b74cc37a0ccd1024f6f38d9a6fd9f989606bef218c57ccad56414a137c72f87d",
+      "size": 6562
+    }
+  ]
+}

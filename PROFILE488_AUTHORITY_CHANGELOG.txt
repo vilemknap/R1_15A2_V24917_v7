@@ -1,0 +1,15 @@
+PROFILE488 AUTHORITY CHANGE
+
+User-selected authority is COUNTLOCATION-2026-10-22-02-23-34.xlsx.
+Every one of its 488 CountLocation rows is a calibration profile.
+
+Derived runtime authority:
+- 362 directional CSD profiles
+- 126 BOTH profiles
+- 488 CALIBRATION
+- 0 VALIDATION
+
+Old 408+90/498 authority is not used by the PROFILE488 launcher.
+Old R1_ACTIVE and R1_ROLE values are not selection criteria.
+Only the isolated working copy is normalized to R1_ACTIVE=1 / R1_ROLE=CALIBRATION.
+The user's source .ver file is not overwritten.

@@ -1,0 +1,145 @@
+{
+  "candidate_rows": [
+    {
+      "actual_attr_log_effect": 0.014999999999999951,
+      "attr": "ADD_PROD_W",
+      "current": 1.0,
+      "family": "WORK",
+      "proposed": 1.015113064615719,
+      "role": "PROD",
+      "zone_no": 1
+    },
+    {
+      "actual_attr_log_effect": -0.01522843081040992,
+      "attr": "ADD_PROD_W",
+      "current": 1.0,
+      "family": "WORK",
+      "proposed": 0.9848869353842811,
+      "role": "PROD",
+      "zone_no": 2
+    },
+    {
+      "actual_attr_log_effect": 0.014999999999999951,
+      "attr": "ADD_ATT_W",
+      "current": 1.0,
+      "family": "WORK",
+      "proposed": 1.015113064615719,
+      "role": "ATT",
+      "zone_no": 3
+    },
+    {
+      "actual_attr_log_effect": -0.01522843081040992,
+      "attr": "ADD_ATT_W",
+      "current": 1.0,
+      "family": "WORK",
+      "proposed": 0.9848869353842811,
+      "role": "ATT",
+      "zone_no": 4
+    }
+  ],
+  "checks": {
+    "att_abs_delta_below_1e-6": true,
+    "negative_effect_present": true,
+    "pa_gap_below_1e-6": true,
+    "positive_effect_present": true,
+    "prod_abs_delta_below_1e-6": true
+  },
+  "coefficient_authority": {
+    "current_live_values_are_authority": true,
+    "legacy_absolute_upper_bounds_enforced": false,
+    "mode": "LIVE_CURRENT_VALUE_SIGNED_RELATIVE_LOG_STEP_WITH_EMPIRICAL_ENVELOPES",
+    "signed_zone_refinement_enabled": true
+  },
+  "pa_effects": {
+    "WORK": {
+      "estimated_abs_gap": 0.0,
+      "estimated_att_delta": 0.0,
+      "estimated_prod_delta": 0.0
+    }
+  },
+  "release": "R1_15A2_V2_4_9_2_SIGNED_GENERATION_REFINEMENT_20261018",
+  "scenario": "ZERO_TOTAL_ZONE_REDISTRIBUTION_WITH_SIMULTANEOUS_UP_AND_DOWN",
+  "schema": "R1_15A2_V2492_SIGNED_GENERATION_SYNTHETIC_BENCHMARK_V1",
+  "signed_audit": {
+    "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+    "enabled": true,
+    "families": {
+      "WORK": {
+        "att_delta_after": 9.769962616701378e-14,
+        "att_delta_before": 4.796163466380676e-14,
+        "prod_delta_after": 9.769962616701378e-14,
+        "prod_delta_before": 4.796163466380676e-14,
+        "relative_gap_after": 0.0,
+        "status": "COMMON_CONSERVATIVE_FAMILY_TOTAL",
+        "target_common_delta": 4.796163466380676e-14
+      }
+    },
+    "global_total_policy": "COMMON_CONSERVATIVE_FAMILY_TOTAL",
+    "groups": {
+      "WORK_ATT": {
+        "base_total": 2000.0,
+        "centering_residual": 4.796163466380676e-14,
+        "global_log": 2.398081733190338e-17,
+        "raw_global_log": 0.0,
+        "status": "CENTERED",
+        "total_delta": 9.769962616701378e-14
+      },
+      "WORK_PROD": {
+        "base_total": 2000.0,
+        "centering_residual": 4.796163466380676e-14,
+        "global_log": 2.398081733190338e-17,
+        "raw_global_log": 0.0,
+        "status": "CENTERED",
+        "total_delta": 9.769962616701378e-14
+      }
+    },
+    "max_family_global_log_down": 0.005,
+    "max_family_global_log_up": 0.005,
+    "max_zone_log_down": 0.02,
+    "max_zone_log_up": 0.02,
+    "mode": "FAMILY_GLOBAL_PLUS_NONLINEAR_CENTERED_ZONE_LOG_EFFECT",
+    "opposite_sign_total_policy": "ZERO_GLOBAL_KEEP_CENTERED_PATTERN",
+    "reference_role": "RUN_START_COEFFICIENT_REFERENCE_FOR_ZAHR",
+    "soft_damped_count": 0,
+    "soft_damped_rows": [],
+    "soft_outward_step_factor": 0.15
+  },
+  "stages": {
+    "1": {
+      "max_add_log_down": 0.06,
+      "max_add_log_up": 0.06,
+      "max_od_relative_down": 0.08,
+      "max_od_relative_up": 0.08,
+      "name": "SIGNED_EXPLORE",
+      "salary_max_abs_delta_per_block": 0.06,
+      "signed_max_family_global_log_down": 0.03,
+      "signed_max_family_global_log_up": 0.03,
+      "signed_soft_outward_step_factor": 0.25,
+      "through_outer_cycle": 2
+    },
+    "3": {
+      "max_add_log_down": 0.04,
+      "max_add_log_up": 0.04,
+      "max_od_relative_down": 0.06,
+      "max_od_relative_up": 0.06,
+      "name": "SIGNED_REFINE",
+      "salary_max_abs_delta_per_block": 0.04,
+      "signed_max_family_global_log_down": 0.015,
+      "signed_max_family_global_log_up": 0.015,
+      "signed_soft_outward_step_factor": 0.2,
+      "through_outer_cycle": 4
+    },
+    "5": {
+      "max_add_log_down": 0.02,
+      "max_add_log_up": 0.02,
+      "max_od_relative_down": 0.04,
+      "max_od_relative_up": 0.04,
+      "name": "DISTRIBUTION_FOCUS",
+      "salary_max_abs_delta_per_block": 0.02,
+      "signed_max_family_global_log_down": 0.005,
+      "signed_max_family_global_log_up": 0.005,
+      "signed_soft_outward_step_factor": 0.15,
+      "through_outer_cycle": 12
+    }
+  }
+}

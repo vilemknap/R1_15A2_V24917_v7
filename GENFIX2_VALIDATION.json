@@ -1,0 +1,146 @@
+{
+  "release": "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027",
+  "status": "OFFLINE_IMPLEMENTATION_VERIFIED_LIVE_VISUM_REQUIRED",
+  "baseline_archive": "R1_15A2_V24917_MOBILITY1_GENFIX1_REPACK2_20261027_FULL.zip",
+  "baseline_sha256": "7cb7408d85af35e859ff967fd2c2240238f4d3131e432f7dcbbce6e43bdfb390",
+  "source_changes": {
+    "modified_existing": 19,
+    "new_code_files": 5,
+    "removed_original": 0,
+    "unchanged_original": 1167,
+    "sealed_legacy_files_unchanged": 1059
+  },
+  "python_version": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "python_ast_files": 430,
+  "python_ast_errors": 0,
+  "test_suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/mnt/data/genfix2/work/R1_V24917_GENFIX2/tests"
+      ],
+      "returncode": 0,
+      "seconds": 55.34,
+      "passed": 1380,
+      "skipped": 4,
+      "failed": 0
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/mnt/data/genfix2/work/R1_V24917_GENFIX2/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 40.402,
+      "passed": 138,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/mnt/data/genfix2/work/R1_V24917_GENFIX2/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 2.824,
+      "passed": 18,
+      "skipped": 0,
+      "failed": 0
+    }
+  ],
+  "passed_total": 1536,
+  "skipped_total": 4,
+  "failed_total": 0,
+  "new_genfix2_test_cases": 45,
+  "unmodified_audit_on_genfix1": {
+    "failed": 15,
+    "passed": 3
+  },
+  "unmodified_audit_on_genfix2": {
+    "passed": 17,
+    "failed": 1,
+    "test": "A10",
+    "reason": "Now raises explicit unsafe-recovery exception instead of returning a record; no state adopted"
+  },
+  "audit_migration": {
+    "test_changed": "A10 only",
+    "diff": "evidence_genfix2/AUDIT_A10_CONTRACT_DIFF.patch",
+    "stronger_assertion": "Explicit manual-reopen failure plus zero candidate acceptance calls",
+    "passed": 18
+  },
+  "existing_test_updates": [
+    "tests/test_v24917_rbcons_audit.py",
+    "tests/test_v24917_step_search.py",
+    "tests/test_v24917_targeted_catchup.py",
+    "tests/test_v24917_td_rollback_tolerant.py"
+  ],
+  "manifests": [
+    {
+      "manifest": "DIAGFAST_V1_BASE_MANIFEST.json",
+      "entries": 1059,
+      "mismatches": 0
+    },
+    {
+      "manifest": "DIAGFAST_V1_RELEASE_MANIFEST.json",
+      "entries": 91,
+      "mismatches": 0
+    },
+    {
+      "manifest": "V24917_RUNTIME_MANIFEST.json",
+      "entries": 54,
+      "mismatches": 0
+    },
+    {
+      "manifest": "V24916_PERF2C_RUNTIME_MANIFEST.json",
+      "entries": 50,
+      "mismatches": 0
+    }
+  ],
+  "options_bytes_unchanged": true,
+  "authority_files_checked": 24,
+  "authority_bytes_unchanged": true,
+  "methodology": {
+    "td_survey_degradation": "LOCAL_PER_STEP_1.25_NOT_GLOBAL_BOUND",
+    "mobility_band": [
+      0.75,
+      1.25
+    ],
+    "survey_coefficients_independently_verified": false,
+    "severity_early_horizon": "EXISTING_OPTIONS_UNCHANGED",
+    "step1_assignment": "FULL_NOT_FASTASSIGN",
+    "stationarity": "CONVERGED_PROPOSAL_COMPLETE_CONFIGURED_REAL_SEARCH_NOT_GLOBAL_OPTIMALITY"
+  },
+  "findings": {
+    "F01": "IMPLEMENTED_OFFLINE_REGRESSION_VERIFIED",
+    "F02": "IMPLEMENTED_OFFLINE_REGRESSION_VERIFIED",
+    "F03": "IMPLEMENTED_OFFLINE_REGRESSION_VERIFIED",
+    "F04": "IMPLEMENTED_OFFLINE_REGRESSION_VERIFIED",
+    "F05": "IMPLEMENTED_OFFLINE_REGRESSION_VERIFIED",
+    "F06": "IMPLEMENTED_OFFLINE_REGRESSION_VERIFIED",
+    "F07": "IMPLEMENTED_OFFLINE_REGRESSION_VERIFIED",
+    "F08": "IMPLEMENTED_OFFLINE_REGRESSION_VERIFIED"
+  },
+  "live_visum_tested": false,
+  "windows_com_tested": false,
+  "real_assignment_tested": false,
+  "next_gate": "CONTROLLED_LIVE_VISUM_REJECT_RESTORE_CHECKPOINT_DIAGNOSTIC_SMOKE",
+  "delivery_integrity_report": "External *_DELIVERY_VERIFICATION.json checks CRC, extraction, exact hashes and Windows paths"
+}

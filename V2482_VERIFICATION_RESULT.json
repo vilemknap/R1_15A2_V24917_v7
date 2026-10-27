@@ -1,0 +1,74 @@
+{
+  "schema": "R1_15A2_V2482_PACKAGE_VERIFICATION_V1",
+  "status": "PASS",
+  "release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+  "root": "/mnt/data/r1_v2482_rebuild/R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+  "manifest_sha256": "6c02b68413b935a14ae95e2bde209022be05a6bc45f969fcaf3ae20399faeb33",
+  "file_count": 417,
+  "errors": [],
+  "config_validation": {
+    "passes": true,
+    "base_contract": {
+      "passes": true,
+      "base_contract": {
+        "passes": true,
+        "minimum_confirmed_stationary_cycles": 2
+      },
+      "bulk_link_read": true,
+      "adaptive_page_size": 2048,
+      "addval_step_units": [
+        4,
+        2,
+        1
+      ],
+      "generation_step_stages": [
+        "EXPLORE",
+        "FULL_VERIFY"
+      ],
+      "progressive_td_stages": [
+        "EXPLORE",
+        "REFINE",
+        "FULL_VERIFY"
+      ],
+      "path_epoch_limits": {
+        "DEMAND": 4,
+        "SUPPLY": 8
+      },
+      "minimum_confirmed_stationary_cycles": 2
+    },
+    "persistent_path_cache": true,
+    "retained_epoch_checkpoints": 3,
+    "max_total_cache_gib": 24.0,
+    "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
+    "legacy_import": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
+    "zero_share_residual_policy": {
+      "enabled": true,
+      "max_dseg_relative_volume": 0.01,
+      "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
+      "requires_existing_geometry": true,
+      "requires_path_volume_parity_pass": true,
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+    }
+  },
+  "launcher": {
+    "release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+    "implementation_hash": "525726c81d3acb7234514a0dcfc7eb8855edef018de652d6de16f95c959c347e",
+    "policy": {
+      "enabled": true,
+      "max_dseg_relative_volume": 0.01,
+      "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
+      "requires_existing_geometry": true,
+      "requires_path_volume_parity_pass": true,
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+    }
+  },
+  "compileall_pass": true,
+  "tests": {
+    "returncode": 0,
+    "stdout": "........................................................................ [ 12%]\n........................................................................ [ 24%]\n........................................................................ [ 36%]\n........................................................................ [ 49%]\n........................................................................ [ 61%]\n........................................................................ [ 73%]\n........................................................................ [ 86%]\n........................................................................ [ 98%]\n..........                                                               [100%]\n586 passed in 8.67s\n",
+    "stderr": ""
+  },
+  "real_visum_tested": false,
+  "production_ready": false,
+  "elapsed_seconds": 13.14
+}

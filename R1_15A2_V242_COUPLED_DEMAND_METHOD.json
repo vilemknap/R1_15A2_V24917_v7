@@ -1,0 +1,51 @@
+{
+  "calibration_order": [
+    "COUPLED_DEMAND_OUTER_CYCLE",
+    "SUPPLY_ADDVAL1_AFTER_JOINT_DEMAND_FIXED_POINT"
+  ],
+  "coupled_demand_cycle": [
+    "TRIP_GENERATION_CALIBRATE_PRODUCTIVITY_ATTRACTIVITY_COEFFICIENTS",
+    "FULL_DOWNSTREAM_RECOMPUTE_AND_ASSIGNMENT_FOR_GENERATION_CANDIDATE",
+    "TRIP_DISTRIBUTION_FINECDF_CALIBRATE_BC_AGAINST_512_POINT_IDP",
+    "FULL_DOWNSTREAM_RECOMPUTE_AND_ASSIGNMENT",
+    "REPEAT_OUTER_CYCLE"
+  ],
+  "direct_od_matrix_writes": false,
+  "generation_acceptance": "CAL_COUNTS_GEH_PRIMARY_WITH_EXISTING_PROTECTED_AND_SEVERITY_GUARDS; IDP_DEFERRED_TO_IMMEDIATE_TD_SUBSTEP",
+  "generation_actuators": [
+    "ADD_PROD_W",
+    "ADD_ATT_W",
+    "ADD_SALARY",
+    "ADD_PROD_S",
+    "ADD_ATT_S",
+    "ZAHR_PROD_WORK",
+    "ZAHR_ATR_WORK",
+    "ZAHR_PROD_SERV",
+    "ZAHR_ATR_SERV"
+  ],
+  "global_runtime_seconds": 36000,
+  "integrated_td_rollback": "RESTORE_BC_THEN_RERUN_NATIVE_TD_AND_VERIFY_MATRICES_NO_SETVALUES",
+  "joint_convergence": "NO_ACCEPTED_GENERATION_UPDATE_AND_NO_ACCEPTED_FINECDF_BC_UPDATE_IN_SAME_OUTER_CYCLE",
+  "live_visum_full_run_completed": false,
+  "load_version_rollback": false,
+  "production_apply": false,
+  "release": "R1_15A2_V2_4_2_FULL_OVERNIGHT_COUPLED_DEMAND_20261016",
+  "schema": "R1_15A2_V242_COUPLED_DEMAND_METHOD_V1",
+  "supply": {
+    "assignment": "OP20_ONLY_FOR_ADDVAL1_TRIALS",
+    "demand_parameters_frozen": true,
+    "full_network_link_eligibility": true,
+    "global_link_count_cap": null,
+    "max_edges_per_local_trial": 12,
+    "unlocked_only_after_joint_demand_convergence": true
+  },
+  "td_reference": {
+    "file": "reference_v17/R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7.py",
+    "foreign_matrix_9116_fixed": true,
+    "mutable_bc_components": 16,
+    "pa_frozen_inside_td": true,
+    "primary_target": "512_POINT_ORIGINAL_IDP_CDF_PLUS_MEAN_DISTANCE",
+    "sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82"
+  },
+  "working_copy_trial_writes": true
+}

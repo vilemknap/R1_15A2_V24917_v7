@@ -1,0 +1,26 @@
+[
+  {
+    "manifest": "DIAGFAST_V1_RELEASE_MANIFEST.json",
+    "updated_entries": [
+      "r1_15a2_parent_equivalence_v24917.py",
+      "r1_15a2_td_rollback_tolerant_v24917.py"
+    ]
+  },
+  {
+    "manifest": "V24917_RUNTIME_MANIFEST.json",
+    "updated_entries": [
+      "r1_15a2_parent_equivalence_v24917.py",
+      "r1_15a2_td_rollback_tolerant_v24917.py",
+      "DIAGFAST_V1_RELEASE_MANIFEST.json"
+    ]
+  },
+  {
+    "manifest": "GENFIX2_PAYLOAD_MANIFEST.json",
+    "updated_entries": [
+      "DIAGFAST_V1_RELEASE_MANIFEST.json",
+      "V24917_RUNTIME_MANIFEST.json",
+      "r1_15a2_parent_equivalence_v24917.py",
+      "r1_15a2_td_rollback_tolerant_v24917.py"
+    ]
+  }
+]

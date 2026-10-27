@@ -1,0 +1,21 @@
+{
+  "schema": "R1_15A2_V240_BUILD_VERIFICATION_V1",
+  "base_release": "R1_15A2_V2_3_9_SAFETY_GATES_20261016",
+  "old_file_count": 245,
+  "old_files_changed": [],
+  "old_files_missing": [],
+  "old_base_bitwise_unchanged": true,
+  "new_files": [
+    "R1_15A2_CONFIG_V2_4_0.json",
+    "R1_15A2_FULL_OVERNIGHT_CALIBRATION_V2_4_0.py",
+    "r1_15a2_trial_adapter_v240.py",
+    "r1_15a2_overnight_controller_v240.py",
+    "README_R1_15A2_V2_4_0_FULL_OVERNIGHT_CZ.md",
+    "tests/test_v240_full_overnight.py"
+  ],
+  "test_result": "435 passed",
+  "live_visum_full_run_performed": false,
+  "production_apply": false,
+  "trial_writes": true,
+  "load_version_used": false
+}

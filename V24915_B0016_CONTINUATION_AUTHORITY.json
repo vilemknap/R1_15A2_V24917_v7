@@ -1,0 +1,249 @@
+{
+  "schema": "R1_15A2_V24915_B0016_CONTINUATION_AUTHORITY_V1",
+  "source_release": "R1_15A2_V2_4_9_15_COM_BUSY_RETRY_SAFE_FINALIZER_20261019",
+  "source_run_id": "RUN_20261019_113447_211124",
+  "source_terminal_status": "FAILED",
+  "source_error_class": "11D_15A2_COMPATIBILITY_GATE_FAILURE_AFTER_CYCLE11_GENERATION_ACCEPT",
+  "source_checkpoint_name": "ACCEPTED_B_0016_d1211a44ac4d.ver",
+  "source_checkpoint_raw_sha256_provenance": "797d5e3d23338ded3bff8e39a60c8a648c4118d139071bcbd61085d779e8cd65",
+  "source_checkpoint_size": 580941027,
+  "accepted_count": 16,
+  "inherited_outer_cycles": 10,
+  "next_outer_cycle": 11,
+  "max_lineage_outer_cycle": 12,
+  "inherited_stationary_cycle_streak": 0,
+  "inherited_completed_demand_cycles": 5,
+  "demand_converged": false,
+  "supply_started": false,
+  "resume_substep": "TD_FINECDF_V17",
+  "resume_outer_cycle": 11,
+  "resume_generation_completed": true,
+  "resume_generation_changed": true,
+  "resume_td_completed": false,
+  "td_realization_pending": true,
+  "semantic_state_hash": "46a0c61d45e55cc9d2a91be0c62839fee7ef9236924e59d6ebc27b62619c63d2",
+  "semantic_hashes": {
+    "fixed_link_hash": "83779fb0c29bc3f0e671b2ca3831289175b951a28740f8aff428c4c5b65b3f50",
+    "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+    "operations_hash": "8b7c5a1ffd4b2c3e8f6ab5a6bd6d37bad77a1e5cd6b2f7107e58cf79b2239b00",
+    "addval_hash": "189d17f4081b2d814659a8374f18c0bcd74ae1f79cf3cdbf9c0f38dddd3a7f74",
+    "matrix_hash": "4ffd9c56d8051ee901bcbbd183bf6a6fa631e177fae42518891dce0b996dcfef",
+    "generation_hash": "fb3d5de744e9fb37bc94fa64a2075ad6278d483a97540ab1a7e6151249bc52c3",
+    "td_hash": "1ee9dce7c8fa05082531209cf1292924d332c7af562f66f0fc74a540631ed12a"
+  },
+  "snapshot_state_hash_diagnostic": "110a150824ebd264f652dfbba8657853bec196ee04398fbcf8565003e3ac71b9",
+  "generation_reference_file": "continuation_b0016/GENERATION_COUNTS_REFERENCE.json",
+  "generation_reference_sha256": "57016672bc247a820075998e98453e7dd4155d6e5b3fd2dcdf752731f6c29e2c",
+  "generation_reference": {
+    "schema": "R1_15A2_SHARED_OBJECTIVE_V22",
+    "components": [
+      "LONG_COMPOSITE",
+      "SCHOOL",
+      "SERV_E_C",
+      "SERV_E_noC",
+      "SERV_noE_C",
+      "SERV_noE_noC",
+      "SERV_stud",
+      "WORK_E_C",
+      "WORK_E_noC",
+      "WORK_noE_C",
+      "WORK_noE_noC",
+      "WORK_stud"
+    ],
+    "component_weights": {
+      "LONG_COMPOSITE": 53.25220487130625,
+      "SCHOOL": 191.27436658218542,
+      "SERV_E_C": 532.4740770468374,
+      "SERV_E_noC": 248.52676718120432,
+      "SERV_noE_C": 335.11447588851036,
+      "SERV_noE_noC": 262.69108974759456,
+      "SERV_stud": 161.7359088099768,
+      "WORK_E_C": 456.7900091152597,
+      "WORK_E_noC": 276.7245249088516,
+      "WORK_noE_C": 118.84750071077225,
+      "WORK_noE_noC": 89.11924036033983,
+      "WORK_stud": 20.593273031508158
+    },
+    "target_hash": "6fa9d0908fe27b330946e1f58ccae630c430c6c9c7e9d6c08838eb5a6b780502",
+    "observation_hash": "af69aadb01a0caad81d796d2d02fc0d9c6a34ea2051678a9a871055bba32e707",
+    "cal_objective_metric": "WEIGHTED_MEAN_GEH",
+    "cal_objective_key": "objective_geh_mean_weighted",
+    "cal_scale": 53.37788753559903
+  },
+  "resume_generation_record": {
+    "status": "ACCEPTED",
+    "search_complete": true,
+    "stationarity_confirmed": false,
+    "resumed_from_prior_run": true,
+    "source_cycle": 11,
+    "objective_before": {
+      "raw_cal": 53.29105546193309,
+      "raw_component_idp": 0.2315694708672336,
+      "terms": {
+        "CSD_CAL": 0.9983732575852121,
+        "COMPONENT_IDP": 0.0,
+        "ADDVAL1_PRIOR": 0.0
+      },
+      "cal_objective_metric": "WEIGHTED_MEAN_GEH",
+      "cal_objective_key": "objective_geh_mean_weighted",
+      "cal_metrics": {
+        "role": "CALIBRATION",
+        "n": 461,
+        "obs_sum": 2217659.6212684186,
+        "model_sum": 780247.7390413424,
+        "model_obs_ratio": 0.3518338574406968,
+        "profile_sum_role": "DIAGNOSTIC_ONLY_PROFILE_PASSAGE_CHECKSUM",
+        "profile_sum_unique_trip_interpretation_allowed": false,
+        "profile_sum_note": "A trip may cross multiple observed profiles; sums are not unique-trip or total-demand estimates.",
+        "rmse": 5948.533726226267,
+        "mae": 3482.6289295557353,
+        "objective_geh_mean_weighted": 53.29105546193309,
+        "objective_geh2_mean": 4513.910061714532,
+        "objective_weight_sum": 452.0,
+        "geh_mean": 53.99663421596591,
+        "geh_lt5": 21,
+        "geh_lt10": 38,
+        "geh_ge20": 366,
+        "geh_ge30": 313
+      },
+      "total": 0.9983732575852121,
+      "reference_hash": "6baf5dd88b8f32561092f1736d308b407ec38712db1c0d9a9cb031404e25a80b",
+      "validation_used": false
+    },
+    "objective_after": {
+      "raw_cal": 53.25304740797715,
+      "raw_component_idp": 0.23177720811592653,
+      "terms": {
+        "CSD_CAL": 0.9976612014190591,
+        "COMPONENT_IDP": 0.0,
+        "ADDVAL1_PRIOR": 0.0
+      },
+      "cal_objective_metric": "WEIGHTED_MEAN_GEH",
+      "cal_objective_key": "objective_geh_mean_weighted",
+      "cal_metrics": {
+        "role": "CALIBRATION",
+        "n": 461,
+        "obs_sum": 2217659.6212684186,
+        "model_sum": 781503.0830674733,
+        "model_obs_ratio": 0.3523999244845711,
+        "profile_sum_role": "DIAGNOSTIC_ONLY_PROFILE_PASSAGE_CHECKSUM",
+        "profile_sum_unique_trip_interpretation_allowed": false,
+        "profile_sum_note": "A trip may cross multiple observed profiles; sums are not unique-trip or total-demand estimates.",
+        "rmse": 5945.900726696612,
+        "mae": 3480.9311757026394,
+        "objective_geh_mean_weighted": 53.25304740797715,
+        "objective_geh2_mean": 4508.1490708126485,
+        "objective_weight_sum": 452.0,
+        "geh_mean": 53.95790486686472,
+        "geh_lt5": 21,
+        "geh_lt10": 38,
+        "geh_ge20": 367,
+        "geh_ge30": 314
+      },
+      "total": 0.9976612014190591,
+      "reference_hash": "6baf5dd88b8f32561092f1736d308b407ec38712db1c0d9a9cb031404e25a80b",
+      "validation_used": false
+    },
+    "candidate": {
+      "scale": 1.0
+    },
+    "generation_step_stage": {
+      "name": "DISTRIBUTION_FOCUS",
+      "through_outer_cycle": 12,
+      "max_od_relative_up": 0.04,
+      "max_od_relative_down": 0.04,
+      "max_add_log_up": 0.02,
+      "max_add_log_down": 0.02,
+      "salary_max_abs_delta_per_block": 0.02,
+      "signed_max_family_global_log_up": 0.005,
+      "signed_max_family_global_log_down": 0.005,
+      "signed_soft_outward_step_factor": 0.15
+    },
+    "path_epoch_transition": {
+      "retained": true,
+      "reason": "V242_ACCEPTED_GENERATION_STATE_CHANGED",
+      "phase": "DEMAND",
+      "epoch": 1,
+      "epoch_origin_state_hash": "7e07a967eafcbc45aae624595ea6eb86be3325815c580843a227ca5320408632",
+      "live_state_hash": "110a150824ebd264f652dfbba8657853bec196ee04398fbcf8565003e3ac71b9",
+      "basis_hash": "e44264e94cb77471256e2bc71e40c711de5bb1b611fb96acb436e713c5e10333",
+      "accepted_state_changes_on_epoch": 7,
+      "persistent_binding": {
+        "schema": "R1_15A2_PERSISTENT_PATH_EPOCH_BINDING_V248",
+        "created_utc": "2026-10-19T15:00:08.340917+00:00",
+        "state_hash": "110a150824ebd264f652dfbba8657853bec196ee04398fbcf8565003e3ac71b9",
+        "cache_id": "EPOCH_20261019T095241Z_7e07a967eafc_e44264e94cb7",
+        "cache_dir": "C:\\Users\\vilem_knap\\AppData\\Local\\R1_15A2_PATH_CACHE_V248\\EPOCH_20261019T095241Z_7e07a967eafc_e44264e94cb7",
+        "manifest_sha256": "5ec7bc13711344b17355d9cd1b441cb1e5bb3660fab46bc7b7c9335e709f7f1f",
+        "origin_state_hash": "7e07a967eafcbc45aae624595ea6eb86be3325815c580843a227ca5320408632",
+        "immutable_snapshot": {
+          "fixed_link_hash": "83779fb0c29bc3f0e671b2ca3831289175b951a28740f8aff428c4c5b65b3f50",
+          "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+          "operations_hash": "8b7c5a1ffd4b2c3e8f6ab5a6bd6d37bad77a1e5cd6b2f7107e58cf79b2239b00"
+        },
+        "path_basis_hash": "e44264e94cb77471256e2bc71e40c711de5bb1b611fb96acb436e713c5e10333",
+        "path_basis_comparison_hash": "ec95c5761b5dc6744849ad26af196b33dfd047c4e403ae68d640ad6dd6da60a7",
+        "reason": "V242_ACCEPTED_GENERATION_STATE_CHANGED",
+        "phase": "DEMAND"
+      }
+    }
+  },
+  "path_epoch_checkpoint": {
+    "enabled": true,
+    "epoch": 1,
+    "epoch_origin_state_hash": "7e07a967eafcbc45aae624595ea6eb86be3325815c580843a227ca5320408632",
+    "live_state_hash": "110a150824ebd264f652dfbba8657853bec196ee04398fbcf8565003e3ac71b9",
+    "basis_hash": "e44264e94cb77471256e2bc71e40c711de5bb1b611fb96acb436e713c5e10333",
+    "comparison_basis_hash": "ec95c5761b5dc6744849ad26af196b33dfd047c4e403ae68d640ad6dd6da60a7",
+    "persistent_cache_id": "EPOCH_20261019T095241Z_7e07a967eafc_e44264e94cb7",
+    "persistent_cache_dir": "C:\\Users\\vilem_knap\\AppData\\Local\\R1_15A2_PATH_CACHE_V248\\EPOCH_20261019T095241Z_7e07a967eafc_e44264e94cb7"
+  },
+  "best_so_far_objective": 1.2294384095349857,
+  "best_so_far_state_hash": "110a150824ebd264f652dfbba8657853bec196ee04398fbcf8565003e3ac71b9",
+  "source_restart_evidence": {
+    "live_matches_last_accepted": true,
+    "manual_reopen_required": false,
+    "safe_restart_from_latest_accepted_checkpoint": true,
+    "restart_policy": "START_NEW_RUN_FROM_LATEST_ACCEPTED_CHECKPOINT",
+    "completed_demand_cycles": 5,
+    "cycle11_generation_completed": true,
+    "cycle11_td_completed": false
+  },
+  "bounded_inner_budget_stop_reasons": [
+    "MAX_ITERATIONS",
+    "TD_EVALUATION_BUDGET",
+    "TD_INNER_TIME_BUDGET"
+  ],
+  "evidence_files": [
+    {
+      "path": "continuation_b0016/ACCEPTED_B_0016_d1211a44ac4d.ver.semantic.json",
+      "sha256": "4076c2d5f29dd93710e4abeda7db9ec325b09c5fc57480aa2114cd0470eee328",
+      "size": 1659
+    },
+    {
+      "path": "continuation_b0016/DEMAND_CYCLE_11_RESULT.json",
+      "sha256": "cd9686e6d339313374f1d34dc022601dabad3427f540f161793d0a557b734129",
+      "size": 279587
+    },
+    {
+      "path": "continuation_b0016/EFFECTIVE_CONFIG.json",
+      "sha256": "1cc0651fb902f939c6742924fca4921d683abc1a15347113e9a177376c62d232",
+      "size": 312365
+    },
+    {
+      "path": "continuation_b0016/GENERATION_COUNTS_REFERENCE.json",
+      "sha256": "57016672bc247a820075998e98453e7dd4155d6e5b3fd2dcdf752731f6c29e2c",
+      "size": 1104
+    },
+    {
+      "path": "continuation_b0016/LATEST_ACCEPTED_CHECKPOINT.json",
+      "sha256": "d90008d4e1587270f9b15cccfd65a232177e60636b37fdde999735f6db87e3be",
+      "size": 2253
+    },
+    {
+      "path": "continuation_b0016/RUN_STATUS.json",
+      "sha256": "f763ff771ac6fc22e5feeffe69145105e59635d7a77c3993ebc4097fe4f40202",
+      "size": 7280755
+    }
+  ]
+}

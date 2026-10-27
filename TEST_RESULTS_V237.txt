@@ -1,0 +1,1 @@
+V2.3.7: 294/294 offline pytest tests PASS. Live Visum V2.3.7 not tested. 09Q live data confirms list schema but not assignment freshness.

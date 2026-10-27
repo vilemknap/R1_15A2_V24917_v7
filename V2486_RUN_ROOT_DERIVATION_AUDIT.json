@@ -1,0 +1,28 @@
+{
+  "schema": "R1_15A2_V2486_RUN_ROOT_DERIVATION_AUDIT_V1",
+  "checks": [
+    {
+      "case": "single",
+      "normalization_depth": 1,
+      "expected_depth": 1,
+      "project_base": "/mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/.v2486_evidence_probe/PROJECT",
+      "passes": true
+    },
+    {
+      "case": "double",
+      "normalization_depth": 2,
+      "expected_depth": 2,
+      "project_base": "/mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/.v2486_evidence_probe/PROJECT",
+      "passes": true
+    },
+    {
+      "case": "triple",
+      "normalization_depth": 3,
+      "expected_depth": 3,
+      "project_base": "/mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/.v2486_evidence_probe/PROJECT",
+      "passes": true
+    }
+  ],
+  "all_pass": true,
+  "real_visum_recomputed": false
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "R1_15A2_V24915_CP78_CORE_FOCUSED_PASS_V1",
+  "checkpoint": "CP78",
+  "status": "CORE_COM_BUSY_RETRY_AND_SAFE_FINALIZER_FOCUSED_PASS",
+  "timestamp_utc": "2026-10-19T08:30:32.079730+00:00",
+  "parent_checkpoint": "CP77",
+  "source_release": "R1_15A2_V2_4_9_14_DEMAND_CONTINUATION_SUPPLY_READY_20261019",
+  "target_release": "R1_15A2_V2_4_9_15_COM_BUSY_RETRY_SAFE_FINALIZER_20261019",
+  "changed_files": [
+    {
+      "path": "r1_15a2_com_compat.py",
+      "baseline_exists": true,
+      "sha256": "a06924770db29ea9b5726c68f9be99a4d2c5730545705a15d70b2dc41d3995d8",
+      "size": 23549
+    },
+    {
+      "path": "r1_15a2_runtime_v1.py",
+      "baseline_exists": true,
+      "sha256": "0e0964d23ab719abed8f08596426103a80900a906fbb036a882d50043872236d",
+      "size": 108301
+    },
+    {
+      "path": "r1_15a2_two_mode_v238.py",
+      "baseline_exists": true,
+      "sha256": "f568c2f0e94b73f5e336a926c37df091b4af36d2c401a985d44eeff15579bf0a",
+      "size": 84146
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v240.py",
+      "baseline_exists": true,
+      "sha256": "5b3b5ebd59c0fad6de0457ddb32dc4d0620053459dc7257a13c9c8d80571eeb9",
+      "size": 41435
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v242.py",
+      "baseline_exists": true,
+      "sha256": "20a729617cfaa20b0219c8fec184a5b2b98ab33a2985755ef4bfae3872fe733e",
+      "size": 61904
+    },
+    {
+      "path": "tests/test_v24915_com_busy_retry_safe_finalizer.py",
+      "baseline_exists": false,
+      "sha256": "b3e1f0d66116c563582121ac64d070bfc72ebbab432ea62a3a6fea4884f5b754",
+      "size": 6767
+    }
+  ],
+  "gates": {
+    "compileall_changed_modules": true,
+    "focused_pytest_rc": 0,
+    "focused_tests_passed": 35,
+    "exact_same_range_retry_preserved": true,
+    "page_size_fallback_for_transient_rpc_forbidden": true,
+    "generic_retry_budget_unchanged": true,
+    "bounded_path_export_scoped_retry_enabled": true,
+    "elapsed_retry_lease_bounded": true,
+    "transient_final_verification_safe_restart_classification": true,
+    "nontransient_manual_reopen_fail_closed": true
+  },
+  "target_retry_policy": {
+    "generic_max_attempts": 5,
+    "bounded_path_export_max_attempts": 48,
+    "bounded_path_export_max_elapsed_seconds": 120.0,
+    "final_verification_max_attempts": 12,
+    "final_verification_max_elapsed_seconds": 30.0
+  },
+  "real_visum_tested": false,
+  "production_ready": false,
+  "gate_pass": true
+}

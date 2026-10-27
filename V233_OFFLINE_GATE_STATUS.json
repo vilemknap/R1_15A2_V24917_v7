@@ -1,0 +1,99 @@
+{
+  "schema": "R1_15A2_V233_COM_API_AUDIT_V1",
+  "version": "2.3.3",
+  "status": "OFFLINE_VERIFIED_LIVE_VISUM_BINDINGS_PENDING",
+  "parent_zip_sha256": "93f96dc9823ab2c5a0cb5f4ce1f56a8e3a2983a7addf045f854471ec75f760a9",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "tests": {
+    "tests": 229,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "execution": [
+    {
+      "label": "pytest_final",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/mnt/data/r1_visum_api_audit/evidence/pytest_final.xml"
+      ],
+      "return_code": 0,
+      "seconds": 4.076,
+      "log": "pytest_final.log",
+      "log_sha256": "d0ac6db3f44d858fa91abde9d4d8f6008d62b81d57ee5def79513c05b7b8d00b"
+    },
+    {
+      "label": "compileall",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "/mnt/data/r1_visum_api_audit/work/R1_15A2_V2_3_3_COM_API_AUDITED"
+      ],
+      "return_code": 0,
+      "seconds": 0.68,
+      "log": "compileall.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "synthetic_numeric_e2e",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "tests/run_synthetic_e2e.py"
+      ],
+      "return_code": 0,
+      "seconds": 0.718,
+      "log": "synthetic_numeric_e2e.log",
+      "log_sha256": "ffc4c182e28ed0abe00a96fea289f5196729a6517ce42ae33c1fefa40ec10ffb"
+    },
+    {
+      "label": "controller_demo",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "tests/run_v22_synthetic_controller_demo.py",
+        "/mnt/data/r1_visum_api_audit/evidence/controller_demo_final"
+      ],
+      "return_code": 0,
+      "seconds": 0.758,
+      "log": "controller_demo.log",
+      "log_sha256": "f53cfbce0488229d74c283b4e211197a2d234742f407fb295fedcd6774a50ba1"
+    },
+    {
+      "label": "isolated_main_and_config",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-c",
+        "import R1_15A2_SUPPLY_DEMAND_MASTER_V2_3_3 as m; c=m.load_config(); assert not c['apply']; assert c['supply']['gap_readback']['attribute'] is None; assert not c['supply']['assignment_operations']; assert len(c['api_approved_observations'])==498; print(c['implementation_hash'])"
+      ],
+      "return_code": 0,
+      "seconds": 0.792,
+      "log": "isolated_main_and_config.log",
+      "log_sha256": "5716c2a09d19cbe7bdfa72c419312f3c8bc3df92a2ab0f55826bc18685304141"
+    }
+  ],
+  "protected_identical_files": 20,
+  "default_apply": false,
+  "live_visum_tested": false,
+  "production_ready": false,
+  "observations": {
+    "total": 498,
+    "calibration": 462,
+    "validation": 36
+  },
+  "unit_contract": "+1 ADDVAL1 = +10 generalized seconds",
+  "pending": [
+    "Approve actual assignment positions/types/DSeg scope",
+    "Approve actual achieved convergence readback (not target tolerance)",
+    "Full live saved-path coverage/parity",
+    "Live attribute writes/frozen demand/rollback",
+    "Existing mapping review acknowledgements remain unchanged"
+  ],
+  "verification_boundary": "Source documentation plus offline COM-shaped tests; NOT a real Visum assignment"
+}

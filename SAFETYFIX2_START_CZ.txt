@@ -1,0 +1,29 @@
+SAFETYFIX2 / TDROLLBACKFIX1 - SPUSTENI
+====================================
+
+1. Ukoncete Visum a spustte jej znovu, aby nezustaly stare Python moduly.
+2. Rozbalte cely ZIP do nove slozky, napriklad C:\R1. Vznikne R1_SAFETYFIX2.
+3. Rucne otevrete posledni overeny accepted checkpoint. Posledni dodany zaznam uvadi:
+
+C:\Users\vilem_knap\Documents\VISUM\v45\2022\R1_15A2_V16_RUNS\RUN_20261027_143934_828868\CALIBRATION\CHECKPOINTS\ACCEPTED_A_0001_f3e10746c18b.ver
+
+SHA-256 podle zaznamu: 7e34dfe5c24f95a1d37eb043c3268f5971d8375201d8e85b53613ac99dfb8da5
+Velikost podle zaznamu: 581516186 bajtu. Model .ver NENI soucasti ZIPu.
+Fyzickou existenci a citelnost souboru na vasem PC zde nebylo mozne overit.
+
+4. Scripts -> Run script file:
+   01_SPUSTIT_V24917_TDJOINT1.py             intenzity/pruzkum 65/35
+   02_SPUSTIT_V24917_TDJOINT1_60_40.py       intenzity/pruzkum 60/40
+
+Launchery zustavaji stejne. Je to NOVY beh od cyklu 1 nad otevrenym accepted stavem,
+ne automaticke obnoveni presne preruseneho TD podkroku. Prijata generation zmena
+je zachovana v uvedenem checkpointu. Nepouzivejte neovereny zivy stav po chybe TD.
+
+Kontrola verze:
+- V24917_RUNTIME_MANIFEST.json: R1_15A2_V24917_SAFETYFIX2_TDROLLBACKFIX1_20261027.
+- Konzole pri instalaci: V24917 TDROLLBACKFIX1.
+- Pri rollbacku: TDROLLBACKFIX1_PARENT_PROOF.json a konecny ROLLBACK_ALL_TD_RESULT.json.
+- Uspech: passes=true, next_generation_permitted=true, status=VERIFIED_PARENT.
+
+Pokud konecna kontrola odhali skutecny rozdil, uchovejte oba uvedene soubory,
+TD_FINECDF_BLOCK_RESULT.json a posledni accepted checkpoint. Ochrany nevypinejte.

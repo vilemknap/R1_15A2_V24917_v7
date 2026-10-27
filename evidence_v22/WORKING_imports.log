@@ -1,0 +1,15 @@
+{
+  "imports": {
+    "R1_15A2_SUPPLY_DEMAND_MASTER_V2_2": "/mnt/data/r1_15a2_v22/WORKING/R1_15A2_SUPPLY_DEMAND_MASTER_V2_2.py",
+    "r1_15a2_controller_v22": "/mnt/data/r1_15a2_v22/WORKING/r1_15a2_controller_v22.py",
+    "r1_15a2_supply": "/mnt/data/r1_15a2_v22/WORKING/r1_15a2_supply.py",
+    "r1_15a2_supply_visum": "/mnt/data/r1_15a2_v22/WORKING/r1_15a2_supply_visum.py",
+    "r1_15a2_runtime_v1": "/mnt/data/r1_15a2_v22/WORKING/r1_15a2_runtime_v1.py",
+    "r1_15a2_core": "/mnt/data/r1_15a2_v22/WORKING/r1_15a2_core.py",
+    "r1_15a2_multiblock": "/mnt/data/r1_15a2_v22/WORKING/r1_15a2_multiblock.py",
+    "r1_15a2_visum_parameters": "/mnt/data/r1_15a2_v22/WORKING/r1_15a2_visum_parameters.py"
+  },
+  "implementation_hash": "94342ec2e8014e54500a3d72a7820cf9665db914f6c5e33fc08c054c37ebb9a3",
+  "status": "PASS",
+  "live_apply_gate": "PENDING_EXPLICIT_OPERATION_AND_GAP_CONFIGURATION"
+}

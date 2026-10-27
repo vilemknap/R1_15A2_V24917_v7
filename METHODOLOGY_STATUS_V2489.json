@@ -1,0 +1,14 @@
+{
+  "candidate_acceptance_role": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
+  "ipf_tolerance_policy": "UNCHANGED_NEVER_RELAXED_BY_CALIBRATOR",
+  "legacy_absolute_upper_bounds_enforced": false,
+  "next_generation_gate": "TD_REALIZATION_MUST_COMPLETE_BEFORE_NEXT_GENERATION",
+  "path_cache_policy": "V2488_EXPLICIT_PREDECESSOR_SEMANTIC_COMPATIBILITY",
+  "production_ready": false,
+  "production_release": false,
+  "rollback_evidence_policy": "ATOMIC_COPY_IN_PLACE_OR_RUN_ROOT_CENTRAL_SHORT_MIRROR",
+  "td_realization_coordinate": "B_LINEAR_LOG_NEG_C",
+  "td_realization_retry_policy": "NATIVE_20B_IPF_NONCONVERGENCE_ONLY",
+  "two_mode_geometry_role": "CANDIDATE_PROPOSAL_ONLY",
+  "working_copy_trial_calibration": true
+}

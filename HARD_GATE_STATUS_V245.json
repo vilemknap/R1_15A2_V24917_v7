@@ -1,0 +1,107 @@
+{
+  "release": "V2.4.5",
+  "status": "OFFLINE_REPAIR_REGRESSION_PASS_LIVE_VISUM_NOT_RUN",
+  "offline_pass": true,
+  "production_ready": false,
+  "overall_production_gate_pass": false,
+  "live_visum_com_test": "NOT_RUN_ENVIRONMENT_UNAVAILABLE",
+  "real_R1_full_calibration": "NOT_RUN",
+  "windows_gui_acceptance": "NOT_RUN",
+  "full_network_resource_stress": "NOT_RUN",
+  "baseline_source_archive_sha256": "6e5f886e96f6b93b072d2f0dc4a2ef0948fbfd0f3cc73564b3a6b45b9ea3233c",
+  "baseline_physical_files": 297,
+  "modified_existing_runtime_files": [
+    "r1_15a2_controller_v22.py",
+    "r1_15a2_finecdf_bridge_v242.py",
+    "r1_15a2_inplace_transaction_v239.py",
+    "r1_15a2_overnight_controller_v240.py",
+    "r1_15a2_overnight_controller_v242.py",
+    "r1_15a2_runtime_v1.py",
+    "r1_15a2_trial_adapter_v240.py",
+    "r1_15a2_two_mode_v238.py"
+  ],
+  "modified_existing_tests": [
+    "tests/test_two_mode_v238.py",
+    "tests/test_v242_coupled_demand.py"
+  ],
+  "deleted_source_files": [],
+  "removed_generated_bytecode": [
+    "benchmarks/__pycache__/benchmark_two_mode_synthetic.cpython-313.pyc",
+    "helpers/__pycache__/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.cpython-313.pyc",
+    "helpers/__pycache__/R1_12D_CSD2022_GEH_FORENSIC_408_APPROVED.cpython-313.pyc",
+    "helpers/__pycache__/R1_12D_CSD2022_GEH_FORENSIC_444_PROCSEQ_EMBEDDED.cpython-313.pyc",
+    "helpers/__pycache__/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.cpython-313.pyc",
+    "provenance/v234_historical/__pycache__/VERIFY_PACKAGE_V234_HISTORICAL_NOT_RUN_ON_V235.cpython-313.pyc",
+    "reference_v17/__pycache__/R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7.cpython-313.pyc"
+  ],
+  "baseline_tests_passed": 457,
+  "v245_tests": {
+    "tests": 522,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_regression_cases": 66,
+  "baseline_case_replaced": "The old empty-interzonal negative case was replaced by explicit empty-vs-missing and positive-volume regressions.",
+  "compileall_returncode": 0,
+  "full_pytest_returncode": 0,
+  "actual_acceptance_demo_returncode": 0,
+  "protected_authorities_byte_identical": true,
+  "finecdf_reference_sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82",
+  "full_controller_fixture": {
+    "status": "COMPLETED_CONFIGURED_DEMAND_AND_SUPPLY_SEARCH",
+    "accepted_count": 3,
+    "completed_demand_cycles": 3,
+    "supply_started": true,
+    "final_state_verified": true,
+    "calibration_complete": true,
+    "assignment_fixture_calls": 21,
+    "final_state_hash": "f03b148d54b63f980a99afeee11b5bf45ddbec9d573aec569db9363e05a8b6a2",
+    "load_version_called": false,
+    "direct_od_matrix_writes": false
+  },
+  "actual_finecdf_runner_fixture": {
+    "stop_reason": "MAX_ITERATIONS",
+    "search_complete": false,
+    "objective_start": 2.231113209480637,
+    "objective_final": 0.5543049064796065,
+    "objective_improvement": 1.6768083030010303,
+    "td_evaluations": 9,
+    "changed_components": [
+      "WORK_E_C",
+      "WORK_E_noC",
+      "WORK_noE_C",
+      "WORK_noE_noC",
+      "WORK_stud",
+      "SERV_E_C",
+      "SERV_E_noC",
+      "SERV_noE_C",
+      "SERV_noE_noC",
+      "SERV_stud",
+      "LONG_E_C",
+      "LONG_E_noC",
+      "LONG_noE_C",
+      "LONG_noE_noC",
+      "LONG_stud",
+      "SCHOOL"
+    ],
+    "reference_sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82",
+    "grid_nodes": 512,
+    "fixture_zones": 4,
+    "native_boundary": "SYNTHETIC_ROW_NORMALIZED_RESPONSE_NOT_VISUM_MULTI",
+    "real_681_zone_patch_preflight": "NOT_EXECUTED_IN_THIS_FIXTURE"
+  },
+  "remaining_live_gates": [
+    "Actual 681-zone model COM/schema and procedure execution",
+    "Current saved-path/zero-link export readback",
+    "Fresh GAP and live acceptance on actual R1 assignments",
+    "Real runtime/RAM/GUI/permissions and external app failures"
+  ],
+  "methodology_not_promoted": [
+    "CAL/VALID roles unchanged",
+    "C/C_NOT shared geometry remains provisional candidate-only",
+    "Native Multi marginal diagnostics are not replaced with strict IPF",
+    "No source model data present for real traffic benchmark"
+  ],
+  "package_verification": "Use VERIFY_PACKAGE_V2_4_5.py; independent extracted-copy report delivered alongside ZIP."
+}

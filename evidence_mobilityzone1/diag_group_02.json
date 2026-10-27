@@ -1,0 +1,8 @@
+{
+  "group": 2,
+  "files": [
+    "diagfast_tests/test_v2_bulk_numpy.py"
+  ],
+  "exit_code": 0,
+  "seconds": 12.601975699999912
+}

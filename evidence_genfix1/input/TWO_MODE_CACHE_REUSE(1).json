@@ -1,0 +1,12 @@
+{
+  "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+  "accepted_state_changes_on_epoch": 0,
+  "cache": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V16_RUNS\\RUN_20261027_003434_537650\\CALIBRATION\\DEMAND_CYCLE_01_GENERATION\\DESIGN\\GENERATION_CACHE\\TWO_MODE_PATH_STORE.sqlite",
+  "geometry_identity": "PROVISIONAL_SAME_MODE_GEOMETRY_NOT_FULLY_VERIFIED",
+  "geometry_used_for": "GENERATION_CANDIDATE_PROPOSAL_ONLY",
+  "live_parent_hash": "4a8f41962e1a83520e9cd0a3f2381d8ae792af4c714dffe50181034a869e5294",
+  "path_basis_comparison_hash": "679e7e3b858b19acc698219a749aa861b2fea3c83d90dbb5b9e1a962f8065e3f",
+  "path_basis_hash": "1ed822ab48f4c5037e6c79329d412a29e71e8b37a140794d0bea9ed89a92f363",
+  "path_epoch": 1,
+  "path_epoch_parent_hash": "4a8f41962e1a83520e9cd0a3f2381d8ae792af4c714dffe50181034a869e5294"
+}

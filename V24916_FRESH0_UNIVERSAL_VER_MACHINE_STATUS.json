@@ -1,0 +1,24 @@
+{
+  "accepted_count_start": 0,
+  "calibration_complete": false,
+  "external_cache_read_allowed": false,
+  "fixed_semantic_hash_required": false,
+  "limitations": [
+    "NO_REAL_VISUM_COM_EXECUTION_IN_THIS_ENVIRONMENT"
+  ],
+  "lock_name": ".R1_15A2_V16.lock",
+  "outer_cycle_start": 1,
+  "overall_pass": true,
+  "pathfix3_enabled": true,
+  "persistent_cache_enabled": false,
+  "production_ready": false,
+  "projected_max_path": 234,
+  "real_visum_tested": false,
+  "recommended_entrypoint": "00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py",
+  "release": "R1_15A2_V24916_PERF2C_PROFILE488_FRESH0_UNIVERSAL_VER_ISOLATED_ACTIVE_TARGETING_IOFIX3_PATHFIX3_CACHE_DISABLED_20261022",
+  "runs_root_name": "R1_15A2_V16_RUNS",
+  "safe_path_budget": 240,
+  "schema": "R1_15A2_V24916_FRESH0_UNIVERSAL_VER_PATHFIX3_MACHINE_STATUS_V1",
+  "source_baseline_policy": "CURRENT_OPEN_VER_IS_DYNAMIC_BASELINE_PROVENANCE_ONLY",
+  "status": "OFFLINE_PASS_READY_FOR_LIVE_VISUM_FRESH0_UNIVERSAL_VER_RUN"
+}

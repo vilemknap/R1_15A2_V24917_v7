@@ -1,0 +1,20 @@
+{
+  "authority_id": "R1_LONG_AUTHORITY_CONTRACT_V2_1",
+  "status": "AGGREGATE_CL_GUARD_ONLY_COMPONENT_TARGETS_NOT_YET_ATTACHED",
+  "methodological_note": "The 12B frozen vector is an aggregate NATIVE_CL 100-200 km guard. It must not be copied to all five LONG components. Component b/c calibration is enabled only after an approved 11E per-component target authority is attached.",
+  "aggregate_cl_guard": {
+    "bins": [
+      {"bin_low": 100.0, "bin_high": 110.0, "target_share": 0.39996292018052365},
+      {"bin_low": 110.0, "bin_high": 120.0, "target_share": 0.35340873740802253},
+      {"bin_low": 120.0, "bin_high": 130.0, "target_share": 0.1277574662324045},
+      {"bin_low": 130.0, "bin_high": 140.0, "target_share": 0.05019336686395694},
+      {"bin_low": 140.0, "bin_high": 150.0, "target_share": 0.025480373167625803},
+      {"bin_low": 150.0, "bin_high": 160.0, "target_share": 0.02227843474651234},
+      {"bin_low": 160.0, "bin_high": 170.0, "target_share": 0.00872929718849454},
+      {"bin_low": 170.0, "bin_high": 180.0, "target_share": 0.004872160933904489},
+      {"bin_low": 180.0, "bin_high": 190.0, "target_share": 0.0035471372362681467},
+      {"bin_low": 190.0, "bin_high": 200.0, "target_share": 0.0037701060422873074}
+    ]
+  },
+  "component_targets": {}
+}

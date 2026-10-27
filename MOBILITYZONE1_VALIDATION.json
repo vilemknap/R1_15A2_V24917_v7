@@ -1,0 +1,170 @@
+{
+  "schema": "R1_MOBILITYZONE1_VALIDATION_V1",
+  "release": "R1_15A2_V24917_MOBILITYZONE1_20261027",
+  "base_zip": "R1_15A2_V24917_SAFETYFIX2_LONGGUARD1_20261027_FULL.zip",
+  "base_zip_sha256": "22696765481479bf4f65ddc1f3ff10273145952f376106ecf68e268a316f95fc",
+  "production_modified": [
+    "r1_15a2_trial_adapter_v24917.py",
+    "r1_15a2_long_school_generation_v24917.py"
+  ],
+  "production_added": [
+    "r1_15a2_mobility_zone_v24917.py"
+  ],
+  "test_added": [
+    "tests/test_v24917_mobilityzone1.py"
+  ],
+  "main": {
+    "passed": 1594,
+    "skipped": 4,
+    "failures": 0,
+    "errors": 0,
+    "collected": 1598,
+    "unique": 1598,
+    "coverage_exact": true,
+    "groups": [
+      {
+        "group": 0,
+        "tests": 269,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "group": 1,
+        "tests": 291,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "group": 2,
+        "tests": 292,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 4
+      },
+      {
+        "group": 3,
+        "tests": 289,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "group": 4,
+        "tests": 264,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "group": 5,
+        "tests": 154,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "group": 6,
+        "tests": 39,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "diagfast": {
+    "passed": 138,
+    "failures": 0,
+    "coverage_exact": true,
+    "groups": [
+      {
+        "group": 0,
+        "tests": 48,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "group": 1,
+        "tests": 50,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "group": 2,
+        "tests": 40,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "audit": {
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "total_unique_passed": 1750,
+  "new_regressions": 60,
+  "python_ast_passed": 444,
+  "manifests": {
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "passes": true,
+      "entries": 1059
+    },
+    "V24916_PERF2C_RUNTIME_MANIFEST.json": {
+      "passes": true,
+      "entries": 50
+    },
+    "V24917_RUNTIME_MANIFEST.json": {
+      "passes": true,
+      "entries": 61
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "passes": true,
+      "entries": 98
+    },
+    "GENFIX2_PAYLOAD_MANIFEST.json": {
+      "passes": true,
+      "entries": 1224
+    }
+  },
+  "protected_base_files_unchanged": 1059,
+  "authority_files_unchanged": 24,
+  "run_options_unchanged": true,
+  "tolerance": [
+    0.75,
+    1.25
+  ],
+  "coefficient_reference": {
+    "WORK": 1.0,
+    "SERVICE": 1.0,
+    "LONG": 0.2,
+    "SCHOOL": 1.0
+  },
+  "live_visum_tested": false,
+  "load_version_added": false,
+  "direct_od_matrix_writes_added": false,
+  "limitations": [
+    "Bound is relative to approved AMDY production equations, not unscaled raw-survey rates.",
+    "Pre-existing out-of-band coefficients are not forcibly reset; only non-worsening/inward moves.",
+    "Raw domestic pre-mode-choice FP is checked, not every final TD/vehicle-OD row sum.",
+    "TDLONG1 and native LONG 100+ structural mask remain separate open work."
+  ],
+  "test_execution_notes": [
+    "Final suites completed in separate processes; exact union checked against collection.",
+    "Initial combined exploratory run had manifest-order and empty-authority failures subsequently fixed, plus legacy exception-class identity contamination.",
+    "Legacy TDROLLBACKFIX1 tests isolated in a separate process without weakening their assertions.",
+    "An initial audit invocation without required PYTHONPATH failed collection; final run used documented root and tests paths.",
+    "Interrupted exploratory invocations are not counted as PASS."
+  ],
+  "source_sha256": {
+    "r1_15a2_trial_adapter_v24917.py": "54e401cd1fa754fb013b652122cf15e0d484f22be3f137a8807e2df55526614f",
+    "r1_15a2_long_school_generation_v24917.py": "58d179d5de866f7d009296ad17bae0714f7bd1afa373156feb529356b895f9a8",
+    "r1_15a2_mobility_zone_v24917.py": "60a5cd1a7447eebe80f3fa7ac1cbc1d4f4bb6ee590b8bb3c75efc29e20327ee2",
+    "tests/test_v24917_mobilityzone1.py": "988778fe56bd4281d1d73eff062107e90ab8f72046b1e34b3416e1d5093cb326"
+  }
+}

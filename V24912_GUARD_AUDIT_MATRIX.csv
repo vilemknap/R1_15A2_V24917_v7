@@ -1,0 +1,24 @@
+guard,level,change,rationale
+OBSERVATION_AUTHORITY,HARD,UNCHANGED,"CAL/VALID role, observed value and observation set must be identical before/after."
+SEMANTIC_MODEL_STATE_IDENTITY,HARD,UNCHANGED,Cross-run restart uses semantic hashes; raw .ver SHA is provenance/sentinel only.
+FROZEN_DEMAND_SUPPLY_CONTEXT,HARD,UNCHANGED,Frozen matrices/foreign/AddVal state remain protected by existing owners.
+NATIVE_IPF_TOLERANCE,HARD,UNCHANGED,Never relaxed; native IPF nonconvergence remains retryable/fail-closed.
+FRESH_TG_TD_ASSIGNMENT_12D_11D,HARD,UNCHANGED,Fresh Visum recomputation remains acceptance authority.
+PARAMETER_WRITE_READBACK,HARD,UNCHANGED,Generation/TD writes and rollback must read back exactly.
+GENERATION_COEFFICIENT_ENVELOPE,HARD,UNCHANGED,Absolute/relative coefficient envelopes and P/A consistency unchanged.
+ROLLBACK_FINAL_STATE_VERIFY,HARD,UNCHANGED,Rejected trials must restore and verify state before continuing.
+PROTECTED_GEH_LT5_TO_GE20,HARD,UNCHANGED,Catastrophic damage to a previously good profile remains forbidden.
+SINGLE_PROFILE_GEH_DELTA_GT15,HARD,UNCHANGED,Independent catastrophic per-profile increase guard.
+HIGH_GEH_AFTER_GT60_DELTA_GT10,HARD,NEW_BASELINE_RELATIVE,Replaces absolute after-state GEH60 wall; material worsening stays hard.
+GEH60_THRESHOLD_CROSSING,DIAGNOSTIC,REBASED,Crossing 60 by itself is not a veto if delta/severity/net budgets pass.
+GEH40_TRANSITIONS,SOFT_BUDGET,REBASED,"Uses net after-before GEH40 count: Generation <=5, TD <=15."
+GEH35,WARNING,UNCHANGED_ROLE,Warning only during coupled-demand exploration.
+GEH20_CONTINUOUS_SEVERITY,SOFT_BUDGET,REBASED,"Generation max +8%, TD max +25% relative severity score."
+GEH30_CONTINUOUS_SEVERITY,SOFT_BUDGET,REBASED,"Generation max +10%, TD max +30% relative severity score."
+GEN_WEIGHTED_GEH_POSITIVE,ACCEPTANCE,UNCHANGED,Any real positive weighted-mean-GEH improvement can pass if hard/severity guards pass.
+GEN_NONMONOTONIC_TRADEOFF,ACCEPTANCE,UNCHANGED,Up to +2% CAL cost only with material severity improvement.
+TD_SELECTED_OBJECTIVE,ACCEPTANCE,UNCHANGED,Minimum aggregate selected TD improvement 0.25%.
+TD_CAL_COST,ACCEPTANCE,UNCHANGED,Maximum CAL weighted-GEH degradation 5%.
+TD_BENEFIT_COST,ACCEPTANCE,UNCHANGED,Minimum benefit/cost ratio 1.5 when CAL cost is positive.
+TD_COMPONENT_DEGRADATION,ACCEPTANCE,UNCHANGED,Selected and nonselected component cost cap 20%.
+CYCLE9_AUTOMATIC_TIGHTENING,REMOVED_WITHIN_HORIZON,REBASED,Baseline-relative exploration stays active through all 12 coupled-demand cycles.

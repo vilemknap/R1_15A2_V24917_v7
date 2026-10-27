@@ -1,0 +1,523 @@
+{
+  "version": "2.4.1-full-overnight-hierarchical-tg-td-supply",
+  "apply": false,
+  "run_procseq": true,
+  "max_cycles": 2,
+  "max_accepted_blocks": 1,
+  "block_schedule": [
+    "GENERATION",
+    "TD_FINECDF_V17",
+    "SUPPLY_ADDVAL1"
+  ],
+  "backtracking_scales": [
+    1.0,
+    0.5,
+    0.25
+  ],
+  "calibration_role": "CALIBRATION",
+  "guidance_mode": "POSITIVE_ONLY",
+  "mutable_dsegs": [
+    "NATIVE_CW",
+    "NATIVE_CW_noT",
+    "NATIVE_CS",
+    "NATIVE_CS_noT"
+  ],
+  "path_export_dsegs": [
+    "NATIVE_CW",
+    "NATIVE_CW_noT",
+    "NATIVE_CS",
+    "NATIVE_CS_noT"
+  ],
+  "include_exog_ee_paths": false,
+  "mutable_relation_policy": "BOTH_ENDPOINTS_ACTUATABLE",
+  "explicit_excluded_zone_nos": [],
+  "require_active_tg_td": true,
+  "require_active_assignment": true,
+  "require_parameter_persistence_after_procseq": true,
+  "require_mutable_matrix_change_for_generation_apply": true,
+  "require_rollback_verification": true,
+  "expected_12d_rows": 498,
+  "expected_calibration_rows": 462,
+  "expected_validation_rows": 36,
+  "require_path_parity_for_apply": true,
+  "min_path_link_coverage": 0.98,
+  "min_path_link_volume_coverage": 0.995,
+  "require_dseg_path_volume_parity_for_apply": true,
+  "dseg_path_volume_relative_tolerance": 0.01,
+  "parity_min_model": 100.0,
+  "parity_p95_relative_tolerance": 0.02,
+  "parity_p99_relative_tolerance": 0.05,
+  "min_driver_geh": 10.0,
+  "min_driver_abs_residual": 300.0,
+  "min_mutable_share": 0.3,
+  "protected_geh": 5.0,
+  "protected_warn_geh": 10.0,
+  "protected_hard_geh": 30.0,
+  "overroute_penalty_geh": 5.0,
+  "observed_weight_floor": 100.0,
+  "driver_weight_multiplier": 1.0,
+  "overroute_weight_multiplier": 1.5,
+  "protected_weight_multiplier": 3.0,
+  "neutral_weight_multiplier": 0.35,
+  "min_od_volume": 5.0,
+  "max_solver_variables": 50000,
+  "max_od_relative_up": 0.08,
+  "max_od_relative_down": 0.04,
+  "ridge_lambda": 0.15,
+  "l1_lambda": 0.002,
+  "tiny_od_penalty_power": 0.5,
+  "solver_max_iter": 1200,
+  "solver_tolerance": 1e-07,
+  "solver_check_every": 10,
+  "power_iterations": 35,
+  "projection_method": "MARGINALS",
+  "projection_gain": 1.0,
+  "projection_ridge_volume": 250.0,
+  "projection_ridge_lambda": 0.3,
+  "projection_max_iter": 1200,
+  "projection_tolerance": 1e-08,
+  "projection_min_volume_weight": 1.0,
+  "min_od_guidance_for_projection": 1e-05,
+  "max_add_log_up": 0.04,
+  "max_add_log_down": 0.02,
+  "min_add_log_step": 5e-05,
+  "preserve_zero_add": true,
+  "add_min": 0.0,
+  "add_max": 3.0,
+  "salary": {
+    "enabled": true,
+    "income_attr": "AV_INCOME",
+    "salary_attr": "ADD_SALARY",
+    "work_attraction_attr": "ADD_ATT_W",
+    "formula_offset": 1000.0,
+    "formula_denominator": 2700.0,
+    "factor_floor": 0.05,
+    "salary_min": 0.0,
+    "salary_max": 3.0,
+    "max_abs_delta_per_block": 0.04,
+    "min_eligible_zones": 8,
+    "zone_add_ridge_lambda": 1.0,
+    "basis_ridge_lambda": 0.2,
+    "include_intercept": false
+  },
+  "zahr": {
+    "enabled": true,
+    "domestic_mask_attr": "NOT_ZAHR",
+    "domestic_threshold": 0.5,
+    "neighbour_attr": "ZAHR_SUSED",
+    "population_attr": "POP_ZP",
+    "min": 0.0,
+    "max": 10.0,
+    "preserve_zero": true,
+    "seed_floor": 0.0,
+    "explicit_excluded_zone_nos": []
+  },
+  "td": {
+    "enabled": true,
+    "component_policy": {
+      "WORK": "AUTO",
+      "SERVICE": "AUTO",
+      "SCHOOL": "AUTO",
+      "LONG": "AUTO"
+    },
+    "min_conditioned_volume": 1000.0,
+    "school_min_conditioned_volume": 500.0,
+    "long_min_conditioned_volume": 80.0,
+    "min_l1_for_mutation": 0.06,
+    "mean_relative_deadband": 0.01,
+    "max_components_per_block": 2,
+    "b_shape_gain": 0.4,
+    "c_mean_gain": 0.18,
+    "c_tail_gain": 0.12,
+    "c_b_compensation": 0.35,
+    "max_abs_b_delta": 0.08,
+    "max_abs_c_delta": 0.04,
+    "long_b_gain_multiplier": 0.25,
+    "long_c_gain_multiplier": 0.5,
+    "long_max_abs_b_delta": 0.02,
+    "long_max_abs_c_delta": 0.018,
+    "b_min": 0.0,
+    "b_max": 5.0,
+    "c_min": -3.0,
+    "c_max": 0.0,
+    "td_objective_l1_weight": 1.0,
+    "td_objective_mean_weight": 0.5,
+    "td_objective_rmse_weight": 0.25,
+    "min_selected_component_relative_improvement": 0.002,
+    "max_selected_component_relative_degradation": 0.0,
+    "max_nonselected_component_objective_degradation": 0.01,
+    "max_cal_geh2_relative_degradation": 0.005,
+    "max_global_idp_mean_degradation": 0.002,
+    "max_global_idp_component_degradation": 0.01,
+    "long_authority_file": "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json"
+  },
+  "matrix_scope_by_block": {
+    "GENERATION": {
+      "dseg_codes": [
+        "NATIVE_CW",
+        "NATIVE_CW_noT",
+        "NATIVE_CS",
+        "NATIVE_CS_noT"
+      ],
+      "matrix_nos": [
+        9101,
+        9102,
+        9103,
+        9104,
+        9105,
+        9106,
+        9107,
+        9108,
+        9109,
+        9110
+      ]
+    },
+    "TD_COMPONENT_WORK": {
+      "dseg_codes": [
+        "NATIVE_CW",
+        "NATIVE_CW_noT"
+      ],
+      "matrix_nos": [
+        9101,
+        9102,
+        9103,
+        9104,
+        9105
+      ]
+    },
+    "TD_COMPONENT_SERVICE": {
+      "dseg_codes": [
+        "NATIVE_CS",
+        "NATIVE_CS_noT"
+      ],
+      "matrix_nos": [
+        9106,
+        9107,
+        9108,
+        9109,
+        9110
+      ]
+    },
+    "TD_COMPONENT_SCHOOL": {
+      "dseg_codes": [
+        "NATIVE_CW",
+        "NATIVE_CW_noT"
+      ],
+      "matrix_nos": [
+        9117
+      ]
+    },
+    "TD_COMPONENT_LONG": {
+      "dseg_codes": [
+        "NATIVE_CL"
+      ],
+      "matrix_nos": [
+        9111,
+        9112,
+        9113,
+        9114,
+        9115
+      ]
+    },
+    "TD_FINECDF_V17": {
+      "matrix_nos": [
+        9101,
+        9102,
+        9103,
+        9104,
+        9105,
+        9106,
+        9107,
+        9108,
+        9109,
+        9110,
+        9111,
+        9112,
+        9113,
+        9114,
+        9115,
+        9117
+      ],
+      "dseg_codes": []
+    }
+  },
+  "min_changed_matrices_by_block": {
+    "GENERATION": 1,
+    "TD_COMPONENT_WORK": 1,
+    "TD_COMPONENT_SERVICE": 1,
+    "TD_COMPONENT_SCHOOL": 1,
+    "TD_COMPONENT_LONG": 1,
+    "TD_FINECDF_V17": 1
+  },
+  "min_cal_objective_relative_improvement": 0.001,
+  "max_new_geh20": 0,
+  "max_new_geh30": 0,
+  "max_protected_to_warn": 3,
+  "max_protected_to_hard": 0,
+  "idp_max_mean_degradation": 0.005,
+  "idp_max_component_degradation": 0.02,
+  "max_generation_effect_log_error": 0.01,
+  "max_generation_pa_relative_gap": 0.02,
+  "require_solver_convergence_for_apply": true,
+  "require_projection_convergence_for_apply": true,
+  "tg_dependency_contract_file": "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6.json",
+  "require_tg_dependency_contract_for_apply": true,
+  "enable_kordon_pairs": false,
+  "kordon_pair_role": "DIAGNOSTIC",
+  "kordon_category": "OA",
+  "skip_wiggly_pair_paths": true,
+  "expected_zones": 681,
+  "supply": {
+    "enabled": true,
+    "lattice": 1.0,
+    "max_step": 1.0,
+    "max_cumulative": 4.0,
+    "absolute_min": -50.0,
+    "absolute_max": 50.0,
+    "minimum_cost_seconds": 0.001,
+    "max_bundle_equivalent_seconds": 120.0,
+    "max_edges": 12,
+    "max_candidates": 10,
+    "max_driver_profiles": 24,
+    "min_geh": 10.0,
+    "min_residual": 300.0,
+    "min_attribution_coverage": 0.995,
+    "min_path_coverage": 0.98,
+    "min_path_volume_coverage": 0.995,
+    "parity_relative_tolerance": 0.02,
+    "parity_absolute_tolerance": 1.0,
+    "prior_lambda": 0.0001,
+    "prior_sigma": 2.0,
+    "passenger_dsegs": [
+      "NATIVE_CW",
+      "NATIVE_CW_noT",
+      "NATIVE_CS",
+      "NATIVE_CS_noT",
+      "NATIVE_CL",
+      "NATIVE_CF",
+      "EXOG_EE_CW",
+      "EXOG_EE_CW_noT",
+      "EXOG_EE_CS",
+      "EXOG_EE_CS_noT",
+      "EXOG_EE_CL",
+      "EXOG_EE_CF"
+    ],
+    "freight_dsegs": [
+      "LNV",
+      "NV"
+    ],
+    "component_matrix_nos": [
+      9101,
+      9102,
+      9103,
+      9104,
+      9105,
+      9106,
+      9107,
+      9108,
+      9109,
+      9110,
+      9111,
+      9112,
+      9113,
+      9114,
+      9115,
+      9116,
+      9117
+    ],
+    "excluded_link_keys": [],
+    "editable_link_types": null,
+    "assignment_operations": [
+      {
+        "no": 20,
+        "operation_type": 101,
+        "dseg_object_path": [
+          "PrTAssignmentParameters"
+        ],
+        "dseg_attribute": "DSEGSET",
+        "expected_dsegs": [
+          "EXOG_EE_CF",
+          "EXOG_EE_CL",
+          "EXOG_EE_CS",
+          "EXOG_EE_CS_NOT",
+          "EXOG_EE_CW",
+          "EXOG_EE_CW_NOT",
+          "LNV",
+          "NATIVE_CF",
+          "NATIVE_CL",
+          "NATIVE_CS",
+          "NATIVE_CS_NOT",
+          "NATIVE_CW",
+          "NATIVE_CW_NOT",
+          "NV"
+        ]
+      }
+    ],
+    "operation_number_attribute": "POSITION",
+    "gap_readback": {
+      "source": "PRT_ASS_QUALITY_LIST",
+      "operation_no": 20,
+      "maximum_gap": 0.005
+    },
+    "link_attributes": {},
+    "impedance_authority_csv": "authorities/IMPEDANCE_FUNCTIONS.csv",
+    "impedance_authority_basis": "USER_SUPPLIED_CURRENT_EXPORTED_SNAPSHOT",
+    "equivalent_seconds_per_addval1": 10.0,
+    "fixed_input_hashes": {
+      "authorities/VDF_REGISTRY.csv": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287",
+      "authorities/VDF_TYPE_MAPPING.csv": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07"
+    },
+    "impedance_file_sha256": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef",
+    "sequence": {
+      "enabled": true,
+      "source": "OFFICIAL_VISUM_SAVED_PRT_ORDERED_PATH_LINKS",
+      "design_mode": "DIVERGE_REJOIN_VOLUME_WEIGHTED_CONTIGUOUS_BRANCHES",
+      "sequence_cap_schedule": [
+        8,
+        4,
+        2,
+        1
+      ],
+      "max_unique_sequences": 100000,
+      "max_pairs_per_market": 64,
+      "max_collateral_volume_to_driver_ratio": null,
+      "all_path_impact_required": true,
+      "validation_target_input_allowed": false,
+      "design_only_duplicate_scope_policy": "DIAGNOSTIC_EXCLUDE_CONFLICTED_DRIVERS"
+    },
+    "assignment_scope_authority": "R1_15A2_ASSIGNMENT_SCOPE_AUTHORITY_V239_OP20_ONLY"
+  },
+  "shared_objective": {
+    "cal_weight": 1.0,
+    "idp_weight": 1.0,
+    "minimum_improvement": 1e-08,
+    "reference_policy": "FIXED_INITIAL_CAL_SCALE_AND_COMPONENT_WEIGHTS"
+  },
+  "require_all_path_export_dsegs": true,
+  "12d_helper_name": "R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py",
+  "12d_detail_name": "01_DETAIL_498_FORENSIC.csv",
+  "12d_authority_csv": "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
+  "12d_authority_sha256": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1",
+  "csd408_mapping_review_acknowledged": false,
+  "12d_city_authority_csv": "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
+  "12d_city_authority_sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
+  "city90_bidirectional_qa_acknowledged": false,
+  "observation_value_policy": "SEALED_R1_OBS_RPDI_NO_ADDITIONAL_VEHICLE_CONVERSION",
+  "api_audit_only": false,
+  "run_full_com_api_audit": true,
+  "require_verified_bounded_pathlink_com": true,
+  "pathlink_page_size": 256,
+  "pathlink_max_pages": 500000,
+  "path_export_fail_fast": true,
+  "dseg_path_volume_parity_basis": "OFFDIAGONAL_INTERZONAL",
+  "two_mode": {
+    "enabled": true,
+    "design_only": true,
+    "representatives": {
+      "C": "NATIVE_CW",
+      "C_NOT": "NATIVE_CW_noT"
+    },
+    "page_size": 256,
+    "max_runtime_seconds": 36000.0,
+    "max_parent_rows_per_dseg": 1500000,
+    "max_geometry_rows_per_mode": 100000000,
+    "max_links_per_path": 100000,
+    "commit_routes": 5000,
+    "max_store_gib": 12.0,
+    "min_free_disk_gib": 1.0,
+    "sample_windows": [
+      [
+        1,
+        256
+      ],
+      [
+        8193,
+        8448
+      ],
+      [
+        65537,
+        65792
+      ]
+    ],
+    "progress_interval_seconds": 2.0
+  },
+  "safety_gate_release": "R1_15A2_V2_4_0_FULL_OVERNIGHT_CALIBRATION_20261016",
+  "production_apply": false,
+  "trial_calibration": {
+    "enabled": true,
+    "mode": "ISOLATED_WORKING_COPY_REAL_ASSIGNMENT_ACCEPT_REJECT",
+    "max_runtime_seconds": 36000.0,
+    "progress_interval_seconds": 2.0,
+    "max_cycles": 100,
+    "max_accepted_states": 100,
+    "max_trials_per_block": {
+      "SUPPLY_ADDVAL1": 6,
+      "GENERATION": 3,
+      "TD_COMPONENT_WORK": 3,
+      "TD_COMPONENT_SERVICE": 3,
+      "TD_COMPONENT_SCHOOL": 3,
+      "TD_COMPONENT_LONG": 3
+    },
+    "require_reproducible_reapply": true,
+    "rollback_method": "RESTORE_CALIBRATED_PARAMETERS_THEN_REAL_RECOMPUTE_NO_LOADVERSION",
+    "geometry_policy": "PROVISIONAL_TWO_MODE_FOR_PROPOSAL_ONLY_REAL_ASSIGNMENT_DECIDES",
+    "full_network_link_eligibility": true,
+    "global_link_count_cap": null,
+    "phase_order_authority": "COUPLED_DEMAND_GENERATION_THEN_FINECDF_TD_REPEAT__THEN_SUPPLY_ADDVAL1",
+    "supply_start_requires_converged_phases": [
+      "COUPLED_DEMAND"
+    ],
+    "demand_parameters_frozen_during_supply": true,
+    "phase_transition_checkpoint": true,
+    "phase_blocking_error_policy": "FAIL_CLOSED_DO_NOT_ADVANCE_TO_NEXT_PHASE",
+    "methodology_note": "TG_AND_TD_ARE_ONE_COUPLED_DEMAND_PHASE; ADDVAL1_ONLY_AFTER_JOINT_FIXED_POINT",
+    "finecdf_v17_inner_replaces_legacy_td_component_blocks": true,
+    "v243_hotfix": "CREATE_RECOMPUTE_OUTPUT_DIRECTORY_BEFORE_PROCSEQ_AND_REQUIRE_VERIFIED_FINAL_STATE_BEFORE_FINAL_SAVE"
+  },
+  "calibration_phases": [
+    {
+      "name": "COUPLED_DEMAND",
+      "blocks": [
+        "GENERATION",
+        "TD_FINECDF_V17"
+      ],
+      "max_cycles": 12,
+      "convergence_rule": "SAME_OUTER_CYCLE_NO_ACCEPTED_GENERATION_UPDATE_AND_NO_FINECDF_BC_UPDATE",
+      "must_converge_before_next_phase": true
+    },
+    {
+      "name": "SUPPLY_ROUTE_CHOICE",
+      "blocks": [
+        "SUPPLY_ADDVAL1"
+      ],
+      "max_cycles": 100,
+      "convergence_rule": "FULL_SUPPLY_CYCLE_WITH_ZERO_ACCEPTED",
+      "must_converge_before_next_phase": true
+    }
+  ],
+  "release": "R1_15A2_V2_4_3_FULL_OVERNIGHT_COUPLED_DEMAND_HOTFIX_20261016",
+  "coupled_demand": {
+    "enabled": true,
+    "methodology": "GENERATION_COUNTS_UPDATE_THEN_FINECDF_TD_WITHIN_SAME_OUTER_CYCLE_REPEAT_TO_JOINT_FIXED_POINT",
+    "max_outer_cycles": 12,
+    "convergence_rule": "NO_ACCEPTED_GENERATION_AND_NO_ACCEPTED_FINECDF_TD_IN_SAME_OUTER_CYCLE",
+    "generation_objective": "CAL_GEH2_COUNTS_ONLY; IDP_DEFERRED_TO_IMMEDIATE_TD_SUBSTEP",
+    "generation_validation_role": "REPORT_ONLY",
+    "finecdf_td": {
+      "reference_script": "reference_v17/R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7.py",
+      "reference_sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82",
+      "primary_objective": "512_POINT_ORIGINAL_IDP_CDF_PLUS_MEAN_DISTANCE",
+      "max_iterations": 35,
+      "max_td_evaluations": 180,
+      "max_stagnant_iterations": 6,
+      "max_runtime_seconds": 14400.0,
+      "foreign_fixed": true,
+      "generation_frozen": true,
+      "addval1_frozen": true,
+      "direct_od_matrix_writes": false,
+      "rollback_method": "RESTORE_BC_THEN_RERUN_NATIVE_TD"
+    },
+    "supply_start_gate": "COUPLED_DEMAND_JOINT_FIXED_POINT_REQUIRED",
+    "supply_max_cycles": 100
+  }
+}

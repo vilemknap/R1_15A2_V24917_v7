@@ -1,0 +1,71 @@
+{
+  "schema": "R1_15A2_V2487_REAL_V2484_FAILURE_REPLAY_V1",
+  "created_utc": "2026-10-16T19:32:47.427847+00:00",
+  "source_evidence_file": "GENERATION_DESIGN(2).json",
+  "source_evidence_sha256": "d5a22f32ff564edde397aa031156f2612b2e902867da432a0a4e2067cf2b7bbf",
+  "zone_snapshot_file": "ZONE-2026-10-16-21-09-22.xlsx",
+  "zone_snapshot_sha256": "7513848642f0e9ed78ed38ba131cb95fe494dd8ad65b84d77ef9b65943599f44",
+  "projection_row_count": 1374,
+  "candidate_count": 1712,
+  "effect_row_count": 1374,
+  "skipped_count": 0,
+  "coefficient_authority": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP",
+  "legacy_absolute_upper_bounds_enforced": false,
+  "clipped_count": 0,
+  "zone_619_production_candidates": [
+    {
+      "zone_no": 619,
+      "family": "WORK",
+      "role": "PROD",
+      "branch": "ZAHR",
+      "attr": "ZAHR_PROD_WORK",
+      "requested_log_step": 0.07596206623275155,
+      "base_margin_volume": 4569.390251114766,
+      "guided_margin_delta": 380.3542104591967,
+      "projected_margin_delta": 360.6237990045932,
+      "current": 10.0,
+      "proposed": 10.78921645818414,
+      "requested_attr_log_effect": 0.07596206623275155,
+      "actual_attr_log_effect": 0.07596206623275147,
+      "multiplier": 1.0789216458184139,
+      "coefficient_authority": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP"
+    },
+    {
+      "zone_no": 619,
+      "family": "SERVICE",
+      "role": "PROD",
+      "branch": "ZAHR",
+      "attr": "ZAHR_PROD_SERV",
+      "requested_log_step": 0.038636542443347695,
+      "base_margin_volume": 2810.1727117179607,
+      "guided_margin_delta": 110.70012163313275,
+      "projected_margin_delta": 110.70012163313275,
+      "pre_pa_rebalance_requested_log_step": 0.038636728182244603,
+      "pa_rebalance_factor": 0.9999951926856738,
+      "pre_pa_rebalance_guided_margin_delta": 120.54887238678063,
+      "pre_pa_rebalance_projected_margin_delta": 110.70066415288122,
+      "current": 10.0,
+      "proposed": 10.393926398799373,
+      "requested_attr_log_effect": 0.038636542443347695,
+      "actual_attr_log_effect": 0.03863654244334765,
+      "multiplier": 1.0393926398799374,
+      "coefficient_authority": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP"
+    }
+  ],
+  "work_pa": {
+    "estimated_prod_delta": 2034.67766091556,
+    "estimated_att_delta": 2034.677660915558,
+    "estimated_abs_gap": 2.0463630789890885e-12
+  },
+  "service_pa": {
+    "estimated_prod_delta": 3801.8669715922797,
+    "estimated_att_delta": 3801.8669715953865,
+    "estimated_abs_gap": 3.106833901256323e-09
+  },
+  "max_abs_effect_log_error": 1.1102230246251565e-16,
+  "passes": true,
+  "real_visum_recomputed": false,
+  "scope": "PURE_PROPOSAL_REPLAY_FROM_LIVE_V2484_DESIGN_EVIDENCE_WITH_EXPORTED_ZONE_ATTRIBUTES",
+  "work_pa_relative_gap": 1.0057431298814528e-15,
+  "service_pa_relative_gap": 8.171863782894525e-13
+}

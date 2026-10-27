@@ -1,0 +1,50 @@
+{
+  "schema": "R1_SAFETYFIX1_VALIDATION_V1",
+  "base_archive_sha256": "0e011ccdb8a518e89b064294f6266769a6d918ccbb552c897e0fe6d3464c9ef2",
+  "offline": {
+    "main": {
+      "passed": 1469,
+      "skipped": 4,
+      "failed": 0,
+      "scope": "pytest -q tests"
+    },
+    "diagfast": {
+      "passed": 138,
+      "failed": 0,
+      "scope": "pytest -q diagfast_tests"
+    },
+    "genfix2_audit": {
+      "passed": 18,
+      "failed": 0,
+      "scope": "PYTHONPATH=.:tests pytest -q genfix2_audit_tests"
+    },
+    "unique_total_passed": 1625,
+    "unique_total_skipped": 4
+  },
+  "regressions": {
+    "td_outer_joint_error": "reject candidate, retry backtracking; verified parent restores; no false stationarity",
+    "flowbundle_zero_evidence": "GLOBAL_IDP_FALLBACK; active components empty; preserve sealed V24916 original",
+    "long_school_rpc": "bounded COM retry; missing vs transient distinct; skip LS this cycle, no stationarity",
+    "invalid_ls_options": "propagate into explicit LS_DESIGN_ERROR, skip LS and continue W/S"
+  },
+  "limitations": [
+    "No real PTV Visum 2026 execution in offline environment",
+    "If rollback cannot be verified, model must stop (integrity safety).",
+    "Unresolved LONG/SCHOOL COM on start defers their calibration for this run; restart once COM is healthy.",
+    "TD zero evidence uses the original GLOBAL_IDP_FALLBACK, not a claimed component-wise count attribution.",
+    "Unchanged issue: SupplyMix malformed config may still use defaults; not addressed by this focused patch.",
+    "DIAGFAST 11D parity (30/33) and low count-incidence coverage remain independent known issues."
+  ],
+  "protected_parent": {
+    "files_in_base_manifest": 1059,
+    "byte_exact_matches": true
+  },
+  "sources_changed_from_parent": [
+    "01_SPUSTIT_V24917_TARGETED_CATCHUP.py",
+    "r1_15a2_active_demand_evidence_v24917.py",
+    "r1_15a2_trial_adapter_v24917.py",
+    "r1_15a2_demand_policy_v1.py",
+    "r1_15a2_long_school_generation_v24917.py",
+    "tests/test_v24917_targeted_catchup.py"
+  ]
+}

@@ -1,0 +1,22 @@
+R1_15A2 PROCSEQFIX1 – spuštění ve Visumu 2026
+
+1. Ukončete Visum a znovu jej spusťte kvůli starým importům v paměti.
+2. Rozbalte kompletní ZIP do nové samostatné složky. Nemíchejte jej se
+   starými soubory R1_15A2_V24917_v6 ani s probíhajícím během.
+3. Otevřete původní ověřený ACCEPTED_A_0019_eaf3d7aea007.ver
+   (ten byl použit v přiložených neúspěšných pokusech).
+4. Skripty → Run script file:
+     01_SPUSTIT_V24917_TDJOINT1.py       – 65 % intenzity / 35 % IDP
+   nebo
+     02_SPUSTIT_V24917_TDJOINT1_60_40.py – 60 % intenzity / 40 % IDP
+5. V NOVÉ složce RUN_... ověřte PROCSEQ_BOOTSTRAPFIX1.json:
+   status = REPAIRED_WORKING_COPY, changed = true,
+   procseq_after.passes = true, assignment_indices = [20].
+   Pak musí uspět LIVE_API_PREFLIGHT. První pokus ve Visumu je stále
+   nezbytný – offline testy nejsou skutečný COM běh.
+6. Při jiné chybě NEVYPÍNEJTE bezpečnostní kontrolu; předejte
+   PROCSEQ_BOOTSTRAPFIX1*.json, 00_RESULT.json, 00_FINAL_STATUS.txt,
+   API_PREFLIGHT/COM_API_PREFLIGHT.json a CONSOLE_CAPTURE.log.
+
+Oprava zapíná pouze schválený op. 20 v izolované pracovní kopii a
+originální zdrojový .ver nesmí být přepisován.

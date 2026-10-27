@@ -1,0 +1,14 @@
+{
+  "schema": "R1_15A2_V2493_METHOD_CORRECTIONS_SYNTHETIC_BENCHMARK_V1",
+  "release": "R1_15A2_V2_4_9_3_METHOD_AND_COM_CORRECTIONS_20261018",
+  "weighted_geh_test": "PASS",
+  "profile_sum_semantics_test": "PASS",
+  "global_long_composite_test": "PASS",
+  "long_component_collapse_test": "PASS",
+  "transient_com_retry_test": "PASS",
+  "permanent_com_error_no_retry_test": "PASS",
+  "signature_fallback_separation_test": "PASS",
+  "cached_zone_key_write_test": "PASS",
+  "helper_retry_test": "PASS",
+  "test_count": 10
+}

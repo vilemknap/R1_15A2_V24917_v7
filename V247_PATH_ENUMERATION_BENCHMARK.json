@@ -1,0 +1,148 @@
+{
+  "schema": "R1_15A2_V247_PATH_ENUMERATION_BENCHMARK_V1",
+  "scope": "OFFLINE_SYNTHETIC_CONTROLLER_CALL_COUNTS_NOT_REAL_VISUM_WALL_TIME",
+  "completed_small_fixture": {
+    "name": "COMPLETED_SMALL_FIXTURE",
+    "v246_model": {
+      "policy": "V246_INVALIDATE_AFTER_ACCEPT",
+      "repeated_generation": false,
+      "status": "COMPLETED_CONFIGURED_DEMAND_AND_SUPPLY_SEARCH",
+      "calibration_complete": true,
+      "accepted_count": 3,
+      "path_enumeration_requests": 3,
+      "enumerations": [
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "SUPPLY",
+          "reason": "CACHE_REQUIRED"
+        }
+      ],
+      "generation_design_calls": 3,
+      "supply_design_calls": 2,
+      "assignment_or_recompute_calls": 21
+    },
+    "v247_model": {
+      "policy": "V247_FROZEN_PATH_EPOCH",
+      "repeated_generation": false,
+      "status": "COMPLETED_CONFIGURED_DEMAND_AND_SUPPLY_SEARCH",
+      "calibration_complete": true,
+      "accepted_count": 3,
+      "path_enumeration_requests": 3,
+      "enumerations": [
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "DEMAND",
+          "reason": "LOCAL_PLATEAU_REFRESH"
+        },
+        {
+          "phase": "SUPPLY",
+          "reason": "LOCAL_PLATEAU_REFRESH"
+        }
+      ],
+      "generation_design_calls": 3,
+      "supply_design_calls": 2,
+      "assignment_or_recompute_calls": 21
+    },
+    "enumeration_reduction": 0,
+    "enumeration_reduction_fraction": 0.0,
+    "same_status": true,
+    "same_accepted_count": true
+  },
+  "accepted_state_stress_fixture": {
+    "name": "TWELVE_ACCEPTED_DEMAND_STATES",
+    "v246_model": {
+      "policy": "V246_INVALIDATE_AFTER_ACCEPT",
+      "repeated_generation": true,
+      "status": "DEMAND_MAX_OUTER_CYCLES_REACHED_SUPPLY_LOCKED",
+      "calibration_complete": false,
+      "accepted_count": 13,
+      "path_enumeration_requests": 12,
+      "enumerations": [
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        },
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        }
+      ],
+      "generation_design_calls": 12,
+      "supply_design_calls": 0,
+      "assignment_or_recompute_calls": 97
+    },
+    "v247_model": {
+      "policy": "V247_FROZEN_PATH_EPOCH",
+      "repeated_generation": true,
+      "status": "DEMAND_MAX_OUTER_CYCLES_REACHED_SUPPLY_LOCKED",
+      "calibration_complete": false,
+      "accepted_count": 13,
+      "path_enumeration_requests": 1,
+      "enumerations": [
+        {
+          "phase": "GENERATION",
+          "reason": "CACHE_REQUIRED"
+        }
+      ],
+      "generation_design_calls": 12,
+      "supply_design_calls": 0,
+      "assignment_or_recompute_calls": 97
+    },
+    "enumeration_reduction": 11,
+    "enumeration_reduction_fraction": 0.9166666666666666,
+    "same_status": true,
+    "same_accepted_count": true
+  },
+  "interpretation": "The small fixture has no enumeration saving because V2.4.7 deliberately spends fresh enumerations to certify demand and supply plateaus. The repeated-acceptance fixture isolates the intended benefit: accepted states reuse one path epoch until plateau.",
+  "real_visum_speedup_claim": null
+}

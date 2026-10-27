@@ -1,0 +1,100 @@
+[
+  {
+    "path": "CURRENT_RELEASE.txt",
+    "status": "MODIFIED",
+    "parent_sha256": "c9b92bf3d4536ee20b46156ac5d173820030c7177c5e9a8afa1f6a0a70d7058d",
+    "v2495_sha256": "8f1b07c7e6b9f7f5e66c72bb6c7cec619d95b627f7b83574053f53061424cc10",
+    "v2495_bytes": 59
+  },
+  {
+    "path": "LIVE_VISUM_ACCEPTANCE_V2_4_9_5_CZ.md",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "d8c2ca2b4dbdfe378054cf3ef1ef58974f2270d2eef56acab0c40837d6d06ea5",
+    "v2495_bytes": 1314
+  },
+  {
+    "path": "METHODOLOGY_STATUS_V2495.json",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "e52fdfe781f08cc9360f8ce4e76a92aca7efcd4369ebb437548e00f482703d67",
+    "v2495_bytes": 1053
+  },
+  {
+    "path": "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+    "status": "MODIFIED",
+    "parent_sha256": "cfc2c7497a80393e727305e147f87e992d17b94f9b9ed718b5c48d6a7994f8b7",
+    "v2495_sha256": "9e922f82467e038b191bef8b15314b30f8d12e39ae27c1142c7aeb77a1be98a1",
+    "v2495_bytes": 43939
+  },
+  {
+    "path": "R1_15A2_CONFIG_V2_4_9_5.json",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "59bfa7013a8f141c559c4232031e1c0fb6979da4f54cec976bc05211be1d4e7c",
+    "v2495_bytes": 53621
+  },
+  {
+    "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_5.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "69870c6121503abd11704ebbc6f303df5907dc796936b67dc79fb07b6a82f507",
+    "v2495_bytes": 36539
+  },
+  {
+    "path": "README_R1_15A2_V2_4_9_5_GEH20_HYSTERESIS_SEVERITY_BUDGET_CZ.md",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "f2ba3386fd8487d5564e41aff1abc5355be37e49da5e4b9a661cc2a0504a9960",
+    "v2495_bytes": 3241
+  },
+  {
+    "path": "V2495_CURRENT_STATUS.txt",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "0d315bf7ad296b6446f39a4166e21a45d1d46c4d16a262d3f898c800d3842aa4",
+    "v2495_bytes": 241
+  },
+  {
+    "path": "V2495_RELEASE_STATUS.json",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "6b75a87dff732efea3ba8aec39b18e117c5e72cb027b49840abb983e69c4f876",
+    "v2495_bytes": 1049
+  },
+  {
+    "path": "VERIFY_PACKAGE_V2_4_9_5.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "d6c4c4b2cae12dbb595c5e2ea0198b332060b89a51add97dde999384196763a4",
+    "v2495_bytes": 20515
+  },
+  {
+    "path": "r1_15a2_core.py",
+    "status": "MODIFIED",
+    "parent_sha256": "79543d7203d9b16039924fe761590cf58fdc7428117fcecc0bb6bb5d69da3449",
+    "v2495_sha256": "8d94a93cd309141806451176f0aa55c3f510d7c1ab389066b649fbe687c5db32",
+    "v2495_bytes": 90693
+  },
+  {
+    "path": "r1_15a2_safety_v2495.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "de684262de0798713ce434ad062e6ede1424c1b52b5e4f15810a7442a9b64ac6",
+    "v2495_bytes": 8895
+  },
+  {
+    "path": "tests/test_v2495_geh20_hysteresis_severity_budget.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "770016641c5eb0bbbbc85df2fc9aaf9353f54ef21faed6efa22ef48a8537bc14",
+    "v2495_bytes": 7524
+  },
+  {
+    "path": "tests/test_v2495_release.py",
+    "status": "ADDED",
+    "parent_sha256": null,
+    "v2495_sha256": "cfb9453382e0a5e438e60b7aaa9731b34eef9510173dc444061c1b4a46859c4b",
+    "v2495_bytes": 3765
+  }
+]

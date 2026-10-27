@@ -1,0 +1,11 @@
+{
+  "cycle": 1,
+  "status": "FAILED",
+  "completed": false,
+  "generation_changed": null,
+  "td_changed": null,
+  "generation_completed": false,
+  "td_completed": false,
+  "state_hash_start": "4a8f41962e1a83520e9cd0a3f2381d8ae792af4c714dffe50181034a869e5294",
+  "error": "V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:V242_GENERATION_TRIAL_PARENT_CHANGED"
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "R1_15A2_V24912_METHODOLOGY_STATUS_V1",
+  "release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+  "policy_level": "BASELINE_RELATIVE_BUDGET_V24912",
+  "coupled_demand_cycles": 12,
+  "generation_severity_budgets": {
+    "severity20": 0.08,
+    "severity30": 0.1,
+    "geh40_net_count": 5
+  },
+  "td_pareto": {
+    "min_td_improvement": 0.0025,
+    "max_cal_weighted_geh_degradation": 0.05,
+    "min_benefit_cost_ratio": 1.5,
+    "max_selected_component_degradation": 0.2,
+    "max_nonselected_component_degradation": 0.2
+  },
+  "td_severity_budgets": {
+    "severity20": 0.25,
+    "severity30": 0.3,
+    "geh40_net_count": 15
+  },
+  "profile_hard_guards": {
+    "protected_before_lt": 5.0,
+    "protected_after_ge": 20.0,
+    "single_geh_increase_gt": 15.0,
+    "high_geh_after_gt": 60.0,
+    "high_geh_increase_gt": 10.0
+  },
+  "absolute_geh60_after_state_wall_removed": true,
+  "geh60_threshold_crossing_alone_hard": false,
+  "native_ipf_tolerance_relaxed": false,
+  "real_visum_tested": false,
+  "production_ready": false
+}

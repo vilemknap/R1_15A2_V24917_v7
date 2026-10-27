@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="0.656" timestamp="2026-10-27T02:39:12.571067+00:00" hostname="155b1f38039a"><testcase classname="tests.test_sequence_stress_v23" name="test_many_markets_have_compact_exact_branch_evidence" time="0.463" /></testsuite></testsuites>

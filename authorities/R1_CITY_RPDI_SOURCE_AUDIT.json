@@ -1,0 +1,15 @@
+{
+  "source_xlsx": "COUNTLOCATION-2026-10-15-19-27-20_pro15A9_v2(1).xlsx",
+  "source_sha256": "f5e56d36f27e1d38cb36f7597adfaaa87bfeb81b3ecbfccefe13cf9f9266bb84",
+  "selected_90_sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
+  "countlocations": 535,
+  "CSD": 408,
+  "CITY_LEGACY": 127,
+  "CITY_ACTIVE_CAL": 90,
+  "CITY_INACTIVE_NOT_CAL": 37,
+  "observed_field": "R1 Obs RPDI",
+  "already_passenger_cars": true,
+  "apply_additional_conversions": false,
+  "both_direction": true,
+  "vehicle_scope_is_source_metadata_only": true
+}

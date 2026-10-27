@@ -1,0 +1,48 @@
+{
+  "inactive_long_identity": {
+    "passes": true,
+    "profile_drift": {
+      "profiles": 1,
+      "missing": [],
+      "violations": 0,
+      "max_abs_diff": 0.0,
+      "max_rel_diff": 0.0,
+      "worst_profile": null,
+      "abs_tol": 0.5,
+      "rel_tol": 0.0001,
+      "identity_errors": []
+    },
+    "weighted_geh_before": 6.030226891555273,
+    "weighted_geh_after": 6.030226891555273,
+    "geh_tol": 0.01,
+    "component_differences": [],
+    "signal_atol": 1e-09,
+    "signal_rtol": 1e-08,
+    "comparison_contract": "TDROLLBACKFIX1_CONTENT_NOT_EXECUTION_IDENTITY",
+    "dynamic_skim_hash_policy": "MATRIX_AND_FAMILY_CONTENT_HASHES_EXACT; EPOCH_REFERENCE_SELF_CHECKED",
+    "inactive_long_objective_policy": "ONLY_DOCUMENTED_POSITIVE_INFINITY_SENTINEL"
+  },
+  "dynamic_epoch_only": {
+    "passes": true,
+    "profile_drift": {
+      "profiles": 1,
+      "missing": [],
+      "violations": 0,
+      "max_abs_diff": 0.0,
+      "max_rel_diff": 0.0,
+      "worst_profile": null,
+      "abs_tol": 0.5,
+      "rel_tol": 0.0001,
+      "identity_errors": []
+    },
+    "weighted_geh_before": 6.030226891555273,
+    "weighted_geh_after": 6.030226891555273,
+    "geh_tol": 0.01,
+    "component_differences": [],
+    "signal_atol": 1e-09,
+    "signal_rtol": 1e-08,
+    "comparison_contract": "TDROLLBACKFIX1_CONTENT_NOT_EXECUTION_IDENTITY",
+    "dynamic_skim_hash_policy": "MATRIX_AND_FAMILY_CONTENT_HASHES_EXACT; EPOCH_REFERENCE_SELF_CHECKED",
+    "inactive_long_objective_policy": "ONLY_DOCUMENTED_POSITIVE_INFINITY_SENTINEL"
+  }
+}

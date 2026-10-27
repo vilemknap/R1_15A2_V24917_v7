@@ -1,0 +1,21 @@
+{
+  "group": 5,
+  "files": [
+    "tests/test_v24917_tdjoint1.py",
+    "tests/test_v24917_tdsplit_sevrelax.py",
+    "tests/test_v2492_release.py",
+    "tests/test_v2492_signed_generation_refinement.py",
+    "tests/test_v2493_method_and_com_corrections.py",
+    "tests/test_v2493_release.py",
+    "tests/test_v2494_path_export_retry_and_semantic_restart.py",
+    "tests/test_v2494_release.py",
+    "tests/test_v2495_geh20_hysteresis_severity_budget.py",
+    "tests/test_v2495_release.py",
+    "tests/test_v2496_early_exploration_pareto_acceptance.py",
+    "tests/test_v2496_release.py",
+    "tests/test_visum_and_master.py"
+  ],
+  "exit_code": 0,
+  "seconds": 4.864707024000154,
+  "expected_cases": 154
+}

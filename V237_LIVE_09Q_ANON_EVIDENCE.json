@@ -1,0 +1,73 @@
+{
+  "release": "R1_15A2_09Q_FULL_PRT_QUALITY_SCOPE_V1_20261016",
+  "status": "GAP_SCOPE_ROW_FOUND_REVIEW_REQUIRED",
+  "quality_rows": 10,
+  "exact_scope_rows": 2,
+  "distinct_dseg_scopes": 5,
+  "last_iteration_row_unique": true,
+  "last_exact_scope_row": {
+    "row": 6,
+    "dsegcode_raw": "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CS_noT,EXOG_EE_CW,EXOG_EE_CW_noT,LNV,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CS_noT,NATIVE_CW,NATIVE_CW_noT,NV",
+    "dsegs": [
+      "EXOG_EE_CF",
+      "EXOG_EE_CL",
+      "EXOG_EE_CS",
+      "EXOG_EE_CS_NOT",
+      "EXOG_EE_CW",
+      "EXOG_EE_CW_NOT",
+      "LNV",
+      "NATIVE_CF",
+      "NATIVE_CL",
+      "NATIVE_CS",
+      "NATIVE_CS_NOT",
+      "NATIVE_CW",
+      "NATIVE_CW_NOT",
+      "NV"
+    ],
+    "iteration": 2,
+    "gap": 0.00328696
+  },
+  "scope_groups": [
+    {
+      "dsegset": "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CS_NOT,EXOG_EE_CW,EXOG_EE_CW_NOT,LNV,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CS_NOT,NATIVE_CW,NATIVE_CW_NOT,NV",
+      "rows": 2,
+      "iteration_count": 2,
+      "max_iteration": 2,
+      "gap_at_max_iteration_last_row": 0.00328696
+    },
+    {
+      "dsegset": "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CW,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CW",
+      "rows": 2,
+      "iteration_count": 2,
+      "max_iteration": 2,
+      "gap_at_max_iteration_last_row": 0.01332029
+    },
+    {
+      "dsegset": "EXOG_EE_CS_NOT,EXOG_EE_CW_NOT,NATIVE_CS_NOT,NATIVE_CW_NOT",
+      "rows": 2,
+      "iteration_count": 2,
+      "max_iteration": 2,
+      "gap_at_max_iteration_last_row": 0.00275311
+    },
+    {
+      "dsegset": "LNV",
+      "rows": 2,
+      "iteration_count": 2,
+      "max_iteration": 2,
+      "gap_at_max_iteration_last_row": 0.00312692
+    },
+    {
+      "dsegset": "NV",
+      "rows": 2,
+      "iteration_count": 2,
+      "max_iteration": 2,
+      "gap_at_max_iteration_last_row": 0.00125766
+    }
+  ],
+  "configured_threshold": 1e-06,
+  "limitations": [
+    "No proof of freshness following last network/demand edit",
+    "Observed quality fails 1e-6 config, apply remains false",
+    "Marginal guard source not present in V2.3.6 package"
+  ]
+}

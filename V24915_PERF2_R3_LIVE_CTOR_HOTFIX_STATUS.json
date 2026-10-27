@@ -1,0 +1,22 @@
+{
+  "schema": "R1_15A2_V24915_PERF2_R3_LIVE_CTOR_HOTFIX_STATUS_V1",
+  "release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
+  "package_revision": "V24915_PERF2_CANDIDATE_READBACK_BUNDLE_R3_LIVE_CTOR_HOTFIX",
+  "live_failure_fixed": "PERF2_ADAPTER_CONSTRUCTOR_ARITY_CONTROL_FORWARDING",
+  "constructor_signature": "(self, visum, cfg, control=None)",
+  "runtime_manifest_sha256": "16f48c4989ab0818276adfeca173f27c35630b781488b9737339ac25810dbf10",
+  "tests": {
+    "passed": 847,
+    "skipped": 4,
+    "failed": 0
+  },
+  "compileall": true,
+  "deployment_preflight": true,
+  "files_checked": 80,
+  "user_source_checkpoint": "ACCEPTED_B_0016_d1211a44ac4d.ver",
+  "source_unchanged_in_failed_r2_run": true,
+  "load_version_called_in_failed_r2_run": false,
+  "b0016_continuation_rebase": "PENDING_SOURCE_RUN_EVIDENCE",
+  "calibration_complete": false,
+  "production_ready": false
+}

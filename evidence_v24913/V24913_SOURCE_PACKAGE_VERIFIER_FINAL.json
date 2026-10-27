@@ -1,0 +1,75 @@
+{
+  "schema": "R1_15A2_V24913_INDEPENDENT_PACKAGE_VERIFIER_V1",
+  "passes": true,
+  "manifest_files": 689,
+  "manifest_failures": [],
+  "config_validation": {
+    "passes": true,
+    "parent_release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+    "supply_policy": "V24913_SUPPLY_ROUTE_CHOICE_BASELINE_RELATIVE",
+    "supply_lattice_seconds": 5.0,
+    "supply_step_ladder_seconds": [
+      80,
+      40,
+      20,
+      10,
+      5
+    ],
+    "real_visum_supply_tested": false,
+    "production_ready": false
+  },
+  "runtime_validation": {
+    "passes": true,
+    "release": "R1_15A2_V2_4_9_13_SUPPLY_ROUTE_CHOICE_READINESS_20261019",
+    "package_revision": "V24913_SUPPLY_READY_R1",
+    "files_checked": 62,
+    "mixed_release_modules": [],
+    "supply_policy_scope": {
+      "enabled": true,
+      "mode": "BASELINE_RELATIVE_ROUTE_CHOICE_EXPLORATION",
+      "outer_cycle": 1,
+      "supply_cycle": 1,
+      "through_outer_cycle": 100,
+      "through_supply_cycle": 100,
+      "scope": "SUPPLY",
+      "scoped": {
+        "positive_improvement_epsilon": 1e-12,
+        "max_severity20_relative_degradation": 0.2,
+        "max_severity30_relative_degradation": 0.25,
+        "max_geh40_net_count_increase": 20,
+        "max_idp_mean_degradation": 0.02,
+        "max_idp_component_degradation": 0.08
+      },
+      "severity": {
+        "geh20_role": "DIAGNOSTIC_CONTINUOUS_PENALTY",
+        "geh30_role": "DIAGNOSTIC_CONTINUOUS_PENALTY",
+        "geh35_role": "WARNING",
+        "geh40_role": "SOFT_NET_COUNT_BUDGET",
+        "max_new_geh40": 0,
+        "max_single_profile_geh_increase": 20.0,
+        "absolute_geh_ceiling": 60.0,
+        "protected_before_geh": 5.0,
+        "protected_after_hard_geh": 20.0,
+        "max_protected_catastrophic": 0,
+        "severity_score_power": 2.0,
+        "policy_level": "BASELINE_RELATIVE_BUDGET_V24912",
+        "absolute_geh_ceiling_role": "DIAGNOSTIC_THRESHOLD_NOT_STATE_VETO",
+        "high_geh_threshold": 60.0,
+        "max_high_geh_increase": 15.0,
+        "runtime_policy_implementation_owner": "r1_15a2_core.py",
+        "runtime_external_policy_import_required": false
+      },
+      "best_so_far": {
+        "enabled": true,
+        "metric": "FIXED_REFERENCE_SHARED_OBJECTIVE",
+        "minimum_improvement": 1e-08,
+        "publish_dedicated_checkpoint": false
+      },
+      "policy_id": "V24913_SUPPLY_ROUTE_CHOICE_BASELINE_RELATIVE"
+    },
+    "half_addval_lattice": true,
+    "branch_local_backtracking": true
+  },
+  "real_visum_supply_tested": false,
+  "production_ready": false
+}

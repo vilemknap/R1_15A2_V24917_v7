@@ -1,0 +1,8 @@
+{
+  "parameters_restored": true,
+  "loads_restored": true,
+  "assignments": [
+    "/tmp/pytest-of-root/pytest-17/test_A09_supply_result_io_fail0/SM/TRY_01/ASSIGNMENT",
+    "/tmp/pytest-of-root/pytest-17/test_A09_supply_result_io_fail0/SM/ROLLBACK_AFTER_ERROR"
+  ]
+}

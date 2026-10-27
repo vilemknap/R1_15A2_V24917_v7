@@ -1,0 +1,12 @@
+{
+  "group": 0,
+  "files": [
+    "diagfast_tests/test_decision_parity.py",
+    "diagfast_tests/test_demand_policy.py",
+    "diagfast_tests/test_generation_gate_nonfatal.py",
+    "diagfast_tests/test_matrix_edges.py",
+    "diagfast_tests/test_parity.py"
+  ],
+  "exit_code": 0,
+  "seconds": 10.663012319000018
+}

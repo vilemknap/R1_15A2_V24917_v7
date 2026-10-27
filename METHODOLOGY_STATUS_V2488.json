@@ -1,0 +1,13 @@
+{
+  "production_release": false,
+  "working_copy_trial_calibration": true,
+  "two_mode_geometry_role": "CANDIDATE_PROPOSAL_ONLY",
+  "candidate_acceptance_role": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
+  "path_enumeration_policy": "AUTHORIZED_PERSISTENT_CACHE_OR_LEGACY_EXACT_STATE_IMPORT_OR_FRESH_ENUMERATION_THEN_ONLY_AT_LOCAL_PLATEAU",
+  "path_cache_config_digest_role": "PROVENANCE_ONLY",
+  "path_cache_compatibility_authority": "EXPLICIT_PATH_SEMANTICS_PLUS_REVIEWED_FULL_SOURCE_IMPLEMENTATION_MAP",
+  "incompatible_cache_policy": "PERFORMANCE_MISS_LEGACY_OR_FRESH_FALLBACK",
+  "cache_integrity_policy": "FAIL_CLOSED",
+  "generation_coefficient_authority": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP_NO_LEGACY_ABSOLUTE_MAX",
+  "production_ready": false
+}

@@ -1,0 +1,1527 @@
+VÝVOJOVÝ PROMPT
+R1_15A2 V24915 PERF2 — CANDIDATE READBACK BUNDLE
+=================================================
+
+ÚKOL
+====
+
+Navazuj přímo na offline ověřenou větev:
+
+R1_15A2_V2_4_9_15_PERF1_EXACT_SAFE_ACCELERATION_20261019
+
+a proveď kompletní:
+
+AUDIT → NÁVRH → IMPLEMENTACI → FOCUSED TESTY → FULL REGRESSION →
+FAULT INJECTION → PARITY AUDIT → BENCHMARK → PACKAGING → CHECKPOINT
+
+pro další čistě výkonnostní vrstvu:
+
+CANDIDATE READBACK BUNDLE
+
+Cílem je odstranit redundantní čtení stejného modelového stavu přes
+PTV Visum COM.
+
+Nejde o změnu kalibrační metody.
+
+CandidateReadbackBundle musí být pouze state-bound read-only materializace
+jednoho konkrétního živého modelového stavu po assignmentu kandidáta.
+
+Pracovní release:
+
+R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019
+
+
+====================================================================
+1. AUTORITATIVNÍ PARENT
+====================================================================
+
+Použij jako jediný parent:
+
+CP88_V24915_PERF1_FULL_SOURCE_CHECKPOINT.zip
+
+SHA-256:
+
+29af8e1bcd45904b101da9988a4a8406db9bd4c74c2bb6e1b0100f5d777b99fa
+
+Referenční PERF1 delivery:
+
+R1_15A2_V2_4_9_15_PERF1_EXACT_SAFE_ACCELERATION_20261019_DELIVERY.zip
+
+SHA-256:
+
+c1655c2d5ed2d9f28b67e297eef4865dcc6b3cb40e434f9e5a44e8b4c2f51e9a
+
+Původní V24915 Drive branch:
+
+https://drive.google.com/drive/folders/1DFn94iXs0z8uQrbO5KMnyA_q2SJVhOnb
+
+Platná restart authority:
+
+accepted_count = 9
+next_outer_cycle = 6
+recommended checkpoint = ACCEPTED_A_0009_cebb9c7a9349.ver
+
+calibration_complete = false
+production_ready = false
+
+PERF2 musí být aditivní potomek PERF1.
+
+NEPŘEPISUJ:
+- původní V24915;
+- PERF1 zdroje;
+- historické release soubory.
+
+Před první změnou:
+
+1. ověř SHA-256 parentu;
+2. rozbal jej do nové pracovní větve;
+3. vytvoř úplný source inventory;
+4. zaznamenej byte-level baseline stromu;
+5. vytvoř CP89 forensic checkpoint.
+
+
+====================================================================
+2. PROBLÉM, KTERÝ ŘEŠÍME
+====================================================================
+
+Aktuální PERF1 je bezpečný, ale stále několikrát čte z Visumu stejný stav.
+
+Současný:
+
+VisumAdapter.snapshot()
+
+mimo jiné provádí:
+
+- read_links();
+- čtení ADDVAL1;
+- fixed-link fingerprint;
+- list_dsegs();
+- DSeg → OD matrix mapping;
+- fingerprint relevantních OD matic;
+- GetValues nad maticemi;
+- čtení generation zone attributes;
+- TD snapshot všech komponent;
+- Procedure Sequence inventory;
+- canonical hash jednotlivých částí;
+- výsledný semantic state_hash.
+
+Ve stejném kandidátním stavu jsou tato nebo příbuzná data následně znovu
+čtena při:
+
+- candidate validation;
+- freeze kontrole;
+- parameter persistence;
+- diagnostics pre/post check;
+- rollback verification;
+- PERF1 rollback diagnostic reuse;
+- recovery;
+- adoption;
+- finalizeru.
+
+PERF1 navíc obsahuje:
+
+count_profile_signature()
+
+který jedním bulk readem ověřuje všech 498 autoritativních profilů přes
+12 osobních DSegů.
+
+Rollback diagnostic reuse ale dnes používá schéma přibližně:
+
+snapshot()
+↓
+498 × 12 passenger-flow signature
+↓
+snapshot()
+
+CandidateReadbackBundle má umožnit použít již jednou ověřený state-bound
+payload všude, kde mezi producerem a consumerem prokazatelně nenastala
+žádná modelová mutace.
+
+
+====================================================================
+3. ABSOLUTNÍ HARD INVARIANTS
+====================================================================
+
+Následující podmínky se nesmí změnit.
+
+Jakákoli odchylka = HARD FAIL.
+
+1. Candidate mathematics beze změny.
+2. Candidate search order beze změny.
+3. Pořadí unikátních kandidátů beze změny.
+4. Žádná candidate parallelism.
+5. Native IPF tolerance beze změny.
+6. Assignment metoda beze změny.
+7. Assignment gap threshold beze změny.
+8. Assignment gap readback authority beze změny.
+9. Každý candidate stále vyžaduje fresh Visum assignment.
+10. Live 12D/11D zůstává acceptance authority.
+11. GEH acceptance beze změny.
+12. IDP acceptance beze změny.
+13. Guard policy beze změny.
+14. Pareto acceptance beze změny.
+15. Stationarity beze změny.
+16. Generation matematika beze změny.
+17. FineCDF matematika beze změny.
+18. Supply route-choice matematika beze změny.
+19. Žádné přímé OD matrix writes.
+20. Žádný LoadVersion rollback běžných rejected candidates.
+21. Persistent path-cache semantics beze změny.
+22. V24915 COM-busy retry beze změny.
+23. V24915 transient-aware finalizer beze změny.
+24. PERF1 phase-specific Procedure Sequence beze změny.
+25. PERF1 duplicate-effective-candidate elimination beze změny.
+26. PERF1 rollback diagnostic reuse nesmí být oslaben.
+27. Baseline/restart/recovery/final verification musí mít FULL legacy fallback.
+28. Jakákoli nejistota = legacy readback nebo fail-closed.
+29. CandidateReadbackBundle nesmí být cross-run cache.
+30. CandidateReadbackBundle nesmí být použit po modelové mutaci.
+
+
+====================================================================
+4. CÍLOVÁ ARCHITEKTURA
+====================================================================
+
+Implementuj explicitní vrstvu:
+
+CandidateReadbackBundle
+
+Preferovaný nový modul:
+
+r1_15a2_candidate_readback_bundle_v24915p2.py
+
+Bundle je:
+
+READ ONLY
+STATE BOUND
+CANDIDATE BOUND
+ASSIGNMENT BOUND
+EPHEMERAL
+
+Není to nový modelový stav.
+
+Není to persistence.
+
+Není to path cache.
+
+Není to approximation.
+
+
+Cílový tok:
+
+candidate parameter writes
+        │
+        ▼
+phase-specific Procedure Sequence
+        │
+        ▼
+fresh Visum assignment
+        │
+        ▼
+assignment gap readback
+        │
+        ▼
+CandidateReadbackBundle.capture()
+        │
+        ├─────────────► snapshot consumer
+        │
+        ├─────────────► freeze verification
+        │
+        ├─────────────► persistence verification
+        │
+        ├─────────────► rollback proof
+        │
+        ├─────────────► ledger/gate context
+        │
+        └─────────────► diagnostic-support data
+                               │
+                               ▼
+                    live 12D / 11D remains mandatory
+
+
+Základní princip:
+
+READ ONCE → VERIFY → HASH → REUSE WITHIN EXACT SAME STATE
+
+
+====================================================================
+5. MUTATION EPOCH / ASSIGNMENT EPOCH
+====================================================================
+
+Neimplementuj cache typu:
+
+"pokud něco máme naposledy uložené, použij to."
+
+Musí vzniknout explicitní runtime state authority.
+
+Adapter musí mít minimálně:
+
+mutation_epoch
+assignment_epoch
+readback_epoch
+
+Dále bundle musí nést minimálně:
+
+schema
+release
+visum_session_token
+run_token
+accepted_parent_state_hash
+block
+candidate_write_signature
+mutation_epoch
+assignment_epoch
+readback_epoch
+capture_started_utc
+capture_completed_utc
+complete
+payload_hash
+
+
+Příklad:
+
+CandidateReadbackBundle
+{
+    schema,
+    parent_state_hash,
+    block,
+    candidate_signature,
+
+    mutation_epoch,
+    assignment_epoch,
+
+    assignment_evidence,
+
+    semantic_snapshot_payload,
+
+    parameter_evidence,
+
+    profile_volume_payload,
+
+    diagnostics_reference,
+
+    payload_hash,
+    complete
+}
+
+
+====================================================================
+6. POVINNÁ INVALIDACE
+====================================================================
+
+Bundle musí být invalidován PŘED každou operací, která může změnit stav.
+
+Minimálně:
+
+SetAttValue
+SetMultiAttValues
+
+generation writes
+TD writes
+ADDVAL1 writes
+
+jakýkoli matrix write
+
+Procedures.Execute
+
+PrT assignment
+downstream recomputation
+
+rollback writes
+
+adoption reapply
+
+LoadVersion
+
+recovery write
+
+jakýkoli jiný COM write
+
+
+Důležitá podmínka:
+
+INVALIDATE BEFORE SIDE EFFECT
+
+nikoli až po něm.
+
+
+Například:
+
+adapter.invalidate_readback(
+    reason="GENERATION_CANDIDATE_WRITE",
+    before_mutation=True
+)
+
+teprve potom:
+
+SetMultiAttValues(...)
+
+
+Stejně:
+
+invalidate
+↓
+Procedures.Execute()
+
+
+Pokud execute selže uprostřed, starý bundle už nesmí být platný.
+
+
+====================================================================
+7. BUNDLE NESMÍ BÝT POUŽIT
+====================================================================
+
+Bundle okamžitě považuj za STALE při:
+
+- změně mutation_epoch;
+- změně assignment_epoch;
+- jiném accepted parentu;
+- jiném candidate signature;
+- jiném blocku;
+- jiné Visum instanci;
+- LoadVersion;
+- novém assignmentu;
+- rollback write;
+- adoption;
+- restartu Python runtime;
+- restartu Visumu;
+- nekompletním capture;
+- hash mismatch;
+- COM capture error.
+
+
+STALE BUNDLE NESMÍ NIKDY PROJÍT ACCEPTANCE PATH.
+
+
+====================================================================
+8. OBSAH BUNDLE
+====================================================================
+
+Nejdříve proveď dependency audit.
+
+Pak implementuj minimálně následující datové skupiny.
+
+
+A. ASSIGNMENT EVIDENCE
+
+- gap;
+- kompletní assignment gap evidence;
+- supply_only/full recompute mode;
+- phase-specific Procedure Sequence plan;
+- Procedure Sequence plan hash;
+- assignment_epoch.
+
+
+B. LEGACY SEMANTIC SNAPSHOT PAYLOAD
+
+Bundle musí umět rekonstruovat současný VisumAdapter.snapshot():
+
+- ADDVAL1 values;
+- addval_hash;
+
+- fixed_link_hash;
+
+- matrices;
+- matrix_hash;
+
+- DSeg map;
+- dseg_hash;
+
+- generation_values;
+- generation_hash;
+
+- td_values;
+- td_hash;
+
+- operations inventory;
+- operations_hash;
+
+- výsledný state_hash.
+
+
+C. PARAMETER EVIDENCE
+
+Podle blocku:
+
+GENERATION:
+- candidate rows;
+- old values;
+- new values;
+- write readbacks;
+- persistence values.
+
+TD:
+- changed components;
+- b/c old;
+- b/c new;
+- readbacks;
+- persistence evidence.
+
+SUPPLY:
+- directed link keys;
+- expected_old ADDVAL1;
+- new ADDVAL1;
+- readback.
+
+
+D. PASSENGER FLOW DATA
+
+Pokud lze bezpečně sloučit s PERF1 readbackem:
+
+načti jednou bulk link-volume tabulku pro všech:
+
+12 passenger DSegs
+
+a z ní vytvoř stejný:
+
+498-profile signature
+
+jako PERF1.
+
+DIRECTED a BOTH semantika musí zůstat beze změny.
+
+
+E. DIAGNOSTICS REFERENCE
+
+Po skutečném live 12D/11D runu může bundle nést:
+
+diagnostics_payload_hash
+d12_hash
+d11_hash
+signals_hash
+
+a immutable reference na již vypočtený diagnostics payload.
+
+To lze znovu použít pouze v tomtéž:
+
+mutation_epoch
+assignment_epoch.
+
+NESMÍ se tím přeskočit fresh diagnostics po novém assignmentu.
+
+
+====================================================================
+9. LEGACY SNAPSHOT JE STÁLE AUTHORITY
+====================================================================
+
+Původní:
+
+VisumAdapter.snapshot()
+
+je semantic authority.
+
+PERF2 nesmí změnit význam:
+
+state_hash.
+
+
+Implementuj:
+
+legacy_snapshot_from_live_visum()
+
+a:
+
+snapshot_from_bundle(bundle)
+
+
+V parity/shadow režimu:
+
+legacy = legacy_snapshot_from_live_visum()
+bundle = capture(...)
+optimized = snapshot_from_bundle(bundle)
+
+a vyžaduj:
+
+legacy == optimized
+
+na canonical payload úrovni.
+
+
+Minimálně musí být exact:
+
+state_hash
+addval_hash
+fixed_link_hash
+matrix_hash
+dseg_hash
+generation_hash
+td_hash
+operations_hash
+
+
+Žádná tolerance pro hash mismatch.
+
+
+Při mismatch:
+
+BUNDLE_PARITY_FAIL
+
+ulož:
+
+- legacy payload;
+- bundle payload;
+- structural diff;
+- hash diff;
+- offending section.
+
+Pak:
+
+fallback → legacy snapshot.
+
+
+====================================================================
+10. MATRIX FINGERPRINTY
+====================================================================
+
+V PERF2 NEMĚŇ význam matrix_hash.
+
+Pokud legacy snapshot používá:
+
+_fingerprint_matrix_object()
+
+a kompletní:
+
+GetValues()
+
+nad relevantní OD maticí, pak CandidateReadbackBundle smí:
+
+- matici načíst jednou;
+- z jednoho načtení vytvořit fingerprint;
+- uložit fingerprint do bundle;
+- tentýž fingerprint znovu použít pro další consumer stejného state.
+
+Nesmí:
+
+- nahradit full matrix hash sumou;
+- použít jen touched OD cells;
+- použít timestamp;
+- vynechat component matrices;
+- předpokládat neměnnost bez důkazu.
+
+Hlavním cílem PERF2 je:
+
+1 matrix GetValues per matrix per bundle state
+
+namísto několika stejných GetValues.
+
+
+====================================================================
+11. 12D / 11D
+====================================================================
+
+Proveď explicitní dependency audit:
+
+r1_15a2_runtime_v1.run_diagnostics()
+
+a příslušných:
+
+helpers/R1_12D...
+helpers/R1_11D...
+
+
+Zmapuj jejich COM readbacky.
+
+Každý read rozděl do jedné kategorie:
+
+A:
+EXACTLY ALREADY IN BUNDLE
+
+B:
+SAFE TO INJECT FROM BUNDLE WITH PROVEN PARITY
+
+C:
+MUST REMAIN LIVE HELPER READ
+
+
+PERF2 není projekt na přepis 12D/11D.
+
+V této větvi je zakázáno:
+
+- nahradit 12D jiným výpočtem;
+- nahradit 11D jiným výpočtem;
+- změnit observation identity;
+- změnit model values;
+- změnit GEH;
+- změnit IDP summary;
+- změnit signals;
+- použít baseline diagnostics jako candidate diagnostics.
+
+
+Pokud bezpečné injection nelze jednoznačně prokázat:
+
+NECH HELPERY BEZE ZMĚNY.
+
+
+====================================================================
+12. POVINNÝ CALL-SITE AUDIT
+====================================================================
+
+Zmapuj minimálně:
+
+r1_15a2_supply_visum.py
+
+r1_15a2_trial_adapter_v24915p1.py
+
+r1_15a2_overnight_controller_v24915p1.py
+
+r1_15a2_overnight_controller_coupled_v24915p1.py
+
+r1_15a2_inplace_transaction_v24915p1.py
+
+r1_15a2_acceleration_v24915p1.py
+
+r1_15a2_supply_handoff_v24915p1.py
+
+r1_15a2_runtime_v1.py
+
+12D helper
+
+11D helper
+
+R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF1.py
+
+R1_15A2_CONFIG_V2_4_9_15_PERF1.json
+
+
+Najdi všechna volání:
+
+adapter.snapshot()
+
+adapter.diagnostics()
+
+adapter.parameter_persistence()
+
+read_links()
+
+td_snapshot()
+
+list_dsegs()
+
+operation_inventory()
+
+_fingerprint_matrix_object()
+
+GetValues()
+
+count_profile_signature()
+
+rollback_diagnostic_equivalence()
+
+Procedures.Execute()
+
+candidate writes
+
+rollback writes
+
+
+Vytvoř:
+
+V24915_PERF2_READBACK_CALL_GRAPH.csv
+
+
+Minimální sloupce:
+
+CALL_SITE
+CALLER
+MODEL_STATE
+CURRENT_COM_READS
+DUPLICATE_WITH
+MUTATION_BETWEEN
+CAN_USE_BUNDLE
+PROOF
+FALLBACK
+
+
+Dvě čtení nejsou redundantní jen proto, že jsou v kódu blízko.
+
+Musí existovat důkaz:
+
+ZERO MODEL MUTATION BETWEEN READS.
+
+
+====================================================================
+13. DOPORUČENÉ API
+====================================================================
+
+Preferovaný koncept:
+
+class CandidateReadbackBundle:
+    ...
+
+class CandidateReadbackManager:
+
+    def invalidate(...):
+        ...
+
+    def mark_mutation(...):
+        ...
+
+    def mark_assignment_started(...):
+        ...
+
+    def mark_assignment_completed(...):
+        ...
+
+    def capture(...):
+        ...
+
+    def require_current(...):
+        ...
+
+    def snapshot_from_current(...):
+        ...
+
+    def attach_diagnostics(...):
+        ...
+
+
+VisumAdapter například:
+
+adapter.readback_manager
+
+adapter.capture_candidate_readback(...)
+
+adapter.current_candidate_readback(...)
+
+adapter.snapshot_from_bundle(...)
+
+adapter.invalidate_candidate_readback(...)
+
+
+Nevytvářej hidden global cache.
+
+
+====================================================================
+14. CACHE HIT JE POVOLEN POUZE PŘI EXACT MATCH
+====================================================================
+
+Každý bundle hit musí minimálně ověřit:
+
+bundle.complete is True
+
+bundle.visum_session_token
+    == adapter.visum_session_token
+
+bundle.run_token
+    == adapter.run_token
+
+bundle.mutation_epoch
+    == adapter.mutation_epoch
+
+bundle.assignment_epoch
+    == adapter.assignment_epoch
+
+bundle.accepted_parent_state_hash
+    == expected_parent
+
+bundle.block
+    == current_block
+
+bundle.candidate_signature
+    == current_candidate_signature
+
+recomputed bundle payload hash
+    == stored payload hash
+
+
+Jediný mismatch:
+
+BUNDLE MISS → LEGACY FALLBACK.
+
+
+====================================================================
+15. CONFIG
+====================================================================
+
+Vytvoř nový:
+
+R1_15A2_CONFIG_V2_4_9_15_PERF2.json
+
+
+Přidej například:
+
+performance:
+  v24915_perf2_candidate_readback_bundle:
+
+    enabled: true
+
+    shadow_parity_mode: true
+
+    fallback_to_legacy: true
+
+    require_exact_snapshot_parity: true
+
+    candidate_math_changed: false
+
+    acceptance_changed: false
+
+    assignment_method_changed: false
+
+    matrix_fingerprint_semantics_changed: false
+
+    diagnostic_method_changed: false
+
+    candidate_parallelism: false
+
+
+PERF1 config neměň.
+
+
+====================================================================
+16. TELEMETRIE
+====================================================================
+
+Doplň minimálně:
+
+BUNDLE_CAPTURE_TOTAL
+
+BUNDLE_CAPTURE_LINKS
+
+BUNDLE_CAPTURE_DSEGS
+
+BUNDLE_CAPTURE_MATRICES
+
+BUNDLE_CAPTURE_GENERATION
+
+BUNDLE_CAPTURE_TD
+
+BUNDLE_CAPTURE_OPERATIONS
+
+BUNDLE_CAPTURE_PROFILE_VOLUMES
+
+BUNDLE_HIT
+
+BUNDLE_MISS
+
+BUNDLE_INVALIDATE
+
+BUNDLE_FALLBACK
+
+SNAPSHOT_FROM_BUNDLE
+
+LEGACY_SNAPSHOT_TOTAL
+
+MATRIX_GETVALUES_COUNT
+
+MATRIX_GETVALUES_TIME
+
+COM_LINK_BULK_READ_COUNT
+
+GENERATION_READ_COUNT
+
+TD_READ_COUNT
+
+OPERATION_INVENTORY_READ_COUNT
+
+MODEL_MUTATION_EPOCH
+
+ASSIGNMENT_EPOCH
+
+
+Pro každý trial musí jít zjistit:
+
+legacy-equivalent snapshot consumers
+actual legacy snapshots
+bundle-backed snapshots
+bundle hits
+bundle misses
+fallbacks
+matrix GetValues
+saved matrix GetValues
+
+
+====================================================================
+17. FOCUSED UNIT TESTS
+====================================================================
+
+Povinně implementuj minimálně následující testy.
+
+
+BUNDLE LIFECYCLE
+
+1. capture po assignmentu → current bundle;
+2. druhý consumer bez mutace → stejný bundle;
+3. generation write → invalidace;
+4. TD write → invalidace;
+5. ADDVAL write → invalidace;
+6. rollback write → invalidace;
+7. Procedures.Execute → invalidace před execute;
+8. LoadVersion → invalidace;
+9. jiný candidate signature → reject bundle;
+10. jiný parent state → reject bundle;
+11. jiný block → reject bundle;
+12. jiná assignment_epoch → reject bundle;
+13. partial capture → nikdy current;
+14. payload tampering → reject;
+15. exception v capture → nikdy partial publication.
+
+
+====================================================================
+18. LEGACY SNAPSHOT PARITY TESTY
+====================================================================
+
+Vytvoř syntetický Visum mock obsahující:
+
+- directed links;
+- ADDVAL1;
+- fixed link attributes;
+- potřebné DSegs;
+- OD matrix mapping;
+- relevantní matrices;
+- 681-zone semantics;
+- generation attrs;
+- všech 17 TD komponent;
+- Procedure Sequence inventory.
+
+
+Testuj:
+
+GENERATION
+
+TD
+
+SUPPLY_ADDVAL1
+
+
+Pro každý:
+
+legacy_snapshot == bundle_snapshot
+
+a přesně stejný:
+
+state_hash.
+
+
+====================================================================
+19. MATRIX READ-COUNT TEST
+====================================================================
+
+Instrumentuj mocked matrix.GetValues().
+
+
+LEGACY scénář:
+
+snapshot()
+snapshot()
+snapshot()
+
+
+při nulové mutaci.
+
+
+PERF2 scénář:
+
+capture_bundle()
+snapshot_from_bundle()
+snapshot_from_bundle()
+snapshot_from_bundle()
+
+
+Požaduj:
+
+snapshot payload EXACTLY SAME
+
+ale:
+
+PERF2 matrix GetValues count
+<
+legacy matrix GetValues count
+
+
+A během jednoho bundle capture:
+
+každá matice GetValues nejvýše jednou.
+
+
+====================================================================
+20. PERF1 ROLLBACK DIAGNOSTIC REUSE
+====================================================================
+
+Původní PERF1 používá silný důkaz:
+
+full semantic snapshot
++
+498-profile × 12 passenger DSeg flow signature
++
+full semantic snapshot.
+
+
+PERF2 smí tuto cestu optimalizovat pouze tehdy, pokud zachová stejnou nebo
+silnější state identity.
+
+
+Povinně testuj mismatch:
+
+- matrix;
+- generation;
+- TD;
+- ADDVAL;
+- Procedure Sequence ACTIVE;
+- DSeg mapping;
+- passenger link volume;
+- BOTH reverse direction.
+
+
+Každý mismatch:
+
+reuse rejected.
+
+
+====================================================================
+21. ACCEPTANCE PARITY
+====================================================================
+
+Pro identické mocked candidates musí PERF1 a PERF2 vrátit přesně stejné:
+
+candidate order
+
+effective write signature
+
+d12 payload
+
+d11 payload
+
+signals
+
+ledger
+
+block gate result
+
+accept/reject
+
+rollback result
+
+accepted sequence
+
+final state_hash
+
+
+CandidateReadbackBundle smí měnit jen:
+
+COM read count
+readback wall-time
+telemetry
+evidence organization.
+
+
+====================================================================
+22. FAULT INJECTION
+====================================================================
+
+Simuluj minimálně:
+
+RPC_E_CALL_REJECTED
+
+matrix GetValues exception
+
+bulk link read exception
+
+generation read exception
+
+TD snapshot exception
+
+operation inventory exception
+
+exception uprostřed capture
+
+exception před bundle publication
+
+payload hash exception
+
+mutation během capture
+
+stale epoch
+
+LoadVersion mezi capture a consumerem
+
+
+Po každém faultu:
+
+- partial bundle nesmí být current;
+- stale bundle nesmí být used;
+- candidate nesmí být accepted z neověřených dat;
+- fallback nebo fail-closed musí být explicitní.
+
+
+====================================================================
+23. COUNTERFACTUAL PERF1 VS PERF2 REPLAY
+====================================================================
+
+Vytvoř replay s kandidáty:
+
+- accepted;
+- rejected objective;
+- rejected guard;
+- TD realization failure;
+- exact duplicate;
+- rollback diagnostic reuse;
+- forced bundle fallback.
+
+
+Porovnej:
+
+candidate order                 EXACT
+write signatures                EXACT
+assignment count                NOT HIGHER
+accept/reject                   EXACT
+accepted sequence               EXACT
+rollback sequence               EXACT
+diagnostic hashes               EXACT
+ledger                          EXACT
+final accepted state_hash       EXACT
+
+
+====================================================================
+24. FULL REGRESSION
+====================================================================
+
+Spusť:
+
+focused PERF2 tests
+
+všechny inherited PERF1 tests
+
+všechny inherited V24915 tests
+
+kompletní full pytest suite
+
+compileall
+
+
+Hard gate:
+
+0 failed
+
+
+Nemaž historické testy.
+
+Nesnižuj coverage tím, že problematický test přeskočíš.
+
+
+====================================================================
+25. LIVE VISUM
+====================================================================
+
+Pokud live PTV Visum není dostupný:
+
+NEPŘEDSTÍREJ LIVE TEST.
+
+
+Připrav A/B benchmark:
+
+A = PERF1
+B = PERF2
+
+oba ze stejného:
+
+ACCEPTED_A_0009_cebb9c7a9349.ver
+
+
+Měř minimálně:
+
+candidate total wall-time
+
+assignment wall-time
+
+Procedure Sequence wall-time
+
+snapshot/readback wall-time
+
+matrix GetValues count
+
+matrix GetValues time
+
+link bulk reads
+
+generation reads
+
+TD reads
+
+operation inventory reads
+
+12D/11D time
+
+rollback time
+
+COM retry count
+
+
+Hard live correctness gate:
+
+100 % candidate decision parity
+
+100 % state_hash parity
+
+100 % diagnostics parity
+
+žádný nový COM write
+
+stejný final accepted state.
+
+
+Bez reálného benchmarku netvrď konkrétní procento speed-up.
+
+
+====================================================================
+26. CHECKPOINTY
+====================================================================
+
+Pracuj průběžně.
+
+CP89
+PERF2_FORENSIC_READBACK_CALL_GRAPH
+
+CP90
+PERF2_BUNDLE_SCHEMA_AND_EPOCH_CORE
+
+CP91
+PERF2_LEGACY_SNAPSHOT_PARITY
+
+CP92
+PERF2_CONTROLLER_INTEGRATION
+
+CP93
+PERF2_ROLLBACK_DIAGNOSTIC_REUSE
+
+CP94
+PERF2_FAULT_INJECTION_AND_FULL_REGRESSION
+
+CP95
+PERF2_FINAL_SOURCE_AND_DELIVERY
+
+
+Každý checkpoint musí mít:
+
+STATUS.json
+
+changed files
+
+SHA-256
+
+test counts
+
+blockers
+
+next action
+
+calibration_complete=false
+
+production_ready=false
+
+
+Pokud je dostupný Google Drive write:
+
+vytvoř novou PERF2 podsložku pod V24915 branch a průběžně tam checkpointy
+nahrávej.
+
+Po každém uploadu proveď readback verification.
+
+Pokud Drive write dostupný není:
+
+ulož checkpoint lokálně a jasně to napiš.
+
+Nikdy netvrď upload bez ověření.
+
+
+====================================================================
+27. OČEKÁVANÉ NOVÉ SOUBORY
+====================================================================
+
+Preferuj aditivní implementaci.
+
+Například:
+
+r1_15a2_candidate_readback_bundle_v24915p2.py
+
+r1_15a2_trial_adapter_v24915p2.py
+
+r1_15a2_overnight_controller_v24915p2.py
+
+r1_15a2_overnight_controller_coupled_v24915p2.py
+
+r1_15a2_safety_v24915p2.py
+
+R1_15A2_CONFIG_V2_4_9_15_PERF2.json
+
+R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2.py
+
+test_v24915p2_candidate_readback_bundle.py
+
+test_v24915p2_snapshot_parity.py
+
+test_v24915p2_invalidation.py
+
+test_v24915p2_fault_injection.py
+
+
+PERF1 soubory zpětně neměň.
+
+
+====================================================================
+28. POVINNÉ FINÁLNÍ ARTEFAKTY
+====================================================================
+
+Vytvoř:
+
+R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019.zip
+
+CP95_V24915_PERF2_FULL_SOURCE_CHECKPOINT.zip
+
+SHA256 sidecar obou ZIPů
+
+V24915_PERF2_IMPLEMENTATION_AND_TEST_REPORT.md
+
+V24915_PERF2_MACHINE_STATUS.json
+
+V24915_PERF2_TEST_REPORT.json
+
+V24915_PERF2_RUNTIME_BUNDLE_MANIFEST.json
+
+V24915_PERF2_SOURCE_PATCH.diff
+
+V24915_PERF2_IMPLEMENTATION_SOURCE_INVENTORY.json
+
+V24915_PERF2_READBACK_CALL_GRAPH.csv
+
+V24915_PERF2_LEGACY_PARITY_REPORT.json
+
+V24915_PERF2_PERFORMANCE_SYNTHETIC_BENCHMARK.json
+
+LIVE_VISUM_ACCEPTANCE_V2_4_9_15_PERF2_CZ.md
+
+README_R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_CZ.md
+
+
+Finální source ZIP po rozbalení musí znovu projít:
+
+pytest
+compileall
+manifest verification
+source inventory verification.
+
+
+====================================================================
+29. STOP CONDITIONS
+====================================================================
+
+Optimalizaci neaktivuj, pokud nastane cokoli z:
+
+legacy snapshot parity != EXACT
+
+state_hash mismatch
+
+acceptance mismatch
+
+candidate order mismatch
+
+diagnostic mismatch
+
+matrix fingerprint semantic mismatch
+
+stale bundle reuse
+
+nepokrytá mutation path
+
+partial bundle publication
+
+fault injection umožní pokračování na stale datech
+
+full regression failure
+
+
+NEŘEŠ to uvolněním tolerance.
+
+Buď oprav implementaci, nebo ponech legacy fallback.
+
+
+====================================================================
+30. FINÁLNÍ STATUS
+====================================================================
+
+Pokud nejsou k dispozici skutečné live Visum výsledky, očekávaný korektní stav je:
+
+PERF2_OFFLINE_VERIFIED_READY_FOR_LIVE_PARITY_BENCHMARK
+
+live_visum_tested = false
+
+calibration_complete = false
+
+production_ready = false
+
+
+Ve finálním reportu uveď:
+
+parent release
+parent SHA
+
+new release
+
+changed/new files
+
+bundle schema
+
+mutation/assignment epoch pravidla
+
+invalidation pravidla
+
+legacy vs PERF2 matrix GetValues count
+
+legacy vs PERF2 snapshot call count
+
+synthetic benchmark
+
+parity status
+
+focused tests
+
+full tests
+
+compileall
+
+live_visum_tested
+
+measured speed-up pouze pokud byl skutečně změřen
+
+calibration_complete
+
+production_ready
+
+next_required_action
+
+
+====================================================================
+31. PRACOVNÍ INSTRUKCE PRO VÝVOJ
+====================================================================
+
+Nezůstávej u návrhu.
+
+Úkol je:
+
+PROZKOUMAT ZDROJE
+→ IMPLEMENTOVAT
+→ TESTOVAT
+→ OPRAVOVAT
+→ ZNOVU TESTOVAT
+→ UDĚLAT CHECKPOINTY
+→ ZABALIT KOMPLETNÍ FUNKČNÍ VĚTEV.
+
+
+Běžné implementační otázky řeš samostatně z autoritativního zdrojového kódu.
+
+Ptej se pouze tehdy, pokud narazíš na skutečnou metodickou nejednoznačnost,
+která může změnit:
+
+- kalibrační matematiku;
+- acceptance authority;
+- význam observačních dat;
+- význam OD matic;
+- nebo produkční supply/demand metodiku.
+
+
+Hlavní princip této větve:
+
+NO PROOF → NO REUSE
+
+READ ONCE → VERIFY → REUSE ONLY INSIDE EXACT SAME STATE
+
+LEGACY FALLBACK IS ALWAYS SAFER THAN SPECULATIVE OPTIMIZATION.

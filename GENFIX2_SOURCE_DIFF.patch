@@ -1,0 +1,3365 @@
+--- GENFIX1/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ GENFIX2/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -4,6 +4,7 @@
+   "scope": "IMMUTABLE_SOURCE_IDENTITY_TEST_STATUS_IS_SEPARATE",
+   "files": {
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
++    "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+     "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py": "da8953c4c4da056e092ed546a158ec13bce12590bdb230fd86122f809702f960",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "fbbfe1b140b80bd56a3823992a3b970b7c52ec7dd753ea2a17705218db9af690",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "30a29ad64af5b353a6c91aa5426bdab85acf3f37e97594d0b65860d71fef70c6",
+@@ -25,14 +26,15 @@
+     "diagfast_tests/test_v2_bulk_numpy.py": "87a0a928a62f45018b809feca2b890e505143491011f04ce55e36bba271bb5e6",
+     "diagfast_tools/refresh_source_manifest.py": "d24cf4471cbdca9c89931bc13f5aec361c0a773a423af5745a05ac8d49de5802",
+     "diagfast_tools/summarize_diagfast_profiles.py": "161792bf9bc4a1f93a4fe84cc99759ac648bb99e460cebd5a1e0a7d15f8e493e",
++    "genfix2_audit_tests/test_audit_regressions.py": "ca385dc56d777e300a62369997b93d8c49b3a75304d07c8c36167b8bf9ade11a",
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
+     "helpers/R1_12D_PROFILE_ROSTER_V24917.py": "518b70b894dcd3156022fb60ff3933cfd04a955a9be890900a770585b741d9df",
+     "r1_15a2_active_demand_evidence_v24917.py": "384424b9b39821d32df474cd6e90977902afd10e22fea50ac60364dcf66906e4",
+     "r1_15a2_boundary_generation_v24917.py": "2b9970f18590a5875941fd3501310014793373872323316662e8b6851e1c3775",
+-    "r1_15a2_boundary_pa_v24917.py": "b22307f462f25d0d4c54a8a9706d8407cc2ad9d587273a680e46b1372bcd14b6",
++    "r1_15a2_boundary_pa_v24917.py": "a0a037a46570e34e0ff7ac85954959b90652e90e4f1e474a2a72d111c89a0958",
+     "r1_15a2_combusy2_v24917.py": "c0833e7e8e50ade00b29196882733189fff06a426d8b9834faf80db850022204",
+-    "r1_15a2_demand_policy_v1.py": "1e035e1e86ca0c735bf6a0a2f7089027f7db81d6961b68519361f020990060ad",
++    "r1_15a2_demand_policy_v1.py": "3c156541431d04eec2e2fcbd5a6c577ac41c9334e9377d6e171cb292d16e7fac",
+     "r1_15a2_diagfast_direct_v2.py": "9be48df75480eb44b54691d165b889a572bf43e72c0667c455fb80fe32ed1e5d",
+     "r1_15a2_diagfast_numpy_v2.py": "1750ab2eff6dc77048680184210fa985ca0be178880b85d5c5f66a5953b82d19",
+     "r1_15a2_diagfast_parity_v1.py": "1c9c314416f8961ec393cc6f1f24077fd07b953d612b263ba5c57149c56b3c6f",
+@@ -46,23 +48,24 @@
+     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_long_school_generation_v24917.py": "9a9a384878e4414f7447bfd7ad390b63f45caa5e04cda59d8d7560159750db53",
+-    "r1_15a2_mobility_guard_v24917.py": "9413fcb896cd048ab01c7eab253c00d410a1435963c7e5464c717965ae407730",
+-    "r1_15a2_perf_v24917.py": "bec293a7f6514ad7937a62b7f9241b5c63f4e821a5d5c554ff8f31c5e839c088",
++    "r1_15a2_mobility_guard_v24917.py": "a45a38263ad37a8d0cb08751b28e3705065cc20b261f1da6a6093ab22baab7ff",
++    "r1_15a2_parent_equivalence_v24917.py": "5f715937a0ace1f49a342542970564b2217508b382bed611b5dbf1051eac5fb4",
++    "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+     "r1_15a2_preflight_explain_v24917.py": "7d0ecf8b8588bf7463eee9beeaadf981d7e61d56e8a00b8240437162cbc6d4f0",
+     "r1_15a2_preflight_iofix_v24917.py": "a843a89df41aaec1ff4d2e9d442cb88b18a4e8273b3e45a8c3498de3800ea6f8",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+-    "r1_15a2_rollback_consistency_v24917.py": "9ab528bd3d834018c0ba42e9bbd75cddc3a83ea12949fd15b9d3c3083ed5ab61",
+-    "r1_15a2_runtime_delta_v24917.py": "e9cbf59753f1a7bffcdc2361b1a4789177affe4009d5852c489be70caff9514b",
++    "r1_15a2_rollback_consistency_v24917.py": "7c44235e1d6743e4f2e7f9cf3e08e8f93987607b244c3b16b6871cb81cb4e46c",
++    "r1_15a2_runtime_delta_v24917.py": "8e83573a7a4c5ebccd77570d8e8c0d5309bd4e11b3e33dba10f951ba6f07dcae",
+     "r1_15a2_severity_relax_v24917.py": "58b1d034364619c88b8bcde7020f681c613ef3f4901253ae844512db6b7a4876",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_snapshot_reads_v24917.py": "90cd8cb09981072d908d8cb022792c6fb6352c45506140724029a0dc8842a7fe",
+-    "r1_15a2_step_search_v24917.py": "59a7fac04075b32c50ed3f2fbc4cf61919c9280517b3914d22e692568933bd3a",
+-    "r1_15a2_supply_mix_v24917.py": "fde688f6a0782690d3ca8b4e61355c62f556fb55777085166de848b11f35760a",
++    "r1_15a2_step_search_v24917.py": "20a13d96d4e93df1de7232f5d142307c373e6c40ba4c7956c4762ea54c81da04",
++    "r1_15a2_supply_mix_v24917.py": "8aab1b0d8e3d84f14a3443a7e887a337b6efe25943052a5b066e968398d239ce",
+     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
+-    "r1_15a2_td_count_blend_v24917.py": "987a9170b75b380e8a7709e0733f99deff8761caca84d3911cd4fe7d3ed2c157",
+-    "r1_15a2_td_rollback_tolerant_v24917.py": "9b187d72c1724643810c70db7a14a0df1739c14ab2d822dab9464bbd7aebef31",
+-    "r1_15a2_trial_adapter_v24917.py": "4fa4ed69a10567bb0cd3ce0515d874c82e9a30912beb99661e76ea2ab7682a45",
+-    "r1_15a2_v24917_runtime.py": "32d66bc3a0f460f56197b740309a09ab8fe30ef58bf2efa9516cbced1823ffe6",
++    "r1_15a2_td_count_blend_v24917.py": "f14656f8025d9af4cfd7269a48f9f7d72c1a109d50310c38aba7480ee944f3ff",
++    "r1_15a2_td_rollback_tolerant_v24917.py": "def3c2a024396440b6f2c7b3599baf3dd32c77d214d75e1ee063eabbcddecf7d",
++    "r1_15a2_trial_adapter_v24917.py": "62f175c9837f43dfc13c7b9332db67fa9379c0fab03b68a9c7a3919734e7013e",
++    "r1_15a2_v24917_runtime.py": "1eaadf89d324df70bcbdab537e59fa0bdfffe9f35ef65519e6efcd82d44aa6aa",
+     "r1_15a2_zonal_count_fit_v24917.py": "bdc08f3203430adf3b43bcdf7ce919582d7b215fcfd4b7bb7882de890fe3522b",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+@@ -73,21 +76,23 @@
+     "tests/test_v24917_generation_state_genfix1.py": "a076bba31a1956bf265ed2fb4bf5b6cc187cfc26ce739cbb28c614b938fa299d",
+     "tests/test_v24917_generation_transaction_genfix1.py": "a3bedd7cc73f963887de33bd4845bf6afdc9add72c755638c763a4487023a0d1",
+     "tests/test_v24917_genfix1_adapter.py": "e0dd242f47d9a391463cf3464ff3bceafe9a46d84431f6a80bef6093479da972",
++    "tests/test_v24917_genfix2.py": "a7ed2b8ec90ffdd0d444cda9e361d403264570a8155422716198574e2e277be1",
+     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
+     "tests/test_v24917_mobility_guard.py": "197ced345d06b0d859ec91f2efc7235acf6e5f14810b6c7e2c220f8ae09bf744",
+     "tests/test_v24917_perf3.py": "2623e752b3d819ce8f9a64ef6417e667cfc27d78b153bcddb70658f99ae72185",
+     "tests/test_v24917_preflight2.py": "8c55cd8f64b2c1188bb3211a541c8ed21ad4b65fdcc460ff5ec882b305a8b89c",
+-    "tests/test_v24917_rbcons_audit.py": "87866a9f204da550a9f26dc77b088589375ba0f229d740ec62d1bfa48a590ea8",
++    "tests/test_v24917_rbcons_audit.py": "b60c4177f1044cc0311f34ab29616589fba6edb677d17dc755d2b98ba69bd88e",
+     "tests/test_v24917_runtime_install.py": "6dbd16ac2bf3c3e8a2ababc80758af373a1ecd016415d7e96de46f6907a0678a",
+     "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
+-    "tests/test_v24917_step_search.py": "f59a5bb441130046c7609e4422475e33139ee56d27603cbdae3aba897a2f8761",
++    "tests/test_v24917_step_search.py": "10b78a9068ffab80e67c4dbe0761898230736a6f302fe7ad059279d1aafd123f",
+     "tests/test_v24917_supply_mix.py": "5323389284a6d497db59d5ffabf763d804b6931e70e22f2052822d3814f0ff92",
+-    "tests/test_v24917_targeted_catchup.py": "45ef1816caa566cfa49dd351db49cb1bf3430cd86f0b392feb66207524b6fa7d",
+-    "tests/test_v24917_td_rollback_tolerant.py": "91fd5cd3025d427ce059d1a2d51b895dd5045aff1cca6c6a1b75c8184e61a8c7",
++    "tests/test_v24917_targeted_catchup.py": "c2ad87bd953185866e6a6dd1ceafe750afbbd8029968388bcbc502cc35d4fd5e",
++    "tests/test_v24917_td_rollback_tolerant.py": "7f03276f74e29715f7dd865688d079458184f97ab1d36b4f4eec76012e40215b",
+     "tests/test_v24917_td_stage_integration.py": "8e4d9636f3472ae5fcc88a28113209458142909467bfc3146f4b206672f86a25",
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "e25d26cda5741c742b87f7a48a68d2480dc9277c8dd51f80817f867eaae68ff2"
++    "tools/refresh_v24917_manifests.py": "7380eac9f241c9e24d99e2d3b57c490a0a60361925c555053a11a8fb81341b87",
++    "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+   }
+ }
+--- GENFIX1/V24917_RUNTIME_MANIFEST.json
++++ GENFIX2/V24917_RUNTIME_MANIFEST.json
+@@ -1,35 +1,37 @@
+ {
+   "schema": "R1_15A2_V24917_RUNTIME_MANIFEST_V1",
+-  "release": "R1_15A2_V24917_MOBILITY1_GENFIX1_20261027",
++  "release": "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027",
+   "parent_release_manifest": "V24916_PERF2C_RUNTIME_MANIFEST.json",
+   "required_files": {
++    "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
++    "r1_15a2_parent_equivalence_v24917.py": "5f715937a0ace1f49a342542970564b2217508b382bed611b5dbf1051eac5fb4",
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "fbbfe1b140b80bd56a3823992a3b970b7c52ec7dd753ea2a17705218db9af690",
+     "r1_15a2_zonal_count_fit_v24917.py": "bdc08f3203430adf3b43bcdf7ce919582d7b215fcfd4b7bb7882de890fe3522b",
+     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
+-    "r1_15a2_trial_adapter_v24917.py": "4fa4ed69a10567bb0cd3ce0515d874c82e9a30912beb99661e76ea2ab7682a45",
++    "r1_15a2_trial_adapter_v24917.py": "62f175c9837f43dfc13c7b9332db67fa9379c0fab03b68a9c7a3919734e7013e",
+     "r1_15a2_active_demand_evidence_v24917.py": "384424b9b39821d32df474cd6e90977902afd10e22fea50ac60364dcf66906e4",
+-    "r1_15a2_runtime_delta_v24917.py": "e9cbf59753f1a7bffcdc2361b1a4789177affe4009d5852c489be70caff9514b",
+-    "r1_15a2_v24917_runtime.py": "32d66bc3a0f460f56197b740309a09ab8fe30ef58bf2efa9516cbced1823ffe6",
++    "r1_15a2_runtime_delta_v24917.py": "8e83573a7a4c5ebccd77570d8e8c0d5309bd4e11b3e33dba10f951ba6f07dcae",
++    "r1_15a2_v24917_runtime.py": "1eaadf89d324df70bcbdab537e59fa0bdfffe9f35ef65519e6efcd82d44aa6aa",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_dynamic_11d_files_v24917.py": "04671df2ce0c3502eb0997ead6e4ec87db5634afeaf84a30279c518dbee9ba4b",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+-    "r1_15a2_td_count_blend_v24917.py": "987a9170b75b380e8a7709e0733f99deff8761caca84d3911cd4fe7d3ed2c157",
++    "r1_15a2_td_count_blend_v24917.py": "f14656f8025d9af4cfd7269a48f9f7d72c1a109d50310c38aba7480ee944f3ff",
+     "r1_15a2_long_school_generation_v24917.py": "9a9a384878e4414f7447bfd7ad390b63f45caa5e04cda59d8d7560159750db53",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
+-    "r1_15a2_step_search_v24917.py": "59a7fac04075b32c50ed3f2fbc4cf61919c9280517b3914d22e692568933bd3a",
+-    "r1_15a2_perf_v24917.py": "bec293a7f6514ad7937a62b7f9241b5c63f4e821a5d5c554ff8f31c5e839c088",
++    "r1_15a2_step_search_v24917.py": "20a13d96d4e93df1de7232f5d142307c373e6c40ba4c7956c4762ea54c81da04",
++    "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+     "r1_15a2_combusy2_v24917.py": "c0833e7e8e50ade00b29196882733189fff06a426d8b9834faf80db850022204",
+     "r1_15a2_preflight_explain_v24917.py": "7d0ecf8b8588bf7463eee9beeaadf981d7e61d56e8a00b8240437162cbc6d4f0",
+     "r1_15a2_boundary_generation_v24917.py": "2b9970f18590a5875941fd3501310014793373872323316662e8b6851e1c3775",
+-    "r1_15a2_supply_mix_v24917.py": "fde688f6a0782690d3ca8b4e61355c62f556fb55777085166de848b11f35760a",
+-    "r1_15a2_td_rollback_tolerant_v24917.py": "9b187d72c1724643810c70db7a14a0df1739c14ab2d822dab9464bbd7aebef31",
++    "r1_15a2_supply_mix_v24917.py": "8aab1b0d8e3d84f14a3443a7e887a337b6efe25943052a5b066e968398d239ce",
++    "r1_15a2_td_rollback_tolerant_v24917.py": "def3c2a024396440b6f2c7b3599baf3dd32c77d214d75e1ee063eabbcddecf7d",
+     "r1_15a2_severity_relax_v24917.py": "58b1d034364619c88b8bcde7020f681c613ef3f4901253ae844512db6b7a4876",
+-    "r1_15a2_rollback_consistency_v24917.py": "9ab528bd3d834018c0ba42e9bbd75cddc3a83ea12949fd15b9d3c3083ed5ab61",
+-    "r1_15a2_boundary_pa_v24917.py": "b22307f462f25d0d4c54a8a9706d8407cc2ad9d587273a680e46b1372bcd14b6",
+-    "r1_15a2_mobility_guard_v24917.py": "9413fcb896cd048ab01c7eab253c00d410a1435963c7e5464c717965ae407730",
++    "r1_15a2_rollback_consistency_v24917.py": "7c44235e1d6743e4f2e7f9cf3e08e8f93987607b244c3b16b6871cb81cb4e46c",
++    "r1_15a2_boundary_pa_v24917.py": "a0a037a46570e34e0ff7ac85954959b90652e90e4f1e474a2a72d111c89a0958",
++    "r1_15a2_mobility_guard_v24917.py": "a45a38263ad37a8d0cb08751b28e3705065cc20b261f1da6a6093ab22baab7ff",
+     "r1_15a2_snapshot_reads_v24917.py": "90cd8cb09981072d908d8cb022792c6fb6352c45506140724029a0dc8842a7fe",
+     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
+@@ -43,7 +45,7 @@
+     "authorities/R1_PROFILE_ROSTER_V24917_CITY.csv": "36d94ddce1bb091e5410dbb498d851825a0e477a000e3edc08f750942e1d199c",
+     "authorities/R1_PROFILE_ROSTER_V24917_SOURCE.xlsx": "0a33837129a2eaf64890052c12429a7d331ef6eb76bd5e9e77727222b5891684",
+     "r1_15a2_generation_gate_nonfatal_v1.py": "2ca13966ae4cdedcfee6f5076236ea4c2db97fc04d6cb2f612ffe899cadb6244",
+-    "r1_15a2_demand_policy_v1.py": "1e035e1e86ca0c735bf6a0a2f7089027f7db81d6961b68519361f020990060ad",
++    "r1_15a2_demand_policy_v1.py": "3c156541431d04eec2e2fcbd5a6c577ac41c9334e9377d6e171cb292d16e7fac",
+     "r1_15a2_diagfast_v1.py": "735e95766a17a4eefd8b4b58ab2c3360ec6d720544b7c30b58f5cc00346d895b",
+     "r1_15a2_diagfast_v2.py": "9a9f9e25cc8d6911fce4bf824b7b677c3156645fa90d8681f1bde26afae5acc2",
+     "r1_15a2_diagfast_numpy_v2.py": "1750ab2eff6dc77048680184210fa985ca0be178880b85d5c5f66a5953b82d19",
+@@ -54,6 +56,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "30a29ad64af5b353a6c91aa5426bdab85acf3f37e97594d0b65860d71fef70c6",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "23490c1be5fd1f5aba4f64a144729dab434f0019086f6d40ce4bd708036950f7"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "cea21d90aeb4420488e7b5ad98aa607c9828750d31889bce5d1b2f06685a2663"
+   }
+ }
+--- GENFIX1/r1_15a2_boundary_pa_v24917.py
++++ GENFIX2/r1_15a2_boundary_pa_v24917.py
+@@ -148,14 +148,28 @@
+             alpha = _solve_alpha(group, take * sign)
+             if alpha is None:
+                 continue
++            # GENFIX2: attenuation of negative PROD can INCREASE mobility.
++            # Preserve the certificate attached by MOBILITY2, including mixed signs.
++            import r1_15a2_mobility_guard_v24917 as mobility
++            saved = [dict(r) for r in group]
++            full_delta = sum(_delta(r) for r in group)
+             _scale_rows(group, alpha)
+-            steps.append({"role": role, "sign": sign, "rows": len(group), "alpha": alpha, "reduced": take})
+-            remaining -= take
++            if not mobility.certificate_passes(fam_rows):
++                for r, old in zip(group, saved):
++                    r.clear(); r.update(old)
++                # Do not trade an envelope violation for a seemingly balanced P/A.
++                # The unresolved P/A gap remains visible to the pre-write gate.
++                steps.append({"role": role, "sign": sign, "rows": len(group),
++                              "status": "BLOCKED_BY_MOBILITY", "reduced": 0.0})
++                continue
++            actual_take = abs(full_delta - sum(_delta(r) for r in group))
++            steps.append({"role": role, "sign": sign, "rows": len(group), "alpha": alpha, "reduced": actual_take})
++            remaining -= actual_take
+         p1 = sum(_delta(r) for r in fam_rows if r.get("role") == "PROD") + float(d.get("prod", 0.0))
+         a1 = sum(_delta(r) for r in fam_rows if r.get("role") == "ATT") + float(d.get("att", 0.0))
+         rec.update(steps=steps, prod_after=p1, att_after=a1,
+                    relative_gap_after=abs(p1 - a1) / max(1.0, abs(p1), abs(a1)),
+-                   status="SUBSET_ATTENUATION" if steps else "UNRESOLVED")
++                   status="SUBSET_ATTENUATION" if abs(p1-a1) <= tol*max(1.0, abs(p1), abs(a1)) else "UNRESOLVED")
+         report[fam] = rec
+     return report
+ 
+--- GENFIX1/r1_15a2_demand_policy_v1.py
++++ GENFIX2/r1_15a2_demand_policy_v1.py
+@@ -528,7 +528,9 @@
+ 
+     def note_generation(self, changed, rec):
+         self.last_generation_changed = bool(changed)
+-        self.last_generation_complete = bool((rec or {}).get('search_complete'))
++        record = rec or {}
++        self.last_generation_complete = bool(record.get('search_complete') and
++            (record.get('stationarity_confirmed') is True if 'stationarity_confirmed' in record else True))
+ 
+     def note_td(self, outer_cycle, ran, changed, rec):
+         self.td_calls += 1
+--- GENFIX1/r1_15a2_mobility_guard_v24917.py
++++ GENFIX2/r1_15a2_mobility_guard_v24917.py
+@@ -1,144 +1,253 @@
+ # -*- coding: utf-8 -*-
+-"""MOBILITY1: trip-rate guard - aggregate trip production stays within a band of the mobility survey.
+-
+-The R1 trip-generation formula of every domestic zone is (R1_TG_NESTED_FORMULA_POP_ZP evidence)
+-
+-    FP_1_WORK_<g>    = ADD_PROD_W * H_WORK_<g>    * persons_<g> / 2.8
+-    FP_2_SERVICE_<g> = ADD_PROD_S * H_SERVICE_<g> * persons_<g> / 2.8 * 0.9
+-
+-where H_* are the trip rates (hybnost) of the Slovak mobility survey and ADD_PROD_* the zonal
+-calibration multipliers.  ADD_PROD = 1 reproduces the survey trip rate exactly, so
+-
+-    R_family = sum_z FP_z / sum_z (FP_z / ADD_PROD_z)          (domestic zones, NOT_ZAHR = 1)
+-
+-is the production-weighted ratio of the modelled trip rate to the survey trip rate.
+-
+-User decision 2026-10-27 (methodology: "model dopytu - pocet zdrojov ciest - udaje o mobilite"):
+-R_family must stay within [mg_min_ratio, mg_max_ratio] = [0.75, 1.25].  After the zonal count fit
+-the positive (or, below the band, the negative) production steps of the family are attenuated by
+-one common factor until the full step (scale 1) ends inside the band; every smaller STEP1 scale is
+-then inside as well (R is monotone in the scale).  A family already outside the band may not move
+-further away (target = current ratio).  The P/A balance is restored afterwards by the inherited
+-role rebalance.  Attractions, LONG/SCHOOL, ZAHR and border-crossing rows are not touched.
++"""MOBILITY2 / GENFIX2: explicit production envelope, before and after realization.
++
++The existing reference R = sum(FP)/sum(FP/ADD_PROD) and configured [0.75,1.25]
++band are retained. This is NOT an independent validation of survey coefficients.
++For mixed-sign log steps R(s) is convex, not monotone: test its interior minimum
++as well as both endpoints. Every final candidate is checked again after masks,
++bounds and P/A balancing. Missing data never silently disables an enabled guard.
+ """
+ from __future__ import annotations
+ 
+ import math
+ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
+ 
+-RELEASE = "R1_15A2_V24917_MOBILITY1_20261027"
++RELEASE = "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027"
+ GROUPS = ("E_C", "E_noC", "noE_C", "noE_noC", "stud")
+ FP_ATTRS = {"WORK": ["FP_1_WORK_%s" % g for g in GROUPS],
+             "SERVICE": ["FP_2_SERVICE_%s" % g for g in GROUPS]}
+ MULT_ATTR = {"WORK": "ADD_PROD_W", "SERVICE": "ADD_PROD_S"}
+ EPS = 1.0e-12
+-
+-
+-def options() -> Dict[str, Any]:
++CERT = "v24917_mobility2_certificate"
++
++
++def options():
++    import r1_15a2_demand_policy_v1 as dp
++    o = dp.load_options()
++    return {"enabled": bool(o.get("mg_enabled", True)), "lo": float(o.get("mg_min_ratio", .75)),
++            "hi": float(o.get("mg_max_ratio", 1.25))}
++
++
++def _f(value):
+     try:
+-        import r1_15a2_demand_policy_v1 as dp
+-        o = dp.load_options()
+-    except Exception:
+-        o = {}
+-    return {"enabled": bool(o.get("mg_enabled", True)),
+-            "lo": float(o.get("mg_min_ratio", 0.75)),
+-            "hi": float(o.get("mg_max_ratio", 1.25))}
+-
+-
+-def _f(v) -> Optional[float]:
+-    try:
+-        x = float(v)
++        x = float(value)
+         return x if math.isfinite(x) else None
+-    except (TypeError, ValueError):
++    except (TypeError, ValueError, OverflowError):
+         return None
+ 
+ 
+-def zone_productions(zone_rows: Sequence[Mapping[str, Any]], family: str) -> Dict[int, Tuple[float, float]]:
+-    """{zone: (current production FP, current multiplier ADD_PROD)} of domestic zones."""
+-    out: Dict[int, Tuple[float, float]] = {}
+-    for r in zone_rows:
+-        if (_f(r.get("NOT_ZAHR")) or 0.0) < 0.5:
++def _limits(opts):
++    lo, hi = _f(opts.get("lo")), _f(opts.get("hi"))
++    if lo is None or hi is None or not 0 < lo <= hi:
++        raise ValueError("MOBILITY2_INVALID_BAND")
++    return lo, hi
++
++
++def zone_productions(zone_rows, family):
++    out, seen = {}, set()
++    for row in zone_rows:
++        z = int(row["zone_no"])
++        if z in seen:
++            raise ValueError("MOBILITY2_DUPLICATE_ZONE:%s" % z)
++        seen.add(z)
++        mask = _f(row.get("NOT_ZAHR"))
++        if mask is None:
++            raise KeyError("MOBILITY2_DOMESTIC_MASK_MISSING:%s" % z)
++        if mask < .5:
+             continue
+-        c = _f(r.get(MULT_ATTR[family]))
++        c = _f(row.get(MULT_ATTR[family]))
+         if c is None or c <= EPS:
+-            continue
+-        vals = [_f(r.get(a)) for a in FP_ATTRS[family]]
+-        if any(v is None for v in vals):
+-            raise KeyError("MOBILITY1_FP_ATTRIBUTE_MISSING:%s" % family)
+-        p = sum(vals)
++            raise ValueError("MOBILITY2_INVALID_MULTIPLIER:%s:%s" % (family, z))
++        values = [_f(row.get(attr)) for attr in FP_ATTRS[family]]
++        if any(v is None for v in values):
++            raise KeyError("MOBILITY2_FP_ATTRIBUTE_MISSING:%s:%s" % (family, z))
++        if any(v < 0 for v in values):
++            raise ValueError("MOBILITY2_NEGATIVE_PRODUCTION:%s:%s" % (family, z))
++        p = math.fsum(values)
+         if p > EPS:
+-            out[int(r["zone_no"])] = (p, c)
++            out[z] = (p, c)
+     return out
+ 
+ 
+-def ratio(prod: Mapping[int, Tuple[float, float]], steps: Optional[Mapping[int, float]] = None,
+-          alpha: float = 1.0, sign: int = 0) -> float:
+-    """Trip-rate ratio after applying ``steps`` (log multipliers); ``sign`` selects scaled steps."""
+-    num = den = 0.0
++def ratio(prod, steps=None, alpha=1.0, sign=0):
++    den = math.fsum(p/c for p, c in prod.values())
++    terms = []
+     for z, (p, c) in prod.items():
+         s = float((steps or {}).get(z, 0.0))
+-        if sign and s * sign > 0:
++        if sign and s*sign > 0:
+             s *= alpha
+-        num += p * math.exp(s)
+-        den += p / c
+-    return num / den if den > EPS else float("nan")
+-
+-
+-def _set_step(row: Dict[str, Any], step: float) -> None:
+-    old = float(row.get("log_step", 0.0))
+-    row.setdefault("v24917_mobility_pre_log_step", old)
+-    row["log_step"] = step
++        terms.append(p*math.exp(s))
++    return math.fsum(terms)/den if den > EPS else float("nan")
++
++
++def _extrema(prod, steps, end=1.0):
++    """Exact convex minimum, up to binary-search roundoff, over [0,end]."""
++    def value(t):
++        return ratio(prod, {z: t*s for z, s in steps.items()})
++    def derivative(t):
++        return math.fsum(p*steps.get(z, 0.0)*math.exp(t*steps.get(z, 0.0)) for z, (p, c) in prod.items())
++    r0, r1 = value(0), value(end)
++    if derivative(0) >= 0:
++        minimum, at = r0, 0.0
++    elif derivative(end) <= 0:
++        minimum, at = r1, end
++    else:
++        lo, hi = 0.0, end
++        for _ in range(65):
++            mid = .5*(lo+hi)
++            if derivative(mid) < 0:
++                lo = mid
++            else:
++                hi = mid
++        at = .5*(lo+hi)
++        minimum = value(at)
++    return minimum, max(r0, r1), at
++
++
++def _set_step(row, step):
++    row.setdefault("v24917_mobility_pre_log_step", float(row.get("log_step", 0.0)))
++    row["log_step"] = float(step)
+     if "requested_log_step" in row:
+-        row["requested_log_step"] = step
++        row["requested_log_step"] = float(step)
+     row["multiplier"] = math.exp(step)
+-    b = float(row.get("base_margin_volume", 0.0) or 0.0)
+-    row["guided_margin_delta"] = row["projected_margin_delta"] = b * math.expm1(step)
++    row["guided_margin_delta"] = row["projected_margin_delta"] = float(row.get("base_margin_volume", 0) or 0)*math.expm1(step)
+     row["raw_relative_margin_change"] = math.expm1(step)
+ 
+ 
+-def guard(rows: List[Dict[str, Any]], zone_rows: Sequence[Mapping[str, Any]],
+-          opts: Optional[Mapping[str, Any]] = None) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+-    opts = dict(opts or options())
+-    report: Dict[str, Any] = {"release": RELEASE, "band": [opts["lo"], opts["hi"]], "families": {}}
++def guard(rows, zone_rows, opts=None):
++    opts = dict(options() if opts is None else opts)
++    lo, hi = _limits(opts)
++    report = {"release": RELEASE, "band": [lo, hi], "families": {}, "passes": True}
+     if not opts.get("enabled", True):
+         report["status"] = "DISABLED"
+         return rows, report
+-    rows = [dict(r) for r in rows]
+-    for fam in ("WORK", "SERVICE"):
++    out = [dict(r) for r in rows]
++    for fam in MULT_ATTR:
+         prod = zone_productions(zone_rows, fam)
+-        prow = {int(r["zone_no"]): r for r in rows
+-                if r.get("family") == fam and r.get("role") == "PROD" and int(r["zone_no"]) in prod}
+-        steps = {z: float(r.get("log_step", 0.0)) for z, r in prow.items()}
++        if not prod:
++            report.update(status="BLOCKED_NO_DOMESTIC_PRODUCTION", passes=False, blocked_family=fam)
++            return [], report
++        prows, steps = {}, {}
++        for r in out:
++            z = int(r["zone_no"])
++            if r.get("family") != fam or r.get("role") != "PROD" or z not in prod:
++                continue
++            if z in prows:
++                raise ValueError("MOBILITY2_DUPLICATE_PRODUCTION_STEP:%s:%s" % (fam, z))
++            step = _f(r.get("log_step", 0.0))
++            if step is None:
++                raise ValueError("MOBILITY2_NONFINITE_STEP")
++            prows[z], steps[z] = r, step
+         r0, r1 = ratio(prod), ratio(prod, steps)
+-        rec = {"ratio_current": r0, "ratio_full_step": r1, "zones": len(prod), "rows": len(prow)}
+-        lo, hi = float(opts["lo"]), float(opts["hi"])
+-        target, sign = None, 0
+-        if r1 > hi + 1e-12 and r1 > r0:
+-            target, sign = max(hi, r0), 1
+-        elif r1 < lo - 1e-12 and r1 < r0:
+-            target, sign = min(lo, r0), -1
+-        if target is None:
+-            rec["status"] = "WITHIN_BAND" if lo <= r1 <= hi else "OUTSIDE_BAND_NOT_MOVING_AWAY"
+-        else:
+-            a_lo, a_hi = 0.0, 1.0
+-            for _ in range(80):
+-                mid = 0.5 * (a_lo + a_hi)
+-                val = ratio(prod, steps, mid, sign)
+-                if (val - target) * sign > 0:
+-                    a_hi = mid
++        lower, upper = min(lo, r0), max(hi, r0)
++        def feasible(alpha):
++            low, high, _ = _extrema(prod, steps, alpha)
++            return low >= lower-EPS*.25 and high <= upper+EPS*.25
++        alpha = 1.0
++        if not feasible(1.0):
++            left, right = 0.0, 1.0
++            # Feasibility of the entire PREFIX interval is monotone even when R is not.
++            for _ in range(70):
++                mid = .5*(left+right)
++                if feasible(mid):
++                    left = mid
+                 else:
+-                    a_lo = mid
+-            alpha = a_lo
+-            for z, r in prow.items():
+-                s = steps[z]
+-                if s * sign > 0:
+-                    _set_step(r, s * alpha)
+-            rec.update(status="ATTENUATED", target=target, factor=alpha,
+-                       scaled_direction="UP" if sign > 0 else "DOWN",
+-                       ratio_after=ratio(prod, {z: float(r["log_step"]) for z, r in prow.items()}))
+-        report["families"][fam] = rec
++                    right = mid
++            alpha = left
++        den = math.fsum(p/c for p, c in prod.values())
++        for z, row in prows.items():
++            _set_step(row, steps[z]*alpha)
++            row[CERT] = {"family": fam, "ratio_current": r0, "lo": lower, "hi": upper,
++                         "weight": prod[z][0]/den}
++        after = ratio(prod, {z: float(r["log_step"]) for z, r in prows.items()})
++        mn, mx, at = _extrema(prod, {z: s*alpha for z, s in steps.items()})
++        report["families"][fam] = {"ratio_current": r0, "ratio_full_step": r1, "ratio_after": after,
++            "zones": len(prod), "rows": len(prows), "factor": alpha,
++            "minimum_over_scales": mn, "maximum_over_scales": mx, "minimum_at_scale": at,
++            "status": "ATTENUATED" if alpha < 1.0 else ("WITHIN_BAND" if lo-EPS <= after <= hi+EPS else "OUTSIDE_BAND_NOT_MOVING_AWAY")}
+     report["status"] = "OK"
+-    return rows, report
+-
+-
+-__all__ = ["RELEASE", "options", "zone_productions", "ratio", "guard"]
++    return out, report
++
++
++def certificate_passes(rows, field="requested_log_step"):
++    """P/A balancing must not undo the bounded production proposal (A02)."""
++    families = {}
++    for row in rows:
++        cert = row.get(CERT)
++        if not cert:
++            continue
++        fam = cert["family"]
++        values = families.setdefault(fam, {"base": cert["ratio_current"], "lo": cert["lo"], "hi": cert["hi"], "deltas": []})
++        if any(values[k] != cert[c] for k, c in (("base", "ratio_current"), ("lo", "lo"), ("hi", "hi"))):
++            return False
++        step = _f(row.get(field, row.get("log_step", 0.0)))
++        if step is None:
++            return False
++        values["deltas"].append(float(cert["weight"])*math.expm1(step))
++    return all(v["lo"]-EPS <= v["base"]+math.fsum(v["deltas"]) <= v["hi"]+EPS for v in families.values())
++
++
++def check_candidate(rows, zone_rows, opts=None):
++    """Validate the exact rows that will be written, AFTER all transformations."""
++    opts = dict(options() if opts is None else opts)
++    lo, hi = _limits(opts)
++    report = {"release": RELEASE, "families": {}, "passes": True, "status": "OK"}
++    if not opts.get("enabled", True):
++        return dict(report, status="DISABLED")
++    seen = set()
++    for row in rows:
++        key = (row.get("attr"), int(row["zone_no"]))
++        if key in seen:
++            raise ValueError("MOBILITY2_DUPLICATE_CANDIDATE_PARAMETER:%s" % (key,))
++        seen.add(key)
++    for fam, attr in MULT_ATTR.items():
++        prod = zone_productions(zone_rows, fam)
++        if not prod:
++            raise ValueError("MOBILITY2_NO_DOMESTIC_PRODUCTION:" + fam)
++        steps = {}
++        for row in rows:
++            z = int(row["zone_no"])
++            if row.get("attr") != attr or z not in prod:
++                continue
++            current, proposed = _f(row.get("current")), _f(row.get("proposed"))
++            if current is None or proposed is None or min(current, proposed) <= EPS:
++                raise ValueError("MOBILITY2_INVALID_CANDIDATE_VALUE")
++            if abs(current-prod[z][1]) > 1e-7 + 1e-10*abs(prod[z][1]):
++                raise ValueError("MOBILITY2_STALE_CANDIDATE_PARENT:%s:%s" % (fam, z))
++            steps[z] = math.log(proposed/current)
++        r0, r1 = ratio(prod), ratio(prod, steps)
++        ok = min(lo, r0)-EPS <= r1 <= max(hi, r0)+EPS
++        report["families"][fam] = {"ratio_current": r0, "ratio_after": r1, "passes": ok, "zones": len(prod)}
++        report["passes"] &= ok
++    if not report["passes"]:
++        report["status"] = "REJECTED_FINAL_CANDIDATE_OUTSIDE_ENVELOPE"
++    return report
++
++
++def check_live(before_rows, after_rows, opts=None):
++    """Measure the realization against the fixed pre-trial reference, not a moving denominator."""
++    opts = dict(options() if opts is None else opts)
++    lo, hi = _limits(opts)
++    report = {"release": RELEASE, "passes": True, "status": "OK", "families": {}}
++    if not opts.get("enabled", True):
++        return dict(report, status="DISABLED")
++    for fam in MULT_ATTR:
++        before, after = zone_productions(before_rows, fam), zone_productions(after_rows, fam)
++        if not before or set(before) != set(after):
++            raise ValueError("MOBILITY2_LIVE_COVERAGE_CHANGED:" + fam)
++        for z in before:
++            reference_before, reference_after = before[z][0]/before[z][1], after[z][0]/after[z][1]
++            if abs(reference_after-reference_before) > 1e-7 + 1e-10*abs(reference_before):
++                raise ValueError("MOBILITY2_UNIT_REFERENCE_CHANGED:%s:%s" % (fam, z))
++        denominator = math.fsum(p/c for p, c in before.values())
++        r0 = ratio(before)
++        r1 = math.fsum(p for p, c in after.values())/denominator
++        ok = min(lo, r0)-EPS <= r1 <= max(hi, r0)+EPS
++        report["families"][fam] = {"ratio_current": r0, "ratio_realized": r1, "passes": ok}
++        report["passes"] &= ok
++    if not report["passes"]:
++        report["status"] = "REJECTED_LIVE_PRODUCTION_OUTSIDE_ENVELOPE"
++    return report
++
++
++__all__ = ["RELEASE", "GROUPS", "options", "zone_productions", "ratio", "guard", "check_candidate", "check_live", "certificate_passes"]
+--- GENFIX1/r1_15a2_perf_v24917.py
++++ GENFIX2/r1_15a2_perf_v24917.py
+@@ -120,21 +120,49 @@
+ 
+ 
+ def _finalize(d: _Deferred, keep: bool) -> None:
++    """Delete evidence only after a complete, CRC-verified archive is published.
++
++    Never mask the primary COM/stop exception with an archive failure.  Retained
++    source paths are recorded in memory and, when possible, in a sidecar.
++    """
++    import zipfile
+     for hold, zip_path, archive_fn in d.pending:
++        hold, zip_path = Path(hold), Path(zip_path)
++        temporary = zip_path.with_name(zip_path.stem + ".partial-" + uuid.uuid4().hex[:8] + ".zip")
++        delete_source = False
+         try:
+             if keep:
+-                archive_fn(hold, zip_path)
++                expected = {p.relative_to(hold).as_posix(): p.stat().st_size
++                            for p in hold.rglob("*") if p.is_file()}
++                archive_fn(hold, temporary)
++                with zipfile.ZipFile(temporary) as archive:
++                    infos = [i for i in archive.infolist() if not i.is_dir()]
++                    actual = {i.filename.replace("\\", "/"): i.file_size for i in infos}
++                    if len(actual) != len(infos) or actual != expected or archive.testzip() is not None:
++                        raise RuntimeError("GENFIX2_EVIDENCE_ARCHIVE_INCOMPLETE_OR_CORRUPT")
++                zip_path.parent.mkdir(parents=True, exist_ok=True)
++                os.replace(temporary, zip_path)
+                 _STATE["deferred_kept"] += 1
++                delete_source = True
+             else:
+-                Path(zip_path).parent.mkdir(parents=True, exist_ok=True)
+-                (Path(zip_path).parent / (Path(zip_path).stem + "_ZIP_SKIPPED_REJECTED_TRIAL.json")).write_text(
++                zip_path.parent.mkdir(parents=True, exist_ok=True)
++                (zip_path.parent / (zip_path.stem + "_ZIP_SKIPPED_REJECTED_TRIAL.json")).write_text(
+                     json.dumps({"release": RELEASE, "reason": "REJECTED_TRIAL_EVIDENCE_NOT_ARCHIVED",
+                                 "compact_mirror_kept": True}), encoding="utf-8")
+                 _STATE["deferred_skipped"] += 1
++                delete_source = True
+         except Exception as exc:
+-            print("R1 V24917 PERF3 WARNING: deferred archive %s: %r" % (zip_path, exc))
++            record = {"source_retained": str(hold), "requested_archive": str(zip_path),
++                      "temporary_archive": str(temporary), "error": repr(exc), "status": "RETAINED_NOT_ARCHIVED"}
++            _STATE.setdefault("archive_failures", []).append(record)
++            try:
++                zip_path.with_suffix(".ARCHIVE_FAILED.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
++            except Exception:
++                pass
++            print("R1 GENFIX2: archive failed; evidence retained at %s: %r" % (hold, exc))
+         finally:
+-            shutil.rmtree(str(hold), ignore_errors=True)
++            if delete_source:
++                shutil.rmtree(str(hold), ignore_errors=True)
+ 
+ 
+ def _wrap_archive(orig):
+--- GENFIX1/r1_15a2_rollback_consistency_v24917.py
++++ GENFIX2/r1_15a2_rollback_consistency_v24917.py
+@@ -1,28 +1,9 @@
+ # -*- coding: utf-8 -*-
+-"""RBCONS1: consistent rollback verification for Generation, ADDVAL1 (SUPPLYMIX) and STEP1.
++"""GENFIX2: verified rollback with live 12D/11D and byte-bound matrices.
+ 
+-Audit 2026-10-26 (conflicting limits / incompatible step variants):
+-
+-1. Diagnostic-reuse proof never applied.  ``perf1.count_profile_signature`` compares the
+-   baseline row count with ``performance.v24915_perf1.rollback_diagnostic_reuse.
+-   expected_profiles`` = 498 (sealed V2.4.9.15 roster), but the V24917 roster has
+-   ``expected_12d_rows`` rows (248 live).  Every rollback therefore logged
+-   BASELINE_PROFILE_COUNT_MISMATCH and ran the full 12D+11D diagnostics (~100 s).
+-   Fix: the expected count is taken from the active roster (``expected_12d_rows``)
+-   when the baseline rows match it exactly.  The proof itself is unchanged (exact
+-   semantic snapshot before/after + every profile and DSeg within 1e-10 rel / 1e-6 abs).
+-   Any error inside the signature read returns ``passes = False`` (full diagnostics),
+-   never an exception - the signature is also read inside candidate read-back capture.
+-
+-2. Generation/ADDVAL1 rollback had the same latent noise crash as TD (fixed by
+-   TDROLLBACK1): ``rollback_and_verify`` requires the full diagnostics to be
+-   hash-identical.  If the exact semantic snapshot (all parameters AND all demand
+-   matrix hashes) is restored but the recomputed loads differ in the last digits, the
+-   run died with V240_ROLLBACK_DIAGNOSTIC_VERIFICATION_FAILED_STATE_RESTORED.
+-   Fix: only in that situation (snapshot exact, diagnostics differ) the recomputed
+-   diagnostics are compared with the parent's; within 0.5 veh / 1e-4 rel per profile
+-   and 0.01 weighted CAL GEH the parent diagnostics are kept as the reference and the
+-   run continues.  A snapshot mismatch stays fail-closed.
++Legacy profile tolerances remain unchanged. Numerical matrix equivalence needs
++pre-mutation array evidence. A hash-only reread or reused diagnostic object is
++not sufficient. Returned diagnostics always describe the measured live model.
+ """
+ from __future__ import annotations
+ 
+@@ -32,7 +13,7 @@
+ from pathlib import Path
+ from typing import Any, Dict, Mapping, Sequence
+ 
+-RELEASE = "R1_15A2_V24917_RBCONS1_20261026"
++RELEASE = "R1_15A2_V24917_RBCONS_GENFIX2_20261027"
+ _STATE: Dict[str, Any] = {"installed": False, "proof_count_rebased": 0, "proof_errors": 0,
+                           "tolerant_accepts": 0, "tolerant_refused": 0, "events": []}
+ 
+@@ -97,14 +78,8 @@
+ 
+ # ------------------------------------------------- 2. tolerant diagnostics
+ def tolerant_compare(baseline_diag: Mapping[str, Any], diag: Mapping[str, Any]) -> Dict[str, Any]:
+-    import r1_15a2_td_rollback_tolerant_v24917 as tdr
+-    drift = tdr.profile_drift(baseline_diag["d12"]["rows"], diag["d12"]["rows"])
+-    gb = tdr._weighted_geh(baseline_diag["d12"]["rows"])
+-    ga = tdr._weighted_geh(diag["d12"]["rows"])
+-    geh_ok = gb is not None and ga is not None and abs(ga - gb) <= tdr.GEH_TOL
+-    ok = not drift["violations"] and not drift["missing"] and geh_ok
+-    return {"passes": bool(ok), "profile_drift": drift, "weighted_geh_before": gb,
+-            "weighted_geh_after": ga, "geh_tol": tdr.GEH_TOL}
++    import r1_15a2_parent_equivalence_v24917 as eq
++    return eq.compare_diagnostics(baseline_diag, diag)
+ 
+ 
+ def wrap_rollback_and_verify(orig, atomic_json):
+@@ -119,28 +94,41 @@
+         except (TypeError, ValueError):
+             pass
+         try:
+-            return orig(adapter, block, before_snapshot, baseline_diag_hash, diagnostic_hash_fn,
+-                        folder, **kwargs)
++            result, diag = orig(adapter, block, before_snapshot, baseline_diag_hash, diagnostic_hash_fn,
++                                folder, **kwargs)
++            if adapter is not None and baseline_diag is not None:
++                import r1_15a2_parent_equivalence_v24917 as eq
++                from r1_15a2_supply import SupplyContractError
++                live = adapter.snapshot()
++                if diag is baseline_diag:
++                    diag = adapter.diagnostics(Path(folder) / "GENFIX2_LIVE_PROOF", "ROLLBACK")
++                proof = eq.verify_parent(adapter, before_snapshot, live, baseline_diag, diag)
++                if adapter.snapshot() != live or not proof["passes"]:
++                    raise SupplyContractError("GENFIX2_ROLLBACK_FULL_PARENT_PROOF_FAILED")
++                result = dict(result, genfix2_parent_proof=proof, diagnostic_hash=diagnostic_hash_fn(diag),
++                              diagnostic_equal=diagnostic_hash_fn(diag) == baseline_diag_hash,
++                              diagnostic_equivalent=True)
++            return result, diag
+         except Exception as exc:
+-            if "INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER" not in str(exc) or baseline_diag is None \
+-                    or not options()["tolerant"]:
++            eligible = any(text in str(exc) for text in
++                           ("INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER", "INPLACE_ROLLBACK_SNAPSHOT_DIFFER"))
++            if not eligible or baseline_diag is None or not options()["tolerant"]:
+                 raise
+             folder = Path(folder)
+             rec: Dict[str, Any] = {"release": RELEASE, "block": str(block), "original_error": str(exc)}
+             try:
++                import r1_15a2_parent_equivalence_v24917 as eq
+                 state = adapter.snapshot()
+-                if state != before_snapshot:
+-                    rec["status"] = "REFUSED_SNAPSHOT_NOT_EXACT"
++                diag = adapter.diagnostics(folder / "RBCONS1_DIAGNOSTICS", "ROLLBACK_TOLERANT")
++                if adapter.snapshot() != state:
++                    rec["status"] = "REFUSED_DIAGNOSTICS_CHANGED_MODEL"
+                 else:
+-                    diag = adapter.diagnostics(folder / "RBCONS1_DIAGNOSTICS", "ROLLBACK_TOLERANT")
+-                    if adapter.snapshot() != before_snapshot:
+-                        rec["status"] = "REFUSED_DIAGNOSTICS_CHANGED_MODEL"
+-                    elif diagnostic_hash_fn(diag) == baseline_diag_hash:
+-                        rec["status"] = "EXACT_ON_REREAD"
+-                    else:
+-                        rec.update(tolerant_compare(baseline_diag, diag))
+-                        rec["status"] = ("SNAPSHOT_EXACT_LOADS_NUMERICALLY_EQUIVALENT" if rec["passes"]
+-                                         else "REFUSED_NOT_NUMERICALLY_EQUIVALENT")
++                    proof = eq.verify_parent(adapter, before_snapshot, state, baseline_diag, diag)
++                    rec["parent_equivalence"] = proof
++                    rec.update(proof["diagnostics"])
++                    rec["passes"] = proof["passes"]
++                    rec["status"] = ("SNAPSHOT_EXACT_LOADS_NUMERICALLY_EQUIVALENT" if proof["passes"]
++                                     else "REFUSED_NOT_NUMERICALLY_EQUIVALENT")
+             except Exception as exc2:
+                 rec["status"] = "REFUSED_CHECK_ERROR"
+                 rec["error"] = repr(exc2)[:2000]
+@@ -155,13 +143,15 @@
+             _STATE["tolerant_accepts"] += 1
+             drift = (rec.get("profile_drift") or {}).get("max_abs_diff", 0.0)
+             print("R1 V24917 RBCONS1: %s rollback snapshot exact, loads within noise (max %.3g veh) - "
+-                  "parent diagnostics kept" % (block, drift or 0.0))
+-            result = {"block": block, "snapshot_equal": True, "diagnostic_equal": True,
+-                      "diagnostic_hash": baseline_diag_hash,
++                  "live diagnostics returned" % (block, drift or 0.0))
++            result = {"block": block, "snapshot_equal": state == before_snapshot, "state_after": state, "diagnostic_equal": diagnostic_hash_fn(diag) == baseline_diag_hash,
++                      "diagnostic_hash": diagnostic_hash_fn(diag),
++                      "baseline_diagnostic_hash": baseline_diag_hash,
++                      "diagnostic_equivalent": True,
+                       "diagnostic_verification_mode": "V24917_RBCONS1_" + rec["status"],
+                       "rbcons1": rec, "passes": True, "load_version_called": False,
+                       "save_version_called": False, "direct_od_matrix_writes": False}
+-            return result, baseline_diag
++            return result, diag
+     rollback_and_verify.__r1_rbcons1__ = True
+     return rollback_and_verify
+ 
+--- GENFIX1/r1_15a2_runtime_delta_v24917.py
++++ GENFIX2/r1_15a2_runtime_delta_v24917.py
+@@ -18,8 +18,8 @@
+ import r1_15a2_targeted_generation_v24917 as tg
+ import r1_15a2_profile_roster_v24917 as roster
+ 
+-RELEASE = "R1_15A2_V24917_MOBILITY1_GENFIX1_20261027"
+-PACKAGE_REVISION = "V24917_MOBILITY1_GENFIX1_20261027"
++RELEASE = "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027"
++PACKAGE_REVISION = "V24917_MOBILITY2_GENFIX2_20261027"
+ V24917_KEYS = ("v24917_targeted_generation", "v24917_release_identity")
+ 
+ 
+@@ -44,6 +44,9 @@
+             "GENFIX1_TRANSIENT_SAFE_EXACT_SNAPSHOT_READS",
+             "GENFIX1_LIVE_GENERATION_PARENT_DIFF",
+             "GENFIX1_RECOVERY_OWNERSHIP_UNTIL_VERIFIED_RECOMPUTE",
++            "GENFIX2_VERIFIED_PARENT_RECOVERY_ALL_DOMAINS",
++            "GENFIX2_MOBILITY_FINAL_AND_LIVE_GUARD",
++            "GENFIX2_FINAL_EFFECT_PREDICTION_COM_AND_ARCHIVE_SAFETY",
+         ],
+         "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+         "acceptance_thresholds_changed_by_v24917": False,
+--- GENFIX1/r1_15a2_step_search_v24917.py
++++ GENFIX2/r1_15a2_step_search_v24917.py
+@@ -37,7 +37,7 @@
+ 
+ import r1_15a2_generation_state_v24917 as genstate
+ 
+-RELEASE = "R1_15A2_V24917_STEP1_GENFIX1_20261027"
++RELEASE = "R1_15A2_V24917_STEP1_GENFIX2_20261027"
+ _STATE: Dict[str, Any] = {"installed": False, "rho": None, "rho_history": [], "blocks": 0,
+                           "trials": 0, "kept": 0, "exhausted": 0}
+ 
+@@ -83,7 +83,9 @@
+     """Predicted 12D rows for a Generation step of scale s."""
+ 
+     def __init__(self, base_rows: Sequence[Mapping[str, Any]], linear: Optional[Mapping[str, Any]],
+-                 rho: float = 1.0):
++                 rho: float = 1.0, predictor=None):
++        self.predictor = predictor
++        self.preview_cache = {}
+         self.base_rows = [dict(r) for r in base_rows]
+         self.keys = [_ident(r) for r in self.base_rows]
+         self.m0 = np.array([_f(r.get("model")) for r in self.base_rows])
+@@ -113,12 +115,46 @@
+         m = np.array([by.get(k, m0) for k, m0 in zip(self.keys, self.m0)])
+         self.measured = (float(scale), m)
+ 
++    def final_prediction(self, s):
++        if self.predictor is None or s == 0:
++            return s*self.delta_linear, True, []
++        key = float(s)
++        if key not in self.preview_cache:
++            preview = self.predictor(key)
++            pred = preview.get("genfix2_prediction") or {}
++            proof = preview.get("genfix2_mobility") or {}
++            pgate = preview.get("_genfix2_pre_gate") or {"passes": True, "reasons": []}
++            ok = proof.get("passes") is True and pgate.get("passes") is True
++            reasons = list(pgate.get("reasons", []))
++            if proof.get("passes") is not True:
++                reasons.append("MOBILITY2_FINAL_ENVELOPE")
++            delta = None
++            if pred.get("available"):
++                keys, vals = pred.get("keys", []), pred.get("delta", [])
++                if len(keys) != len(vals) or len(set(keys)) != len(keys):
++                    raise ValueError("GENFIX2_PREDICTION_IDENTITY_MISMATCH")
++                by = dict(zip(keys, vals))
++                delta = np.array([float(by.get(k, 0.0)) for k in self.keys])
++                if not np.isfinite(delta).all():
++                    raise ValueError("GENFIX2_NONFINITE_PREDICTION")
++            self.preview_cache[key] = (delta, ok, reasons)
++        return self.preview_cache[key]
++
+     def volumes(self, s: float) -> np.ndarray:
++        delta, _, _ = self.final_prediction(s)
+         if self.measured is not None:
+             sk, mk = self.measured
+-            m = self.m0 + (s / sk) * (mk - self.m0)
++            old_delta, _, _ = self.final_prediction(sk)
++            if delta is not None and old_delta is not None:
++                # Account for masks/rebalance at EACH scale, with a secant
++                # correction of the measured modelling error, not of stale x.
++                m = self.m0 + delta + (s/sk)*(mk-self.m0-old_delta)
++            else:
++                m = self.m0 + (s/sk)*(mk-self.m0)
++        elif delta is not None:
++            m = self.m0 + self.rho*delta
+         else:
+-            m = self.m0 + s * self.rho * self.delta_linear
++            m = self.m0.copy()  # unavailable prediction -> one real trial, not invented effect
+         return np.maximum(m, 0.0)
+ 
+     def rows(self, s: float) -> List[Dict[str, Any]]:
+@@ -143,7 +179,10 @@
+         sel = self.cal & (np.abs(self.delta_linear) > 1e-9)
+         if s <= 0 or sel.sum() < 5:
+             return None
+-        dp = s * self.delta_linear[sel]
++        actual_prediction, _, _ = self.final_prediction(s)
++        if actual_prediction is None:
++            return None
++        dp = actual_prediction[sel]
+         dm = m[sel] - self.m0[sel]
+         den = float(dp @ dp)
+         if den <= 1e-9:
+@@ -169,8 +208,9 @@
+             dec = gate(model.base_rows, rows)
+             obj = model.objective(s)
+             rel = (obj0 - obj) / max(abs(obj0), 1e-12)
+-            ok = bool(dec.get("accepted")) and rel >= min_improvement
+-            cache[s] = (ok, list(dec.get("reasons") or []), rel)
++            _, candidate_ok, candidate_reasons = model.final_prediction(s)
++            ok = bool(dec.get("accepted")) and rel >= min_improvement and candidate_ok
++            cache[s] = (ok, list(dec.get("reasons") or []) + candidate_reasons, rel)
+         return cache[s]
+ 
+     best = None
+@@ -178,7 +218,7 @@
+         ok, reasons, rel = feas(s)
+         robust = ok
+         if ok:
+-            s_hi = s * (1.0 + margin)
++            s_hi = min(s * (1.0 + margin), float(opts["max_scale"]))
+             if model.measured is not None:
+                 s_hi = min(s_hi, model.measured[0] * 0.999)
+             if s_hi > s + 1e-9:
+@@ -208,14 +248,16 @@
+ 
+ 
+ def _pre_apply_gate(preview, adapter):
+-    """Same gate as ``apply_generation`` (V2.1 generation_apply_gate) on the preview design."""
+-    try:
+-        import r1_15a2_supply_visum as sv
+-        if not isinstance(preview, dict) or "summary" not in preview:
+-            return None
+-        return sv.base.generation_apply_gate(copy.deepcopy(preview), adapter.cfg)
+-    except Exception:
+-        return None
++    """The same PA/effect gate plus the final MOBILITY2 envelope. No error-to-PASS fallback."""
++    import r1_15a2_supply_visum as sv
++    if not isinstance(preview, dict) or "summary" not in preview:
++        return None  # legacy adapters without a preview summary retain apply-time gating
++    out = sv.base.generation_apply_gate(copy.deepcopy(preview), adapter.cfg)
++    mobility = preview.get("genfix2_mobility")
++    if mobility is not None and mobility.get("passes") is not True:
++        out["passes"] = False
++        out["reasons"] = list(out.get("reasons", [])) + ["MOBILITY2_FINAL_ENVELOPE"]
++    return out
+ 
+ 
+ def _pa_gaps(preview):
+@@ -235,7 +277,7 @@
+     return out
+ 
+ 
+-def generation_block(ctrl, base, tx, adapter, cfg, folder, control, state, diag, anchors, reference, policy):
++def _generation_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state, diag, anchors, reference, policy):
+     """Drop-in replacement of force100._generation_update_once_impl."""
+     from r1_15a2_supply import SupplyContractError
+     opts = options()
+@@ -272,6 +314,8 @@
+         genstate.require_parent(adapter, state, folder / "DESIGN_PARENT_CHECK", phase=design_phase)
+         design_phase = "GENERATION_DESIGN"
+         context = adapter.generation_design(diag, folder / "DESIGN")
++        if (context.get("v24917") or {}).get("status") == "BLOCKED_MOBILITY_DATA":
++            raise SupplyContractError("MOBILITY2_BLOCKED_DATA_NOT_A_PLATEAU")
+         design_phase = "GENERATION_SOLVER_CHECK"
+         if context.get("result") is not None and not context["result"].converged:
+             raise SupplyContractError("V245_GENERATION_SOLVER_NOT_CONVERGED_NOT_A_PLATEAU")
+@@ -294,7 +338,16 @@
+     rec["search_complete"] = False
+     rec["stationarity_confirmed"] = False
+     rho = _STATE["rho"] if _STATE["rho"] is not None else 1.0
+-    model = StepModel(diag["d12"]["rows"], context.get("v24917_step_model"), rho)
++    def final_preview(scale):
++        preview = adapter.generation_preview(context, scale)
++        preview["_genfix2_pre_gate"] = _pre_apply_gate(preview, adapter)
++        return preview
++    model = StepModel(diag["d12"]["rows"], context.get("v24917_step_model"), rho,
++                      predictor=final_preview if context.get("_genfix2_mobility") else None)
++    rec["prediction_authority"] = "FINAL_IMPLEMENTED_EFFECT_ROWS" if model.predictor else "LEGACY_OR_UNAVAILABLE"
++    rec["fast_assignment_used"] = False
++    rec["fast_assignment_note"] = "STEP1 uses full assignment; fa_enabled applies to legacy scoped evaluator only."
++    rec["solver_converged"] = all(x.get("converged") for x in context["projection"].family_summaries) if context.get("projection") else None
+     gate, holder = _gate_fn(adapter)
+     holder["before"] = diag["d11"]["summary"]
+     baseline_diag_hash = base.diagnostic_hash(diag)
+@@ -321,7 +374,7 @@
+ 
+     def rollback_full(reason):
+         nonlocal applied_rows, applied_candidate, recovery_rows, recovery_candidate, demand_dirty
+-        nonlocal rollback_started
++        nonlocal rollback_started, diag, baseline_value, baseline_diag_hash, state
+         if recovery_rows is None:
+             return
+         rollback_started = True
+@@ -329,8 +382,17 @@
+             rb, rolled = base._rollback_candidate(adapter, "GENERATION", state, baseline_diag_hash,
+                                                   folder / "ROLLBACK", recovery_rows, recovery_candidate, diag)
+         base.atomic_json(folder / "ROLLBACK_SUMMARY.json", dict(rb, reason=reason))
+-        if base.diagnostic_hash(rolled) != baseline_diag_hash:
++        import r1_15a2_parent_equivalence_v24917 as eq
++        live_state = adapter.snapshot()
++        proof = eq.verify_parent(adapter, state, live_state, diag, rolled)
++        if not proof["passes"]:
+             raise SupplyContractError("V242_GENERATION_ROLLBACK_DIAGNOSTIC_CHANGED")
++        # Carry the measured parent diagnostics forward. Never label stale diagnostics exact.
++        eq.rebind_verified_parent(adapter, live_state, rolled)
++        state, diag = live_state, rolled
++        baseline_diag_hash = base.diagnostic_hash(diag)
++        baseline_value = base.ledger(diag, state, anchors, policy, reference, gen_cfg)
++        rec["rollback_parent_equivalence"] = proof
+         applied_rows = recovery_rows = None
+         applied_candidate = recovery_candidate = None
+         demand_dirty = False
+@@ -491,7 +553,6 @@
+             rec["attempts"].append(attempt)
+             base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+             if decision.get("accepted"):
+-                _STATE["kept"] += 1
+                 cache_transition = None
+                 if hasattr(adapter, "accepted_state_changed"):
+                     cache_transition = adapter.accepted_state_changed(
+@@ -506,6 +567,7 @@
+                 recovery_rows = None
+                 recovery_candidate = None
+                 demand_dirty = False
++                _STATE["kept"] += 1
+                 return True, after, after_diag, after_value, rec
+             model.set_measured(float(scale), after_diag["d12"]["rows"])
+             upper = float(scale) * 0.95
+@@ -515,7 +577,18 @@
+         rollback_full("SEARCH_EXHAUSTED")
+         _STATE["exhausted"] += 1
+         rec["search_complete"] = True
+-        rec["stationarity_confirmed"] = True
++        rec["configured_search_exhausted"] = True
++        # A usable or truncated fit is not a stationarity certificate. Only a
++        # converged proposal with the complete configured REAL trial budget
++        # rejected can satisfy the controller's finite-search contract.
++        verified = bool(rec.get("solver_converged") is True
++                        and len(rec["attempts"]) == max_trials
++                        and all(a.get("status") == "REJECTED" for a in rec["attempts"]))
++        rec["stationarity_confirmed"] = verified
++        rec["stationarity_verified"] = verified
++        rec["stationarity_scope"] = "CONVERGED_PROPOSAL_COMPLETE_CONFIGURED_REAL_SEARCH_NOT_GLOBAL_OPTIMALITY"
++        rec["stationarity_reason"] = ("COMPLETE_CONFIGURED_REAL_SEARCH_REJECTED" if verified
++                                      else "BOUNDED_OR_UNVERIFIED_SEARCH_NOT_A_STATIONARITY_CERTIFICATE")
+         rec["status"] = "CONFIGURED_GENERATION_SEARCH_EXHAUSTED"
+         base.atomic_json(folder / "GENERATION_BLOCK_RESULT.json", rec)
+         return False, state, diag, baseline_value, rec
+@@ -532,6 +605,12 @@
+             if recovery_rows is not None and not rollback_started:
+                 rollback_full("SEARCH_ERROR")
+         raise
++
++
++def generation_block(ctrl, base, tx, adapter, cfg, folder, control, state, diag, anchors, reference, policy):
++    import r1_15a2_parent_equivalence_v24917 as eq
++    with eq.parent_scope(adapter, state, folder):
++        return _generation_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state, diag, anchors, reference, policy)
+ 
+ 
+ def install(print_fn=print) -> Dict[str, Any]:
+--- GENFIX1/r1_15a2_supply_mix_v24917.py
++++ GENFIX2/r1_15a2_supply_mix_v24917.py
+@@ -350,10 +350,9 @@
+ 
+ 
+ # --------------------------------------------------------------- the block
+-def supply_block(ctrl, base, tx, adapter, cfg, folder, control, state, diag, anchors, reference,
++def _supply_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state, diag, anchors, reference,
+                  policy, outer_cycle, opts) -> Tuple[bool, Dict, Dict, Dict, Dict]:
+-    """Returns (changed, state, diag, value, record).  Never raises for trial errors
+-    whose rollback was verified."""
++    """Return a verified state or raise. Stops and I/O errors propagate after recovery."""
+     from r1_15a2_supply import SupplyContractError
+     import r1_15a2_perf_v24917 as perf
+     folder = Path(folder); folder.mkdir(parents=True, exist_ok=True)
+@@ -362,7 +361,7 @@
+     sup_cfg["runtime_acceptance_scope"] = BLOCK
+     sup_cfg["runtime_acceptance_supply_cycle"] = int(outer_cycle)
+     rec: Dict[str, Any] = {"release": RELEASE, "outer_cycle": outer_cycle, "status": "DESIGNING",
+-                           "attempts": [], "options": dict(opts)}
++                           "attempts": [], "options": dict(opts), "search_complete": False}
+     baseline_value = base.ledger(diag, state, anchors, policy, reference, sup_cfg)
+     rec["objective_before"] = baseline_value
+     try:
+@@ -376,233 +375,316 @@
+     before_table = profile_table(diag["d12"]["rows"])
+     baseline_diag_hash = base.diagnostic_hash(diag)
+     applied = None
++    recovery_candidate = None
++    recovery_in_progress = False
++
++    def own(candidate):
++        nonlocal recovery_candidate
++        changes = {tuple(r["key"]): dict(r) for r in (recovery_candidate or {}).get("changes", [])}
++        for row in candidate.get("changes", []):
++            changes.setdefault(tuple(row["key"]), dict(row))
++        recovery_candidate = dict(candidate, changes=list(changes.values()))
++
++    def safe_save(primary):
++        try:
++            save()
++        except Exception as io_exc:
++            rec.setdefault("evidence_write_errors", []).append(repr(io_exc))
++            if hasattr(primary, "add_note"):
++                primary.add_note("SUPPLYMIX_EVIDENCE_WRITE_FAILED:" + repr(io_exc))
++
+ 
+     def save():
+         rec["elapsed_s"] = round(time.time() - t0, 1)
+         base.atomic_json(folder / "SUPPLYMIX_BLOCK_RESULT.json", rec)
+ 
+-    with ctrl.adapter_config_scope(adapter, sup_cfg):
+-        try:
+-            control.checkpoint("V24917_SUPPLYMIX_DESIGN", force=True)
+-            # The path epoch is frozen while the Generation keeps adding demand, so the
+-            # saved-path support of a profile lags its live volume (coverage = support /
+-            # live model).  Inside the demand loop the proposal accepts a lower coverage;
+-            # every candidate is still judged by a fresh Visum assignment.
+-            old_policy = getattr(adapter, "policy", None)
+-            cov = float(opts.get("min_attribution_coverage", 0.5))
+-            # max_candidates counts ladder members (up to 5 steps per branch): the reviewed
+-            # 40 leaves only ~8 branches, so one block could never see sp_max_groups profiles.
+-            if old_policy is not None and hasattr(old_policy, "min_attribution_coverage"):
+-                import dataclasses
+-                repl = {}
+-                if cov < float(old_policy.min_attribution_coverage):
+-                    repl["min_attribution_coverage"] = cov
+-                want = min(200, 5 * int(opts.get("max_groups", 12)))
+-                if int(getattr(old_policy, "max_candidates", want)) < want:
+-                    repl["max_candidates"] = want
+-                if repl:
+-                    adapter.policy = dataclasses.replace(old_policy, **repl)
+-                    rec["design_policy_override"] = repl
++    try:
++        with ctrl.adapter_config_scope(adapter, sup_cfg):
+             try:
+-                design = adapter.supply_design(diag, folder / "DESIGN", state)
+-            finally:
+-                if old_policy is not None:
+-                    adapter.policy = old_policy
+-            skipped = {}
+-            for row in design.get("skipped", []) or []:
+-                skipped[str(row.get("reason"))] = skipped.get(str(row.get("reason")), 0) + 1
+-            rec["design_skipped_reasons"] = skipped
+-        except BaseException as exc:
+-            if not isinstance(exc, Exception) or isinstance(exc, (base.UserStopRequested, base.TimeBudgetReached)):
+-                raise
+-            if adapter.snapshot() != state:
+-                raise SupplyContractError("V24917_SUPPLYMIX_DESIGN_CHANGED_MODEL") from exc
+-            rec.update(status="DESIGN_FAILED_NO_WRITE", error=str(exc)[:2000],
+-                       traceback=traceback.format_exc()[-4000:])
+-            _STATE["errors"] += 1
++                control.checkpoint("V24917_SUPPLYMIX_DESIGN", force=True)
++                # The path epoch is frozen while the Generation keeps adding demand, so the
++                # saved-path support of a profile lags its live volume (coverage = support /
++                # live model).  Inside the demand loop the proposal accepts a lower coverage;
++                # every candidate is still judged by a fresh Visum assignment.
++                old_policy = getattr(adapter, "policy", None)
++                cov = float(opts.get("min_attribution_coverage", 0.5))
++                # max_candidates counts ladder members (up to 5 steps per branch): the reviewed
++                # 40 leaves only ~8 branches, so one block could never see sp_max_groups profiles.
++                if old_policy is not None and hasattr(old_policy, "min_attribution_coverage"):
++                    import dataclasses
++                    repl = {}
++                    if cov < float(old_policy.min_attribution_coverage):
++                        repl["min_attribution_coverage"] = cov
++                    want = min(200, 5 * int(opts.get("max_groups", 12)))
++                    if int(getattr(old_policy, "max_candidates", want)) < want:
++                        repl["max_candidates"] = want
++                    if repl:
++                        adapter.policy = dataclasses.replace(old_policy, **repl)
++                        rec["design_policy_override"] = repl
++                try:
++                    design = adapter.supply_design(diag, folder / "DESIGN", state)
++                finally:
++                    if old_policy is not None:
++                        adapter.policy = old_policy
++                skipped = {}
++                for row in design.get("skipped", []) or []:
++                    skipped[str(row.get("reason"))] = skipped.get(str(row.get("reason")), 0) + 1
++                rec["design_skipped_reasons"] = skipped
++            except BaseException as exc:
++                if not isinstance(exc, Exception) or isinstance(exc, (base.UserStopRequested, base.TimeBudgetReached)):
++                    raise
++                if adapter.snapshot() != state:
++                    raise SupplyContractError("V24917_SUPPLYMIX_DESIGN_CHANGED_MODEL") from exc
++                rec.update(status="DESIGN_FAILED_NO_WRITE", error=str(exc)[:2000],
++                           traceback=traceback.format_exc()[-4000:])
++                _STATE["errors"] += 1
++                save()
++                return False, state, diag, baseline_value, rec
++            groups = select_groups(design, before_table, opts, mode)
++            rec["design_candidates"] = len(design.get("candidates", []) or [])
++            rec["selected_groups"] = [{k: v for k, v in g.items() if k not in ("keys", "ladder")} for g in groups]
++            if not groups:
++                rec["status"] = "NO_DRIVER_BRANCH"
++                rec["search_complete"] = True
++                _STATE["skipped"] += 1
++                save()
++                return False, state, diag, baseline_value, rec
++            excluded: set = set()
++            av_type = addval_integer(adapter)
++            rec["addval1_value_type"] = av_type
++            units = list(opts["step_units"])[: int(opts["max_trials"])]
++            for ordinal, unit in enumerate(units, start=1):
++                active_groups = [g for g in groups if g["driver_profile"] not in excluded]
++                cand = merged_candidate(active_groups, unit, design, state["state_hash"])
++                if av_type["integer"]:
++                    cand = snap_integer(cand)
++                if cand is None:
++                    rec["stop_reason"] = "NO_REMAINING_BRANCH"
++                    break
++                tfolder = folder / ("TRY_%02d" % ordinal)
++                tfolder.mkdir(parents=True, exist_ok=True)
++                base.atomic_json(tfolder / "SUPPLYMIX_CANDIDATE.json", cand)
++                attempt = {"trial": ordinal, "step_units": unit, "addval1_step": unit * 0.5,
++                           "generalized_seconds_step": unit * 5.0, "candidate_id": cand["candidate_id"],
++                           "edges": len(cand["changes"]), "positive_edges": cand["positive_edges"],
++                           "negative_edges": cand["negative_edges"], "members": cand["members"]}
++                try:
++                    if applied is not None:
++                        tx.restore_supply_parameters(adapter, state, applied["changes"], tfolder / "RESTORE_PARENT")
++                        applied = None
++                    if adapter.snapshot() != state:
++                        raise SupplyContractError("V24917_SUPPLYMIX_PARENT_CHANGED")
++                    # the path proof is bound to the parent; reapply it after a parameter restore
++                    adapter.supply_path_proof = dict(adapter.supply_path_proof or {},
++                                                     parent_hash=state["state_hash"])
++                    signature = base._candidate_signature(BLOCK, cand, [])
++                    if hasattr(adapter, "begin_candidate_readback_context"):
++                        adapter.begin_candidate_readback_context(
++                            state["state_hash"], BLOCK, signature, parameter_evidence={"candidate": cand})
++                    control.checkpoint("TRIAL_APPLY", block=BLOCK, candidate=signature)
++                    own(cand)                           # retained after parameter-only restoration
++                    applied = cand                      # rollback scope even for a half-written candidate
++                    adapter.apply_supply(cand, state, tfolder)
++                    control.checkpoint("TRIAL_ASSIGNMENT", block=BLOCK)
++                    gap = base._assign_candidate(adapter, tfolder / "ASSIGNMENT", BLOCK)
++                    after = adapter.snapshot()
++                    base.assert_freeze(state, after, BLOCK, rows=[], candidate=cand, cfg=sup_cfg)
++                    control.checkpoint("TRIAL_DIAGNOSTICS", block=BLOCK)
++                    with perf.deferred_archives() as deferred:
++                        after_diag = adapter.diagnostics(tfolder / "DIAGNOSTICS", "AFTER")
++                        if adapter.snapshot() != after:
++                            raise SupplyContractError("TRIAL_DIAGNOSTICS_CHANGED_MODEL")
++                        after_value = base.ledger(after_diag, after, anchors, policy, reference, sup_cfg)
++                        decision = adapter.block_gate(BLOCK, diag, after_diag, [])
++                        improvement = baseline_value["total"] - after_value["total"]
++                        decision["shared_ledger_before"] = baseline_value
++                        decision["shared_ledger_after"] = after_value
++                        decision["shared_objective_improvement"] = improvement
++                        minimum = base.number(sup_cfg.get("shared_objective", {}).get("minimum_improvement", 1e-8))
++                        if improvement <= minimum:
++                            decision["accepted"] = False
++                            decision.setdefault("reasons", []).append("SHARED_OBJECTIVE_NOT_IMPROVED")
++                        base._write_acceptance(tfolder / "ACCEPTANCE.json", decision)
++                        deferred.keep = bool(decision.get("accepted"))
++                except BaseException as exc:
++                    attempt.update(status="FAILED", error=str(exc)[:2000])
++                    rec["attempts"].append(attempt)
++                    safe_save(exc)
++                    _STATE["errors"] += 1
++                    if recovery_candidate is not None:
++                        recovery_in_progress = True
++                        return _rollback_or_recover(ctrl, base, tx, adapter, sup_cfg, folder, control, state, diag,
++                                                    baseline_value, baseline_diag_hash, recovery_candidate, anchors, reference,
++                                                    policy, rec, exc, save)
++                    if not isinstance(exc, Exception) or isinstance(exc, (base.UserStopRequested, base.TimeBudgetReached)):
++                        raise
++                    rec.update(status="TRIAL_FAILED_BEFORE_WRITE", error=str(exc)[:2000])
++                    save()
++                    return False, state, diag, baseline_value, rec
++                _STATE["trials"] += 1
++                after_table = profile_table(after_diag["d12"]["rows"])
++                drivers = []
++                for m in cand["members"]:
++                    p = m["driver_profile"]
++                    b, a = before_table.get(p, {}), after_table.get(p, {})
++                    drivers.append({"profile": p, "geh_before": round(b.get("geh", 0.0), 3),
++                                    "geh_after": round(a.get("geh", 0.0), 3),
++                                    "model_before": round(b.get("model", 0.0), 1),
++                                    "model_after": round(a.get("model", 0.0), 1),
++                                    "observed": round(b.get("observed", 0.0), 1)})
++                attempt.update(status="ELIGIBLE" if decision.get("accepted") else "REJECTED", gap=gap,
++                               decision_reasons=list(decision.get("reasons", [])),
++                               objective_after=after_value, drivers=drivers)
++                rec["attempts"].append(attempt)
++                save()
++                if decision.get("accepted"):
++                    transition = None
++                    if hasattr(adapter, "accepted_state_changed"):
++                        transition = adapter.accepted_state_changed(
++                            after, after_diag, reason="V24917_SUPPLYMIX_ACCEPTED_ADDVAL1_STATE", phase="SUPPLY")
++                    rec.update(status="ACCEPTED", accepted_trial=ordinal, adopted_in_place=True,
++                               objective_after=after_value, path_epoch_transition=transition, search_complete=True,
++                               addval1_changes=len(cand["changes"]))
++                    save()
++                    _event("ACCEPTED", cycle=outer_cycle, trial=ordinal, edges=len(cand["changes"]))
++                    recovery_candidate = None
++                    _STATE["accepted"] += 1
++                    return True, after, after_diag, after_value, rec
++                excluded |= set(worsened_profiles(cand["members"], before_table, after_table))
++                attempt["excluded_after_trial"] = sorted(excluded)
++            # nothing accepted: back to the exact parent
++            if recovery_candidate is not None:
++                try:
++                    with base.recovery_scope(control, "V24917_SUPPLYMIX_ROLLBACK"):
++                        rb, rolled = base._rollback_candidate(adapter, BLOCK, state, baseline_diag_hash,
++                                                              folder / "ROLLBACK", [], recovery_candidate, diag)
++                    import r1_15a2_parent_equivalence_v24917 as eq
++                    live_state = adapter.snapshot()
++                    proof = eq.verify_parent(adapter, state, live_state, diag, rolled)
++                    if not proof["passes"]:
++                        raise SupplyContractError("GENFIX2_SUPPLYMIX_ROLLBACK_NOT_EQUIVALENT")
++                    eq.rebind_verified_parent(adapter, live_state, rolled)
++                    diag = rolled
++                    state = live_state
++                    baseline_value = base.ledger(diag, state, anchors, policy, reference, sup_cfg)
++                    recovery_candidate = None
++                    base.atomic_json(folder / "ROLLBACK_SUMMARY.json", dict(rb, genfix2_proof=proof))
++                except BaseException as exc:
++                    if recovery_candidate is None:
++                        raise
++                    recovery_in_progress = True
++                    return _rollback_or_recover(ctrl, base, tx, adapter, sup_cfg, folder, control, state, diag,
++                                                baseline_value, baseline_diag_hash, recovery_candidate, anchors, reference,
++                                                policy, rec, exc, save, already_tried=True)
++            rec["status"] = "NO_ACCEPTED_TRIAL"
++            rec["search_complete"] = True
+             save()
+             return False, state, diag, baseline_value, rec
+-        groups = select_groups(design, before_table, opts, mode)
+-        rec["design_candidates"] = len(design.get("candidates", []) or [])
+-        rec["selected_groups"] = [{k: v for k, v in g.items() if k not in ("keys", "ladder")} for g in groups]
+-        if not groups:
+-            rec["status"] = "NO_DRIVER_BRANCH"
+-            _STATE["skipped"] += 1
+-            save()
+-            return False, state, diag, baseline_value, rec
+-        excluded: set = set()
+-        av_type = addval_integer(adapter)
+-        rec["addval1_value_type"] = av_type
+-        units = list(opts["step_units"])[: int(opts["max_trials"])]
+-        for ordinal, unit in enumerate(units, start=1):
+-            active_groups = [g for g in groups if g["driver_profile"] not in excluded]
+-            cand = merged_candidate(active_groups, unit, design, state["state_hash"])
+-            if av_type["integer"]:
+-                cand = snap_integer(cand)
+-            if cand is None:
+-                rec["stop_reason"] = "NO_REMAINING_BRANCH"
+-                break
+-            tfolder = folder / ("TRY_%02d" % ordinal)
+-            tfolder.mkdir(parents=True, exist_ok=True)
+-            base.atomic_json(tfolder / "SUPPLYMIX_CANDIDATE.json", cand)
+-            attempt = {"trial": ordinal, "step_units": unit, "addval1_step": unit * 0.5,
+-                       "generalized_seconds_step": unit * 5.0, "candidate_id": cand["candidate_id"],
+-                       "edges": len(cand["changes"]), "positive_edges": cand["positive_edges"],
+-                       "negative_edges": cand["negative_edges"], "members": cand["members"]}
+-            try:
+-                if applied is not None:
+-                    tx.restore_supply_parameters(adapter, state, applied["changes"], tfolder / "RESTORE_PARENT")
+-                    applied = None
+-                if adapter.snapshot() != state:
+-                    raise SupplyContractError("V24917_SUPPLYMIX_PARENT_CHANGED")
+-                # the path proof is bound to the parent; reapply it after a parameter restore
+-                adapter.supply_path_proof = dict(adapter.supply_path_proof or {},
+-                                                 parent_hash=state["state_hash"])
+-                signature = base._candidate_signature(BLOCK, cand, [])
+-                if hasattr(adapter, "begin_candidate_readback_context"):
+-                    adapter.begin_candidate_readback_context(
+-                        state["state_hash"], BLOCK, signature, parameter_evidence={"candidate": cand})
+-                control.checkpoint("TRIAL_APPLY", block=BLOCK, candidate=signature)
+-                applied = cand                      # rollback scope even for a half-written candidate
+-                adapter.apply_supply(cand, state, tfolder)
+-                control.checkpoint("TRIAL_ASSIGNMENT", block=BLOCK)
+-                gap = base._assign_candidate(adapter, tfolder / "ASSIGNMENT", BLOCK)
+-                after = adapter.snapshot()
+-                base.assert_freeze(state, after, BLOCK, rows=[], candidate=cand, cfg=sup_cfg)
+-                control.checkpoint("TRIAL_DIAGNOSTICS", block=BLOCK)
+-                with perf.deferred_archives() as deferred:
+-                    after_diag = adapter.diagnostics(tfolder / "DIAGNOSTICS", "AFTER")
+-                    if adapter.snapshot() != after:
+-                        raise SupplyContractError("TRIAL_DIAGNOSTICS_CHANGED_MODEL")
+-                    after_value = base.ledger(after_diag, after, anchors, policy, reference, sup_cfg)
+-                    decision = adapter.block_gate(BLOCK, diag, after_diag, [])
+-                    improvement = baseline_value["total"] - after_value["total"]
+-                    decision["shared_ledger_before"] = baseline_value
+-                    decision["shared_ledger_after"] = after_value
+-                    decision["shared_objective_improvement"] = improvement
+-                    minimum = base.number(sup_cfg.get("shared_objective", {}).get("minimum_improvement", 1e-8))
+-                    if improvement <= minimum:
+-                        decision["accepted"] = False
+-                        decision.setdefault("reasons", []).append("SHARED_OBJECTIVE_NOT_IMPROVED")
+-                    base._write_acceptance(tfolder / "ACCEPTANCE.json", decision)
+-                    deferred.keep = bool(decision.get("accepted"))
+-            except BaseException as exc:
+-                attempt.update(status="FAILED", error=str(exc)[:2000])
+-                rec["attempts"].append(attempt)
+-                save()
+-                _STATE["errors"] += 1
+-                if applied is not None:
+-                    return _rollback_or_recover(ctrl, base, tx, adapter, sup_cfg, folder, control, state, diag,
+-                                                baseline_value, baseline_diag_hash, applied, anchors, reference,
+-                                                policy, rec, exc, save)
+-                if not isinstance(exc, Exception) or isinstance(exc, (base.UserStopRequested, base.TimeBudgetReached)):
+-                    raise
+-                rec.update(status="TRIAL_FAILED_BEFORE_WRITE", error=str(exc)[:2000])
+-                save()
+-                return False, state, diag, baseline_value, rec
+-            _STATE["trials"] += 1
+-            after_table = profile_table(after_diag["d12"]["rows"])
+-            drivers = []
+-            for m in cand["members"]:
+-                p = m["driver_profile"]
+-                b, a = before_table.get(p, {}), after_table.get(p, {})
+-                drivers.append({"profile": p, "geh_before": round(b.get("geh", 0.0), 3),
+-                                "geh_after": round(a.get("geh", 0.0), 3),
+-                                "model_before": round(b.get("model", 0.0), 1),
+-                                "model_after": round(a.get("model", 0.0), 1),
+-                                "observed": round(b.get("observed", 0.0), 1)})
+-            attempt.update(status="ELIGIBLE" if decision.get("accepted") else "REJECTED", gap=gap,
+-                           decision_reasons=list(decision.get("reasons", [])),
+-                           objective_after=after_value, drivers=drivers)
+-            rec["attempts"].append(attempt)
+-            save()
+-            if decision.get("accepted"):
+-                _STATE["accepted"] += 1
+-                transition = None
+-                if hasattr(adapter, "accepted_state_changed"):
+-                    transition = adapter.accepted_state_changed(
+-                        after, after_diag, reason="V24917_SUPPLYMIX_ACCEPTED_ADDVAL1_STATE", phase="SUPPLY")
+-                rec.update(status="ACCEPTED", accepted_trial=ordinal, adopted_in_place=True,
+-                           objective_after=after_value, path_epoch_transition=transition,
+-                           addval1_changes=len(cand["changes"]))
+-                save()
+-                _event("ACCEPTED", cycle=outer_cycle, trial=ordinal, edges=len(cand["changes"]))
+-                return True, after, after_diag, after_value, rec
+-            excluded |= set(worsened_profiles(cand["members"], before_table, after_table))
+-            attempt["excluded_after_trial"] = sorted(excluded)
+-        # nothing accepted: back to the exact parent
+-        if applied is not None:
+-            try:
+-                with base.recovery_scope(control, "V24917_SUPPLYMIX_ROLLBACK"):
+-                    rb, rolled = base._rollback_candidate(adapter, BLOCK, state, baseline_diag_hash,
+-                                                          folder / "ROLLBACK", [], applied, diag)
+-                base.atomic_json(folder / "ROLLBACK_SUMMARY.json", rb)
+-            except BaseException as exc:
+-                return _rollback_or_recover(ctrl, base, tx, adapter, sup_cfg, folder, control, state, diag,
+-                                            baseline_value, baseline_diag_hash, None, anchors, reference,
+-                                            policy, rec, exc, save, already_tried=True)
+-        rec["status"] = "NO_ACCEPTED_TRIAL"
+-        save()
+-        return False, state, diag, baseline_value, rec
++
++    except BaseException as exc:
++        rec.update(status="FAILED", error=str(exc)[:2000], search_complete=False,
++                   stationarity_confirmed=False)
++        safe_save(exc)
++        if recovery_candidate is not None and not recovery_in_progress:
++            recovery_in_progress = True
++            _rollback_or_recover(ctrl, base, tx, adapter, sup_cfg, folder, control, state, diag,
++                                 baseline_value, baseline_diag_hash, recovery_candidate, anchors, reference,
++                                 policy, rec, exc, save)
++        raise
++
++
++def supply_block(ctrl, base, tx, adapter, cfg, folder, control, state, diag, anchors, reference,
++                 policy, outer_cycle, opts):
++    import r1_15a2_parent_equivalence_v24917 as eq
++    with eq.parent_scope(adapter, state, folder):
++        return _supply_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state, diag,
++                                 anchors, reference, policy, outer_cycle, opts)
+ 
+ 
+ def _rollback_or_recover(ctrl, base, tx, adapter, sup_cfg, folder, control, state, diag, baseline_value,
+                          baseline_diag_hash, applied, anchors, reference, policy, rec, exc, save,
+                          already_tried=False):
+-    """After a failure with a live write: verified rollback, else full-sequence recovery."""
++    """Restore and prove the parent. Recovery is NEVER an acceptance path."""
+     from r1_15a2_supply import SupplyContractError
++    import r1_15a2_parent_equivalence_v24917 as eq
+     stop = (not isinstance(exc, Exception)) or isinstance(exc, (base.UserStopRequested, base.TimeBudgetReached))
+-    rb_error = None
++    rb_error = exc if already_tried else None
+     if not already_tried:
+         try:
+             with base.recovery_scope(control, "V24917_SUPPLYMIX_ROLLBACK_AFTER_ERROR"):
+-                rb, _ = base._rollback_candidate(adapter, BLOCK, state, baseline_diag_hash,
+-                                                 folder / "ROLLBACK_AFTER_ERROR", [], applied, diag)
+-            base.atomic_json(folder / "ROLLBACK_SUMMARY.json", rb)
+-            rec.update(status="TRIAL_FAILED_ROLLBACK_VERIFIED", error=str(exc)[:2000])
+-            save()
+-            if stop:
++                rb, rolled = base._rollback_candidate(adapter, BLOCK, state, baseline_diag_hash,
++                                                     folder / "ROLLBACK_AFTER_ERROR", [], applied, diag)
++                live = adapter.snapshot()
++                if rolled is diag:
++                    rolled = adapter.diagnostics(folder / "ROLLBACK_LIVE_PROOF", "ROLLBACK")
++                proof = eq.verify_parent(adapter, state, live, diag, rolled)
++                if adapter.snapshot() != live or not proof["passes"]:
++                    raise SupplyContractError("GENFIX2_SUPPLYMIX_ROLLBACK_NOT_EQUIVALENT")
++        except BaseException as e2:
++            rb_error = e2
++        else:
++            eq.rebind_verified_parent(adapter, live, rolled)
++            value = base.ledger(rolled, live, anchors, policy, reference, sup_cfg)
++            rec.update(status="TRIAL_FAILED_ROLLBACK_VERIFIED", error=str(exc)[:2000],
++                       parent_equivalence=proof, objective_after=value, search_complete=False,
++                       stationarity_confirmed=False)
++            # All model work is complete before fallible logging. An I/O failure
++            # must not trigger a second assignment or hide the primary exception.
++            try:
++                base.atomic_json(folder / "ROLLBACK_SUMMARY.json", rb)
++                save()
++            except Exception as io_exc:
++                if hasattr(exc, "add_note"):
++                    exc.add_note("ROLLBACK_LOG_WRITE_FAILED:" + repr(io_exc))
+                 raise exc
+-            return False, state, diag, baseline_value, rec
+-        except BaseException as e2:
+-            if e2 is exc:
+-                raise
+-            rb_error = e2
+-    else:
+-        rb_error = exc
+-    # the rollback could not prove hash-identical diagnostics: rebuild a verified parent
++            if stop or isinstance(exc, OSError):
++                raise exc
++            return False, state if live == state else live, rolled, value, rec
+     rec["rollback_error"] = str(rb_error)[:2000]
+     with base.recovery_scope(control, "V24917_SUPPLYMIX_FULL_RECOVERY"):
+         live = adapter.snapshot()
+-        if live.get("addval1") != state.get("addval1"):
+-            changes = [{"key": [int(x) for x in k.split("|")]} for k, v in state["addval1"].items()
+-                       if live.get("addval1", {}).get(k) != v]
+-            if changes:
+-                tx.restore_supply_parameters(adapter, state, changes, folder / "RECOVERY_RESTORE")
+-            live = adapter.snapshot()
+-        for name in ("addval1", "generation_hash", "td_hash", "fixed_link_hash", "dseg_hash", "operations_hash"):
++        changes = [{"key": [int(x) for x in k.split("|")]} for k, v in state["addval1"].items()
++                   if live.get("addval1", {}).get(k) != v]
++        if changes:
++            tx.restore_supply_parameters(adapter, state, changes, folder / "RECOVERY_RESTORE")
++        live = adapter.snapshot()
++        for name in set(state) | set(live):
++            if name in ("matrices", "matrix_hash", "state_hash"):
++                continue
+             if live.get(name) != state.get(name):
+-                rec["status"] = "RECOVERY_FAILED_MANUAL_REOPEN_LATEST_ACCEPTED"
+-                save()
+-                raise SupplyContractError("V24917_SUPPLYMIX_RECOVERY_PARAMETER_MISMATCH:" + name) from rb_error
++                raise SupplyContractError("GENFIX2_SUPPLYMIX_RECOVERY_PARAMETER_MISMATCH:" + name) from rb_error
+         gap = base._assign_candidate(adapter, folder / "RECOVERY_FULL_RECOMPUTE", "GENERATION")
+         new_state = adapter.snapshot()
+         new_diag = adapter.diagnostics(folder / "RECOVERY_DIAGNOSTICS", "RECOVERY")
++        proof = eq.verify_parent(adapter, state, new_state, diag, new_diag)
+         if adapter.snapshot() != new_state:
+-            raise SupplyContractError("V24917_SUPPLYMIX_RECOVERY_DIAGNOSTICS_CHANGED_MODEL")
++            proof["passes"] = False
++            proof["diagnostics_changed_model"] = True
++        rec["parent_equivalence"] = proof
++        if not proof["passes"]:
++            rec.update(status="RECOVERY_FAILED_MANUAL_REOPEN_LATEST_ACCEPTED", search_complete=False,
++                       stationarity_confirmed=False, recovery_accepted=False)
++            try:
++                save()
++            except Exception:
++                pass
++            raise SupplyContractError("GENFIX2_SUPPLYMIX_RECOVERY_NOT_EQUIVALENT_MANUAL_REOPEN") from rb_error
+         new_value = base.ledger(new_diag, new_state, anchors, policy, reference, sup_cfg)
+-    if hasattr(adapter, "accepted_state_changed"):
+-        adapter.accepted_state_changed(new_state, new_diag, reason="V24917_SUPPLYMIX_FULL_RECOVERY",
+-                                       phase="DEMAND")
++    # No accepted_state_changed call and no changed=True. This is the same parent.
++    eq.rebind_verified_parent(adapter, new_state, new_diag)
+     _STATE["recovered"] += 1
+     rec.update(status="RECOVERED_FULL_RECOMPUTE_FROM_PARENT_PARAMETERS", recovery_gap=gap,
+-               objective_after=new_value, error=str(exc)[:2000])
+-    save()
+-    if stop:
++               objective_after=new_value, error=str(exc)[:2000], recovery_accepted=False,
++               search_complete=False, stationarity_confirmed=False)
++    try:
++        save()
++    except Exception as io_exc:
++        if hasattr(exc, "add_note"):
++            exc.add_note("RECOVERY_LOG_WRITE_FAILED:" + repr(io_exc))
+         raise exc
+-    changed = new_state.get("state_hash") != state.get("state_hash") or \
+-        base.diagnostic_hash(new_diag) != baseline_diag_hash
+-    return changed, new_state, new_diag, new_value, rec
++    if stop or isinstance(exc, OSError):
++        raise exc
++    return False, new_state, new_diag, new_value, rec
+ 
+ 
+ # ------------------------------------------------------------------ install
+@@ -639,7 +721,18 @@
+             except Exception:
+                 pass
+             return True, st2, dg2, value2, rec
+-        return changed, st2, dg2, value, rec
++        if srec.get("search_complete") is False:
++            rec["stationarity_confirmed"] = False
++            rec["search_complete"] = False
++            # This wrapper runs outside DemandPolicy.note_generation. Clear its
++            # earlier completeness claim too; a recovered technical failure is
++            # not a verified stationary demand cycle.
++            import r1_15a2_demand_policy_v1 as dp
++            for item in dp._ACTIVE.values():
++                pol = item.get("policy")
++                if pol is not None:
++                    pol.last_generation_complete = False
++        return changed, st2, dg2, value2, rec
+     _generation_update_once.__r1_supplymix__ = True
+     return _generation_update_once
+ 
+--- GENFIX1/r1_15a2_td_count_blend_v24917.py
++++ GENFIX2/r1_15a2_td_count_blend_v24917.py
+@@ -106,6 +106,7 @@
+ 
+     def __init__(self, visum, cfg: Mapping[str, Any], zone_order, incidence=None):
+         self.v = visum
++        self.retry_policy = cfg.get("com_resilience") or {"enabled": True, "max_attempts": 5}
+         self.zone_index = {int(z): i for i, z in enumerate(zone_order)}
+         self.n = len(zone_order)
+         prof = []
+@@ -130,26 +131,34 @@
+ 
+     # live volumes ---------------------------------------------------------
+     def _link(self, fr, to):
+-        key = (fr, to)
+-        if key not in self._links:
+-            try:
+-                self._links[key] = self.v.Net.Links.ItemByKey(int(fr), int(to))
+-            except Exception:
+-                self._links[key] = None
++        # GENFIX2: an unreadable required link is not an observed zero.  Cache
++        # only successful objects; transient COM rejection uses bounded retry.
++        from r1_15a2_com_compat import com_call_with_retry
++        key = (int(fr), int(to))
++        if self._links.get(key) is None:
++            obj = com_call_with_retry(
++                lambda: self.v.Net.Links.ItemByKey(*key),
++                label="TD_COUNT_LINK:%s" % (key,),
++                retry_policy=getattr(self, "retry_policy", {"enabled": True, "max_attempts": 5}))
++            if obj is None:
++                raise RuntimeError("V24917_TD_COUNT_REQUIRED_LINK_MISSING:%s" % (key,))
++            self._links[key] = obj
+         return self._links[key]
+ 
+     def _vol(self, link):
++        from r1_15a2_com_compat import com_call_with_retry
+         if link is None:
+-            return 0.0
+-        s = 0.0
+-        for d in PASSENGER_DSEGS:
+-            try:
+-                x = float(link.AttValue("VOLVEH_DSEG(%s,AP)" % d))
+-                if math.isfinite(x):
+-                    s += x
+-            except Exception:
+-                pass
+-        return s
++            raise RuntimeError("V24917_TD_COUNT_REQUIRED_LINK_MISSING")
++        total = 0.0
++        for dseg in PASSENGER_DSEGS:
++            attr = "VOLVEH_DSEG(%s,AP)" % dseg
++            x = float(com_call_with_retry(
++                lambda: link.AttValue(attr), label="TD_COUNT:" + attr,
++                retry_policy=getattr(self, "retry_policy", {"enabled": True, "max_attempts": 5})))
++            if not math.isfinite(x) or x < 0.0:
++                raise RuntimeError("V24917_TD_COUNT_INVALID_VOLUME:" + attr)
++            total += x
++        return total
+ 
+     def read_live(self) -> np.ndarray:
+         out = np.zeros(len(self.profiles))
+--- GENFIX1/r1_15a2_td_rollback_tolerant_v24917.py
++++ GENFIX2/r1_15a2_td_rollback_tolerant_v24917.py
+@@ -1,27 +1,11 @@
+ # -*- coding: utf-8 -*-
+-"""TDROLLBACK1: parameter-exact TD rollback with a numerical-noise tolerance.
+-
+-Live failure RUN_20261025_232921 cycle 1: every TD realization was rejected by the
+-soft-reference guard, the rollback restored all b/c parameters exactly (readback OK)
+-and recomputed TD -> assignment, but ``_rollback_td_all`` demands bit-identical
+-snapshot hashes AND bit-identical diagnostics.  The recomputed loads differed only in
+-the 10th significant digit (max GEH 201.80642696705 -> 201.80642696695), which the
+-hash comparison treats as a different state -> V242_TD_ROLLBACK_NOT_IDENTICAL ->
+-V24916_FINECDF_ROLLBACK_FAILED_MANUAL_REOPEN.  (Generation rollbacks never hit this:
+-they use the 498-profile diagnostic reuse proof with a 1e-10 relative tolerance.)
+-
+-Policy: when the exact rollback check fails, the model is accepted as the parent only if
+-
+-* every *parameter* of the parent is restored exactly: generation values, ADDVAL1,
+-  fixed link/DSeg/operation context, intrazonal penalty and TD base, and the TD b/c
+-  parameters within the reviewed TD read-back tolerance (``_td_expected_freeze``);
+-* the recomputed diagnostics are numerically equivalent to the parent's: every
+-  counted profile within ``max(abs_tol, rel_tol*model)`` and the weighted CAL GEH
+-  within ``geh_tol``.
+-
+-The recomputed state then becomes the verified parent (logged as
+-PARAMETER_EXACT_NUMERICALLY_EQUIVALENT_RECOMPUTE).  Anything larger stays fail-closed
+-(the original error is raised).
++"""GENFIX2: parameter-exact TD rollback with explicit full-parent evidence.
++
++Existing TD parameter and profile roundoff tolerances remain unchanged. Changed
++matrix hashes require pre-mutation, hash-bound arrays and bounded cell/margin/
++total differences. Live 11D, component signals and profile authority are checked
++even when the legacy diagnostic hash compares equal. Verified reconstruction
++rebinds the existing parent cache; it is not a new accepted optimisation step.
+ """
+ from __future__ import annotations
+ 
+@@ -30,7 +14,7 @@
+ from pathlib import Path
+ from typing import Any, Dict, List, Mapping
+ 
+-RELEASE = "R1_15A2_V24917_TDROLLBACK1_20261026"
++RELEASE = "R1_15A2_V24917_TDROLLBACK_GENFIX2_20261027"
+ PARAM_EXCLUDE = {"td_values", "td_hash", "state_hash", "matrices", "matrix_hash"}
+ ABS_TOL = 0.5          # vehicles per profile
+ REL_TOL = 1.0e-4       # of the profile volume
+@@ -54,25 +38,45 @@
+ 
+ 
+ def profile_drift(before_rows, after_rows) -> Dict[str, Any]:
+-    b = {_pid(r): _f(r.get("model")) for r in before_rows or []}
+-    a = {_pid(r): _f(r.get("model")) for r in after_rows or []}
+-    worst, worst_id, worst_rel, n_bad = 0.0, None, 0.0, 0
++    from r1_15a2_supply import observation_identity
++    from r1_15a2_td_count_blend_v24917 import cl_key
++    errors = []
++    def index(rows):
++        out = {}
++        for r in rows or []:
++            key = cl_key(_pid(r))
++            if not key or key in out:
++                errors.append("EMPTY_OR_DUPLICATE_PROFILE:" + key)
++            value = _f(r.get("model"))
++            if value is None or value < 0:
++                errors.append("INVALID_PROFILE_MODEL:" + key)
++            out[key] = r
++        if not out:
++            errors.append("EMPTY_PROFILES")
++        return out
++    b, a = index(before_rows), index(after_rows)
++    try:
++        if observation_identity(before_rows) != observation_identity(after_rows):
++            errors.append("OBSERVATION_AUTHORITY_CHANGED")
++    except Exception as exc:
++        errors.append("INVALID_OBSERVATION_AUTHORITY:" + str(exc))
++    worst, worst_id, worst_rel, n_bad = 0.0, None, 0.0, len(errors)
+     missing = sorted(set(b) ^ set(a))
+     for k in set(b) & set(a):
+-        mb, ma = b[k], a[k]
+-        if mb is None or ma is None:
+-            if mb != ma:
++        fields = {"model"} | {name for name in set(b[k]) | set(a[k]) if name.startswith("model_")}
++        for field in fields:
++            mb, ma = _f(b[k].get(field)), _f(a[k].get(field))
++            if mb is None or ma is None or mb < 0 or ma < 0:
+                 n_bad += 1
+-            continue
+-        d = abs(ma - mb)
+-        tol = max(ABS_TOL, REL_TOL * abs(mb))
+-        if d > tol:
+-            n_bad += 1
+-        if d > worst:
+-            worst, worst_id, worst_rel = d, k, d / max(abs(mb), 1e-9)
++                continue
++            diff = abs(ma - mb)
++            if diff > max(ABS_TOL, REL_TOL * abs(mb)):
++                n_bad += 1
++            if diff > worst:
++                worst, worst_id, worst_rel = diff, k, diff / max(abs(mb), 1e-9)
+     return {"profiles": len(set(b) & set(a)), "missing": missing[:20], "violations": n_bad,
+             "max_abs_diff": worst, "max_rel_diff": worst_rel, "worst_profile": worst_id,
+-            "abs_tol": ABS_TOL, "rel_tol": REL_TOL}
++            "abs_tol": ABS_TOL, "rel_tol": REL_TOL, "identity_errors": errors[:20]}
+ 
+ 
+ PENALTY_KEY = "v24917_iz_penalty"
+@@ -139,11 +143,12 @@
+     if adapter.snapshot() != state:
+         rec["status"] = "REFUSED_DIAGNOSTICS_CHANGED_MODEL"
+         return rec
+-    drift = profile_drift(baseline_diag["d12"]["rows"], diag["d12"]["rows"])
+-    gb, ga = _weighted_geh(baseline_diag["d12"]["rows"]), _weighted_geh(diag["d12"]["rows"])
+-    rec.update(profile_drift=drift, weighted_geh_before=gb, weighted_geh_after=ga)
+-    geh_ok = gb is not None and ga is not None and abs(ga - gb) <= GEH_TOL
+-    if drift["violations"] or drift["missing"] or not geh_ok:
++    import r1_15a2_parent_equivalence_v24917 as eq
++    proof = eq.verify_parent(adapter, before, state, baseline_diag, diag,
++                             allow_td=True, ctrl=ctrl, cfg=cfg, folder=folder)
++    rec["parent_equivalence"] = proof
++    rec.update(proof["diagnostics"])
++    if not proof["passes"]:
+         rec["status"] = "REFUSED_NOT_NUMERICALLY_EQUIVALENT"
+         return rec
+     rec["status"] = "PARAMETER_EXACT_NUMERICALLY_EQUIVALENT_RECOMPUTE"
+@@ -157,7 +162,15 @@
+     @functools.wraps(orig)
+     def _rollback_td_all(adapter, before, baseline_diag, folder, cfg=None):
+         try:
+-            return orig(adapter, before, baseline_diag, folder, cfg)
++            state, diag = orig(adapter, before, baseline_diag, folder, cfg)
++            if adapter is not None and baseline_diag is not None:
++                import r1_15a2_parent_equivalence_v24917 as eq
++                from r1_15a2_supply import SupplyContractError
++                proof = eq.verify_parent(adapter, before, state, baseline_diag, diag,
++                                         allow_td=True, ctrl=ctrl, cfg=cfg, folder=folder)
++                if adapter.snapshot() != state or not proof["passes"]:
++                    raise SupplyContractError("GENFIX2_TD_ROLLBACK_FULL_PARENT_PROOF_FAILED")
++            return state, diag
+         except Exception as exc:
+             if "V242_TD_ROLLBACK_NOT_IDENTICAL" not in str(exc):
+                 raise
+@@ -178,12 +191,8 @@
+                 raise
+             _STATE["tolerant_accepts"] += 1
+             state, diag = rec["_state"], rec["_diag"]
+-            if hasattr(adapter, "accepted_state_changed"):
+-                try:
+-                    adapter.accepted_state_changed(state, diag, reason="V24917_TDROLLBACK1_RECOMPUTED_PARENT",
+-                                                   phase="DEMAND")
+-                except Exception:
+-                    pass
++            import r1_15a2_parent_equivalence_v24917 as eq
++            eq.rebind_verified_parent(adapter, state, diag)
+             print("R1 V24917 TDROLLBACK1: TD rollback parameter-exact, recomputed loads numerically "
+                   "equivalent (max %.3g veh, weighted GEH %.6f -> %.6f) - continuing"
+                   % (public["profile_drift"]["max_abs_diff"], public["weighted_geh_before"],
+@@ -202,6 +211,15 @@
+             raise RuntimeError("V24917_TDROLLBACK1_SYMBOL_MISSING:" + name)
+     if not getattr(ctrl._rollback_td_all, "__r1_tdrollback1__", False):
+         ctrl._rollback_td_all = wrap_rollback_td_all(ctrl._rollback_td_all, ctrl)
++    if not getattr(ctrl._finecdf_td_once_impl, "__r1_genfix2_matrix_proof__", False):
++        original_stage = ctrl._finecdf_td_once_impl
++        @functools.wraps(original_stage)
++        def guarded_stage(adapter, cfg, folder, control, state, diag, package_root):
++            import r1_15a2_parent_equivalence_v24917 as eq
++            with eq.parent_scope(adapter, state, folder):
++                return original_stage(adapter, cfg, folder, control, state, diag, package_root)
++        guarded_stage.__r1_genfix2_matrix_proof__ = True
++        ctrl._finecdf_td_once_impl = guarded_stage
+     _STATE["installed"] = True
+     print_fn("V24917 TDROLLBACK1: TD rollback accepts a parameter-exact recompute within "
+              "%.2g veh / %.0e rel per profile and %.2g weighted GEH" % (ABS_TOL, REL_TOL, GEH_TOL))
+--- GENFIX1/r1_15a2_trial_adapter_v24917.py
++++ GENFIX2/r1_15a2_trial_adapter_v24917.py
+@@ -22,6 +22,7 @@
+ import contextlib
+ import copy
+ import json
++import math
+ from pathlib import Path
+ from typing import Any, Mapping
+ 
+@@ -43,7 +44,7 @@
+ import r1_15a2_snapshot_reads_v24917 as snapshot_reads
+ import r1_15a2_com_busy_snapshot_hotfix_v24916 as snapshot_retry
+ 
+-RELEASE = "R1_15A2_V24917_MOBILITY1_GENFIX1_ADAPTER_20261027"
++RELEASE = "R1_15A2_V24917_MOBILITY2_GENFIX2_ADAPTER_20261027"
+ 
+ 
+ class VisumAdapter(_V24916ActiveAdapter):
+@@ -136,84 +137,102 @@
+         return ((context or {}).get("v24917") or {}).get("overlay_phase")
+ 
+     # ---------------------------------------------------------------- design
++    def _blocked_generation(self, context, folder, exc):
++        context["projection"] = core.ProjectionResult(rows=[], weighted_rmse=0.0,
++            family_summaries=[{"family": f, "converged": False, "proposal_usable": False} for f in zf.FAMILIES])
++        context["v24917"] = {"release": RELEASE, "status": "BLOCKED_MOBILITY_DATA",
++                             "error": type(exc).__name__ + ":" + str(exc), "proposal_usable": False}
++        context["v24917_step_model"] = {"keys": [], "delta_full": [], "available": False,
++                                       "reason": "BLOCKED_MOBILITY_DATA"}
++        context.pop("v24917_ls", None); context.pop("v24917_bd", None)
++        rt.write_json(Path(folder) / "V24917_MOBILITY_BLOCKED.json", context["v24917"])
++        return context
++
+     def generation_design(self, diag, folder):
+         context = super().generation_design(diag, folder)
+         if isinstance(context, Mapping) and context.get("incidence") is not None:
+-            # FlowBundle path incidence of the current epoch: reused by the TD count blend.
+             self.v24917_last_incidence = context["incidence"]
+         policy = tg.policy_of(self.cfg)
+-        if policy is None:
+-            return context
+         folder = Path(folder) / "V24917_TARGETED_GENERATION"
+         folder.mkdir(parents=True, exist_ok=True)
+-        phase, ratio = tg.phase_for(diag["d12"]["rows"], policy)
++        phase, ratio = tg.phase_for(diag["d12"]["rows"], policy) if policy else (None, None)
+         self.v24917_status.update(last_phase=phase, last_ratio=ratio)
++        # Acquire the guard authority independently of the numerical fit. Any
++        # fallback below still has to satisfy exactly the same enabled guard.
+         try:
+             with self._v24917_overlay(phase) as cfg:
+-                zone_rows, _attrs = supply_visum.base.zone_state_rows(
++                zone_rows, attrs = supply_visum.base.zone_state_rows(
+                     self.visum, self.zones, cfg, zone_indices=self.zone_write_index_by_no,
+                     retry_policy=self.com_retry_policy)
+-                bounds = tg.zone_bounds(mb, zone_rows, cfg, self.generation_reference_values)
+-                rows, summary, _problem, solution, bd = self._fit_with_boundary(
+-                    context["incidence"], bounds, cfg, policy)
+-                ls = None
+-                if (getattr(self, "v24917_ls", None) or {}).get("active"):
+-                    try:
+-                        ls = lsgen.design(self.visum, cfg, self.zones, context["incidence"], _problem,
+-                                          solution, self.generation_reference_values, policy.get("fit", {}))
+-                    except Exception as ls_exc:
+-                        ls = {"steps": {}, "summary": {"status": "LS_DESIGN_ERROR",
+-                                                       "error": type(ls_exc).__name__ + ":" + str(ls_exc)}}
+-            if not rows:
+-                raise RuntimeError("V24917_FIT_PRODUCED_NO_ROWS")
+-            # MOBILITY1: aggregate trip rate per family within the mobility-survey band
++            mg_opts = mguard.options()
++        except Exception as exc:
++            return self._blocked_generation(context, folder, exc)
++        context["_genfix2_mobility"] = {"zone_rows": copy.deepcopy(zone_rows), "options": mg_opts,
++                                        "zone_attributes": attrs}
++        self._genfix2_mobility_parent = context["_genfix2_mobility"]
++        original_projection = context["projection"]
++        problem = solution = bd = ls = summary = None
++        bounds = {}
++        fallback = None
++        if policy is not None:
+             try:
+-                rows, mobility = mguard.guard(rows, zone_rows)
+-            except Exception as mg_exc:
+-                mobility = {"release": mguard.RELEASE, "status": "GUARD_ERROR_NOT_APPLIED",
+-                            "error": type(mg_exc).__name__ + ":" + str(mg_exc)}
+-                print("R1 V24917 MOBILITY1 WARNING: trip-rate guard not applied: %s" % mobility["error"])
+-            self.v24917_status["last_mobility_guard"] = mobility
+-            for fam, rec in (mobility.get("families") or {}).items():
+-                print("R1 V24917 MOBILITY1 %s: trip rate / survey = %.3f now, %.3f full step (%s)"
+-                      % (fam, rec.get("ratio_current", float("nan")),
+-                         rec.get("ratio_after", rec.get("ratio_full_step", float("nan"))), rec.get("status")))
+-            mask = self._apply_flowbundle_mask(rows, context, policy, phase)
+-            converged = bool(solution["converged"]) or (
+-                solution["objective_final"] < solution["objective_initial"])
++                with self._v24917_overlay(phase) as cfg:
++                    bounds = tg.zone_bounds(mb, zone_rows, cfg, self.generation_reference_values)
++                    rows, summary, problem, solution, bd = self._fit_with_boundary(context["incidence"], bounds, cfg, policy)
++                    if not rows:
++                        raise RuntimeError("V24917_FIT_PRODUCED_NO_ROWS")
++                    if (getattr(self, "v24917_ls", None) or {}).get("active"):
++                        try:
++                            ls = lsgen.design(self.visum, cfg, self.zones, context["incidence"], problem,
++                                              solution, self.generation_reference_values, policy.get("fit", {}))
++                        except Exception as ls_exc:
++                            ls = {"steps": {}, "summary": {"status": "LS_DESIGN_ERROR", "error": repr(ls_exc)}}
++            except Exception as exc:
++                fallback = type(exc).__name__ + ":" + str(exc)
++                self.v24917_status["fit_fallbacks"] += 1
++                rows = [dict(r) for r in original_projection.rows]
++                problem = solution = bd = ls = None
++        else:
++            rows = [dict(r) for r in original_projection.rows]
++        try:
++            mask = self._apply_flowbundle_mask(rows, context, policy, phase) if policy else {"rows": rows, "audit": {"status": "PARENT"}}
++            rows, mobility = mguard.guard(mask["rows"], zone_rows, mg_opts)
++            if not mobility.get("passes", mobility.get("status") == "DISABLED"):
++                raise ValueError(mobility["status"])
++        except Exception as exc:
++            return self._blocked_generation(context, folder, exc)
++        self.v24917_status["last_mobility_guard"] = mobility
++        if solution is not None:
++            converged = bool(solution["converged"])
++            usable = bool(converged or solution["objective_final"] < solution["objective_initial"])
+             summaries = [{"family": f, "method": zf.METHOD, "converged": converged,
+-                          "fit_solver_converged": bool(solution["converged"]),
+-                          "iterations": int(solution["iterations"])} for f in zf.FAMILIES]
+-            parent_projection = context["projection"]
+-            context["v24917_parent_projection_summary"] = {
+-                "rows": len(parent_projection.rows),
+-                "family_summaries": copy.deepcopy(parent_projection.family_summaries)}
+-            context["projection"] = core.ProjectionResult(rows=mask["rows"], family_summaries=summaries,
+-                                                          weighted_rmse=0.0)
+-            context["v24917"] = {"release": RELEASE, "phase": phase, "overlay_phase": phase,
+-                                 "model_obs_ratio": ratio, "fit_summary": summary, "flowbundle_mask": mask["audit"],
+-                                 "bounds_count": len(bounds),
+-                                 "long_school": (ls or {}).get("summary"),
+-                                 "boundary": (bd or {}).get("summary"),
+-                                 "mobility_guard": mobility}
+-            context["v24917_ls"] = ls
+-            context["v24917_bd"] = bd
+-            if bd:
+-                rt.write_json(folder / "V24917_BOUNDARY_STEPS.json", bd)
+-            context["v24917_step_model"] = self._step_model(_problem, solution, ls)
+-            rt.write_json(folder / "V24917_FIT_SUMMARY.json", context["v24917"])
+-            rt.write_csv(folder / "V24917_FIT_PROJECTION_ROWS.csv", mask["rows"])
+-            self.v24917_status["designs"] += 1
+-            print("R1 V24917 TG: phase=%s ratio=%.3f zones=%d rows=%d at_upper=%d predicted_ratio=%.3f"
+-                  % (phase, ratio, summary["zones_changed"], summary["rows"], summary["rows_at_upper"],
+-                     summary["linear_prediction"]["ratio_after"] or 0.0))
+-        except Exception as exc:
+-            self.v24917_status["fit_fallbacks"] += 1
+-            context["v24917"] = {"release": RELEASE, "phase": phase, "model_obs_ratio": ratio,
+-                                 "status": "FIT_FALLBACK_PARENT_PROPOSAL",
+-                                 "error": type(exc).__name__ + ":" + str(exc)}
++                          "solver_converged": converged, "proposal_usable": usable,
++                          "fit_solver_converged": converged, "iterations": int(solution["iterations"])} for f in zf.FAMILIES]
++        else:
++            summaries = copy.deepcopy(original_projection.family_summaries)
++            converged = bool(summaries) and all(r.get("converged") for r in summaries)
++            usable = converged
++        context["v24917_parent_projection_summary"] = {"rows": len(original_projection.rows),
++                                                        "family_summaries": copy.deepcopy(original_projection.family_summaries)}
++        context["projection"] = core.ProjectionResult(rows=rows, family_summaries=summaries,
++                                                      weighted_rmse=0.0 if solution else original_projection.weighted_rmse)
++        context["v24917"] = {"release": RELEASE, "phase": phase, "overlay_phase": phase if not fallback else None,
++                             "model_obs_ratio": ratio, "raw_fit_summary": summary, "fit_summary": summary,
++                             "flowbundle_mask": mask["audit"], "bounds_count": len(bounds),
++                             "long_school": (ls or {}).get("summary"), "boundary": (bd or {}).get("summary"),
++                             "mobility_guard": mobility, "solver_converged": converged, "proposal_usable": usable,
++                             "status": "FIT_FALLBACK_PARENT_PROPOSAL" if fallback else "GUARDED_PROPOSAL"}
++        context["v24917_ls"], context["v24917_bd"] = ls, bd
++        context["_genfix2_effect_model"] = {"problem": problem, "ls": ls, "bd": bd}
++        context["v24917_step_model"] = self._step_model(problem, solution, ls, rows=rows, bd=bd)
++        if fallback:
++            context["v24917"]["error"] = fallback
+             rt.write_json(folder / "V24917_FIT_FALLBACK.json", context["v24917"])
+-            print("R1 V24917 TG: fit fallback to parent proposal: %s" % context["v24917"]["error"])
++        if bd:
++            rt.write_json(folder / "V24917_BOUNDARY_STEPS.json", bd)
++        rt.write_json(folder / "V24917_FIT_SUMMARY.json", context["v24917"])
++        rt.write_csv(folder / "V24917_FIT_PROJECTION_ROWS.csv", rows)
++        self.v24917_status["designs"] += 1
+         return context
+ 
+     def _fit_with_boundary(self, incidence, bounds, cfg, policy):
+@@ -241,24 +260,79 @@
+         return rows, summary, problem, solution, bd
+ 
+     @staticmethod
+-    def _step_model(problem, solution, ls):
+-        """STEP1: first-order profile response of the full (scale 1) Generation step."""
++    def _step_model(problem, solution, ls, rows=None, bd=None):
++        """First-order response of the requested IMPLEMENTABLE proposal, not stale solver x."""
+         try:
+             import numpy as np
+             from r1_15a2_td_count_blend_v24917 import cl_key
+-            delta = np.asarray(solution["predicted_change"], dtype=float).copy()
++            if rows is None:  # API for explicitly untransformed fit diagnostics
++                delta = np.asarray(solution["predicted_change"], dtype=float).copy()
++            else:
++                if problem is None or not hasattr(problem, "G") or not hasattr(problem, "var_keys"):
++                    raise ValueError("FINAL_CANDIDATE_EFFECT_OPERATOR_UNAVAILABLE")
++                by = {(r["family"], r["role"], int(r["zone_no"])): float(r.get("log_step", 0)) for r in rows}
++                for key, step in ((bd or {}).get("steps") or {}).items():
++                    fam, z = key.split("|")
++                    by[(fam, "PA", int(z))] = float(step)
++                x = np.array([by.get(tuple(k), 0.0) for k in problem.var_keys])
++                delta = np.asarray(problem.G @ x, dtype=float)
+             lsp = (ls or {}).get("predicted_change")
+-            if lsp is not None and len(lsp) == len(delta):
+-                delta = delta + np.asarray(lsp, dtype=float)
++            if lsp is not None:
++                if len(lsp) != len(delta):
++                    raise ValueError("LS_PREDICTION_AXIS_MISMATCH")
++                delta += np.asarray(lsp, dtype=float)
++            if not np.isfinite(delta).all():
++                raise ValueError("NONFINITE_FINAL_PREDICTION")
+             keys = [cl_key(r.get("countlocation_no")) for r in problem.profile_rows]
+-            return {"keys": keys, "delta_full": [float(v) for v in delta],
+-                    "source": "V24917_ZONAL_FIT_PLUS_LSGEN_LINEAR"}
++            if len(keys) != len(delta) or len(set(keys)) != len(keys):
++                raise ValueError("DUPLICATE_OR_MISMATCHED_PREDICTION_PROFILES")
++            return {"keys": keys, "delta_full": delta.tolist(), "available": True,
++                    "source": "GENFIX2_GUARDED_PROPOSAL_LINEAR" if rows is not None else "RAW_FIT_DIAGNOSTIC"}
+         except Exception as exc:
+-            return {"keys": [], "delta_full": [], "error": type(exc).__name__ + ":" + str(exc)}
++            return {"keys": [], "delta_full": [], "available": False, "error": repr(exc)}
++
++    def _final_step_prediction(self, context, design, scale):
++        import numpy as np
++        model = context.get("_genfix2_effect_model") or {}
++        problem = model.get("problem")
++        if problem is None or not hasattr(problem, "G"):
++            return {"keys": [], "delta": [], "available": False, "reason": "NO_FINAL_EFFECT_OPERATOR"}
++        effects = {(r["family"], r["role"], int(r["zone_no"])): float(r["implemented_total_log_effect"])
++                   for r in design.get("effect_rows", [])}
++        for key, value in ((model.get("bd") or {}).get("steps") or {}).items():
++            fam, z = key.split("|")
++            effects[(fam, "PA", int(z))] = float(scale)*float(value)
++        x = np.array([effects.get(tuple(k), 0.0) for k in problem.var_keys])
++        delta = np.asarray(problem.G @ x, dtype=float)
++        ls_delta = (model.get("ls") or {}).get("predicted_change")
++        if ls_delta is not None:
++            if len(ls_delta) != len(delta):
++                raise supply_visum.SupplyContractError("GENFIX2_LS_PREDICTION_AXIS_MISMATCH")
++            delta += float(scale)*np.asarray(ls_delta, dtype=float)
++        if not np.isfinite(delta).all():
++            raise supply_visum.SupplyContractError("GENFIX2_NONFINITE_FINAL_PREDICTION")
++        from r1_15a2_td_count_blend_v24917 import cl_key
++        return {"keys": [cl_key(r.get("countlocation_no")) for r in problem.profile_rows],
++                "delta": delta.tolist(), "available": True, "scale": float(scale),
++                "source": "GENFIX2_FINAL_EFFECT_ROWS_INCLUDING_SALARY_BOUNDARY_LS"}
+ 
+     # ---------------------------------------------------------- TD acceptance
+     def block_gate(self, block, before, after, rows):
+         decision = super().block_gate(block, before, after, rows)
++        if str(block).upper() == "GENERATION":
++            authority = getattr(self, "_genfix2_mobility_parent", None)
++            opts = authority["options"] if authority else mguard.options()
++            if opts.get("enabled", True):
++                if authority is None:
++                    raise supply_visum.SupplyContractError("MOBILITY2_PARENT_AUTHORITY_MISSING")
++                live_rows, _ = supply_visum.base.zone_state_rows(
++                    self.visum, self.zones, self.cfg, zone_indices=self.zone_write_index_by_no,
++                    retry_policy=self.com_retry_policy)
++                proof = mguard.check_live(authority["zone_rows"], live_rows, opts)
++                decision = dict(decision, mobility_guard_live=proof)
++                if not proof["passes"]:
++                    decision["accepted"] = False
++                    decision["reasons"] = list(decision.get("reasons", [])) + ["MOBILITY2_LIVE_ENVELOPE_REJECTED"]
+         if str(block).upper() != "TD_FINECDF_SOFT_REFERENCE":
+             return decision
+         import r1_15a2_td_count_blend_v24917 as blend
+@@ -288,33 +362,82 @@
+         return {"rows": out, "audit": audit}
+ 
+     # ------------------------------------------------------- preview / apply
++    def _validate_mobility_plan(self, context, design):
++        authority = context.get("_genfix2_mobility")
++        if authority is None:
++            if mguard.options().get("enabled", True):
++                raise supply_visum.SupplyContractError("MOBILITY2_PARENT_AUTHORITY_MISSING")
++            return {"passes": True, "status": "DISABLED"}
++        proof = mguard.check_candidate(design.get("candidate_rows") or [], authority["zone_rows"], authority["options"])
++        design["genfix2_mobility"] = proof
++        return proof
++
+     def generation_preview(self, context, scale):
+-        with self._v24917_overlay(self._phase_of(context)), bdpa.scope((context or {}).get("v24917_bd")):
+-            design = super().generation_preview(context, scale)
+-        ls_rows = lsgen.rows_at_scale((context or {}).get("v24917_ls"), scale)
+-        ls_rows = ls_rows + bdgen.rows_at_scale((context or {}).get("v24917_bd"), scale)
+-        if ls_rows and isinstance(design, dict):
++        if (context.get("v24917") or {}).get("status") == "BLOCKED_MOBILITY_DATA":
++            raise supply_visum.SupplyContractError("MOBILITY2_BLOCKED_DATA_NOT_A_PLATEAU")
++        if not math.isfinite(float(scale)) or not 0 <= float(scale) <= 1:
++            raise supply_visum.SupplyContractError("GENFIX2_INVALID_GENERATION_SCALE")
++        authority = context.get("_genfix2_mobility")
++        with self._v24917_overlay(self._phase_of(context)), bdpa.scope(context.get("v24917_bd")):
++            if authority is None:
++                design = super().generation_preview(context, scale)
++            else:
++                # Pure preview from the verified parent. Actual apply re-reads COM
++                # and checks byte-identical planned rows BEFORE its first write.
++                design = mb.design_generation_candidates(context["projection"].rows, authority["zone_rows"],
++                    self.cfg, scale=scale, reference_values=self.generation_reference_values)
++                design["zone_attributes_read"] = authority["zone_attributes"]
++        extra = lsgen.rows_at_scale(context.get("v24917_ls"), scale) + bdgen.rows_at_scale(context.get("v24917_bd"), scale)
++        if isinstance(design, dict):
+             design = dict(design)
+-            design["candidate_rows"] = list(design.get("candidate_rows") or []) + ls_rows
+-            design["v24917_long_school_rows"] = len(ls_rows)
++            design["candidate_rows"] = list(design.get("candidate_rows") or []) + extra
++            design["v24917_long_school_rows"] = len(extra)
++            self._validate_mobility_plan(context, design)
++            design["genfix2_prediction"] = self._final_step_prediction(context, design, scale)
+         return design
+ 
+     def apply_generation(self, context, scale, folder):
+-        with self._v24917_overlay(self._phase_of(context)), bdpa.scope((context or {}).get("v24917_bd")):
+-            rows = super().apply_generation(context, scale, folder)
+-        ls_rows = lsgen.rows_at_scale((context or {}).get("v24917_ls"), scale)
+-        ls_rows = ls_rows + bdgen.rows_at_scale((context or {}).get("v24917_bd"), scale)
+-        if ls_rows:
+-            audit = rt.apply_add_candidate(
+-                self.visum, ls_rows, self.zones, zone_indices=self.zone_write_index_by_no,
++        from r1_15a2_supply import canonical_hash
++        # Validate the complete final plan before calling inherited mutators.
++        preview = self.generation_preview(context, scale)
++        proof = preview.get("genfix2_mobility") or {}
++        if proof.get("passes") is not True:
++            raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITY2_FINAL_ENVELOPE")
++        extra = lsgen.rows_at_scale(context.get("v24917_ls"), scale) + bdgen.rows_at_scale(context.get("v24917_bd"), scale)
++        original = supply_visum.base.generation_candidate
++        def checked_design(*args, **kwargs):
++            design = original(*args, **kwargs)
++            complete = dict(design, candidate_rows=list(design.get("candidate_rows") or []) + extra)
++            checked = self._validate_mobility_plan(context, complete)
++            if not checked["passes"]:
++                raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITY2_FINAL_ENVELOPE")
++            if canonical_hash(complete["candidate_rows"]) != canonical_hash(preview["candidate_rows"]):
++                raise supply_visum.SupplyContractError("GENFIX2_GENERATION_PLAN_CHANGED_BEFORE_WRITE")
++            design["genfix2_mobility"] = checked
++            return design
++        # The COM orchestrator is synchronous. Restore the scoped hook even on
++        # KeyboardInterrupt; inherited cache invalidation and support-risk hooks remain intact.
++        supply_visum.base.generation_candidate = checked_design
++        try:
++            with self._v24917_overlay(self._phase_of(context)), bdpa.scope(context.get("v24917_bd")):
++                rows = super().apply_generation(context, scale, folder)
++        finally:
++            supply_visum.base.generation_candidate = original
++        if extra:
++            audit = rt.apply_add_candidate(self.visum, extra, self.zones, zone_indices=self.zone_write_index_by_no,
+                 retry_policy=self.com_retry_policy, readback_tolerance=self.zone_readback_tolerance)
+             if not audit or any(x.get("status") != "OK" for x in audit):
+                 raise supply_visum.SupplyContractError("V24917_LONG_SCHOOL_READBACK_FAILED")
+-            rt.write_json(Path(folder) / "V24917_LONG_SCHOOL_ROWS.json",
+-                          {"scale": scale, "rows": ls_rows,
+-                           "summary": ((context or {}).get("v24917_ls") or {}).get("summary")})
+-            rows = list(rows) + ls_rows
++            rt.write_json(Path(folder) / "V24917_LONG_SCHOOL_ROWS.json", {"scale": scale, "rows": extra})
++            rows = list(rows) + extra
++        rt.write_json(Path(folder) / "GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json",
++                      {"mobility": proof, "prediction": preview.get("genfix2_prediction")})
+         return rows
+ 
++    def rollback_diagnostic_equivalence(self, baseline_diag, before_snapshot, folder):
++        # A profile-only proof cannot establish that dynamic 11D/skims are equal.
++        # Recompute the full diagnostic authority, then use the shared verifier.
++        return {"passes": False, "reason": "GENFIX2_REQUIRES_LIVE_12D_11D_COMPONENT_PROOF"}
++
+ 
+ __all__ = ["VisumAdapter", "RELEASE"]
+--- GENFIX1/r1_15a2_v24917_runtime.py
++++ GENFIX2/r1_15a2_v24917_runtime.py
+@@ -17,7 +17,7 @@
+ from types import SimpleNamespace
+ from typing import Any, Dict
+ 
+-RELEASE = "R1_15A2_V24917_MOBILITY1_GENFIX1_RUNTIME_20261027"
++RELEASE = "R1_15A2_V24917_MOBILITY2_GENFIX2_RUNTIME_20261027"
+ _STATE: Dict[str, Any] = {}
+ 
+ 
+@@ -155,6 +155,19 @@
+         status["diagfast"] = {"installed": False, "reason": "R1_DIAGFAST_DISABLE"}
+     else:
+         status["diagfast"] = install_diagfast(rt, print_fn=print_fn)
++    o = _dp.load_options()
++    status["genfix2_policy_semantics"] = {
++        "release": RELEASE,
++        "td_survey_limit_scope": "LOCAL_STEP_ERROR_RATIO_NOT_GLOBAL_SURVEY_PERCENT",
++        "td_local_max_error_ratio": o.get("td_max_survey_degradation"),
++        "global_survey_error_limit_added": False,
++        "mobility_band": [o.get("mg_min_ratio"), o.get("mg_max_ratio")],
++        "mobility_reference": "EXISTING_FP_DIV_ADD_REFERENCE_NOT_INDEPENDENT_SURVEY_VALIDATION",
++        "early_exploration_extended": o.get("sev_extend_early_horizon"),
++        "fast_assignment_step1": "NOT_ACTIVE_FULL_ASSIGNMENT_REQUIRED",
++        "stationarity": "BOUNDED_STEP1_EXHAUSTION_NOT_CERTIFIED",
++        "release_live_visum_validation_supplied": False,
++    }
+     _STATE.update(status)
+     return _STATE
+ 
+--- GENFIX1/tests/test_v24917_rbcons_audit.py
++++ GENFIX2/tests/test_v24917_rbcons_audit.py
+@@ -181,7 +181,9 @@
+     if expect_ok:
+         res, diag = fn(ad, "GENERATION", before, _hash(base_diag), _hash, tmp_path,
+                        candidate_rows=[], candidate={}, baseline_diag=base_diag)
+-        assert diag is base_diag and res["passes"] and res["diagnostic_hash"] == _hash(base_diag)
++        assert diag is ad.diag and diag is not base_diag and res["passes"]
++        assert res["diagnostic_hash"] == _hash(diag) and res["diagnostic_equivalent"]
++        assert not res["diagnostic_equal"]
+         assert saved and saved[0][1]["status"] == "SNAPSHOT_EXACT_LOADS_NUMERICALLY_EQUIVALENT"
+     else:
+         with pytest.raises(RuntimeError, match="INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER"):
+@@ -194,10 +196,10 @@
+ 
+     def orig(adapter, block, before_snapshot, baseline_diag_hash, diagnostic_hash_fn, folder,
+              candidate_rows=None, candidate=None, baseline_diag=None):
+-        raise RuntimeError("INPLACE_ROLLBACK_SNAPSHOT_DIFFER")
++        raise RuntimeError("INPLACE_ROLLBACK_COM_DEAD")
+     ad = Adapter({"state_hash": "s"}, _diag(0.0))
+     fn = rb.wrap_rollback_and_verify(orig, lambda p, o: None)
+-    with pytest.raises(RuntimeError, match="SNAPSHOT_DIFFER"):
++    with pytest.raises(RuntimeError, match="COM_DEAD"):
+         fn(ad, "GENERATION", {"state_hash": "s"}, "h", _hash, tmp_path, baseline_diag=_diag(0.0))
+     assert ad.diag_calls == 0
+ 
+--- GENFIX1/tests/test_v24917_step_search.py
++++ GENFIX2/tests/test_v24917_step_search.py
+@@ -222,7 +222,8 @@
+     changed, new_state, new_diag, value, rec = harness.run()
+     ad = harness.ad
+     assert changed is False and rec["status"] == "CONFIGURED_GENERATION_SEARCH_EXHAUSTED"
+-    assert rec["stationarity_confirmed"] is True
++    assert rec["configured_search_exhausted"] is True
++    assert rec["stationarity_confirmed"] is False  # fake design supplies no solver convergence proof
+     assert ad.snapshot() == harness.state                              # parent restored
+     assert ad.diags[-1] == "ROLLBACK"                                  # one verified rollback
+     assert sum(1 for f in ad.assignments if "ROLLBACK" in f) == 1
+--- GENFIX1/tests/test_v24917_targeted_catchup.py
++++ GENFIX2/tests/test_v24917_targeted_catchup.py
+@@ -293,6 +293,12 @@
+     import r1_15a2_trial_adapter_v24917 as a17
+     import r1_15a2_supply_visum as sv
+     seen = {}
++    # Complete live FP authority, proportional to the actual ADD multipliers.
++    import r1_15a2_mobility_guard_v24917 as mg
++    for row in zr:
++        for family, attr in mg.MULT_ATTR.items():
++            for fp in mg.FP_ATTRS[family]:
++                row.setdefault(fp, 10.0 * float(row.get(attr, 1.0)))
+     monkeypatch.setattr(a17._V24916ActiveAdapter, "generation_design",
+                         lambda self, diag, folder: dict(parent_context))
+     monkeypatch.setattr(a17._V24916ActiveAdapter, "generation_preview",
+@@ -321,9 +327,13 @@
+     assert ctx["projection"].rows and all(r["projection_method"] == zf.METHOD for r in ctx["projection"].rows)
+     assert all(s["converged"] for s in ctx["projection"].family_summaries)
+     assert (tmp_path / "V24917_TARGETED_GENERATION" / "V24917_FIT_SUMMARY.json").is_file()
+-    ad.generation_preview(ctx, 1.0); ad.apply_generation(ctx, 0.5, tmp_path)
+-    for key in ("preview", "apply"):
+-        assert seen[key][tg.MODE_KEY] == tg.MODE and seen[key]["max_add_log_up"] == pytest.approx(UP)
++    # GENFIX2 preview is pure and no longer invokes the inherited COM preview.
++    preview = ad.generation_preview(ctx, 1.0)
++    assert preview["genfix2_mobility"]["passes"] and preview["genfix2_prediction"]["available"]
++    assert "preview" not in seen
++    ad.apply_generation(ctx, 0.5, tmp_path)
++    assert seen["apply"][tg.MODE_KEY] == tg.MODE
++    assert seen["apply"]["max_add_log_up"] == pytest.approx(UP)
+     assert ad.cfg is real_cfg                   # overlay restored
+ 
+ 
+@@ -334,10 +344,11 @@
+                                    family_summaries=[{"family": "WORK", "converged": True}], weighted_rmse=0.0)
+     ad, seen = _adapter(monkeypatch, real_cfg, zones, [], {"incidence": inc, "projection": parent})
+     ctx = ad.generation_design({"d12": {"rows": inc["profiles"]}}, tmp_path)   # no zone rows -> no actuators
+-    assert ctx["v24917"]["status"] == "FIT_FALLBACK_PARENT_PROPOSAL"
+-    assert ctx["projection"] is parent
+-    ad.generation_preview(ctx, 1.0)
+-    assert tg.MODE_KEY not in seen["preview"]
++    assert ctx["v24917"]["status"] == "BLOCKED_MOBILITY_DATA"
++    assert not ctx["projection"].rows and not ctx["v24917"]["proposal_usable"]
++    with pytest.raises(Exception, match="BLOCKED_DATA_NOT_A_PLATEAU"):
++        ad.generation_preview(ctx, 1.0)
++    assert "preview" not in seen and "apply" not in seen
+ 
+ 
+ # ------------------------------------------------------- PrT skim op type
+@@ -904,7 +915,17 @@
+           "current": {"ADD_PROD_L": {1: 0.2, 2: 0.2}, "ADD_ATT_L": {1: 1.0, 2: 1.0},
+                       "ADD_PROD_SCH": {1: 1.0, 2: 1.0}, "ADD_ATT_SCH": {1: 1.0, 2: 1.0}},
+           "summary": {"status": "OK"}}
+-    ctx = {"v24917_ls": ls}
++    import r1_15a2_mobility_guard_v24917 as mg
++    zr = zone_rows([1, 2], 1.0)
++    for row in zr:
++        for family, attr in mg.MULT_ATTR.items():
++            for fp in mg.FP_ATTRS[family]:
++                row[fp] = 10.0 * float(row[attr])
++    import r1_15a2_core as core
++    ctx = {"v24917_ls": ls,
++           "projection": core.ProjectionResult(rows=[], family_summaries=[], weighted_rmse=0.0),
++           "_genfix2_mobility": {"zone_rows": zr, "zone_attributes": [],
++                                  "options": {"enabled": True, "lo": .75, "hi": 1.25}}}
+     rows = ad.apply_generation(ctx, 0.5, tmp_path)
+     assert len(rows) == 3 and len(written) == 3
+     assert {r["attr"] for r in written} == {"ADD_PROD_L", "ADD_PROD_SCH"}
+--- GENFIX1/tests/test_v24917_td_rollback_tolerant.py
++++ GENFIX2/tests/test_v24917_td_rollback_tolerant.py
+@@ -58,9 +58,12 @@
+ def test_accepts_noise_level_recompute(tmp_path):
+     c = ctrl()
+     before = snap()
+-    ad = Ad(snap(mat="B"), rows(1.0 + 1e-12))
++    # This test covers load roundoff with EXACT matrices. Changed matrix bytes
++    # are exercised by the GENFIX2 disk-bound numerical proof regressions.
++    ad = Ad(snap(), rows(1.0 + 1e-12))
+     st, dg = tr.wrap_rollback_td_all(c.orig, c)(ad, before, {"d12": {"rows": rows()}}, tmp_path, {})
+-    assert st["matrices"][0]["sha256_float64_le"] == "B" and ad.changed
++    assert st["matrices"][0]["sha256_float64_le"] == "A"
++    assert dg["d12"]["rows"] == ad.rows
+ 
+ 
+ def test_refuses_material_load_difference(tmp_path):
+--- GENFIX1/tools/refresh_v24917_manifests.py
++++ GENFIX2/tools/refresh_v24917_manifests.py
+@@ -10,6 +10,8 @@
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ RUNTIME = [
++    "01_SPUSTIT_V24917_GENFIX2.py",
++    "r1_15a2_parent_equivalence_v24917.py",
+     "01_SPUSTIT_V24917_GENFIX1.py",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py",
+     "r1_15a2_zonal_count_fit_v24917.py",
+--- /dev/null
++++ GENFIX2/01_SPUSTIT_V24917_GENFIX2.py
+@@ -0,0 +1,39 @@
++# -*- coding: utf-8 -*-
++"""V24917 MOBILITY2 + GENFIX2; preserves the PREFLIGHTIOFIX1 entry point.
++
++Open the accepted .ver in Visum, then run this script through Scripts.
++It does not create a Visum instance or load a model automatically.
++"""
++from __future__ import annotations
++
++import importlib.util
++from pathlib import Path
++
++HERE = Path(__file__).resolve().parent
++PARENT_LAUNCHER = "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py"
++RELEASE = "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027"
++
++
++def load_parent():
++    spec = importlib.util.spec_from_file_location(
++        "_r1_v24917_genfix2_parent", HERE / PARENT_LAUNCHER)
++    if spec is None or spec.loader is None:
++        raise RuntimeError("V24917_GENFIX2_PARENT_LAUNCHER_UNAVAILABLE")
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def main():
++    visum, com = globals().get("Visum"), globals().get("COM")
++    if visum is None and com is None:
++        raise RuntimeError("NO_INJECTED_VISUM")
++    parent = load_parent()
++    parent.Visum = visum
++    parent.COM = com
++    print("=== " + RELEASE + " ===")
++    return parent.main()
++
++
++if __name__ == "__main__" or globals().get("Visum") is not None or globals().get("COM") is not None:
++    main()
+--- /dev/null
++++ GENFIX2/genfix2_audit_tests/test_audit_regressions.py
+@@ -0,0 +1,269 @@
++"""Audit-only adversarial tests. These assert required safety properties, not bug behaviour.
++Run independently from packaged suites; PYTHONPATH must include the original root and tests/.
++The delivered source archive is never modified.
++"""
++import copy
++import json
++import math
++import os
++import hashlib
++from pathlib import Path
++from types import SimpleNamespace
++from contextlib import nullcontext
++
++import numpy as np
++import pytest
++import r1_15a2_mobility_guard_v24917 as mg
++import r1_15a2_boundary_pa_v24917 as bdpa
++import r1_15a2_td_rollback_tolerant_v24917 as tr
++import r1_15a2_rollback_consistency_v24917 as rb
++import r1_15a2_supply_mix_v24917 as sm
++from test_v24917_supply_mix import harness as supply_harness, _no_g1b, OPTS
++from test_v24917_td_rollback_tolerant import rows as profile_rows, snap, ctrl, Ad
++
++OPTS_MG = {'enabled': True, 'lo': 0.75, 'hi': 1.25}
++EVIDENCE = Path(os.environ.get('R1_AUDIT_EVIDENCE', str(Path(__file__).resolve().parents[1] / 'evidence')))
++EVIDENCE.mkdir(parents=True, exist_ok=True)
++
++def record(name, value):
++    (EVIDENCE / (name + '.json')).write_text(json.dumps(value, indent=2, default=str, allow_nan=True), encoding='utf-8')
++
++def zones(c=1.25):
++    result=[]
++    for z,p in [(1,100.),(2,250.)]:
++        row={'zone_no':z,'NOT_ZAHR':1.,'ADD_PROD_W':c,'ADD_PROD_S':1.}
++        for g in mg.GROUPS:
++            row['FP_1_WORK_'+g]=p/5
++            row['FP_2_SERVICE_'+g]=20.
++        result.append(row)
++    return result
++
++def proposal(bases=(100.,250.)):
++    return [{'zone_no':z,'family':'WORK','role':'PROD','log_step':math.log(mult),
++             'base_margin_volume':b} for z,mult,b in [(1,1.5,bases[0]),(2,0.8,bases[1])]]
++
++def test_A01_mobility_smaller_step_must_stay_in_band():
++    zr=zones(.755)
++    out,rep=mg.guard(proposal(),zr,OPTS_MG)
++    prod=mg.zone_productions(zr,'WORK')
++    steps={r['zone_no']:r['log_step'] for r in out}
++    values={str(s):mg.ratio(prod,{z:s*v for z,v in steps.items()}) for s in [0.,.25,.5,.75,1.]}
++    record('A01_smaller_step',{'report':rep,'ratios':values,'allowed_band':[.75,1.25]})
++    assert all(.75-1e-12 <= r <= 1.25+1e-12 for r in values.values()),values
++
++def test_A02_pa_rebalance_must_preserve_mobility_limit():
++    zr=zones(1.25)
++    out,rep=mg.guard(proposal((50.,250.)),zr,OPTS_MG)
++    for r in out:r['requested_log_step']=r['log_step']
++    bal=bdpa.subset_rebalance(out,{'WORK':{'prod':10.,'att':10.}})
++    r_after=mg.ratio(mg.zone_productions(zr,'WORK'),{r['zone_no']:r['requested_log_step'] for r in out})
++    record('A02_rebalance_bypasses_mobility',{'before_guard':rep,'balance':bal,'ratio_after_rebalance':r_after})
++    assert r_after <= 1.25+1e-12
++
++def test_A03_mobility_empty_coverage_must_not_be_OK():
++    out,rep=mg.guard(proposal(),[dict(z,NOT_ZAHR=0.) for z in zones()],OPTS_MG)
++    record('A03_missing_coverage',rep)
++    assert rep['status'] != 'OK' or all(math.isfinite(r['ratio_current']) and r['zones']>0 for r in rep['families'].values())
++
++def test_A04_generation_tolerant_rollback_must_check_11d():
++    before={'d12':{'rows':profile_rows()},'d11':{'summary':{'component_rmse':.1}},'signals':{'WORK':{'objective':.1}}}
++    after=copy.deepcopy(before)
++    after['d11']['summary']['component_rmse']=10.
++    after['signals']['WORK']['objective']=10.
++    result=rb.tolerant_compare(before,after)
++    record('A04_11d_ignored',{'before':before['d11'],'after':after['d11'],'comparison':result})
++    assert result['passes'] is False
++
++def real_td_controller():
++    import r1_15a2_overnight_controller_coupled_v24915p2_force100 as fc
++    return SimpleNamespace(_td_expected_freeze=fc._td_expected_freeze, atomic_json=fc.atomic_json)
++
++def test_A05_td_rollback_must_limit_matrix_drift(tmp_path):
++    before=snap();after=snap(mat='DIFFERENT')
++    for state in [before,after]:state['td_values'][0]['current_c']=-.1
++    before_array=np.array([[50.,0.],[0.,50.]])
++    after_array=np.array([[0.,50.],[50.,0.]])
++    for state,arr in [(before,before_array),(after,after_array)]:
++        sha=hashlib.sha256(arr.astype('<f8').tobytes()).hexdigest()
++        state['matrices']=[{'matrix_no':9101,'rows':2,'cols':2,'sha256_float64_le':sha}]
++        state['matrix_hash']=sha
++    c=real_td_controller();ad=Ad(after,profile_rows())
++    result=tr.tolerant_check(c,ad,before,{'d12':{'rows':profile_rows()}},tmp_path,{})
++    record('A05_unbounded_matrix_drift', {**{k:v for k,v in result.items() if not k.startswith('_')},
++        'before_matrix':before_array.tolist(),'after_matrix':after_array.tolist(),
++        'max_cell_difference':float(abs(after_array-before_array).max()),
++        'l1_matrix_difference':float(abs(after_array-before_array).sum()),
++        'real_td_expected_freeze_used':True})
++    assert result['status'] != 'PARAMETER_EXACT_NUMERICALLY_EQUIVALENT_RECOMPUTE'
++
++def test_A06_td_rollback_must_check_11d(tmp_path):
++    before=snap();after=snap(mat='DIFFERENT')
++    for state in [before,after]:state['td_values'][0]['current_c']=-.1
++    baseline={'d12':{'rows':profile_rows()},'d11':{'summary':{'error':.1}},'signals':{'WORK':{'objective':.1}}}
++    class With11D(Ad):
++        def diagnostics(self,folder,label):
++            return {'d12':{'rows':self.rows},'d11':{'summary':{'error':100.}},'signals':{'WORK':{'objective':100.}}}
++    result=tr.tolerant_check(real_td_controller(),With11D(after,profile_rows()),before,baseline,tmp_path,{})
++    record('A06_td_11d_ignored',{k:v for k,v in result.items() if not k.startswith('_')})
++    assert result['status'] != 'PARAMETER_EXACT_NUMERICALLY_EQUIVALENT_RECOMPUTE'
++
++def test_A07_duplicate_profiles_must_not_mask_load_drift():
++    before=profile_rows();after=copy.deepcopy(before)
++    before[0:0]=[dict(before[0],model=500.),dict(before[1],model=500000.)]
++    after[0:0]=[dict(after[0],model=500000.),dict(after[1],model=500.)]
++    result=tr.profile_drift(before,after)
++    combined=rb.tolerant_compare({'d12':{'rows':before}},{'d12':{'rows':after}})
++    record('A07_duplicate_profiles',{'profile_drift':result,'combined_tolerant_comparison':combined,
++          'changed_duplicate_volumes':[500.,500000.], 'same_overall_volume_multiset':True})
++    assert combined['passes'] is False
++
++def test_A08_supply_second_trial_prewrite_error_must_recompute_parent(supply_harness,monkeypatch):
++    h=supply_harness(shift=350.)
++    _no_g1b(h,monkeypatch)
++    def begin(*a,**k):
++        if h.ad.assignments: raise RuntimeError('AUDIT_SECOND_READBACK_CONTEXT_FAILURE')
++    monkeypatch.setattr(h.ad,'begin_candidate_readback_context',begin,raising=False)
++    result=h.run()
++    record('A08_supply_dirty_assignment',{'status':result[4]['status'],'returned_parent':result[1]==h.state,
++           'parameter_restored':h.ad.addval==h.state['addval1'],'loads_restored':h.ad.vol==h.state['addval1'],
++           'live_assignment':h.ad.vol,'parent':h.state['addval1'],'assignments':h.ad.assignments})
++    assert h.ad.vol==h.state['addval1']
++
++def test_A09_supply_result_io_failure_must_rollback(supply_harness,monkeypatch):
++    h=supply_harness(shift=60.);_no_g1b(h,monkeypatch)
++    original=h.base.atomic_json
++    def write(path,payload):
++        if Path(path).name=='SUPPLYMIX_BLOCK_RESULT.json' and h.ad.assignments:
++            raise OSError('AUDIT_SIMULATED_DISK_FULL')
++        return original(path,payload)
++    monkeypatch.setattr(h.base,'atomic_json',write)
++    with pytest.raises(OSError,match='AUDIT_SIMULATED_DISK_FULL'):h.run()
++    record('A09_supply_io_escapes_rollback',{'parameters_restored':h.ad.addval==h.state['addval1'],
++           'loads_restored':h.ad.vol==h.state['addval1'],'assignments':h.ad.assignments})
++    assert h.ad.addval==h.state['addval1'] and h.ad.vol==h.state['addval1']
++
++def test_A10_supply_recovery_must_not_adopt_materially_worse_state(supply_harness,monkeypatch):
++    h=supply_harness(shift=60.);_no_g1b(h,monkeypatch)
++    monkeypatch.setattr(h.ad,'block_gate',lambda *a,**k:{'accepted':False,'reasons':['AUDIT_FORCE_REJECT']})
++    def rb_failure(*a,**k):raise RuntimeError('INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER')
++    monkeypatch.setattr(h.base,'_rollback_candidate',rb_failure)
++    orig=h.ad.assign_for_block
++    def recompute(folder,block):
++        if 'RECOVERY_FULL_RECOMPUTE' in str(folder):
++            h.ad.rows0=[dict(r,model=r['model']*10) for r in h.ad.rows0]
++        return orig(folder,block)
++    monkeypatch.setattr(h.ad,'assign_for_block',recompute)
++    with pytest.raises(Exception, match='RECOVERY_NOT_EQUIVALENT_MANUAL_REOPEN'):
++        h.run(opts=dict(OPTS,max_trials=1))
++    assert not h.ad.kept, 'Recovery must not call candidate acceptance'
++    record('A10_supply_recovery_closed', {'status':'EXPLICIT_MANUAL_REOPEN_FAILURE',
++           'accepted_transitions':h.ad.kept,'accepted_change':False})
++
++
++def test_control_mobility_pure_positive_step_is_limited():
++    out,rep=mg.guard([dict(r,log_step=math.log(1.5)) for r in proposal()],zones(1.25),OPTS_MG)
++    assert rep['families']['WORK']['ratio_after'] <= 1.25+1e-12
++
++def test_control_supply_normal_rejection_rolls_back(supply_harness,monkeypatch):
++    h=supply_harness(shift=-60.);_no_g1b(h,monkeypatch)
++    result=h.run()
++    assert not result[0] and h.ad.addval==h.state['addval1'] and h.ad.vol==h.state['addval1']
++
++
++def _design_fixture(monkeypatch, *, fit_raises=False, missing_fp=False):
++    import r1_15a2_trial_adapter_v24917 as admod
++    ad=object.__new__(admod.VisumAdapter)
++    ad.cfg={admod.tg.POLICY_KEY:copy.deepcopy(admod.tg.DEFAULT_POLICY)}
++    ad.visum=object();ad.zones=[1,2];ad.zone_write_index_by_no={1:1,2:2}
++    ad.com_retry_policy={};ad.generation_reference_values={};ad.v24917_ls={'active':False}
++    ad.v24917_status={'designs':0,'fit_fallbacks':0}
++    parent_rows=[dict(r,log_step=math.log(1.5)) for r in proposal()]
++    context={'incidence':object(),'projection':admod.core.ProjectionResult(rows=copy.deepcopy(parent_rows),
++               family_summaries=[{'converged':True}],weighted_rmse=0.)}
++    monkeypatch.setattr(admod._V24916ActiveAdapter,'generation_design',lambda *a:context)
++    zr=zones(1.25)
++    if missing_fp: zr[0].pop('FP_1_WORK_E_C')
++    monkeypatch.setattr(admod.supply_visum.base,'zone_state_rows',lambda *a,**k:(zr,[]))
++    monkeypatch.setattr(admod.tg,'zone_bounds',lambda *a,**k:{})
++    def fit(*a,**k):
++        if fit_raises:raise RuntimeError('AUDIT_FIT_FAILURE')
++        summary={'zones_changed':2,'rows':2,'rows_at_upper':2,'linear_prediction':{'ratio_after':1.}}
++        problem=SimpleNamespace(profile_rows=[{'countlocation_no':'900001'}])
++        solution={'converged':True,'objective_initial':2.,'objective_final':1.,'iterations':3,
++                  'predicted_change':np.array([100.])}
++        return copy.deepcopy(parent_rows),summary,problem,solution,None
++    monkeypatch.setattr(ad,'_fit_with_boundary',fit)
++    diag={'d12':{'rows':[{'role':'CALIBRATION','model':60.,'observed':100.}]}}
++    return ad,diag,context,zr
++
++
++def test_A11_enabled_mobility_guard_error_must_block_candidate(monkeypatch,tmp_path):
++    ad,diag,context,zr=_design_fixture(monkeypatch,missing_fp=True)
++    result=ad.generation_design(diag,tmp_path)
++    record('A11_guard_error_fails_open',{'v24917':result['v24917'],'candidate_rows':result['projection'].rows})
++    assert not result['projection'].rows
++
++
++def test_A12_parent_fallback_must_also_enforce_mobility(monkeypatch,tmp_path):
++    ad,diag,context,zr=_design_fixture(monkeypatch,fit_raises=True)
++    result=ad.generation_design(diag,tmp_path)
++    r_after=mg.ratio(mg.zone_productions(zr,'WORK'),{r['zone_no']:r['log_step'] for r in result['projection'].rows})
++    record('A12_fallback_bypasses_mobility',{'v24917':result['v24917'],'ratio_of_returned_proposal':r_after})
++    assert r_after <= 1.25+1e-12
++
++
++def test_A13_step_prediction_must_describe_guarded_candidate(monkeypatch,tmp_path):
++    ad,diag,context,zr=_design_fixture(monkeypatch)
++    result=ad.generation_design(diag,tmp_path)
++    max_step=max(abs(r['log_step']) for r in result['projection'].rows)
++    delta=result['v24917_step_model']['delta_full']
++    record('A13_stale_prediction',{'max_final_projection_log_step':max_step,
++        'step_model':result['v24917_step_model'],'guard':result['v24917']['mobility_guard']})
++    assert max_step>1e-9 or all(abs(v)<1e-9 for v in delta)
++
++
++def test_A14_transient_countmodel_link_failure_must_not_be_cached_as_missing():
++    import r1_15a2_td_count_blend_v24917 as cb
++    class Busy(Exception):hresult=-2147418111
++    link=object();calls=[]
++    def getlink(*args):
++        calls.append(args)
++        if len(calls)==1:raise Busy('AUDIT_RPC_E_CALL_REJECTED')
++        return link
++    model=object.__new__(cb.CountModel)
++    model.v=SimpleNamespace(Net=SimpleNamespace(Links=SimpleNamespace(ItemByKey=getlink)))
++    model._links={}
++    first=model._link(1,2)
++    second=model._link(1,2)
++    record('A14_transient_link_cache',{'first_was_none':first is None,'second_was_none':second is None,
++           'com_call_count':len(calls),'cached_as_missing':model._links.get((1,2)) is None})
++    assert second is link
++
++
++def test_A15_failed_forensic_archive_must_keep_source_evidence(tmp_path):
++    import r1_15a2_perf_v24917 as perf
++    hold=tmp_path/'hold';hold.mkdir();(hold/'trace.txt').write_text('last evidence')
++    def broken_archive(*args):raise OSError('AUDIT_ARCHIVE_DISK_FULL')
++    d=perf._Deferred();d.pending.append((hold,tmp_path/'evidence.zip',broken_archive))
++    perf._finalize(d,keep=True)
++    record('A15_lost_forensic_evidence',{'hold_exists':hold.exists(),'archive_exists':(tmp_path/'evidence.zip').exists()})
++    assert (hold/'trace.txt').is_file() or (tmp_path/'evidence.zip').is_file()
++
++
++def test_control_td_local_degradation_can_accumulate(monkeypatch):
++    """Policy observation, not a test that claims a global bound is implemented."""
++    import r1_15a2_td_count_blend_v24917 as cb
++    import r1_15a2_core as core
++    import r1_15a2_multiblock as mb
++    monkeypatch.setattr(cb,'options',lambda:{'w_cnt':.65,'w_idp':.35,'max_idp_ratio':1.25})
++    monkeypatch.setattr(core,'csd_metrics',lambda rows,*a,**k:{'objective_geh_mean_weighted':rows[0]['test_metric']})
++    monkeypatch.setattr(mb,'td_component_metrics',lambda signals,*a,**k:{'weighted_objective':signals['X']['test_metric']})
++    def diag(c,i):return {'d12':{'rows':[{'test_metric':c}]},'signals':{'X':{'test_metric':i}}}
++    before=diag(1.,1.);events=[]
++    for k in range(1,4):
++        after=diag(.7**k,1.2**k)
++        result=cb.outer_decision({'accepted':False,'reasons':['GLOBAL_IDP_MEAN_DEGRADED']},before,after,{})
++        events.append({'step':k,'accepted':result['accepted'],**result['v24917_td_blend']})
++        before=after
++    record('R01_local_vs_global_survey_bound',{'events':events,'final_ratio_to_start':1.2**3})
++    assert all(e['accepted'] for e in events)
+--- /dev/null
++++ GENFIX2/r1_15a2_parent_equivalence_v24917.py
+@@ -0,0 +1,310 @@
++"""GENFIX2: fail-closed numerical equivalence of an accepted parent.
++
++Snapshots keep their original public schema.  Matrix tolerances need byte-bound
++parent arrays captured BEFORE mutation, not just aggregate profile agreement.
++Proofs are temporary .npy files (one matrix in RAM); they never write to Visum.
++"""
++from __future__ import annotations
++
++import contextlib
++import copy
++import hashlib
++import json
++import math
++import numbers
++import shutil
++import tempfile
++from pathlib import Path
++from typing import Any, Mapping
++
++import numpy as np
++
++from r1_15a2_com_compat import com_call_with_retry, zone_identity
++from r1_15a2_supply import SupplyContractError, canonical_hash
++
++RELEASE = "R1_15A2_V24917_GENFIX2_PARENT_EQUIVALENCE_20261027"
++MATRIX_ATOL = 1.0e-7
++MATRIX_RTOL = 1.0e-10
++MARGIN_ATOL = 1.0e-6
++SIGNAL_ATOL = 1.0e-9
++SIGNAL_RTOL = 1.0e-8
++# Only provenance/transport metadata is ignored; statuses and metrics are not.
++_METADATA = frozenset(("timestamp", "created_at", "generated_at", "elapsed_s", "elapsed_seconds",
++                       "runtime_seconds", "summary_path", "output_dir", "output_folder", "folder",
++                       "evidence_zip", "source_file", "source_path", "path", "script_path", "authority_dir"))
++
++
++def _public_write(path, data):
++    path = Path(path)
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(json.dumps(data, indent=2, default=str, allow_nan=False), encoding="utf-8")
++
++
++def _matrix_index(state):
++    out = {}
++    for row in state.get("matrices", []) or []:
++        no = int(row["matrix_no"])
++        if no in out:
++            raise SupplyContractError("GENFIX2_DUPLICATE_MATRIX_ID:%s" % no)
++        out[no] = row
++    return out
++
++
++def _array_hash(array):
++    return hashlib.sha256(np.ascontiguousarray(array, dtype="<f8").tobytes(order="C")).hexdigest()
++
++
++def _array(adapter, no):
++    policy = getattr(adapter, "com_retry_policy", None)
++    return np.asarray(com_call_with_retry(
++        lambda: adapter.visum.Net.Matrices.ItemByKey(int(no)).GetValues(),
++        label="GENFIX2_MATRIX:%s" % no, retry_policy=policy), dtype="<f8")
++
++
++def _valid_array(a):
++    return a.ndim == 2 and bool(np.isfinite(a).all()) and not bool((a < 0).any())
++
++
++def _axes(adapter):
++    order, _ = zone_identity(adapter.visum, getattr(adapter, "zones", None),
++                             getattr(adapter, "com_retry_policy", None))
++    expected = getattr(adapter, "zones", None)
++    if expected is not None and list(order) != list(expected):
++        raise SupplyContractError("GENFIX2_MATRIX_AXIS_ORDER_MISMATCH")
++    return order
++
++
++def capture(adapter, state):
++    """Bind a disk proof to the entire parent snapshot, including IZ penalties."""
++    rows = _matrix_index(state)
++    proof = {"snapshot": copy.deepcopy(state), "identity": canonical_hash(state),
++             "matrices": {}, "directory": None, "status": "EXACT_ONLY_NO_MATRIX_READER",
++             "path_epoch_accepts_before": getattr(adapter, "path_epoch_accepts", None)}
++    if not rows:
++        proof["status"] = "EXACT_ONLY_NO_MATRICES"
++        return proof
++    if not hasattr(adapter, "visum") or not hasattr(getattr(adapter.visum, "Net", None), "Matrices"):
++        return proof  # exact hash equality remains possible; drift is never waived
++    directory = Path(tempfile.mkdtemp(prefix="R1EQ_"))
++    proof["directory"] = str(directory)
++    try:
++        proof["axes"] = _axes(adapter)
++        for no, row in sorted(rows.items()):
++            a = _array(adapter, no)
++            if (not _valid_array(a) or list(a.shape) != [row.get("rows"), row.get("cols")]
++                    or list(a.shape) != [len(proof["axes"]), len(proof["axes"])]):
++                raise SupplyContractError("GENFIX2_PARENT_MATRIX_INVALID:%s" % no)
++            if _array_hash(a) != row.get("sha256_float64_le"):
++                raise SupplyContractError("GENFIX2_PARENT_MATRIX_SNAPSHOT_MISMATCH:%s" % no)
++            p = directory / ("M%s.npy" % no)
++            np.save(p, a, allow_pickle=False)
++            proof["matrices"][no] = {"path": str(p), "sha256": _array_hash(a), "shape": list(a.shape)}
++        proof["status"] = "CAPTURED_BEFORE_MUTATION"
++        _public_write(directory / "PARENT_PROOF.json", proof)
++        return proof
++    except BaseException:
++        shutil.rmtree(directory, ignore_errors=True)
++        raise
++
++
++@contextlib.contextmanager
++def parent_scope(adapter, state, folder):
++    """Nestable transaction boundary. Retain failed-run proof, remove successful temporary data."""
++    old = getattr(adapter, "_genfix2_parent_proof", None)
++    if old and old.get("identity") == canonical_hash(state):
++        yield old
++        return
++    proof = capture(adapter, state)
++    adapter._genfix2_parent_proof = proof
++    failed = False
++    try:
++        yield proof
++    except BaseException:
++        failed = True
++        try:
++            _public_write(Path(folder) / "GENFIX2_PARENT_PROOF_RETAINED.json", proof)
++        except Exception:
++            pass
++        raise
++    finally:
++        adapter._genfix2_parent_proof = old
++        if not failed and proof.get("directory"):
++            shutil.rmtree(proof["directory"], ignore_errors=True)
++
++
++def compare_matrices(adapter, before, after):
++    rec = {"passes": False, "matrices": [], "atol": MATRIX_ATOL, "rtol": MATRIX_RTOL,
++           "margin_atol": MARGIN_ATOL}
++    try:
++        b, a = _matrix_index(before), _matrix_index(after)
++        if set(a) != set(b):
++            rec["reason"] = "MATRIX_IDENTITY_MISMATCH"
++            return rec
++        for no in b:
++            if any(b[no].get(k) != a[no].get(k) for k in ("rows", "cols")):
++                rec["reason"] = "MATRIX_SHAPE_MISMATCH:%s" % no
++                return rec
++        proof = getattr(adapter, "_genfix2_parent_proof", None)
++        if proof and proof.get("axes") is not None and _axes(adapter) != proof["axes"]:
++            rec["reason"] = "MATRIX_AXIS_ORDER_CHANGED"
++            return rec
++        changed = [no for no in b if a[no] != b[no]]
++        if not changed and before.get("matrix_hash") == after.get("matrix_hash"):
++            rec.update(passes=True, mode="EXACT_MATRIX_FINGERPRINTS")
++            return rec
++        proof = getattr(adapter, "_genfix2_parent_proof", None)
++        if not proof or proof.get("identity") != canonical_hash(before) or proof.get("status") != "CAPTURED_BEFORE_MUTATION":
++            rec["reason"] = "NO_BYTE_BOUND_PRE_MUTATION_MATRIX_PROOF"
++            return rec
++        if _axes(adapter) != proof.get("axes"):
++            rec["reason"] = "MATRIX_AXIS_ORDER_CHANGED"
++            return rec
++        # An aggregate hash change not explained by its rows is inconsistent too.
++        if not changed:
++            rec["reason"] = "INCONSISTENT_MATRIX_AGGREGATE_HASH"
++            return rec
++        for no in changed:
++            item = proof["matrices"].get(no)
++            if not item:
++                raise SupplyContractError("GENFIX2_PARENT_MATRIX_PROOF_MISSING:%s" % no)
++            x = np.load(item["path"], mmap_mode="r", allow_pickle=False)
++            y = _array(adapter, no)
++            if not _valid_array(x) or not _valid_array(y) or x.shape != y.shape:
++                raise SupplyContractError("GENFIX2_MATRIX_INVALID:%s" % no)
++            if _array_hash(x) != b[no].get("sha256_float64_le") or _array_hash(y) != a[no].get("sha256_float64_le"):
++                raise SupplyContractError("GENFIX2_MATRIX_PROOF_HASH_MISMATCH:%s" % no)
++            diff = np.abs(y - x)
++            cells_ok = bool(np.all(diff <= MATRIX_ATOL + MATRIX_RTOL * np.abs(x)))
++            l1 = float(diff.sum())
++            l1_ok = l1 <= MATRIX_ATOL * x.size + MATRIX_RTOL * float(np.abs(x).sum())
++            margins_ok = True
++            for axis in (0, 1):
++                xb, ya = x.sum(axis=axis), y.sum(axis=axis)
++                margins_ok = margins_ok and bool(np.all(np.abs(ya - xb) <= MARGIN_ATOL + MATRIX_RTOL * np.abs(xb)))
++            total_ok = abs(float(y.sum()) - float(x.sum())) <= MARGIN_ATOL + MATRIX_RTOL * abs(float(x.sum()))
++            ok = cells_ok and l1_ok and margins_ok and total_ok
++            rec["matrices"].append({"matrix_no": no, "passes": ok, "max_abs": float(diff.max(initial=0)),
++                                    "l1": l1, "sum_before": float(x.sum()), "sum_after": float(y.sum())})
++            del x, y, diff
++            if not ok:
++                rec["reason"] = "MATERIAL_MATRIX_DRIFT:%s" % no
++                return rec
++        rec.update(passes=True, mode="BYTE_BOUND_NUMERIC_MATRIX_PROOF")
++    except Exception as exc:
++        rec["reason"] = "MATRIX_PROOF_ERROR:%s:%s" % (type(exc).__name__, str(exc)[:1000])
++    return rec
++
++
++def semantic_differences(before, after, path="", result=None):
++    """Compare every diagnostic signal; only explicitly named file/timing metadata is ignored."""
++    if result is None:
++        result = []
++    if len(result) >= 30:
++        return result
++    if isinstance(before, Mapping) and isinstance(after, Mapping):
++        kb, ka = set(before) - _METADATA, set(after) - _METADATA
++        if kb != ka:
++            result.append(path + ":KEYS")
++        for k in sorted(kb & ka, key=str):
++            if k == "outputs" and isinstance(before[k], Mapping) and isinstance(after[k], Mapping):
++                # 11D outputs maps artifact names to workspace-dependent paths.
++                # Validate its schema and inventory, not temporary path spelling.
++                if set(before[k]) != set(after[k]) or not all(
++                        isinstance(v, str) for v in list(before[k].values()) + list(after[k].values())):
++                    result.append(path + ".outputs:INVENTORY_OR_TYPE")
++                continue
++            semantic_differences(before[k], after[k], path + "." + str(k), result)
++    elif isinstance(before, (list, tuple)) and isinstance(after, (list, tuple)):
++        if len(before) != len(after):
++            result.append(path + ":LENGTH")
++        else:
++            for i, (b, a) in enumerate(zip(before, after)):
++                semantic_differences(b, a, "%s[%d]" % (path, i), result)
++    elif isinstance(before, numbers.Real) and isinstance(after, numbers.Real) and not isinstance(before, bool) and not isinstance(after, bool):
++        b, a = float(before), float(after)
++        if not math.isfinite(a) or not math.isfinite(b) or abs(a - b) > SIGNAL_ATOL + SIGNAL_RTOL * abs(b):
++            result.append(path + ":NUMERIC")
++    elif before != after:
++        result.append(path + ":VALUE")
++    return result
++
++
++def compare_diagnostics(before, after):
++    import r1_15a2_td_rollback_tolerant_v24917 as tr
++    b = (before.get("d12") or {}).get("rows", [])
++    a = (after.get("d12") or {}).get("rows", [])
++    drift = tr.profile_drift(b, a)
++    gb, ga = tr._weighted_geh(b), tr._weighted_geh(a)
++    geh_ok = gb is not None and ga is not None and math.isfinite(gb) and math.isfinite(ga) and abs(ga - gb) <= tr.GEH_TOL
++    errors = []
++    for domain in ("d11", "signals"):
++        if (domain in before) != (domain in after):
++            errors.append(domain + ":MISSING")
++            continue
++        if domain == "d11":
++            x, y = before.get(domain, {}).get("summary", {}), after.get(domain, {}).get("summary", {})
++        else:
++            x, y = before.get(domain, {}), after.get(domain, {})
++        semantic_differences(x, y, domain, errors)
++    return {"passes": bool(not drift["violations"] and not drift["missing"] and geh_ok and not errors),
++            "profile_drift": drift, "weighted_geh_before": gb, "weighted_geh_after": ga,
++            "geh_tol": tr.GEH_TOL, "component_differences": errors,
++            "signal_atol": SIGNAL_ATOL, "signal_rtol": SIGNAL_RTOL}
++
++
++def verify_parent(adapter, before, after, baseline_diag, diag, allow_td=False, ctrl=None, cfg=None, folder=None):
++    import r1_15a2_td_rollback_tolerant_v24917 as tr
++    if allow_td:
++        params = tr.parameter_differences(before, after)
++        try:
++            ctrl._td_expected_freeze(before, after, [], cfg or {},
++                                     Path(folder) / "GENFIX2_TD_FREEZE.json")
++        except Exception as exc:
++            params.append("TD_FREEZE:" + str(exc))
++    else:
++        params = sorted(k for k in set(before) | set(after) if k not in ("state_hash", "matrices", "matrix_hash")
++                        and before.get(k) != after.get(k))
++    # An unexplained hash change is not a numerical reconstruction.
++    if before.get("state_hash") != after.get("state_hash") and all(
++            before.get(k) == after.get(k) for k in (set(before) | set(after)) - {"state_hash"}):
++        params.append("UNEXPLAINED_STATE_HASH_CHANGE")
++    matrices = compare_matrices(adapter, before, after)
++    diagnostic = compare_diagnostics(baseline_diag, diag)
++    return {"passes": not params and matrices["passes"] and diagnostic["passes"],
++            "parameter_differences": params, "matrix_proof": matrices, "diagnostics": diagnostic}
++
++
++def rebind_verified_parent(adapter, state, diag):
++    """Rebind an already-proved parent without incrementing accepted-change counters.
++
++    Preserve the epoch geometry when its immutable context still matches. A fake
++    or custom adapter without epoch state needs no callback. Never call the
++    candidate-acceptance callback to represent a rollback.
++    """
++    proof = getattr(adapter, "_genfix2_parent_proof", None) or {}
++    if proof.get("path_epoch_accepts_before") is not None:
++        adapter.path_epoch_accepts = proof["path_epoch_accepts_before"]
++    if getattr(adapter, "cache", None) is None:
++        return {"retained": False, "reason": "NO_LIVE_PATH_EPOCH", "accepted_change": False}
++    origin = getattr(adapter, "cache_snapshot", None) or {}
++    if any(origin.get(k) != state.get(k) for k in ("fixed_link_hash", "dseg_hash", "operations_hash")):
++        raise SupplyContractError("GENFIX2_PARENT_CACHE_IMMUTABLE_CONTEXT_MISMATCH")
++    current = state.get("addval1", {})
++    records = getattr(adapter, "cache_links", None)
++    updates = []
++    if records is not None:
++        for key, row in records.items():
++            text = "|".join(str(int(x)) for x in key)
++            if text not in current:
++                raise SupplyContractError("GENFIX2_PARENT_CACHE_LINK_COVERAGE")
++            updates.append((row, float(current[text])))
++    adapter.cache_live_snapshot = copy.deepcopy(state)
++    adapter.path_epoch_plateau_verified = None
++    adapter.supply_path_proof = None
++    for row, value in updates:
++        row["addval1"] = value
++    persistent = getattr(adapter, "persistent_path_cache", None)
++    manifest = getattr(adapter, "persistent_cache_manifest", None)
++    if persistent is not None and persistent.enabled and manifest is not None:
++        persistent.bind_state(state, manifest, reason="GENFIX2_VERIFIED_PARENT_REBASE", phase="RECOVERY")
++    return {"retained": True, "reason": "GENFIX2_VERIFIED_PARENT_REBASE", "accepted_change": False}
+--- /dev/null
++++ GENFIX2/tests/test_v24917_genfix2.py
+@@ -0,0 +1,314 @@
++"""GENFIX2 safety regressions: real byte-bound proofs and final mutation path."""
++import copy
++import json
++import math
++import zipfile
++from pathlib import Path
++from types import SimpleNamespace as NS
++
++import numpy as np
++import pytest
++
++import r1_15a2_parent_equivalence_v24917 as eq
++import r1_15a2_mobility_guard_v24917 as mg
++import r1_15a2_step_search_v24917 as step
++import r1_15a2_rollback_consistency_v24917 as rb
++import r1_15a2_td_rollback_tolerant_v24917 as tr
++import r1_15a2_supply_mix_v24917 as sm
++from r1_15a2_supply import canonical_hash, SupplyContractError
++from test_v24917_supply_mix import harness as supply_harness, _no_g1b, OPTS as SUPPLY_OPTS
++from test_v24917_step_search import harness as generation_harness, OPTS as STEP_OPTS
++
++MGO = {"enabled": True, "lo": .75, "hi": 1.25}
++
++
++def diagnostics(model=1000.):
++    return {"d12": {"rows": [{"countlocation_no": "1", "role": "CALIBRATION", "observed": 1200.,
++                              "model": model, "profile_weight": 1.}]},
++            "d11": {"summary": {"component_dist_summary_rows": [{"component": "WORK", "mean": 10.}],
++                                  "created_at": "T1", "outputs": {"summary": "C:/old/summary.json"}}},
++            "signals": {"WORK": {"cdf_rmse": .12}}}
++
++
++class ArrayAdapter:
++    def __init__(self):
++        self.a = np.array([[50., 1.], [2., 47.]], dtype='<f8')
++        self.zones = [1, 2]
++        self.order = [1, 2]
++        self.com_retry_policy = {"enabled": True, "max_attempts": 2, "initial_delay_seconds": 0.}
++        mat = NS(GetValues=lambda: self.a.copy())
++        zone = NS(GetMultiAttValues=lambda *args: list(enumerate(self.order, 1)))
++        self.visum = NS(Net=NS(Matrices=NS(ItemByKey=lambda n: mat), Zones=zone))
++        self.diag = diagnostics()
++
++    def snapshot(self):
++        row = {"matrix_no": 9101, "rows": 2, "cols": 2, "sha256_float64_le": eq._array_hash(self.a)}
++        out = {"matrices": [row], "matrix_hash": canonical_hash([row]), "addval1": {},
++               "generation_values": {"ADD_PROD_W": {"1": 1., "2": 1.}},
++               "td_values": [{"component": "WORK", "current_b": .1, "current_c": -.1}],
++               "fixed_link_hash": "L", "dseg_hash": "D", "operations_hash": "O"}
++        return dict(out, state_hash=canonical_hash(out))
++
++    def diagnostics(self, *args):
++        return copy.deepcopy(self.diag)
++
++
++def test_disk_proof_accepts_bounded_roundoff_and_removes_successful_temp(tmp_path):
++    ad = ArrayAdapter(); before = ad.snapshot()
++    with eq.parent_scope(ad, before, tmp_path) as proof:
++        directory = Path(proof['directory'])
++        assert directory.is_dir() and proof['status'] == 'CAPTURED_BEFORE_MUTATION'
++        ad.a += 1e-10
++        check = eq.verify_parent(ad, before, ad.snapshot(), diagnostics(), diagnostics())
++        assert check['passes'] and check['matrix_proof']['mode'] == 'BYTE_BOUND_NUMERIC_MATRIX_PROOF'
++    assert not directory.exists() and ad._genfix2_parent_proof is None
++
++
++@pytest.mark.parametrize('change', ['swap', 'nan', 'negative', 'axis', 'corrupt_proof'])
++def test_disk_proof_refuses_material_invalid_or_unbound_matrix(change, tmp_path):
++    ad = ArrayAdapter(); before = ad.snapshot()
++    with eq.parent_scope(ad, before, tmp_path) as proof:
++        if change == 'swap': ad.a = ad.a[:, ::-1].copy()
++        elif change == 'nan': ad.a[0, 0] = np.nan
++        elif change == 'negative': ad.a[0, 0] = -1.
++        elif change == 'axis': ad.order = [2, 1]
++        elif change == 'corrupt_proof':
++            Path(proof['matrices'][9101]['path']).write_bytes(b'NOT_NPY'); ad.a += 1e-10
++        after = ad.snapshot()
++        assert not eq.compare_matrices(ad, before, after)['passes']
++
++
++def test_changed_bytes_without_capture_never_pass(tmp_path):
++    ad=ArrayAdapter(); before=ad.snapshot(); ad.a+=1e-10
++    assert not eq.compare_matrices(ad, before, ad.snapshot())['passes']
++
++
++def test_parent_proof_capture_is_checked_before_first_mutation(tmp_path):
++    ad=ArrayAdapter(); before=ad.snapshot(); ad.a[0, 0]+=1
++    with pytest.raises(Exception, match='PARENT_MATRIX_SNAPSHOT_MISMATCH'):
++        with eq.parent_scope(ad, before, tmp_path):
++            pytest.fail('mutation scope opened for stale parent')
++
++
++def test_failed_scope_retains_original_matrix_evidence(tmp_path):
++    ad=ArrayAdapter(); before=ad.snapshot()
++    with pytest.raises(KeyboardInterrupt):
++        with eq.parent_scope(ad, before, tmp_path) as proof:
++            directory=Path(proof['directory'])
++            raise KeyboardInterrupt()
++    assert directory.exists()
++    assert json.loads((tmp_path/'GENFIX2_PARENT_PROOF_RETAINED.json').read_text())['identity']==canonical_hash(before)
++    import shutil; shutil.rmtree(directory)
++
++
++@pytest.mark.parametrize('change', ['signal', '11d', 'duplicate', 'observed', 'weight', 'role', 'missing', 'nonfinite', 'outputs'])
++def test_full_diagnostic_proof_rejects_changed_authority_or_metrics(change):
++    b=diagnostics(); a=copy.deepcopy(b)
++    if change=='signal': a['signals']['WORK']['cdf_rmse']=2.
++    elif change=='11d': a['d11']['summary']['component_dist_summary_rows'][0]['mean']=20.
++    elif change=='duplicate':
++        a['d12']['rows']*=2; b['d12']['rows']*=2
++    elif change=='observed': a['d12']['rows'][0]['observed']=1300.
++    elif change=='weight': a['d12']['rows'][0]['profile_weight']=2.
++    elif change=='role': a['d12']['rows'][0]['role']='VALIDATION'
++    elif change=='missing': del a['d11']
++    elif change=='nonfinite': a['signals']['WORK']['cdf_rmse']=float('nan')
++    elif change=='outputs': a['d11']['summary']['outputs']['extra']='C:/extra.csv'
++    assert not eq.compare_diagnostics(b,a)['passes']
++
++
++def test_11d_transport_paths_differ_but_metrics_are_proven_equal():
++    b=diagnostics(); a=copy.deepcopy(b)
++    a['d11']['summary']['created_at']='T2'
++    a['d11']['summary']['outputs']['summary']='C:/new/summary.json'
++    assert eq.compare_diagnostics(b,a)['passes']
++
++
++def test_exact_legacy_hash_does_not_waive_11d_check(tmp_path):
++    ad=ArrayAdapter(); before=ad.snapshot(); baseline=diagnostics()
++    ad.diag['d11']['summary']['component_dist_summary_rows'][0]['mean']=20.
++    original=lambda *args, **kwargs: ({'passes':True}, copy.deepcopy(ad.diag))
++    wrapped=rb.wrap_rollback_and_verify(original,lambda *args:None)
++    with pytest.raises(Exception,match='FULL_PARENT_PROOF_FAILED'):
++        wrapped(ad,'GENERATION',before,'IGNORES_11D',lambda d:'IGNORES_11D',tmp_path,baseline_diag=baseline)
++
++
++def test_exact_td_return_does_not_waive_component_check(tmp_path):
++    ad=ArrayAdapter(); state=ad.snapshot(); baseline=diagnostics()
++    ad.diag['signals']['WORK']['cdf_rmse']=2.
++    ctrl=NS(_td_expected_freeze=lambda *args:None, atomic_json=lambda *args:None)
++    wrapped=tr.wrap_rollback_td_all(lambda *args:(ad.snapshot(),copy.deepcopy(ad.diag)),ctrl)
++    with pytest.raises(Exception,match='FULL_PARENT_PROOF_FAILED'):
++        wrapped(ad,state,baseline,tmp_path,{})
++
++
++def zones(c=1.):
++    result=[]
++    for z in (1,2):
++        row={'zone_no':z,'NOT_ZAHR':1.,'ADD_PROD_W':c,'ADD_PROD_S':1.}
++        for fam,attr in mg.MULT_ATTR.items():
++            for fp in mg.FP_ATTRS[fam]: row[fp]=float(z*10)*row[attr]
++        result.append(row)
++    return result
++
++
++@pytest.mark.parametrize('seed',range(8))
++def test_mixed_sign_guard_envelope_over_dense_scale_grid(seed):
++    rng=np.random.default_rng(seed); zr=zones(.75+seed*.5/7)
++    rows=[{'zone_no':z,'family':'WORK','role':'PROD','log_step':rng.uniform(-.22,.405),'base_margin_volume':100.} for z in (1,2)]
++    out,rep=mg.guard(rows,zr,MGO)
++    prod=mg.zone_productions(zr,'WORK'); steps={r['zone_no']:r['log_step'] for r in out}
++    vals=[mg.ratio(prod,{z:t*s for z,s in steps.items()}) for t in np.linspace(0,1,201)]
++    assert rep['passes'] and min(vals)>=.75-1e-11 and max(vals)<=1.25+1e-11
++
++
++@pytest.mark.parametrize('change',['missing','negative','nan','duplicate'])
++def test_required_mobility_data_fail_closed(change):
++    zr=zones()
++    if change=='missing': del zr[0][mg.FP_ATTRS['WORK'][0]]
++    elif change=='negative': zr[0][mg.FP_ATTRS['WORK'][0]]=-1.
++    elif change=='nan': zr[0][mg.FP_ATTRS['WORK'][0]]=float('nan')
++    elif change=='duplicate': zr.append(copy.deepcopy(zr[0]))
++    with pytest.raises((ValueError,KeyError)):
++        mg.guard([],zr,MGO)
++
++
++def test_final_candidate_after_rebalance_rejected():
++    zr=zones(1.25)
++    rows=[{'zone_no':1,'attr':'ADD_PROD_W','current':1.25,'proposed':1.3}]
++    assert not mg.check_candidate(rows,zr,MGO)['passes']
++
++
++def test_live_fp_recompute_checked_against_fixed_reference():
++    old=zones(1.2); new=zones(1.3)
++    assert not mg.check_live(old,new,MGO)['passes']
++    ok=zones(1.21)
++    assert mg.check_live(old,ok,MGO)['passes']
++    ok[0][mg.FP_ATTRS['WORK'][0]]+=1.
++    with pytest.raises(ValueError,match='REFERENCE'):
++        mg.check_live(old,ok,MGO)
++
++
++def test_final_prediction_uses_implemented_effects_instead_of_raw_fit():
++    import r1_15a2_trial_adapter_v24917 as a17
++    ad=a17.VisumAdapter.__new__(a17.VisumAdapter)
++    problem=NS(G=np.array([[100.,200.]]),var_keys=[('WORK','PROD',1),('WORK','ATT',1)],
++               profile_rows=[{'countlocation_no':'1'}])
++    ctx={'_genfix2_effect_model':{'problem':problem}}
++    design={'effect_rows':[{'family':'WORK','role':'PROD','zone_no':1,'implemented_total_log_effect':.01},
++                           {'family':'WORK','role':'ATT','zone_no':1,'implemented_total_log_effect':-.002}]}
++    rec=ad._final_step_prediction(ctx,design,.5)
++    assert rec['available'] and rec['delta']==pytest.approx([.6])
++    design['effect_rows']=[]
++    assert ad._final_step_prediction(ctx,design,.5)['delta']==[0.]
++
++
++def test_actual_apply_checks_fresh_plan_before_any_mutation(monkeypatch,tmp_path):
++    import r1_15a2_trial_adapter_v24917 as a17
++    import r1_15a2_supply_visum as sv
++    import r1_15a2_core as core
++    ad=a17.VisumAdapter.__new__(a17.VisumAdapter)
++    ad.cfg={};ad.visum=None;ad.zones=[1,2];ad.zone_write_index_by_no={}
++    ad.com_retry_policy={};ad.generation_reference_values=None
++    old=zones(); fresh=copy.deepcopy(old); writes=[]
++    def design(projection,zr,cfg,scale,**kw):
++        c=zr[0]['ADD_PROD_W']
++        return {'candidate_rows':[{'zone_no':1,'attr':'ADD_PROD_W','current':c,'proposed':c*math.exp(.02*scale)}],
++                'effect_rows':[],'summary':{}}
++    monkeypatch.setattr(a17.mb,'design_generation_candidates',design)
++    monkeypatch.setattr(sv.base,'zone_state_rows',lambda *args,**kw:(fresh,[]))
++    def original_apply(self,context,scale,folder):
++        planned=sv.base.generation_candidate(self.visum,self.zones,context['projection'],self.cfg,scale)
++        writes.extend(planned['candidate_rows'])
++        return planned['candidate_rows']
++    monkeypatch.setattr(a17._V24916ActiveAdapter,'apply_generation',original_apply)
++    context={'projection':core.ProjectionResult(rows=[],family_summaries=[],weighted_rmse=0.),
++             '_genfix2_mobility':{'zone_rows':old,'options':MGO,'zone_attributes':[]}}
++    before_hook=sv.base.generation_candidate
++    assert ad.apply_generation(context,.5,tmp_path) and len(writes)==1
++    writes.clear(); fresh[0]['ADD_PROD_W']=1.01
++    with pytest.raises(Exception,match='STALE|PLAN_CHANGED'):
++        ad.apply_generation(context,.5,tmp_path)
++    assert not writes and sv.base.generation_candidate is before_hook
++
++
++def test_supply_bad_full_recovery_is_explicit_failure_without_acceptance(supply_harness,monkeypatch):
++    h=supply_harness(shift=60.); _no_g1b(h,monkeypatch)
++    monkeypatch.setattr(h.ad,'block_gate',lambda *args:{'accepted':False,'reasons':['TEST_REJECT']})
++    def bad_rollback(*args,**kwargs): raise RuntimeError('INPLACE_ROLLBACK_DIAGNOSTICS_DIFFER')
++    monkeypatch.setattr(h.base,'_rollback_candidate',bad_rollback)
++    original=h.ad.assign_for_block
++    def recompute(folder,block):
++        if 'RECOVERY_FULL_RECOMPUTE' in str(folder):
++            h.ad.rows0=[dict(r,model=r['model']*10) for r in h.ad.rows0]
++        return original(folder,block)
++    monkeypatch.setattr(h.ad,'assign_for_block',recompute)
++    with pytest.raises(Exception,match='RECOVERY_NOT_EQUIVALENT_MANUAL_REOPEN'):
++        h.run(opts=dict(SUPPLY_OPTS,max_trials=1))
++    assert not h.ad.kept
++
++
++def test_supply_keyboard_interrupt_restores_real_assignment(supply_harness,monkeypatch):
++    h=supply_harness(shift=60.); _no_g1b(h,monkeypatch)
++    original=h.ad.assign_for_block; called=[]
++    def interrupt(folder,block):
++        called.append(1); val=original(folder,block)
++        if len(called)==1: raise KeyboardInterrupt()
++        return val
++    monkeypatch.setattr(h.ad,'assign_for_block',interrupt)
++    with pytest.raises(KeyboardInterrupt): h.run()
++    assert h.ad.snapshot()==h.state and h.ad.vol==h.ad.addval and len(called)>=2
++    assert not h.ad.kept
++
++
++def test_verified_parent_rebind_is_not_an_accepted_change():
++    ad=NS(cache=object(),cache_snapshot={'fixed_link_hash':'F','dseg_hash':'D','operations_hash':'O'},
++          cache_links={(1,2):{'addval1':10.}},path_epoch_accepts=7)
++    state=dict(ad.cache_snapshot,addval1={'1|2':2.})
++    out=eq.rebind_verified_parent(ad,state,diagnostics())
++    assert out['retained'] and not out['accepted_change']
++    assert ad.path_epoch_accepts==7 and ad.cache_live_snapshot==state
++    assert ad.cache_links[(1,2)]['addval1']==2.
++
++
++def test_archive_incomplete_zip_keeps_both_original_files(tmp_path):
++    import r1_15a2_perf_v24917 as perf
++    hold=tmp_path/'hold';hold.mkdir();(hold/'a.txt').write_text('a');(hold/'b.txt').write_text('b')
++    def incomplete(source,target):
++        with zipfile.ZipFile(target,'w') as archive: archive.write(source/'a.txt','a.txt')
++    perf._finalize(NS(pending=[(hold,tmp_path/'out.zip',incomplete)]),True)
++    assert (hold/'a.txt').exists() and (hold/'b.txt').exists() and not (tmp_path/'out.zip').exists()
++
++
++def test_matrix_shape_must_match_the_live_zone_axis(tmp_path):
++    ad=ArrayAdapter(); ad.zones=[1,2,3]; ad.order=[1,2,3]
++    with pytest.raises(Exception,match='PARENT_MATRIX_INVALID'):
++        eq.capture(ad,ad.snapshot())
++
++
++def test_generation_flag_false_cannot_start_stationary_streak():
++    import r1_15a2_demand_policy_v1 as dp
++    obj=dp.DemandPolicy(dp.load_options())
++    obj.note_generation(False,{'search_complete':True,'stationarity_confirmed':False})
++    obj.note_td(1,True,False,{'inner':{'search_complete':True}})
++    assert obj.streak==0 and not obj.last_generation_complete
++
++
++def test_supply_failure_clears_outer_policy_stationarity(monkeypatch):
++    import r1_15a2_demand_policy_v1 as dp
++    policy=NS(last_generation_complete=True)
++    monkeypatch.setattr(dp,'_ACTIVE',{'test':{'policy':policy}})
++    monkeypatch.setattr(sm,'options',lambda:dict(SUPPLY_OPTS))
++    monkeypatch.setattr(sm,'due',lambda *args:(True,'TEST'))
++    monkeypatch.setattr(sm,'supply_block',lambda *args:(False,{}, {}, {}, {'search_complete':False}))
++    wrapped=sm._wrap_generation(lambda *args,**kwargs:(False,{}, {}, {},
++                                {'search_complete':True,'stationarity_confirmed':True}),NS(),NS(),NS())
++    result=wrapped(None,{},'x',None,{}, {},None,None,None,outer_cycle=3)
++    assert not result[4]['search_complete'] and not result[4]['stationarity_confirmed']
++    assert not policy.last_generation_complete
++
++
++def test_recovery_resets_speculative_epoch_acceptance_counter():
++    ad=NS(cache=None,path_epoch_accepts=8,_genfix2_parent_proof={'path_epoch_accepts_before':7})
++    eq.rebind_verified_parent(ad,{},diagnostics())
++    assert ad.path_epoch_accepts==7
+--- /dev/null
++++ GENFIX2/tools/run_genfix2_checks.py
+@@ -0,0 +1,60 @@
++#!/usr/bin/env python3
++"""Run all supported suites in separate processes (avoids conftest name collisions).
++
++No Visum process is started. Requires Python plus the dependencies of the original
++calibrator, numpy/scipy and pytest. Does not install packages or change options.
++"""
++from __future__ import annotations
++import argparse
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import time
++
++ROOT = Path(__file__).resolve().parents[1]
++SUITES = (('main', 'tests'), ('diagfast', 'diagfast_tests'), ('audit_genfix2', 'genfix2_audit_tests'))
++
++
++def main() -> int:
++    parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--output',type=Path)
++    parser.add_argument('--timeout',type=int,default=600,help='Hard limit per suite, seconds')
++    args=parser.parse_args()
++    out=(args.output or Path(tempfile.mkdtemp(prefix='R1_GENFIX2_CHECK_'))).resolve()
++    out.mkdir(parents=True,exist_ok=True)
++    records=[]
++    # Some inherited launcher tests intentionally update these status outputs.
++    preserve={name:(ROOT/name).read_bytes() for name in
++              ('V24916_LAST_BOOTSTRAP_FAILURE.json','V24916_LAST_RUNS_LOCATION.txt') if (ROOT/name).is_file()}
++    try:
++        for name,folder in SUITES:
++            env=dict(os.environ,OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1',MKL_NUM_THREADS='1',
++                     PYTHONDONTWRITEBYTECODE='1',R1_AUDIT_EVIDENCE=str(out/'audit_evidence'))
++            env['PYTHONPATH']=os.pathsep.join([str(ROOT),str(ROOT/'tests')]) if name!='diagfast' else str(ROOT)
++            cmd=[sys.executable,'-m','pytest','-q','-p','no:cacheprovider',str(ROOT/folder)]
++            start=time.monotonic()
++            with (out/(name+'.log')).open('w',encoding='utf-8') as log:
++                try:
++                    process=subprocess.run(cmd,cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=args.timeout)
++                    rc=process.returncode
++                except subprocess.TimeoutExpired:
++                    rc=124
++                    log.write('\nGENFIX2_TEST_TIMEOUT\n')
++            record={'suite':name,'command':cmd,'returncode':rc,'seconds':round(time.monotonic()-start,3)}
++            records.append(record)
++            print(json.dumps(record),flush=True)
++    finally:
++        for name,payload in preserve.items(): (ROOT/name).write_bytes(payload)
++    result={'release':'GENFIX2','offline_only':True,'live_visum_tested':False,'suites':records,
++            'all_passed':len(records)==len(SUITES) and all(r['returncode']==0 for r in records),
++            'output':str(out),'test_process_isolation':'REQUIRED_SEPARATE_CONFTEXTS'}
++    (out/'CHECKS.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
++    print('Evidence:',out,flush=True)
++    return 0 if result['all_passed'] else 1
++
++
++if __name__=='__main__':
++    raise SystemExit(main())

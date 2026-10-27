@@ -1,0 +1,67 @@
+{
+  "schema": "R1_15A2_V24914_DEMAND_CONTINUATION_CONTRACT_V1",
+  "release": "R1_15A2_V2_4_9_14_DEMAND_CONTINUATION_SUPPLY_READY_20261019",
+  "package_revision": "V24914_DEMAND_CONTINUATION_R1",
+  "parent_release": "R1_15A2_V2_4_9_13_SUPPLY_ROUTE_CHOICE_READINESS_20261019",
+  "parent_config_sha256": "508c4e13e91832239391dda52b8a4afd1cad98441c7fdea84cb1d70d5a8d1a88",
+  "live_source_authority": {
+    "source_release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+    "source_run_id": "RUN_20261019_002326_649324",
+    "checkpoint_name": "ACCEPTED_A_0009_8f7cac7a950a.ver",
+    "accepted_count": 9,
+    "semantic_state_hash": "b599fdc7291e4a1d929db9818740e3f7aa7de53616b55238dcfcb2e8c40134a8",
+    "restart_acceptance": "EXACT_SEMANTIC_MODEL_STATE_NOT_RAW_VER_SHA"
+  },
+  "lineage": {
+    "inherited_outer_cycles": 5,
+    "next_outer_cycle": 6,
+    "max_outer_cycle": 12,
+    "inherited_stationary_cycle_streak": 0,
+    "accepted_count_start": 9,
+    "initial_checkpoint_number_preserved": true
+  },
+  "bounded_inner_budget_policy": {
+    "stop_reasons": [
+      "MAX_ITERATIONS",
+      "TD_EVALUATION_BUDGET",
+      "TD_INNER_TIME_BUDGET"
+    ],
+    "accepted_change": "CONTINUE_NEXT_OUTER_CYCLE_AS_DURABLE_PROGRESS",
+    "no_accepted_change": "CONTINUE_NEXT_OUTER_CYCLE_WITHOUT_STATIONARITY",
+    "search_complete": false,
+    "stationary_cycle_credit": false,
+    "supply_unlocked": false,
+    "global_user_stop": "TERMINAL_SAFE_STOP",
+    "global_time_budget": "TERMINAL_SAFE_STOP",
+    "technical_error": "FAIL_CLOSED",
+    "rollback_error": "FAIL_CLOSED",
+    "realization_incomplete": "FAIL_CLOSED"
+  },
+  "supply_unlock": {
+    "criterion": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
+    "minimum_stationary_cycles": 2,
+    "bounded_budget_cycle_counts_as_stationary": false,
+    "supply_policy_inherited_from_v24913": true
+  },
+  "demand_policy": {
+    "generation_and_td_acceptance": "UNCHANGED_FROM_V24913_V24912_REBASE",
+    "finecdf_reference": "UNCHANGED_V19_SOFT_DIRECTIONAL_REFERENCE",
+    "native_ipf_tolerance": "UNCHANGED",
+    "validation_used_for_acceptance": false
+  },
+  "supply_policy": {
+    "inherited_exactly_from_v24913": true,
+    "step_ladder_seconds": [
+      80,
+      40,
+      20,
+      10,
+      5
+    ],
+    "lattice_seconds": 5,
+    "demand_hashes_frozen": true
+  },
+  "created_utc": "2026-10-19T05:52:27.874278+00:00",
+  "real_visum_tested": false,
+  "production_ready": false
+}

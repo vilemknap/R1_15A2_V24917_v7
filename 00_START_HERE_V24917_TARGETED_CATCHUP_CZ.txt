@@ -1,0 +1,571 @@
+R1 15A2 V24917 - CILENE A HRUBSI DOROVNAVANI OBJEMU DOPRAVY (TG)
+==================================================================
+Datum: 2026-10-25        Stav: OFFLINE_TESTED (1190 + 138 testu PASS), LIVE_PENDING
+Revize SKIMFIX1 (25. 10. 02:45): oprava napojeni dynamickych skimu
+Revize D11FIX1 (25. 10. 03:10): dynamicke 11D publikuje soubory komponent
+Revize D11FIX2 (25. 10. 03:00 SEC): dlouhe cesty Windows v pokusech TG
+Revize TDFIX1 (25. 10. 12:30): gap v TD realizaci, bez TD ve fazi dohaneni
+Revize BLENDFIX1 (25. 10. 16:45): TD blend padal v zakladni 11D diagnostice
+  (SimpleNamespace bez outer_adapter) + DIAGFAST parity modul nenalezen -> LEGACY
+Revize IZPEN1 (25. 10. vecer): paka na vnitrozonove cesty 15 velkych zon
+  (prirazka na diagonale kopie M9001 = M9002, hleda ji TD s cilem 65/35)
+Revize ICONG1 (25. 10. 17:45): v pozdejsi fazi (model/scitani >= 0,80) TD pocita s odporem
+  ze zatizene site: M9002 = OSRM x tCur/t0 ze skimu NATIVE_CW (MSA lambda 0,5) + prirazky
+Revize FASTASSIGN1 (25. 10. 19:10): pokusy TG prirazuji z ustalene zateze rodice
+  (bez resetu op 1/15 a preloadu op 17-19); prijeti a navrat dal plny postup AMDY
+Revize STEP1 + PERF3 (25. 10. 19:50): vypocteny krok TG (jeden pokus, prijeti rovnou,
+  bez rollbacku a noveho prirazeni), odlozene ZIPy, rychlejsi checkpoint, cache M9002, mereni casu
+Zaklad: V24916 FRESH0 ISOLATED ACTIVE TARGETING (vsechny soubory beze zmeny)
+
+SPUSTENI
+00. (25. 10. vecer) ODSTUPNOVANE NAVYSENI PRECHODU X1-X31 (x8 ... x2) - viz REVIZE BNDGEN1/BNDGEN2 na konci.
+0. JEDNOU predem (paka IZPEN1): ve Visumu otevrit vychozi .ver, spustit
+   R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py (zalozi M9002 = kopie M9001 a prepne na ni
+   matici odporu 16 nativnich vrstev TD), zkontrolovat vypis a ULOZIT jako novou .ver.
+   Bez toho kalibrace bezi dal, jen bez paky (konzole: "IZ lever inactive: ...").
+1. Cely ZIP rozbalit do NOVE ciste slozky.
+2. Ve Visumu otevrit .ver, ze ktereho ma kalibrace startovat (novy beh, cyklus 1).
+3. Scripts -> Run script file ->  01_SPUSTIT_V24917_TARGETED_CATCHUP.py
+   (NE 00_0_SPUSTIT_V24916_..., to je puvodni V24916.)
+   Na zacatku vypise "R1 15A2 V24917 TARGETED CATCH-UP" a v kazdem TG navrhu:
+   R1 V24917 TG: phase=CATCH_UP ratio=0.265 zones=... rows=... predicted_ratio=...
+Vystupy: jako u V24916 (slozka R1_15A2_V16_RUNS vedle .ver), navic
+V24917_RUNTIME_STATUS.json a v kazdem TG bloku DESIGN\V24917_TARGETED_GENERATION\
+(V24917_FIT_SUMMARY.json, V24917_FIT_PROJECTION_ROWS.csv).
+
+PROC TO DOSUD NESLO (cyklus 1, preview scale 1.0 z vaseho behu)
+- resic OD navedeni chtel jen +0,65 % produkce SERVICE a +0,36 % WORK;
+- projekce na marginaly zachovava soucty zon, ne ucinek na scitacich profilech:
+  zona, jejiz cesty vetsinou profily neprojizdeji, dostala jen zlomek pozadavku;
+- rodinny globalni krok se pridava vsem zonam plosne, P/A bere mensi stranu;
+- mekke pasmo [0,8; 1,25] tlumilo 820 z 1602 radku, 15 % zon na stropu 2,0;
+- vysledek +1 011 cest, soucet modelu na profilech +0,4 % za cyklus.
+- FlowBundle cileni ve V24916 nikdy nebezelo: ActiveDemandEvidenceBuilder.build
+  volal publish(skim_identity=dist) s nedefinovanym jmenem "dist" -> NameError
+  po vsech FlowBundle COM volanich -> fallback v kazdem cyklu (TG i TD maska).
+
+OPRAVA TD (TDFIX1)
+Beh RUN_20261025_030431: 5 prijatych TG kroku (pomer model/scitani 0,267 ->
+0,419, vazene GEH 60,1 -> 49,3, profilu s GEH>=20 429 -> 356). V cyklu 5 se
+poprve spustil TD a spadl na QUALITY_OPERATION_NOT_ACTIVE_PRT: V24916 cetla
+gap prirazeni az po obnoveni izolovanych priznaku TD (operace 20 neaktivni).
+Oprava: gap se cte uvnitr aktivniho planu, hned po vypoctu.
+Nove: periodicky TD (kazdy 5. cyklus) se ve fazi DOHANENI (pomer < 0,80)
+vynechava - TD objem nemeni a kazde jeho vyhodnoceni je cele prirazeni.
+TD dal bezi pri TG plateau. Zapnout lze td_during_catchup=true.
+Mezera 0,06 v mezich ADD_ATT_W (WORK atrakce) proti zamitnuti
+GENERATION_EFFECT_PROJECTION_ERROR_TOO_LARGE (spolecny navrh se mzdou).
+Pokracovani: otevrit ACCEPTED_A_0005_d644f9bad8a9.ver (nebo BEST_SO_FAR_0005)
+z RUN_20261025_030431\CALIBRATION\CHECKPOINTS a spustit novy beh.
+
+OPRAVA DLOUHYCH CEST (D11FIX2)
+Beh RUN_20261025_020826: baseline prosel, TG pokus 1 (krok +50 %) byl aplikovan
+a prepocten, ale diagnostika AFTER spadla na
+  [WinError 3] System nemuze nalezt uvedenou cestu
+Cesta ...\DEMAND_CYCLE_01_GENERATION\TRY_01\DIAGNOSTICS\11D_DYNAMIC_ASSIGNMENT_SKIM_AFTER\
+r1_step11d_v1_3_component_dist_behavior_component_model_dist_vs_idp_summary.csv
+prekrocila limit 260 znaku. Rollback probehl spravne (stav modelu shodny), beh
+skoncil s pravem restartu z posledniho prijateho checkpointu.
+Oprava: dynamicke 11D se pocita v kratke slozce %LOCALAPPDATA%\R1DF\D11\<id>
+(lze zmenit promennou R1_D11_SHORT_ROOT) a vysledne soubory se zkopiruji do
+slozky behu funkci odolnou proti dlouhym cestam. Hledani a kopirovani souboru
+11D pouziva rozsirene cesty \\?\.
+
+OPRAVA DYNAMICKEHO 11D (D11FIX1)
+Chyba z behu 02:48 v BASELINE_DIAGNOSTICS:
+  "11D component files incomplete under ...\11D_DYNAMIC_ASSIGNMENT_SKIM_BASELINE"
+V24916 presmerovala vysledek 11D do nove slozky s dynamickymi vzdalenostmi, ale
+nezkopirovala tam tri CSV soubory komponent, ktere hned potom cte tvorba TD
+signalu. (Tato cast V24916 se v realnem Visumu dosud nikdy nespustila.)
+V24917 soubory pripravi predem a po vypoctu je prepise dynamickymi hodnotami:
+souhrn komponent z dynamickeho prepoctu, podily v pasmech vzdalenosti z
+cerstvych DIS skimu po prirazeni (stejna pasma jako FineCDF), cilove podily beze
+zmeny. Zaznam: ...\11D_DYNAMIC_ASSIGNMENT_SKIM_<faze>\V24917_DYNAMIC_11D_FILES.json
+
+OPRAVA SKIMU (SKIMFIX1)
+Chyba V24916_DYNAMIC_SKIM_EXPECTED_6_ACTIVE_PRT_SKIMS_FOUND_0 (beh 02:28).
+Behem 02:42 se ukazalo, ze kod 103 je spravny: v ulozenem .ver z 02:28 skimy
+pravdepodobne nebyly aktivni. V24917 pocet aktivnich PrT skimu kontroluje pri
+startu a vypise:  V24917 PrT skim OPERATIONTYPE=<kod> (<metoda>, ...)
+Kdyby urceni selhalo, chyba vypise seznam vsech operaci s jejich typy; kod lze
+pak zadat rucne promennou prostredi R1_PRT_SKIM_OPERATION_TYPE=<kod>.
+Vystupni matice DIS se dal overuji podle DSEG kodu (beze zmeny).
+
+CO DELA V24917
+1. Novy navrh TG: zonovy fit na scitani (r1_15a2_zonal_count_fit_v24917).
+   Pro WORK a SERVICE se hledaji log-nasobky produkce (u) a atrakce (v) kazde
+   zony tak, aby linearni ucinek na VSECH 487 profilech co nejlepe pokryl
+   rezidua (scitani - model). Pouziva presnou incidenci cest aktualni epochy
+   (stejne prirazeni OD k profilum, jake FlowBundle overuje ve Visumu).
+   Model ucinku: zmena OD = u_puvod + v_cil - prumerny rust rodiny
+   (dvojite omezeni, jednotny rust P i A = stejny rust vsech OD).
+   - zony, jejichz cesty projizdeji podhodnocene profily, rostou;
+   - zony, ktere zatezuji jen pretizene profily, klesaji;
+   - zony bez vazby na scitani zustavaji beze zmeny (zadny plosny krok).
+2. Faze DOHANENI, dokud model/scitani < 0,80 (soucty na CAL profilech):
+   krok na zonu a cyklus az +50 % / -20 %, bez mekkeho tlumeni.
+   Faze DOLADENI potom: puvodni stupnovite limity kroku a mekke pasmo.
+3. Obalka koeficientu: ADD_PROD/ATT_W/S [0,25; 5,0], ZAHR referencni hodnota
+   x [0,25; 5,0]. V doladeni mekke pasmo [0,5; 2,5]. ADD_SALARY beze zmeny.
+4. Oprava FlowBundle evidence (podtrida, puvodni soubor nezmenen): evidence se
+   konecne publikuje, TD maska komponent muze byt aktivni. Maska TG kroku je
+   ve V24917 vypnuta (faktor 1,0), protoze fit je cileny sam.
+5. TG brana pred zapisem nefatalni (chyba z cyklu 19): kandidat se zamitne,
+   zkusi se mensi krok, pri vycerpani TG plateau.
+6. TD jen kazdy 5. cyklus a pri TG plateau; konec po 2 stacionarnich cyklech
+   (R1_RUN_OPTIONS.json, viz nize).
+7. DIAGFAST V2: 12D/11D hromadne cteni + NumPy; prvni volani kazde diagnostiky
+   se overi proti LEGACY (jednorazove asi +2 min), pri jakekoli chybe se
+   diagnostika zopakuje v LEGACY a zbytek behu jede LEGACY.
+   Zaznam: %LOCALAPPDATA%\R1DF\DIRECT_GUARD_*.jsonl
+
+CO SE NEMENI
+Akceptace (nove prirazeni + zive 12D/11D + vsechny guardy + rollback), vzorce
+TG, IPF, prirazeni, VDF, scitani, PROFILE488, dynamicke DIS skimy, zadne prime
+zapisy OD matic. Kazdy kandidat se overi skutecnym prepoctem; kdyz +50 %
+nektere profily prilis zhorsi, zamitne se a zkousi se backtracking 1/2, 1/4 ...
+
+VOLBY  R1_RUN_OPTIONS.json (vedle skriptu) nebo promenne prostredi
+  td_policy                  EVERY_N | ALWAYS | OFF                 R1_TD_POLICY
+  td_every_n_cycles          5                                      R1_TD_EVERY_N
+  td_when_generation_plateau true                                   R1_TD_ON_TG_PLATEAU
+  stop_when_stationary_cycles 2 (0 = vzdy vsech 100 cyklu)          R1_STOP_WHEN_STATIONARY
+  td_during_catchup          false (TD jen pri plateau, dokud <0,80)  R1_TD_DURING_CATCHUP
+  generation_envelope_scale  musi zustat 1.0 (V24917 ma vlastni obalku)
+  R1_DIAGFAST_BACKEND=LEGACY      cely beh bez DIAGFAST V2
+  R1_DIAGFAST_INLINE_PARITY=0     bez vstupni kontroly LEGACY/FAST
+  R1_DIAGFAST_DISABLE=1           DIAGFAST vubec neinstalovat
+  R1_MAX_GENERATION_PA_GAP        ve V24917 NEPODPOROVANO (nenastavovat)
+
+OMEZENI
+- Menit lze jen NATIVE WORK a SERVICE (vcetne stud). LONG, SCHOOL, zahranicni
+  a EXOG_EE matice zustavaji pevne. Pokud chybejici objem lezi hlavne v nich,
+  dohaneni se zastavi na horni obalce 5,0 - pak je potreba rozhodnout o dalsich
+  aktuatorech (napr. sazby H_LONG_*).
+- Fit je linearni prvni rad na aktualni epose cest. Skutecny ucinek se meri
+  az prepoctem; predicted_ratio ve vypisu je jen orientacni.
+- Realny Visum beh zatim neprobehl (LIVE_PENDING).
+
+================================================================================
+REVIZE ROSTER248 (25. 10. 2026) - KALIBRACE JEN NA VYBRANYCH PROFILECH
+================================================================================
+SEZNAM PROFILU
+  Kalibrace bere jen 248 scitacich mist: tabulka COUNTLOCATION-2026-10-25-13-52-33
+  (256) bez 8 profilu s nulovym modelem (920061/62, 920081/82, 920147/48,
+  920267/68) = 196 CSD smerovych + 52 mestskych BOTH, misto puvodnich 488.
+  Hodnoty scitani, useky a vahy se berou beze zmeny z puvodni autority 488
+  (vahy 1,0 CSD / 0,9 mesto); tabulka urcuje jen, ktere profily patri do cile.
+  Soubory: authorities/R1_PROFILE_ROSTER_V24917*.{json,csv,xlsx},
+           helpers/R1_12D_PROFILE_ROSTER_V24917.py
+  Ostatni CountLocations mohou v modelu zustat - kalibrace je ignoruje.
+  Na startu se vypise:
+     R1 V24917 PROFILE ROSTER: 248 profiles (196 CSD + 52 CITY) ...
+  Jiny seznam: exportovat CountLocations z Visumu do xlsx a spustit
+     python tools/build_profile_roster_v24917.py <export.xlsx> [--exclude NO,NO]
+     python tools/refresh_v24917_manifests.py
+  Vratit 488: promenna prostredi R1_PROFILE_ROSTER_DISABLE=1.
+
+OBJEM POPTAVKY (stav do 25. 10. 19:30, od CATCHUP2 opet zapnuto - viz konec souboru)
+  R1_RUN_OPTIONS.json: tg_catchup_enabled = false
+  TG bezi jen ve fazi REFINE (krokove meze etap, mekke pasmo 0,5-2,5);
+  zadne +50 %/cyklus. Zpet: true nebo R1_TG_CATCHUP=1.
+  td_every_n_cycles = 2: TD (krivky b/c) bezi kazdy 2. cyklus a pri TG plateau.
+
+V seznamu zustalo 7 profilu s modelem < 10 % scitani (diagnostika 25. 10.):
+912017 912055 912067 920032 920033 920123 920124.
+
+================================================================================
+REVIZE TDBLEND1 + RELAX1 (25. 10. 2026) - TD PODLE SCITANI, VOLNEJSI A RYCHLEJSI KROKY
+================================================================================
+TD (krivky b/c) - NOVA OPTIMALIZACNI FUNKCE
+  F = 0,65 * scitani + 0,35 * pruzkum mobility (IDP), obe casti = 1 na zacatku TD
+  scitani: prumer GEH^2 na 248 kalibracnich profilech (jmenovatel pevny pro etapu)
+  pruzkum: puvodni FineCDF (512 bodu CDF + 0,25 * chyba prumeru), beze zmeny vzorce
+  Vnitrni hledani: jen operace TD (sekundy), trasy a skimy zmrazene na aktualni
+  epose; zmena scitani z FlowBundle (vozidla OD skrz profil) + kappa/pasma.
+  Prijeti po realizaci (nove prirazeni, zive 12D/11D):
+     0,65 * GEHw_po/GEHw_pred + 0,35 * IDP_po/IDP_pred <= 0,999
+     drzi se: sada pozorovani, chranene profily, nove tezke GEH, autorita slozek;
+     pruzkum se smi zhorsit nejvys o 25 %.
+  Vypis:  R1 V24917 TD BLEND: F=0.93 counts 49.3->45.1 ... -> ACCEPT
+  Zaznam vnitrniho hledani: ...\FINECDF_INNER\V24917_TD_COUNT_BLEND.jsonl
+
+TG (zonovy fit) - VOLNEJSI KROKY (faze REFINE)
+  krok na zonu a cyklus  +25 % / -20 %    (driv etapove meze +-3 %)
+  mekke pasmo            0,4 - 3,0         (driv 0,5 - 2,5)
+  tlumeni vnejsich kroku 50 %              (driv 15 %)
+  hrebenova penalizace   0,01              (driv 0,02)
+  tvrda obalka           0,25 - 5 beze zmeny
+
+ZRYCHLENI (R1_RUN_OPTIONS.json)
+  tg_max_trials              3   pokusu TG na cyklus (driv az 6 prirazeni)
+  td_realization_max_trials  3   realizaci TD (1; 1/2; 1/4) misto 7
+  td_inner_max_evaluations   60  vnitrnich vyhodnoceni TD na etapu (driv az 180)
+  td_inner_mode   FROZEN_PATHS (vnitrni krok bez prirazeni) | DYNAMIC (puvodni, pomale)
+  td_count_weight 0.65 (podil scitani v TD)       promenne: R1_TD_COUNT_WEIGHT,
+  R1_TD_INNER_MODE, R1_TG_MAX_TRIALS, R1_TD_REALIZATION_MAX_TRIALS, R1_TD_INNER_MAX_EVALS
+
+================================================================================
+REVIZE LSGEN1 (25. 10. 2026) - KALIBRACE GENEROVANI LONG A SCHOOL
+================================================================================
+PREDPOKLAD V MODELU (jinak se LSGEN1 vypne a vypise "inactive")
+  zonove atributy ADD_PROD_L (start 0,2 = AMDY k_long), ADD_ATT_L, ADD_PROD_SCH,
+  ADD_ATT_SCH (start 1,0) a vzorce:
+    FP_3_LONG_*  = [ADD_PROD_L]*[H_LONG_*]*[E_*|NUM_VS]*[NOT_ZAHR]/2,8
+    FA_3_LONG    = [ADD_ATT_L]*(0,4*[POP_ZP]+0,6*[NUM_PM]+0,2*[PRENOC_SVK])*[NOT_ZAHR]
+    FP_5_SCHOOL  = [ADD_PROD_SCH]*(...puvodni...)
+    FA_5_SCHOOL  = [ADD_ATT_SCH]*(...puvodni...)
+  Kontrola: R1_LONG_SCHOOL_FORMULA_CHECK.py (zdvojnasobi koeficient v 1 zone a vrati).
+CO KALIBRATOR DELA
+  Po zonovem fitu WORK/SERVICE resi zbytek odchylek:
+  - SCHOOL po zonach (produkce i atrakce); expozice = FlowBundle WORK x podil
+    SCHOOL ve vozidlove bunce OD (M9225/M9226); obalka 0,25-5.
+  - LONG jednim globalnim krokem ADD_PROD_L (vsechny zony); expozice = zive
+    zatizeni NATIVE_CL na profilu x podil produkce, kterou koeficient skaluje;
+    obalka 0,5-2 x vychozi hodnota (0,1-0,4).
+  - LSSENS1 - citliveji nez WORK/SERVICE (R1_RUN_OPTIONS.json, ls_*):
+      krok na zonu a cyklus  +-10 %       (W/S +25 % / -20 %)   ls_max_step_up/down
+      SCHOOL obalka          0,67 - 1,5   (W/S 0,25 - 5)        ls_school_envelope
+      LONG obalka            0,5 - 2 x ref                       ls_long_envelope_ref
+      hrebenova penalizace   0,05         (W/S 0,01)            ls_ridge_relative
+  Radky se zapisou ve stejnem pokusu TG (jedno prirazeni), jsou soucasti
+  snapshotu a rollbacku. Zaznam: ...\V24917_LONG_SCHOOL_ROWS.json a v
+  V24917_FIT_SUMMARY.json polozka long_school.
+
+Podrobnosti: V24917_IMPLEMENTATION_AND_TEST_REPORT_CZ.md
+
+================================================================================
+REVIZE FASTASSIGN1 (25. 10. 2026) - RYCHLE PRIRAZENI V POKUSECH TG
+================================================================================
+Plny postup AMDY (op 1 reset, TG, TD, kappa, symetrizace, op 15 reset, preload
+op 17 nakladni, op 18 a 19 nativni, op 20 spolecne prirazeni vsech 14 vrstev)
+zustava pro vse, co urcuje stav kalibrace. Jen ZKUSEBNI prirazeni pokusu TG
+vypne pro jedno spusteni operace 1, 15, 17, 18, 19: op 20 tak startuje
+z ustaleneho spolecneho rovnovazneho stavu rodice (princip preloadu, jen lepsi
+pocatecni reseni). Kontrola kvality (gap op 20 <= 0,005) beze zmeny.
+
+  pokus TG (scale 1 / 0,5 / 0,25)   -> rychle (warm start)
+  navrat po pokusu                  -> plny postup (presna reprodukce rodice)
+  prijeti viteze                    -> plny postup; o prijeti se rozhoduje znovu
+                                       na tomto prirazeni (gate + cilova funkce)
+  realizace TD, vychozi stav, uloz. -> plny postup (beze zmeny)
+Kdyz plny postup pri prijeti viteze nepotvrdi, cely blok TG se zopakuje
+s pokusy v plnem postupu (zadny falesny plateau). Pokud sekvence ve Visumu
+neodpovida (typy/pozice operaci), pouzije se puvodni plny plan.
+
+Volby R1_RUN_OPTIONS.json (promenne prostredi):
+  fa_enabled         true              (R1_FA_ENABLED=0 vypne)
+  fa_skip_positions  [1,15,17,18,19]   (R1_FA_SKIP_POSITIONS)
+  fa_blocks          ["GENERATION"]
+Kontrola: v kazdem pokusu TRY_xx\ASSIGNMENT\PROCEDURE_EXECUTION_PLAN_ACTIVE.json
+  "mode": "V24917_FAST_WARM_TRIAL", "v24917_fast_trial": {"applied": true, ...};
+  na startu konzole: "V24917 FASTASSIGN1: ON; warm Generation trials skip ops ..."
+
+================================================================================
+REVIZE STEP1 + PERF3 (25. 10. 2026) - VYPOCTENY KROK TG A NIZKORIZIKOVE USPORY
+================================================================================
+DRIV: pokusy scale 1 / 0,5 / 0,25; kazdy pokus = prirazeni + 12D/11D + navrat
+(dalsi prirazeni); vitez se znovu aplikoval a znovu priradil.
+  prijaty plny krok: 2 prirazeni; prijaty 2. pokus: 5 prirazeni.
+
+NYNI (ts_enabled = true):
+1. Krok se SPOCITA. Predpoved zateze profilu pro krok s:
+     linearne z fitu TG + LONG/SCHOOL: m(s) = m0 + s * rho * d
+       (rho = nauceny pomer skutecne/predpovezene odezvy, upresnuje se kazdy cyklus)
+     po zmerenem pokusu (secna):        m(s) = m0 + s/s1 * (m1 - m0)
+   Na predpovezene zateze se pusti SKUTECNE prijimaci rozhodnuti (stejny guard,
+   stejna konfigurace, stejna etapa) pro 20 hodnot s. Vybere se s s nejvetsim
+   predpovezenym zlepsenim GEH, ktere projde guardem i pri s * 1,15 (rezerva).
+2. Jeden pokus v tomto s (plne prirazeni AMDY + 12D/11D + guard jako driv).
+   Projde-li, ZUSTANE jako novy stav: zadny navrat, zadne nove prirazeni.
+3. Neprojde-li: parametry rodice se zpet zapisi (jen COM), dalsi s se spocita
+   ze zmerene secny (mensi nez predchozi) a zkusi se. Plny navrat (prirazeni
+   + overeni diagnostik) jen kdyz blok skonci bez prijeti.
+  prijaty 1. pokus: 1 prirazeni;  prijaty 2. pokus: 2 prirazeni.
+Zaznam: GENERATION\STEP1_PLAN_xx.json (mrizka s, predpoved, duvody guardu),
+  GENERATION_BLOCK_RESULT.json: plan_mode LINEAR_FIT/SECANT_MEASURED,
+  predicted_objective vs measured_objective, rho_measured, adopted_in_place.
+Volby: ts_enabled true | ts_robust_margin 0.15 | ts_min_scale 0.05 |
+       ts_max_scale 1.0 | ts_grid_points 20 | pocet pokusu = tg_max_trials (3)
+FASTASSIGN1 (rychle prirazeni pokusu) se pouziva jen pri ts_enabled = false:
+pri prijeti pokusu primo na miste musi byt pokus plnym postupem AMDY.
+
+PERF3 (perf3_enabled = true)
+- ZIP pracovni slozky 12D/11D u pokusu: odlozen po rozhodnuti; odmitnuty pokus
+  se nezipuje (zustava kompaktni zrcadlo + *_ZIP_SKIPPED_REJECTED_TRIAL.json),
+  prijaty nebo chybovy se zipuje jako driv.
+- Checkpoint: SHA-256 souboru se nepocita opakovane; BEST_SO_FAR je pevny odkaz
+  (hard link) na prijaty checkpoint misto kopie 0,6 GB (jinak kopie jako driv).
+- M9002 v kazdem snapshotu: z pameti mezi zapisy prirazek/odporu, kazdy 25.
+  snapshot se overi ctenim z Visumu; LoadVersion cache maze.
+- Mereni casu: V24917_TIMING.json v kazdem bloku TG a TD (prirazeni, 12D, 11D,
+  snapshot, navrh, rollback, ukladani, checkpoint, export cest, ZIP) +
+  konzole "R1 V24917 TIMING GENERATION: procedure_sequence 410s/1, ...".
+  Casy jsou vcetne vnorenych kroku (prirazeni uvnitr rollbacku se pocita v obou).
+Skimy rodice z pameti po rollbacku: nezavedeno - pri prijeti na miste se
+rollback deje jen po neuspesnem bloku, uspora by byla mala a vyzadovala by
+primy zapis matic skimu.
+
+================================================================================
+REVIZE CATCHUP2 (25. 10. 2026 19:40) - DOHANENI OBJEMU ZNOVU ZAPNUTO
+================================================================================
+Beh RUN_20261025_181651: model/scitani 0,343 -> 0,419 za 3 prijate kroky
+(REFINE: +-25 % na zonu, LONG +10 % na cyklus = strop v kazdem cyklu).
+K saturovane siti (poptavka ~2,4x vic na profilech) by REFINE potreboval ~7
+prijatych plnych kroku + TD kazdy 2. cyklus (~16 min).
+R1_RUN_OPTIONS.json nyni:
+  tg_catchup_enabled  true   faze CATCH_UP do model/scitani 0,80:
+                             krok na zonu +50 % / -20 %, bez mekkeho tlumeni
+  td_during_catchup   false  TD (b/c + prirazky IZPEN1) se v dohaneni preskakuje,
+                             bezi jen na plateau TG; od 0,80 zase kazdy 2. cyklus
+                             a s odporem ze zatizene site (ICONG1)
+  ls_max_step_up      0.5    LONG/SCHOOL az +50 % na cyklus (driv +10 %),
+                             obalky LONG 0,5-2,0 x start a SCHOOL 0,67-1,5 beze zmeny
+STEP1 v dohaneni hleda nejvetsi krok, ktery projde guardem (jeden novy profil
+nesmi zhorsit GEH o vic nez 15, chranene profily, GEH40) - velke kroky tedy
+nejsou slepe, guard se predpovida pred prirazenim.
+Vratit: tg_catchup_enabled false, ls_max_step_up 0.1.
+
+================================================================================
+REVIZE COMBUSY2 (25. 10. 2026 19:55) - "Volany odmitl volani" UZ BEH NEUKONCI
+================================================================================
+Beh RUN_20261025_181651, cyklus 3: krok TG (1,0) prosel (GEH 48,6 -> 45,9, pomer
+0,419 -> 0,461), pri opakovanem prirazeni (adopci) 11D dostalo od Visumu 5x
+com_error -2147418111 "Volany odmitl volani" behem ~1,5 s (puvodni rozpocet
+opakovani) a navrat selhal hned na prvnim pristupu k Visum.Net.Zones
+-> FAILED_MANUAL_REOPEN_LATEST_ACCEPTED_REQUIRED.
+Visum takto odmita volani, kdyz je jeho okno zaneprazdnene / modalni (otevreny
+dialog, klikani do okna Visumu, prekreslovani site).
+Nyni (r1_15a2_combusy2_v24917.py):
+ 1. kazde COM volani s opakovanim ceka az cb_max_wait_seconds (900 s) misto 1,5 s
+ 2. filtr zprav COM: i nezabalena volani (Visum.Net.Zones ...) opakuje sam COM
+    (pokud pywin32 filtr nepovoli, konzole napise "message filter: OFF ...")
+ 3. navrat (rollback) se pri odmitnuti zopakuje; blok TG/TD, ktery spadl na
+    odmitnutem volani, se zopakuje od identickeho rodice (max cb_block_retries=3)
+Doporuceni: behem kalibrace do okna Visumu neklikat a neotvirat v nem dialogy.
+
+================================================================================
+REVIZE BNDGEN1 (25. 10. 2026 20:15) - HRANICNI PRECHODY X1-X31
+================================================================================
+A) JEDNORAZOVE NAVYSENI x3 (pred startem kalibrace)
+   Synteticka produkce P09F4_PER_PRE_* a atrakce A09F4_PER_PRE_* kordonovych zon
+   650-680 (X1-X31), vsech 16 nezahranicnich vrstev (WORK/SERV/LONG x 5 skupin,
+   SCHOOL), P i A stejnym faktorem.  FOREIGN, FP/FA, ADD_*, ZAHR_*, matice: beze zmeny.
+   1. Ve Visumu otevrit ACCEPTED_A_0003_1b5adaebec76.ver (stav, ze ktereho se pokracuje)
+   2. Scripts -> Run script file -> R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py
+      -> <slozka .ver>\R1_BOUNDARY_X_PA_UPLIFT\DRYRUN_*\00_STATUS.txt, 02_ZONE_TOTALS.csv
+   3. Run script file -> R1_BOUNDARY_X_PA_UPLIFT_APPLY.py
+      00_STATUS.txt musi byt PASS_APPLIED_NOT_SAVED (zaloha BACKUP_BEFORE.json.gz)
+      Pri chybe se puvodni hodnoty vrati (FAILED_ROLLED_BACK) - .ver neukladat.
+      Druhe spusteni na uz navysenem modelu skript odmitne (zadne x9).
+   4. SAVE AS novou .ver (napr. ..._X3.ver) a z ni spustit kalibraci (krok 3 nize).
+   Faktor/zony: promenne FACTOR, ZONES na zacatku skriptu.
+
+B) PAKA KALIBRACE (r1_15a2_boundary_generation_v24917.py, bd_enabled = true)
+   Hranicni zony dosud nemely zadnou paku (ADD_* jen v 650 domacich zonach),
+   proto deficit u prechodu (X1 0,18, X4 0,18, X2 0,11, X9 0,07, X29 0,09) nemizel.
+   Nyni: jedna promenna na (WORK|SERVICE, prechod) - logaritmicky krok, ktery nasobi
+   P i A teto zony v 5 vrstvach rodiny.  Fituje se SPOLECNE s domacimi W/S promennymi
+   (stejne vahy, hreben, P/A rovnovaha), citlivost = vsechny OD z/do prechodu na profilech.
+   Meze: krok faze (dohaneni +50 % / -20 %, ladeni +-25 %) a obalka ZAHR x[0,25; 5]
+   hodnoty na startu behu (tj. po navyseni x3).  LONG/SCHOOL vrstvy prechodu a FOREIGN
+   kalibrace nemeni.  Zapis ve stejnem pokusu jako W/S, soucast snapshotu a navratu.
+   Konzole na startu: "R1 V24917 border-crossing P/A lever: ACTIVE zones=[650, ...]".
+   V navrhu TG: DESIGN\V24917_TARGETED_GENERATION\V24917_BOUNDARY_STEPS.json.
+   Volby: bd_enabled true | bd_zones "650-680".
+
+REVIZE BNDGEN2 (25. 10. 20:30) - NAVYSENI PODLE OBJEMU PRECHODU, SPOLEHLIVE SPUSTENI
+  Faktor podle soucasne synteticke produkce prechodu V (soucet 16 vrstev P):
+     V <= 300 -> x8 | V >= 2000 -> x2 | mezi: logaritmicky (500 -> x4,9; 1000 -> x3,3)
+  P i A zony stejnym faktorem, zona s V = 0 zustava 0.  Parametry LOW_VOLUME,
+  HIGH_VOLUME, FACTOR_LOW, FACTOR_HIGH na zacatku skriptu.
+  Skript se spusti vzdy (driv mohl v nekterem prostredi Visumu nespustit main) a na
+  konci ukaze okno s vysledkem a cestou k vystupu (vedle .ver, jinak vedle skriptu,
+  jinak Dokumenty).  02_ZONE_TOTALS.csv: zona; P pred; faktor; P po; A pred; A po.
+
+REVIZE ROSTEREDGE1 (25. 10. 20:50) - SCITACI MISTO 912071 NA NOVEM USEKU
+  Po uprave site je CountLocation 912071 (R1LC071, TT_PROFILE_09, 30 007 voz./den, BOTH)
+  na useku 9800632 (9900317 -> 9900316) misto 2004239 (1001732 -> 1003238).
+  Autorita 248 profilu (R1_PROFILE_ROSTER_V24917_CITY.csv) prevzala novou hranu,
+  pozorovani, vaha a role beze zmeny; zaznam v R1_PROFILE_ROSTER_V24917.json "edge_resync".
+  Prepecetene: roster JSON (CSV + helper SHA), helper 12D, DIAGFAST a V24917 manifest.
+  Pri dalsich upravach site u scitacich mist: start skonci chybou
+  V24917_ROSTER_LIVE_MODEL_INCOMPATIBLE:...:<cislo>:EDGE:(nova)!=(stara) - poslat chybu
+  (nebo export CountLocations) a autorita se precte znovu.
+REVIZE COMBUSY2FIX1 (25. 10. 20:55): start padal "module 'pythoncom' has no attribute
+  'IID_IMessageFilter'" - pywin32 ve Visumu nema filtr zprav COM.  Filtr je ted ciste
+  volitelny (konzole "message filter: OFF PYWIN32_WITHOUT_IMESSAGEFILTER"); ochrana proti
+  "Volany odmitl volani" dal plati: opakovani az 900 s + opakovani navratu a bloku.
+REVIZE PREFLIGHT2 (25. 10. 21:10): po uprave site start padal V240_LIVE_RECOMPUTE_PREFLIGHT_FAILED
+  bez duvodu.  Pri editaci site Visum smaze vysledky prirazeni, predkontrola ale chtela
+  precist kvalitu (gap) operace 20 z otevrene .ver.  Chybejici vysledky prirazeni uz start
+  neblokuji (gap se kontroluje po kazdem prirazeni, prvni hned v BASELINE_FULL_RECOMPUTE).
+  Pokud predkontrola selze z jineho duvodu, chyba ted rika proc (TG, procedure sequence,
+  plan prirazeni, useky s t0 + 10*ADDVAL1 <= 0) a PREFLIGHT\00_PREFLIGHT_FAILURE_EXPLAINED.json.
+REVIZE PREFLIGHT3 (25. 10. 21:20): skutecna pricina pradu = BASELINE_OUTSIDE_POSITIVE_COST_DOMAIN:
+  4 useky s nulovym casem jizdy pro C (t0 + 10*ADDVAL1 < 0,001 s), 3 nove z upravy site:
+  8001203 (9000273->9000289), 9800570 (9000289->9900299), 9800572 (9900299->9000401),
+  9800634 (9900317->9900312).  Takove useky se ted vyradi z paky ADDVAL1 (kalibrace nabidky)
+  a start pokracuje; konzole je vypise.  V prirazeni se ale dal pouzivaji s nulovym casem -
+  DOPORUCENO opravit v siti (delka / rychlost v0 / TSys C).
+
+================================================================================
+REVIZE SUPPLYMIX1 + TDCATCHUP3 (25. 10. 2026 22:30)
+================================================================================
+A) TD BEHEM DOHANENI KAZDY 3. CYKLUS
+   R1_RUN_OPTIONS.json: td_during_catchup = true, td_every_n_cycles = 3,
+   td_first_cycle = true (TD vzdy v prvnim cyklu behu - novy start i restart; 23:12).
+   TD (65 % scitani / 35 % pruzkum) bezi v cyklech 3, 6, 9, ... i ve fazi dohaneni
+   a dal po kazdem cyklu, kde TG nic neprijalo.
+
+B) LADENI ROUTE CHOICE PRES ADDVAL1 V KAZDEM CYKLU (r1_15a2_supply_mix_v24917.py)
+   Pretizene profily s vysokym GEH (912051, 912133, 912136) jsou problem volby trasy.
+   Po bloku TG kazdeho cyklu (sp_every_n_cycles) se na prijatem stavu:
+   1. Z ulozenych skutecnych cest Visumu (path epocha) najdou pro kazdy ridici profil
+      souvisle useky cest PRES profil (ON) a alternativ, ktere se mu vyhybaji (OFF).
+      Pretizeny profil: ON +ADDVAL1 (zpomali), OFF -ADDVAL1 (zatraktivni).
+      Podzatizeny profil: obracene.  1 ADDVAL1 = 10 zobecnenych sekund.
+   2. Jeden slouceny kandidat: nejlepsi vetev kazdeho profilu (od nejvyssiho GEH, max
+      sp_max_groups profilu, useky se neprekryvaji, max sp_max_edges useku), krok
+      sp_step_units[0] x 0,5 ADDVAL1 (8 -> 4 ADDVAL1 = 40 s).
+      Ve fazi DOHANENI jen pretizene profily (objem resi TG), potom oba smery
+      (sp_drivers AUTO | OVERLOADED | BOTH).
+   3. Pokus = studene prirazeni od resetu op 15 pres preloady 17-19 do op 20 + skimy.
+      Matice poptavky se nemeni, navrat je proto presny (shodne diagnostiky).
+   4. Prijeti = schvalena pravidla pro nabidku (guard SUPPLY_ADDVAL1: jednotlivy profil
+      max +20 GEH, vysoke GEH max +15, zadny novy GEH40) + celkova cilova funkce scitani
+      se musi zlepsit.  Prijaty pokus zustava (bez noveho prirazeni), ulozi se checkpoint.
+   5. Odmitnuty: rodicovske ADDVAL1 zpet zapisem, 2. pokus s polovicnim krokem bez
+      profilu, ktere se zhorsily na stejne strane (prestrel se nevyrazuje - mensi krok ho
+      opravi).  Nic neprijato -> overeny navrat na identicky stav.
+   6. Chyba nikdy neukonci beh: pred zapisem se jen zaznamena, po zapisu overeny navrat;
+      kdyz navrat nevyjde hash-shodne, prepocet cele sekvence z rodicovskych parametru.
+   Limity ADDVAL1 (config): krok max 8, kumulativne max +-15 od vychozi hodnoty, mrizka 0,5,
+   absolutne +-100, t0 + 10*ADDVAL1 > 0.  Useky s nulovym t0 (PREFLIGHT3) se nemeni.
+   Vystup: DEMAND_CYCLE_xx_SUPPLYMIX\SUPPLYMIX_BLOCK_RESULT.json (vybrane profily, kroky,
+   GEH ridicich profilu pred/po, duvody odmitnuti), TRY_xx\SUPPLYMIX_CANDIDATE.json.
+   Konzole na startu: "V24917 SUPPLYMIX1: ON; ADDVAL1 route choice every 1 cycle(s) ...".
+   Volby: sp_enabled true | sp_every_n_cycles 2 | sp_start_cycle 2 (cykly 2, 4, 6, ...; zmena 23:10) | sp_max_trials 2 |
+          sp_step_units [8, 4] | sp_max_groups 12 | sp_max_edges 120 |
+          sp_min_driver_geh 10 | sp_drivers BOTH (zapnuto 22:45; AUTO = v dohaneni jen pretizene) | sp_cold_reset_position 15 |
+          sp_min_attribution_coverage 0.5 (path epocha je zmrazena, TG mezitim pridava
+          poptavku - podil vysvetleny ulozenymi cestami proto klesa).
+   Cena: 1 prirazeni na prijaty blok, 2-3 na neprijaty.  Zpomaleni: sp_every_n_cycles 2.
+
+C) POKRACOVANI: z posledniho ACCEPTED_A_0003_7954c436a3bf.ver behu RUN_20261025_211330
+   (stejne jako dosud, krok 3).  Volby TD/SUPPLYMIX se nacitaji pri startu.
+
+REVIZE TDROLLBACK1 (26. 10. 00:40) - PAD RUN_20261025_232921 CYKLUS 1
+  TD nic neprijalo (vsechny kroky blokovaly 920047, 920048, 920140, 920438 o +22-24 GEH)
+  a navrat na rodice skoncil V242_TD_ROLLBACK_NOT_IDENTICAL -> beh se zastavil.
+  Parametry b/c se vratily presne (readback OK), prepocet TD -> prirazeni ale nedal
+  bitove stejny vysledek (max GEH 201.80642696705 -> 201.80642696695).  Navrat TD
+  vyzadoval shodu otisku, navrat TG uz drive pouzival toleranci 1e-10.
+  Nyni (r1_15a2_td_rollback_tolerant_v24917.py): pri neshode otisku se stav prijme
+  jako rodic jen kdyz (a) vsechny parametry jsou presne zpet (TG, ADDVAL1, kontext site,
+  vnitrozonove prirazky, TD b/c v tolerance readbacku) a (b) prepoctene zatizeni
+  vsech profilu se lisi max o 0,5 voz. / 1e-4 relativne a vazeny GEH max o 0,01.
+  Jinak beh skonci jako dosud.  Zaznam: ...\TDROLLBACK1_TOLERANT_RESULT.json.
+  POKRACOVANI: z ACCEPTED_A_0001_59c5d0bfa586.ver (krok TG cyklu 1 je v nem).
+
+REVIZE TDSPLIT1 + SEVRELAX1 (26. 10. 01:00)
+  1. TD realizace zkousi b/c a vnitrozonove prirazky oddelene: nejdriv spolecne (kroky
+     1 / 0,5 / 0,25), kdyz neprojde nic, jen b/c pri puvodnich prirazkach (1 / 0,5),
+     potom jen prirazky pri puvodnich b/c (1 / 0,5).  Nic neprijato -> navrat.
+     Volba iz_split_realization (true).  Zaznam: TD_REALIZATION_ATTEMPTS.json, pole "kind".
+  2. Prirazka zony se v jednom TD kroku zmeni nejvys o iz_max_cycle_change_min = 2,5 min
+     (drive az 7,5 min); k cili se dojde postupne za nekolik cyklu.
+  3. Zmirnene rozpocty skoku GEH pro TG, TD i ADDVAL1 (R1_RUN_OPTIONS.json):
+     sev_max_single_profile_geh_increase 25 (drive 15 TG/TD, 20 ADDVAL1),
+     sev_max_high_geh_increase 15 (drive 10 TG/TD) pro profily s GEH > 60.
+     Ostatni pojistky beze zmeny (zadny novy GEH40 nad rozpocet, severity20/30,
+     chranene profily, celkova cilova funkce se musi zlepsit).
+
+REVIZE GATEFIT1 (26. 10. 02:10) - PAD RUN_20261026_011631 CYKLUS 1
+  Vypocteny krok TG 0,85 neprosel kontrolou pred zapisem (GENERATION_PA_GAP_WORK/SERVICE:
+  produkce a atrakce rodiny se lisi o vic nez 2 %) a STEP1 to bral jako chybu -> pad.
+  (Dosavadni neprulomnost brany platila jen pro stary zpusob pokusu, ne pro STEP1.)
+  Nyni: brana se overi na nahledu kroku jeste pred zapisem a prirazenim; kdyz neprojde,
+  krok se zmensuje (x0,75) az projde.  Kdyz neprojde zadny krok >= ts_min_scale, blok TG
+  konci jako plato (bez zmeny) a pokracuje TD / ADDVAL1.  Zaznam v GENERATION_BLOCK_RESULT.json:
+  attempts[].pre_apply_gate_shrink (krok, duvod, mezery P/A po rodinach).
+  POKRACOVANI: znovu z ACCEPTED_A_0001_59c5d0bfa586.ver (beh RUN_20261026_011631 nic neprijal).
+
+REVIZE AUDIT1: RBCONS1 + SEVRELAX2 (26. 10. 03:30) - KONTROLA KONFLIKTU MEZI HRANICEMI A KROKY
+  1. Od cyklu 13 by se tise vratily stare prisne meze prijeti (V2.4.9.5: skok GEH jednoho
+     profilu max 2,0, max 3 nove GEH20; TD 1,0) - uvolnene rozpocty 25/15 plati jen do cyklu 12
+     (early_exploration_acceptance.through_outer_cycle).  Videno v drivejsim behu v cyklech
+     13-18 (MATERIAL_NEW_GEH20_COUNT_EXCEEDED).  Nyni sev_extend_early_horizon = true:
+     stejne meze ve vsech cyklech behu.
+  2. Dukaz pro opakovane pouziti diagnostiky po navratu (rollback) porovnaval 498 profilu
+     se soucasnym seznamem 248 -> vzdy selhal a kazdy navrat pocital plnou diagnostiku (~100 s).
+     Nyni se pouzije pocet aktivniho seznamu profilu; dukaz sam je stejne prisny.
+  3. Navrat TG / ADDVAL1 mel stejne riziko padu na sumu jako TD (opraveno TDROLLBACK1):
+     kdyz jsou parametry i matice presne zpet a zatizeni se lisi jen sumem (0,5 voz. /
+     vazeny GEH 0,01), beh pokracuje (RBCONS1_TOLERANT_ROLLBACK.json).  Jinak pad jako dosud.
+  4. Hledani vnitrozonovych prirazek mohlo navrhnout posun az 15 min, ale realizace bere
+     nejvys 2,5 min -> TD se vyhodnocoval v bode, ktery hledani nespocitalo.  Hledani je
+     nyni omezeno stejnou mezi 2,5 min.
+  Nove volby (R1_RUN_OPTIONS.json): sev_extend_early_horizon (true), sev_protected_after_hard_geh
+  (0 = beze zmeny 20), rb_tolerant_diagnostics (true), rb_roster_reuse_proof (true).
+  POKRACOVANI: z ACCEPTED_A_0001_59c5d0bfa586.ver.
+
+REVIZE BDPA1 (26. 10. 04:30) - TG V CYKLU 1 NEPROSEL BRANOU P/A ZADNYM KROKEM
+  Beh z 26. 10.: krok TG 0,85 ... 0,064 vzdy GENERATION_PA_GAP_WORK/SERVICE, relativni mezera
+  ~100 % nezavisla na kroku (WORK: produkce +25 087, atrakce +580).  TG proto nic nezmenil
+  (bez padu - GATEFIT1 zafungoval), TD byl prijat.
+  Pricina: fit TG vyvazuje produkce a atrakce za CELY krok vcetne hranicnich prechodu
+  X1-X31 (BNDGEN1), ale zdedene vyvazeni a brana pred zapisem pocitaly jen domaci zony;
+  hranicni radky se pridavaji az potom.  Kdyz cast rustu atrakci nesou prechody,
+  domaci cast vypada nevyvazene -> brana odmitla kazdy krok (pri stejnem znamenku by
+  zdedene vyvazeni naopak tise srazilo produkce na tu malou atrakci).
+  Nyni: vyvazeni P/A i brana pocitaji domaci + hranicni zmeny stejneho kroku; vyvazuje se
+  jen zeslabenim radku, ktere prebytek tlaci (spolehlive i pri smisenych znamenkach).
+  Zaznam: GENERATION_DESIGN.json -> summary.v24917_internal_pa_delta_by_family,
+  v24917_boundary_pa_delta_by_family; v GENERATION_BLOCK_RESULT.json pri odmitnuti
+  pre_apply_gate_shrink[].pa_gaps._internal / _boundary.
+  POKRACOVANI: z posledniho prijateho checkpointu tohoto behu (TD cyklu 1 prijat) nebo
+  z ACCEPTED_A_0001_59c5d0bfa586.ver.
+
+REVIZE BALANCE1 (26. 10. 05:00) - SKUTECNA PRICINA MEZERY P/A + HRANICNI PRECHODY VYPNUTY
+  Z V24917_FIT_SUMMARY.json / V24917_BOUNDARY_STEPS.json: hranicni prechody P/A NEposouvaly
+  (jejich P a A jsou prakticky shodne).  Mezeru vyrobil sam fit TG:
+     SERVICE: produkce +63 967, atrakce -2 361;  WORK: produkce +31 053, atrakce -178.
+  Rovnovaha P/A byla ve fitu jen mekka pokuta a na zivem problemu byla prilis slaba
+  (rada promennych na mezich +50 % / -20 %).  Opacna znamenka -> zadne vyvazeni -> brana.
+  Nyni: rovnovaha P/A ve fitu je TVRDA podminka (presne splnena v kazde iteraci, projekce
+  na meze + nadrovinu po rodinach).  Fit tedy navrhne krok, kde rostou produkce i atrakce.
+  Zaznam: V24917_FIT_SUMMARY.json -> fit_summary.solver.balance (linear_pa_gap ~ 0).
+  Hranicni prechody X1-X31 vypnuty: R1_RUN_OPTIONS.json "bd_enabled": false
+  (zapnout zpet = true).  BDPA1 zustava, bez prechodu se neuplatni.
+
+REVIZE INTADDVAL1 (26. 10. 24:00) - ADDVAL1 SE V BEHU NIKDY NEZAPSAL
+  Beh RUN_20261026_043801, cykly 2/4/6/8/10: kazdy pokus ADDVAL1 (SUPPLYMIX) skoncil
+  ADDVAL1_READBACK_FAILED (bez padu, navrat overen).  Pricina: zdedena mrizka kroku ADDVAL1
+  je 0,5 (5 s), Visum ale uklada AddValue jako cele cislo (COM_API_PREFLIGHT.json:
+  ADDVAL1 ValueType 1) -> zapsanych 0,5 se precte jako zaokrouhlena hodnota.
+  Nyni: SUPPLYMIX zjisti typ atributu Link ADDVAL1 a u celociselneho zaokrouhli kazdou
+  zmenu od nuly na cele ADDVAL (0,5 -> 1, 2,5 -> 3).  Zaznam: DEMAND_CYCLE_xx_SUPPLYMIX\
+  SUPPLYMIX_RESULT -> addval1_value_type; v kandidatovi v24917_integer_snap_from.
+  POKRACOVANI: z BEST_SO_FAR_0015_e35744b04158.ver (vazeny GEH 28,11).
+
+REVIZE LONGTRIP1 (27. 10. 00:15) - PRECHODY ZAPNUTY, VIC DLOUHYCH CEST V TD
+  R1_RUN_OPTIONS.json:
+    "bd_enabled": true              hranicni prechody X1-X31 znovu ladi TG (P a A prechodu spolu,
+                                    rovnovahu P/A neovlivni - BALANCE1)
+    "td_count_weight": 0.65         cil TD zustava 65 % scitani / 35 % pruzkum (rozhodnuti
+                                    uzivatele 27. 10.: pruzkum mobility = hlavne kratke cesty)
+    "td_max_survey_degradation": 1.25 krok TD smi zhorsit shodu s pruzkumem nejvys o 25 %
+                                    (sulad s pruzkumem mobility / metodikou; volba nastavitelna)
+  Ostatni pojistky TD beze zmeny (zadny novy silne spatny profil, chranene profily).
+  Navrat k drivejsimu: td_max_survey_degradation 1.25.
+
+REVIZE MOBILITY1 (27. 10. 00:45) - POCET CEST V SOULADU S PRUZKUMEM MOBILITY (+-25 %)
+  Vzorec TG domaci zony: FP = ADD_PROD x H (hybnost z pruzkumu mobility) x osoby / 2.8.
+  ADD_PROD = 1 tedy presne odpovida pruzkumu.  Pomer modelove hybnosti k pruzkumu za rodinu:
+     R = soucet FP / soucet (FP / ADD_PROD)      (domaci zony; WORK z ADD_PROD_W, SERVICE z ADD_PROD_S)
+  Po fitu TG se kladne (pod pasmem zaporne) kroky produkce rodiny spolecne zmensi tak, aby R
+  po celem kroku zustal v pasmu [0,75; 1,25].  Rodina uz mimo pasmo se nesmi dal vzdalovat.
+  Atrakce, LONG/SCHOOL, ZAHR a prechody beze zmeny; rovnovaha P/A se doladi zdedene.
+  Konzole kazdy navrh TG:  R1 V24917 MOBILITY1 WORK: trip rate / survey = 1.18 now, 1.25 full step
+  Zaznam: V24917_FIT_SUMMARY.json -> mobility_guard.  Volby: mg_enabled, mg_min_ratio, mg_max_ratio.

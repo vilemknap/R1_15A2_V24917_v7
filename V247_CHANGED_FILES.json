@@ -1,0 +1,146 @@
+{
+  "schema": "R1_15A2_V247_CHANGED_FILES_V1",
+  "base": "R1_15A2_V2_4_6_ADAPTIVE_PERFORMANCE_20261016",
+  "release": "R1_15A2_V2_4_7_PATH_EPOCH_CALIBRATION_20261016",
+  "changed_count": 14,
+  "files": [
+    {
+      "path": "LIVE_VISUM_ACCEPTANCE_V2_4_7_CZ.md",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 3790,
+        "sha256": "306d1298f83e1ffb296bb61ace5b8b9dc19ece66f006ac100270671cc0ae287a"
+      }
+    },
+    {
+      "path": "R1_15A2_CONFIG_V2_4_7.json",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 20097,
+        "sha256": "5a700fdd1260a8a9da817478810a2214b8325eb378ae18b83eeb1ba0f300131e"
+      }
+    },
+    {
+      "path": "R1_15A2_FULL_OVERNIGHT_PATH_EPOCH_V2_4_7.py",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 15502,
+        "sha256": "1429ac8665f7145cea2ac43cb543ff6db6f12bda5e125061e47c0e1c26c58750"
+      }
+    },
+    {
+      "path": "README_R1_15A2_V2_4_7_PATH_EPOCH_CZ.md",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 5038,
+        "sha256": "09c23450438c3c07d92b6b9f939a19d162ec474ad035b7678fb004c6b35c731f"
+      }
+    },
+    {
+      "path": "START_HERE_V247_CZ.txt",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 720,
+        "sha256": "d3b2d4d512de51b20b71f182e53ccd10c88d497ceb6550229debfd7b35385cbe"
+      }
+    },
+    {
+      "path": "V247_PATH_ENUMERATION_BENCHMARK.json",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 4294,
+        "sha256": "9b4291d6f14e9cad454090932aeac17bc94a16b1bde5ca0e76fbf09f71af672b"
+      }
+    },
+    {
+      "path": "V247_PATH_ENUMERATION_BENCHMARK.md",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 1027,
+        "sha256": "e3ebcf984863f026534b5e4dbbecbc199f2c41c81e756e11201056a8c5067ad8"
+      }
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v240.py",
+      "change": "MODIFIED",
+      "old": {
+        "bytes": 33573,
+        "sha256": "1f32ece1edf6a71e04e9a2864a88101b669b82816eec20365b3d3c663ff6a73d"
+      },
+      "new": {
+        "bytes": 34712,
+        "sha256": "c9057a21e136da3e735df67c1ace251656fe22fbc708ee89ce8b04d242cec855"
+      }
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v242.py",
+      "change": "MODIFIED",
+      "old": {
+        "bytes": 28996,
+        "sha256": "721e0c3d6eab02cfb97599364c09f3bc546b05898b6e2ac7c329f0750e2c8576"
+      },
+      "new": {
+        "bytes": 31008,
+        "sha256": "dd4e387052c1ef312abff82017769c1034eaa755f7bce7ae1592a912b17fb95c"
+      }
+    },
+    {
+      "path": "r1_15a2_safety_v247.py",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 12381,
+        "sha256": "9071aa87f8d956cb45eb0bae8be2cc57ae2bc5d1bb2bbf13f4b1b5521d803125"
+      }
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v240.py",
+      "change": "MODIFIED",
+      "old": {
+        "bytes": 10094,
+        "sha256": "ed9f86ed9be7dd706ec3464fae19619bee131eb340bbddc8c34d594d4de5f4f9"
+      },
+      "new": {
+        "bytes": 24813,
+        "sha256": "894a8e93846f69ee98073ea1729d32b0eacb5bf0829c482c92028a4dbd8cff1b"
+      }
+    },
+    {
+      "path": "r1_15a2_two_mode_v238.py",
+      "change": "MODIFIED",
+      "old": {
+        "bytes": 52857,
+        "sha256": "1011894602b4bff61d34bc72e20f99edffad671ddd5e7dbb9145a4fda1b2e59e"
+      },
+      "new": {
+        "bytes": 66883,
+        "sha256": "84ee266f9076449ffe772f15c5bfa374368d61467df731af7c52170695262b8d"
+      }
+    },
+    {
+      "path": "run_v247_path_epoch_benchmark.py",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 5255,
+        "sha256": "2b3bd8c11cf62c15363b74cc7d348465bf374c518b273d8c2b2d7e99272ddfba"
+      }
+    },
+    {
+      "path": "tests/test_v247_path_epochs.py",
+      "change": "ADDED",
+      "old": null,
+      "new": {
+        "bytes": 17438,
+        "sha256": "97f95e90520b779549564aa791253e4380f8bcf727ea418c005b5e69a9776c86"
+      }
+    }
+  ]
+}

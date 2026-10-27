@@ -1,0 +1,27 @@
+{
+  "production_release": false,
+  "working_copy_trial_calibration": true,
+  "parent_release": "R1_15A2_V2_4_9_4_PATH_EXPORT_RETRY_SEMANTIC_RESTART_20261018",
+  "csd_calibration_objective": "OBSERVATION_WEIGHTED_MEAN_GEH",
+  "geh20_transition_mode": "HYSTERESIS_BUDGET",
+  "geh20_threshold": 20.0,
+  "geh20_hysteresis": [19.5, 20.5],
+  "generation_severity_budget": {
+    "max_material_new_geh20": 3,
+    "max_single_profile_geh_increase": 2.0,
+    "max_total_new_geh20_excess": 2.0
+  },
+  "td_severity_budget": {
+    "max_material_new_geh20": 1,
+    "max_single_profile_geh_increase": 1.0,
+    "max_total_new_geh20_excess": 0.75
+  },
+  "max_new_geh30": 0,
+  "protected_profile_guard": "RETAINED_5_10_30_MAX_WARN3_MAX_HARD0",
+  "continuous_severity_penalty": "DEFERRED_NOT_IMPLEMENTED_IN_V2495",
+  "long_acceptance_mode": "GLOBAL_LONG_COMPOSITE",
+  "path_export_com_retry": "V2494_SAME_RANGE_BOUNDED_TRANSIENT_RPC_RETRY_RETAINED",
+  "restart_authority": "V2494_SEMANTIC_MODEL_STATE_RETAINED",
+  "real_visum_tested": false,
+  "production_ready": false
+}

@@ -1,0 +1,1497 @@
+{
+  "schema": "R1_15A2_V24914_CONTINUABLE_COUPLED_DEMAND_STATE_MACHINE",
+  "status": "FAILED_MANUAL_REOPEN_LATEST_ACCEPTED_REQUIRED",
+  "production_apply": false,
+  "trial_writes": true,
+  "load_version_called": false,
+  "direct_od_matrix_writes": false,
+  "finecdf_reference_sha256": "fcdfa535940296e6cc793b6416c7c0a56c18aae8d5d20beddb064a170c673ff5",
+  "architecture": "COUPLED_DEMAND_OUTER_LOOP__GENERATION_COUNTS_THEN_FINECDF_TD__THEN_SUPPLY",
+  "demand_cycles": [
+    {
+      "cycle": 1,
+      "status": "FAILED",
+      "completed": false,
+      "generation_changed": null,
+      "td_changed": null,
+      "generation_completed": false,
+      "td_completed": false,
+      "state_hash_start": "4a8f41962e1a83520e9cd0a3f2381d8ae792af4c714dffe50181034a869e5294",
+      "error": "V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:V242_GENERATION_TRIAL_PARENT_CHANGED"
+    }
+  ],
+  "completed_demand_cycles": 0,
+  "demand_converged": false,
+  "supply_started": false,
+  "accepted_count": 0,
+  "stationary_cycle_streak": 0,
+  "final_state_verified": false,
+  "calibration_complete": false,
+  "demand_continuation": {
+    "enabled": true,
+    "mode": "FRESH_CYCLE1_FORCE_EXACT_100_TGTD_OUTER_CYCLES",
+    "accepted_count": 0,
+    "inherited_outer_cycles": 0,
+    "next_outer_cycle": 1,
+    "max_lineage_outer_cycle": 100,
+    "inherited_stationary_cycle_streak": 0,
+    "inherited_completed_demand_cycles": 0,
+    "resume_substep": "GENERATION",
+    "semantic_state_hash": "d3be3eb7e24b653d2b74386708fd01d9eaeec0198f86bd09587f3f93524329cc",
+    "bounded_inner_budget_stop_reasons": [
+      "TD_INNER_TIME_BUDGET",
+      "MAX_ITERATIONS",
+      "TD_EVALUATION_BUDGET"
+    ],
+    "continue_bounded_budget_without_accepted_change": true,
+    "bounded_budget_counts_as_stationarity": false,
+    "supply_unlock_criterion": "AFTER_OUTER_CYCLE_100_ONLY_AND_FINAL_STATIONARITY_CRITERION",
+    "source_version": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\BEST_SO_FAR_0015_e35744b04158.ver",
+    "source_sha256": "88f3310577e5bec8442db5853773c10bf985f9638db5b47a3909977bd4de8d02",
+    "source_role": "NEW_BASELINE_CURRENTLY_OPENED_VERSION",
+    "prior_lineage_resumed": false
+  },
+  "lineage_outer_cycle_start": 1,
+  "inherited_outer_cycles": 0,
+  "preflight": {
+    "tg": {
+      "passes": true,
+      "failures": [],
+      "rows": [
+        {
+          "dstrat_code": "1_WORK_E_C",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_1_WORK_E_C] + [P09F4_PER_PRE_WORK_E_C]",
+          "attraction_function": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_E_C]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "1_WORK_E_noC",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_1_WORK_E_noC] + [P09F4_PER_PRE_WORK_E_noC]",
+          "attraction_function": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_E_noC]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "1_WORK_noE_C",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_1_WORK_noE_C] + [P09F4_PER_PRE_WORK_noE_C]",
+          "attraction_function": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_noE_C]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "1_WORK_noE_noC",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_1_WORK_noE_noC] + [P09F4_PER_PRE_WORK_noE_noC]",
+          "attraction_function": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_noE_noC]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "1_WORK_stud",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_1_WORK_stud] + [P09F4_PER_PRE_WORK_stud]",
+          "attraction_function": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_stud]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "2_SERV_E_C",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_2_SERVICE_E_C] + [P09F4_PER_PRE_SERV_E_C]",
+          "attraction_function": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_E_C]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "2_SERV_E_noC",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_2_SERVICE_E_noC] + [P09F4_PER_PRE_SERV_E_noC]",
+          "attraction_function": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_E_noC]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "2_SERV_noE_C",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_2_SERVICE_noE_C] + [P09F4_PER_PRE_SERV_noE_C]",
+          "attraction_function": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_noE_C]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "2_SERV_noE_noC",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_2_SERVICE_noE_noC] + [P09F4_PER_PRE_SERV_noE_noC]",
+          "attraction_function": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_noE_noC]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        },
+        {
+          "dstrat_code": "2_SERV_stud",
+          "source": "TripGenerationDStratParameters(code)",
+          "status": "OK",
+          "production_function": "[FP_2_SERVICE_stud] + [P09F4_PER_PRE_SERV_stud]",
+          "attraction_function": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_stud]",
+          "production_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "attraction_binding_mode": "VERIFIED_OUTER_PLUS_09F4_PREFEED",
+          "missing_production_tokens": "",
+          "missing_attraction_tokens": ""
+        }
+      ],
+      "operation_rows": [
+        {
+          "index": 1,
+          "operation_type": "9.0",
+          "active": 0,
+          "comment": "R1 09C - reset PrT assignment results before native TG/TD",
+          "selected": 0
+        },
+        {
+          "index": 2,
+          "operation_type": "75.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 3,
+          "operation_type": "65.0",
+          "active": 0,
+          "comment": "14A COUTRY_ADD Preset",
+          "selected": 0
+        },
+        {
+          "index": 4,
+          "operation_type": "75.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 5,
+          "operation_type": "45.0",
+          "active": 1,
+          "comment": "R1 09C - native trip generation incl 09b boundary P/A presym inputs | R1_STEP_09I_V2_BOUNDARY_PA_TG_FORMULA_PATCH",
+          "selected": 1,
+          "parameter_source": "TripGenerationParameters",
+          "parameter_status": "OK",
+          "dstratset": "1_WORK_E_C,1_WORK_E_noC,1_WORK_noE_C,1_WORK_noE_noC,1_WORK_stud,2_SERV_E_C,2_SERV_E_noC,2_SERV_noE_C,2_SERV_noE_noC,2_SERV_stud,3_LONG_E_C,3_LONG_E_noC,3_LONG_noE_C,3_LONG_noE_noC,3_LONG_stud,4_FOREIGN,5_SCHOOL"
+        },
+        {
+          "index": 6,
+          "operation_type": "46.0",
+          "active": 1,
+          "comment": "R1 09C - native trip distribution for II+IE+EI component curves",
+          "selected": 0
+        },
+        {
+          "index": 7,
+          "operation_type": "75.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 8,
+          "operation_type": "65.0",
+          "active": 1,
+          "comment": " Foreign Matrix Post Processing",
+          "selected": 0
+        },
+        {
+          "index": 9,
+          "operation_type": "75.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 10,
+          "operation_type": "65.0",
+          "active": 1,
+          "comment": "AMDY parent κ audit by R1 9001 bands; read-only",
+          "selected": 0
+        },
+        {
+          "index": 11,
+          "operation_type": "65.0",
+          "active": 1,
+          "comment": "kappa-band Non Foregin Car Realization",
+          "selected": 0
+        },
+        {
+          "index": 12,
+          "operation_type": "91.0",
+          "active": 1,
+          "comment": "kappa-fixed Foregin Car Realization",
+          "selected": 0
+        },
+        {
+          "index": 13,
+          "operation_type": "75.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 14,
+          "operation_type": "65.0",
+          "active": 1,
+          "comment": "Matrix Symmetrization",
+          "selected": 0
+        },
+        {
+          "index": 15,
+          "operation_type": "9.0",
+          "active": 1,
+          "comment": "R1 09C - reset stale PrT assignment results after regenerated demand",
+          "selected": 0
+        },
+        {
+          "index": 16,
+          "operation_type": "75.0",
+          "active": 1,
+          "comment": "R1 09C - assignment wrapper after native TG/TD",
+          "selected": 0
+        },
+        {
+          "index": 17,
+          "operation_type": "101.0",
+          "active": 1,
+          "comment": "R1 09C - freight LNV + NV",
+          "selected": 0
+        },
+        {
+          "index": 18,
+          "operation_type": "101.0",
+          "active": 1,
+          "comment": "R1 09C - native passenger CF + CL after boundary-aware TG/TD",
+          "selected": 0
+        },
+        {
+          "index": 19,
+          "operation_type": "101.0",
+          "active": 1,
+          "comment": "R1 09C - native passenger service/work after boundary-aware TG/TD",
+          "selected": 0
+        },
+        {
+          "index": 20,
+          "operation_type": "101.0",
+          "active": 1,
+          "comment": "R1 09C - joint freight + native passenger after boundary-aware TG/TD",
+          "selected": 0
+        },
+        {
+          "index": 21,
+          "operation_type": "65.0",
+          "active": 1,
+          "comment": "GEH (EXOG_EE_CF, EXOG_EE_CL, EXOG_EE_CS, EXOG_EE_CS_noT,\nEXOG_EE_CW, EXOG_EE_CW_noT,\nNATIVE_CF, NATIVE_CL, NATIVE_CS, NATIVE_CS_noT,\nNATIVE_CW, NATIVE_CW_noT)",
+          "selected": 0
+        },
+        {
+          "index": 22,
+          "operation_type": "75.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 23,
+          "operation_type": "103.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 24,
+          "operation_type": "103.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 25,
+          "operation_type": "103.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 26,
+          "operation_type": "103.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 27,
+          "operation_type": "103.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 28,
+          "operation_type": "103.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 29,
+          "operation_type": "103.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 30,
+          "operation_type": "103.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 31,
+          "operation_type": "103.0",
+          "active": 1,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 32,
+          "operation_type": "103.0",
+          "active": 1,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 33,
+          "operation_type": "103.0",
+          "active": 1,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 34,
+          "operation_type": "103.0",
+          "active": 1,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 35,
+          "operation_type": "103.0",
+          "active": 1,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 36,
+          "operation_type": "103.0",
+          "active": 1,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 37,
+          "operation_type": "9.0",
+          "active": 0,
+          "comment": "R1 09C - reset stale PrT assignment results after regenerated demand",
+          "selected": 0
+        },
+        {
+          "index": 38,
+          "operation_type": "101.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 39,
+          "operation_type": "101.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 40,
+          "operation_type": "75.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 41,
+          "operation_type": "1.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 42,
+          "operation_type": "101.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        },
+        {
+          "index": 43,
+          "operation_type": "65.0",
+          "active": 0,
+          "comment": "",
+          "selected": 0
+        }
+      ],
+      "zone_attribute_rows": [
+        {
+          "attr": "A09F4_PER_PRE_SERV_E_C",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_E_NOC",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_NOE_C",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_NOE_NOC",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_STUD",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_E_C",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_E_NOC",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_NOE_C",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_NOE_NOC",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_STUD",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_E_C",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_E_NOC",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_NOE_C",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_NOE_NOC",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_STUD",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_E_C",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_E_NOC",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_NOE_C",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_NOE_NOC",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_STUD",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "POP_ZP",
+          "status": "TYPE_OK",
+          "expected_value_type": 2,
+          "actual_value_type": 2
+        },
+        {
+          "attr": "ADD_PROD_W",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ADD_ATT_W",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ADD_SALARY",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ADD_PROD_S",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ADD_ATT_S",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ZAHR_PROD_WORK",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ZAHR_ATR_WORK",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ZAHR_PROD_SERV",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ZAHR_ATR_SERV",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "NOT_ZAHR",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "ZAHR_SUSED",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "POP_ZP",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "AV_INCOME",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "NUM_PM_SMEAR",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FA_1_WORK",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FA_2_SERVICE",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_1_WORK_E_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_1_WORK_E_noC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_1_WORK_noE_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_1_WORK_noE_noC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_1_WORK_stud",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_2_SERVICE_E_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_2_SERVICE_E_noC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_2_SERVICE_noE_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_2_SERVICE_noE_noC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "FP_2_SERVICE_stud",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_E_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_E_NOC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_NOE_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_NOE_NOC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_SERV_STUD",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_E_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_E_NOC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_NOE_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_NOE_NOC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "A09F4_PER_PRE_WORK_STUD",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_E_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_E_NOC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_NOE_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_NOE_NOC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_SERV_STUD",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_E_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_E_NOC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_NOE_C",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_NOE_NOC",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        },
+        {
+          "attr": "P09F4_PER_PRE_WORK_STUD",
+          "status": "OK",
+          "rows": 681,
+          "nonfinite": 0
+        }
+      ],
+      "contract_id": "R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6_LIVE_P09F4_A09F4_PREFEED"
+    },
+    "procseq": {
+      "readable": true,
+      "active_tg": 1,
+      "active_td": 1,
+      "active_assignment": 4,
+      "recursive_master": 0,
+      "tg_indices": [
+        5
+      ],
+      "td_indices": [
+        6
+      ],
+      "assignment_indices": [
+        17,
+        18,
+        19,
+        20
+      ],
+      "tg_before_td": true,
+      "assignment_after_td": true,
+      "passes": true,
+      "reasons": []
+    },
+    "supply_assignment": {
+      "passes": true,
+      "reasons": [],
+      "approved_numbers": [
+        20
+      ],
+      "gap_readback_evidence": {
+        "source": "PRT_ASS_QUALITY_LIST",
+        "operation_no": 20,
+        "operation_dsegs": [
+          "EXOG_EE_CF",
+          "EXOG_EE_CL",
+          "EXOG_EE_CS",
+          "EXOG_EE_CS_NOT",
+          "EXOG_EE_CW",
+          "EXOG_EE_CW_NOT",
+          "LNV",
+          "NATIVE_CF",
+          "NATIVE_CL",
+          "NATIVE_CS",
+          "NATIVE_CS_NOT",
+          "NATIVE_CW",
+          "NATIVE_CW_NOT",
+          "NV"
+        ],
+        "quality_rows": 10,
+        "exact_scope_rows": 2,
+        "iteration": 2,
+        "quality_row": 6,
+        "gap": 0.00174824,
+        "latest_gap_by_scope": {
+          "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CS_NOT,EXOG_EE_CW,EXOG_EE_CW_NOT,LNV,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CS_NOT,NATIVE_CW,NATIVE_CW_NOT,NV": {
+            "iteration": 2,
+            "gap": 0.00174824
+          },
+          "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CW,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CW": {
+            "iteration": 2,
+            "gap": 0.00234741
+          },
+          "EXOG_EE_CS_NOT,EXOG_EE_CW_NOT,NATIVE_CS_NOT,NATIVE_CW_NOT": {
+            "iteration": 2,
+            "gap": 0.00172545
+          },
+          "LNV": {
+            "iteration": 2,
+            "gap": 0.00469749
+          },
+          "NV": {
+            "iteration": 2,
+            "gap": 0.00257865
+          }
+        },
+        "freshness": "UNVERIFIED_HISTORICAL_UNLESS_READ_AFTER_SUCCESSFUL_EXPLICIT_ASSIGNMENT"
+      },
+      "covered_dsegs": [
+        "EXOG_EE_CF",
+        "EXOG_EE_CL",
+        "EXOG_EE_CS",
+        "EXOG_EE_CS_NOT",
+        "EXOG_EE_CW",
+        "EXOG_EE_CW_NOT",
+        "LNV",
+        "NATIVE_CF",
+        "NATIVE_CL",
+        "NATIVE_CS",
+        "NATIVE_CS_NOT",
+        "NATIVE_CW",
+        "NATIVE_CW_NOT",
+        "NV"
+      ],
+      "preserved_group_numbers": [
+        16
+      ],
+      "inventory": [
+        {
+          "no": 1,
+          "position": 1,
+          "type": 9,
+          "active": 0,
+          "comment": "R1 09C - reset PrT assignment results before native TG/TD",
+          "name": ""
+        },
+        {
+          "no": 2,
+          "position": 2,
+          "type": 75,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 3,
+          "position": 3,
+          "type": 65,
+          "active": 0,
+          "comment": "14A COUTRY_ADD Preset",
+          "name": ""
+        },
+        {
+          "no": 4,
+          "position": 4,
+          "type": 75,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 5,
+          "position": 5,
+          "type": 45,
+          "active": 1,
+          "comment": "R1 09C - native trip generation incl 09b boundary P/A presym inputs | R1_STEP_09I_V2_BOUNDARY_PA_TG_FORMULA_PATCH",
+          "name": ""
+        },
+        {
+          "no": 6,
+          "position": 6,
+          "type": 46,
+          "active": 1,
+          "comment": "R1 09C - native trip distribution for II+IE+EI component curves",
+          "name": ""
+        },
+        {
+          "no": 7,
+          "position": 7,
+          "type": 75,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 8,
+          "position": 8,
+          "type": 65,
+          "active": 1,
+          "comment": " Foreign Matrix Post Processing",
+          "name": ""
+        },
+        {
+          "no": 9,
+          "position": 9,
+          "type": 75,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 10,
+          "position": 10,
+          "type": 65,
+          "active": 1,
+          "comment": "AMDY parent κ audit by R1 9001 bands; read-only",
+          "name": ""
+        },
+        {
+          "no": 11,
+          "position": 11,
+          "type": 65,
+          "active": 1,
+          "comment": "kappa-band Non Foregin Car Realization",
+          "name": ""
+        },
+        {
+          "no": 12,
+          "position": 12,
+          "type": 91,
+          "active": 1,
+          "comment": "kappa-fixed Foregin Car Realization",
+          "name": ""
+        },
+        {
+          "no": 13,
+          "position": 13,
+          "type": 75,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 14,
+          "position": 14,
+          "type": 65,
+          "active": 1,
+          "comment": "Matrix Symmetrization",
+          "name": ""
+        },
+        {
+          "no": 15,
+          "position": 15,
+          "type": 9,
+          "active": 1,
+          "comment": "R1 09C - reset stale PrT assignment results after regenerated demand",
+          "name": ""
+        },
+        {
+          "no": 16,
+          "position": 16,
+          "type": 75,
+          "active": 1,
+          "comment": "R1 09C - assignment wrapper after native TG/TD",
+          "name": ""
+        },
+        {
+          "no": 17,
+          "position": 17,
+          "type": 101,
+          "active": 1,
+          "comment": "R1 09C - freight LNV + NV",
+          "name": ""
+        },
+        {
+          "no": 18,
+          "position": 18,
+          "type": 101,
+          "active": 1,
+          "comment": "R1 09C - native passenger CF + CL after boundary-aware TG/TD",
+          "name": ""
+        },
+        {
+          "no": 19,
+          "position": 19,
+          "type": 101,
+          "active": 1,
+          "comment": "R1 09C - native passenger service/work after boundary-aware TG/TD",
+          "name": ""
+        },
+        {
+          "no": 20,
+          "position": 20,
+          "type": 101,
+          "active": 1,
+          "comment": "R1 09C - joint freight + native passenger after boundary-aware TG/TD",
+          "name": ""
+        },
+        {
+          "no": 21,
+          "position": 21,
+          "type": 65,
+          "active": 1,
+          "comment": "GEH (EXOG_EE_CF, EXOG_EE_CL, EXOG_EE_CS, EXOG_EE_CS_noT,\nEXOG_EE_CW, EXOG_EE_CW_noT,\nNATIVE_CF, NATIVE_CL, NATIVE_CS, NATIVE_CS_noT,\nNATIVE_CW, NATIVE_CW_noT)",
+          "name": ""
+        },
+        {
+          "no": 22,
+          "position": 22,
+          "type": 75,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 23,
+          "position": 23,
+          "type": 103,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 24,
+          "position": 24,
+          "type": 103,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 25,
+          "position": 25,
+          "type": 103,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 26,
+          "position": 26,
+          "type": 103,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 27,
+          "position": 27,
+          "type": 103,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 28,
+          "position": 28,
+          "type": 103,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 29,
+          "position": 29,
+          "type": 103,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 30,
+          "position": 30,
+          "type": 103,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 31,
+          "position": 31,
+          "type": 103,
+          "active": 1,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 32,
+          "position": 32,
+          "type": 103,
+          "active": 1,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 33,
+          "position": 33,
+          "type": 103,
+          "active": 1,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 34,
+          "position": 34,
+          "type": 103,
+          "active": 1,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 35,
+          "position": 35,
+          "type": 103,
+          "active": 1,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 36,
+          "position": 36,
+          "type": 103,
+          "active": 1,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 37,
+          "position": 37,
+          "type": 9,
+          "active": 0,
+          "comment": "R1 09C - reset stale PrT assignment results after regenerated demand",
+          "name": ""
+        },
+        {
+          "no": 38,
+          "position": 38,
+          "type": 101,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 39,
+          "position": 39,
+          "type": 101,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 40,
+          "position": 40,
+          "type": 75,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 41,
+          "position": 41,
+          "type": 1,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 42,
+          "position": 42,
+          "type": 101,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        },
+        {
+          "no": 43,
+          "position": 43,
+          "type": 65,
+          "active": 0,
+          "comment": "",
+          "name": ""
+        }
+      ]
+    },
+    "zones": {
+      "zone_count": 681,
+      "eligible_zone_count": 661,
+      "excluded_zone_count": 20,
+      "passes": true
+    },
+    "impedance": {
+      "schema": "R1_15A2_ADDVAL1_TEN_SECONDS_V1",
+      "stored_terms": 31,
+      "effective": {
+        "C:LINK": {
+          "time_source": "C",
+          "equivalent_seconds_per_addval1": 10.0
+        },
+        "C:CONNECTOR": {
+          "time_source": "C",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "C:TURN": {
+          "time_source": "C",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "C:MAINTURN": {
+          "time_source": "C",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "C_noT:LINK": {
+          "time_source": "C",
+          "equivalent_seconds_per_addval1": 10.0
+        },
+        "C_noT:CONNECTOR": {
+          "time_source": "C_noT",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "C_noT:TURN": {
+          "time_source": "C_noT",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "C_noT:MAINTURN": {
+          "time_source": "C_noT",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "LNV:LINK": {
+          "time_source": "LNV",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "LNV:CONNECTOR": {
+          "time_source": "LNV",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "LNV:TURN": {
+          "time_source": "LNV",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "LNV:MAINTURN": {
+          "time_source": "LNV",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "NV:LINK": {
+          "time_source": "NV",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "NV:CONNECTOR": {
+          "time_source": "NV",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "NV:TURN": {
+          "time_source": "NV",
+          "equivalent_seconds_per_addval1": 0.0
+        },
+        "NV:MAINTURN": {
+          "time_source": "NV",
+          "equivalent_seconds_per_addval1": 0.0
+        }
+      },
+      "authority_hash": "872982066b7e7d7ecd080ad39e786b8db7bbf51fb7322f0b60167ad3f5aa5cf9"
+    },
+    "impedance_basis": "USER_SUPPLIED_EXPORTED_FORMULA_AUTHORITY",
+    "eligible_links": 8287,
+    "unsafe_minimum_cost_keys": [],
+    "apply_preflight_passes": true
+  },
+  "generation_reference_source": "LIVE_RUN_START",
+  "current_exploratory_checkpoint": {
+    "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V16_RUNS\\RUN_20261027_003434_537650\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0000_657e914ccec2.ver",
+    "sha256": "aa0eb8e447c26a0251ac317f42e8d8c7ad63b776a9ddf885e43ad5a51e1ee816",
+    "size": 579438000
+  },
+  "best_so_far_checkpoint": {
+    "schema": "R1_15A2_V2496_BEST_SO_FAR_CHECKPOINT_V1",
+    "role": "BEST_SO_FAR_FIXED_REFERENCE_SHARED_OBJECTIVE",
+    "accepted_count": 0,
+    "state_hash": "4a8f41962e1a83520e9cd0a3f2381d8ae792af4c714dffe50181034a869e5294",
+    "objective": {
+      "raw_cal": 28.108207604432213,
+      "raw_component_idp": 0.48984021064161376,
+      "terms": {
+        "CSD_CAL": 1.0,
+        "COMPONENT_IDP": 0.48984021064161376,
+        "ADDVAL1_PRIOR": 0.0
+      },
+      "cal_objective_metric": "WEIGHTED_MEAN_GEH",
+      "cal_objective_key": "objective_geh_mean_weighted",
+      "cal_metrics": {
+        "role": "CALIBRATION",
+        "n": 247,
+        "obs_sum": 1299058.4035403342,
+        "model_sum": 956986.8566636932,
+        "model_obs_ratio": 0.7366773149348862,
+        "profile_sum_role": "DIAGNOSTIC_ONLY_PROFILE_PASSAGE_CHECKSUM",
+        "profile_sum_unique_trip_interpretation_allowed": false,
+        "profile_sum_note": "A trip may cross multiple observed profiles; sums are not unique-trip or total-demand estimates.",
+        "rmse": 3960.2853157604395,
+        "mae": 2107.5244625336777,
+        "objective_geh_mean_weighted": 28.108207604432213,
+        "objective_geh2_mean": 1495.2288059662521,
+        "objective_weight_sum": 241.8,
+        "geh_mean": 28.403148550923117,
+        "geh_lt5": 45,
+        "geh_lt10": 74,
+        "geh_ge20": 136,
+        "geh_ge30": 94
+      },
+      "total": 1.4898402106416138,
+      "reference_hash": "1ab8228974d05d3593d1073dd98c51e1b90e1ec054b48a5d06eb211e9cac5e36",
+      "validation_used": false
+    },
+    "checkpoint": {
+      "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V16_RUNS\\RUN_20261027_003434_537650\\CALIBRATION\\CHECKPOINTS\\BEST_SO_FAR_0000_4a8f41962e1a.ver",
+      "sha256": "aa0eb8e447c26a0251ac317f42e8d8c7ad63b776a9ddf885e43ad5a51e1ee816",
+      "size": 579438000
+    },
+    "source_accepted_checkpoint": {
+      "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V16_RUNS\\RUN_20261027_003434_537650\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0000_657e914ccec2.ver",
+      "sha256": "aa0eb8e447c26a0251ac317f42e8d8c7ad63b776a9ddf885e43ad5a51e1ee816",
+      "size": 579438000
+    },
+    "semantic_restart_authority": {
+      "schema": "R1_15A2_SEMANTIC_RESTART_AUTHORITY_V2494",
+      "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V16_RUNS\\RUN_20261027_003434_537650\\CALIBRATION\\CHECKPOINTS\\BEST_SO_FAR_0000_4a8f41962e1a.ver.semantic.json",
+      "semantic_state_hash": "d3be3eb7e24b653d2b74386708fd01d9eaeec0198f86bd09587f3f93524329cc",
+      "semantic_hashes": {
+        "fixed_link_hash": "da1561b6a4059c3022c1a9d2d6324c7a37d9b4a1d81dab227518e768e71b43e2",
+        "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+        "operations_hash": "07ff2152a4f560a062dde9705d4c84e7f2610fe5a2f23b4062c35c05c3843ba1",
+        "addval_hash": "701b66765d92c34684a5db196817a92500c4f4165cae8e773277499fb2640e3a",
+        "matrix_hash": "f5bf4d1be8674f3007b704e84795f94cc99a95b46ba9ea0549fbddf34b81156a",
+        "generation_hash": "ec860e5b4dcbb86718a6ffd48119d45bbac9c25f0f226df4ddaffb9f29d98e89",
+        "td_hash": "6f493fa97f781bd7e7dd396ca095369b8f0be3e7acd06cfa41935bee2fc5c28e"
+      },
+      "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+      "raw_ver_sha_used_for_restart_acceptance": false
+    }
+  },
+  "best_so_far_objective": 1.4898402106416138,
+  "remaining_lineage_outer_cycles": 100,
+  "td_realization_pending": false,
+  "error": "V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:V242_GENERATION_TRIAL_PARENT_CHANGED",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_step_search_v24917.py\", line 308, in generation_block\n    raise SupplyContractError(\"V242_GENERATION_TRIAL_PARENT_CHANGED\")\nr1_15a2_supply.SupplyContractError: V242_GENERATION_TRIAL_PARENT_CHANGED\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_overnight_controller_coupled_v24915p2_force100.py\", line 1023, in run_overnight_calibration_coupled\n    changed, state, diag, value, rec = _generation_update_once(\n                                       ~~~~~~~~~~~~~~~~~~~~~~~^\n        *gen_args, outer_cycle=outer)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_supply_mix_v24917.py\", line 613, in _generation_update_once\n    result = orig(adapter, cfg, folder, control, state, diag, anchors, reference, policy,\n                  outer_cycle=outer_cycle)\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_demand_policy_v1.py\", line 559, in generation\n    result = original(adapter, cfg, folder, control, state, diag, anchors, reference,\n                      policy_arg, outer_cycle=outer_cycle)\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_overnight_controller_coupled_v24915p2_force100.py\", line 641, in _generation_update_once\n    return _generation_update_once_impl(adapter, gen_cfg, folder, control, state, diag, anchors, reference, policy)\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_combusy2_v24917.py\", line 165, in block\n    return orig(adapter, cfg, folder, *args, **kwargs)\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_perf_v24917.py\", line 56, in run\n    return fn(*args, **kwargs)\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_perf_v24917.py\", line 324, in _generation_update_once_impl\n    return orig_gen(adapter, cfg, folder, *args, **kwargs)\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_step_search_v24917.py\", line 462, in _generation_update_once_impl\n    return generation_block(ctrl, base, tx, adapter, cfg, folder, control, state, diag,\n                            anchors, reference, policy)\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v5\\r1_15a2_step_search_v24917.py\", line 401, in generation_block\n    raise SupplyContractError(\"V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:\" + str(exc)) from exc\nr1_15a2_supply.SupplyContractError: V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:V242_GENERATION_TRIAL_PARENT_CHANGED\n",
+  "elapsed_seconds": 1375.452,
+  "final_state_owner": "DEMAND",
+  "latest_accepted_checkpoint": {
+    "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V16_RUNS\\RUN_20261027_003434_537650\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0000_657e914ccec2.ver",
+    "sha256": "aa0eb8e447c26a0251ac317f42e8d8c7ad63b776a9ddf885e43ad5a51e1ee816",
+    "size": 579438000
+  },
+  "live_matches_last_accepted": false,
+  "primary_status_before_final_verification": "FAILED",
+  "manual_reopen_required": true,
+  "safe_restart_from_latest_accepted_checkpoint": true
+}

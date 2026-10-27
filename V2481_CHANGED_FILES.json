@@ -1,0 +1,84 @@
+{
+  "schema": "R1_15A2_V2481_CHANGED_FILES_V1",
+  "count": 13,
+  "files": [
+    {
+      "path": "LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "065d7ac3370db27b9da4926542bf3201c71acf3aa41bf0c51b79377efd5f0ac1"
+    },
+    {
+      "path": "R1_15A2_CONFIG_V2_4_8.json",
+      "status": "MODIFIED",
+      "base_sha256": "65177ee070e094b7311d00467809cb6a889740e37aa03d8b6cd291141a50109b",
+      "new_sha256": "0a7b03bacec7935ce40cfa26de34cbcfb2b281fd3e7f40c8eaf2c1f1d82ce728"
+    },
+    {
+      "path": "R1_15A2_CONFIG_V2_4_8_1.json",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02"
+    },
+    {
+      "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "8433a3ea9a7d93e01a1a581c94e29993e87ac859e09a92273c7405b4bc2c76ec"
+    },
+    {
+      "path": "README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "00bb6a3fa2405d583502942f0b65589e7299881d518970e1fcaf5181c6e4781c"
+    },
+    {
+      "path": "SOURCE_PATCH_V248_TO_V2481.diff",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "c6c020ffe60adbc787bff9aba15f46e117ae9b5ae084a42a9fcc2bb18ad273b8"
+    },
+    {
+      "path": "V247_REAL_RUN_POSTMORTEM.json",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "28a949e3fb8df42435ae2c74c040c601f54c781552d1cd465bf79c4f649de983"
+    },
+    {
+      "path": "V247_REAL_RUN_POSTMORTEM.md",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "32629d541944b5a27916af740d8cb2e7d4908cb18d3e49b27dc9e308ca8da4db"
+    },
+    {
+      "path": "VERIFY_PACKAGE_V2_4_8_1.py",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "4ba20bb9be32941fc3184295949ab799a1bb3ed672e3f9481b65c45121ddcd8c"
+    },
+    {
+      "path": "r1_15a2_safety_v248.py",
+      "status": "MODIFIED",
+      "base_sha256": "35b9668a4f68eb6d6686c4213abac802960814fed46c84cd29ac3f81f0256c8a",
+      "new_sha256": "65558fad87e0930cee4a2e8053c621fb3bb555ab1711d8f037107760ef9f74a7"
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v240.py",
+      "status": "MODIFIED",
+      "base_sha256": "d1b352cb162b1dd5c0e4283167979a233fbed90d4e18265fa69fb9b826d2d69f",
+      "new_sha256": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1"
+    },
+    {
+      "path": "r1_15a2_two_mode_v238.py",
+      "status": "MODIFIED",
+      "base_sha256": "16f49575fe83792b2dea530923bfe63a6d9543e7cd9f33e78c7c33b35d5ae9ab",
+      "new_sha256": "c753e82075e2b521fcd53170f9f2d36c80ba151eb2bd0b6ea07b5cba6103b525"
+    },
+    {
+      "path": "tests/test_v2481_live_run_hotfix.py",
+      "status": "ADDED",
+      "base_sha256": null,
+      "new_sha256": "eba9c2360047e5ddc556f9e5117d379dcdc478beae16005bff02c14e9d59b28d"
+    }
+  ]
+}

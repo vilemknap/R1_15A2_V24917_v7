@@ -1,0 +1,57 @@
+{
+  "compileall": "PASS",
+  "generated_utc": "2026-10-16T03:39:58.209410+00:00",
+  "live_visum_full_run_completed": false,
+  "methodology": {
+    "cycle": "GENERATION_PRODUCTIVITY_ATTRACTIVITY -> FINECDF_BC_IDP -> REPEAT",
+    "direct_od_matrix_writes": false,
+    "load_version_rollback": false,
+    "supply_gate": "ADDVAL1_ONLY_AFTER_SAME_CYCLE_NO_ACCEPTED_TG_AND_NO_ACCEPTED_TD",
+    "tg_td_relationship": "ONE_COUPLED_DEMAND_PHASE"
+  },
+  "pytest": "451 passed",
+  "release": "R1_15A2_V2_4_2_FULL_OVERNIGHT_COUPLED_DEMAND_20261016",
+  "status": "OFFLINE_VERIFIED_LIVE_VISUM_RUN_PENDING",
+  "user_v17_exact_source_sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82",
+  "user_v17_reference_files": [
+    {
+      "file": "R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7.py",
+      "identical": true,
+      "package_sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82",
+      "source_sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82"
+    },
+    {
+      "file": "R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7_MANIFEST.json",
+      "identical": true,
+      "package_sha256": "76f6ddb41821ad7b0627b8d64e695feadfd246bff21a30413005e0d4d2112c30",
+      "source_sha256": "76f6ddb41821ad7b0627b8d64e695feadfd246bff21a30413005e0d4d2112c30"
+    },
+    {
+      "file": "R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7_TEST_REPORT.json",
+      "identical": true,
+      "package_sha256": "22e99deba5bc5b74ad6031ce64fee3e3c53f484c975c5e28d4c68808c1673836",
+      "source_sha256": "22e99deba5bc5b74ad6031ce64fee3e3c53f484c975c5e28d4c68808c1673836"
+    },
+    {
+      "file": "R1_BC_FINECDF_PATCHED_v1_7_PATCH_PROOF.json",
+      "identical": true,
+      "package_sha256": "0f270aed6b2eaf416f9ceb23e14e3599b8b6730a3a7b4c649411238ac8a316e2",
+      "source_sha256": "0f270aed6b2eaf416f9ceb23e14e3599b8b6730a3a7b4c649411238ac8a316e2"
+    },
+    {
+      "file": "README_R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7.txt",
+      "identical": true,
+      "package_sha256": "b4f82964706eff971dc31f2ae55174abae7f242ac9f65cfc70e9ea47973397c2",
+      "source_sha256": "b4f82964706eff971dc31f2ae55174abae7f242ac9f65cfc70e9ea47973397c2"
+    }
+  ],
+  "user_v17_test_report": {
+    "failures": 0,
+    "real_visum_run_tested": false,
+    "total_local_tests": 42
+  },
+  "v241_base_bitwise_unchanged": true,
+  "v241_base_changed_files": [],
+  "v241_base_file_count": 260,
+  "v241_base_missing_files": []
+}

@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "source": "SYNTHETIC_PYTHON_GENERATORS_NOT_VISUM_COM",
+  "read_only": true,
+  "segment_count": 12,
+  "parent_volume_records": 60000,
+  "unique_geometry_routes": 10000,
+  "stored_geometric_link_occurrences": 1000000,
+  "expanded_equivalent_link_occurrences": 6000000,
+  "sqlite_bytes": 8605696,
+  "elapsed_seconds": 3.281643743000018,
+  "timings": {
+    "parent_storage_seconds": 0.3505209539999896,
+    "geometry_validation_and_storage_seconds": 2.796124987999974,
+    "flow_and_impact_seconds": 0.13492222700006096
+  },
+  "speedup_claim_for_visum": null,
+  "geometry_identity_proven": false,
+  "apply_permitted": false
+}

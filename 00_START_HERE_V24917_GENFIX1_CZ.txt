@@ -1,0 +1,51 @@
+R1 15A2 V24917 MOBILITY1 GENFIX1 — 27. 10. 2026
+================================================
+
+SPUŠTĚNÍ
+1. Rozbalte celý archiv do nové krátké složky, například C:\R1\V24917_GENFIX1.
+2. Ve Visumu ručně otevřete bezpečný checkpoint posledního neúspěšného běhu:
+   C:\Users\vilem_knap\Documents\VISUM\v45\2022\R1_15A2_V16_RUNS\RUN_20261027_003434_537650\CALIBRATION\CHECKPOINTS\ACCEPTED_B_0000_657e914ccec2.ver
+3. Spusťte přes Scripts → Run script file:
+   01_SPUSTIT_V24917_GENFIX1.py
+
+Checkpoint je z RUN_STATUS dodaného běhu. Má 579 438 000 bajtů a SHA-256:
+aa0eb8e447c26a0251ac317f42e8d8c7ad63b776a9ddf885e43ad5a51e1ee816
+Soubor .ver není součástí tohoto ZIPu; zůstává na vašem počítači.
+Záznam BEST_SO_FAR_0000_4a8f41962e1a.ver má podle RUN_STATUS shodný obsah.
+
+Běh skončil s accepted_count=0 a completed_demand_cycles=0. Nové spuštění
+navazuje na znovu otevřený model jako nový běh od cyklu 1, stejně jako původní
+MOBILITY1. Nejde o pokračování v neověřeném živém stavu po pádu.
+Launcher zachovává PREFLIGHTIOFIX1 a používá stávající instanci Visumu.
+
+CO GENFIX1 OPRAVUJE
+- Dočasné odmítnutí COM čtení nesmí být zapsáno do snapshotu jako prázdný
+  komentář operace, chybějící DSeg nebo prázdná vazba na matici. Opakuje se
+  celé čtení v existujícím omezeném retry režimu; při trvalé chybě se skončí.
+- Kontrola rodiče před designem a prvním zápisem bere čerstvá data z Visumu,
+  včetně necacheovaných intrazonálních penalizací a báze M9002.
+- Povinnost rollbacku přežije obnovu samotných parametrů mezi pokusy. Pokud
+  jsou matice a assignment ještě z odmítnutého pokusu, proběhne při ukončení
+  plný přepočet rodiče a jeho ověření.
+- Chyby ukládají FAILED a fázi, místo neaktuálního DESIGNING.
+- Případná skutečná změna rodiče se nadále odmítne. Podrobnosti zapisuje:
+  DESIGN_PARENT_CHECK\GENERATION_PARENT_CHECK.json
+  TRY_01\PARENT_CHECK\GENERATION_PARENT_CHECK.json
+  TRY_01\PARENT_CHECK\GENERATION_PARENT_DIFF.json  (jen při rozdílu)
+  Podrobné soubory obsahují domény hashů, čísla matic, atributy/zóny,
+  parametry TD a vazby DSeg; nevypisují celé matice.
+
+MOBILITY1, jeho nastavení hybnosti, cíle kalibrace, akceptační prahy, assignment,
+FlowBundle a TD nejsou touto opravou metodicky přenastaveny. Původní zapečetěné
+soubory V24916 zůstávají shodné; změny jsou v přídavné vrstvě V24917.
+
+ROZSAH OVĚŘENÍ A NEJISTOTA
+Z dodaných logů je přesně doložen pád V242_GENERATION_TRIAL_PARENT_CHANGED
+před prvním zápisem kandidáta. Solver i projekce konvergovaly. Log ale
+neobsahoval původní a nový snapshot ani komponentový rozdíl. Nelze proto
+zpětně prokázat konkrétní změněný atribut a jeho příčinu v tomto živém běhu.
+GENFIX1 opravuje reprodukované chyby zdroje a doplňuje chybějící diagnostiku.
+Živý výpočet v PTV Visum v tomto prostředí proveden nebyl.
+
+Podrobnosti: GENFIX1_REPAIR_REPORT_CZ.txt
+Automatické testy a provenance: evidence_genfix1/

@@ -1,0 +1,34 @@
+{
+  "schema": "R1_15A2_V24915_PERF2_READBACK_CALL_GRAPH_AUDIT_V1",
+  "files_scanned": [
+    "r1_15a2_supply_visum.py",
+    "r1_15a2_trial_adapter_v24915p1.py",
+    "r1_15a2_overnight_controller_v24915p1.py",
+    "r1_15a2_overnight_controller_coupled_v24915p1.py",
+    "r1_15a2_inplace_transaction_v24915p1.py",
+    "r1_15a2_acceleration_v24915p1.py",
+    "r1_15a2_supply_handoff_v24915p1.py",
+    "r1_15a2_runtime_v1.py",
+    "helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py",
+    "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF1.py"
+  ],
+  "call_sites": 84,
+  "counts": {
+    "operation_inventory": 5,
+    "SetAttValue": 7,
+    "list_dsegs": 5,
+    "read_links": 5,
+    "snapshot": 35,
+    "_fingerprint_matrix_object": 3,
+    "td_snapshot": 1,
+    "rollback_diagnostic_equivalence": 2,
+    "parameter_persistence": 3,
+    "diagnostics": 10,
+    "count_profile_signature": 1,
+    "LoadVersion": 2,
+    "GetValues": 4,
+    "Execute": 1
+  },
+  "conclusion": "REUSE_ONLY_INSIDE_EXACT_SESSION_RUN_PARENT_BLOCK_CANDIDATE_AND_EPOCH; MUTATIONS_INVALIDATE_BEFORE_SIDE_EFFECT"
+}

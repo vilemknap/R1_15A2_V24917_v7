@@ -1,0 +1,19 @@
+{
+  "schema": "R1_15A2_V24912_COMPLETE_R2_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+  "package_revision": "V24912_COMPLETE_R2",
+  "status": "OFFLINE_VERIFIED_RUNTIME_COMPLETE_PENDING_REAL_VISUM_RETEST",
+  "live_failure_closed": "NO_MODULE_NAMED_R1_15A2_GUARD_POLICY_V24912",
+  "policy_implementation_owner": "r1_15a2_core.py",
+  "runtime_external_policy_import_required": false,
+  "automatic_runtime_bundle_preflight": true,
+  "runtime_bundle_manifest_file": "V24912_RUNTIME_BUNDLE_MANIFEST.json",
+  "runtime_bundle_file_count": 60,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "updated_at_utc": "2026-10-18T22:11:08.122169+00:00",
+  "runtime_bundle_manifest_sha256": "40750767d99fa29a776a122c1c3c0fb4875f758962384e03ef1af6594f299556",
+  "source_full_pytest_passed": 761,
+  "focused_v24912_pytest_passed": 18,
+  "deployment_preflight_before_load_config": true
+}

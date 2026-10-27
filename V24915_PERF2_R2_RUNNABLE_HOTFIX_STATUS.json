@@ -1,0 +1,31 @@
+{
+  "acceptance_changed": false,
+  "calibration_math_changed": false,
+  "candidate_readback_bundle_changed": false,
+  "compileall": true,
+  "deployment_preflight": {
+    "files_checked": 80,
+    "passes": true
+  },
+  "focused_tests": {
+    "failed": 0,
+    "passed": 51
+  },
+  "full_regression": {
+    "execution": "4 deterministic groups",
+    "failed": 0,
+    "passed": 844,
+    "skipped": 4
+  },
+  "launcher": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2.py",
+  "package_revision": "V24915_PERF2_CANDIDATE_READBACK_BUNDLE_R2_RUNNABLE_HOTFIX",
+  "production_ready": false,
+  "real_visum_tested": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
+  "root_folder": "R1_15A2_V24915_PERF2_RUN",
+  "run_root_full": "R1_15A2_V24915_PERF2_RUNS",
+  "run_root_supply_only": "R1_15A2_V24915_PERF2_SUPPLY_RUNS",
+  "runtime_bundle_preflight": true,
+  "schema": "R1_15A2_V24915_PERF2_R2_RUNNABLE_HOTFIX_STATUS_V1",
+  "status": "OFFLINE_VERIFIED_RUNNABLE_DEPLOYMENT_HOTFIX_READY_FOR_LIVE_VISUM"
+}

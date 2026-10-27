@@ -1,0 +1,20 @@
+{
+  "release": "R1_15A2_V24917_SAFETYFIX2_TDROLLBACKFIX1_20261027",
+  "parent": "SAFETYFIX1",
+  "contains": [
+    "GENFIX2",
+    "TDJOINT1",
+    "COSTFIX1",
+    "IMPORTFIX1",
+    "PROCSEQFIX1",
+    "MOBILITYFIX1",
+    "SAFETYFIX1",
+    "TDROLLBACKFIX1"
+  ],
+  "launcher_65_35": "01_SPUSTIT_V24917_TDJOINT1.py",
+  "launcher_60_40": "02_SPUSTIT_V24917_TDJOINT1_60_40.py",
+  "production_modules": {
+    "r1_15a2_parent_equivalence_v24917.py": "34efb09b5eaae48fdeaa865aa76c7845267ac7ecc58fe2fce119de98b9926664",
+    "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a"
+  }
+}

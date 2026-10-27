@@ -1,0 +1,23 @@
+parameter;V24912;V24913;unit_or_role
+lattice;1.0;0.5;ADDVAL units
+lattice_equivalent_seconds;10;5;seconds
+max_step;4;8;ADDVAL units
+max_step_equivalent_seconds;40;80;seconds
+step_ladder_seconds;40|20|10;80|40|20|10|5;seconds
+max_cumulative;4;15;ADDVAL units from run start
+max_cumulative_seconds;40;150;seconds
+absolute_range;-50..50;-100..100;ADDVAL units
+max_bundle_equivalent_seconds;120;360;seconds
+max_changed_links;12;30;links
+max_candidates;10;40;proposals
+max_live_trials_per_cycle;6;40;assignments
+max_driver_profiles;24;80;profiles
+min_geh;10;5;GEH
+min_abs_residual;300;100;vehicles
+min_attribution_coverage;0.995;0.90;share
+min_path_coverage;0.98;0.90;share
+min_path_volume_coverage;0.995;0.95;share
+sequence_cap_schedule;8|4|2|1;12|8|4|2|1;branches
+max_unique_sequences;100000;250000;sequences
+max_pairs_per_market;64;128;pairs
+supply_positive_improvement_materiality;0.001;epsilon + 0.0005 first-sufficient;relative objective

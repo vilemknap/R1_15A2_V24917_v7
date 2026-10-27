@@ -1,0 +1,15 @@
+{
+  "release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+  "files": [
+    "r1_15a2_two_mode_v238.py",
+    "R1_15A2_CONFIG_V2_4_8_2.json",
+    "r1_15a2_safety_v2482.py",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_2.py",
+    "tests/test_v2481_live_run_hotfix.py",
+    "README_R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_CZ.md",
+    "START_HERE_V2482_CZ.txt",
+    "V2481_REAL_RUN_POSTMORTEM_CP12.json",
+    "V2481_REAL_RUN_POSTMORTEM_CP12.md",
+    "V2482_RELEASE_STATUS.json"
+  ]
+}

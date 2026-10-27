@@ -1,0 +1,29 @@
+﻿R1 15A2 V24917 MOBILITY1 GENFIX1 — NOVY BALICEK REPACK2 (27. 10. 2026)
+
+Toto je NOVY archiv vytvoreny z fyzicky rozbalenych a hashove overenych
+souboru predchoziho balicku GENFIX1. Nedochazi k zadnym zmenam v samotnem
+kalibracnim kodu; resi se pouze zpusob predani a kompatibilita rozbaleni.
+
+OBSAH
+- Vsechny puvodni zdrojove soubory, testy, evidence, nastaveni a navody
+  jsou v jedine korenove slozce R1_V24917_GENFIX1/.
+- SHA256_VALUES.txt kontroluje hash kazdeho puvodniho souboru.
+- 00_ZACNETE_ZDE_REPACK2.txt je uvodni soubor do balicku.
+
+SPUSTENI
+1. Stahnete novy ZIP kompletne, zkontrolujte soucet SHA256 podle samostatneho
+   TXT souboru ulozeneho vedle ZIPu na Google Drive.
+2. Rozbalte soubor napr. pres 7-Zip nebo Windows Explorer / Extrahovat vse do
+   kratke cesty C:\R1 (vysledek C:\R1\R1_V24917_GENFIX1\).
+3. Ve Visumu otevrete puvodni bezpecny modelovy checkpoint .ver presne podle
+   00_START_HERE_V24917_GENFIX1_CZ.txt.
+4. Ze slozky R1_V24917_GENFIX1 spustte pres Visum Scripts -> Run script file:
+   01_SPUSTIT_V24917_GENFIX1.py
+
+POZOR: NENI TO VYSLEDEK ZIVEHO BEHU VISUM. Opravy zdrojoveho kodu jsou
+oddelene od ZIP packaging. Pro 1 473 testu plati offline evidence predchozi
+verze, kterou obsahuje archiv. Cerstva kontrola rozbaleni byla provedena
+nezavisle programem unzip a Python ZIP validatorem.
+
+Pri problemu s extrakci vyzkousejte 7-Zip a porovnejte delku a SHA256
+stazeneho souboru. Nepoustet kalibrator, pokud ZIP CRC nebo SHA256 nesouhlasi.

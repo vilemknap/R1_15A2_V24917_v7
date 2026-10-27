@@ -1,0 +1,20 @@
+R1 15A2 FRESH100 TGTD100 ONLY - SEMFIX1 - NO WALLCLOCK
+
+Run:
+R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_FRESH100_TGTD100_ONLY_SEMFIX1_NO_WALLCLOCK.py
+
+Semantics:
+- fresh lineage: outer cycle 1, accepted_count 0
+- exactly 100 coupled-demand outer cycles are attempted
+- each outer cycle = TG generation + TD FineCDF
+- stationarity before cycle 100 is diagnostic only and does not terminate the demand loop
+- Supply / ADDVAL is disabled for this run, including after cycle 100
+- no global wall-clock limit
+- inner FineCDF budgets and inherited calibration mathematics/acceptance rules remain unchanged
+- user STOP and technical failures still stop the run
+
+SEMFIX1:
+- the currently opened live .ver is the new fresh baseline authority
+- an adjacent historical .ver.semantic.json is diagnostic only and cannot veto this fresh baseline
+- the saved working copy must still match the live source semantics exactly before calibration starts
+- source .ver byte identity remains a within-run mutation sentinel

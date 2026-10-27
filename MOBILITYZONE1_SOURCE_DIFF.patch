@@ -1,0 +1,836 @@
+--- a/r1_15a2_trial_adapter_v24917.py
++++ b/r1_15a2_trial_adapter_v24917.py
+@@ -41,6 +41,7 @@
+ import r1_15a2_boundary_generation_v24917 as bdgen
+ import r1_15a2_boundary_pa_v24917 as bdpa
+ import r1_15a2_mobility_guard_v24917 as mguard
++import r1_15a2_mobility_zone_v24917 as zguard
+ import r1_15a2_intrazonal_penalty_v24917 as izpen
+ import r1_15a2_snapshot_reads_v24917 as snapshot_reads
+ import r1_15a2_com_busy_snapshot_hotfix_v24916 as snapshot_retry
+@@ -192,6 +193,23 @@
+         context["_genfix2_mobility"] = {"zone_rows": copy.deepcopy(zone_rows), "options": mg_opts,
+                                         "zone_attributes": attrs}
+         self._genfix2_mobility_parent = context["_genfix2_mobility"]
++        # MOBILITYZONE1: raw resident FP, not post-sym vehicle trips or counts.
++        try:
++            mz_rows, mz_families, mz_errors = zguard.enrich(self, zone_rows)
++            mz = zguard.capture(mz_rows, mg_opts, mz_families, mz_errors,
++                                anchor=getattr(self, "_mobilityzone1_anchor", None))
++            if not hasattr(self, "_mobilityzone1_anchor"):
++                self._mobilityzone1_anchor = copy.deepcopy(mz)
++            else:
++                # Newly available optional families may be bound once; existing
++                # references are never re-centred on calibrated current values.
++                for key, entry in mz["entries"].items():
++                    self._mobilityzone1_anchor["entries"].setdefault(key, copy.deepcopy(entry))
++            context["_mobilityzone1"] = mz
++            self._mobilityzone1_parent = mz
++            rt.write_json(folder / "MOBILITYZONE1_PARENT.json", mz)
++        except Exception as exc:
++            return self._blocked_generation(context, folder, exc, stage="MOBILITYZONE1_PARENT")
+         original_projection = context["projection"]
+         problem = solution = bd = ls = summary = None
+         bounds = {}
+@@ -231,7 +249,9 @@
+         except Exception as exc:
+             return self._blocked_generation(context, folder, exc, stage="FLOWBUNDLE_MASK")
+         try:
+-            rows, mobility = mguard.guard(mask["rows"], zone_rows, mg_opts)
++            zonal_rows, zonal_projection = zguard.guard_projection(mask["rows"], mz)
++            ls = zguard.guard_ls(ls, mz)
++            rows, mobility = mguard.guard(zonal_rows, zone_rows, mg_opts)
+             if not mobility.get("passes", mobility.get("status") == "DISABLED"):
+                 raise ValueError(mobility["status"])
+         except Exception as exc:
+@@ -258,7 +278,7 @@
+         longguard_deferred = bool((getattr(self, "v24917_ls", None) or {}).get("active") and
+                                   not self._longguard1_parent.get("long_generation_permitted"))
+         self.v24917_status["ls_incomplete_current_cycle"] = bool(
+-            ls_deferred or ls_design_error or longguard_deferred)
++            ls_deferred or ls_design_error or longguard_deferred or not mz["target_satisfied"])
+         context["v24917"] = {"release": RELEASE, "phase": phase, "overlay_phase": phase if not fallback else None,
+                              "model_obs_ratio": ratio, "raw_fit_summary": summary, "fit_summary": summary,
+                              "flowbundle_mask": mask["audit"], "bounds_count": len(bounds),
+@@ -266,11 +286,11 @@
+                                              ({"status": "DEFERRED_READ_UNAVAILABLE",
+                                                "activation": dict(ls_activation), "search_complete": False}
+                                               if ls_deferred else {"status": "INACTIVE", "activation": dict(ls_activation)})),
+-                             "long_school_search_incomplete": bool(ls_deferred or ls_design_error or longguard_deferred),
++                             "long_school_search_incomplete": bool(ls_deferred or ls_design_error or longguard_deferred or not mz["target_satisfied"]),
+                              "longguard1_parent": self._longguard1_parent,
+                              "longguard1_long_step_deferred": longguard_deferred,
+                              "boundary": (bd or {}).get("summary"),
+-                             "mobility_guard": mobility, "solver_converged": converged, "proposal_usable": usable,
++                             "mobilityzone1": zonal_projection, "mobility_guard": mobility, "solver_converged": converged, "proposal_usable": usable,
+                              "status": "FIT_FALLBACK_PARENT_PROPOSAL" if fallback else "GUARDED_PROPOSAL"}
+         context["v24917_ls"], context["v24917_bd"] = ls, bd
+         context["_genfix2_effect_model"] = {"problem": problem, "ls": ls, "bd": bd}
+@@ -326,6 +346,8 @@
+                     by[(fam, "PA", int(z))] = float(step)
+                 x = np.array([by.get(tuple(k), 0.0) for k in problem.var_keys])
+                 delta = np.asarray(problem.G @ x, dtype=float)
++            if (ls or {}).get("prediction_unavailable_after_guard"):
++                raise ValueError("MOBILITYZONE1_LS_EFFECT_OPERATOR_UNAVAILABLE")
+             lsp = (ls or {}).get("predicted_change")
+             if lsp is not None:
+                 if len(lsp) != len(delta):
+@@ -354,6 +376,9 @@
+             effects[(fam, "PA", int(z))] = float(scale)*float(value)
+         x = np.array([effects.get(tuple(k), 0.0) for k in problem.var_keys])
+         delta = np.asarray(problem.G @ x, dtype=float)
++        if (model.get("ls") or {}).get("prediction_unavailable_after_guard"):
++            return {"keys": [], "delta": [], "available": False,
++                    "reason": "MOBILITYZONE1_LS_EFFECT_OPERATOR_UNAVAILABLE"}
+         ls_delta = (model.get("ls") or {}).get("predicted_change")
+         if ls_delta is not None:
+             if len(ls_delta) != len(delta):
+@@ -389,6 +414,20 @@
+                     self.visum, self.zones, self.cfg, zone_indices=self.zone_write_index_by_no,
+                     retry_policy=self.com_retry_policy)
+                 proof = mguard.check_live(authority["zone_rows"], live_rows, opts)
++                mz = getattr(self, "_mobilityzone1_parent", None)
++                if mz is not None:
++                    try:
++                        mz_live, _, read_errors = zguard.enrich(self, live_rows)
++                        if any(f not in mz["unavailable"] for f in read_errors):
++                            raise ValueError("MOBILITYZONE1_LIVE_READ_UNAVAILABLE:" + repr(read_errors))
++                        zonal = zguard.check_live(mz, mz_live)
++                    except Exception as exc:
++                        zonal = {"release": zguard.RELEASE, "passes": False,
++                                 "status": "LIVE_READ_UNVERIFIED", "error": repr(exc)}
++                    proof["mobilityzone1"] = zonal
++                    proof["passes"] = bool(proof["passes"] and zonal["passes"])
++                    if zonal.get("deferred_families") or not zonal["passes"]:
++                        self.v24917_status["ls_incomplete_current_cycle"] = True
+                 decision = dict(decision, mobility_guard_live=proof)
+                 if not proof["passes"]:
+                     decision["accepted"] = False
+@@ -439,6 +478,13 @@
+                 raise supply_visum.SupplyContractError("MOBILITY2_PARENT_AUTHORITY_MISSING")
+             return {"passes": True, "status": "DISABLED"}
+         proof = mguard.check_candidate(design.get("candidate_rows") or [], authority["zone_rows"], authority["options"])
++        mz = context.get("_mobilityzone1")
++        if mz is not None:
++            zonal = zguard.check_candidate(design.get("candidate_rows") or [], mz)
++            proof["mobilityzone1"] = zonal
++            proof["passes"] = bool(proof["passes"] and zonal["passes"])
++            if not proof["passes"]:
++                proof["status"] = "REJECTED_FINAL_CANDIDATE_OUTSIDE_ENVELOPE"
+         design["genfix2_mobility"] = proof
+         return proof
+ 
+@@ -477,6 +523,18 @@
+         if proof.get("passes") is not True:
+             raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITY2_FINAL_ENVELOPE")
+         extra = lsgen.rows_at_scale(context.get("v24917_ls"), scale) + bdgen.rows_at_scale(context.get("v24917_bd"), scale)
++        mz = context.get("_mobilityzone1")
++        if mz is not None and mz["enabled"]:
++            # Includes LS values immediately before the first inherited COM write.
++            fresh, _ = supply_visum.base.zone_state_rows(
++                self.visum, self.zones, self.cfg, zone_indices=self.zone_write_index_by_no,
++                retry_policy=self.com_retry_policy)
++            fresh, _, read_errors = zguard.enrich(self, fresh)
++            if any(f not in mz["unavailable"] for f in read_errors):
++                raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITYZONE1_LIVE_READ_UNAVAILABLE")
++            check = zguard.parent_unchanged(mz, fresh)
++            if not check["passes"]:
++                raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITYZONE1_STALE_PARENT")
+         original = supply_visum.base.generation_candidate
+         def checked_design(*args, **kwargs):
+             design = original(*args, **kwargs)
+--- a/r1_15a2_long_school_generation_v24917.py
++++ b/r1_15a2_long_school_generation_v24917.py
+@@ -297,7 +297,9 @@
+                "linear_ratio_after_ws_and_ls": float(after.sum() / obs.sum()) if obs.sum() > 0 else None}
+     return {"steps": steps, "current": {a: {int(z): float(cur[a][i]) for i, z in enumerate(zones)} for a in ATTRS},
+             "summary": summary,
+-            "predicted_change": [float(v) for v in np.asarray(sol["predicted_change"], dtype=float)]}
++            "predicted_change": [float(v) for v in np.asarray(sol["predicted_change"], dtype=float)],
++            # MOBILITYZONE1 re-evaluates effects after bounding production steps.
++            "effect_operator": {"keys": [list(k) for k in var_keys], "G": G.tolist()}}
+ 
+ 
+ def rows_at_scale(ls: Mapping[str, Any], scale: float) -> List[Dict[str, Any]]:
+--- /dev/null
++++ b/r1_15a2_mobility_zone_v24917.py
+@@ -0,0 +1,368 @@
++# -*- coding: utf-8 -*-
++"""MOBILITYZONE1: fixed-reference domestic production envelope, per zone/purpose.
++
++Raw pre-mode-choice FP productions are compared, never profile passages, vehicle
++OD or attraction weights. Reference is the existing AMDY equation evaluated at
++ADD_PROD_W/S/SCH=1 and ADD_PROD_L=0.2, NOT raw unscaled survey trip frequency.
++Existing out-of-band parents may improve or hold, never move further away.
++No COM writes, no LoadVersion, no changes to native TD or boundary production.
++"""
++from __future__ import annotations
++
++import copy
++import math
++from typing import Any, Mapping
++
++RELEASE = "R1_15A2_V24917_MOBILITYZONE1_20261027"
++GROUPS = ("E_C", "E_noC", "noE_C", "noE_noC", "stud")
++SPECS = {
++    "WORK": ("ADD_PROD_W", 1.0, tuple("FP_1_WORK_" + x for x in GROUPS)),
++    "SERVICE": ("ADD_PROD_S", 1.0, tuple("FP_2_SERVICE_" + x for x in GROUPS)),
++    "LONG": ("ADD_PROD_L", 0.2, tuple("FP_3_LONG_" + x for x in GROUPS)),
++    "SCHOOL": ("ADD_PROD_SCH", 1.0, ("FP_5_SCHOOL",)),
++}
++ATTR_FAMILY = {v[0]: k for k, v in SPECS.items()}
++ATT_FAMILY = {"ADD_ATT_L": "LONG", "ADD_ATT_SCH": "SCHOOL"}
++EPS = 1e-12
++ATOL = 1e-7
++RTOL = 1e-10
++REFERENCE = "AMDY_DOMESTIC_FP_AT_CANONICAL_COEFFICIENT_NOT_RAW_SURVEY"
++
++
++def finite(value, name):
++    try:
++        x = float(value)
++    except (TypeError, ValueError, OverflowError) as exc:
++        raise ValueError("MOBILITYZONE1_INVALID:" + name) from exc
++    if not math.isfinite(x):
++        raise ValueError("MOBILITYZONE1_NONFINITE:" + name)
++    return x
++
++
++def close(a, b):
++    return abs(a-b) <= ATOL + RTOL*max(abs(a), abs(b))
++
++
++def limits(opts):
++    lo = finite(opts.get("lo", .75), "lo")
++    hi = finite(opts.get("hi", 1.25), "hi")
++    if not 0 < lo <= 1 <= hi:
++        raise ValueError("MOBILITYZONE1_INVALID_BAND")
++    return lo, hi
++
++
++def zone_map(rows):
++    out = {}
++    for row in rows:
++        raw = finite(row.get("zone_no"), "zone_no")
++        if raw != int(raw) or raw <= 0 or int(raw) in out:
++            raise ValueError("MOBILITYZONE1_INVALID_OR_DUPLICATE_ZONE")
++        out[int(raw)] = row
++    if not out:
++        raise ValueError("MOBILITYZONE1_EMPTY_ZONE_COVERAGE")
++    return out
++
++
++def enrich(adapter, rows):
++    """Read LS FP strictly, with existing bounded COM retry and indexed identity.
++
++    Failure defers only that optional family; no invented zeros or cached values.
++    W/S required data have already been acquired by zone_state_rows.
++    """
++    import r1_15a2_runtime_v1 as rt
++    out = copy.deepcopy(list(rows))
++    families, unavailable = ["WORK", "SERVICE"], {}
++    if not (getattr(adapter, "v24917_ls", {}) or {}).get("active"):
++        return out, families, unavailable
++    for fam in ("LONG", "SCHOOL"):
++        families.append(fam)
++        attr, _, fps = SPECS[fam]
++        try:
++            for name in (attr,) + fps:
++                vals = rt.read_zone_attr_strict(adapter.visum, name, adapter.zones,
++                    zone_indices=adapter.zone_write_index_by_no,
++                    retry_policy=adapter.com_retry_policy)
++                if len(vals) != len(out):
++                    raise ValueError("MOBILITYZONE1_ATTRIBUTE_AXIS:" + name)
++                if [int(r["zone_no"]) for r in out] != [int(z) for z in adapter.zones]:
++                    raise ValueError("MOBILITYZONE1_ZONE_ORDER")
++                for row, value in zip(out, vals):
++                    row[name] = finite(value, name)
++        except Exception as exc:
++            unavailable[fam] = type(exc).__name__ + ":" + str(exc)
++    return out, families, unavailable
++
++
++def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=None):
++    """Build a fixed reference and retain the raw parent for readback/rollback."""
++    lo, hi = limits(opts)
++    by_zone = zone_map(rows)
++    entries, errors = {}, dict(unavailable or {})
++    for fam in families:
++        if fam in errors:
++            continue
++        attr, ref, fps = SPECS[fam]
++        current_entries = {}
++        try:
++            for z, row in by_zone.items():
++                mask = finite(row.get("NOT_ZAHR"), "NOT_ZAHR:%s" % z)
++                if mask < .5:
++                    continue
++                c = finite(row.get(attr), "%s:%s" % (attr, z))
++                values = {a: finite(row.get(a), "%s:%s" % (a, z)) for a in fps}
++                if c < 0 or any(v < 0 for v in values.values()):
++                    raise ValueError("MOBILITYZONE1_NEGATIVE_PRODUCTION_OR_COEFFICIENT:%s:%s" % (fam,z))
++                p = math.fsum(values.values())
++                if c <= EPS and p > EPS:
++                    raise ValueError("MOBILITYZONE1_POSITIVE_FP_WITH_ZERO_COEFFICIENT:%s:%s" % (fam,z))
++                base = {a: v*ref/c for a,v in values.items()} if c > EPS else None
++                entry = {"zone_no": z, "family": fam, "attr": attr, "reference_coefficient": ref,
++                    "current": c, "production": p, "fp": values, "reference_fp": base,
++                    "reference_production": math.fsum(base.values()) if base is not None else None,
++                    "ratio_current": c/ref if p > EPS else None,
++                    "status": "VERIFIED" if p > EPS else "ZERO_PRODUCTION_FROZEN"}
++                key = fam + "|" + str(z)
++                previous = (anchor or {}).get("entries", {}).get(key)
++                if previous is not None:
++                    old = previous["reference_fp"]
++                    if (old is None) != (base is None) or (old is not None and
++                            (set(old) != set(base) or any(not close(old[a],base[a]) for a in old))):
++                        raise ValueError("MOBILITYZONE1_FIXED_REFERENCE_CHANGED:" + key)
++                    entry["reference_fp"] = copy.deepcopy(old)
++                    entry["reference_production"] = previous["reference_production"]
++                current_entries[key] = entry
++            old_keys = {k for k in (anchor or {}).get("entries", {}) if k.startswith(fam+"|")}
++            if old_keys and old_keys != set(current_entries):
++                raise ValueError("MOBILITYZONE1_DOMESTIC_COVERAGE_CHANGED:" + fam)
++            if not current_entries:
++                raise ValueError("MOBILITYZONE1_NO_DOMESTIC_ZONES:" + fam)
++            entries.update(current_entries)
++        except Exception as exc:
++            errors[fam] = type(exc).__name__ + ":" + str(exc)
++    outside = [{"zone_no": e["zone_no"], "family": e["family"], "ratio": e["ratio_current"]}
++               for e in entries.values() if e["ratio_current"] is not None and
++               not lo-EPS <= e["ratio_current"] <= hi+EPS]
++    return {"release": RELEASE, "enabled": bool(opts.get("enabled", True)),
++            "band": [lo, hi], "reference_role": REFERENCE,
++            "families": list(families), "entries": entries,
++            "unavailable": errors, "out_of_band": outside,
++            "target_satisfied": not bool(errors or outside), "parent_zone_rows": copy.deepcopy(list(rows)),
++            "status": "VERIFIED" if not errors else "PARTIAL_DEFERRED",
++            "search_complete": not bool(errors)}
++
++
++def interval(entry, authority):
++    lo, hi = authority["band"]
++    r = entry["current"]/entry["reference_coefficient"]
++    return min(lo,r), max(hi,r)
++
++
++def bounded_step(entry, step, authority):
++    step = finite(step, "log_step")
++    if entry["reference_fp"] is None:
++        return 0.0
++    lo, hi = interval(entry, authority)
++    r = entry["current"]/entry["reference_coefficient"]
++    return min(math.log(hi/r), max(math.log(lo/r),step))
++
++
++def guard_projection(rows, authority):
++    """Clip W/S production proposals independently, BEFORE aggregate guard/P-A."""
++    import r1_15a2_mobility_guard_v24917 as mg
++    if not authority["enabled"]:
++        return rows, {"status": "DISABLED"}
++    out, changes = copy.deepcopy(list(rows)), []
++    zones = zone_map(authority["parent_zone_rows"])
++    seen = set()
++    for row in out:
++        fam, z = row.get("family"), int(row["zone_no"])
++        if fam not in SPECS or row.get("role") != "PROD":
++            continue
++        if z not in zones:
++            raise ValueError("MOBILITYZONE1_UNKNOWN_ZONE:%s" % z)
++        if finite(zones[z].get("NOT_ZAHR"), "NOT_ZAHR") < .5 or row.get("branch") == "ZAHR":
++            continue
++        key = fam+"|"+str(z)
++        if key in seen:
++            raise ValueError("MOBILITYZONE1_DUPLICATE_STEP:"+key)
++        seen.add(key)
++        s = finite(row.get("log_step",0), "log_step")
++        e = authority["entries"].get(key)
++        t = bounded_step(e,s,authority) if e is not None else 0.0
++        if t != s:
++            changes.append({"zone_no":z,"family":fam,"before_log_step":s,"after_log_step":t})
++        mg._set_step(row,t)
++    return out, {"release":RELEASE,"status":"PROJECTED", "rows_clipped":len(changes),
++                 "changes":changes,"unavailable":authority["unavailable"],
++                 "out_of_band_parent": authority["out_of_band"],
++                 "target_satisfied": authority["target_satisfied"]}
++
++
++def guard_ls(ls, authority):
++    """Keep LONG as ONE global step. SCHOOL can be clipped zone by zone."""
++    if not ls or not authority["enabled"]:
++        return ls
++    out = copy.deepcopy(ls)
++    steps, changed = out.get("steps",{}), False
++    zones = zone_map(authority["parent_zone_rows"])
++    edits = []
++    for attr in ("ADD_PROD_L","ADD_PROD_SCH"):
++        fam = ATTR_FAMILY[attr]
++        items = steps.get(attr,{})
++        if not items:
++            continue
++        clipped = {}
++        for raw_z, s in items.items():
++            z = int(raw_z); s = finite(s,"ls_step")
++            e = authority["entries"].get(fam+"|"+str(z))
++            # LSGEN writes a global LONG coefficient to every zone. Freeze
++            # unsupported/external zones instead of inventing resident demand.
++            clipped[raw_z] = bounded_step(e,s,authority) if e is not None else 0.0
++        if fam == "LONG":
++            vals = [finite(s,"long_step") for s in items.values()]
++            if max(vals)-min(vals)>EPS:
++                raise ValueError("MOBILITYZONE1_LONG_STEP_NOT_GLOBAL")
++            s = vals[0]
++            domestic = [clipped[z] for z in items if int(z) in zones and
++                        finite(zones[int(z)].get("NOT_ZAHR"),"NOT_ZAHR")>=.5]
++            alpha = min([1.0]+[abs(t/s) for t in domestic]) if abs(s)>EPS else 0.0
++            for z in clipped:
++                # Preserve the existing global lever, including zero-production
++                # zones by freezing the full lever if any is not certifiable.
++                clipped[z] = s*alpha
++        for z,t in clipped.items():
++            if abs(t-float(items[z]))>EPS:
++                edits.append({"attr":attr,"zone_no":int(z),"before":items[z],"after":t})
++                changed = True
++            items[z]=t
++    # If optional LS data is unavailable, freeze that family's attraction too.
++    for attr,fam in ATT_FAMILY.items():
++        if fam in authority["unavailable"]:
++            for z,s in steps.get(attr,{}).items():
++                if s: changed=True
++                steps[attr][z]=0.0
++    if changed:
++        model=out.get("effect_operator")
++        if model:
++            import numpy as np
++            by={}
++            for attr,by_zone in steps.items():
++                fam=ATTR_FAMILY.get(attr) or ATT_FAMILY.get(attr)
++                role="PROD" if attr in ATTR_FAMILY else "ATT"
++                for z,s in by_zone.items(): by[(fam,role,int(z))]=float(s)
++            long_vals=list(steps.get("ADD_PROD_L",{}).values())
++            by[("LONG","PROD",0)]=float(long_vals[0]) if long_vals else 0.0
++            x=np.array([by.get(tuple(k),0.0) for k in model["keys"]])
++            delta=np.asarray(model["G"],dtype=float)@x
++            if not np.isfinite(delta).all(): raise ValueError("MOBILITYZONE1_INVALID_LS_PREDICTION")
++            out["predicted_change"]=delta.tolist()
++        else:
++            out["predicted_change"]=None
++            out["prediction_unavailable_after_guard"]=True
++    summary = out.setdefault("summary", {})
++    if changed:
++        summary["raw_solver_long_global_log_step"] = summary.get("long_global_log_step")
++        summary["raw_solver_linear_ratio_after_ws_and_ls"] = summary.get("linear_ratio_after_ws_and_ls")
++        # A solver's ratio cannot be presented as the guarded forecast.
++        summary["linear_ratio_after_ws_and_ls"] = None
++    vals = list(steps.get("ADD_PROD_L", {}).values())
++    summary["long_global_log_step"] = float(vals[0]) if vals else 0.0
++    summary["school_zones_changed"] = sum(abs(float(v)) > EPS for attr in
++        ("ADD_PROD_SCH", "ADD_ATT_SCH") for v in steps.get(attr, {}).values())
++    summary["mobilityzone1"] = {"changes": edits, "deferred": authority["unavailable"],
++        "prediction_role": "GUARDED_EFFECT_OPERATOR" if changed and out.get("effect_operator")
++                           else "UNAVAILABLE" if out.get("prediction_unavailable_after_guard")
++                           else "UNCHANGED_SOLVER_PREDICTION"}
++    return out
++
++
++def check_candidate(rows, authority):
++    report={"release":RELEASE,"passes":True,"status":"VERIFIED", "violations":[],
++            "deferred_families":authority["unavailable"],"checked":0}
++    if not authority["enabled"]:
++        return dict(report,status="DISABLED")
++    zones=zone_map(authority["parent_zone_rows"])
++    seen=set()
++    for row in rows:
++        attr=str(row.get("attr","")).upper();fam=ATTR_FAMILY.get(attr)
++        if fam is None:
++            fam=ATT_FAMILY.get(attr)
++            if fam not in authority["unavailable"]: continue
++        z=int(row["zone_no"]);key=fam+"|"+str(z)
++        if (attr,z) in seen: raise ValueError("MOBILITYZONE1_DUPLICATE_CANDIDATE:"+key)
++        seen.add((attr,z))
++        if z not in zones: raise ValueError("MOBILITYZONE1_UNKNOWN_ZONE:"+key)
++        if finite(zones[z].get("NOT_ZAHR"),"NOT_ZAHR")<.5: continue
++        c=finite(row.get("current"),"current"); p=finite(row.get("proposed"),"proposed")
++        e=authority["entries"].get(key)
++        reason=None
++        if min(c,p)<0: reason="NEGATIVE_COEFFICIENT"
++        elif e is None or e["reference_fp"] is None:
++            if not close(c,p):reason="UNVERIFIED_OR_ZERO_ZONE_MUTATION"
++        elif attr in ATTR_FAMILY:
++            report["checked"]+=1
++            lo,hi=interval(e,authority)
++            if not close(c,e["current"]):reason="STALE_PARENT_COEFFICIENT"
++            elif not lo-EPS<=p/e["reference_coefficient"]<=hi+EPS:reason="ZONAL_ENVELOPE"
++        if reason: report["violations"].append({"zone_no":z,"family":fam,"reason":reason,"current":c,"proposed":p})
++    report["passes"]=not report["violations"]
++    if not report["passes"]:report["status"]="REJECT_CANDIDATE"
++    elif report["deferred_families"]:report["status"]="PARTIAL_DEFERRED"
++    return report
++
++
++def check_live(authority, rows):
++    """Fixed per-group denominators detect production drift, not just ADD_PROD."""
++    report={"release":RELEASE,"passes":True,"status":"VERIFIED","violations":[],"rows":[],
++            "deferred_families":authority["unavailable"],"reference_role":REFERENCE}
++    if not authority["enabled"]: return dict(report,status="DISABLED")
++    by=zone_map(rows); old=zone_map(authority["parent_zone_rows"])
++    if set(by)!=set(old):raise ValueError("MOBILITYZONE1_LIVE_ZONE_COVERAGE_CHANGED")
++    for z in by:
++        if finite(by[z].get("NOT_ZAHR"),"mask")!=finite(old[z].get("NOT_ZAHR"),"mask"):
++            raise ValueError("MOBILITYZONE1_LIVE_MASK_CHANGED")
++    for key,e in authority["entries"].items():
++        z=e["zone_no"]; r=by[z];fam=e["family"];attr,ref,fps=SPECS[fam]
++        c=finite(r.get(attr),attr);values={a:finite(r.get(a),a) for a in fps}
++        bad=[]
++        if c<0 or any(v<0 for v in values.values()):bad.append("NEGATIVE_VALUE")
++        if e["reference_fp"] is None:
++            if not close(c,e["current"]) or any(not close(values[a],e["fp"][a]) for a in fps):
++                bad.append("ZERO_PRODUCTION_ZONE_CHANGED")
++        else:
++            lo,hi=interval(e,authority)
++            if not lo-EPS<=c/ref<=hi+EPS:bad.append("COEFFICIENT_ENVELOPE")
++            for a in fps:
++                base=e["reference_fp"][a]
++                expected=base*c/ref
++                if not close(values[a],expected):bad.append("FP_REFERENCE_OR_FORMULA_CHANGED:"+a)
++                if base>EPS and not lo-EPS<=values[a]/base<=hi+EPS:
++                    bad.append("FP_ENVELOPE:"+a)
++                elif base<=EPS and values[a]>ATOL:bad.append("ZERO_GROUP_BECAME_POSITIVE:"+a)
++        total=math.fsum(values.values());base=e["reference_production"]
++        report["rows"].append({"zone_no":z,"family":fam,"production":total,
++            "reference_production":base,"ratio":total/base if base and base>EPS else None,
++            "in_target_band":bool(base and base>EPS and authority["band"][0]-EPS<=total/base<=authority["band"][1]+EPS),
++            "passes":not bad})
++        if bad:report["violations"].append({"zone_no":z,"family":fam,"reasons":bad})
++    # Deferred optional families are not "verified". Only unchanged parameters
++    # are allowed, and incompleteness is propagated to stationarity logic.
++    for fam in authority["unavailable"]:
++        for attr in (SPECS[fam][0],)+tuple(a for a,f in ATT_FAMILY.items() if f==fam):
++            for z in old:
++                if attr in old[z] and (attr not in by[z] or not close(finite(old[z][attr],attr),finite(by[z][attr],attr))):
++                    report["violations"].append({"zone_no":z,"family":fam,"reasons":["DEFERRED_FAMILY_PARAMETER_CHANGED"]})
++    report["passes"]=not report["violations"]
++    report["status"]="REJECT_CANDIDATE" if not report["passes"] else "PARTIAL_DEFERRED" if authority["unavailable"] else "VERIFIED"
++    return report
++
++
++def parent_unchanged(authority, rows):
++    """Before first write: raw FP and coefficients must still be the same parent."""
++    proof=check_live(authority,rows)
++    by=zone_map(rows)
++    for e in authority["entries"].values():
++        if not close(finite(by[e["zone_no"]].get(e["attr"]),e["attr"]),e["current"]):
++            proof["passes"]=False
++            proof["violations"].append({"zone_no":e["zone_no"],"family":e["family"],"reasons":["PARENT_CHANGED_BEFORE_WRITE"]})
++    return proof
+--- /dev/null
++++ b/tests/test_v24917_mobilityzone1.py
+@@ -0,0 +1,308 @@
++"""MOBILITYZONE1 regression: real guard, adapter hooks, strict live authority."""
++import copy
++import math
++from types import SimpleNamespace as NS
++import pytest
++import numpy as np
++
++import r1_15a2_mobility_zone_v24917 as z
++import r1_15a2_mobility_guard_v24917 as mg
++
++OPTS={"enabled":True,"lo":.75,"hi":1.25}
++
++
++def zones(ratios=(1.,1.),families=tuple(z.SPECS)):
++    rows=[]
++    for no,ratio in enumerate(ratios,1):
++        row={"zone_no":no,"NOT_ZAHR":1.}
++        for fam in families:
++            attr,ref,fps=z.SPECS[fam]
++            row[attr]=ref*ratio
++            for a in fps: row[a]=10.*ratio
++        row.update(ADD_ATT_L=1.,ADD_ATT_SCH=1.)
++        rows.append(row)
++    return rows
++
++
++def authority(rows=None,families=tuple(z.SPECS),**kwargs):
++    return z.capture(rows or zones(),OPTS,families,**kwargs)
++
++
++def candidate(fam,c,p,no=1):
++    return {"zone_no":no,"attr":z.SPECS[fam][0],"family":fam,"role":"PROD","current":c,"proposed":p}
++
++
++def projection(fam,step,no=1):
++    return {"zone_no":no,"family":fam,"role":"PROD","log_step":step,"base_margin_volume":50.}
++
++
++def test_aggregate_passes_but_zonal_guard_rejects_compensation():
++    rows=zones();cs=[candidate('WORK',1.,1.5,1),candidate('WORK',1.,.5,2)]
++    assert mg.check_candidate(cs,rows,OPTS)['passes']
++    assert not z.check_candidate(cs,authority(rows))['passes']
++
++
++@pytest.mark.parametrize('fam',tuple(z.SPECS))
++def test_canonical_reference_not_run_start(fam):
++    a=authority(zones((2.,.5)))
++    e=a['entries'][fam+'|1']; ref=z.SPECS[fam][1]
++    assert e['reference_production']==pytest.approx(10.*len(z.SPECS[fam][2]))
++    assert e['ratio_current']==2. and e['current']==ref*2.
++    assert not a['target_satisfied']
++    assert not z.check_candidate([candidate(fam,ref*2.,ref*2.1)],a)['passes']
++    assert z.check_candidate([candidate(fam,ref*2.,ref*1.7)],a)['passes']
++
++
++@pytest.mark.parametrize('fam',tuple(z.SPECS))
++@pytest.mark.parametrize('step',[-1.,-.1,0.,.1,1.])
++def test_projection_and_all_backtracking_scales_are_feasible(fam,step):
++    a=authority(zones((1.2,.8)))
++    out,_=z.guard_projection([projection(fam,step)],a)
++    e=a['entries'][fam+'|1'];c=e['current']
++    for scale in np.linspace(0,1,51):
++        assert z.check_candidate([candidate(fam,c,c*math.exp(scale*out[0]['log_step']))],a)['passes']
++
++
++def test_work_projection_clips_each_zone_without_modifying_attractions():
++    rows=zones((1.2,.8));a=authority(rows)
++    att={'zone_no':1,'family':'WORK','role':'ATT','log_step':.5}
++    out,r=z.guard_projection([projection('WORK',.4,1),projection('WORK',-.4,2),att],a)
++    assert 1.2*math.exp(out[0]['log_step'])==pytest.approx(1.25)
++    assert .8*math.exp(out[1]['log_step'])==pytest.approx(.75)
++    assert out[2]==att and r['rows_clipped']==2
++    guarded,_=mg.guard(out,rows,OPTS)
++    assert all(abs(g['log_step'])<=abs(p['log_step'])+1e-12 for g,p in zip(guarded[:2],out[:2]))
++
++
++def test_long_reference_point_two_not_one_or_last_calibrated_value():
++    a=authority();e=a['entries']['LONG|1']
++    assert e['reference_coefficient']==.2
++    assert z.check_candidate([candidate('LONG',.2,.25)],a)['passes']
++    assert not z.check_candidate([candidate('LONG',.2,.251)],a)['passes']
++
++
++def ls_payload():
++    return {'steps':{'ADD_PROD_L':{1:math.log(1.5),2:math.log(1.5)},
++                     'ADD_PROD_SCH':{1:math.log(1.5),2:-math.log(2)},
++                     'ADD_ATT_SCH':{1:.1}},
++            'current':{'ADD_PROD_L':{1:.2,2:.2},'ADD_PROD_SCH':{1:1.,2:1.},'ADD_ATT_SCH':{1:1.}},
++            'effect_operator':{'keys':[['LONG','PROD',0],['SCHOOL','PROD',1],['SCHOOL','PROD',2],['SCHOOL','ATT',1]],
++                               'G':[[100.,200.,300.,400.]]},'predicted_change':[999.], 'summary':{}}
++
++
++def test_ls_projection_preserves_global_long_and_recomputes_actual_prediction():
++    ls=ls_payload();out=z.guard_ls(ls,authority())
++    assert out['steps']['ADD_PROD_L'][1]==out['steps']['ADD_PROD_L'][2]==pytest.approx(math.log(1.25))
++    assert out['steps']['ADD_PROD_SCH'][1]==pytest.approx(math.log(1.25))
++    assert out['steps']['ADD_PROD_SCH'][2]==pytest.approx(math.log(.75))
++    assert out['steps']['ADD_ATT_SCH'][1]==.1
++    want=300*math.log(1.25)+300*math.log(.75)+40
++    assert out['predicted_change']==pytest.approx([want])
++    assert ls['predicted_change']==[999.]
++
++
++def test_missing_ls_prediction_is_explicit_not_stale():
++    ls=ls_payload();del ls['effect_operator']
++    out=z.guard_ls(ls,authority())
++    assert out['predicted_change'] is None and out['prediction_unavailable_after_guard']
++
++
++def test_long_one_zone_at_cap_holds_global_step_but_school_can_continue():
++    rows=zones();rows[0]['ADD_PROD_L']=.25
++    for a in z.SPECS['LONG'][2]:rows[0][a]=12.5
++    out=z.guard_ls(ls_payload(),authority(rows))
++    assert set(out['steps']['ADD_PROD_L'].values())=={0.}
++    assert out['steps']['ADD_PROD_SCH'][1]>0
++
++
++def test_foreign_and_synthetic_boundary_not_resident_envelope():
++    rows=zones();rows[1]['NOT_ZAHR']=0.
++    a=authority(rows)
++    assert 'WORK|2' not in a['entries']
++    c=candidate('WORK',1,2,2)
++    assert z.check_candidate([c],a)['passes']
++    r={'zone_no':1,'attr':'P09F4_PER_PRE_WORK_E_C','current':100,'proposed':200}
++    assert z.check_candidate([r],a)['passes']
++
++
++def test_live_fp_readback_uses_fixed_denominator_not_current_multiplier_only():
++    before=zones();after=zones();a=authority(before)
++    after[0]['FP_1_WORK_E_C']=20.
++    p=z.check_live(a,after)
++    assert not p['passes']
++    assert any('FP_REFERENCE' in reason for row in p['violations'] for reason in row['reasons'])
++
++
++def test_live_group_swap_cannot_hide_in_equal_family_sum():
++    before=zones();after=zones();after[0]['FP_1_WORK_E_C']+=5;after[0]['FP_1_WORK_E_noC']-=5
++    assert not z.check_live(authority(before),after)['passes']
++
++
++def test_fixed_reference_remains_frozen_across_cycles():
++    a=authority();rows=zones((1.1,1.2));b=authority(rows,anchor=a)
++    assert b['entries']['WORK|1']['reference_fp']==a['entries']['WORK|1']['reference_fp']
++    rows[0]['FP_1_WORK_E_C']+=1
++    c=authority(rows,anchor=a)
++    assert 'WORK' in c['unavailable'] and not c['target_satisfied']
++    assert not z.check_candidate([candidate('WORK',1.1,1.2)],c)['passes']
++
++
++@pytest.mark.parametrize('value',[float('nan'),float('inf'),-1.])
++def test_bad_ls_data_defers_only_affected_family(value):
++    rows=zones();rows[0]['FP_3_LONG_E_C']=value;a=authority(rows)
++    assert 'LONG' in a['unavailable'] and 'WORK' not in a['unavailable']
++    out=z.guard_ls(ls_payload(),a)
++    assert all(s==0. for s in out['steps']['ADD_PROD_L'].values())
++    assert out['steps']['ADD_PROD_SCH'][1]>0
++    assert not z.check_candidate([candidate('LONG',.2,.21)],a)['passes']
++    assert z.check_candidate([candidate('WORK',1.,1.1)],a)['passes']
++
++
++def test_missing_positive_fp_coefficient_defers_family_not_fabricate_zero():
++    rows=zones();del rows[0]['ADD_PROD_SCH'];a=authority(rows)
++    assert 'SCHOOL' in a['unavailable'] and 'SCHOOL|1' not in a['entries']
++
++
++@pytest.mark.parametrize('coefficient',[0.,1.])
++def test_zero_work_production_is_safe_and_does_not_block_other_zones(coefficient):
++    rows=zones();rows[0]['ADD_PROD_W']=coefficient
++    for a in z.SPECS['WORK'][2]:rows[0][a]=0.
++    a=authority(rows)
++    assert not a['unavailable']
++    assert z.check_live(a,rows)['passes']
++    after=copy.deepcopy(rows);after[0]['FP_1_WORK_E_C']=1.
++    assert not z.check_live(a,after)['passes']
++    out,_=z.guard_projection([projection('WORK',.1,2)],a)
++    assert out[0]['log_step']>.0
++
++
++def test_known_zero_long_does_not_freeze_global_production():
++    rows=zones()
++    for attr in z.SPECS['LONG'][2]: rows[0][attr]=0.
++    a=authority(rows);out=z.guard_ls(ls_payload(),a)
++    assert out['steps']['ADD_PROD_L'][1]>0
++
++
++def test_unknown_zero_long_base_is_frozen_not_divided_by_epsilon():
++    rows=zones();rows[0]['ADD_PROD_L']=0.
++    for attr in z.SPECS['LONG'][2]:rows[0][attr]=0.
++    a=authority(rows);out=z.guard_ls(ls_payload(),a)
++    assert set(out['steps']['ADD_PROD_L'].values())=={0.}
++
++
++@pytest.mark.parametrize('change',['duplicate','mask','missing_zone','stale_coefficient'])
++def test_live_parent_integrity_is_required(change):
++    a=authority();new=zones()
++    if change=='duplicate':new.append(copy.deepcopy(new[0]))
++    elif change=='mask':new[0]['NOT_ZAHR']=0.
++    elif change=='missing_zone':new.pop()
++    else:new=zones((1.1,1.))
++    if change=='stale_coefficient':assert not z.parent_unchanged(a,new)['passes']
++    else:
++        with pytest.raises(ValueError):z.parent_unchanged(a,new)
++
++
++def test_disabled_guard_no_change():
++    a=z.capture(zones(),dict(OPTS,enabled=False),tuple(z.SPECS))
++    rows=[projection('WORK',2.)]
++    assert z.guard_projection(rows,a)[0] is rows
++    assert z.check_candidate([candidate('WORK',1,100)],a)['passes']
++
++
++def test_enrich_reads_all_ls_attrs_using_strict_reader(monkeypatch):
++    import r1_15a2_runtime_v1 as rt
++    rows=zones();base=[{k:v for k,v in r.items() if not k.startswith('FP_3_') and k!='FP_5_SCHOOL'} for r in rows]
++    calls=[]
++    def read(visum,attr,zn,**kw):calls.append(attr);return [r[attr] for r in rows]
++    monkeypatch.setattr(rt,'read_zone_attr_strict',read)
++    ad=NS(v24917_ls={'active':True},visum=object(),zones=[1,2],zone_write_index_by_no={1:1,2:2},com_retry_policy={})
++    enriched,fams,errors=z.enrich(ad,base)
++    assert set(fams)==set(z.SPECS) and not errors
++    assert set(calls)=={'ADD_PROD_L','ADD_PROD_SCH','FP_5_SCHOOL',*z.SPECS['LONG'][2]}
++    assert enriched==rows
++
++
++def test_unavailable_long_read_defers_long_only(monkeypatch):
++    import r1_15a2_runtime_v1 as rt
++    rows=zones()
++    def read(visum,attr,zn,**kw):
++        if attr=='FP_3_LONG_E_C':raise RuntimeError('COM unavailable')
++        return [r[attr] for r in rows]
++    monkeypatch.setattr(rt,'read_zone_attr_strict',read)
++    ad=NS(v24917_ls={'active':True},visum=object(),zones=[1,2],zone_write_index_by_no={},com_retry_policy={})
++    zr,fs,errs=z.enrich(ad,rows)
++    a=z.capture(zr,OPTS,fs,errs)
++    assert set(a['unavailable'])=={'LONG'}
++
++
++def test_real_adapter_final_candidate_requires_zonal_proof():
++    from r1_15a2_trial_adapter_v24917 import VisumAdapter
++    ad=VisumAdapter.__new__(VisumAdapter);zr=zones()
++    ctx={'_genfix2_mobility':{'zone_rows':zr,'options':OPTS},'_mobilityzone1':authority(zr)}
++    design={'candidate_rows':[candidate('WORK',1,1.5,1),candidate('WORK',1,.5,2)]}
++    p=ad._validate_mobility_plan(ctx,design)
++    assert not p['passes'] and not p['mobilityzone1']['passes']
++
++
++def test_real_adapter_readback_rejects_zonal_violation_even_when_aggregate_passes(monkeypatch):
++    import r1_15a2_trial_adapter_v24917 as admod
++    before=zones();after=zones((1.5,.5))
++    ad=admod.VisumAdapter.__new__(admod.VisumAdapter)
++    ad.cfg={};ad.visum=object();ad.zones=[1,2];ad.zone_write_index_by_no={};ad.com_retry_policy={};ad.v24917_status={}
++    ad._genfix2_mobility_parent={'zone_rows':before,'options':OPTS}
++    ad._mobilityzone1_parent=authority(before,families=('WORK','SERVICE'))
++    monkeypatch.setattr(admod._V24916ActiveAdapter,'block_gate',lambda *a,**k:{'accepted':True,'reasons':[]})
++    monkeypatch.setattr(admod.supply_visum.base,'zone_state_rows',lambda *a,**k:(after,[]))
++    monkeypatch.setattr(admod.longguard,'capture',lambda *a,**k:{})
++    monkeypatch.setattr(admod.longguard,'decide',lambda *a,**k:{'passes':True,'reasons':[]})
++    out=ad.block_gate('GENERATION',{}, {},[candidate('WORK',1,1.5)])
++    assert not out['accepted'] and not out['mobility_guard_live']['mobilityzone1']['passes']
++
++
++@pytest.mark.parametrize('ratio,newratio,passes',[(1.8,1.7,True),(1.8,1.9,False),(.4,.5,True),(.4,.3,False),(1.,.7,False)])
++def test_live_existing_violation_may_recover_but_never_worsen(ratio,newratio,passes):
++    a=authority(zones((ratio,1.)));after=zones((newratio,1.))
++    assert z.check_live(a,after)['passes']==passes
++
++
++def test_raw_solver_summary_never_masquerades_as_guarded_forecast():
++    ls=ls_payload();ls['summary']={'long_global_log_step':.4,'linear_ratio_after_ws_and_ls':1.2}
++    out=z.guard_ls(ls,authority())
++    assert out['summary']['raw_solver_long_global_log_step']==.4
++    assert out['summary']['long_global_log_step']==pytest.approx(math.log(1.25))
++    assert out['summary']['linear_ratio_after_ws_and_ls'] is None
++
++
++def test_actual_apply_checks_stale_ls_parent_before_any_write(monkeypatch,tmp_path):
++    import r1_15a2_trial_adapter_v24917 as a17
++    ad=a17.VisumAdapter.__new__(a17.VisumAdapter)
++    ad.cfg={};ad.visum=object();ad.zones=[1,2];ad.zone_write_index_by_no={};ad.com_retry_policy={}
++    old=zones();new=zones((1.1,1.))
++    ad.generation_preview=lambda *args:{'genfix2_mobility':{'passes':True}}
++    monkeypatch.setattr(a17.supply_visum.base,'zone_state_rows',lambda *args,**kw:(new,[]))
++    monkeypatch.setattr(a17.zguard,'enrich',lambda *args:(new,list(z.SPECS),{}))
++    writes=[]
++    monkeypatch.setattr(a17._V24916ActiveAdapter,'apply_generation',lambda *args: writes.append(1))
++    with pytest.raises(Exception,match='MOBILITYZONE1_STALE_PARENT'):
++        ad.apply_generation({'_mobilityzone1':authority(old)},1.,tmp_path)
++    assert not writes
++
++
++def test_actual_apply_rejects_unverified_optional_read_before_first_write(monkeypatch,tmp_path):
++    import r1_15a2_trial_adapter_v24917 as a17
++    ad=a17.VisumAdapter.__new__(a17.VisumAdapter)
++    ad.cfg={};ad.visum=object();ad.zones=[1,2];ad.zone_write_index_by_no={};ad.com_retry_policy={}
++    old=zones();ad.generation_preview=lambda *a:{'genfix2_mobility':{'passes':True}}
++    monkeypatch.setattr(a17.supply_visum.base,'zone_state_rows',lambda *a,**kw:(old,[]))
++    monkeypatch.setattr(a17.zguard,'enrich',lambda *a:(old,list(z.SPECS),{'LONG':'COM busy'}))
++    writes=[];monkeypatch.setattr(a17._V24916ActiveAdapter,'apply_generation',lambda *a: writes.append(1))
++    with pytest.raises(Exception,match='MOBILITYZONE1_LIVE_READ_UNAVAILABLE'):
++        ad.apply_generation({'_mobilityzone1':authority(old)},1.,tmp_path)
++    assert not writes
++
++
++def test_guard_module_cannot_mutate_visum_or_reload_version():
++    import ast, pathlib
++    tree=ast.parse(pathlib.Path(z.__file__).read_text())
++    called={n.func.attr for n in ast.walk(tree) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)}
++    assert not called & {'LoadVersion','SetValues','SetAttValue','SetMultiAttValues','Dispatch','DispatchEx'}

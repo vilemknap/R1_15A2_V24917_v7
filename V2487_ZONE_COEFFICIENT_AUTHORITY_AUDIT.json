@@ -1,0 +1,494 @@
+{
+  "schema": "R1_15A2_V2487_ZONE_COEFFICIENT_AUTHORITY_AUDIT_V1",
+  "source_file": "ZONE-2026-10-16-21-09-22.xlsx",
+  "source_sha256": "7513848642f0e9ed78ed38ba131cb95fe494dd8ad65b84d77ef9b65943599f44",
+  "sheet": "Zones",
+  "zone_count": 681,
+  "conclusion": {
+    "snapshot_values_are_observations_not_bounds": true,
+    "absolute_upper_bounds_for_zonal_calibration_coefficients": null,
+    "runtime_current_value_authority": "LIVE_VISUM_ZONE_ATTRIBUTE_AT_EACH_GENERATION_DESIGN",
+    "step_authority": "RELATIVE_LOG_STEP_OR_SALARY_PER_BLOCK_DELTA",
+    "legacy_3_and_10_limits": "DISABLED_NOT_ENFORCED",
+    "note": "This export shows the supplied snapshot only. A live model may already contain larger values; the runtime must accept them if finite and formula-valid."
+  },
+  "attributes": [
+    {
+      "attribute": "ADD_ATT_S",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 1.1,
+      "zero_count": 30,
+      "positive_count": 651,
+      "legacy_config_max": 3.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          34,
+          1.1
+        ],
+        [
+          42,
+          1.1
+        ],
+        [
+          145,
+          1.1
+        ],
+        [
+          156,
+          1.1
+        ],
+        [
+          162,
+          1.1
+        ],
+        [
+          163,
+          1.1
+        ],
+        [
+          164,
+          1.1
+        ],
+        [
+          165,
+          1.1
+        ],
+        [
+          167,
+          1.1
+        ],
+        [
+          173,
+          1.1
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    },
+    {
+      "attribute": "ADD_ATT_W",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 1.1,
+      "zero_count": 30,
+      "positive_count": 651,
+      "legacy_config_max": 3.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          34,
+          1.1
+        ],
+        [
+          42,
+          1.1
+        ],
+        [
+          145,
+          1.1
+        ],
+        [
+          156,
+          1.1
+        ],
+        [
+          162,
+          1.1
+        ],
+        [
+          163,
+          1.1
+        ],
+        [
+          164,
+          1.1
+        ],
+        [
+          165,
+          1.1
+        ],
+        [
+          167,
+          1.1
+        ],
+        [
+          173,
+          1.1
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    },
+    {
+      "attribute": "ADD_PROD_S",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 1.1,
+      "zero_count": 30,
+      "positive_count": 651,
+      "legacy_config_max": 3.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          612,
+          1.1
+        ],
+        [
+          679,
+          1.1
+        ],
+        [
+          1,
+          1.0
+        ],
+        [
+          2,
+          1.0
+        ],
+        [
+          3,
+          1.0
+        ],
+        [
+          4,
+          1.0
+        ],
+        [
+          5,
+          1.0
+        ],
+        [
+          6,
+          1.0
+        ],
+        [
+          7,
+          1.0
+        ],
+        [
+          8,
+          1.0
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    },
+    {
+      "attribute": "ADD_PROD_W",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 1.1,
+      "zero_count": 30,
+      "positive_count": 651,
+      "legacy_config_max": 3.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          612,
+          1.1
+        ],
+        [
+          679,
+          1.1
+        ],
+        [
+          1,
+          1.0
+        ],
+        [
+          2,
+          1.0
+        ],
+        [
+          3,
+          1.0
+        ],
+        [
+          4,
+          1.0
+        ],
+        [
+          5,
+          1.0
+        ],
+        [
+          6,
+          1.0
+        ],
+        [
+          7,
+          1.0
+        ],
+        [
+          8,
+          1.0
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    },
+    {
+      "attribute": "ADD_SALARY",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 1.2,
+      "zero_count": 31,
+      "positive_count": 650,
+      "legacy_config_max": 3.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          7,
+          1.2
+        ],
+        [
+          8,
+          1.2
+        ],
+        [
+          10,
+          1.2
+        ],
+        [
+          11,
+          1.2
+        ],
+        [
+          12,
+          1.2
+        ],
+        [
+          13,
+          1.2
+        ],
+        [
+          14,
+          1.2
+        ],
+        [
+          15,
+          1.2
+        ],
+        [
+          16,
+          1.2
+        ],
+        [
+          17,
+          1.2
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    },
+    {
+      "attribute": "ZAHR_ATR_SERV",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 8.0,
+      "zero_count": 666,
+      "positive_count": 15,
+      "legacy_config_max": 10.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          619,
+          8.0
+        ],
+        [
+          659,
+          8.0
+        ],
+        [
+          623,
+          5.0
+        ],
+        [
+          624,
+          5.0
+        ],
+        [
+          622,
+          0.3
+        ],
+        [
+          220,
+          0.2
+        ],
+        [
+          660,
+          0.2
+        ],
+        [
+          661,
+          0.2
+        ],
+        [
+          662,
+          0.2
+        ],
+        [
+          663,
+          0.2
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    },
+    {
+      "attribute": "ZAHR_ATR_WORK",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 8.0,
+      "zero_count": 666,
+      "positive_count": 15,
+      "legacy_config_max": 10.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          619,
+          8.0
+        ],
+        [
+          659,
+          8.0
+        ],
+        [
+          623,
+          4.0
+        ],
+        [
+          624,
+          3.0
+        ],
+        [
+          622,
+          0.3
+        ],
+        [
+          620,
+          0.15
+        ],
+        [
+          220,
+          0.1
+        ],
+        [
+          660,
+          0.1
+        ],
+        [
+          661,
+          0.1
+        ],
+        [
+          662,
+          0.1
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    },
+    {
+      "attribute": "ZAHR_PROD_SERV",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 10.0,
+      "zero_count": 666,
+      "positive_count": 15,
+      "legacy_config_max": 10.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          619,
+          10.0
+        ],
+        [
+          659,
+          10.0
+        ],
+        [
+          623,
+          5.0
+        ],
+        [
+          624,
+          5.0
+        ],
+        [
+          622,
+          0.5
+        ],
+        [
+          220,
+          0.2
+        ],
+        [
+          660,
+          0.2
+        ],
+        [
+          661,
+          0.2
+        ],
+        [
+          662,
+          0.2
+        ],
+        [
+          663,
+          0.2
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    },
+    {
+      "attribute": "ZAHR_PROD_WORK",
+      "count": 681,
+      "minimum": 0.0,
+      "maximum": 10.0,
+      "zero_count": 666,
+      "positive_count": 15,
+      "legacy_config_max": 10.0,
+      "above_legacy_config_max_count": 0,
+      "top_zones": [
+        [
+          619,
+          10.0
+        ],
+        [
+          659,
+          10.0
+        ],
+        [
+          623,
+          4.0
+        ],
+        [
+          624,
+          3.0
+        ],
+        [
+          622,
+          0.7
+        ],
+        [
+          220,
+          0.2
+        ],
+        [
+          660,
+          0.2
+        ],
+        [
+          661,
+          0.2
+        ],
+        [
+          662,
+          0.2
+        ],
+        [
+          663,
+          0.2
+        ]
+      ],
+      "runtime_authority": "LIVE_VISUM_CURRENT_VALUE_NOT_THIS_SNAPSHOT_MAXIMUM"
+    }
+  ]
+}

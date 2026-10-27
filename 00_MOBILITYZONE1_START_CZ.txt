@@ -1,0 +1,24 @@
+R1_15A2 MOBILITYZONE1 - navazuje na SAFETYFIX2 + LONGGUARD1
+
+1. Rozbalte CELY ZIP do nove kratke slozky, napr. C:\R1.
+   Vznikne R1_MOBILITYZONE1. Nemichejte jednotlive moduly s minulou verzi.
+2. Pouzijte overeny prijaty model ve Visumu, ne neovereny stav po selhani rollbacku.
+   Aktualni bezici kalibraci neprepisujte. Vyber startovniho modelu je rucni.
+3. Spustte stejny launcher jako dosud:
+   01_SPUSTIT_V24917_TDJOINT1.py          vahy 65/35
+   02_SPUSTIT_V24917_TDJOINT1_60_40.py    vahy 60/40
+4. V DESIGN/V24917_TARGETED_GENERATION zkontrolujte MOBILITYZONE1_PARENT.json.
+   out_of_band ukazuje existujici odchylky; unavailable chybejici podklady.
+   target_satisfied=false neznamena opravneni zvysovat odchylku ani tvrzeni o shode.
+5. Po kandidatu kontrolujte mobility_guard_live.mobilityzone1 ve vysledku generation.
+
+Tento patch pouziva mg_min_ratio=0.75 a mg_max_ratio=1.25 z existujicich voleb.
+Limit je proti pevne kanonicke referenci AMDY, nikoli proti predchozimu cyklu.
+WORK/SERVICE/SCHOOL reference koeficientu=1.0; LONG=0.2. Zony jiz mimo pasmo
+nejsou nasilne prenormovany. Mohou zustat nebo se vracet, ne dale vzdalovat.
+
+Za behu zustava jedina otevrena instance Visumu. Zadny LoadVersion nebo prima
+oprava bunek OD nebyly pridany. Rollback a overeni zustavaji z SAFETYFIX2.
+
+Offline overeni nenahrazuje zivy Visum test. V balicku nejsou modely .ver.
+LONG TD strukturou a optimalizaci se tento patch nezabyva; LONGGUARD1 zachovan.

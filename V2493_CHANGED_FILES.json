@@ -1,0 +1,33 @@
+{
+  "release": "R1_15A2_V2_4_9_3_METHOD_AND_COM_CORRECTIONS_20261018",
+  "baseline_release": "R1_15A2_V2_4_9_2_SIGNED_GENERATION_REFINEMENT_20261018",
+  "changed_file_count": 26,
+  "files": [
+    "CURRENT_RELEASE.txt",
+    "LIVE_VISUM_ACCEPTANCE_V2_4_9_3_CZ.md",
+    "METHODOLOGY_STATUS_V2493.json",
+    "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+    "R1_15A2_CONFIG_V2_4_9_3.json",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_3.py",
+    "R1_15A2_VISUM_COM_PREFLIGHT_V2_3_6_INLINE.py",
+    "README_R1_15A2_V2_4_9_3_METHOD_AND_COM_CORRECTIONS_CZ.md",
+    "SOURCE_PATCH_V2492_TO_V2493.diff",
+    "START_HERE_V2493_CZ.txt",
+    "V2493_CHANGED_FILES.json",
+    "V2493_IMPLEMENTATION_AND_TEST_REPORT.md",
+    "V2493_METHOD_CORRECTIONS_SYNTHETIC_BENCHMARK.json",
+    "V2493_RELEASE_STATUS.json",
+    "VERIFY_PACKAGE_V2_4_9_3.py",
+    "r1_15a2_com_compat.py",
+    "r1_15a2_controller_v22.py",
+    "r1_15a2_core.py",
+    "r1_15a2_inplace_transaction_v239.py",
+    "r1_15a2_multiblock.py",
+    "r1_15a2_runtime_v1.py",
+    "r1_15a2_safety_v2493.py",
+    "r1_15a2_supply.py",
+    "r1_15a2_supply_visum.py",
+    "tests/test_v2493_method_and_com_corrections.py",
+    "tests/test_v2493_release.py"
+  ]
+}

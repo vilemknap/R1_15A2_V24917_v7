@@ -1,0 +1,22 @@
+{
+  "schema": "R1_15A2_V2486_MERGE_LINEAGE_V1",
+  "release": "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
+  "parents": [
+    {
+      "release": "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
+      "role": "launcher_run_root_safety_and_cache_compatibility_base"
+    },
+    {
+      "release": "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016",
+      "role": "bound_constrained_generation_projection"
+    }
+  ],
+  "merge_policy": "ROOT_BRANCH_BASE_PLUS_AUDITED_NUMERICAL_CHERRY_PICK_PLUS_NEW_COMBINED_SAFETY_CONTRACT",
+  "additional_hardening": [
+    "PRESERVED_ZERO_DIRECT_ACTUATOR_REMOVED_BEFORE_PA_BALANCE",
+    "BOTH_V2485_CACHE_CONTRACTS_EXPLICITLY_READ_COMPATIBLE",
+    "COMBINED_PACKAGE_VERIFIER_REQUIRES_BOTH_FEATURES"
+  ],
+  "real_visum_tested": false,
+  "production_ready": false
+}

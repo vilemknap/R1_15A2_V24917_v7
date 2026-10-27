@@ -1,0 +1,39 @@
+{
+  "entries": [
+    {
+      "changed_files": [
+        "r1_15a2_overnight_controller_v242.py",
+        "r1_15a2_runtime_v1.py",
+        "tests/test_v2489_td_realization_stabilization.py"
+      ],
+      "checkpoint": "CP20_V2489_TD_REALIZATION_CORE",
+      "compileall_pass": null,
+      "created_utc": "2026-10-16T21:10:34.336895+00:00",
+      "implemented": [
+        "TD_REALIZATION_BACKTRACK_B_LINEAR_LOG_NEG_C",
+        "IPF_TOLERANCE_NOT_RELAXED",
+        "NEXT_GENERATION_BLOCKED_WHILE_TD_REALIZATION_PENDING",
+        "RUN_ROOT_H_CENTRAL_SHORT_DIAGNOSTIC_MIRROR",
+        "ATOMIC_DIAGNOSTIC_EVIDENCE_COPY"
+      ],
+      "next": "RELEASE_WIRING_CONFIG_SAFETY_VERIFIER_MANIFEST_PACKAGE",
+      "parent": "CP19_V2488_FINAL_PATH_CACHE_SEMANTIC_COMPAT_RELEASE",
+      "production_ready": false,
+      "pytest": "636 passed",
+      "real_visum_tested": false,
+      "schema": "R1_15A2_V2489_CORE_CHECKPOINT_V1",
+      "status": "PASS_CORE_IMPLEMENTATION_636_TESTS_NOT_FINAL_RELEASE"
+    },
+    {
+      "checkpoint": "CP21_V2489_FINAL_RELEASE_LOCAL_PENDING_CLOUD_READBACK",
+      "compileall_pass": true,
+      "parent": "CP20_V2489_CORE",
+      "phase": "FINAL_PACKAGE_BUILD",
+      "production_ready": false,
+      "real_visum_tested": false,
+      "source_tree_tests": "640 passed"
+    }
+  ],
+  "schema": "R1_15A2_V2489_RECOVERY_JOURNAL_V1",
+  "updated_utc": "2026-10-16T21:16:14.526341+00:00"
+}

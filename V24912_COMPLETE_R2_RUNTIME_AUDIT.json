@@ -1,0 +1,69 @@
+{
+  "config_referenced_paths_checked": [
+    "V24912_GUARD_POLICY_CONTRACT.json",
+    "V24912_RUNTIME_BUNDLE_MANIFEST.json",
+    "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
+    "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
+    "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json",
+    "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6.json",
+    "authorities/VDF_REGISTRY.csv",
+    "authorities/VDF_TYPE_MAPPING.csv",
+    "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py",
+    "helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py",
+    "reference_v19/R1_BC_AUTO_DIST_ONLY_FINECDF_SOFT_v1_9.py"
+  ],
+  "dynamic_import_calls": [
+    {
+      "call": "import_module",
+      "line": 213,
+      "source": "r1_15a2_live_api_audit.py"
+    },
+    {
+      "call": "import_module",
+      "line": 461,
+      "source": "r1_15a2_live_api_audit.py"
+    }
+  ],
+  "entrypoint": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_12.py",
+  "import_edge_count": 82,
+  "late_guard_policy_import_present": false,
+  "missing_config_referenced_paths": [],
+  "package_revision": "V24912_COMPLETE_R2",
+  "passes": true,
+  "policy_owner": "r1_15a2_core.py",
+  "reachable_python_file_count": 26,
+  "reachable_python_files": [
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_12.py",
+    "r1_15a2_assignment_authority_v239.py",
+    "r1_15a2_com_compat.py",
+    "r1_15a2_controller_v22.py",
+    "r1_15a2_core.py",
+    "r1_15a2_finecdf_bridge_v242.py",
+    "r1_15a2_inplace_transaction_v239.py",
+    "r1_15a2_live_api_audit.py",
+    "r1_15a2_multiblock.py",
+    "r1_15a2_overnight_controller_v240.py",
+    "r1_15a2_overnight_controller_v242.py",
+    "r1_15a2_perf_v246.py",
+    "r1_15a2_persistent_path_cache_v248.py",
+    "r1_15a2_restart_v2494.py",
+    "r1_15a2_runtime_v1.py",
+    "r1_15a2_safety_v245.py",
+    "r1_15a2_safety_v247.py",
+    "r1_15a2_safety_v248.py",
+    "r1_15a2_safety_v24912.py",
+    "r1_15a2_sequence_v23.py",
+    "r1_15a2_supply.py",
+    "r1_15a2_supply_visum.py",
+    "r1_15a2_trial_adapter_v240.py",
+    "r1_15a2_trial_adapter_v243.py",
+    "r1_15a2_two_mode_v238.py",
+    "r1_15a2_visum_parameters.py"
+  ],
+  "release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+  "runtime_manifest_file_count": 60,
+  "runtime_manifest_mismatches": [],
+  "runtime_manifest_sha256": "40750767d99fa29a776a122c1c3c0fb4875f758962384e03ef1af6594f299556",
+  "schema": "R1_15A2_V24912_RUNTIME_AUDIT_V1",
+  "unresolved_local_imports": []
+}

@@ -1,0 +1,34 @@
+{
+  "compileall_pass": true,
+  "config_validation_pass": true,
+  "domestic_hard_envelope": [
+    0.5,
+    2.0
+  ],
+  "domestic_soft_band": [
+    0.8,
+    1.25
+  ],
+  "generation_stages": [
+    "SIGNED_EXPLORE",
+    "SIGNED_REFINE",
+    "DISTRIBUTION_FOCUS"
+  ],
+  "guidance_mode": "SIGNED",
+  "independent_archive_readback_pending": true,
+  "native_ipf_tolerance_relaxed": false,
+  "offline_tests": "672 passed",
+  "package_verifier_pass": true,
+  "persistent_cache_v2490_compatibility_pinned": true,
+  "production_ready": false,
+  "real_visum_tested": false,
+  "release": "R1_15A2_V2_4_9_2_SIGNED_GENERATION_REFINEMENT_20261018",
+  "schema": "R1_15A2_V2492_RELEASE_STATUS_V1",
+  "status": "PASS_FINAL_SOURCE_BYTES_OFFLINE_TESTS_NOT_REAL_VISUM_ACCEPTANCE",
+  "td_soft_reference_retained": true,
+  "updated_utc": "2026-10-17T23:45:12.401297+00:00",
+  "zahr_reference_multiplier_envelope": [
+    0.5,
+    2.0
+  ]
+}

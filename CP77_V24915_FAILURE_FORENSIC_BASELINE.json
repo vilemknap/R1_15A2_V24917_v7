@@ -1,0 +1,58 @@
+{
+  "schema": "R1_15A2_V24915_CP77_FAILURE_FORENSIC_BASELINE_V1",
+  "checkpoint": "CP77",
+  "status": "FAILURE_REPRODUCED_AND_ROOT_CAUSE_IDENTIFIED",
+  "timestamp_utc": "2026-10-19T08:26:13.969440+00:00",
+  "source_release": "R1_15A2_V2_4_9_14_DEMAND_CONTINUATION_SUPPLY_READY_20261019",
+  "source_archive": {
+    "path": "/mnt/data/R1_15A2_V2_4_9_14_DEMAND_CONTINUATION_SUPPLY_READY_20261019.zip",
+    "sha256": "b032f7fb6325339f297e0b60341ae40a8744ecd00eeee2aeaf264d4269b2dc37",
+    "size": 7300828
+  },
+  "baseline_tree": {
+    "files": 709,
+    "python_files": 216,
+    "working_copy_files": 709
+  },
+  "failure": {
+    "phase": "REPRESENTATIVE_GEOMETRY",
+    "bounded_range_first": 22786049,
+    "bounded_range_last": 22788096,
+    "page_size": 2048,
+    "hresult": -2147418111,
+    "message": "Volany odmitl volani.",
+    "retry_max_attempts": 5,
+    "pre_final_attempt_total_wait_seconds": 0.75,
+    "raw_rows_completed": 22786048,
+    "pages_completed": 11126,
+    "geometry_routes": 300000,
+    "link_children": 22358180
+  },
+  "root_causes": [
+    "TRANSIENT_COM_RETRY_WINDOW_TOO_SHORT_FOR_LONG_VISUM_PATH_EXPORT",
+    "FINALIZER_RECLASSIFIES_TRANSIENT_SNAPSHOT_READ_FAILURE_AS_MANUAL_REOPEN_REQUIRED"
+  ],
+  "state_safety": {
+    "production_apply": false,
+    "trial_writes": true,
+    "load_version_called": false,
+    "accepted_count": 9,
+    "latest_checkpoint_available": true,
+    "source_semantic_state_hash": "b599fdc7291e4a1d929db9818740e3f7aa7de53616b55238dcfcb2e8c40134a8",
+    "start_snapshot_state_hash": "7e07a967eafcbc45aae624595ea6eb86be3325815c580843a227ca5320408632"
+  },
+  "planned_fix": [
+    "ELAPSED_TIME_BOUNDED_SAME_RANGE_COM_BUSY_LEASE",
+    "TERMINAL_RETRY_EVENT_AND_EXHAUSTION_AUDIT",
+    "TRANSIENT_AWARE_FINAL_STATE_VERIFICATION_WITH_SAFE_CHECKPOINT_CLASSIFICATION",
+    "NO_PAGE_SIZE_FALLBACK_FOR_RPC_CALL_REJECTED"
+  ],
+  "critical_source_sha256": {
+    "r1_15a2_com_compat.py": "46025eb36a13e1039e6718d773122c12a5eda53a62540077f1cd1d0b508ad0fb",
+    "r1_15a2_two_mode_v238.py": "3722fabe5b90f7bb0367f840d466c3a6c9de6a6ddb483dda0ec7db8eed6c3d8a",
+    "r1_15a2_overnight_controller_v242.py": "4b344aff6beb77ab230b8ec46e8ab58379738ae76539059c39a2f76d34ec280e",
+    "R1_15A2_CONFIG_V2_4_9_14.json": "0978519bed11bb9330d6d28bc4f5b6db0fe9e714e2d6b100499e7c641eadbade",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_14.py": "60630549b81c102d876ffd26a76d7d144862a5b2a19013f674cf9ef46c4db11a"
+  },
+  "gate_pass": true
+}

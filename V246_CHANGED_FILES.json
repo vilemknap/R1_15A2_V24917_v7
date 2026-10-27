@@ -1,0 +1,143 @@
+{
+  "schema": "R1_15A2_V246_CHANGED_FILES_V1",
+  "base": "CP03_LIVE_PATHLEN_HOTFIX",
+  "added": [
+    {
+      "path": "LIVE_VISUM_ACCEPTANCE_V2_4_6_CZ.md",
+      "sha256": "d430456354912272f33f728afb28484232fce7a35861ef8648ce8af92e0e8f12",
+      "bytes": 2465
+    },
+    {
+      "path": "R1_15A2_CONFIG_V2_4_6.json",
+      "sha256": "36698cf521ba6c60913af716e127c120a224d83a42738a815f1b811e2f9b4ba4",
+      "bytes": 18263
+    },
+    {
+      "path": "R1_15A2_FULL_OVERNIGHT_ADAPTIVE_V2_4_6.py",
+      "sha256": "f51d7698607d61751a3ec144c291918a8843b0544858668d33d891b46eedaecb",
+      "bytes": 14778
+    },
+    {
+      "path": "README_R1_15A2_V2_4_6_ADAPTIVE_PERFORMANCE_CZ.md",
+      "sha256": "356b0e65239e501df094c5d0c0b181dbb70d51cd20b7401c317f92b614d37329",
+      "bytes": 5333
+    },
+    {
+      "path": "SOURCE_PATCH_CP03_TO_V246.diff",
+      "sha256": "9860e10dd4f3764cb22b9bc6e27ef388f1dc7af8f62892de2a44b67d4b04cfce",
+      "bytes": 633773
+    },
+    {
+      "path": "START_HERE_V246_CZ.txt",
+      "sha256": "50cb407f5f1703411517ace2abab36dc711cec85467990b0efee8e940fe7c4d9",
+      "bytes": 730
+    },
+    {
+      "path": "V246_IMPLEMENTATION_AND_TEST_REPORT.md",
+      "sha256": "6b49270233950f1d1c5a66f62712b5dd1aedcfef1bfb56c31ed98cc13454bb70",
+      "bytes": 3392
+    },
+    {
+      "path": "V246_PERFORMANCE_BENCHMARK.json",
+      "sha256": "7b6c1fab7b645ded4ddcbb0173a27db215c4ac3e99f8c093c157447810ad6b7e",
+      "bytes": 3505
+    },
+    {
+      "path": "V246_PERFORMANCE_BENCHMARK.md",
+      "sha256": "aacf7a773e650fe5c8f42cc3904b6dccd212b8e83e4ec3acc84956150cc70a85",
+      "bytes": 940
+    },
+    {
+      "path": "V246_RELEASE_STATUS.json",
+      "sha256": "ef5e44804cbf976e286f1712d30ae51c60b232b5fc5e309736098645466096f6",
+      "bytes": 1169
+    },
+    {
+      "path": "VERIFY_PACKAGE_V2_4_6.py",
+      "sha256": "3e6952d56e69d8efe5c2e739a28db7a1adb4a529cd47f8f77a397a6e82bce65c",
+      "bytes": 4158
+    },
+    {
+      "path": "benchmarks/run_v246_performance_benchmark.py",
+      "sha256": "b646a99cadecd7126e7d667d836fbbafe1dec6ae079737cbafbafaf1bd33dcf6",
+      "bytes": 10609
+    },
+    {
+      "path": "r1_15a2_perf_v246.py",
+      "sha256": "a773a0ab6c1dfaa328b9254aba73e160adf61ac298a79a26764003bd83c77af8",
+      "bytes": 3922
+    },
+    {
+      "path": "r1_15a2_safety_v246.py",
+      "sha256": "9d7518eb4dfeae27aca67f14718903320fda2a03d5573a5860021ff402f0d9bd",
+      "bytes": 9426
+    },
+    {
+      "path": "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
+      "sha256": "abeb746ff49ac1f0e548e6b7945ec476e5c5e80897e6be1da6e2d42ae442d7d5",
+      "bytes": 408140
+    },
+    {
+      "path": "reference_v18/README_R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.txt",
+      "sha256": "3f8bd110d3b1bb916cf687c8d67ffa3fff28f6aea42de371efb27599e35ddd07",
+      "bytes": 2317
+    },
+    {
+      "path": "tests/test_v246_performance.py",
+      "sha256": "d016559e367b49f74f5d09703ebdddd66869d1b9522c3a5eadba128abb4f10c9",
+      "bytes": 23559
+    }
+  ],
+  "removed": [],
+  "changed": [
+    {
+      "path": "r1_15a2_finecdf_bridge_v242.py",
+      "before_sha256": "96fc7dd3696fdb8ff9417f107ca9b8f45905869a411cb96dac896b21fd92fe2c",
+      "after_sha256": "eb64589e4c03e9f46ff54ae780c5d06da38824f71b6e902dce0441b779000b13",
+      "before_bytes": 23075,
+      "after_bytes": 24710
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v240.py",
+      "before_sha256": "659c779c2daeea340b225cdf5f7f1bd10a23f7e865c191b99a5da00cb697d106",
+      "after_sha256": "1f32ece1edf6a71e04e9a2864a88101b669b82816eec20365b3d3c663ff6a73d",
+      "before_bytes": 31759,
+      "after_bytes": 33573
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v242.py",
+      "before_sha256": "fe813615ef996459f950be9a9a5d4cb539ea1eacd478b3fec8c69021a761d8cc",
+      "after_sha256": "721e0c3d6eab02cfb97599364c09f3bc546b05898b6e2ac7c329f0750e2c8576",
+      "before_bytes": 23571,
+      "after_bytes": 28996
+    },
+    {
+      "path": "r1_15a2_sequence_v23.py",
+      "before_sha256": "cd20953e769c2dd69be131cc8fcace98c5304d5c8d754dcef2787a113af55414",
+      "after_sha256": "91a3c65e7c38a56dbb560d5debe91235ae10637176de16f08b29ccd09ff5a983",
+      "before_bytes": 31628,
+      "after_bytes": 32523
+    },
+    {
+      "path": "r1_15a2_supply_visum.py",
+      "before_sha256": "6b31f1e73272b0a24376c5483b626315be3f1a062e6e2dabdd11246763fc111d",
+      "after_sha256": "714cc708a2186d48a0cbb9e53f590af5ebd386e27aa13b1766d69e3b5629ebad",
+      "before_bytes": 27316,
+      "after_bytes": 31360
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v240.py",
+      "before_sha256": "20cf664562466d0d418a028a2f41c722b0fa8a664cc6aabebd54c294cbf15aba",
+      "after_sha256": "ed9f86ed9be7dd706ec3464fae19619bee131eb340bbddc8c34d594d4de5f4f9",
+      "before_bytes": 8809,
+      "after_bytes": 10094
+    },
+    {
+      "path": "r1_15a2_two_mode_v238.py",
+      "before_sha256": "64614f9dc8e04ca846a806983460d7684d4254414ddb17e730fa0538ba77fb55",
+      "after_sha256": "1011894602b4bff61d34bc72e20f99edffad671ddd5e7dbb9145a4fda1b2e59e",
+      "before_bytes": 49403,
+      "after_bytes": 52857
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "R1_15A2_V2483_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+  "status": "PASS_OFFLINE_TESTS_EXPLICIT_PREDECESSOR_CACHE_COMPAT_NOT_REAL_VISUM_ACCEPTANCE",
+  "offline_tests": "589 passed",
+  "compileall_pass": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "retains_v2482_zero_share_residual_fix": true,
+  "cache_root_unchanged": "%LOCALAPPDATA%\\R1_15A2_PATH_CACHE_V248",
+  "predecessor_cache_rules": [
+    "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+    "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016"
+  ],
+  "compatibility_mode": "EXPLICIT_PREDECESSOR_READ_COMPATIBILITY",
+  "next_gate": "REAL_VISUM_V2483_RESTORE_EXISTING_V2481_CACHE_WITHOUT_INITIAL_FORCED_SUPPORT_REFRESH_AND_REACH_GENERATION_TRY_01"
+}

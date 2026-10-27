@@ -1,0 +1,21 @@
+{
+  "group": 4,
+  "files": [
+    "tests/test_v24917_mobilityzone1.py",
+    "tests/test_v24917_perf3.py",
+    "tests/test_v24917_preflight2.py",
+    "tests/test_v24917_procseq_bootstrapfix1.py",
+    "tests/test_v24917_rbcons_audit.py",
+    "tests/test_v24917_runtime_install.py",
+    "tests/test_v24917_safetyfix1.py",
+    "tests/test_v24917_snapshot_reads_genfix1.py",
+    "tests/test_v24917_step_search.py",
+    "tests/test_v24917_supply_mix.py",
+    "tests/test_v24917_targeted_catchup.py",
+    "tests/test_v24917_td_rollback_tolerant.py",
+    "tests/test_v24917_td_stage_integration.py"
+  ],
+  "exit_code": 0,
+  "seconds": 9.585828099999958,
+  "expected_cases": 264
+}

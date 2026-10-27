@@ -1,0 +1,22 @@
+IMPORTFIX1 - prvni spusteni ve Visumu 2026
+
+1. Ukoncete puvodni beh. Nejlepe restartujte Visum, aby nezustaly
+   stare Python moduly v pameti programu.
+2. Rozbalte CELÝ opraveny ZIP do NOVÉ slozky; nemichejte s puvodnim
+   GENFIX1/GENFIX2/TDJOINT1/COSTFIX1.
+3. Ve Visumu otevrete posledni overene ulozene .ver z
+   LATEST_ACCEPTED_CHECKPOINT(20261027-115427).json,
+   ACCEPTED_B_0000_0970e9bffb7d.ver, pokud na disku skutecne existuje
+   a jde otevrit. Posledni neuspesny beh neprijal zadnou zmenu.
+4. Scripts -> Run script file -> 01_SPUSTIT_V24917_TDJOINT1.py
+   (vychozi vahy 65/35). Pro 60/40 lze pouzit druhy launcher
+   02_SPUSTIT_V24917_TDJOINT1_60_40.py.
+5. V `V24917_RUNTIME_STATUS.json` zkontrolujte
+   `v24917.parent_equivalence_preload.status` ==
+   `BOUND_BY_MANIFEST_VERIFIED_ABSOLUTE_PATH`.
+6. Po prvnim generation cyklu zkontrolujte DEMAND_CYCLE_01_RESULT.json,
+   `generation_completed`, pripadne zapis GENFIX2_PARENT_PROOF_RETAINED.
+   Chybejici modul nema znovu vyvolat ModuleNotFoundError.
+
+Varovani: DIAGFAST 11D parity muze prepnout na LEGACY; to neni fatalni.
+Komponentove skimy zatim NEJSOU soucasti teto opravy.

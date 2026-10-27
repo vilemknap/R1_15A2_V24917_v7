@@ -1,0 +1,26 @@
+{
+  "schema": "R1_15A2_COUNTLOCATION_CALIBRATION_AUTHORITY_20261022_V1",
+  "source_workbook": "COUNTLOCATION-2026-10-22-02-23-34.xlsx",
+  "source_workbook_sha256": "0244e311488e88f754a691e8c1d535608a13360e91086ee116d6d9e71bf7f860",
+  "rule": "EVERY_ROW_IN_SOURCE_WORKBOOK_IS_CALIBRATION_AUTHORITY",
+  "rows_total": 488,
+  "calibration_rows": 488,
+  "validation_rows": 0,
+  "csd_directional_rows": 362,
+  "city_both_rows": 126,
+  "role_policy": "FORCE_CALIBRATION_FOR_ALL_488",
+  "active_policy": "FORCE_ACTIVE_FOR_ALL_488_IN_WORKING_COPY_ONLY",
+  "observed_field": "R1 Obs RPDI",
+  "weight_field": "R1 Weight",
+  "physical_mapping_fields": [
+    "LinkNo",
+    "FromNodeNo",
+    "ToNodeNo"
+  ],
+  "source_R1_Role_ignored": true,
+  "source_R1_Active_ignored": true,
+  "authority_files": [
+    "R1_CSD2022_COUNTLOCATION_AUTHORITY_CURRENT_362_20261022.csv",
+    "R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_CURRENT_126_20261022.csv"
+  ]
+}

@@ -1,0 +1,561 @@
+--- V232/r1_15a2_runtime_v1.py
++++ V233/r1_15a2_runtime_v1.py
+@@ -237,20 +237,11 @@
+     return cfg
+ 
+ 
++import r1_15a2_com_compat as com
++
++
+ def get_visum():
+-    if globals().get("Visum") is not None:
+-        return globals()["Visum"], "injected Visum global"
+-    if globals().get("COM") is not None:
+-        return globals()["COM"], "injected COM global"
+-    if win32com is None:
+-        raise RuntimeError("Run inside PTV Visum; no injected object and pywin32 unavailable.")
+-    errors = []
+-    for progid in ("Visum.Visum.260", "Visum.Visum.250", "Visum.Visum"):
+-        try:
+-            return win32com.client.GetActiveObject(progid), "GetActiveObject(%s)" % progid
+-        except Exception as exc:
+-            errors.append("%s=%s" % (progid, compact_error(exc)))
+-    raise RuntimeError("Could not connect to running Visum: " + " | ".join(errors))
++    return com.bind_injected(globals())
+ 
+ 
+ def att(obj, name, default=None):
+@@ -262,60 +253,32 @@
+ 
+ 
+ def get_all(coll, limit=None):
+-    items = []
+-    for name in ("GetAll", "GetAllObjects"):
+-        try:
+-            value = getattr(coll, name)
+-            value = value() if callable(value) else value
+-            if value is not None:
+-                items = list(value)
+-                return items[:limit] if limit else items
+-        except Exception:
+-            pass
+-    try:
+-        items = list(coll)
+-        return items[:limit] if limit else items
+-    except Exception:
+-        pass
+-    try:
+-        n = int(coll.Count() if callable(coll.Count) else coll.Count)
+-        for i in range(1, n + 1):
+-            for meth in ("ItemByKey", "Item"):
+-                try:
+-                    items.append(getattr(coll, meth)(i)); break
+-                except Exception:
+-                    pass
+-            if limit and len(items) >= limit:
+-                break
+-    except Exception:
+-        pass
+-    return items
++    items = com.collection_items(coll)
++    return items[:limit] if limit else items
+ 
+ 
+ def get_multi(coll, attr_name):
+     try:
+         return list(coll.GetMultiAttValues(attr_name, False))
+-    except Exception:
++    except TypeError:
+         return list(coll.GetMultiAttValues(attr_name))
+ 
+ 
+ def set_multi(coll, attr_name, rows):
+     try:
+         coll.SetMultiAttValues(attr_name, rows, False)
+-    except Exception:
++    except TypeError:
+         coll.SetMultiAttValues(attr_name, rows)
+ 
+ 
+ def zone_numbers(visum):
+     rows = get_multi(visum.Net.Zones, "NO")
+-    nums = []
+-    for key, value in rows:
+-        n = ival(value, ival(key, None))
+-        if n is not None:
+-            nums.append(int(n))
+-    nums = sorted(nums)
+-    if nums != list(range(1, EXPECTED_ZONES + 1)):
++    nums = [com.exact_int(value, "Zone.NO") for _index, value in rows]
++    if sorted(nums) != list(range(1, EXPECTED_ZONES + 1)):
+         raise RuntimeError("Zone gate failed; expected exactly 1..%d, got count=%d" % (EXPECTED_ZONES, len(nums)))
++    # GetValues follows model axis order. Do not sort away an axis mismatch.
++    if nums != sorted(nums):
++        raise RuntimeError("ZONE_MATRIX_AXIS_ORDER_MISMATCH: GetMultiAttValues(NO) order is not 1..681")
+     return nums
+ 
+ 
+@@ -377,24 +340,17 @@
+ 
+ 
+ def read_zone_attr(visum, attr_name, zone_nos):
+-    values = get_multi(visum.Net.Zones, attr_name)
+-    by_key = {}
+-    for key, value in values:
+-        n = ival(key, None)
+-        if n is not None:
+-            by_key[n] = fval(value, 0.0) or 0.0
+-    if all(z in by_key for z in zone_nos):
+-        return [float(by_key[z]) for z in zone_nos]
+-    if len(values) == len(zone_nos):
+-        return [float(fval(v, 0.0) or 0.0) for _k, v in values]
+-    raise RuntimeError("Unexpected row count reading Zone.%s: %d" % (attr_name, len(values)))
++    return com.indexed_zone_values(visum, attr_name, zone_nos)
+ 
+ 
+ def write_zone_attr(visum, attr_name, zone_nos, values):
+-    rows = [[int(z), float(v)] for z, v in zip(zone_nos, values)]
++    if len(zone_nos) != len(values):
++        raise RuntimeError("ZONE_WRITE_LENGTH_MISMATCH")
++    indices = com.zone_write_indices(visum, zone_nos)
++    rows = [[indices[int(z)], com.finite_float(v, attr_name)] for z, v in zip(zone_nos, values)]
+     set_multi(visum.Net.Zones, attr_name, rows)
+     got = read_zone_attr(visum, attr_name, zone_nos)
+-    max_abs = max(abs(a - b) for a, b in zip(got, values)) if values else 0.0
++    max_abs = max((abs(a-b) for a,b in zip(got, values)), default=0.0)
+     if max_abs > 1.0e-7:
+         raise RuntimeError("Zone attribute readback mismatch %s max_abs=%g" % (attr_name, max_abs))
+     return got
+@@ -571,7 +527,7 @@
+             return getattr(win32com.client.constants, "routeFilter_filterAllRoutes"), "COM_ENUM"
+         except Exception:
+             pass
+-    return 0, "INTEGER_0"
++    return com.ALL_ROUTES, "PTV_2026_CREATEPRTPATHLIST_EXAMPLE_ENUM_0"
+ 
+ 
+ def list_dsegs(visum):
+@@ -627,25 +583,21 @@
+ 
+ 
+ def create_list(lists, name):
+-    value = getattr(lists, name)
+-    return value() if callable(value) else value
++    return com.object_property(lists, name)
+ 
+ 
+ def add_list_columns(obj, key_headers, extras):
+-    mode = ""
+-    try:
+-        obj.AddKeyColumns(); mode = "AddKeyColumns"
+-    except Exception:
+-        mode = "ExplicitKeyColumns"
+-        for col in key_headers:
+-            obj.AddColumn(col)
++    # Add exact columns in explicit order. AddKeyColumns has a host-dependent
++    # default schema; an equal column count alone does not prove key order.
++    for col in key_headers:
++        obj.AddColumn(col)
+     failures = []
+     for col in extras:
+         try:
+             obj.AddColumn(col)
+         except Exception as exc:
+             failures.append({"column": col, "error": compact_error(exc)})
+-    return mode, failures
++    return "ExplicitVerifiedKeyColumns", failures
+ 
+ 
+ def set_list_objects(obj, dseg_row, all_routes):
+@@ -663,9 +615,9 @@
+ 
+ def save_to_array(obj):
+     value = obj.SaveToArray
+-    value = value() if callable(value) else value
++    value = com.member_value(value)
+     rows = []
+-    for row in value or []:
++    for row in ([] if value is None else value):
+         if isinstance(row, (tuple, list)):
+             rows.append(list(row))
+         else:
+@@ -774,23 +726,23 @@
+             # Official PrT path list for one DSeg.
+             try:
+                 pl = create_list(lists, "CreatePrTPathList")
+-                mode, failed = add_list_columns(pl, PATH_KEY_HEADERS, PATH_EXTRA_ATTRS)
+-                failures.extend([dict(x, dseg_code=code, list="PrTPathList") for x in failed])
+                 ok, err = set_list_objects(pl, ds, all_routes)
+                 if not ok:
+                     raise RuntimeError(err)
++                mode, failed = add_list_columns(pl, PATH_KEY_HEADERS, PATH_EXTRA_ATTRS)
++                failures.extend([dict(x, dseg_code=code, list="PrTPathList") for x in failed])
+                 arr = save_to_array(pl)
+-                expected = len(PATH_KEY_HEADERS) + len(PATH_EXTRA_ATTRS)
+-                if arr and len(arr[0]) != expected:
+-                    raise RuntimeError("PrT path list returned %d columns, expected %d" % (len(arr[0]), expected))
+-                headers = PATH_KEY_HEADERS + PATH_EXTRA_ATTRS
+-                for row in arr:
+-                    rec = dict({"dseg_code": code}, **dict(zip(headers, row)))
++                missing_columns = {x["column"] for x in failed}
++                if "Vol(AP)" in missing_columns:
++                    raise RuntimeError("REQUIRED_PATH_VOLUME_COLUMN_UNAVAILABLE")
++                headers = PATH_KEY_HEADERS + [x for x in PATH_EXTRA_ATTRS if x not in missing_columns]
++                for values in com.validated_array_rows(arr, headers, PATH_KEY_HEADERS + ["Vol(AP)"]):
++                    rec = dict({"dseg_code": code}, **values)
+                     path_rows_ds.append(rec)
+                     path_writer.writerow({k: rec.get(k, "") for k in path_fields})
+                 status["path_rows"] = len(path_rows_ds)
+                 status["path_key_mode"] = mode
+-                path_volume_sum = sum(float(fval(r[len(PATH_KEY_HEADERS)], 0.0) or 0.0) for r in arr) if arr else 0.0
++                path_volume_sum = math.fsum(r["Vol(AP)"] for r in path_rows_ds)
+                 del arr
+                 try:
+                     del pl
+@@ -825,18 +777,17 @@
+             # Official PrT paths-on-link-level list for the same DSeg.
+             try:
+                 pll = create_list(lists, "CreatePrTPathLinkList")
+-                mode, failed = add_list_columns(pll, PATHLINK_KEY_HEADERS, PATHLINK_EXTRA_ATTRS)
+-                failures.extend([dict(x, dseg_code=code, list="PrTPathLinkList") for x in failed])
+                 ok, err = set_list_objects(pll, ds, all_routes)
+                 if not ok:
+                     raise RuntimeError(err)
++                mode, failed = add_list_columns(pll, PATHLINK_KEY_HEADERS, PATHLINK_EXTRA_ATTRS)
++                failures.extend([dict(x, dseg_code=code, list="PrTPathLinkList") for x in failed])
+                 arr = save_to_array(pll)
+-                expected = len(PATHLINK_KEY_HEADERS) + len(PATHLINK_EXTRA_ATTRS)
+-                if arr and len(arr[0]) != expected:
+-                    raise RuntimeError("PrT path-link list returned %d columns, expected %d" % (len(arr[0]), expected))
++                if failed:
++                    raise RuntimeError("REQUIRED_PATHLINK_COLUMNS_UNAVAILABLE:" + ",".join(x["column"] for x in failed))
+                 headers = PATHLINK_KEY_HEADERS + PATHLINK_EXTRA_ATTRS
+-                for row in arr:
+-                    rec = dict({"dseg_code": code}, **dict(zip(headers, row)))
++                for values in com.validated_array_rows(arr, headers, headers):
++                    rec = dict({"dseg_code": code}, **values)
+                     link_rows_ds.append(rec)
+                     link_writer.writerow({k: rec.get(k, "") for k in pathlink_fields})
+                 status["pathlink_rows"] = len(link_rows_ds)
+@@ -1039,21 +990,20 @@
+ 
+ def audit_procseq(visum, out_dir, cfg):
+     rows = []
+-    ops = get_all(visum.Procedures.Operations, limit=1000)
++    ops = get_all(visum.Procedures.Operations)
+     for idx, op in enumerate(ops, start=1):
+         vals = {}
+         for name in PROCSEQ_CORE_ATTRS:
+             value = att(op, name, None)
+             if value not in (None, ""):
+                 vals.setdefault(name.upper(), value)
+-        active = proc_bool(vals.get("ACTIVE", ""))
++        active = com.active_bool(vals.get("ACTIVE", ""))
+         text = " ".join(sval(x) for x in vals.values()).upper()
+         compact = re.sub(r"[^A-Z0-9_]+", "", text)
+-        operation_type = fval(vals.get("OPERATIONTYPE", vals.get("PROCEDURETYPE", None)), None)
+-        operation_type_int = int(round(operation_type)) if operation_type is not None else None
+-        is_tg = operation_type_int == 45 or any(t in compact for t in ("TRIPGENERATION", "DEMANDGENERATION", "PRODUCTIONATTRACTION"))
+-        is_td = operation_type_int == 46 or any(t in compact for t in ("TRIPDISTRIBUTION", "DEMANDDISTRIBUTION"))
+-        is_assignment = "ASSIGNMENT" in compact and "DELETEASSIGNMENT" not in compact
++        operation_type_int = com.exact_int(vals.get("OPERATIONTYPE"), "OPERATIONTYPE")
++        is_tg = operation_type_int == com.TG
++        is_td = operation_type_int == com.TD
++        is_assignment = operation_type_int == com.ASSIGNMENT_PRT
+         is_master = "15A2" in compact or SCRIPT_ID.replace("_", "") in compact
+         rows.append({
+             "seq_index": idx, "active": int(active), "operation_type": operation_type_int if operation_type_int is not None else "", "text": text[:1500],
+@@ -1655,24 +1605,4 @@
+     return out
+ 
+ def read_zone_attr_strict(visum, attr_name, zone_nos):
+-    """Read a numeric Zone attribute without coercing blanks/non-numeric to zero."""
+-    values = get_multi(visum.Net.Zones, attr_name)
+-    by_key = {}
+-    invalid = []
+-    duplicates = []
+-    for key, value in values:
+-        z = ival(key, None)
+-        v = fval(value, None)
+-        if z is None:
+-            continue
+-        if int(z) in by_key:
+-            duplicates.append(int(z))
+-        if v is None or not math.isfinite(float(v)):
+-            invalid.append({"zone_no": z, "raw_value": sval(value)})
+-        else:
+-            by_key[int(z)] = float(v)
+-    missing = [int(z) for z in zone_nos if int(z) not in by_key]
+-    unexpected = [int(z) for z in by_key if int(z) not in set(int(x) for x in zone_nos)]
+-    if invalid or missing or duplicates or unexpected:
+-        raise RuntimeError("Zone.%s strict read failed: invalid=%d missing=%d duplicates=%d unexpected=%d" % (attr_name, len(invalid), len(missing), len(duplicates), len(unexpected)))
+-    return [by_key[int(z)] for z in zone_nos]
++    return com.indexed_zone_values(visum, attr_name, zone_nos)
+--- V232/r1_15a2_supply_visum.py
++++ V233/r1_15a2_supply_visum.py
+@@ -13,6 +13,7 @@
+ import re
+ import numpy as np
+ 
++import r1_15a2_com_compat as com
+ import r1_15a2_core as core
+ import r1_15a2_multiblock as mb
+ import r1_15a2_runtime_v1 as rt
+@@ -28,11 +29,10 @@
+ 
+ 
+ def strict_collection(collection):
+-    rows = rt.get_all(collection)
+-    count = integer(collection.Count, "COM collection count")
+-    if len(rows) != count:
+-        raise SupplyContractError("INCOMPLETE_COM_COLLECTION")
+-    return rows
++    try:
++        return com.collection_items(collection)
++    except RuntimeError as exc:
++        raise SupplyContractError(str(exc)) from exc
+ 
+ 
+ def read_path_attribute(visum, spec):
+@@ -48,20 +48,10 @@
+ 
+ 
+ def operation_inventory(visum, cfg):
+-    result = []
+-    noattr = cfg.get("supply", {}).get("operation_number_attribute", "NO")
+-    for op in strict_collection(visum.Procedures.Operations):
+-        no = integer(op.AttValue(noattr), "operation number")
+-        typ = integer(op.AttValue("OPERATIONTYPE"), "operation type")
+-        active = op.AttValue("ACTIVE")
+-        if active not in (0, 1, False, True, "0", "1"):
+-            raise SupplyContractError("UNKNOWN_ACTIVE_FLAG")
+-        result.append({"no": no, "type": typ, "active": int(str(active) in ("1", "True")),
+-                       "comment": str(rt.att(op, "COMMENT", "")),
+-                       "name": str(rt.att(op, "NAME", "")), "object": op})
+-    if len({r["no"] for r in result}) != len(result) or not result:
+-        raise SupplyContractError("DUPLICATE_OR_EMPTY_OPERATION_LIST")
+-    return result
++    try:
++        return com.operation_rows(visum)
++    except RuntimeError as exc:
++        raise SupplyContractError(str(exc)) from exc
+ 
+ 
+ def assignment_plan(visum, cfg):
+@@ -78,7 +68,7 @@
+             raise SupplyContractError("DUPLICATE_APPROVED_OPERATION")
+         wanted.add(no)
+         row = byno.get(no)
+-        if row is None or row["type"] != typ or not row["active"] or typ in (45, 46):
++        if row is None or row["type"] != typ or not row["active"] or typ != com.ASSIGNMENT_PRT:
+             reasons.append("APPROVED_ASSIGNMENT_OPERATION_MISMATCH:%s" % no)
+         if row and "15A2" in (row["comment"] + row["name"]).upper():
+             reasons.append("RECURSIVE_MASTER_OPERATION")
+@@ -99,10 +89,10 @@
+             continue
+         try:
+             obj = row["object"]
+-            for name in rule.get("dseg_object_path", []):
++            for name in rule.get("dseg_object_path", ["PrTAssignmentParameters"]):
+                 if not isinstance(name, str) or not name.isidentifier() or name.startswith("_"):
+                     raise SupplyContractError("INVALID_DSEG_OBJECT_PATH")
+-                obj = getattr(obj, name)
++                obj = com.object_property(obj, name)
+             value = obj.AttValue(rule.get("dseg_attribute", "DSEGSET"))
+             if not isinstance(value, str):
+                 raise SupplyContractError("NONSTRING_DSEGSET_REQUIRES_EXPLICIT_ADAPTER")
+@@ -118,22 +108,27 @@
+         reasons.append("UNAPPROVED_EXTRA_ASSIGNMENT_DSEGS:" + ",".join(sorted(covered-required-extra)))
+     return {"passes": not reasons, "reasons": reasons, "approved_numbers": sorted(wanted),
+             "covered_dsegs": sorted(covered),
++            "preserved_group_numbers": [r["no"] for r in inventory if r["type"] == com.GROUP and r["active"]],
+             "inventory": [{k: v for k, v in r.items() if k != "object"} for r in inventory]}
+ 
+ 
+ @contextmanager
+ def assignment_only_operations(visum, cfg):
+-    """Disable everything except explicitly approved assignment operations; restore flags."""
++    """Run approved PrT assignments with originally-active groups; restore all flags.
++
++    Groups are structural containers, not computations. Deactivating the parent
++    can suppress selected child assignment operations in the live sequence.
++    """
+     plan = assignment_plan(visum, cfg)
+     if not plan["passes"]:
+         raise SupplyContractError("ASSIGNMENT_ONLY_PLAN_BLOCKED:" + ";".join(plan["reasons"]))
+     old = operation_inventory(visum, cfg)
+-    selected = set(plan["approved_numbers"])
++    selected = set(plan["approved_numbers"]) | set(plan["preserved_group_numbers"])
+     try:
+         for row in old:
+             expected = int(row["no"] in selected)
+             row["object"].SetAttValue("ACTIVE", expected)
+-            if int(row["object"].AttValue("ACTIVE")) != expected:
++            if int(com.active_bool(row["object"].AttValue("ACTIVE"))) != expected:
+                 raise SupplyContractError("OPERATION_FLAG_WRITE_MISMATCH")
+         current = operation_inventory(visum, cfg)
+         if {r["no"] for r in current if r["active"]} != selected:
+@@ -144,7 +139,7 @@
+         for row in old:
+             try:
+                 row["object"].SetAttValue("ACTIVE", row["active"])
+-                if int(row["object"].AttValue("ACTIVE")) != row["active"]:
++                if int(com.active_bool(row["object"].AttValue("ACTIVE"))) != row["active"]:
+                     raise SupplyContractError("ACTIVE_READBACK")
+             except Exception as exc:
+                 errors.append(str(exc))
+@@ -248,12 +243,18 @@
+         required = {core.norm_code(x) for x in self.cfg["supply"]["passenger_dsegs"] + self.cfg["supply"].get("freight_dsegs", [])}
+         if not required <= set(dsmap):
+             raise SupplyContractError("REQUIRED_DEMAND_SEGMENT_MISSING:" + ",".join(sorted(required-set(dsmap))))
++        unbound = sorted(code for code in required if dsmap[code] in (None, ""))
++        if unbound:
++            raise SupplyContractError("REQUIRED_DSEG_ODMATRIX_UNREADABLE:" + ",".join(unbound))
+         numbers = set(integer(r["matrix_no"]) for r in dsrows if r.get("matrix_no") not in (None, ""))
+         numbers.update(integer(x) for x in self.cfg["supply"].get("component_matrix_nos", []))
+         mats = []
+         for no in sorted(numbers):
+             mat = self.visum.Net.Matrices.ItemByKey(no)
+             row = rt._fingerprint_matrix_object(mat, "MATRIX:%d" % no, "ALL_DEMAND")
++            expected_zones = self.cfg.get("expected_zones")
++            if expected_zones is not None and (row["rows"], row["cols"]) != (int(expected_zones), int(expected_zones)):
++                raise SupplyContractError("DEMAND_MATRIX_AXIS_SHAPE_MISMATCH:%s" % no)
+             if not math.isfinite(row["sum"]) or row["sum"] < 0:
+                 raise SupplyContractError("NONFINITE_OR_NEGATIVE_DEMAND")
+             mats.append({k: row[k] for k in ("matrix_no", "rows", "cols", "sha256_float64_le")})
+--- V232/r1_15a2_visum_parameters.py
++++ V233/r1_15a2_visum_parameters.py
+@@ -8,6 +8,8 @@
+ 
+ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
+ import re
++import inspect
++import r1_15a2_com_compat as com
+ 
+ import r1_15a2_multiblock as mb
+ import r1_15a2_runtime_v1 as rt
+@@ -17,23 +19,15 @@
+ 
+ 
+ def _is_active(value: Any) -> bool:
+-    text = mb.sval(value).strip().lower()
+-    if text in ("true", "yes", "y", "1", "active"):
+-        return True
+-    value_num = mb.fval(value, None)
+-    return bool(value_num) if value_num is not None else False
++    return com.active_bool(value)
+ 
+ 
+ def _operation_type(value: Any) -> int:
+-    x = mb.ival(value, None)
+-    return int(x) if x is not None else -1
++    return com.exact_int(value, "OPERATIONTYPE")
+ 
+ 
+ def _operation_is(value: Any, number: int, words: Sequence[str]) -> bool:
+-    if _operation_type(value) == number:
+-        return True
+-    text = mb.sval(value).lower().replace(" ", "")
+-    return all(w.lower().replace(" ", "") in text for w in words)
++    return _operation_type(value) == number
+ 
+ 
+ def _iter_operations(visum):
+@@ -72,13 +66,20 @@
+                 dset = mb.sval(rt.att(params, attr, ""))
+                 if dset:
+                     break
+-            score += sum(1 for code in required_codes if code in dset)
++            tokens = com.code_set(dset, "DSTRATSET") if dset else set()
++            score += sum(1 for code in required_codes if code.upper() in tokens)
+         row["dstratset"] = dset
+         if params is not None and (best is None or score > best[0]):
+             best = (score, op, params, row)
+         audit.append(row)
+     if best is None:
+         return None, None, audit
++    complete_active = [r for r in audit if r.get("active") and r.get("parameter_status") == "OK"
++                       and set(c.upper() for c in required_codes) <= (com.code_set(r["dstratset"]) if r.get("dstratset") else set())]
++    if len(complete_active) > 1:
++        for r in complete_active:
++            r["resolution_error"] = "AMBIGUOUS_ACTIVE_OPERATION_SCOPE"
++        return None, None, audit
+     best[3]["selected"] = 1
+     return best[1], best[2], audit
+ 
+@@ -93,7 +94,7 @@
+             obj = getattr(params, name)
+         except Exception:
+             continue
+-        if callable(obj):
++        if getattr(obj, "_oleobj_", None) is None and (inspect.ismethod(obj) or inspect.isfunction(obj) or inspect.isbuiltin(obj)):
+             try:
+                 value = obj(code)
+                 if value is not None:
+@@ -167,9 +168,10 @@
+     selected_ops = [r for r in operation_rows if int(r.get("selected", 0) or 0) == 1]
+     if selected_ops and int(selected_ops[0].get("active", 0) or 0) != 1:
+         failures.append("SELECTED_TRIP_GENERATION_OPERATION_INACTIVE")
+-    if selected_ops and selected_ops[0].get("dstratset"):
++    if selected_ops:
+         dset = mb.sval(selected_ops[0].get("dstratset"))
+-        missing_set = [code for code in required_dstrats if code not in dset]
++        tokens = com.code_set(dset) if dset else set()
++        missing_set = [code for code in required_dstrats if code.upper() not in tokens]
+         if missing_set:
+             failures.append("TRIP_GENERATION_DSTRATSET_MISSING:%s" % ",".join(missing_set))
+     expected = contract.get("dstrata", {}) or {}
+@@ -222,9 +224,10 @@
+     selected_ops = [r for r in operation_rows if int(r.get("selected", 0) or 0) == 1]
+     if not selected_ops or int(selected_ops[0].get("active", 0) or 0) != 1:
+         raise RuntimeError("Selected Trip Distribution operation is inactive or unresolved")
+-    if selected_ops[0].get("dstratset"):
++    if selected_ops:
+         dset = mb.sval(selected_ops[0].get("dstratset"))
+-        missing_set = [code for code in required_codes if code not in dset]
++        tokens = com.code_set(dset) if dset else set()
++        missing_set = [code for code in required_codes if code.upper() not in tokens]
+         if missing_set:
+             raise RuntimeError("Trip Distribution DStratSet misses: %s" % ",".join(missing_set))
+     rows = []
+--- V232/helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py
++++ V233/helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py
+@@ -89,6 +89,20 @@
+         return x
+     except Exception:
+         return default
++
++
++def required_model_volume(obj, attribute):
++    # A numerical zero is valid. Missing/unreadable is NOT a zero traffic flow.
++    try:
++        raw = obj.AttValue(attribute)
++        if raw is None or isinstance(raw, bool) or not str(raw).strip():
++            raise ValueError("blank/non-numeric volume")
++        value = float(str(raw).replace("\u00a0", "").replace(" ", "").replace(",", "."))
++        if not math.isfinite(value) or value < 0:
++            raise ValueError("nonfinite/negative volume")
++        return value
++    except Exception as exc:
++        raise RuntimeError("REQUIRED_PASSENGER_VOLUME_UNREADABLE:%s:%s" % (attribute, exc)) from exc
+ 
+ 
+ def as_int(v, default=None):
+@@ -413,7 +427,7 @@
+     dseg_attrs = ["VOLVEH_DSEG(%s,AP)" % ds for ds in PASSENGER_DSEGS]
+     freight_attrs = ["VOLVEH_DSEG(%s,AP)" % ds for ds in FREIGHT_DSEGS]
+     agg_attrs = ["VOLVEH_TSYS(C,AP)", "VOLVEH_TSYS(C_noT,AP)", "VOLVEHPRT(AP)"]
+-    # Probe attributes on first link only; all reads later still use safe default.
++    # Probe on first link for diagnostics; every included passenger read below is strict.
+     if items:
+         sample = items[0]
+         for a in dseg_attrs:
+@@ -450,7 +464,7 @@
+         else:
+             row["type_name"] = text(att(obj, ["TYPENAME", "TypeName"], ""))
+         for ds in PASSENGER_DSEGS:
+-            row["model_%s" % ds] = as_float(att(obj, "VOLVEH_DSEG(%s,AP)" % ds, 0.0))
++            row["model_%s" % ds] = required_model_volume(obj, "VOLVEH_DSEG(%s,AP)" % ds)
+         for ds in FREIGHT_DSEGS:
+             row["qa_freight_%s_excluded" % ds] = as_float(att(obj, "VOLVEH_DSEG(%s,AP)" % ds, 0.0))
+         row["qa_tsys_c"] = as_float(att(obj, ["VOLVEH_TSYS(C,AP)", "VolVehTSys(C,AP)"], 0.0))

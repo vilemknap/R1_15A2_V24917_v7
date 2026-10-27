@@ -1,0 +1,92 @@
+{
+  "schema": "R1_15A2_V2487_CHANGED_FILES_V1",
+  "base_release": "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
+  "target_release": "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
+  "changed_count": 14,
+  "files": [
+    {
+      "path": "LIVE_VISUM_ACCEPTANCE_V2_4_8_7_CZ.md",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "2015e068bb2947fa67e48734e98b92dd84234b073684ebbfcaa3ad9e8dff0e0d"
+    },
+    {
+      "path": "R1_15A2_CONFIG_V2_4_8_7.json",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "7cc4b50edde935bab42c13c7be6f99e6653a6e6ad9948a2c2bb19e164e0eee4e"
+    },
+    {
+      "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_7.py",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "ed1e8843a610f95912ad948ea06d35a2a1085b528e379a0ca63355aba08c78d4"
+    },
+    {
+      "path": "README_R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_CZ.md",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "e96463793f0ed119748de8efa2bcf50bbf1e7870ac0f690412e0d51855f80610"
+    },
+    {
+      "path": "START_HERE_V2487_CZ.txt",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "758eb9b15d89110fc428794a47761cf50a8af813fe25d0a2fd470ea0fec0045d"
+    },
+    {
+      "path": "V2487_REAL_V2484_FAILURE_REPLAY.json",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "4374902c066612569e484eae71277deee0794f0bb47ab792b739a4fd64c923f8"
+    },
+    {
+      "path": "V2487_ZONE_COEFFICIENT_AUTHORITY_AUDIT.csv",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "db692bec7a01cee123d9a878ccd29d983c741e82da6d42507562e557c086217c"
+    },
+    {
+      "path": "V2487_ZONE_COEFFICIENT_AUTHORITY_AUDIT.json",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "a036db3d8c67bb007c8f9f61f90e43513e023fa7236a290ea633bdf87276b6a2"
+    },
+    {
+      "path": "VERIFY_PACKAGE_V2_4_8_7.py",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "ae937399f78f047e021f2bb5572d5e7dc63d3b166711a4a73ad7a4bcbac0146f"
+    },
+    {
+      "path": "r1_15a2_multiblock.py",
+      "status": "MODIFIED",
+      "old_sha256": "c31acfb03eb43c1a2192a0cc512bfe48871a8a8f15b81840ca04387e28082e31",
+      "new_sha256": "110481bcda35de4d648e4218840d9ef819cbba93f071a4043de8271b614a9e38"
+    },
+    {
+      "path": "r1_15a2_runtime_v1.py",
+      "status": "MODIFIED",
+      "old_sha256": "5b6f7c16b218c3baf1cc26d76a94050b545de3966629b56ee77a835c8e8aed69",
+      "new_sha256": "9b9169f08bb5fb1e4c42dbb74ccee2b9aecbb849f21fcb32cbb71a7055117844"
+    },
+    {
+      "path": "r1_15a2_safety_v2487.py",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "86a9dcc79ecf05ab6f4d323a26af2f052d6d2d7c1ac0e6d8828171c1cef8816b"
+    },
+    {
+      "path": "tests/test_v2487_live_coefficient_authority.py",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "c324270c19c4db4343972edc7c45976c7b68fb8c905ef552986c3ff64656d13e"
+    },
+    {
+      "path": "tests/test_v2487_release.py",
+      "status": "ADDED",
+      "old_sha256": null,
+      "new_sha256": "636539ab7af0db1bf095022212ea2d2b3f6a9f6d0f70607298c29acea43a5309"
+    }
+  ]
+}

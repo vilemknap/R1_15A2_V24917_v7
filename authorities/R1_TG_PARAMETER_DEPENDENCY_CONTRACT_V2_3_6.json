@@ -1,0 +1,299 @@
+{
+  "contract_id": "R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6_LIVE_P09F4_A09F4_PREFEED",
+  "year": 2022,
+  "required_dstrata": [
+    "1_WORK_E_C",
+    "1_WORK_E_noC",
+    "1_WORK_noE_C",
+    "1_WORK_noE_noC",
+    "1_WORK_stud",
+    "2_SERV_E_C",
+    "2_SERV_E_noC",
+    "2_SERV_noE_C",
+    "2_SERV_noE_noC",
+    "2_SERV_stud"
+  ],
+  "required_zone_attributes": [
+    "ADD_PROD_W",
+    "ADD_ATT_W",
+    "ADD_SALARY",
+    "ADD_PROD_S",
+    "ADD_ATT_S",
+    "ZAHR_PROD_WORK",
+    "ZAHR_ATR_WORK",
+    "ZAHR_PROD_SERV",
+    "ZAHR_ATR_SERV",
+    "NOT_ZAHR",
+    "ZAHR_SUSED",
+    "POP_ZP",
+    "AV_INCOME",
+    "NUM_PM_SMEAR",
+    "FA_1_WORK",
+    "FA_2_SERVICE",
+    "FP_1_WORK_E_C",
+    "FP_1_WORK_E_noC",
+    "FP_1_WORK_noE_C",
+    "FP_1_WORK_noE_noC",
+    "FP_1_WORK_stud",
+    "FP_2_SERVICE_E_C",
+    "FP_2_SERVICE_E_noC",
+    "FP_2_SERVICE_noE_C",
+    "FP_2_SERVICE_noE_noC",
+    "FP_2_SERVICE_stud",
+    "A09F4_PER_PRE_SERV_E_C",
+    "A09F4_PER_PRE_SERV_E_NOC",
+    "A09F4_PER_PRE_SERV_NOE_C",
+    "A09F4_PER_PRE_SERV_NOE_NOC",
+    "A09F4_PER_PRE_SERV_STUD",
+    "A09F4_PER_PRE_WORK_E_C",
+    "A09F4_PER_PRE_WORK_E_NOC",
+    "A09F4_PER_PRE_WORK_NOE_C",
+    "A09F4_PER_PRE_WORK_NOE_NOC",
+    "A09F4_PER_PRE_WORK_STUD",
+    "P09F4_PER_PRE_SERV_E_C",
+    "P09F4_PER_PRE_SERV_E_NOC",
+    "P09F4_PER_PRE_SERV_NOE_C",
+    "P09F4_PER_PRE_SERV_NOE_NOC",
+    "P09F4_PER_PRE_SERV_STUD",
+    "P09F4_PER_PRE_WORK_E_C",
+    "P09F4_PER_PRE_WORK_E_NOC",
+    "P09F4_PER_PRE_WORK_NOE_C",
+    "P09F4_PER_PRE_WORK_NOE_NOC",
+    "P09F4_PER_PRE_WORK_STUD"
+  ],
+  "dstrata": {
+    "1_WORK_E_C": {
+      "production_tokens": [
+        "ADD_PROD_W",
+        "ZAHR_PROD_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_W",
+        "ADD_SALARY",
+        "ZAHR_ATR_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_1_WORK_E_C",
+      "attraction_outer_attribute": "FA_1_WORK",
+      "production_inline_population_required": true,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_WORK_E_C",
+      "attraction_additive_attribute": "A09F4_PER_PRE_WORK_E_C"
+    },
+    "1_WORK_E_noC": {
+      "production_tokens": [
+        "ADD_PROD_W",
+        "ZAHR_PROD_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_W",
+        "ADD_SALARY",
+        "ZAHR_ATR_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_1_WORK_E_noC",
+      "attraction_outer_attribute": "FA_1_WORK",
+      "production_inline_population_required": true,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_WORK_E_NOC",
+      "attraction_additive_attribute": "A09F4_PER_PRE_WORK_E_NOC"
+    },
+    "1_WORK_noE_C": {
+      "production_tokens": [
+        "ADD_PROD_W",
+        "ZAHR_PROD_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_W",
+        "ADD_SALARY",
+        "ZAHR_ATR_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_1_WORK_noE_C",
+      "attraction_outer_attribute": "FA_1_WORK",
+      "production_inline_population_required": true,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_WORK_NOE_C",
+      "attraction_additive_attribute": "A09F4_PER_PRE_WORK_NOE_C"
+    },
+    "1_WORK_noE_noC": {
+      "production_tokens": [
+        "ADD_PROD_W",
+        "ZAHR_PROD_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_W",
+        "ADD_SALARY",
+        "ZAHR_ATR_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_1_WORK_noE_noC",
+      "attraction_outer_attribute": "FA_1_WORK",
+      "production_inline_population_required": true,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_WORK_NOE_NOC",
+      "attraction_additive_attribute": "A09F4_PER_PRE_WORK_NOE_NOC"
+    },
+    "1_WORK_stud": {
+      "production_tokens": [
+        "ADD_PROD_W",
+        "ZAHR_PROD_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_W",
+        "ADD_SALARY",
+        "ZAHR_ATR_WORK",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_1_WORK_stud",
+      "attraction_outer_attribute": "FA_1_WORK",
+      "production_inline_population_required": false,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_WORK_STUD",
+      "attraction_additive_attribute": "A09F4_PER_PRE_WORK_STUD"
+    },
+    "2_SERV_E_C": {
+      "production_tokens": [
+        "ADD_PROD_S",
+        "ZAHR_PROD_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_S",
+        "ZAHR_ATR_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_2_SERVICE_E_C",
+      "attraction_outer_attribute": "FA_2_SERVICE",
+      "production_inline_population_required": true,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_SERV_E_C",
+      "attraction_additive_attribute": "A09F4_PER_PRE_SERV_E_C"
+    },
+    "2_SERV_E_noC": {
+      "production_tokens": [
+        "ADD_PROD_S",
+        "ZAHR_PROD_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_S",
+        "ZAHR_ATR_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_2_SERVICE_E_noC",
+      "attraction_outer_attribute": "FA_2_SERVICE",
+      "production_inline_population_required": true,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_SERV_E_NOC",
+      "attraction_additive_attribute": "A09F4_PER_PRE_SERV_E_NOC"
+    },
+    "2_SERV_noE_C": {
+      "production_tokens": [
+        "ADD_PROD_S",
+        "ZAHR_PROD_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_S",
+        "ZAHR_ATR_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_2_SERVICE_noE_C",
+      "attraction_outer_attribute": "FA_2_SERVICE",
+      "production_inline_population_required": true,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_SERV_NOE_C",
+      "attraction_additive_attribute": "A09F4_PER_PRE_SERV_NOE_C"
+    },
+    "2_SERV_noE_noC": {
+      "production_tokens": [
+        "ADD_PROD_S",
+        "ZAHR_PROD_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_S",
+        "ZAHR_ATR_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_2_SERVICE_noE_noC",
+      "attraction_outer_attribute": "FA_2_SERVICE",
+      "production_inline_population_required": true,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_SERV_NOE_NOC",
+      "attraction_additive_attribute": "A09F4_PER_PRE_SERV_NOE_NOC"
+    },
+    "2_SERV_stud": {
+      "production_tokens": [
+        "ADD_PROD_S",
+        "ZAHR_PROD_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "attraction_tokens": [
+        "ADD_ATT_S",
+        "ZAHR_ATR_SERV",
+        "NOT_ZAHR",
+        "ZAHR_SUSED"
+      ],
+      "production_outer_attribute": "FP_2_SERVICE_stud",
+      "attraction_outer_attribute": "FA_2_SERVICE",
+      "production_inline_population_required": false,
+      "attraction_inline_population_required": true,
+      "production_additive_attribute": "P09F4_PER_PRE_SERV_STUD",
+      "attraction_additive_attribute": "A09F4_PER_PRE_SERV_STUD"
+    }
+  },
+  "live_formula_evidence_file": "authorities/R1_TG_NESTED_FORMULA_POP_ZP_LIVE_EVIDENCE_20261015.json",
+  "outer_formula_mode": "EXACT_FP_PLUS_P09F4_AND_FA_PLUS_A09F4_PER_DSTRAT",
+  "inner_formula_mode": "LIVE_FORENSIC_SNAPSHOT_WITH_POP_ZP__NO_AUTOMATIC_LIVE_REVALIDATION_OF_NESTED_EXPRESSION",
+  "pre_input_policy": "READ_ONLY_EXISTING_ZONE_VALUES; NEVER_SEED_OR_RECONVERT; NOT_A_CALIBRATION_ACTUATOR",
+  "live_tg_evidence_file": "authorities/R1_TG_OPERATION_5_ADDITIVE_LIVE_EVIDENCE_20261016.json",
+  "expected_zone_attribute_types": {
+    "A09F4_PER_PRE_SERV_E_C": 2,
+    "A09F4_PER_PRE_SERV_E_NOC": 2,
+    "A09F4_PER_PRE_SERV_NOE_C": 2,
+    "A09F4_PER_PRE_SERV_NOE_NOC": 2,
+    "A09F4_PER_PRE_SERV_STUD": 2,
+    "A09F4_PER_PRE_WORK_E_C": 2,
+    "A09F4_PER_PRE_WORK_E_NOC": 2,
+    "A09F4_PER_PRE_WORK_NOE_C": 2,
+    "A09F4_PER_PRE_WORK_NOE_NOC": 2,
+    "A09F4_PER_PRE_WORK_STUD": 2,
+    "P09F4_PER_PRE_SERV_E_C": 2,
+    "P09F4_PER_PRE_SERV_E_NOC": 2,
+    "P09F4_PER_PRE_SERV_NOE_C": 2,
+    "P09F4_PER_PRE_SERV_NOE_NOC": 2,
+    "P09F4_PER_PRE_SERV_STUD": 2,
+    "P09F4_PER_PRE_WORK_E_C": 2,
+    "P09F4_PER_PRE_WORK_E_NOC": 2,
+    "P09F4_PER_PRE_WORK_NOE_C": 2,
+    "P09F4_PER_PRE_WORK_NOE_NOC": 2,
+    "P09F4_PER_PRE_WORK_STUD": 2,
+    "POP_ZP": 2
+  }
+}

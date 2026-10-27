@@ -1,0 +1,1313 @@
+--- /dev/null
++++ r1_15a2_dynamic_skim_v24916p2c.py
+# -*- coding: utf-8 -*-
+"""Assignment-coupled PrT distance skims for V24916/PERF2C.
+
+Scientific contract
+-------------------
+The static R1_OSRM_DIST_KM matrix is *not* an active calibration authority on a
+congested network.  Every TD candidate must be realized on the loaded network,
+then the configured native PrT skim operations are executed from the resulting
+assignment paths.  The resulting DIS matrices are bound to that exact
+assignment epoch and are the distance basis for IDP/FineCDF evaluation.
+
+This module does not alter b/c, P/A, OD matrices, VDFs, or acceptance
+thresholds.  It only orchestrates an already-configured Procedure Sequence and
+reads its skim results.  ACTIVE flags are restored exactly by the caller/bridge.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Mapping, Sequence
+import hashlib
+import json
+import math
+
+import numpy as np
+
+import r1_15a2_com_compat as com
+import r1_15a2_core as core
+import r1_15a2_runtime_v1 as rt
+from r1_15a2_supply import SupplyContractError
+from r1_15a2_skim_v24916 import matrix_inventory
+from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
+
+SCHEMA = "R1_15A2_V24916_DYNAMIC_ASSIGNMENT_SKIM_V1"
+
+# All passenger-native families present in the current R1 model.  FOREIGN is
+# retained for provenance/parity even though the domestic IDP objective does
+# not calibrate it.
+REQUIRED_NATIVE_DSEGS = (
+    "NATIVE_CW", "NATIVE_CW_NOT", "NATIVE_CS", "NATIVE_CS_NOT",
+    "NATIVE_CL", "NATIVE_CF",
+)
+IDP_NATIVE_DSEGS = REQUIRED_NATIVE_DSEGS[:-1]
+
+
+def _hash(value: Any) -> str:
+    return hashlib.sha256(json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        allow_nan=False).encode("utf-8")).hexdigest()
+
+
+def _call(adapter: Any, fn, label: str):
+    return com.com_call_with_retry(
+        fn, label=label,
+        retry_policy=getattr(adapter, "com_retry_policy", None) or
+        (getattr(adapter, "cfg", {}) or {}).get("com_resilience", {}) or {})
+
+
+def _matrix_values(adapter: Any, no: int, n: int, label: str) -> np.ndarray:
+    obj = _call(adapter, lambda: adapter.visum.Net.Matrices.ItemByKey(int(no)),
+                "Matrices.ItemByKey[%s:%s]" % (label, no))
+    raw = _call(adapter, lambda: obj.GetValues(), "Matrix.GetValues[%s:%s]" % (label, no))
+    a = np.asarray(raw, dtype=np.float64)
+    if a.shape != (n, n):
+        raise SupplyContractError(
+            "V24916_DYNAMIC_SKIM_SHAPE_MISMATCH:%s:%r" % (label, a.shape))
+    if not np.isfinite(a).all():
+        raise SupplyContractError("V24916_DYNAMIC_SKIM_NONFINITE:" + label)
+    if float(np.min(a)) < -1.0e-10:
+        raise SupplyContractError("V24916_DYNAMIC_SKIM_NEGATIVE:" + label)
+    # Do not retain a COM SAFEARRAY/nested list; keep one compact float64 array.
+    return np.array(a, dtype=np.float64, copy=True, order="C")
+
+
+def _native_dis_rows(adapter: Any) -> dict[str, dict[str, Any]]:
+    rows = matrix_inventory(adapter.visum, getattr(adapter, "com_retry_policy", None))
+    found: dict[str, dict[str, Any]] = {}
+    duplicates: dict[str, list[int]] = {}
+    for row in rows:
+        if str(row.get("matrix_code_norm", "")) != "DIS":
+            continue
+        dseg = core.norm_code(row.get("dseg_code_norm", ""))
+        if dseg not in REQUIRED_NATIVE_DSEGS:
+            continue
+        no = row.get("matrix_no_int")
+        if no is None:
+            continue
+        if dseg in found:
+            duplicates.setdefault(dseg, [int(found[dseg]["matrix_no_int"])]).append(int(no))
+        else:
+            found[dseg] = row
+    if duplicates:
+        detail = ";".join("%s=%s" % (k, ",".join(map(str, v)))
+                          for k, v in sorted(duplicates.items()))
+        raise SupplyContractError("V24916_DYNAMIC_SKIM_DUPLICATE_DIS_MATRIX:" + detail)
+    missing = [d for d in REQUIRED_NATIVE_DSEGS if d not in found]
+    if missing:
+        raise SupplyContractError("V24916_DYNAMIC_SKIM_REQUIRED_DIS_MISSING:" + ",".join(missing))
+    return found
+
+
+def active_native_skim_positions(visum: Any) -> tuple[list[int], list[int]]:
+    """Return active PrT-skim positions and active group positions.
+
+    We intentionally do not guess a COM parameter object/member name for skim
+    operations.  The live model itself already owns the configured six native
+    PrT skim procedures.  Scientific identity is verified on the *resulting*
+    DIS matrices by exact DSEG code after execution.
+    """
+    rows = com.operation_rows(visum)
+    skim = [int(r["no"]) for r in rows
+            if int(r["active"]) and int(r["type"]) == com.SKIMS_PRT]
+    groups = [int(r["no"]) for r in rows
+              if int(r["active"]) and int(r["type"]) == com.GROUP]
+    if len(skim) != len(REQUIRED_NATIVE_DSEGS):
+        raise SupplyContractError(
+            "V24916_DYNAMIC_SKIM_EXPECTED_6_ACTIVE_PRT_SKIMS_FOUND_%d" % len(skim))
+    return sorted(skim), sorted(groups)
+
+
+@dataclass(frozen=True)
+class DynamicSkimEpoch:
+    schema: str
+    epoch: int
+    assignment_epoch: int
+    assignment_token: str
+    zone_order_sha256: str
+    operation_positions: tuple[int, ...]
+    matrices_by_dseg: Mapping[str, np.ndarray]
+    matrix_meta_by_dseg: Mapping[str, Mapping[str, Any]]
+    family_distance: Mapping[str, np.ndarray]
+    family_hashes: Mapping[str, str]
+    epoch_hash: str
+
+    def summary(self) -> dict[str, Any]:
+        return {
+            "schema": self.schema,
+            "epoch": self.epoch,
+            "assignment_epoch": self.assignment_epoch,
+            "assignment_token": self.assignment_token,
+            "zone_order_sha256": self.zone_order_sha256,
+            "operation_positions": list(self.operation_positions),
+            "matrix_meta_by_dseg": {k: dict(v) for k, v in self.matrix_meta_by_dseg.items()},
+            "family_hashes": dict(self.family_hashes),
+            "epoch_hash": self.epoch_hash,
+            "role": "ACTIVE_TD_CALIBRATION_DISTANCE_AUTHORITY",
+            "static_r1_osrm_dist_km_role": "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION",
+            "source": "VISUM_FRESH_ASSIGNMENT_PATHS_PRT_DIS",
+        }
+
+
+def _weighted_pair(a_dist: np.ndarray, b_dist: np.ndarray,
+                   a_flow: np.ndarray, b_flow: np.ndarray) -> np.ndarray:
+    if not (a_dist.shape == b_dist.shape == a_flow.shape == b_flow.shape):
+        raise SupplyContractError("V24916_DYNAMIC_SKIM_WEIGHTED_PAIR_SHAPE_MISMATCH")
+    total = a_flow + b_flow
+    out = np.empty_like(a_dist, dtype=np.float64)
+    positive = total > 1.0e-12
+    out[positive] = ((a_flow[positive] * a_dist[positive] +
+                      b_flow[positive] * b_dist[positive]) / total[positive])
+    # Zero-current-demand cells do not contribute to the current IDP objective.
+    # Keep them finite/deterministic for future use without inventing volume:
+    # choose the shorter *available native-family assignment skim*.
+    out[~positive] = np.minimum(a_dist[~positive], b_dist[~positive])
+    return out
+
+
+class DynamicSkimManager:
+    """Run/read assignment-coupled native DIS skims and expose family matrices."""
+
+    def __init__(self, adapter: Any):
+        self.adapter = adapter
+        self.epoch = 0
+        self.current: DynamicSkimEpoch | None = None
+
+    def _read_epoch(self, assignment_token: str, operation_positions: Sequence[int],
+                    live_matrices: Mapping[str, Any]) -> DynamicSkimEpoch:
+        zones = tuple(int(z) for z in self.adapter.zones)
+        n = len(zones)
+        zhash = ordered_zone_hash(zones)
+        rows = _native_dis_rows(self.adapter)
+        matrices: dict[str, np.ndarray] = {}
+        meta: dict[str, dict[str, Any]] = {}
+        for dseg in REQUIRED_NATIVE_DSEGS:
+            row = rows[dseg]
+            no = int(row["matrix_no_int"])
+            values = _matrix_values(self.adapter, no, n, "DIS:" + dseg)
+            matrices[dseg] = values
+            meta[dseg] = {
+                "matrix_no": no,
+                "matrix_code": str(row.get("matrix_code", "DIS")),
+                "dseg_code": str(row.get("dseg_code", dseg)),
+                "canonical_dseg": dseg,
+                "values_sha256": matrix_values_hash(values),
+                "shape": [n, n],
+                "unit": "km",
+            }
+
+        def flow(code: str) -> np.ndarray:
+            matches = None
+            for raw, value in (live_matrices or {}).items():
+                if core.norm_code(raw) == code:
+                    matches = value
+                    break
+            if matches is None:
+                raise SupplyContractError("V24916_DYNAMIC_SKIM_LIVE_DEMAND_MISSING:" + code)
+            a = np.asarray(matches, dtype=np.float64)
+            if a.shape != (n, n) or not np.isfinite(a).all() or float(np.min(a)) < -1.0e-10:
+                raise SupplyContractError("V24916_DYNAMIC_SKIM_LIVE_DEMAND_INVALID:" + code)
+            return a
+
+        family = {
+            "WORK": _weighted_pair(matrices["NATIVE_CW"], matrices["NATIVE_CW_NOT"],
+                                   flow("NATIVE_CW"), flow("NATIVE_CW_NOT")),
+            "SERVICE": _weighted_pair(matrices["NATIVE_CS"], matrices["NATIVE_CS_NOT"],
+                                      flow("NATIVE_CS"), flow("NATIVE_CS_NOT")),
+            "LONG": np.array(matrices["NATIVE_CL"], copy=True),
+            "FOREIGN": np.array(matrices["NATIVE_CF"], copy=True),
+        }
+        fhash = {k: matrix_values_hash(v) for k, v in family.items()}
+        self.epoch += 1
+        rm = getattr(self.adapter, "readback_manager", None)
+        assignment_epoch = int(getattr(rm, "assignment_epoch", self.epoch) or self.epoch)
+        payload = {
+            "schema": SCHEMA,
+            "epoch": self.epoch,
+            "assignment_epoch": assignment_epoch,
+            "assignment_token": str(assignment_token),
+            "zone_order_sha256": zhash,
+            "operation_positions": [int(x) for x in operation_positions],
+            "matrix_hashes": {d: meta[d]["values_sha256"] for d in REQUIRED_NATIVE_DSEGS},
+            "family_hashes": fhash,
+        }
+        return DynamicSkimEpoch(
+            schema=SCHEMA, epoch=self.epoch, assignment_epoch=assignment_epoch,
+            assignment_token=str(assignment_token), zone_order_sha256=zhash,
+            operation_positions=tuple(int(x) for x in operation_positions),
+            matrices_by_dseg=matrices, matrix_meta_by_dseg=meta,
+            family_distance=family, family_hashes=fhash, epoch_hash=_hash(payload))
+
+    def capture_after_execution(self, folder: Path, assignment_token: str,
+                                operation_positions: Sequence[int],
+                                live_matrices: Mapping[str, Any]) -> DynamicSkimEpoch:
+        epoch = self._read_epoch(assignment_token, operation_positions, live_matrices)
+        self.current = epoch
+        folder = Path(folder); folder.mkdir(parents=True, exist_ok=True)
+        rt.write_json(folder / "DYNAMIC_SKIM_EPOCH.json", epoch.summary())
+        return epoch
+
+    def require_current(self) -> DynamicSkimEpoch:
+        if self.current is None:
+            raise SupplyContractError("V24916_DYNAMIC_SKIM_EPOCH_MISSING")
+        rm = getattr(self.adapter, "readback_manager", None)
+        current_assignment = int(getattr(rm, "assignment_epoch", self.current.assignment_epoch)
+                                 or self.current.assignment_epoch)
+        if current_assignment != int(self.current.assignment_epoch):
+            raise SupplyContractError(
+                "V24916_DYNAMIC_SKIM_STALE_ASSIGNMENT_EPOCH:%s!=%s" %
+                (self.current.assignment_epoch, current_assignment))
+        return self.current
+
+
+__all__ = [
+    "SCHEMA", "REQUIRED_NATIVE_DSEGS", "IDP_NATIVE_DSEGS", "DynamicSkimEpoch",
+    "DynamicSkimManager", "active_native_skim_positions",
+]
+--- /mnt/data/r1_v24916_bootfix2_work/r1_15a2_finecdf_bridge_v24916.py	2026-10-22 07:03:42.000000000 +0000
++++ /mnt/data/r1_v24916_dynamicskim1_work/r1_15a2_finecdf_bridge_v24916.py	2026-10-22 17:17:54.929932492 +0000
+@@ -7,9 +7,11 @@
+ * rejected b/c states are restored by parameter restoration + a fresh native TD run;
+ * the caller owns the global 10 h budget and later full downstream recomputation.
+ 
+-The TD inner solver freezes trip-generation attributes and ADDVAL1.  It temporarily
+-executes only the native TD leaf (operation type 46), with FOREIGN excluded exactly
+-as in v1.7, then restores the original Procedure Sequence controls.
++The TD inner solver freezes trip-generation attributes and ADDVAL1. In dynamic-skim
++mode every FineCDF evaluation executes the approved TD-to-assignment realization
++chain and the six configured native PrT skim operations before evaluating the sealed
++v1.9 IDP/FineCDF target math. The original Procedure Sequence controls are restored
++after each evaluation. Static R1_OSRM_DIST_KM remains reference-only.
+ """
+ from __future__ import annotations
+ 
+@@ -23,9 +25,12 @@
+ import time
+ 
+ import r1_15a2_runtime_v1 as rt
++import r1_15a2_com_compat as com
++import r1_15a2_acceleration_v24915p1 as perf1
+ import r1_15a2_visum_parameters as vp
+ from r1_15a2_supply import SupplyContractError, canonical_hash, number
+ from r1_15a2_perf_v246 import optional_span
++from r1_15a2_dynamic_skim_v24916p2c import REQUIRED_NATIVE_DSEGS
+ 
+ REF_REL = Path("reference_v17") / "R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7.py"
+ REF_SHA256 = "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82"
+@@ -73,12 +78,16 @@
+ 
+     A_ATTRS = ("PARA_A", "Para_A", "ParaA", "PARAM_A", "ParamA", "ParameterA", "A")
+ 
+-    def __init__(self, visum, ref, root, control=None, telemetry=None):
++    def __init__(self, visum, ref, root, control=None, telemetry=None, outer_adapter=None):
+         self.v = visum
+         self.telemetry = telemetry
+         self.ref = ref
+         self.root = Path(root)
+         self.control = control
++        self.outer_adapter = outer_adapter
++        self.dynamic_skim_enabled = bool(outer_adapter is not None and getattr(outer_adapter, "v24916_dynamic_skims", None) is not None)
++        self.dynamic_skim_epoch = None
++        self.dynamic_eval_index = 0
+         self.n = int(ref.CONFIG["expected_zone_count"])
+         self.ops = rt.get_all(self.v.Procedures.Operations)
+         self.inventory = []
+@@ -285,6 +294,97 @@
+             raise SupplyContractError("V242_TD_CONTROL_RESTORE_FAILED:" + ";".join(errors))
+         self.controls_changed = False
+ 
++    def _dynamic_realization_plan(self):
++        if not self.dynamic_skim_enabled:
++            return None
++        cfg = getattr(self.outer_adapter, "cfg", {}) or {}
++        rules = list((cfg.get("supply", {}) or {}).get("assignment_operations", []) or [])
++        if not rules:
++            raise SupplyContractError("V24916_DYNAMIC_FINECDF_ASSIGNMENT_AUTHORITY_EMPTY")
++        assignment_positions = sorted(int(r["no"]) for r in rules)
++        by = {int(r["index"]): r for r in self.inventory}
++        for rule in rules:
++            no = int(rule["no"]); row = by.get(no)
++            if row is None or int(row["type"]) != com.ASSIGNMENT_PRT or not int(row["active"]):
++                raise SupplyContractError("V24916_DYNAMIC_FINECDF_ASSIGNMENT_AUTHORITY_MISMATCH:%s" % no)
++        last_assignment = max(assignment_positions)
++        skim_positions = sorted(int(r["index"]) for r in self.inventory
++                                if int(r["active"]) and int(r["type"]) == com.SKIMS_PRT)
++        if len(skim_positions) != len(REQUIRED_NATIVE_DSEGS):
++            raise SupplyContractError(
++                "V24916_DYNAMIC_FINECDF_EXPECTED_6_ACTIVE_PRT_SKIMS_FOUND_%d" %
++                len(skim_positions))
++        groups = sorted(int(r["index"]) for r in self.inventory
++                        if int(r["active"]) and int(r["type"]) == com.GROUP)
++        # Generation stays frozen.  Realize the TD candidate through every
++        # originally active operation from the authoritative TD leaf to the
++        # final approved assignment, then calculate the configured PrT skims.
++        selected = {int(r["index"]) for r in self.inventory
++                    if int(r["active"]) and self.td_index <= int(r["index"]) <= last_assignment}
++        selected |= set(skim_positions) | set(groups)
++        return {
++            "schema": "R1_15A2_V24916_FINECDF_DYNAMIC_REALIZATION_PLAN_V1",
++            "block": "TD_FINECDF_DYNAMIC_ASSIGNMENT_SKIM",
++            "mode": "TD_TO_ASSIGNMENT_PLUS_NATIVE_PRT_SKIMS",
++            "optimized": True,
++            "selected_operation_positions": sorted(selected),
++            "original_active_operation_positions": sorted(int(r["index"]) for r in self.inventory if int(r["active"])),
++            "approved_assignment_positions": assignment_positions,
++            "dynamic_skim_operation_positions": skim_positions,
++            "preserved_group_positions": groups,
++            "td_operation_position": int(self.td_index),
++            "last_assignment_position": int(last_assignment),
++            "generation_frozen": True,
++        }
++
++    def _execute_dynamic_realization(self):
++        plan = self._dynamic_realization_plan()
++        if plan is None:
++            return None
++        self.dynamic_eval_index += 1
++        folder = self.root / "DYNAMIC_ASSIGNMENT_SKIMS" / ("EVAL_%03d" % self.dynamic_eval_index)
++        folder.mkdir(parents=True, exist_ok=True)
++        rt.write_json(folder / "DYNAMIC_REALIZATION_PLAN.json", plan)
++        rm = getattr(self.outer_adapter, "readback_manager", None)
++        if rm is not None:
++            rm.mark_assignment_started(reason="FINECDF_DYNAMIC_TD_ASSIGNMENT_SKIM", procedure_plan=plan)
++        try:
++            with perf1.activate_operation_plan(self.v, plan) as active_plan:
++                rt.write_json(folder / "DYNAMIC_REALIZATION_PLAN_ACTIVE.json", active_plan)
++                rt.execute_procseq(self.v, folder)
++            gap = self.outer_adapter.gap()
++        except BaseException as exc:
++            if rm is not None:
++                rm.mark_assignment_failed(str(exc))
++            raise
++        if rm is not None:
++            rm.mark_assignment_completed({
++                "gap": gap,
++                "gap_evidence": getattr(self.outer_adapter, "last_gap_evidence", None),
++                "block": "TD_FINECDF_DYNAMIC_ASSIGNMENT_SKIM",
++                "supply_only": False,
++                "procedure_plan": plan,
++            })
++        token = canonical_hash({
++            "dynamic_eval_index": self.dynamic_eval_index,
++            "abc": self.read_abc(),
++            "gap": float(gap),
++            "assignment_epoch": int(getattr(rm, "assignment_epoch", self.dynamic_eval_index) or self.dynamic_eval_index),
++        })
++        epoch = self.outer_adapter.v24916_dynamic_skims.capture_after_execution(
++            folder, token, plan["dynamic_skim_operation_positions"],
++            self.outer_adapter._live_generation_matrices())
++        self.dynamic_skim_epoch = epoch
++        rt.write_json(folder / "DYNAMIC_FINECDF_BINDING.json", {
++            "passes": True,
++            "gap": float(gap),
++            "skim_epoch": int(epoch.epoch),
++            "skim_epoch_hash": epoch.epoch_hash,
++            "assignment_epoch": int(epoch.assignment_epoch),
++            "static_r1_osrm_dist_km_used_for_objective": False,
++        })
++        return epoch
++
+     def guard_protected(self, full=False):
+         self._guard_generation_addval()
+         for no in (9001, 9697, 9116):
+@@ -293,12 +393,17 @@
+ 
+     def execute(self):
+         self.assert_isolated()
+-        # Stop/time gates are checked before parameter writes by the integrated
+-        # v1.7 log hook.  Do not raise a stop here after b/c have been written.
+-        # No output matrix clearing and no direct OD writes.  A failed native call must
+-        # surface as COM/procedure failure; positive regenerated matrices are required.
+-        with optional_span(self, "VISUM_NATIVE_TD_EXECUTE", purpose="FINECDF_INNER"):
+-            self.v.Procedures.Execute()
++        # In V24916 dynamic-skim mode one FineCDF evaluation is a complete
++        # congested-network feedback step: TD -> downstream vehicle realization
++        # -> fresh PrT assignment -> assignment-path DIS skims.  Static M9697 is
++        # retained only as a protected forensic/reference matrix.
++        if self.dynamic_skim_enabled:
++            with optional_span(self, "VISUM_TD_ASSIGNMENT_DYNAMIC_SKIM_EXECUTE",
++                               purpose="FINECDF_INNER_CONGESTED_FEEDBACK"):
++                self._execute_dynamic_realization()
++        else:
++            with optional_span(self, "VISUM_NATIVE_TD_EXECUTE", purpose="FINECDF_INNER"):
++                self.v.Procedures.Execute()
+         arrays = self.read_outputs()
+         for no, a in arrays.items():
+             if float(a.sum()) <= 0 or float(a.min()) < -1e-10:
+@@ -321,6 +426,128 @@
+         return regenerated
+ 
+ 
++class DynamicFamilyMetrics:
++    """Exact FineCDF target math with a fresh family-specific DIS matrix.
++
++    The numerical formulas are the same as the sealed v1.9 ``Metrics`` class;
++    only the distance array is selected by target family instead of reading the
++    single static M9697 matrix.
++    """
++
++    def __init__(self, bridge, ref, original_metrics_cls=None):
++        self.bridge = bridge
++        self.ref = ref
++
++    @staticmethod
++    def _family(component):
++        name = str(component).upper()
++        if name == "SCHOOL" or name.startswith("WORK_"):
++            return "WORK"
++        if name.startswith("SERV_"):
++            return "SERVICE"
++        if name == "LONG_COMPOSITE" or name.startswith("LONG_"):
++            return "LONG"
++        raise SupplyContractError("V24916_DYNAMIC_METRIC_COMPONENT_FAMILY_UNKNOWN:" + name)
++
++    def _evaluate_one(self, key, distance_matrix, matrices):
++        ref = self.ref; np = ref.np; t = ref.TARGETS[key]
++        distance = np.asarray(distance_matrix, dtype=float)
++        if distance.ndim != 2 or distance.shape[0] != distance.shape[1]:
++            raise SupplyContractError("V24916_DYNAMIC_DISTANCE_NOT_SQUARE:" + key)
++        n_zones = int(distance.shape[0])
++        d = distance.ravel()
++        fine = ref.FINE_AUTHORITY["targets"][key]
++        grid_name = fine["grid"]
++        fine_x = np.asarray(ref.FINE_AUTHORITY["common_grid_%s_km" % grid_name], dtype=float)
++        goal = np.asarray(fine["cdf"], dtype=float)
++        edges = np.asarray(t["edges"], dtype=float)
++        idx = np.flatnonzero((d >= edges[0]) & (d <= edges[-1]))
++        x = d[idx]
++        coarse_bins = np.searchsorted(edges, x, side="right") - 1
++        coarse_bins = np.minimum(coarse_bins, len(edges) - 2)
++        fine_bins = np.searchsorted(fine_x, x, side="left")
++        if len(fine_bins) and int(np.max(fine_bins)) >= len(fine_x):
++            raise SupplyContractError("V24916_DYNAMIC_FINE_GRID_COVERAGE_FAIL:" + key)
++        origin_ids = idx // n_zones
++        destination_ids = idx % n_zones
++        is_diag = origin_ids == destination_ids
++        weights = np.zeros(len(idx), dtype=float)
++        total = 0.0
++        for no in t["matrix_nos"]:
++            a = matrices[int(no)]
++            weights += a.ravel()[idx]
++            total += float(a.sum())
++        mass = float(weights.sum())
++        if not (mass > 0.0 and total > 0.0):
++            raise SupplyContractError("V24916_DYNAMIC_NO_CONDITIONED_DEMAND:" + key)
++        count = len(edges) - 1
++        hist = np.bincount(coarse_bins, weights=weights, minlength=count)
++        shares = hist / mass
++        mean_exact = float(np.dot(weights, x) / mass)
++        if str(t["mean_basis"]).startswith("BIN_MIDPOINT"):
++            centres = (np.asarray(t["edges"][:-1]) + np.asarray(t["edges"][1:])) / 2
++            mean = float(np.dot(shares, centres))
++        else:
++            mean = mean_exact
++        q = np.asarray(t["shares"])
++        diff = shares - q
++        rel = (mean - t["mean_km"]) / t["mean_km"]
++        model_cdf = np.cumsum(np.bincount(
++            fine_bins, weights=weights, minlength=len(fine_x))) / mass
++        cdf_diff = model_cdf - goal
++        if abs(float(model_cdf[-1]) - 1.0) >= 1e-8:
++            raise SupplyContractError("V24916_DYNAMIC_FINE_CDF_NOT_NORMALIZED:" + key)
++        residual = np.r_[cdf_diff / math.sqrt(len(fine_x)),
++                         math.sqrt(ref.CONFIG["shape_mean_weight"]) * rel]
++        zero_mass = float(np.sum(weights[x == 0]) / mass)
++        diag_zero_mass = float(np.sum(weights[(x == 0) & is_diag]) / mass)
++        offdiag_zero_mass = zero_mass - diag_zero_mass
++        return {
++            "component": key, "shares": shares, "bin_volumes": hist,
++            "fine_model_cdf": model_cdf,
++            "fine_cdf_rmse": float(np.sqrt(np.mean(cdf_diff ** 2))),
++            "fine_cdf_mae": float(np.mean(np.abs(cdf_diff))),
++            "fine_cdf_ks": float(np.max(np.abs(cdf_diff))),
++            "fine_cdf_mean_signed": float(np.mean(cdf_diff)),
++            "fine_points_used": len(fine_x),
++            "model_cdf_at_first_idp_node": float(model_cdf[0]),
++            "target_cdf_at_first_idp_node": float(goal[0]),
++            "zero_distance_share_diagnostic": zero_mass,
++            "intrazonal_zero_distance_share_diagnostic": diag_zero_mass,
++            "offdiagonal_zero_distance_share_diagnostic": offdiag_zero_mass,
++            "zero_distance_structural_warning": int(
++                zero_mass >= ref.CONFIG["structural_zero_distance_warning_threshold"]),
++            "mean_model_km": mean,
++            "mean_exact_distance_km_diagnostic": mean_exact,
++            "mean_target_km": t["mean_km"], "mean_basis": t["mean_basis"],
++            "mean_delta_km": mean - t["mean_km"],
++            "mean_relative_error": rel,
++            "l1_half": float(.5 * abs(diff).sum()),
++            "rmse_share": float(np.sqrt(np.mean(diff ** 2))),
++            "objective": float(residual @ residual), "residual": residual,
++            "conditioned_volume_diagnostic": mass,
++            "total_volume_diagnostic": total,
++            "conditioned_share_diagnostic": mass / total,
++        }
++
++    def evaluate(self, matrices):
++        epoch = self.bridge.dynamic_skim_epoch
++        if epoch is None:
++            raise SupplyContractError("V24916_FINECDF_DYNAMIC_SKIM_NOT_REFRESHED")
++        out = {}
++        for key in self.ref.TARGETS:
++            family = self._family(key)
++            distance = epoch.family_distance.get(family)
++            if distance is None:
++                raise SupplyContractError("V24916_FINECDF_DYNAMIC_FAMILY_SKIM_MISSING:" + family)
++            out[key] = self._evaluate_one(key, distance, matrices)
++            out[key]["distance_authority"] = "DYNAMIC_ASSIGNMENT_DIS_KM"
++            out[key]["dynamic_skim_epoch"] = int(epoch.epoch)
++            out[key]["dynamic_skim_epoch_hash"] = epoch.epoch_hash
++            out[key]["dynamic_distance_family"] = family
++        return out
++
++
+ def _abc_delta_rows(ref, before, after):
+     rows = []
+     for no in ref.MUTABLE_NOS:
+@@ -438,13 +665,24 @@
+     log.summary["native_multi_guard_method"] = "KEEP_FULL_MARGINAL_DIAGNOSTICS_BUT_DO_NOT_IMPOSE_EXTERNAL_STRICT_IPF_REJECT_ON_NATIVE_VISUM_MULTI"
+     bridge = NoDirectMatrixWriteTDAdapter(
+         adapter.visum, ref, folder, control=control,
+-        telemetry=getattr(adapter, "telemetry", None))
++        telemetry=getattr(adapter, "telemetry", None), outer_adapter=adapter)
+     start_abc = {n: dict(v) for n, v in bridge.entry_abc.items()}
+     runner = None
+     stop_reason = None
+     try:
+         bridge.isolate_td()
+-        runner = ref.Runner(bridge, log)
++        original_metrics_cls = ref.Metrics
++        if bridge.dynamic_skim_enabled:
++            class _BoundDynamicMetrics:
++                def __init__(self, _ignored_static_distance):
++                    self.impl = DynamicFamilyMetrics(bridge, ref, original_metrics_cls)
++                def evaluate(self, matrices):
++                    return self.impl.evaluate(matrices)
++            ref.Metrics = _BoundDynamicMetrics
++        try:
++            runner = ref.Runner(bridge, log)
++        finally:
++            ref.Metrics = original_metrics_cls
+         original_check = log.check_stop
+         inner_started = time.monotonic()
+         max_eval = int(ref.CONFIG["max_td_evaluations"])
+@@ -532,6 +770,9 @@
+         "metrics_evaluate_all_components": True,
+         "ipf_tolerance_changed": False,
+         "idp_acceptance_changed": False,
++        "distance_authority": "DYNAMIC_ASSIGNMENT_DIS_KM" if bridge.dynamic_skim_enabled else "LEGACY_STATIC_9697",
++        "fresh_assignment_and_skims_per_finecdf_evaluation": bool(bridge.dynamic_skim_enabled),
++        "static_r1_osrm_dist_km_used_for_finecdf_objective": not bool(bridge.dynamic_skim_enabled),
+     }
+     log.summary.update(status="COMPLETED_BEST_STATE_RETAINED", stop_reason=stop_reason,
+                        search_complete=summary["search_complete"])
+--- /mnt/data/r1_v24916_bootfix2_work/r1_15a2_trial_adapter_v24916p2c_active.py	2026-10-22 10:09:00.000000000 +0000
++++ /mnt/data/r1_v24916_dynamicskim1_work/r1_15a2_trial_adapter_v24916p2c_active.py	2026-10-22 17:17:54.930089486 +0000
+@@ -1,20 +1,25 @@
+ # -*- coding: utf-8 -*-
+ """Active V24916 adapter over the current PERF2C adapter.
+ 
+-Only three behaviors are added:
+-1) accepted-state FlowBundle/DIST_KM evidence;
++Only additive V24916 behaviors are introduced:
++1) accepted-state FlowBundle evidence plus assignment-coupled native DIS skims;
+ 2) signed-safe Generation projection damping;
+-3) TD active-component planning + candidate support-risk gate.
++3) TD active-component planning + candidate support-risk gate;
++4) dynamic 11D/FineCDF distance authority bound to the fresh assignment epoch.
+ Everything else, including assignment/readback/snapshot/acceptance, is inherited.
++Static R1_OSRM_DIST_KM is retained only as reference provenance.
+ """
+ from __future__ import annotations
+ 
+ import copy
+ import json
++import numpy as np
+ from pathlib import Path
+ from typing import Any, Mapping
++from types import SimpleNamespace
+ 
+ import r1_15a2_core as core
++import r1_15a2_com_compat as com
+ import r1_15a2_runtime_v1 as rt
+ from r1_15a2_supply import SupplyContractError
+ from r1_15a2_trial_adapter_v24916p2c import VisumAdapter as _V24916P2CBase
+@@ -23,6 +28,10 @@
+ from r1_15a2_demand_support_v24916 import audit_live_matrices
+ from r1_15a2_demand_targeting_hooks_v24916p2c import recompute_generation_post_target_summary
+ import r1_15a2_runtime_io_hotfix_profile488 as runtime_io_hotfix
++import r1_15a2_supply_visum as supply_visum
++import r1_15a2_acceleration_v24915p1 as perf1
++from r1_15a2_candidate_readback_bundle_v24915p2 import diagnostic_reference_hash
++from r1_15a2_dynamic_skim_v24916p2c import DynamicSkimManager, active_native_skim_positions
+ 
+ 
+ class VisumAdapter(_V24916P2CBase):
+@@ -55,6 +64,174 @@
+             self.v24916_active_evidence = None
+         self._v24916_last_evidence = None
+         self._v24916_current_candidate_folder = None
++        self.v24916_dynamic_skims = DynamicSkimManager(self) if (
++            self.v24916_enabled and bool((self.cfg.get("v24916_flowbundle_skim_runtime", {}) or {}).get(
++                "dynamic_assignment_skim_enabled", False))) else None
++
++
++    def _refresh_dynamic_skims_after_assignment(self, folder, label, *, skims_already_executed=False):
++        """Execute only configured active PrT skim operations after a fresh assignment."""
++        if self.v24916_dynamic_skims is None:
++            return None
++        folder = Path(folder) / "DYNAMIC_ASSIGNMENT_SKIMS"
++        folder.mkdir(parents=True, exist_ok=True)
++        skim_positions, groups = active_native_skim_positions(self.visum)
++        selected = sorted(set(skim_positions) | set(groups))
++        inventory = com.operation_rows(self.visum)
++        plan = {
++            "schema": "R1_15A2_V24916_DYNAMIC_SKIM_PROCSEQ_PLAN_V1",
++            "block": str(label),
++            "mode": "SKIM_ONLY_AFTER_FRESH_ASSIGNMENT",
++            "optimized": True,
++            "selected_operation_positions": selected,
++            "original_active_operation_positions": sorted(int(r["no"]) for r in inventory if int(r["active"])),
++            "dynamic_skim_operation_positions": skim_positions,
++            "preserved_group_positions": groups,
++            "inventory": [{k:v for k,v in r.items() if k != "object"} for r in inventory],
++        }
++        rt.write_json(folder / "DYNAMIC_SKIM_PROCEDURE_PLAN.json", plan)
++        if not skims_already_executed:
++            with perf1.activate_operation_plan(self.visum, plan) as active_plan:
++                rt.write_json(folder / "DYNAMIC_SKIM_PROCEDURE_PLAN_ACTIVE.json", active_plan)
++                rt.execute_procseq(self.visum, folder)
++        else:
++            rt.write_json(folder / "DYNAMIC_SKIM_PROCEDURE_PLAN_ACTIVE.json", {
++                **plan,
++                "mode": "CAPTURE_EXISTING_SKIMS_FROM_JUST_COMPLETED_FULL_SEQUENCE",
++                "procedure_execute_repeated": False,
++            })
++        rm = getattr(self, "readback_manager", None)
++        assignment_epoch = int(getattr(rm, "assignment_epoch", 0) or 0)
++        token = diagnostic_reference_hash({
++            "assignment_epoch": assignment_epoch,
++            "gap_evidence": getattr(self, "last_gap_evidence", None),
++            "label": str(label),
++            "skim_positions": skim_positions,
++        })
++        epoch = self.v24916_dynamic_skims.capture_after_execution(
++            folder, token, skim_positions, self._live_generation_matrices())
++        rt.write_json(folder / "DYNAMIC_SKIM_BINDING.json", {
++            "assignment_epoch": assignment_epoch,
++            "skim_epoch": epoch.epoch,
++            "skim_epoch_hash": epoch.epoch_hash,
++            "passes": True,
++        })
++        return epoch
++
++    def assign_for_block(self, folder, block):
++        gap = super().assign_for_block(folder, block)
++        self._refresh_dynamic_skims_after_assignment(folder, block)
++        return gap
++
++    def assign(self, folder, *, supply_only):
++        gap = super().assign(folder, supply_only=supply_only)
++        self._refresh_dynamic_skims_after_assignment(
++            folder, "SUPPLY_ADDVAL1" if supply_only else "FULL_DOWNSTREAM_RECOMPUTE",
++            skims_already_executed=not bool(supply_only))
++        return gap
++
++    def _dynamic_11d_overlay(self, diag, folder, label):
++        if self.v24916_dynamic_skims is None:
++            return diag
++        epoch = self.v24916_dynamic_skims.require_current()
++        from r1_15a2_finecdf_bridge_v24916 import load_reference, DynamicFamilyMetrics
++        fine_cfg = (self.cfg.get("coupled_demand", {}) or {}).get("finecdf_td", {}) or {}
++        ref, _path, ref_sha = load_reference(self._v24916_package_root, fine_cfg)
++        needed = sorted({int(no) for target in ref.TARGETS.values() for no in target["matrix_nos"]})
++        matrices = {}
++        for no in needed:
++            a = np.asarray(self.visum.Net.Matrices.ItemByKey(int(no)).GetValues(), dtype=np.float64)
++            if a.shape != (len(self.zones), len(self.zones)) or not np.isfinite(a).all():
++                raise SupplyContractError("V24916_DYNAMIC_11D_COMPONENT_MATRIX_INVALID:%s" % no)
++            matrices[no] = a
++        combined = DynamicFamilyMetrics(
++            SimpleNamespace(dynamic_skim_epoch=epoch), ref).evaluate(matrices)
++
++        d11 = copy.deepcopy(diag["d11"])
++        meta = copy.deepcopy(d11["summary"])
++        rows = [dict(r) for r in (meta.get("component_dist_summary_rows") or [])]
++        by_component = {str(r.get("component", "")): r for r in rows}
++        for key, metric in combined.items():
++            row = by_component.get(key)
++            if row is None:
++                continue
++            row.update({
++                "conditioned_volume": float(metric["conditioned_volume_diagnostic"]),
++                "total_volume": float(metric["total_volume_diagnostic"]),
++                "mean_model_conditioned": float(metric["mean_model_km"]),
++                "mean_target": float(metric["mean_target_km"]),
++                "l1_distance_half": float(metric["l1_half"]),
++                "rmse_share": float(metric["rmse_share"]),
++                "dynamic_fine_cdf_rmse": float(metric["fine_cdf_rmse"]),
++                "distance_authority": "DYNAMIC_ASSIGNMENT_DIS_KM",
++                "dynamic_distance_family": metric["dynamic_distance_family"],
++                "dynamic_skim_epoch": int(epoch.epoch),
++                "dynamic_skim_epoch_hash": epoch.epoch_hash,
++            })
++        meta["component_dist_summary_rows"] = rows
++        meta["dist_classification_matrix"] = {
++            "code": "VISUM_DYNAMIC_ASSIGNMENT_DIS_KM",
++            "classification": "DYNAMIC_ASSIGNMENT_PATH_VOLUME_WEIGHTED_DIS",
++            "assignment_epoch": int(epoch.assignment_epoch),
++            "skim_epoch": int(epoch.epoch),
++            "skim_epoch_hash": epoch.epoch_hash,
++            "zone_order_sha256": epoch.zone_order_sha256,
++            "family_hashes": dict(epoch.family_hashes),
++            "readback": {"nonfinite_cells": 0, "negative_cells": 0},
++        }
++        idp_contract = dict(meta.get("idp_contract") or {})
++        idp_contract["backend_metric"] = "DYNAMIC_ASSIGNMENT_DIS_KM"
++        idp_contract["static_r1_osrm_dist_km_role"] = "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION"
++        idp_contract["fresh_assignment_required"] = True
++        meta["idp_contract"] = idp_contract
++        meta["dynamic_distance_authority"] = epoch.summary()
++
++        # Reuse every existing 11D structural/read-only check by presenting the
++        # dynamic numbers through the legacy schema, then add an explicit
++        # assignment-epoch authority check.  No threshold is relaxed.
++        gate_meta = copy.deepcopy(meta)
++        gate_meta["dist_classification_matrix"] = {
++            "code": "R1_OSRM_DIST_KM",
++            "readback": {"nonfinite_cells": 0, "negative_cells": 0},
++        }
++        gate_contract = dict(gate_meta.get("idp_contract") or {})
++        gate_contract["backend_metric"] = "DIST_KM"
++        gate_meta["idp_contract"] = gate_contract
++        decision = rt.assess_11d_idp_gate(gate_meta, diag["d12"], self.cfg)
++        if not decision.get("passes"):
++            raise SupplyContractError("V24916_DYNAMIC_11D_STRUCTURAL_GATE_FAIL:" + ",".join(decision.get("failures", [])[:8]))
++        decision = dict(decision)
++        decision.update({
++            "status": "PASS_ATOMIC_IDP_DYNAMIC_ASSIGNMENT_SKIM",
++            "distance_authority": "DYNAMIC_ASSIGNMENT_DIS_KM",
++            "dynamic_assignment_epoch": int(epoch.assignment_epoch),
++            "dynamic_skim_epoch": int(epoch.epoch),
++            "dynamic_skim_epoch_hash": epoch.epoch_hash,
++            "static_r1_osrm_dist_km_used_for_active_idp": False,
++            "static_r1_osrm_dist_km_role": "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION",
++        })
++        d11["summary"] = meta
++        d11["idp_gate"] = decision
++        out = Path(folder) / ("11D_DYNAMIC_ASSIGNMENT_SKIM_" + str(label))
++        out.mkdir(parents=True, exist_ok=True)
++        rt.write_json(out / "DYNAMIC_11D_SUMMARY.json", meta)
++        rt.write_json(out / "DYNAMIC_11D_GATE.json", decision)
++        rt.write_json(out / "DYNAMIC_SKIM_EPOCH.json", epoch.summary())
++        rt.write_csv(out / "DYNAMIC_COMPONENT_DIST_SUMMARY.csv", rows)
++        d11["summary_path"] = str(out / "DYNAMIC_11D_SUMMARY.json")
++        diag = dict(diag)
++        diag["d11"] = d11
++        signals, _ = supply_visum.base.build_td_signals_from_11d(d11, self.cfg)
++        diag["signals"] = signals
++        diag["dynamic_skim_epoch"] = epoch.summary()
++        diag["dynamic_11d_reference_sha256"] = ref_sha
++        return diag
++
++    def diagnostics(self, folder, label="CURRENT"):
++        diag = super().diagnostics(folder, label=label)
++        if self.v24916_dynamic_skims is not None:
++            diag = self._dynamic_11d_overlay(diag, folder, label)
++        return diag
+ 
+     @staticmethod
+     def _targets_from_snapshot(snap) -> dict[str, Any]:
+--- /mnt/data/r1_v24916_bootfix2_work/r1_15a2_active_demand_evidence_v24916p2c.py	2026-10-22 07:03:42.000000000 +0000
++++ /mnt/data/r1_v24916_dynamicskim1_work/r1_15a2_active_demand_evidence_v24916p2c.py	2026-10-22 17:13:35.478673639 +0000
+@@ -2,7 +2,7 @@
+ """Live accepted-state V24916 evidence builder for active Generation/TD targeting.
+ 
+ This module is deliberately read-only with respect to the Visum model.  It
+-uses FlowBundle/DIST_KM only to narrow candidate search.  Frozen path incidence
++uses FlowBundle/fresh assignment-path DIS skims only to narrow candidate search.  Frozen path incidence
+ remains the numerical count-response authority and all acceptance remains in
+ parent live 12D/11D gates.
+ """
+@@ -40,7 +40,6 @@
+     canonical_hash,
+     ordered_zone_hash,
+ )
+-from r1_15a2_skim_v24916p2c import SealedSkimIdentity, seal_dist_km
+ 
+ SCHEMA = "R1_15A2_V24916_ACTIVE_DEMAND_EVIDENCE_V1"
+ 
+@@ -116,9 +115,7 @@
+         self.runtime_cfg = dict((adapter.cfg or {}).get("v24916_flowbundle_skim_runtime") or {})
+         self.manager = BoundedDemandEvidenceManager(
+             max_entries=int(self.runtime_cfg.get("max_evidence_entries", 2)))
+-        self._dist_identity: SealedSkimIdentity | None = None
+-        self._dist_values: Any = None
+-        self._zone_index: dict[int, int] = {}
++        self._zone_index: dict[int, int] = {int(z): i for i, z in enumerate(adapter.zones)}
+         self._dsegs: list[dict[str, Any]] | None = None
+         self.telemetry = {
+             "FLOWBUNDLE_EVIDENCE_BUILD_COUNT": 0,
+@@ -132,31 +129,24 @@
+             "FLOWBUNDLE_TOTAL_PARITY_FAIL": 0,
+         }
+ 
+-    def _distance(self) -> tuple[SealedSkimIdentity, Any]:
+-        if self._dist_identity is not None:
+-            return self._dist_identity, self._dist_values
+-        expected = dict(self.live_authority.get("dist_km") or {})
+-        no = int(expected.get("matrix_no"))
+-        code = str(expected.get("matrix_code"))
+-        zones = tuple(int(z) for z in self.adapter.zones)
+-        if ordered_zone_hash(zones) != str((self.live_authority.get("zone_order") or {}).get("sha256")):
+-            raise RuntimeError("V24916_ACTIVE_ZONE_ORDER_NOT_PREFLIGHT_AUTHORITY")
+-        matrix = _call(self.adapter, lambda: self.adapter.visum.Net.Matrices.ItemByKey(no),
+-                       f"Matrices.ItemByKey({no})")
+-        values = _call(self.adapter, lambda: matrix.GetValues(),
+-                       f"Matrix.GetValues[DIST_KM:{no}]")
+-        ident = seal_dist_km(
+-            matrix_no=no, matrix_code=code, unit="km", values=values,
+-            zone_nos=zones, exact_expected_code=code)
+-        if ident.identity_hash != str(expected.get("identity_hash")):
+-            raise RuntimeError("V24916_ACTIVE_DIST_KM_IDENTITY_MISMATCH")
+-        self._dist_identity = ident
+-        self._dist_values = values
+-        self._zone_index = {int(z): i for i, z in enumerate(zones)}
+-        return ident, values
+-
+-    def distance_value(self, origin: int, destination: int) -> float | None:
+-        _, values = self._distance()
++    def _distance_epoch(self):
++        manager = getattr(self.adapter, "v24916_dynamic_skims", None)
++        if manager is None:
++            raise RuntimeError("V24916_ACTIVE_DYNAMIC_SKIM_MANAGER_MISSING")
++        epoch = manager.require_current()
++        expected_zone_hash = str((self.live_authority.get("zone_order") or {}).get("sha256", ""))
++        if expected_zone_hash and epoch.zone_order_sha256 != expected_zone_hash:
++            raise RuntimeError("V24916_ACTIVE_DYNAMIC_SKIM_ZONE_ORDER_MISMATCH")
++        return epoch
++
++    def distance_value(self, family: str, origin: int, destination: int) -> float | None:
++        epoch = self._distance_epoch()
++        fam = str(family or "").upper()
++        if fam == "SCHOOL":
++            fam = "WORK"
++        values = epoch.family_distance.get(fam)
++        if values is None:
++            return None
+         oi = self._zone_index.get(int(origin)); di = self._zone_index.get(int(destination))
+         if oi is None or di is None:
+             return None
+@@ -235,7 +225,7 @@
+                 })
+         return out
+ 
+-    def _identity(self, snapshot: Mapping[str, Any], diag: Mapping[str, Any], dist: SealedSkimIdentity) -> FlowBundleEvidenceIdentity:
++    def _identity(self, snapshot: Mapping[str, Any], diag: Mapping[str, Any], dist_epoch) -> FlowBundleEvidenceIdentity:
+         rm = getattr(self.adapter, "readback_manager", None)
+         assignment_epoch = int(getattr(rm, "assignment_epoch", 0) or 0)
+         run_token = str(getattr(rm, "run_token", "NO_RB_RUN_TOKEN"))
+@@ -256,7 +246,7 @@
+             comparison_basis_hash=str(self.adapter._epoch_comparison_basis() or ""),
+             zone_order_hash=ordered_zone_hash(self.adapter.zones),
+             flowbundle_contract_hash=contract_hash(FlowBundleContract()),
+-            dist_km_hash=dist.identity_hash,
++            dist_km_hash=str(getattr(dist_epoch, "epoch_hash", getattr(dist_epoch, "identity_hash", ""))),
+             targeting_config_hash=canonical_hash(self.cfg),
+         )
+ 
+@@ -264,8 +254,8 @@
+               snapshot: Mapping[str, Any]):
+         folder=Path(folder); folder.mkdir(parents=True, exist_ok=True)
+         started=time.perf_counter()
+-        dist,_=self._distance()
+-        identity=self._identity(snapshot,diag,dist)
++        dist_epoch=self._distance_epoch()
++        identity=self._identity(snapshot,diag,dist_epoch)
+         cached=self.manager.get(identity)
+         if cached is not None:
+             self.telemetry["FLOWBUNDLE_EVIDENCE_REUSE_COUNT"] += 1
+@@ -345,7 +335,7 @@
+                             "geh":float(audit["geh"]),
+                             "scope_kind":str(profile.get("observation_direction","DIRECTED")).upper(),
+                             "condition_count":len(keys),
+-                            "distance_km":self.distance_value(origin,destination),
++                            "distance_km":self.distance_value(family,origin,destination),
+                         }
+                         flow_rows.append(row)
+                     profile_status.append({
+--- /mnt/data/r1_v24916_bootfix2_work/r1_15a2_active_targeting_runtime_v24916p2c.py	2026-10-22 07:03:42.000000000 +0000
++++ /mnt/data/r1_v24916_dynamicskim1_work/r1_15a2_active_targeting_runtime_v24916p2c.py	2026-10-22 17:13:35.478736874 +0000
+@@ -4,7 +4,7 @@
+ The certified V24915/PERF2C parent configuration is kept byte/methodology intact.
+ All V24916 settings are additive top-level namespaces tolerated by the parent
+ config drift gate.  Acceptance remains the parent fresh-assignment + 12D/11D
+-contract; FlowBundle/DIST_KM only narrow candidate search.
++contract; FlowBundle/fresh assignment-path DIS skims only narrow candidate search.
+ """
+ from __future__ import annotations
+ 
+@@ -39,10 +39,15 @@
+     "td_max_active_components": 4,
+     "td_minimum_pressure": 0.0,
+     "exact_zone_order_required": True,
+-    "exact_dist_km_identity_required": True,
++    "exact_dist_km_identity_required": False,
++    "dynamic_assignment_skim_enabled": True,
++    "dynamic_distance_code": "DIS",
++    "dynamic_distance_aggregation": "MEAN_OVER_ASSIGNMENT_PATH_VOLUME",
++    "dynamic_skim_refresh_policy": "EVERY_TD_FINECDF_EVALUATION_AND_EVERY_FRESH_ASSIGNMENT",
++    "static_r1_osrm_dist_km_role": "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION",
+     "full_matrix_retention_forbidden": True,
+     "flowbundle_role": "ACTIVE_SEARCH_TARGETING_ONLY_NOT_ACCEPTANCE",
+-    "skim_role": "ACTIVE_TARGETING_CONTEXT_ONLY_NOT_ACCEPTANCE",
++    "skim_role": "ACTIVE_TD_CALIBRATION_DISTANCE_AUTHORITY_FROM_FRESH_ASSIGNMENT",
+     "acceptance_authority": "UNCHANGED_PARENT_FRESH_ASSIGNMENT_PLUS_LIVE_12D_11D",
+     "post_r3a_parent_freeze_required_before_live_activation": False,
+     "fresh_baseline_live_authority_required": True,
+@@ -87,11 +92,14 @@
+         "zone_targeting_role": "POSITIVE_UNDERLOAD_REGULARIZATION_DAMPING_ONLY",
+     },
+     "skim": {
+-        "automatic_calculation": False,
++        "automatic_calculation": True,
++        "calculation_source": "CONFIGURED_ACTIVE_VISUM_PRT_SKIM_PROCEDURES_AFTER_FRESH_ASSIGNMENT",
++        "distance_code": "DIS",
++        "required_native_dsegs": ["NATIVE_CW", "NATIVE_CW_noT", "NATIVE_CS", "NATIVE_CS_noT", "NATIVE_CL", "NATIVE_CF"],
+         "finite_nonnegative_required": True,
+-        "required": "DIST_KM",
++        "static_r1_osrm_dist_km_role": "REFERENCE_ONLY",
++        "assignment_epoch_binding_required": True,
+         "optional_role": "SHADOW_DIAGNOSTIC_ONLY",
+-        "single_bulk_getvalues_per_snapshot": True,
+         "zone_order_hash_required": True,
+     },
+     "support_risk": {
+@@ -105,7 +113,9 @@
+         "distance_bin_edges_km": [5, 10, 20, 30, 50, 75, 100],
+         "enabled": True,
+         "families": ["WORK", "SERVICE"],
+-        "finecdf_v19_authority_unchanged": True,
++        "finecdf_v19_algorithm_and_targets_unchanged": True,
++        "finecdf_distance_authority": "DYNAMIC_ASSIGNMENT_DIS_KM",
++        "fresh_assignment_and_skims_per_finecdf_evaluation": True,
+         "global_11d_evaluation_required": True,
+         "max_active_components_per_family": 2,
+         "max_active_components_total": 4,
+--- /mnt/data/r1_v24916_bootfix2_work/r1_15a2_fresh_baseline_live_preflight_v24916p2c.py	2026-10-22 12:45:44.000000000 +0000
++++ /mnt/data/r1_v24916_dynamicskim1_work/r1_15a2_fresh_baseline_live_preflight_v24916p2c.py	2026-10-22 17:13:35.478521740 +0000
+@@ -3,7 +3,8 @@
+ 
+ This preflight is intentionally separate from calibration.  It binds the
+ currently opened Visum model, seals its semantic identity, zone order,
+-DIST_KM and DSeg roles, then exercises the sealed FlowBundle COM signature on
++static OSRM distance as reference-only provenance, the six configured native
++assignment-path DIS skim slots, and DSeg roles, then exercises the sealed FlowBundle COM signature on
+ small representative samples.  It never executes Procedure Sequence,
+ assignment or coefficient writes.
+ """
+@@ -27,6 +28,9 @@
+ )
+ from r1_15a2_skim_v24916 import zone_numbers
+ from r1_15a2_skim_v24916p2c import seal_dist_km
++from r1_15a2_dynamic_skim_v24916p2c import (
++    REQUIRED_NATIVE_DSEGS, active_native_skim_positions, _native_dis_rows,
++)
+ from r1_15a2_trial_adapter_v24916p2c import VisumAdapter
+ from r1_15a2_active_targeting_runtime_v24916_fresh0isolated import (
+     AUTHORITY_FILE, RELEASE, apply_active_runtime_delta,
+@@ -399,6 +403,31 @@
+ 
+     # Snapshot before any FlowBundle analysis. No candidate/readback context is active.
+     adapter = VisumAdapter(visum, cfg, None)
++    skim_positions, skim_group_positions = active_native_skim_positions(visum)
++    native_dis_rows = _native_dis_rows(adapter)
++    dynamic_skim_structure = {
++        "schema": "R1_15A2_V24916_DYNAMIC_SKIM_STRUCTURE_AUTHORITY_V1",
++        "active_prt_skim_operation_positions": list(skim_positions),
++        "active_prt_skim_operation_count": len(skim_positions),
++        "required_native_dsegs": list(REQUIRED_NATIVE_DSEGS),
++        "dis_matrices": {
++            code: {
++                "matrix_no": int(native_dis_rows[code]["matrix_no_int"]),
++                "matrix_code": str(native_dis_rows[code].get("matrix_code", "DIS")),
++                "dseg_code": str(native_dis_rows[code].get("dseg_code", code)),
++            } for code in REQUIRED_NATIVE_DSEGS
++        },
++        "distance_semantics": "ASSIGNMENT_PATH_DISTANCE_KM",
++        "required_path_aggregation": "MEAN_OVER_PATH_VOLUME",
++        "refresh_policy": "EVERY_TD_FINECDF_EVALUATION_AND_EVERY_FRESH_ASSIGNMENT",
++        "static_r1_osrm_dist_km_role": "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION",
++        "procedure_sequence_executed_by_preflight": False,
++        "configuration_readback_note": (
++            "Operation count and exact resulting DIS DSeg matrix identities are sealed here; "
++            "each live calibration refresh revalidates all six result matrices and assignment epoch."
++        ),
++    }
++    dynamic_skim_structure["authority_hash"] = _canonical_hash(dynamic_skim_structure)
+     before = adapter.snapshot()
+     before_semantic = restart.build_authority(
+         before, version_path=source_ver, raw_ver_sha256=source_sha,
+@@ -471,7 +500,9 @@
+             "count": len(zones), "sha256": zone_hash,
+             "first": zones[:5], "last": zones[-5:],
+         },
+-        "dist_km": dist_identity.as_dict(),
++        "dist_km": dict(dist_identity.as_dict(),
++                        role="REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION"),
++        "dynamic_assignment_skims": dynamic_skim_structure,
+         "dseg_role_authority": role_authority,
+         "flowbundle_contract": contract.as_dict(),
+         "flowbundle_contract_sha256": fb_contract_hash,
+@@ -527,6 +558,20 @@
+     zones = zone_numbers(visum, cfg.get("com_resilience", {}) or {})
+     if ordered_zone_hash(zones) != (authority.get("zone_order") or {}).get("sha256"):
+         raise RuntimeError("V24916_FRESH_BASELINE_ZONE_ORDER_CHANGED_SINCE_PREFLIGHT")
++    skim_positions, _skim_groups = active_native_skim_positions(visum)
++    native_dis_rows = _native_dis_rows(adapter)
++    expected_dynamic = authority.get("dynamic_assignment_skims") or {}
++    if list(skim_positions) != list(expected_dynamic.get("active_prt_skim_operation_positions") or []):
++        raise RuntimeError("V24916_DYNAMIC_SKIM_OPERATION_SET_CHANGED_SINCE_PREFLIGHT")
++    current_native_dis = {
++        code: int(native_dis_rows[code]["matrix_no_int"]) for code in REQUIRED_NATIVE_DSEGS
++    }
++    expected_native_dis = {
++        code: int((expected_dynamic.get("dis_matrices") or {}).get(code, {}).get("matrix_no", -1))
++        for code in REQUIRED_NATIVE_DSEGS
++    }
++    if current_native_dis != expected_native_dis:
++        raise RuntimeError("V24916_DYNAMIC_SKIM_MATRIX_BINDING_CHANGED_SINCE_PREFLIGHT")
+     dist_row, matrix = _matrix_meta_exact(visum, cfg)
+     values = _call(lambda: matrix.GetValues(),
+                    f"Matrix.GetValues[DIST_KM:{dist_row['matrix_no_int']}]", cfg)
+@@ -544,6 +589,9 @@
+         "semantic_state_hash": current["semantic_state_hash"],
+         "zone_order_sha256": ordered_zone_hash(zones),
+         "dist_km_identity_hash": ident.identity_hash,
++        "dist_km_role": "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION",
++        "dynamic_assignment_skim_operation_positions": list(skim_positions),
++        "dynamic_assignment_skim_matrix_nos": current_native_dis,
+         "authority_hash": authority.get("authority_hash"),
+     }
+ 
+--- /dev/null
++++ tests/test_v24916_dynamic_assignment_skims.py
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from types import SimpleNamespace
+
+import numpy as np
+import pytest
+
+import r1_15a2_dynamic_skim_v24916p2c as dyn
+from r1_15a2_dynamic_skim_v24916p2c import (
+    DynamicSkimEpoch, DynamicSkimManager, _weighted_pair,
+    active_native_skim_positions,
+)
+from r1_15a2_finecdf_bridge_v24916 import (
+    DynamicFamilyMetrics, NoDirectMatrixWriteTDAdapter, load_reference,
+)
+from r1_15a2_active_targeting_runtime_v24916p2c import (
+    V24916_ACTIVE_SECTION, DEMAND_EVIDENCE_TARGETING,
+)
+from r1_15a2_supply import SupplyContractError
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_weighted_family_distance_responds_to_congested_reroute_volume():
+    # Toll path remains short, no-toll path is longer.  When saturated-network
+    # assignment shifts volume to the no-toll family, the effective WORK skim
+    # must increase; a static OSRM matrix cannot represent this response.
+    short = np.array([[0.0, 10.0], [10.0, 0.0]])
+    long = np.array([[0.0, 18.0], [18.0, 0.0]])
+    mostly_short = _weighted_pair(short, long,
+                                  np.array([[0.0, 90.0], [90.0, 0.0]]),
+                                  np.array([[0.0, 10.0], [10.0, 0.0]]))
+    mostly_long = _weighted_pair(short, long,
+                                 np.array([[0.0, 20.0], [20.0, 0.0]]),
+                                 np.array([[0.0, 80.0], [80.0, 0.0]]))
+    assert mostly_short[0, 1] == pytest.approx(10.8)
+    assert mostly_long[0, 1] == pytest.approx(16.4)
+    assert mostly_long[0, 1] > mostly_short[0, 1]
+
+
+def _v19_reference():
+    cfg = json.loads((ROOT / "R1_15A2_CONFIG_V2_4_9_15_PERF2.json").read_text(encoding="utf-8"))
+    fine = cfg["coupled_demand"]["finecdf_td"]
+    ref, _path, _sha = load_reference(ROOT, fine)
+    return ref
+
+
+def test_dynamic_family_metrics_exactly_match_v19_when_all_family_skims_are_equal():
+    """Only the distance authority may change; FineCDF math must not."""
+    ref = _v19_reference()
+    n = int(ref.CONFIG["expected_zone_count"])
+    distance = np.linspace(0.1, 199.9, n * n, dtype=np.float64).reshape(n, n)
+    # Share one immutable flow array across all component matrix numbers.  This
+    # keeps the test small while giving positive conditioned mass to every target.
+    flow = np.ones((n, n), dtype=np.float64)
+    matrix_nos = sorted({int(no) for t in ref.TARGETS.values() for no in t["matrix_nos"]})
+    matrices = {no: flow for no in matrix_nos}
+
+    expected = ref.Metrics(distance).evaluate(matrices)
+    epoch = SimpleNamespace(
+        epoch=11,
+        epoch_hash="PARITY_EPOCH",
+        family_distance={"WORK": distance, "SERVICE": distance, "LONG": distance},
+    )
+    actual = DynamicFamilyMetrics(SimpleNamespace(dynamic_skim_epoch=epoch), ref).evaluate(matrices)
+
+    numeric_arrays = ("shares", "bin_volumes", "fine_model_cdf", "residual")
+    numeric_scalars = (
+        "fine_cdf_rmse", "fine_cdf_mae", "fine_cdf_ks", "fine_cdf_mean_signed",
+        "model_cdf_at_first_idp_node", "target_cdf_at_first_idp_node",
+        "zero_distance_share_diagnostic", "intrazonal_zero_distance_share_diagnostic",
+        "offdiagonal_zero_distance_share_diagnostic", "mean_model_km",
+        "mean_exact_distance_km_diagnostic", "mean_target_km", "mean_delta_km",
+        "mean_relative_error", "l1_half", "rmse_share", "objective",
+        "conditioned_volume_diagnostic", "total_volume_diagnostic",
+        "conditioned_share_diagnostic",
+    )
+    assert set(actual) == set(expected)
+    for key in expected:
+        for name in numeric_arrays:
+            assert np.allclose(actual[key][name], expected[key][name], rtol=0.0, atol=1e-14), (key, name)
+        for name in numeric_scalars:
+            assert actual[key][name] == pytest.approx(expected[key][name], rel=0.0, abs=1e-14), (key, name)
+        assert actual[key]["mean_basis"] == expected[key]["mean_basis"]
+        assert actual[key]["fine_points_used"] == expected[key]["fine_points_used"]
+        assert actual[key]["distance_authority"] == "DYNAMIC_ASSIGNMENT_DIS_KM"
+
+
+def test_active_skim_authority_requires_exactly_six_configured_native_operations(monkeypatch):
+    def rows(count):
+        return [
+            {"no": i + 1, "active": 1, "type": dyn.com.SKIMS_PRT, "object": object()}
+            for i in range(count)
+        ]
+    monkeypatch.setattr(dyn.com, "operation_rows", lambda _visum: rows(5))
+    with pytest.raises(SupplyContractError, match="EXPECTED_6_ACTIVE_PRT_SKIMS_FOUND_5"):
+        active_native_skim_positions(object())
+    monkeypatch.setattr(dyn.com, "operation_rows", lambda _visum: rows(6))
+    skim, groups = active_native_skim_positions(object())
+    assert skim == [1, 2, 3, 4, 5, 6]
+    assert groups == []
+
+
+def test_dynamic_skim_epoch_rejects_stale_assignment_epoch():
+    adapter = SimpleNamespace(readback_manager=SimpleNamespace(assignment_epoch=9))
+    manager = DynamicSkimManager(adapter)
+    manager.current = DynamicSkimEpoch(
+        schema="X", epoch=2, assignment_epoch=8, assignment_token="T",
+        zone_order_sha256="Z", operation_positions=(31, 32, 33, 34, 35, 36),
+        matrices_by_dseg={}, matrix_meta_by_dseg={}, family_distance={}, family_hashes={},
+        epoch_hash="E",
+    )
+    with pytest.raises(SupplyContractError, match="STALE_ASSIGNMENT_EPOCH:8!=9"):
+        manager.require_current()
+
+
+def test_finecdf_dynamic_realization_plan_is_td_to_assignment_plus_all_six_skims_not_generation():
+    b = NoDirectMatrixWriteTDAdapter.__new__(NoDirectMatrixWriteTDAdapter)
+    b.dynamic_skim_enabled = True
+    b.td_index = 6
+    b.inventory = [
+        {"index": 5, "type": 45, "active": 1, "is_group": False},  # TG: excluded
+        {"index": 6, "type": 46, "active": 1, "is_group": False},  # TD
+        {"index": 7, "type": 65, "active": 1, "is_group": False},  # realization script
+        {"index": 17, "type": 101, "active": 1, "is_group": False},
+        {"index": 18, "type": 101, "active": 1, "is_group": False},
+        {"index": 20, "type": 101, "active": 1, "is_group": False},
+        {"index": 21, "type": 65, "active": 1, "is_group": False},  # post-assignment GEH: excluded
+        {"index": 22, "type": 75, "active": 1, "is_group": True},
+        {"index": 31, "type": 103, "active": 1, "is_group": False},
+        {"index": 32, "type": 103, "active": 1, "is_group": False},
+        {"index": 33, "type": 103, "active": 1, "is_group": False},
+        {"index": 34, "type": 103, "active": 1, "is_group": False},
+        {"index": 35, "type": 103, "active": 1, "is_group": False},
+        {"index": 36, "type": 103, "active": 1, "is_group": False},
+    ]
+    b.outer_adapter = SimpleNamespace(cfg={"supply": {"assignment_operations": [
+        {"no": 17, "operation_type": 101},
+        {"no": 18, "operation_type": 101},
+        {"no": 20, "operation_type": 101},
+    ]}})
+    plan = b._dynamic_realization_plan()
+    selected = set(plan["selected_operation_positions"])
+    assert 5 not in selected
+    assert 6 in selected and 7 in selected
+    assert {17, 18, 20} <= selected
+    assert 21 not in selected
+    assert {31, 32, 33, 34, 35, 36} <= selected
+    assert 22 in selected
+    assert plan["dynamic_skim_operation_positions"] == [31, 32, 33, 34, 35, 36]
+
+
+def test_runtime_contract_replaces_static_osrm_with_fresh_assignment_skims():
+    assert V24916_ACTIVE_SECTION["dynamic_assignment_skim_enabled"] is True
+    assert V24916_ACTIVE_SECTION["static_r1_osrm_dist_km_role"] == "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION"
+    assert V24916_ACTIVE_SECTION["dynamic_skim_refresh_policy"] == "EVERY_TD_FINECDF_EVALUATION_AND_EVERY_FRESH_ASSIGNMENT"
+    skim = DEMAND_EVIDENCE_TARGETING["skim"]
+    assert skim["automatic_calculation"] is True
+    assert skim["distance_code"] == "DIS"
+    assert skim["assignment_epoch_binding_required"] is True
+    assert len(skim["required_native_dsegs"]) == 6
+    assert DEMAND_EVIDENCE_TARGETING["td"]["finecdf_distance_authority"] == "DYNAMIC_ASSIGNMENT_DIS_KM"
+    assert DEMAND_EVIDENCE_TARGETING["td"]["fresh_assignment_and_skims_per_finecdf_evaluation"] is True
+--- /mnt/data/r1_v24916_bootfix2_work/V24916_PERF2C_RUNTIME_MANIFEST.json	2026-10-22 16:27:34.318975102 +0000
++++ /mnt/data/r1_v24916_dynamicskim1_work/V24916_PERF2C_RUNTIME_MANIFEST.json	2026-10-22 17:18:25.184361618 +0000
+@@ -1,10 +1,11 @@
+ {
+-  "activation_stage": "FRESH0_ISOLATED_ACTIVE_GENERATION_AND_TD_TARGETING_IOFIX3_PATHFIX3_PERSISTENT_CACHE_DISABLED",
++  "activation_stage": "FRESH0_ISOLATED_ACTIVE_TARGETING_DYNAMIC_ASSIGNMENT_SKIMS_EVERY_TD_EVALUATION",
+   "bootstrapfix_revision": "BOOTSTRAPFIX1_20261022",
+   "cross_run_cache_restore_allowed": false,
++  "dynamic_skim_revision": "DYNAMICSKIM1_20261022",
+   "external_cache_read_allowed": false,
+   "persistent_path_cache_enabled": false,
+-  "release": "R1_15A2_V24916_PERF2C_PROFILE488_FRESH0_UNIVERSAL_VER_ISOLATED_ACTIVE_TARGETING_IOFIX3_PATHFIX3_CACHE_DISABLED_20261022",
++  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_20261022",
+   "required_files": {
+     "00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py": "9bd89e2375d4a7e3804458433889b2af0d24757fbfdde19ece1ea906594c6876",
+     "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_FRESH100_PROFILE488_FRESHCACHE_SAVEFIX1_NO_WALLCLOCK.py": "c1aa1f4883810cb2c0ad276f2b53b854b4f7329bf543ecee12865a08dd020441",
+@@ -13,9 +14,9 @@
+     "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_CURRENT_362_20261022.csv": "86319e09010e2c4c261437a805541f9ff45b6bd0a3fe48d0757123f595c112ba",
+     "helpers/R1_12D_CURRENT_COUNTLOCATION_488_ALL_CALIBRATION_20261022.py": "d9d02126d20a643eec4fa2913a0ed4abfde82057e549320cef195756dc463c5c",
+     "r1_15a2_active_controller_patch_v24916p2c.py": "4a72cd7428eaa55ec96b2e8af37b96e343b1661b52e3ee8d7cf392c84d229e8d",
+-    "r1_15a2_active_demand_evidence_v24916p2c.py": "da4197451c5a0cb935da0a86650df0231a4abf9c94b0efc14a9c931483647200",
++    "r1_15a2_active_demand_evidence_v24916p2c.py": "d69f118710334e3a7b41b76a3d0142526456541a843b6cfe4df13e75c5853740",
+     "r1_15a2_active_targeting_runtime_v24916_fresh0isolated.py": "c3fab468c6838cf191e96e626a4fef637416bcf430d3da7a22a816a4b53fd305",
+-    "r1_15a2_active_targeting_runtime_v24916p2c.py": "136ab4d16a080e72fdf4f5bce17c1deb7a3ea94833d538cbedb19c61e2ea21f3",
++    "r1_15a2_active_targeting_runtime_v24916p2c.py": "1a24ceaff9dd169c1aa2d4c6fcecee10279eefc57ad6d7cf0c3d8677bff28541",
+     "r1_15a2_block_classifier_v24916.py": "93bcdbde4179ebffdbfce91e1dde2f577b9cee9f19496e889b779e8e3b715bb4",
+     "r1_15a2_coefficient_ledger_v24916.py": "f3061cfda2d96dfe2c56bf920a9545cb66e5b7e8f4301906740e79311bc8cac4",
+     "r1_15a2_demand_evidence_v24916.py": "66e60dbb430c7603934d39410b2ff43fdf6ea9d0baeab569c358a00f5f9d57c4",
+@@ -24,12 +25,13 @@
+     "r1_15a2_demand_support_v24916p2c.py": "9d152e74a74a4a9a72ac9bc4557ed5cfcb1a3b5b0829cd98c378702d9a6d0a0b",
+     "r1_15a2_demand_targeting_hooks_v24916p2c.py": "02145a35a8e04fe4db86fe0e8b1447698b7f7af833003d239361ef760620ac98",
+     "r1_15a2_demand_targeting_integration_v24916p2c.py": "6c880ec5f983d86e83fc4e79e148c09c47a367c13b1a6d1a4577d94a9cda0eff",
+-    "r1_15a2_finecdf_bridge_v24916.py": "2496e83821552729cbc4787f9c84c671437c546851ce06f3dce24aec35177bc6",
++    "r1_15a2_dynamic_skim_v24916p2c.py": "645a43d12f011a0e177d0db4b72b9522de24cd607163db0665c8a0e6f5c79f87",
++    "r1_15a2_finecdf_bridge_v24916.py": "059a2a5b08003bb08f109911dad5dc42e3a21bcc7073f8005e686e279012141a",
+     "r1_15a2_finecdf_target_hook_v24916p2c.py": "4c3dc372702bac2a5750a93bce8a070877ff261f7cff54c25f3d23555b425ec4",
+     "r1_15a2_flowbundle_v24916.py": "89a93d16070dbd22b98da1ef10746a235333e0a82a70933ecb6dcf19ed31f848",
+     "r1_15a2_flowbundle_v24916p2c.py": "ac1fb7de2dcc9450025451632bd9e83084588b45db86f723fc72a3888a0d626b",
+     "r1_15a2_fresh0_shortroot_parent_v24916.py": "189506730b4226376ea3f66a9a9ba7ae0767ba86febbf2b33f0e8e148d1e2579",
+-    "r1_15a2_fresh_baseline_live_preflight_v24916p2c.py": "80ac0bf9cb077d50b2378db61f48576285dc853482dd9e253d9dedac3a02cc03",
++    "r1_15a2_fresh_baseline_live_preflight_v24916p2c.py": "69223222ea38eb9764b4e93e4efd8ebde3eb9142226862a85ff58e3c84712ba2",
+     "r1_15a2_inplace_transaction_v24916.py": "1b9515f382dfb805d15116924053e4fa28614d2fcba463a1d711668ec17f0da5",
+     "r1_15a2_live_preflight_v24916p2c.py": "ee817cce955e11f69e3c605ea20edb0daf281072aca7a9a12548d1be648c0426",
+     "r1_15a2_overnight_controller_coupled_v24915p2_force100.py": "e40c54c2c88b3b3e00fd77b9d6931f81884a641770231953e46fb786fdcde30f",
+@@ -49,7 +51,7 @@
+     "r1_15a2_trial_adapter_v24915p2c.py": "381e543dc833fff85c912ad9849fb03178c8e3f7f0bf6d843e515910abe36d91",
+     "r1_15a2_trial_adapter_v24916.py": "4192780a68ed0a5cd433a7b8751fc69ed185ae018070513340a4c0d4540d650d",
+     "r1_15a2_trial_adapter_v24916p2c.py": "7a4e60d1bd2d1fca03c8f11765895aa42712471019df4353ff8dd2c8786a1c35",
+-    "r1_15a2_trial_adapter_v24916p2c_active.py": "7112867c06e830348dec6a8dda5626ce4bb20f5508bd24fe8fe9b66874a5bbee",
++    "r1_15a2_trial_adapter_v24916p2c_active.py": "a08b9b1b9c425d44c837960d5fe843bc2dbaaab5dbd09c050a2c88033ef17704",
+     "r1_15a2_trial_evaluator_v24916.py": "2eba02c0509bff10e5f5f2d292e3aeed104dc642b7cc47f81c558fd08a3bb7f1"
+   },
+   "schema": "R1_15A2_V24916_PERF2C_RUNTIME_MANIFEST_PATHFIX3_V2"

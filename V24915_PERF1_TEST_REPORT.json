@@ -1,0 +1,27 @@
+{
+  "compileall": {
+    "command": "python -m compileall -q .",
+    "log": "V24915_PERF1_COMPILEALL.log",
+    "return_code": 0
+  },
+  "focused": {
+    "command": "pytest -q tests/test_v24915_perf1_exact_safe_acceleration.py tests/test_v24915_perf1_release.py",
+    "failed": 0,
+    "log": "V24915_PERF1_FOCUSED_PYTEST.log",
+    "passed": 10
+  },
+  "full": {
+    "command": "pytest -q",
+    "failed": 0,
+    "log": "V24915_PERF1_FULL_PYTEST.log",
+    "passed": 793,
+    "seconds": 17.79,
+    "skipped": 4
+  },
+  "live_visum": {
+    "executed": false,
+    "reason": "OFFLINE_IMPLEMENTATION_GATE_ONLY; LIVE_A0009_BENCHMARK_REQUIRED"
+  },
+  "release": "R1_15A2_V2_4_9_15_PERF1_EXACT_SAFE_ACCELERATION_20261019",
+  "schema": "R1_15A2_V24915_PERF1_TEST_REPORT_V1"
+}

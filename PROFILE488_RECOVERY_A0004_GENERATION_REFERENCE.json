@@ -1,0 +1,36 @@
+{
+  "schema": "R1_15A2_SHARED_OBJECTIVE_V22",
+  "components": [
+    "LONG_COMPOSITE",
+    "SCHOOL",
+    "SERV_E_C",
+    "SERV_E_noC",
+    "SERV_noE_C",
+    "SERV_noE_noC",
+    "SERV_stud",
+    "WORK_E_C",
+    "WORK_E_noC",
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "WORK_stud"
+  ],
+  "component_weights": {
+    "LONG_COMPOSITE": 53.152362302041915,
+    "SCHOOL": 191.2743666182355,
+    "SERV_E_C": 537.0785138855531,
+    "SERV_E_noC": 250.64650932127833,
+    "SERV_noE_C": 337.9309767113732,
+    "SERV_noE_noC": 264.78560336565533,
+    "SERV_stud": 163.14239835542463,
+    "WORK_E_C": 459.2384819542238,
+    "WORK_E_noC": 278.5527937036734,
+    "WORK_noE_C": 120.45385676614231,
+    "WORK_noE_noC": 90.59702901032159,
+    "WORK_stud": 20.689709320504075
+  },
+  "target_hash": "6fa9d0908fe27b330946e1f58ccae630c430c6c9c7e9d6c08838eb5a6b780502",
+  "observation_hash": "0f0bb12af3f7e05db7f41e27c961e9462c963a86a00b7d29999e328db6aefc81",
+  "cal_objective_metric": "WEIGHTED_MEAN_GEH",
+  "cal_objective_key": "objective_geh_mean_weighted",
+  "cal_scale": 64.07204060942018
+}

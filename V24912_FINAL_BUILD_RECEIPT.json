@@ -1,0 +1,64 @@
+{
+  "schema": "R1_15A2_V24912_FINAL_BUILD_RECEIPT_V2",
+  "release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+  "package_revision": "V24912_COMPLETE_R2",
+  "status": "OFFLINE_VERIFIED_RUNTIME_COMPLETE_PENDING_REAL_VISUM_RETEST",
+  "parent_release": "R1_15A2_V2_4_9_6_EARLY_EXPLORATION_PARETO_ACCEPTANCE_20261018",
+  "config_sha256": "9972a5ce4334b79481ea9bc5c272ca1d5c674c3b2298e841128eafe2b3db4c48",
+  "guard_contract_sha256": "bd5c3353d35aeed634eb93123d3aa75d3f1072092b3eb253b639953a87c3032d",
+  "runtime_bundle_manifest_sha256": "40750767d99fa29a776a122c1c3c0fb4875f758962384e03ef1af6594f299556",
+  "runtime_bundle_file_count": 60,
+  "live_failure": {
+    "signature": "No module named 'r1_15a2_guard_policy_v24912'",
+    "source": "first V24912 live Generation trial",
+    "model_changed": false,
+    "accepted_count": 0
+  },
+  "fix": {
+    "policy_implementation_owner": "r1_15a2_core.py",
+    "late_runtime_policy_import_removed": true,
+    "compatibility_facade_retained": true,
+    "automatic_prewrite_runtime_bundle_preflight": true,
+    "import_path_loss_smoke_test": true,
+    "aggregated_incomplete_deployment_reporting": true,
+    "aggregated_preload_deployment_preflight": true
+  },
+  "tests": {
+    "focused_v24912": {
+      "passed": 18,
+      "failed": 0,
+      "log_sha256": "698315a8d5097c1956ada27f43ede75c8c5a928b91659079876276bd700d8581"
+    },
+    "full_source": {
+      "passed": 761,
+      "failed": 0,
+      "log_sha256": "198b3dc67cb545ab537573c612cda685739279d184146d0eb4e2814ab91842b6"
+    },
+    "compileall": {
+      "passes": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "package_verifier": {
+      "passes": true,
+      "report_sha256": "3cb26a64596fa8d2087c7533df837820eb5cc1cb68edea739e5360d1451943f6"
+    },
+    "runtime_audit": {
+      "passes": true,
+      "report_sha256": "4ff5cb79310a89fec0ad2721a43390a0120233b9fbd26e6dc4744d784b213772"
+    }
+  },
+  "counterfactual_replay_assertions": {
+    "generation_1_0_accept": true,
+    "generation_0_5_reject": true,
+    "generation_0_25_accept": true,
+    "td_0_5_reject": true,
+    "td_0_25_accept": true,
+    "td_0_125_accept": true,
+    "td_0_0625_accept": true
+  },
+  "real_visum_tested": false,
+  "production_ready": false,
+  "next_gate": "REAL_VISUM_V24912_COMPLETE_R2_FROM_VERIFIED_ACCEPTED_PARENT",
+  "created_at_utc": "2026-10-18T22:06:40.687599+00:00",
+  "updated_at_utc": "2026-10-18T22:11:08.121667+00:00"
+}

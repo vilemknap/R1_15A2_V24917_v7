@@ -1,0 +1,214 @@
+{
+  "evidence_id": "R1_TG_OP5_20261016_001811_LIVE_COM_READBACK",
+  "source_release": "R1_15A2_V2_3_5_LIVE_API_REMEDIATION",
+  "source_started": "2026-10-16T00:18:11.578528+02:00",
+  "source_preflight_sha256": "7ecdd26df75a9040fec55981b2998dc2e9ac3cf444f90d7ddca0de45d0ebcd67",
+  "source_procseq_sha256": "0e4346b9238da4825877836f47ce4944bd3c269c789729ba7653137143465480",
+  "evidence_status": "TG_OUTER_EXACT_ADDITIVE_FORMULAS_READ_LIVE; VALUE_TYPES_READ_LIVE; ZONE_VALUES_REQUIRE_NEXT_RUN",
+  "procedure_sequence": {
+    "tg_operation": 5,
+    "td_operation": 6,
+    "assignments": [
+      17,
+      18,
+      19,
+      20
+    ]
+  },
+  "dstrata_formula_readback": [
+    {
+      "dstrat_code": "1_WORK_E_C",
+      "production": "[FP_1_WORK_E_C] + [P09F4_PER_PRE_WORK_E_C]",
+      "attraction": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_E_C]",
+      "pre_input_production": "P09F4_PER_PRE_WORK_E_C",
+      "pre_input_attraction": "A09F4_PER_PRE_WORK_E_C"
+    },
+    {
+      "dstrat_code": "1_WORK_E_noC",
+      "production": "[FP_1_WORK_E_noC] + [P09F4_PER_PRE_WORK_E_noC]",
+      "attraction": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_E_noC]",
+      "pre_input_production": "P09F4_PER_PRE_WORK_E_NOC",
+      "pre_input_attraction": "A09F4_PER_PRE_WORK_E_NOC"
+    },
+    {
+      "dstrat_code": "1_WORK_noE_C",
+      "production": "[FP_1_WORK_noE_C] + [P09F4_PER_PRE_WORK_noE_C]",
+      "attraction": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_noE_C]",
+      "pre_input_production": "P09F4_PER_PRE_WORK_NOE_C",
+      "pre_input_attraction": "A09F4_PER_PRE_WORK_NOE_C"
+    },
+    {
+      "dstrat_code": "1_WORK_noE_noC",
+      "production": "[FP_1_WORK_noE_noC] + [P09F4_PER_PRE_WORK_noE_noC]",
+      "attraction": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_noE_noC]",
+      "pre_input_production": "P09F4_PER_PRE_WORK_NOE_NOC",
+      "pre_input_attraction": "A09F4_PER_PRE_WORK_NOE_NOC"
+    },
+    {
+      "dstrat_code": "1_WORK_stud",
+      "production": "[FP_1_WORK_stud] + [P09F4_PER_PRE_WORK_stud]",
+      "attraction": "[FA_1_WORK] + [A09F4_PER_PRE_WORK_stud]",
+      "pre_input_production": "P09F4_PER_PRE_WORK_STUD",
+      "pre_input_attraction": "A09F4_PER_PRE_WORK_STUD"
+    },
+    {
+      "dstrat_code": "2_SERV_E_C",
+      "production": "[FP_2_SERVICE_E_C] + [P09F4_PER_PRE_SERV_E_C]",
+      "attraction": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_E_C]",
+      "pre_input_production": "P09F4_PER_PRE_SERV_E_C",
+      "pre_input_attraction": "A09F4_PER_PRE_SERV_E_C"
+    },
+    {
+      "dstrat_code": "2_SERV_E_noC",
+      "production": "[FP_2_SERVICE_E_noC] + [P09F4_PER_PRE_SERV_E_noC]",
+      "attraction": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_E_noC]",
+      "pre_input_production": "P09F4_PER_PRE_SERV_E_NOC",
+      "pre_input_attraction": "A09F4_PER_PRE_SERV_E_NOC"
+    },
+    {
+      "dstrat_code": "2_SERV_noE_C",
+      "production": "[FP_2_SERVICE_noE_C] + [P09F4_PER_PRE_SERV_noE_C]",
+      "attraction": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_noE_C]",
+      "pre_input_production": "P09F4_PER_PRE_SERV_NOE_C",
+      "pre_input_attraction": "A09F4_PER_PRE_SERV_NOE_C"
+    },
+    {
+      "dstrat_code": "2_SERV_noE_noC",
+      "production": "[FP_2_SERVICE_noE_noC] + [P09F4_PER_PRE_SERV_noE_noC]",
+      "attraction": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_noE_noC]",
+      "pre_input_production": "P09F4_PER_PRE_SERV_NOE_NOC",
+      "pre_input_attraction": "A09F4_PER_PRE_SERV_NOE_NOC"
+    },
+    {
+      "dstrat_code": "2_SERV_stud",
+      "production": "[FP_2_SERVICE_stud] + [P09F4_PER_PRE_SERV_stud]",
+      "attraction": "[FA_2_SERVICE] + [A09F4_PER_PRE_SERV_stud]",
+      "pre_input_production": "P09F4_PER_PRE_SERV_STUD",
+      "pre_input_attraction": "A09F4_PER_PRE_SERV_STUD"
+    }
+  ],
+  "real_pre_input_schema": [
+    {
+      "ID": "A09F4_PER_PRE_SERV_E_C",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_SERV_E_NOC",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_SERV_NOE_C",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_SERV_NOE_NOC",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_SERV_STUD",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_WORK_E_C",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_WORK_E_NOC",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_WORK_NOE_C",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_WORK_NOE_NOC",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "A09F4_PER_PRE_WORK_STUD",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_SERV_E_C",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_SERV_E_NOC",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_SERV_NOE_C",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_SERV_NOE_NOC",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_SERV_STUD",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_WORK_E_C",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_WORK_E_NOC",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_WORK_NOE_C",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_WORK_NOE_NOC",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    },
+    {
+      "ID": "P09F4_PER_PRE_WORK_STUD",
+      "ValueType": 2,
+      "Editable": true,
+      "IsUserDefined": true
+    }
+  ],
+  "population_attr": "POP_ZP",
+  "authorizes_model_mutation": false
+}

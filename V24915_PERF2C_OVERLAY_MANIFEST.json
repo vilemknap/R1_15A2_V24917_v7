@@ -1,0 +1,39 @@
+{
+  "file_count": 6,
+  "files": [
+    {
+      "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C.py",
+      "sha256": "459f99c73ab40d8108f16874e1a741904b93ca77db25f4966328f2d6991579a0",
+      "size": 4563
+    },
+    {
+      "path": "R1_15A2_SUPPLY_ONLY_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_R2.py",
+      "sha256": "f5144481df7da6140035b9fdf4aa03ff5aacf0854bd53a866d60d334bd5a09ba",
+      "size": 895
+    },
+    {
+      "path": "r1_15a2_single_pass_snapshot_v24915p2c.py",
+      "sha256": "599161fe370e133ba575047ad83ee7b709c07140931ecf3634cfb4d03e812b73",
+      "size": 18160
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24915p2c.py",
+      "sha256": "381e543dc833fff85c912ad9849fb03178c8e3f7f0bf6d843e515910abe36d91",
+      "size": 5788
+    },
+    {
+      "path": "r1_15a2_supply_temp_sqlite_hotfix_v24915p2c2.py",
+      "sha256": "ba3a28c85b9e234222357c482b58c56cdf792fdd01edd692ef938cbe5c313f27",
+      "size": 4767
+    },
+    {
+      "path": "V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_CONTRACT.json",
+      "sha256": "2c396a29e4ce1fa6c3ac23b0ae9d6285dec6c6669f17db44c2c9fe047f4a1ae3",
+      "size": 2267
+    }
+  ],
+  "package_revision": "V24915_PERF2C_R2_SUPPLY_TEMP_SQLITE_HOTFIX",
+  "parent_release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
+  "release": "R1_15A2_V2_4_9_15_PERF2C_R2_SINGLE_PASS_EXACT_SNAPSHOT_SUPPLY_TEMP_HOTFIX_20261020",
+  "schema": "R1_15A2_V24915_PERF2C_OVERLAY_MANIFEST_V1"
+}

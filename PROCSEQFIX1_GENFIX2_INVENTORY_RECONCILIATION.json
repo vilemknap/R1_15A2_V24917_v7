@@ -1,0 +1,155 @@
+{
+  "schema": "R1_PROCSEQFIX1_LEGACY_GENFIX2_INVENTORY_RECONCILIATION",
+  "purpose": "Reconcile historical parent GENFIX2 payload hashes with actual verified current release. No production source or config file was modified by inventory reconciliation. Older release provenance remains recorded here.",
+  "count": 21,
+  "changed_hash_references": [
+    {
+      "path": "DIAGFAST_V1_BASE_MANIFEST.json",
+      "historical_sha256": "30a29ad64af5b353a6c91aa5426bdab85acf3f37e97594d0b65860d71fef70c6",
+      "current_sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+      "historical_bytes": 118863,
+      "current_bytes": 120987
+    },
+    {
+      "path": "DIAGFAST_V1_RELEASE_MANIFEST.json",
+      "historical_sha256": "cea21d90aeb4420488e7b5ad98aa607c9828750d31889bce5d1b2f06685a2663",
+      "current_sha256": "7ab10d242744e0da7ada45d2a565ef8ad9ecf188d83de8df56bbc820da74c312",
+      "historical_bytes": 10110,
+      "current_bytes": 10643
+    },
+    {
+      "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_FRESH100_TGTD100_ONLY_SEMFIX1_NO_WALLCLOCK.py",
+      "historical_sha256": "03203ee7f1c51a0fb523db5265f87be55af51d7e86e7b05bb4f567d58ae8ce19",
+      "current_sha256": "4e5c0e93fe523977d6d4f36a340e1d025dc984c6c0ab2d4051ee81607e4dd9af",
+      "historical_bytes": 59259,
+      "current_bytes": 61936
+    },
+    {
+      "path": "R1_RUN_OPTIONS.json",
+      "historical_sha256": "687b0713a0df747b24d88ea3d8ae299fedca8e227651690044dedfb390fa4cb0",
+      "current_sha256": "0a1b020577ea23acd2147d7c31dd80c9efa7084c63ddab008bc984275d9163ee",
+      "historical_bytes": 2190,
+      "current_bytes": 2283
+    },
+    {
+      "path": "V24916_BOOTSTRAPFIX2_PACKAGE_MANIFEST.json",
+      "historical_sha256": "77ef40f6c18505efd23fe8e6f772e441a6fb90a8459e6a2df314730ae0c303f6",
+      "current_sha256": "15407071dec17390100e758b38da00eb3847148eeac796e5dbab8855f96283d4",
+      "historical_bytes": 176708,
+      "current_bytes": 176708
+    },
+    {
+      "path": "V24916_COMBUSY_TD09C16_PACKAGE_MANIFEST.json",
+      "historical_sha256": "dab186f9c6ca946cd1f27290c9bf98e4e9030d535078861bd1aafa4619553c7e",
+      "current_sha256": "57862935c23516dc098f6749c4f310c778e0de7002d502cacde8d143fe511e5c",
+      "historical_bytes": 182946,
+      "current_bytes": 182946
+    },
+    {
+      "path": "V24916_DYNAMICSKIM1_PARENT_PACKAGE_MANIFEST.json",
+      "historical_sha256": "c07e36810b7fa8126030108e91b4aca35e64dcca67c6e0445116b632041e61c5",
+      "current_sha256": "92ce83cd7c52bcb17000dbfe28ff1775d275c311aa16337f49dce05972f80004",
+      "historical_bytes": 177411,
+      "current_bytes": 177411
+    },
+    {
+      "path": "V24916_FASTCAL1_PACKAGE_MANIFEST.json",
+      "historical_sha256": "8e1a183838d1d281255299fbe9481fb8d3a4fcfd908582cb32af3728f8d0b05a",
+      "current_sha256": "6d9b6a1a5085d5c8231d9847516e6b9ad6fe6c115b623e1e6175d8752907b2a8",
+      "historical_bytes": 178880,
+      "current_bytes": 178880
+    },
+    {
+      "path": "V24916_FRESH0_UNIVERSAL_VER_PACKAGE_MANIFEST.json",
+      "historical_sha256": "ae835ec5039a53e6699281ee4ce47e3418860e68266289daeea9079d36ee7ea2",
+      "current_sha256": "f62703243bcfd173c6e982c3d2eaa264aed467f2049c3732f098ad80780b43ad",
+      "historical_bytes": 176049,
+      "current_bytes": 176049
+    },
+    {
+      "path": "V24916_LAST_BOOTSTRAP_FAILURE.json",
+      "historical_sha256": "711de755837a9f706727e46129f20b9c583b8c3703cf9358198385b9e7e866cf",
+      "current_sha256": "55a28868ab7e44888bd7fea0e0ee177b456de0fedd78c22ffcd3788cf9e9c340",
+      "historical_bytes": 1624,
+      "current_bytes": 1786
+    },
+    {
+      "path": "V24916_LAST_RUNS_LOCATION.txt",
+      "historical_sha256": "b4bfc35c1737d080ad42d7526683a148b97fc011748452c91ba494ada82ffa0b",
+      "current_sha256": "1e4305e2a347ce856df5555ef13f7b638e36eb8bb48c182aa32c54cbc9163880",
+      "historical_bytes": 369,
+      "current_bytes": 367
+    },
+    {
+      "path": "V24916_PROFILE488FIX1_PACKAGE_MANIFEST.json",
+      "historical_sha256": "fda9a3468b61ad9997297bd14aa57e4951fc325378899ce3929770d6704f31c5",
+      "current_sha256": "f26b29b133ecdf0a5f109426b55602f6c82be63580c89a112f0e1287fdc819c2",
+      "historical_bytes": 179371,
+      "current_bytes": 179371
+    },
+    {
+      "path": "V24917_RUNTIME_MANIFEST.json",
+      "historical_sha256": "4f9664cb1beb746af04edecff7ba172aebd43e1a090b6ed64aa541380e1aafe1",
+      "current_sha256": "e83988d9f2c61b65b4ddb25b003234105c2e47620dd0ad9c91e8018f785331d2",
+      "historical_bytes": 6057,
+      "current_bytes": 6595
+    },
+    {
+      "path": "r1_15a2_demand_policy_v1.py",
+      "historical_sha256": "3c156541431d04eec2e2fcbd5a6c577ac41c9334e9377d6e171cb292d16e7fac",
+      "current_sha256": "058c5f3e16c226691d39807f76f6560e9c4b6ee5923f9637df1654138428cd74",
+      "historical_bytes": 32330,
+      "current_bytes": 33054
+    },
+    {
+      "path": "r1_15a2_runtime_delta_v24917.py",
+      "historical_sha256": "8e83573a7a4c5ebccd77570d8e8c0d5309bd4e11b3e33dba10f951ba6f07dcae",
+      "current_sha256": "56c1b614e082afe5341c1365fe144fa6230050e4365e2d6b5063f50be57b3313",
+      "historical_bytes": 3722,
+      "current_bytes": 3855
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "historical_sha256": "8aab1b0d8e3d84f14a3443a7e887a337b6efe25943052a5b066e968398d239ce",
+      "current_sha256": "66b1e7e85315ee4241b6e441e9b5325819932b75efab39b622d6fd5949ea2b49",
+      "historical_bytes": 40891,
+      "current_bytes": 49619
+    },
+    {
+      "path": "r1_15a2_td_count_blend_v24917.py",
+      "historical_sha256": "f14656f8025d9af4cfd7269a48f9f7d72c1a109d50310c38aba7480ee944f3ff",
+      "current_sha256": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
+      "historical_bytes": 26150,
+      "current_bytes": 26831
+    },
+    {
+      "path": "r1_15a2_v24917_runtime.py",
+      "historical_sha256": "1eaadf89d324df70bcbdab537e59fa0bdfffe9f35ef65519e6efcd82d44aa6aa",
+      "current_sha256": "36efc95e815fd1f92be8bdb7a4a3fd7726dbaad58be4fc4b0098cc59ddb287a6",
+      "historical_bytes": 8862,
+      "current_bytes": 11549
+    },
+    {
+      "path": "tests/test_v24917_runtime_install.py",
+      "historical_sha256": "6dbd16ac2bf3c3e8a2ababc80758af373a1ecd016415d7e96de46f6907a0678a",
+      "current_sha256": "c618d62de789100aec8b6248354f7949e720835d1fa59d3cd32c6b34fc2977ee",
+      "historical_bytes": 4497,
+      "current_bytes": 7085
+    },
+    {
+      "path": "tests/test_v24917_supply_mix.py",
+      "historical_sha256": "5323389284a6d497db59d5ffabf763d804b6931e70e22f2052822d3814f0ff92",
+      "current_sha256": "e5bf373849ed55b05387bd53eb00d9ec01d53d2170d170200fabfffab1e1da46",
+      "historical_bytes": 22627,
+      "current_bytes": 29312
+    },
+    {
+      "path": "tools/refresh_v24917_manifests.py",
+      "historical_sha256": "7380eac9f241c9e24d99e2d3b57c490a0a60361925c555053a11a8fb81341b87",
+      "current_sha256": "0d25b150fc08ab2364a8b814e9b0109f4bde69e25f008350c343ca55abeddf5f",
+      "historical_bytes": 3226,
+      "current_bytes": 3382
+    }
+  ],
+  "new_manifest_sha256": "8677407cea0c97b009526596e4e0873eeb21463e14a11dc87dfa00932fb12ae7"
+}

@@ -1,0 +1,1304 @@
+--- /dev/null
++++ b/01_SPUSTIT_V24917_TDJOINT1.py
+@@ -0,0 +1,39 @@
++# -*- coding: utf-8 -*-
++"""V24917 GENFIX2 + TDJOINT1; preserves the PREFLIGHTIOFIX1 entry point.
++
++Open the accepted .ver in Visum, then run this script through Scripts.
++It does not create a Visum instance or load a model automatically.
++"""
++from __future__ import annotations
++
++import importlib.util
++from pathlib import Path
++
++HERE = Path(__file__).resolve().parent
++PARENT_LAUNCHER = "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py"
++RELEASE = "R1_15A2_V24917_GENFIX2_TDJOINT1_20261027"
++
++
++def load_parent():
++    spec = importlib.util.spec_from_file_location(
++        "_r1_v24917_tdjoint1_parent", HERE / PARENT_LAUNCHER)
++    if spec is None or spec.loader is None:
++        raise RuntimeError("V24917_GENFIX2_PARENT_LAUNCHER_UNAVAILABLE")
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def main():
++    visum, com = globals().get("Visum"), globals().get("COM")
++    if visum is None and com is None:
++        raise RuntimeError("NO_INJECTED_VISUM")
++    parent = load_parent()
++    parent.Visum = visum
++    parent.COM = com
++    print("=== " + RELEASE + " ===")
++    return parent.main()
++
++
++if __name__ == "__main__" or globals().get("Visum") is not None or globals().get("COM") is not None:
++    main()
+--- /dev/null
++++ b/02_SPUSTIT_V24917_TDJOINT1_60_40.py
+@@ -0,0 +1,35 @@
++# -*- coding: utf-8 -*-
++"""TDJOINT1 optional 60% counts / 40% survey; other settings unchanged."""
++from __future__ import annotations
++import importlib.util
++import os
++from pathlib import Path
++
++HERE = Path(__file__).resolve().parent
++
++def load_parent():
++    spec = importlib.util.spec_from_file_location(
++        "_r1_tdjoint1_weight_parent", HERE / "01_SPUSTIT_V24917_TDJOINT1.py")
++    if spec is None or spec.loader is None:
++        raise RuntimeError("TDJOINT1_PARENT_LAUNCHER_UNAVAILABLE")
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++def main():
++    parent = load_parent()
++    parent.Visum, parent.COM = globals().get("Visum"), globals().get("COM")
++    key = "R1_TD_COUNT_WEIGHT"
++    previous = os.environ.get(key)
++    try:
++        os.environ[key] = "0.60"
++        print("TDJOINT1: explicit TD weights 60% counts / 40% survey")
++        return parent.main()
++    finally:
++        if previous is None:
++            os.environ.pop(key, None)
++        else:
++            os.environ[key] = previous
++
++if __name__ == "__main__" or globals().get("Visum") is not None or globals().get("COM") is not None:
++    main()
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -7,6 +7,8 @@
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+     "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py": "da8953c4c4da056e092ed546a158ec13bce12590bdb230fd86122f809702f960",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "fbbfe1b140b80bd56a3823992a3b970b7c52ec7dd753ea2a17705218db9af690",
++    "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
++    "02_SPUSTIT_V24917_TDJOINT1_60_40.py": "069805ca1366578bf51994490f78a3827fdd42a6b44ff2957e2663ed00419f94",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "30a29ad64af5b353a6c91aa5426bdab85acf3f37e97594d0b65860d71fef70c6",
+     "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
+     "R1_ADD_LONG_SCHOOL_COEFFICIENTS.py": "4e659040b390b38333330bef402b7447f2fefa73030b144501c48d8ce7ab87b6",
+@@ -34,7 +36,7 @@
+     "r1_15a2_boundary_generation_v24917.py": "2b9970f18590a5875941fd3501310014793373872323316662e8b6851e1c3775",
+     "r1_15a2_boundary_pa_v24917.py": "a0a037a46570e34e0ff7ac85954959b90652e90e4f1e474a2a72d111c89a0958",
+     "r1_15a2_combusy2_v24917.py": "c0833e7e8e50ade00b29196882733189fff06a426d8b9834faf80db850022204",
+-    "r1_15a2_demand_policy_v1.py": "3c156541431d04eec2e2fcbd5a6c577ac41c9334e9377d6e171cb292d16e7fac",
++    "r1_15a2_demand_policy_v1.py": "058c5f3e16c226691d39807f76f6560e9c4b6ee5923f9637df1654138428cd74",
+     "r1_15a2_diagfast_direct_v2.py": "9be48df75480eb44b54691d165b889a572bf43e72c0667c455fb80fe32ed1e5d",
+     "r1_15a2_diagfast_numpy_v2.py": "1750ab2eff6dc77048680184210fa985ca0be178880b85d5c5f66a5953b82d19",
+     "r1_15a2_diagfast_parity_v1.py": "1c9c314416f8961ec393cc6f1f24077fd07b953d612b263ba5c57149c56b3c6f",
+@@ -55,17 +57,19 @@
+     "r1_15a2_preflight_iofix_v24917.py": "a843a89df41aaec1ff4d2e9d442cb88b18a4e8273b3e45a8c3498de3800ea6f8",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+     "r1_15a2_rollback_consistency_v24917.py": "7c44235e1d6743e4f2e7f9cf3e08e8f93987607b244c3b16b6871cb81cb4e46c",
+-    "r1_15a2_runtime_delta_v24917.py": "8e83573a7a4c5ebccd77570d8e8c0d5309bd4e11b3e33dba10f951ba6f07dcae",
++    "r1_15a2_runtime_delta_v24917.py": "56c1b614e082afe5341c1365fe144fa6230050e4365e2d6b5063f50be57b3313",
+     "r1_15a2_severity_relax_v24917.py": "58b1d034364619c88b8bcde7020f681c613ef3f4901253ae844512db6b7a4876",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_snapshot_reads_v24917.py": "90cd8cb09981072d908d8cb022792c6fb6352c45506140724029a0dc8842a7fe",
+     "r1_15a2_step_search_v24917.py": "20a13d96d4e93df1de7232f5d142307c373e6c40ba4c7956c4762ea54c81da04",
+     "r1_15a2_supply_mix_v24917.py": "8aab1b0d8e3d84f14a3443a7e887a337b6efe25943052a5b066e968398d239ce",
+     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
+-    "r1_15a2_td_count_blend_v24917.py": "f14656f8025d9af4cfd7269a48f9f7d72c1a109d50310c38aba7480ee944f3ff",
++    "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
++    "r1_15a2_td_joint_runtime_v24917.py": "f4d1fc8f2d09f415a3682e1b3f089772de99f6c5a4c0db685743fb02771ce04f",
++    "r1_15a2_td_joint_v24917.py": "5f4366cb1c8b833d54303f88e07e5e48857774f13f629779ccaabf94e8b92c66",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "def3c2a024396440b6f2c7b3599baf3dd32c77d214d75e1ee063eabbcddecf7d",
+     "r1_15a2_trial_adapter_v24917.py": "62f175c9837f43dfc13c7b9332db67fa9379c0fab03b68a9c7a3919734e7013e",
+-    "r1_15a2_v24917_runtime.py": "1eaadf89d324df70bcbdab537e59fa0bdfffe9f35ef65519e6efcd82d44aa6aa",
++    "r1_15a2_v24917_runtime.py": "d4801bd3beec665ca0420d33e180191a77f74b15d31c598bb313a7f3d3fe06ee",
+     "r1_15a2_zonal_count_fit_v24917.py": "bdc08f3203430adf3b43bcdf7ce919582d7b215fcfd4b7bb7882de890fe3522b",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+@@ -90,9 +94,10 @@
+     "tests/test_v24917_targeted_catchup.py": "c2ad87bd953185866e6a6dd1ceafe750afbbd8029968388bcbc502cc35d4fd5e",
+     "tests/test_v24917_td_rollback_tolerant.py": "7f03276f74e29715f7dd865688d079458184f97ab1d36b4f4eec76012e40215b",
+     "tests/test_v24917_td_stage_integration.py": "8e4d9636f3472ae5fcc88a28113209458142909467bfc3146f4b206672f86a25",
++    "tests/test_v24917_tdjoint1.py": "683b0330a08b973f617c933539529406e3a6efe3bf6a0ab8c5b201966315db53",
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "7380eac9f241c9e24d99e2d3b57c490a0a60361925c555053a11a8fb81341b87",
++    "tools/refresh_v24917_manifests.py": "0d25b150fc08ab2364a8b814e9b0109f4bde69e25f008350c343ca55abeddf5f",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+   }
+ }
+--- a/R1_RUN_OPTIONS.json
++++ b/R1_RUN_OPTIONS.json
+@@ -89,5 +89,8 @@
+   "td_max_survey_degradation": 1.25,
+   "mg_enabled": true,
+   "mg_min_ratio": 0.75,
+-  "mg_max_ratio": 1.25
++  "mg_max_ratio": 1.25,
++  "td_joint_enabled": true,
++  "td_joint_outer_isolates": true,
++  "td_joint_max_isolates": 2
+ }
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -1,8 +1,12 @@
+ {
+   "schema": "R1_15A2_V24917_RUNTIME_MANIFEST_V1",
+-  "release": "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027",
++  "release": "R1_15A2_V24917_GENFIX2_TDJOINT1_20261027",
+   "parent_release_manifest": "V24916_PERF2C_RUNTIME_MANIFEST.json",
+   "required_files": {
++    "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
++    "02_SPUSTIT_V24917_TDJOINT1_60_40.py": "069805ca1366578bf51994490f78a3827fdd42a6b44ff2957e2663ed00419f94",
++    "r1_15a2_td_joint_v24917.py": "5f4366cb1c8b833d54303f88e07e5e48857774f13f629779ccaabf94e8b92c66",
++    "r1_15a2_td_joint_runtime_v24917.py": "f4d1fc8f2d09f415a3682e1b3f089772de99f6c5a4c0db685743fb02771ce04f",
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+     "r1_15a2_parent_equivalence_v24917.py": "5f715937a0ace1f49a342542970564b2217508b382bed611b5dbf1051eac5fb4",
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+@@ -11,13 +15,13 @@
+     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
+     "r1_15a2_trial_adapter_v24917.py": "62f175c9837f43dfc13c7b9332db67fa9379c0fab03b68a9c7a3919734e7013e",
+     "r1_15a2_active_demand_evidence_v24917.py": "384424b9b39821d32df474cd6e90977902afd10e22fea50ac60364dcf66906e4",
+-    "r1_15a2_runtime_delta_v24917.py": "8e83573a7a4c5ebccd77570d8e8c0d5309bd4e11b3e33dba10f951ba6f07dcae",
+-    "r1_15a2_v24917_runtime.py": "1eaadf89d324df70bcbdab537e59fa0bdfffe9f35ef65519e6efcd82d44aa6aa",
++    "r1_15a2_runtime_delta_v24917.py": "56c1b614e082afe5341c1365fe144fa6230050e4365e2d6b5063f50be57b3313",
++    "r1_15a2_v24917_runtime.py": "d4801bd3beec665ca0420d33e180191a77f74b15d31c598bb313a7f3d3fe06ee",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_dynamic_11d_files_v24917.py": "04671df2ce0c3502eb0997ead6e4ec87db5634afeaf84a30279c518dbee9ba4b",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+-    "r1_15a2_td_count_blend_v24917.py": "f14656f8025d9af4cfd7269a48f9f7d72c1a109d50310c38aba7480ee944f3ff",
++    "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
+     "r1_15a2_long_school_generation_v24917.py": "9a9a384878e4414f7447bfd7ad390b63f45caa5e04cda59d8d7560159750db53",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
+@@ -45,7 +49,7 @@
+     "authorities/R1_PROFILE_ROSTER_V24917_CITY.csv": "36d94ddce1bb091e5410dbb498d851825a0e477a000e3edc08f750942e1d199c",
+     "authorities/R1_PROFILE_ROSTER_V24917_SOURCE.xlsx": "0a33837129a2eaf64890052c12429a7d331ef6eb76bd5e9e77727222b5891684",
+     "r1_15a2_generation_gate_nonfatal_v1.py": "2ca13966ae4cdedcfee6f5076236ea4c2db97fc04d6cb2f612ffe899cadb6244",
+-    "r1_15a2_demand_policy_v1.py": "3c156541431d04eec2e2fcbd5a6c577ac41c9334e9377d6e171cb292d16e7fac",
++    "r1_15a2_demand_policy_v1.py": "058c5f3e16c226691d39807f76f6560e9c4b6ee5923f9637df1654138428cd74",
+     "r1_15a2_diagfast_v1.py": "735e95766a17a4eefd8b4b58ab2c3360ec6d720544b7c30b58f5cc00346d895b",
+     "r1_15a2_diagfast_v2.py": "9a9f9e25cc8d6911fce4bf824b7b677c3156645fa90d8681f1bde26afae5acc2",
+     "r1_15a2_diagfast_numpy_v2.py": "1750ab2eff6dc77048680184210fa985ca0be178880b85d5c5f66a5953b82d19",
+@@ -56,6 +60,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "30a29ad64af5b353a6c91aa5426bdab85acf3f37e97594d0b65860d71fef70c6",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "cea21d90aeb4420488e7b5ad98aa607c9828750d31889bce5d1b2f06685a2663"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "4185df1216018766ff2079be710628b0941d744a2ed79d11ab313a6743e71f8b"
+   }
+ }
+--- a/r1_15a2_demand_policy_v1.py
++++ b/r1_15a2_demand_policy_v1.py
+@@ -68,6 +68,9 @@
+     'tg_catchup_enabled': True,
+     'td_count_weight': 0.65,
+     'td_inner_mode': 'FROZEN_PATHS',
++    'td_joint_enabled': False,
++    'td_joint_outer_isolates': False,
++    'td_joint_max_isolates': 2,
+     'tg_max_trials': 3,
+     'td_realization_max_trials': 3,
+     'td_inner_max_evaluations': 60,
+@@ -144,6 +147,9 @@
+     'tg_catchup_enabled': 'R1_TG_CATCHUP',
+     'td_count_weight': 'R1_TD_COUNT_WEIGHT',
+     'td_inner_mode': 'R1_TD_INNER_MODE',
++    'td_joint_enabled': 'R1_TD_JOINT_ENABLED',
++    'td_joint_outer_isolates': 'R1_TD_JOINT_OUTER_ISOLATES',
++    'td_joint_max_isolates': 'R1_TD_JOINT_MAX_ISOLATES',
+     'tg_max_trials': 'R1_TG_MAX_TRIALS',
+     'td_realization_max_trials': 'R1_TD_REALIZATION_MAX_TRIALS',
+     'td_inner_max_evaluations': 'R1_TD_INNER_MAX_EVALS',
+@@ -256,6 +262,16 @@
+     if mode not in ('FROZEN_PATHS', 'DYNAMIC'):
+         raise RuntimeError('R1_RUN_OPTION_INVALID:td_inner_mode=%r' % out['td_inner_mode'])
+     out['td_inner_mode'] = mode
++    for key in ('td_joint_enabled', 'td_joint_outer_isolates'):
++        out[key] = _bool(out[key], key)
++    value = out['td_joint_max_isolates']
++    try:
++        value = int(str(value).strip())
++    except (TypeError, ValueError):
++        raise RuntimeError('R1_RUN_OPTION_INVALID:td_joint_max_isolates')
++    if not 0 <= value <= 2:
++        raise RuntimeError('R1_RUN_OPTION_RANGE:td_joint_max_isolates must be 0..2')
++    out['td_joint_max_isolates'] = value
+     for key, lo, hi in (('tg_max_trials', 1, 6), ('td_realization_max_trials', 1, 7),
+                         ('td_inner_max_evaluations', 5, 400)):
+         try:
+--- a/r1_15a2_runtime_delta_v24917.py
++++ b/r1_15a2_runtime_delta_v24917.py
+@@ -18,8 +18,8 @@
+ import r1_15a2_targeted_generation_v24917 as tg
+ import r1_15a2_profile_roster_v24917 as roster
+ 
+-RELEASE = "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027"
+-PACKAGE_REVISION = "V24917_MOBILITY2_GENFIX2_20261027"
++RELEASE = "R1_15A2_V24917_GENFIX2_TDJOINT1_20261027"
++PACKAGE_REVISION = "V24917_GENFIX2_TDJOINT1_20261027"
+ V24917_KEYS = ("v24917_targeted_generation", "v24917_release_identity")
+ 
+ 
+@@ -47,6 +47,8 @@
+             "GENFIX2_VERIFIED_PARENT_RECOVERY_ALL_DOMAINS",
+             "GENFIX2_MOBILITY_FINAL_AND_LIVE_GUARD",
+             "GENFIX2_FINAL_EFFECT_PREDICTION_COM_AND_ARCHIVE_SAFETY",
++            "TDJOINT1_SINGLE_SHARED_SCORE_BOUNDED_COMPONENT_POLL",
++            "TDJOINT1_ISOLATED_REALIZATION_AFTER_VERIFIED_PLATEAU",
+         ],
+         "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+         "acceptance_thresholds_changed_by_v24917": False,
+--- a/r1_15a2_td_count_blend_v24917.py
++++ b/r1_15a2_td_count_blend_v24917.py
+@@ -14,7 +14,7 @@
+           (mean GEH^2 with the denominator frozen at the stage start: Gauss-Newton ready)
+     J_c = sealed v1.9 FineCDF objective of component c (unchanged formula).
+ 
+-Inner search (FineCDF Runner, unchanged algorithm): every component c gets the residual
++Legacy inner search (TDJOINT1 disabled): every component c gets the residual
+     r'_c = [ sqrt(w_idp / J_ref) * r_idp,c ;  sqrt(w_cnt / Q_ref) * q(M_ref + dM_c) ]
+ so its objective/gradient is the component's share of F to first order.  dM_c is the
+ count change caused by component c alone, from the FlowBundle path incidence of the
+@@ -23,6 +23,10 @@
+ 
+     dV_fam[o,d] = f_c * kappa_c * (dT_c[o,d] + dT_c[d,o]) / 2
+     dM_p,c      = sum_v a_p,v * dV_fam[o_v,d_v] / V_fam[o_v,d_v]
++
++TDJOINT1 enabled: one stacked residual covers all components and the count term
++exactly once; bounded native coordinate probes rank isolated and combined steps.
++This remains a surrogate, not a replacement for live outer acceptance.
+ 
+ Inner modes (run option td_inner_mode):
+     FROZEN_PATHS (default)  each inner evaluation runs ONLY the TD operation (seconds);
+@@ -69,9 +73,11 @@
+         import r1_15a2_demand_policy_v1 as dp
+         o = dp.load_options()
+     except Exception:
+-        o = {}
++        # Configuration errors must not silently replace a requested joint run.
++        raise
+     w = float(o.get("td_count_weight", 0.65))
+     return {"w_cnt": w, "w_idp": 1.0 - w,
++            "joint_enabled": bool(o.get("td_joint_enabled", False)),
+             "inner_mode": str(o.get("td_inner_mode", "FROZEN_PATHS")).upper(),
+             "tg_max_trials": int(o.get("tg_max_trials", 3)),
+             "td_realization_max_trials": int(o.get("td_realization_max_trials", 3)),
+@@ -319,6 +325,9 @@
+         return r, float(r @ r), parts
+ 
+     def apply(self, out: Dict[str, Dict[str, Any]], matrices) -> Dict[str, Dict[str, Any]]:
++        if self.opts.get("joint_enabled", False):
++            from r1_15a2_td_joint_v24917 import score_blend
++            return score_blend(self, out, matrices)
+         m, wc, wi = self.model, self.opts["w_cnt"], self.opts["w_idp"]
+         if not self.ref_set:
+             m.set_reference(m.read_live(), {no: matrices[no] for no in matrices}, self.bridge.read_matrix)
+@@ -435,8 +444,10 @@
+             if blend is None:
+                 try:
+                     blend = Blend(self.bridge, self.ref, options())
+-                except Exception as exc:          # fail open for the whole stage -> pure survey TD
+-                    blend = False
++                except Exception as exc:
++                    if options().get("joint_enabled", False):
++                        raise RuntimeError("TDJOINT1_BLEND_INITIALIZATION_FAILED") from exc
++                    blend = False  # legacy behavior, only with TDJOINT1 explicitly off
+                     _STATE["blend_init_failures"] = _STATE.get("blend_init_failures", 0) + 1
+                     _STATE["last_blend_init_error"] = repr(exc)[:2000]
+                     print("R1 V24917 TD BLEND WARNING: blend disabled for this TD stage, "
+--- /dev/null
++++ b/r1_15a2_td_joint_runtime_v24917.py
+@@ -0,0 +1,132 @@
++# -*- coding: utf-8 -*-
++"""Small runtime wiring for TDJOINT1; sealed parent files remain unchanged."""
++from __future__ import annotations
++import copy
++import functools
++from pathlib import Path
++
++import r1_15a2_td_joint_v24917 as joint
++
++
++def wrap_inner(original):
++    @functools.wraps(original)
++    def inner(adapter, cfg, folder, control, package_root, *args, **kwargs):
++        enabled = joint.options()["enabled"]
++        adapter._tdjoint_stage = None
++        result = original(adapter, cfg, folder, control, package_root, *args, **kwargs)
++        if not enabled:
++            return result
++        stage = getattr(adapter, "_tdjoint_stage", None)
++        if stage is None or Path(stage["inner_root"]) != Path(folder).resolve():
++            raise RuntimeError("TDJOINT1_STAGE_RESULT_MISSING_OR_STALE")
++        result = dict(result)
++        result.update({k: stage[k] for k in (
++            "objective_start", "objective_final", "objective_improvement",
++            "search_complete", "stationarity_confirmed",
++            "fresh_assignment_and_skims_per_finecdf_evaluation")})
++        result["primary_objective"] = stage["metric"]
++        result["tdjoint"] = stage
++        result["progress_continue"] = str(result.get("stop_reason", "")) in (
++            "MAX_ITERATIONS", "TD_EVALUATION_BUDGET", "TD_INNER_TIME_BUDGET")
++        # Keep the original key and publish corrected semantics, not a second
++        # conflicting result file.  The separate summary is the search audit.
++        from r1_15a2_controller_v22 import atomic_json
++        atomic_json(Path(folder) / "V24916_FINECDF_INNER_RESULT.json", result)
++        return result
++    inner._tdjoint1 = True
++    return inner
++
++
++def wrap_realization(original, ctrl):
++    """Retain the existing combined/backtracking path, then bounded ablations.
++
++    Each ablation starts only after the parent rollback was VERIFIED by the
++    original path.  One additional full realization per component, <=2.  No
++    new retry or acceptance exception is swallowed.  Pending IZ changes use
++    the existing combined IZ realization unchanged in this first increment.
++    """
++    @functools.wraps(original)
++    def realize(adapter, cfg, folder, control, before, baseline_diag, target_rows):
++        opts = joint.options()
++        stage = getattr(adapter, "_tdjoint_stage", None)
++        if not opts["enabled"]:
++            return original(adapter, cfg, folder, control, before, baseline_diag, target_rows)
++        import r1_15a2_td_count_blend_v24917 as blend
++        now = blend.options()
++        if stage is None:
++            raise RuntimeError("TDJOINT1_REALIZATION_STAGE_MISSING")
++        if any(abs(float(stage[k]) - float(now[k])) > 1e-12 for k in ("w_cnt", "w_idp")):
++            raise RuntimeError("TDJOINT1_WEIGHT_CHANGED_DURING_STAGE")
++        # Never silently associate an old component plan with a new inner run.
++        import r1_15a2_multiblock as mb
++        component_no = {str(k): int(r["matrix_no"]) for k, r in mb.COMPONENT_REGISTRY.items()}
++        for row in target_rows:
++            final = stage["final_abc"].get(str(component_no.get(row["component"])))
++            if final is None or any(abs(float(final[p]) - float(row["candidate_" + p])) > 1e-8
++                                    for p in ("b", "c")):
++                raise RuntimeError("TDJOINT1_TARGET_PLAN_MISMATCH:" + row["component"])
++        import r1_15a2_intrazonal_penalty_v24917 as iz
++        pending_iz = bool(getattr(iz, "_STAGE", {}))
++        result = original(adapter, cfg, folder, control, before, baseline_diag, target_rows)
++        if (result[0] or len(target_rows) < 2 or not opts["outer_isolates"] or pending_iz):
++            return result
++        if result[4].get("status") != "SOFT_REFERENCE_PLATEAU":
++            return result
++        # Existing target order is deterministic.  In this first version, no
++        # claim is made that an inner contribution predicts live ablation rank.
++        rows_order = sorted(target_rows, key=lambda r: str(r["component"]))[:opts["max_isolates"]]
++        records = [{"kind": "COMBINED_WITH_BACKTRACK", "evidence": result[4]}]
++        cfg_one = copy.deepcopy(cfg)
++        fine = cfg_one.setdefault("coupled_demand", {}).setdefault("finecdf_td", {})
++        fine["realization_backtracking_scales"] = [1.0]
++        for ordinal, row in enumerate(rows_order, 1):
++            control.checkpoint("TDJOINT_ISOLATED_REALIZATION", component=row["component"], force=True)
++            isolated_folder = Path(folder) / ("ISOLATED_%02d_%s" % (ordinal, row["component"]))
++            one = original(adapter, cfg_one, isolated_folder, control, before, baseline_diag, [row])
++            records.append({"kind": "ISOLATED", "component": row["component"], "evidence": one[4]})
++            ctrl.atomic_json(Path(folder) / "TDJOINT_REALIZATION.json", {
++                "release": joint.RELEASE, "attempt_groups": records,
++                "max_extra_realization_trials": opts["max_isolates"],
++                "accepted": bool(one[0]), "fresh_assignment_required": True,
++                "parent_hash": before["state_hash"], "outer_acceptance_changed": False})
++            result = one
++            if one[0]:
++                break
++        evidence = dict(result[4])
++        evidence["tdjoint_attempt_groups"] = records
++        evidence["tdjoint_component_isolation"] = True
++        ctrl.atomic_json(Path(folder) / "TD_REALIZATION_ATTEMPTS.json", evidence)
++        return result[:4] + (evidence,)
++    realize._tdjoint1 = True
++    return realize
++
++
++def install(controller, print_fn=print):
++    import r1_15a2_finecdf_bridge_v24916 as bridge
++    import r1_15a2_active_controller_patch_v24916p2c as active
++    if not getattr(bridge.load_reference, "_tdjoint1", False):
++        original_loader = bridge.load_reference
++        @functools.wraps(original_loader)
++        def loader(package_root, fine_cfg=None):
++            ref, path, sha = original_loader(package_root, fine_cfg)
++            if joint.options()["enabled"]:
++                ref.Runner = joint.make_runner(ref.Runner, ref)
++            return ref, path, sha
++        loader._tdjoint1 = True
++        bridge.load_reference = loader
++    # The active controller owns its own imported function; patch that actual
++    # dispatch too.  All wrappers are installed after GENFIX2 / IZ wrappers.
++    for module, name in ((bridge, "run_finecdf_inner"),
++                         (controller, "run_finecdf_inner"),
++                         (active, "targeted_run_finecdf_inner")):
++        old = getattr(module, name, None)
++        if old is not None and not getattr(old, "_tdjoint1", False):
++            setattr(module, name, wrap_inner(old))
++    old = controller._realize_finecdf_td
++    if not getattr(old, "_tdjoint1", False):
++        controller._realize_finecdf_td = wrap_realization(old, controller)
++    status = {"release": joint.RELEASE, "installed": True, "options": joint.options(),
++              "sealed_reference_modified": False, "outer_acceptance_modified": False}
++    print_fn("R1 TDJOINT1: %s; shared score once; native isolated +/- probes; outer isolates=%s" %
++             ("ENABLED" if status["options"]["enabled"] else "DISABLED", status["options"]["outer_isolates"]))
++    return status
+--- /dev/null
++++ b/r1_15a2_td_joint_v24917.py
+@@ -0,0 +1,302 @@
++# -*- coding: utf-8 -*-
++"""TDJOINT1: bounded, component-isolated polling on one shared TD objective.
++
++This is a small alternative search controller, NOT a new demand model.  The
++sealed FineCDF reference supplies the native evaluator, parameter coordinates,
++bounds, numeric guards and checkpoints.  All targets are scored together; the
++count residual is included exactly once.  Native TD writes matrices, never us.
++The score is a frozen-path SURROGATE (GEH-squared + 512-point FineCDF), not the
++outer live GEH/11D acceptance score.  The latter remains the sole acceptance
++ authority.  The existing active-component shortlist is intentionally retained.
++"""
++from __future__ import annotations
++
++import copy
++import functools
++import math
++from pathlib import Path
++from typing import Any, Mapping
++
++import numpy as np
++
++RELEASE = "R1_15A2_V24917_TDJOINT1_20261027"
++EPS = 1e-12
++
++
++def options() -> dict:
++    import r1_15a2_demand_policy_v1 as dp
++    o = dp.load_options()  # invalid configuration must not disable the feature
++    return {"enabled": o.get("td_joint_enabled", False),
++            "outer_isolates": o.get("td_joint_outer_isolates", False),
++            "max_isolates": o.get("td_joint_max_isolates", 2)}
++
++
++def validate_count_model(model, targets, active, count_weight):
++    """Reject missing/empty attribution, not legitimate zero sensitivity.
++
++    Coverage is reported, not silently represented as exact component paths.
++    A partial map remains the inherited approximation.  Both signs of the
++    observed count residual are retained in CountModel.q().
++    """
++    if count_weight <= 0:
++        return
++    linear = getattr(model, "linear", None)
++    if not linear:
++        raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
++    families = set()
++    for key in active:
++        for no in targets[key]["matrix_nos"]:
++            if 9101 <= int(no) <= 9105 or int(no) == 9117:
++                families.add("WORK")
++            elif 9106 <= int(no) <= 9110:
++                families.add("SERVICE")
++    for family in families:
++        arrays = linear.get(family)
++        if arrays is None or not len(arrays[0]):
++            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
++        if (len({len(x) for x in arrays}) != 1 or
++                not np.all(np.isfinite(arrays[3]))):
++            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_INVALID:" + family)
++    if not math.isfinite(float(model.Q_ref)) or model.Q_ref < 0:
++        raise RuntimeError("TDJOINT1_COUNT_REFERENCE_INVALID")
++
++
++def score_blend(blend, out, matrices):
++    """Use existing stacked() once; leave every survey metric unmodified."""
++    residual, objective, parts = blend.stacked(out, matrices)
++    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
++                         float(blend.opts["w_cnt"]))
++    if not (math.isfinite(objective) and np.all(np.isfinite(residual))):
++        raise RuntimeError("TDJOINT1_NONFINITE_SCORE")
++    mode = "DYNAMIC" if blend.measured else "FROZEN_PATHS"
++    blend.last_joint = {
++        "release": RELEASE, "objective": float(objective), "parts": dict(parts),
++        "w_cnt": float(blend.opts["w_cnt"]), "w_idp": float(blend.opts["w_idp"]),
++        "mode": mode, "count_residual_copies": 1,
++        "metric": "NORMALIZED_GEH2_PLUS_FINECDF512_SURROGATE",
++        "linear_profile_coverage": getattr(blend.model, "linear_profile_coverage", None),
++        "fresh_assignment_per_evaluation": bool(blend.measured),
++        "component_attribution": "SCALAR_KAPPA_FROZEN_PATH_APPROXIMATION",
++    }
++    return out
++
++
++def metric_guards(before: Mapping, after: Mapping, config: Mapping) -> list[str]:
++    """Keep inherited fine-CDF and mean-distance bounds, across ALL targets.
++
++    Per-component objective minimisation is deliberately replaced by shared
++    objective minimisation.  It is not an extra veto against bounded trade-offs.
++    """
++    if set(before) != set(after):
++        return ["TARGET_SET_CHANGED"]
++    reasons = []
++    for key in sorted(before):
++        a, b = before[key], after[key]
++        values = [b["objective"], b["fine_cdf_rmse"], b["mean_relative_error"]]
++        if not all(math.isfinite(float(x)) for x in values):
++            reasons.append("NONFINITE:" + key)
++            continue
++        if b["fine_cdf_rmse"] > a["fine_cdf_rmse"] + config["max_fine_cdf_rmse_degradation"]:
++            reasons.append("FINECDF_GUARD:" + key)
++        mean_limit = max(abs(a["mean_relative_error"]), config["mean_error_floor"])
++        if abs(b["mean_relative_error"]) > mean_limit + config["max_mean_error_degradation"]:
++            reasons.append("MEAN_GUARD:" + key)
++    return reasons
++
++
++def coordinate_proposals(space, x, components, radius):
++    """Small +/- probes in native b and log(-c) coordinates, one group only."""
++    for key in components:
++        for axis in (0, 1):
++            step = min(float(space.probe[key][axis]),
++                       float(space.trust[key][axis]) * radius[key])
++            for sign in (1, -1):
++                lo, hi = space.bounds[key][axis]
++                v = float(np.clip(x[key][axis] + sign * step, lo, hi))
++                if abs(v - x[key][axis]) <= EPS:
++                    continue
++                trial = {k: v.copy() for k, v in x.items()}
++                trial[key][axis] = v
++                yield key, axis, sign, trial
++
++
++def _signature(x):
++    return tuple((k, tuple(float(v) for v in x[k])) for k in sorted(x))
++
++
++def _score(state):
++    return float(state["tdjoint"]["objective"])
++
++
++def _is_better(base, candidate, config):
++    improvement = _score(base) - _score(candidate)
++    tol = max(float(config["minimum_objective_improvement"]),
++              abs(_score(base)) * float(config["minimum_relative_objective_improvement"]))
++    return improvement > tol and not metric_guards(base["metrics"], candidate["metrics"], config)
++
++
++def optimize(runner, ref):
++    """Bounded polling + one combined native verification per complete sweep.
++
++    The baseline plus current base/best arrays are retained. Other probes keep only
++    parameters/metrics.  A candidate is never accepted by combining OD cells.
++    Budget exhaustion does not imply stationarity.  Numerical failures and
++    unexpected exceptions propagate to the GENFIX2 transaction owner.
++    """
++    baseline = runner.evaluate(runner.space.x, "TDJOINT_BASELINE")
++    runner.best = runner.baseline = baseline
++    runner.marginals = {n: [a.sum(axis=0), a.sum(axis=1)]
++                        for n, a in baseline["matrices"].items()}
++    runner.checkpoint(baseline)
++    runner.log.summary.update(calibration_baseline="FRESH_NATIVE_TD_TDJOINT1",
++                              fresh_baseline_objective_sum=_score(baseline),
++                              entry_od_matrices_treated_as_stale=True)
++    groups = list(ref.GROUPS)
++    if not groups:
++        raise RuntimeError("TDJOINT1_EMPTY_ACTIVE_COMPONENTS")
++    radius = {k: 1.0 for k in groups}
++    poll_history, stagnant = [], 0
++    reason = "MAX_ITERATIONS"
++    for iteration in range(1, int(ref.CONFIG["max_iterations"]) + 1):
++        base = runner.best
++        winner = base
++        best_by_component = {}
++        stop = None
++        # Rotate the first group to avoid starvation when the remaining budget
++        # permits only part of a sweep.  The original shortlist is unchanged.
++        offset = (iteration - 1) % len(groups)
++        order = groups[offset:] + groups[:offset]
++        proposals = list(coordinate_proposals(runner.space, base["x"], order, radius))
++        seen = {_signature(base["x"])}
++        records = []
++        completed = True
++        native_rejections = 0
++        at_min_radius = all(radius[k] <= ref.CONFIG["trust_radius_min"] + EPS for k in groups)
++
++        def evaluate_trial(x, label, kind, component=None):
++            nonlocal winner, stop, completed, native_rejections
++            signature = _signature(x)
++            if signature in seen:
++                return None
++            seen.add(signature)
++            try:
++                result = runner.evaluate(x, label)
++            except ref.StopRequested as exc:
++                stop = str(exc)
++                completed = False
++                return None
++            except ref.MarginalGuardError as exc:
++                native_rejections += 1
++                runner.adapter.restore_state(base["abc"], base["matrices"])
++                records.append({"label": label, "kind": kind, "component": component,
++                                "status": "REJECTED_NATIVE_MARGIN", "error": str(exc)})
++                return None
++            guards = metric_guards(base["metrics"], result["metrics"], ref.CONFIG)
++            rec = {"label": label, "kind": kind, "component": component,
++                   "objective_before": _score(base), "objective": _score(result),
++                   "relative_improvement": (_score(base) - _score(result)) / max(EPS, abs(_score(base))),
++                   "guard_reasons": guards, "parts": result["tdjoint"]["parts"],
++                   "status": "SAFE" if not guards else "REJECTED_SURVEY_GUARD"}
++            records.append(rec)
++            if _is_better(base, result, ref.CONFIG):
++                if _score(result) < _score(winner):
++                    # Only keep the winning full matrix snapshot.
++                    winner = result
++                if component is not None:
++                    old = best_by_component.get(component)
++                    if old is None or _score(result) < old["objective"]:
++                        best_by_component[component] = {
++                            "x": result["x"][component].copy(), "objective": _score(result),
++                            "label": label, "relative_improvement": rec["relative_improvement"]}
++            return rec
++
++        for key, axis, sign, x in proposals:
++            evaluate_trial(x, "J%02d_%s_%s_%s" %
++                           (iteration, key, "B" if axis == 0 else "LOGC", "P" if sign > 0 else "M"),
++                           "ISOLATED", key)
++            if stop is not None:
++                break
++        ranking = sorted(best_by_component, key=lambda k: (best_by_component[k]["objective"], k))
++        if stop is None and len(ranking) > 1:
++            # At most the two strongest isolated directions: a bounded change,
++            # and its joint value is measured rather than assumed additive.
++            combo = {k: v.copy() for k, v in base["x"].items()}
++            for key in ranking[:2]:
++                combo[key] = best_by_component[key]["x"].copy()
++            evaluate_trial(combo, "J%02d_COMBINED_TOP2" % iteration, "COMBINED")
++        changed = winner is not base
++        if changed:
++            runner.best = winner
++            runner.checkpoint(winner)
++            stagnant = 0
++        elif completed and native_rejections == 0:
++            stagnant += 1
++        else:
++            stagnant = 0
++        runner.adapter.restore_state(runner.best["abc"], runner.best["matrices"])
++        changed_groups = [k for k in groups if not np.array_equal(base["x"][k], runner.best["x"][k])]
++        for key in groups:
++            if key not in changed_groups:
++                radius[key] = max(ref.CONFIG["trust_radius_min"],
++                                  radius[key] * ref.CONFIG["trust_shrink_rejected"])
++        item = {"iteration": iteration, "complete_poll": completed,
++                "native_rejections": native_rejections, "polled_at_min_radius": at_min_radius,
++                "status": "ACCEPTED_INNER_SURROGATE" if changed else "KEPT_PARENT",
++                "changed_components": changed_groups, "ranked_components": ranking,
++                "objective_before": _score(base), "objective_after": _score(runner.best),
++                "evaluations": runner.evaluations, "trials": records}
++        poll_history.append(item)
++        runner.log.summary.update(iterations_completed=iteration, stagnant_iterations=stagnant)
++        ref.write_json(runner.log.root / "TDJOINT_SEARCH.json", {
++            "release": RELEASE, "component_pool": groups, "polls": poll_history,
++            "count_residual_copies": 1, "outer_acceptance_authority_changed": False})
++        runner.log.event("TDJOINT_ITERATION", "iteration %d %s F=%.9g" %
++                         (iteration, item["status"], _score(runner.best)))
++        if stop is not None:
++            reason = stop
++            break
++        if (completed and native_rejections == 0 and at_min_radius and
++                stagnant >= ref.CONFIG["max_stagnant_iterations"]):
++            # Same local-completion contract as the parent, but only after a
++            # complete poll of ALL configured active components at min radius.
++            # Budget exhaustion, incomplete polls and numerical rejects cannot
++            # certify even this local result; global optimality is never claimed.
++            reason = "LOCAL_PLATEAU_NOT_PROOF_OF_GLOBAL_OPTIMUM"
++            break
++    complete = reason == "LOCAL_PLATEAU_NOT_PROOF_OF_GLOBAL_OPTIMUM"
++    result = {"release": RELEASE, "metric": baseline["tdjoint"]["metric"],
++              "objective_start": _score(baseline), "objective_final": _score(runner.best),
++              "objective_improvement": _score(baseline) - _score(runner.best),
++              "component_pool": groups, "candidate_selection": "MEASURED_SHARED_SURROGATE_WITHIN_EXISTING_MASK",
++              "count_residual_copies": 1, "mode": baseline["tdjoint"]["mode"],
++              "w_cnt": baseline["tdjoint"]["w_cnt"], "w_idp": baseline["tdjoint"]["w_idp"],
++              "linear_profile_coverage": baseline["tdjoint"]["linear_profile_coverage"],
++              "td_evaluations": runner.evaluations, "stop_reason": reason,
++              "search_complete": complete, "stationarity_confirmed": complete,
++              "stationarity_scope": "CONFIGURED_ACTIVE_COMPONENT_COORDINATE_POLL_NOT_GLOBAL",
++              "fresh_assignment_and_skims_per_finecdf_evaluation": baseline["tdjoint"]["fresh_assignment_per_evaluation"],
++              "prediction_is_not_live_acceptance": True,
++              "inner_root": str(runner.log.root.resolve()),
++              "final_abc": {str(k): dict(v) for k, v in runner.best["abc"].items()},
++              "polls_completed": sum(bool(p["complete_poll"]) for p in poll_history)}
++    runner.adapter.outer_adapter._tdjoint_stage = result
++    ref.write_json(runner.log.root / "TDJOINT_SUMMARY.json", result)
++    return reason
++
++
++def make_runner(parent, ref):
++    class JointRunner(parent):
++        def evaluate(self, x, label, honor_stop=True):
++            result = super().evaluate(x, label, honor_stop=honor_stop)
++            impl = getattr(self.metrics, "impl", None)
++            blend = getattr(impl, "_v24917_blend_state", None)
++            score = getattr(blend, "last_joint", None)
++            if score is None:
++                raise RuntimeError("TDJOINT1_SHARED_METRIC_NOT_INSTALLED")
++            result["tdjoint"] = copy.deepcopy(score)
++            ref.write_json(Path(result["folder"]) / "TDJOINT_SCORE.json", score)
++            return result
++
++        def optimize(self):
++            return optimize(self, ref)
++    return JointRunner
+--- a/r1_15a2_v24917_runtime.py
++++ b/r1_15a2_v24917_runtime.py
+@@ -17,7 +17,7 @@
+ from types import SimpleNamespace
+ from typing import Any, Dict
+ 
+-RELEASE = "R1_15A2_V24917_MOBILITY2_GENFIX2_RUNTIME_20261027"
++RELEASE = "R1_15A2_V24917_GENFIX2_TDJOINT1_RUNTIME_20261027"
+ _STATE: Dict[str, Any] = {}
+ 
+ 
+@@ -168,6 +168,8 @@
+         "stationarity": "BOUNDED_STEP1_EXHAUSTION_NOT_CERTIFIED",
+         "release_live_visum_validation_supplied": False,
+     }
++    import r1_15a2_td_joint_runtime_v24917 as tdjoint
++    status["tdjoint1"] = tdjoint.install(controller, print_fn=print_fn)
+     _STATE.update(status)
+     return _STATE
+ 
+--- /dev/null
++++ b/tests/test_v24917_tdjoint1.py
+@@ -0,0 +1,512 @@
++"""TDJOINT1 unit + native-evaluator seam regressions (offline, no live Visum)."""
++from __future__ import annotations
++import copy
++import importlib.util
++import json
++import math
++from pathlib import Path
++from types import SimpleNamespace as NS
++
++import numpy as np
++import pytest
++
++import r1_15a2_td_joint_v24917 as j
++import r1_15a2_td_joint_runtime_v24917 as wire
++import r1_15a2_td_count_blend_v24917 as tb
++import r1_15a2_demand_policy_v1 as dp
++from r1_15a2_controller_v22 import atomic_json
++from test_v24917_targeted_catchup import _blend_fixture
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def make_blend(tmp_path, wc=.65, missing=False, dynamic=False):
++    visum, cfg, zo, mats, live, inc, links = _blend_fixture()
++    # Extend the inherited WORK-only fixture with real SERVICE attribution.
++    inc["variables"].append({"family":"SERVICE","origin":1,"destination":2})
++    inc["incidence"].row_idx.append(0)
++    inc["incidence"].col_idx.append(1)
++    inc["incidence"].values.append(7.)
++    ref = NS(CONFIG={"max_fine_cdf_rmse_degradation": .01, "max_mean_error_degradation": .02},
++             TARGETS={"WORK_E_C": {"matrix_nos": [9101]}, "SERV_E_C": {"matrix_nos": [9106]}},
++             GROUPS=["WORK_E_C", "SERV_E_C"])
++    outer = NS(cfg=cfg, v24917_last_incidence=None if missing else inc)
++    bridge = NS(v=visum, outer_adapter=outer, zone_order=zo, root=tmp_path,
++                read_matrix=lambda no: live[no], _v24917_frozen=not dynamic)
++    blend = tb.Blend(bridge, ref, {"w_cnt":wc,"w_idp":1-wc,"joint_enabled":True})
++    return blend, mats, live
++
++
++def metric(j1=.04, j2=.06):
++    return {"WORK_E_C": {"objective":j1,"residual":np.array([math.sqrt(j1)])},
++            "SERV_E_C": {"objective":j2,"residual":np.array([math.sqrt(j2)])}}
++
++
++@pytest.mark.parametrize('weight',[.35,.60,.65,1.0])
++def test_reference_global_score_is_one_not_component_count(tmp_path, weight):
++    b, mats, _ = make_blend(tmp_path, weight)
++    m=metric(); before=copy.deepcopy(m)
++    b.apply(m,mats)
++    assert b.last_joint['objective']==pytest.approx(1.)
++    assert b.last_joint['count_residual_copies']==1
++    assert b.last_joint['w_cnt']==weight
++    for k in m:
++        assert m[k]['objective']==before[k]['objective']
++        np.testing.assert_array_equal(m[k]['residual'],before[k]['residual'])
++
++
++def test_global_count_contains_cross_component_interaction(tmp_path):
++    b, mats, _ = make_blend(tmp_path)
++    b.apply(metric(),mats)
++    both={no:a.copy() for no,a in mats.items()}
++    both[9101][0,1]+=10.; both[9106][0,1]+=12.
++    out=metric(.041,.063)
++    b.apply(out,both)
++    dm=b.model.delta_for([9101,9106],both)
++    expected=.65*b.model.Q(b.model.M_ref+dm)/b.model.Q_ref+.35*.104/.1
++    assert b.last_joint['objective']==pytest.approx(expected)
++
++
++@pytest.mark.parametrize('dynamic',[True,False])
++def test_effective_mode_reporting(tmp_path,dynamic):
++    b,mats,_=make_blend(tmp_path,dynamic=dynamic); b.apply(metric(),mats)
++    assert b.last_joint['fresh_assignment_per_evaluation'] is dynamic
++    assert b.last_joint['mode']==('DYNAMIC' if dynamic else 'FROZEN_PATHS')
++
++
++def test_missing_incidence_is_not_survey_only_fallback(tmp_path):
++    b,mats,_=make_blend(tmp_path,missing=True)
++    with pytest.raises(RuntimeError,match='COUNT_INCIDENCE_MISSING'): b.apply(metric(),mats)
++
++
++def test_explicit_zero_count_weight_can_be_survey_only(tmp_path):
++    b,mats,_=make_blend(tmp_path,wc=0.,missing=True); b.apply(metric(),mats)
++    assert b.last_joint['objective']==pytest.approx(1.)
++
++
++@pytest.mark.parametrize('mode',['empty','nan','shape'])
++def test_invalid_linear_map_rejected(tmp_path,mode):
++    b,mats,_=make_blend(tmp_path); b.apply(metric(),mats)
++    a=b.model.linear['WORK']
++    if mode=='empty': b.model.linear['WORK']=tuple(np.array([]) for _ in range(4))
++    if mode=='nan': b.model.linear['WORK']=(a[0],a[1],a[2],np.full(len(a[3]),np.nan))
++    if mode=='shape': b.model.linear['WORK']=(a[0],a[1],a[2],np.array([]))
++    with pytest.raises(RuntimeError,match='COUNT_INCIDENCE'):
++        j.validate_count_model(b.model,b.ref.TARGETS,b.ref.GROUPS,.65)
++
++
++@pytest.mark.parametrize('raw',[{'td_joint_enabled':'maybe'},{'td_joint_outer_isolates':'maybe'},
++                                 {'td_joint_max_isolates':-1},{'td_joint_max_isolates':3},
++                                 {'td_joint_max_isolates':'1.5'}])
++def test_joint_options_fail_closed(raw):
++    with pytest.raises(RuntimeError): dp.validate(raw)
++
++
++def test_options_feature_off_default_and_weights_independent(tmp_path):
++    o=dp.load_options(tmp_path,environ={})
++    assert not o['td_joint_enabled'] and o['td_count_weight']==.65
++    o=dp.load_options(tmp_path,environ={'R1_TD_JOINT_ENABLED':'true','R1_TD_COUNT_WEIGHT':'.60'})
++    assert o['td_joint_enabled'] and o['td_count_weight']==.60
++    stored=json.loads((ROOT/'R1_RUN_OPTIONS.json').read_text())
++    assert stored['td_joint_enabled'] and stored['td_count_weight']==.65
++    assert stored['td_max_survey_degradation']==1.25
++
++
++class Stop(Exception): pass
++class Marginal(Exception): pass
++
++
++def toy_runner(tmp_path, objective, budget=40, iterations=1, fail=None):
++    groups=['WORK_E_C','SERV_E_C']
++    names=groups+['SCHOOL']
++    x={k:np.array([.5,-1.]) for k in names}
++    space=NS(x=x,probe={k:np.array([.05,.06]) for k in groups},
++             trust={k:np.array([.25,.2]) for k in groups},
++             bounds={k:np.array([[0.,4.],[-5.,2.]]) for k in groups})
++    cfg={'max_iterations':iterations,'max_stagnant_iterations':2,
++         'trust_radius_min':.05,'trust_shrink_rejected':.5,
++         'minimum_objective_improvement':1e-10,'minimum_relative_objective_improvement':.001,
++         'max_fine_cdf_rmse_degradation':.03,'max_mean_error_degradation':.05,'mean_error_floor':.02}
++    outer=NS()
++    ad=NS(outer_adapter=outer,restores=[])
++    ad.restore_state=lambda abc,mats:ad.restores.append(copy.deepcopy(abc))
++    runner=NS(space=space,adapter=ad,log=NS(root=tmp_path,summary={},event=lambda *a:None),
++              evaluations=0,best=None,baseline=None,seen=[],checkpoints=[])
++    runner.checkpoint=lambda state:runner.checkpoints.append(state['label'])
++    def evaluate(x,label):
++        if runner.evaluations>=budget: raise Stop('TD_EVALUATION_BUDGET')
++        runner.evaluations+=1; runner.seen.append((label,copy.deepcopy(x)))
++        if fail and runner.evaluations==2: raise fail('injected')
++        f=float(objective(x))
++        met={k:{'objective':.1,'fine_cdf_rmse':.1,'mean_relative_error':.1} for k in names}
++        abc={9101:{'a':1.,'b':float(x['WORK_E_C'][0]),'c':-math.exp(x['WORK_E_C'][1])},
++             9106:{'a':1.,'b':float(x['SERV_E_C'][0]),'c':-math.exp(x['SERV_E_C'][1])}}
++        return {'x':copy.deepcopy(x),'abc':abc,'matrices':{9101:np.ones((2,2))},'metrics':met,
++                'label':label,'folder':str(tmp_path),'tdjoint':{
++                    'objective':f,'parts':{'F':f},'metric':'NORMALIZED_GEH2_PLUS_FINECDF512_SURROGATE',
++                    'mode':'FROZEN_PATHS','w_cnt':.65,'w_idp':.35,'linear_profile_coverage':{},
++                    'fresh_assignment_per_evaluation':False}}
++    runner.evaluate=evaluate
++    ref=NS(CONFIG=cfg,GROUPS=groups,StopRequested=Stop,MarginalGuardError=Marginal,write_json=atomic_json)
++    return runner,ref
++
++
++def test_probes_isolate_one_component_and_try_both_signs(tmp_path):
++    r,ref=toy_runner(tmp_path,lambda x:1.)
++    props=list(j.coordinate_proposals(r.space,r.space.x,ref.GROUPS,{k:1 for k in ref.GROUPS}))
++    assert len(props)==8
++    for key,axis,sign,x in props:
++        assert sum(not np.array_equal(x[k],r.space.x[k]) for k in x)==1
++        assert np.sign(x[key][axis]-r.space.x[key][axis])==sign
++        np.testing.assert_array_equal(x['SCHOOL'],r.space.x['SCHOOL'])
++
++
++def test_bounds_never_crossed_and_no_zero_probe(tmp_path):
++    r,ref=toy_runner(tmp_path,lambda x:1.); r.space.x['WORK_E_C'][0]=0.
++    props=list(j.coordinate_proposals(r.space,r.space.x,ref.GROUPS,{k:1 for k in ref.GROUPS}))
++    assert len(props)==7
++    assert all(x['WORK_E_C'][0]>=0 for *_,x in props)
++
++
++def test_harmful_combination_rejected_good_single_retained(tmp_path):
++    def objective(x):
++        a=x['WORK_E_C'][0]-.5; b=x['SERV_E_C'][0]-.5
++        return 1.-a-b+10000.*a*b
++    r,ref=toy_runner(tmp_path,objective)
++    reason=j.optimize(r,ref)
++    assert reason=='MAX_ITERATIONS'
++    assert j._score(r.best)==pytest.approx(.95)
++    assert any('COMBINED' in label for label,_ in r.seen)
++    assert sum(not np.array_equal(r.best['x'][k],r.baseline['x'][k]) for k in ref.GROUPS)==1
++    assert r.adapter.restores[-1]==r.best['abc']
++    assert not r.adapter.outer_adapter._tdjoint_stage['stationarity_confirmed']
++
++
++def test_helpful_joint_candidate_measured_and_selected(tmp_path):
++    r,ref=toy_runner(tmp_path,lambda x:1.-(x['WORK_E_C'][0]-.5)-(x['SERV_E_C'][0]-.5))
++    j.optimize(r,ref)
++    assert j._score(r.best)==pytest.approx(.9)
++    assert 'COMBINED' in r.best['label']
++    assert r.evaluations==10  # baseline + eight isolated probes + one combined
++
++
++@pytest.mark.parametrize('budget',[1,2,5])
++def test_partial_poll_budget_does_not_claim_stationarity(tmp_path,budget):
++    r,ref=toy_runner(tmp_path,lambda x:1.-(x['WORK_E_C'][0]-.5),budget=budget)
++    assert j.optimize(r,ref)=='TD_EVALUATION_BUDGET'
++    assert r.evaluations==budget
++    summary=r.adapter.outer_adapter._tdjoint_stage
++    assert not summary['search_complete'] and summary['polls_completed']==0
++    assert j._score(r.best)<=j._score(r.baseline)
++
++
++def test_complete_min_radius_poll_certifies_only_configured_local_search(tmp_path):
++    r,ref=toy_runner(tmp_path,lambda x:1.,budget=100,iterations=12)
++    reason=j.optimize(r,ref)
++    summary=r.adapter.outer_adapter._tdjoint_stage
++    assert reason=='LOCAL_PLATEAU_NOT_PROOF_OF_GLOBAL_OPTIMUM'
++    assert summary['search_complete'] and summary['stationarity_confirmed']
++    assert summary['stationarity_scope']=='CONFIGURED_ACTIVE_COMPONENT_COORDINATE_POLL_NOT_GLOBAL'
++    history=json.loads((tmp_path/'TDJOINT_SEARCH.json').read_text())['polls']
++    assert history[-1]['polled_at_min_radius'] and history[-1]['complete_poll']
++    assert history[-1]['native_rejections']==0
++
++
++def test_iteration_limit_is_not_local_completion(tmp_path):
++    r,ref=toy_runner(tmp_path,lambda x:1.,budget=100,iterations=2)
++    assert j.optimize(r,ref)=='MAX_ITERATIONS'
++    assert not r.adapter.outer_adapter._tdjoint_stage['stationarity_confirmed']
++
++
++def test_unexpected_error_is_not_a_plateau(tmp_path):
++    r,ref=toy_runner(tmp_path,lambda x:1.,fail=RuntimeError)
++    with pytest.raises(RuntimeError,match='injected'): j.optimize(r,ref)
++
++
++def test_native_margin_failure_restores_base_and_continues(tmp_path):
++    r,ref=toy_runner(tmp_path,lambda x:1.,fail=Marginal)
++    j.optimize(r,ref)
++    assert len(r.adapter.restores)>=2
++    report=json.loads((tmp_path/'TDJOINT_SEARCH.json').read_text())
++    assert any(t['status']=='REJECTED_NATIVE_MARGIN' for t in report['polls'][0]['trials'])
++
++
++@pytest.mark.parametrize('field,value',[('fine_cdf_rmse',.2),('mean_relative_error',.5),('objective',float('nan'))])
++def test_guard_all_components_including_frozen(tmp_path,field,value):
++    r,ref=toy_runner(tmp_path,lambda x:1.)
++    base=r.evaluate(r.space.x,'B')['metrics']; after=copy.deepcopy(base)
++    after['SCHOOL'][field]=value
++    assert j.metric_guards(base,after,ref.CONFIG)
++
++
++def test_wrap_inner_off_returns_exact_parent_object(monkeypatch):
++    monkeypatch.setattr(j,'options',lambda:{'enabled':False})
++    original={'old':1}; ad=NS()
++    out=wire.wrap_inner(lambda *a,**k:original)(ad,{},'f',None,'root')
++    assert out is original
++
++
++def test_wrap_inner_corrects_frozen_mode_and_summary(tmp_path,monkeypatch):
++    monkeypatch.setattr(j,'options',lambda:{'enabled':True})
++    def original(ad,cfg,folder,*a,**k):
++        ad._tdjoint_stage={'inner_root':str(Path(folder).resolve()),'metric':'JOINT',
++            'objective_start':1.,'objective_final':.9,'objective_improvement':.1,
++            'search_complete':False,'stationarity_confirmed':False,
++            'fresh_assignment_and_skims_per_finecdf_evaluation':False}
++        return {'stop_reason':'MAX_ITERATIONS','fresh_assignment_and_skims_per_finecdf_evaluation':True}
++    out=wire.wrap_inner(original)(NS(),{},tmp_path,None,'root')
++    assert out['objective_start']==1. and out['progress_continue']
++    assert not out['fresh_assignment_and_skims_per_finecdf_evaluation']
++    assert json.loads((tmp_path/'V24916_FINECDF_INNER_RESULT.json').read_text())==out
++
++
++def test_wrap_inner_missing_stage_is_error(tmp_path,monkeypatch):
++    monkeypatch.setattr(j,'options',lambda:{'enabled':True})
++    with pytest.raises(RuntimeError,match='MISSING_OR_STALE'):
++        wire.wrap_inner(lambda *a,**k:{})(NS(),{},tmp_path,None,'r')
++
++
++def outer_harness(tmp_path,monkeypatch,accept=None,iz=False):
++    import r1_15a2_intrazonal_penalty_v24917 as ip
++    monkeypatch.setattr(ip,'_STAGE',{'pending':True} if iz else {})
++    monkeypatch.setattr(j,'options',lambda:{'enabled':True,'outer_isolates':True,'max_isolates':2})
++    monkeypatch.setattr(tb,'options',lambda:{'w_cnt':.65,'w_idp':.35})
++    rows=[{'component':'WORK_E_C','candidate_b':1.,'candidate_c':-1.},
++          {'component':'SERV_E_C','candidate_b':2.,'candidate_c':-2.}]
++    ad=NS(_tdjoint_stage={'w_cnt':.65,'w_idp':.35,
++        'final_abc':{'9101':{'b':1.,'c':-1.},'9106':{'b':2.,'c':-2.}}})
++    before={'state_hash':'PARENT'}; diag={'PARENT':True}; calls=[]
++    def orig(adapter,cfg,folder,control,b,d,rs):
++        assert b==before and d==diag
++        if len(rs)==1: assert cfg['coupled_demand']['finecdf_td']['realization_backtracking_scales']==[1.]
++        calls.append([x['component'] for x in rs])
++        take=bool(accept and len(rs)==1 and rs[0]['component']==accept)
++        return (rs if take else [], {'state_hash':'NEW'} if take else b, d,.001,
++                {'status':'REALIZED' if take else 'SOFT_REFERENCE_PLATEAU','attempts':[]})
++    ctrl=NS(atomic_json=atomic_json)
++    args=(ad,{},tmp_path,NS(checkpoint=lambda *a,**k:None),before,diag,rows)
++    return wire.wrap_realization(orig,ctrl),args,calls
++
++
++def test_outer_ablation_after_verified_combined_plateau(tmp_path,monkeypatch):
++    fn,args,calls=outer_harness(tmp_path,monkeypatch,accept='SERV_E_C')
++    out=fn(*args)
++    assert calls==[['WORK_E_C','SERV_E_C'],['SERV_E_C']]
++    assert [r['component'] for r in out[0]]==['SERV_E_C']
++    assert len(out[4]['tdjoint_attempt_groups'])==2
++
++
++def test_outer_all_rejected_remains_parent_and_bounded(tmp_path,monkeypatch):
++    fn,args,calls=outer_harness(tmp_path,monkeypatch)
++    out=fn(*args)
++    assert not out[0] and out[1]==args[4] and len(calls)==3
++    assert out[4]['status']=='SOFT_REFERENCE_PLATEAU'
++
++
++def test_outer_pending_penalty_uses_legacy_path_only(tmp_path,monkeypatch):
++    fn,args,calls=outer_harness(tmp_path,monkeypatch,iz=True)
++    fn(*args); assert len(calls)==1
++
++
++def test_outer_weight_change_and_target_mismatch_block_before_write(tmp_path,monkeypatch):
++    fn,args,calls=outer_harness(tmp_path,monkeypatch)
++    args[0]._tdjoint_stage['w_cnt']=.6
++    with pytest.raises(RuntimeError,match='WEIGHT_CHANGED'):fn(*args)
++    assert not calls
++    args[0]._tdjoint_stage['w_cnt']=.65
++    args[-1][0]['candidate_b']=3.
++    with pytest.raises(RuntimeError,match='TARGET_PLAN_MISMATCH'):fn(*args)
++    assert not calls
++
++
++def test_feature_off_keeps_original_realization_identity(tmp_path,monkeypatch):
++    monkeypatch.setattr(j,'options',lambda:{'enabled':False})
++    result=([],{}, {},None,{'legacy':True})
++    got=wire.wrap_realization(lambda *a:result,NS())(NS(),{},tmp_path,None,{}, {}, [])
++    assert got is result
++
++
++def test_loader_keeps_sealed_authority_bytes_and_uses_joint_subclass(monkeypatch):
++    import r1_15a2_finecdf_bridge_v24916 as bm
++    import r1_15a2_active_controller_patch_v24916p2c as acp
++    import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
++    for module,name in [(bm,'load_reference'),(bm,'run_finecdf_inner'),(ctrl,'run_finecdf_inner'),
++                        (ctrl,'_realize_finecdf_td'),(acp,'targeted_run_finecdf_inner')]:
++        monkeypatch.setattr(module,name,getattr(module,name))
++    monkeypatch.setattr(j,'options',lambda:{'enabled':True,'outer_isolates':True,'max_isolates':2})
++    s=wire.install(ctrl,print_fn=lambda *a:None)
++    fine={'reference_script':'reference_v19/R1_BC_AUTO_DIST_ONLY_FINECDF_SOFT_v1_9.py',
++          'reference_sha256':'fcdfa535940296e6cc793b6416c7c0a56c18aae8d5d20beddb064a170c673ff5',
++          'reference_script_id':'R1_BC_AUTO_DIST_ONLY_FINECDF_SOFT_V1_9_20261017'}
++    ref,_,sha=bm.load_reference(ROOT,fine)
++    assert ref.Runner.__name__=='JointRunner' and sha==fine['reference_sha256']
++    assert s['outer_acceptance_modified'] is False
++    assert getattr(acp.targeted_run_finecdf_inner,'_tdjoint1',False)
++
++
++def test_real_sealed_runner_dynamic_metrics_blend_and_checkpoint(tmp_path):
++    """Real v1.9 evaluate, parameter space, margins and NPZ checkpoint; fake native TD only."""
++    import r1_15a2_finecdf_bridge_v24916 as bm
++    fine={'reference_script':'reference_v19/R1_BC_AUTO_DIST_ONLY_FINECDF_SOFT_v1_9.py',
++          'reference_sha256':'fcdfa535940296e6cc793b6416c7c0a56c18aae8d5d20beddb064a170c673ff5',
++          'reference_script_id':'R1_BC_AUTO_DIST_ONLY_FINECDF_SOFT_V1_9_20261017'}
++    ref,_,_=bm.load_reference(ROOT,fine)
++    # This test constructs its own reference instance. No installed-class globals.
++    if ref.Runner.__name__=='JointRunner': ref.Runner=ref.Runner.__bases__[0]
++    ref.GROUPS=['WORK_E_C','SERV_E_C']
++    ref.CONFIG.update(max_iterations=1,max_td_evaluations=20,save_versions=False)
++    visum,cfg,zo,mats,live,inc,_=_blend_fixture()
++    inc['variables'].append({'family':'SERVICE','origin':1,'destination':2})
++    inc['incidence'].row_idx.append(0);inc['incidence'].col_idx.append(1);inc['incidence'].values.append(7.)
++    seed=np.array([[20.,10.,1.],[10.,20.,1.],[1.,1.,20.]])
++    for n in ref.MUTABLE_NOS: live[n+100]=seed*.5
++    live[9221]=seed*2.5;live[9222]=seed*2.5;live[9225]=seed*.5;live[9226]=seed*3
++    dist=np.array([[1.,5.,40.],[10.,2.,30.],[30.,50.,3.]])
++    epoch=NS(epoch=1,epoch_hash='frozen',family_distance={
++        'WORK':dist,'SERVICE':dist,'LONG':np.array([[110.,130.,190.],[130.,140.,160.],[150.,160.,120.]])})
++    class Native:
++        def __init__(self):
++            self.entry_abc={n:{'a':1.,'b':1.,'c':-1.} for n in ref.BY_NO}
++            self.current=copy.deepcopy(self.entry_abc);self.protected={9697:dist}
++            self.v=visum;self.outer_adapter=NS(cfg=cfg,v24917_last_incidence=inc)
++            self.zone_order=zo;self.root=tmp_path;self._v24917_frozen=True
++            self.dynamic_skim_epoch=epoch;self.ops=[NS(AttValue=lambda _:0)];self.td_index=1
++            self.executions=0;self.restores=0
++        def set_abc(self,abc):self.current=copy.deepcopy(abc);return self.current
++        def read_abc(self):return copy.deepcopy(self.current)
++        def read_matrix(self,no):return live[no]
++        def execute(self):
++            self.executions+=1
++            out={n:seed.copy() for n in ref.MUTABLE_NOS}
++            for n in (9101,9106):
++                d=.5*(self.current[n]['b']-1.)+.1*math.log(-self.current[n]['c'])
++                out[n][:2,:2]+=np.array([[d,-d],[-d,d]])
++            return out
++        def guard_protected(self,full=False):
++            assert self.current[9116]==self.entry_abc[9116]
++            for n in self.current:
++                assert self.current[n]['a']==1.
++                if n not in (9101,9106):assert self.current[n]==self.entry_abc[n]
++        def restore_state(self,abc,matrices):
++            self.restores+=1;self.set_abc(abc);self.execute();self.guard_protected(True)
++        def write_matrix(self,*a):raise AssertionError('DIRECT_OD_WRITE')
++    native=Native()
++    blend=tb.Blend(native,ref,{'w_cnt':.65,'w_idp':.35,'joint_enabled':True})
++    class Metrics:
++        def __init__(self,*a):
++            self.impl=bm.DynamicFamilyMetrics(native,ref)
++            self.impl._v24917_blend_state=blend
++        def evaluate(self,arrays):
++            # Calling each real per-target evaluator avoids any process-level
++            # wrapper installed by unrelated legacy tests.
++            out={k:self.impl._evaluate_one(k,epoch.family_distance[self.impl._family(k)],arrays)
++                 for k in ref.TARGETS}
++            return blend.apply(out,arrays)
++    ref.Metrics=Metrics
++    runner=j.make_runner(ref.Runner,ref)(native,ref.Log(tmp_path))
++    assert runner.optimize()=='MAX_ITERATIONS'
++    assert runner.baseline['tdjoint']['objective']==pytest.approx(1.)
++    assert len(runner.best['metrics'])==12
++    assert (tmp_path/'BEST_STATE.json').is_file()
++    assert native.restores>=1 and native.executions>=runner.evaluations
++    assert runner.best['tdjoint']['count_residual_copies']==1
++
++
++def test_count_model_uses_both_signs_and_excludes_validation(tmp_path):
++    b,mats,_=make_blend(tmp_path)
++    b.model.O[1]=100.  # second profile is overpredicted, first is underpredicted
++    b.apply(metric(),mats)
++    r=b.model.q(b.model.M_ref)
++    assert r[0]<0 and r[1]>0
++    visum,cfg,zo,_,_,inc,_=_blend_fixture()
++    cfg['api_approved_observations'][1]['role']='VALIDATION'
++    model=tb.CountModel(visum,cfg,zo,inc)
++    assert len(model.profiles)==1
++
++
++def test_references_and_protected_source_still_byte_identical():
++    import hashlib
++    base=json.loads((ROOT/'DIAGFAST_V1_BASE_MANIFEST.json').read_text())['files']
++    assert len(base)==1059
++    assert all(hashlib.sha256((ROOT/n).read_bytes()).hexdigest()==h for n,h in base.items())
++
++
++@pytest.mark.parametrize('previous',[None,'0.65'])
++@pytest.mark.parametrize('fail',[False,True])
++def test_weight_launcher_scopes_environment_and_restores(tmp_path,monkeypatch,previous,fail):
++    import os
++    if previous is None: monkeypatch.delenv('R1_TD_COUNT_WEIGHT',raising=False)
++    else: monkeypatch.setenv('R1_TD_COUNT_WEIGHT',previous)
++    spec=importlib.util.spec_from_file_location('test_weight_launcher',ROOT/'02_SPUSTIT_V24917_TDJOINT1_60_40.py')
++    mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
++    token=object();mod.Visum=token
++    calls=[]
++    def main():
++        calls.append((dp.load_options(ROOT)['td_count_weight'],parent.Visum))
++        if fail: raise RuntimeError('injected')
++        return 123
++    parent=NS(main=main)
++    monkeypatch.setattr(mod,'load_parent',lambda:parent)
++    if fail:
++        with pytest.raises(RuntimeError,match='injected'):mod.main()
++    else: assert mod.main()==123
++    assert calls==[(.60,token)]
++    assert os.environ.get('R1_TD_COUNT_WEIGHT')==previous
++
++@pytest.mark.parametrize('mode',['accept_isolated','reject_all','broken_rollback'])
++def test_real_controller_realization_and_rollback_order(tmp_path,monkeypatch,mode):
++    """Real outer interpolation/freeze/rollback; native COM and decisions scripted."""
++    import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
++    import r1_15a2_intrazonal_penalty_v24917 as iz
++    from r1_15a2_supply import canonical_hash
++    from test_v2490_td_soft_reference import _soft_cfg, Control
++    class Adapter:
++        def __init__(self):
++            self.bc={'WORK_E_C':(1.,-.1),'SERV_E_C':(2.,-.2)}
++            self.assignments=[];self.restores=[];self.gates=[];self.result_token=0
++            self._tdjoint_stage={'w_cnt':.65,'w_idp':.35,'final_abc':{
++                '9101':{'a':1.,'b':1.2,'c':-.12},'9106':{'a':1.,'b':2.2,'c':-.22}}}
++        def snapshot(self):
++            rows=[{'component':k,'current_b':v[0],'current_c':v[1],'status':'OK'} for k,v in sorted(self.bc.items())]
++            s={'td_values':rows,'td_hash':canonical_hash(rows),'fixed_link_hash':'F','dseg_hash':'D',
++               'operations_hash':'O','addval_hash':'A','generation_hash':'G','addval1':{},'matrices':[], 'dseg_map':{}}
++            return dict(s,state_hash=canonical_hash(s))
++        def apply_td(self,rows):
++            for r in rows:self.bc[r['component']]=(r['candidate_b'],r['candidate_c'])
++        def assign(self,folder,*,supply_only):
++            self.assignments.append(copy.deepcopy(self.bc));return .001
++        def diagnostics(self,folder,label):
++            return {'d12':{'rows':[]},'d11':{'summary':{}},'signals':{},'token':self.result_token}
++        def parameter_persistence(self,*a):pass
++        def block_gate(self,block,before,after,rows):
++            self.gates.append(copy.deepcopy(rows))
++            accepted=mode=='accept_isolated' and len(rows)==1 and rows[0]['component']=='SERV_E_C'
++            return {'accepted':accepted,'reasons':[] if accepted else ['SOFT_REFERENCE_TRADEOFF_GUARD']}
++    ad=Adapter();before=ad.snapshot();diag=ad.diagnostics(None,'BASE')
++    def restore(adapter,parent,rows,folder=None):
++        adapter.bc={r['component']:(r['current_b'],r['current_c']) for r in parent['td_values']}
++        adapter.restores.append(copy.deepcopy(adapter.bc))
++        if mode=='broken_rollback' and 'PLATEAU_ROLLBACK' in str(folder):adapter.result_token=1
++    monkeypatch.setattr(ctrl,'restore_td_parameters',restore)
++    monkeypatch.setattr(ctrl,'diagnostic_hash',canonical_hash)
++    monkeypatch.setattr(j,'options',lambda:{'enabled':True,'outer_isolates':True,'max_isolates':2})
++    monkeypatch.setattr(tb,'options',lambda:{'w_cnt':.65,'w_idp':.35})
++    monkeypatch.setattr(iz,'_STAGE',{})
++    rows=[{'component':'WORK_E_C','candidate_b':1.2,'candidate_c':-.12},
++          {'component':'SERV_E_C','candidate_b':2.2,'candidate_c':-.22}]
++    run=wire.wrap_realization(ctrl._realize_finecdf_td,ctrl)
++    if mode=='broken_rollback':
++        with pytest.raises(Exception,match='ROLLBACK_NOT_IDENTICAL'):
++            run(ad,_soft_cfg(),tmp_path,Control(),before,diag,rows)
++        assert len(ad.gates)==3 # no isolated write before successful full rollback
++        assert not (tmp_path/'ISOLATED_01_SERV_E_C').exists()
++        return
++    got=run(ad,_soft_cfg(),tmp_path,Control(),before,diag,rows)
++    assert [len(r) for r in ad.gates[:3]]==[2,2,2]
++    assert ad.assignments[3]=={'WORK_E_C':(1.,-.1),'SERV_E_C':(2.,-.2)}
++    assert ad.assignments[4]['WORK_E_C']==(1.,-.1) # verified parent before isolated SERVICE
++    if mode=='accept_isolated':
++        assert len(ad.gates)==4 and [r['component'] for r in got[0]]==['SERV_E_C']
++    else:
++        assert len(ad.gates)==5 and not got[0] and got[1]==before
++        assert ad.snapshot()==before and ad.diagnostics(None,'FINAL')==diag
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -10,6 +10,10 @@
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ RUNTIME = [
++    "01_SPUSTIT_V24917_TDJOINT1.py",
++    "02_SPUSTIT_V24917_TDJOINT1_60_40.py",
++    "r1_15a2_td_joint_v24917.py",
++    "r1_15a2_td_joint_runtime_v24917.py",
+     "01_SPUSTIT_V24917_GENFIX2.py",
+     "r1_15a2_parent_equivalence_v24917.py",
+     "01_SPUSTIT_V24917_GENFIX1.py",

@@ -1,0 +1,106 @@
+{
+  "schema": "R1_SAFETYFIX2_TDROLLBACKFIX1_VALIDATION_V1",
+  "release": "R1_15A2_V24917_SAFETYFIX2_TDROLLBACKFIX1_20261027",
+  "base_archive": "R1_15A2_V24917_SAFETYFIX1_FULL_20261027.zip",
+  "base_archive_sha256": "4410a6a6d9bdde2a10a89b0390f3b605511851e107b65fecea67ca5e47c70c26",
+  "base_crc_passes": true,
+  "main_suite": {
+    "passed": 1508,
+    "skipped": 4,
+    "failed": 0,
+    "errors": 0,
+    "unique_test_cases": 1512,
+    "collected_test_cases": 1512,
+    "coverage_complete": true,
+    "execution": "7 completed separate process shards; single combined timeout NOT counted as PASS"
+  },
+  "diagfast": {
+    "passed": 138,
+    "failed": 0
+  },
+  "genfix2_audit": {
+    "passed": 18,
+    "failed": 0
+  },
+  "total_unique_passed": 1664,
+  "skipped": 4,
+  "new_regression_cases": 39,
+  "targeted_combined_run": {
+    "passed": 103,
+    "included_in_main_total": true
+  },
+  "syntax": {
+    "sources": 440,
+    "errors": 0
+  },
+  "manifests": [
+    {
+      "manifest": "DIAGFAST_V1_BASE_MANIFEST.json",
+      "checked": 1059,
+      "passes": true
+    },
+    {
+      "manifest": "V24916_PERF2C_RUNTIME_MANIFEST.json",
+      "checked": 50,
+      "passes": true
+    },
+    {
+      "manifest": "V24917_RUNTIME_MANIFEST.json",
+      "checked": 59,
+      "passes": true
+    },
+    {
+      "manifest": "DIAGFAST_V1_RELEASE_MANIFEST.json",
+      "checked": 96,
+      "passes": true
+    },
+    {
+      "manifest": "GENFIX2_PAYLOAD_MANIFEST.json",
+      "checked": 1222,
+      "passes": true
+    },
+    {
+      "manifest": "V24915_PERF2_RUNTIME_BUNDLE_MANIFEST.json",
+      "checked": 101,
+      "passes": true
+    },
+    {
+      "manifest": "V24915_PERF2C_OVERLAY_MANIFEST.json",
+      "checked": 6,
+      "passes": true
+    }
+  ],
+  "existing_files_changed": [
+    "DIAGFAST_V1_RELEASE_MANIFEST.json",
+    "GENFIX2_PAYLOAD_MANIFEST.json",
+    "V24917_RUNTIME_MANIFEST.json",
+    "r1_15a2_parent_equivalence_v24917.py",
+    "r1_15a2_td_rollback_tolerant_v24917.py"
+  ],
+  "new_test_file": "tests/test_v24917_tdrollbackfix1.py",
+  "protected_base_files_unchanged": 1059,
+  "unchanged": {
+    "authorities": 24,
+    "run_options": true,
+    "finecdf_reference": true,
+    "generation_algorithm": true,
+    "supplymix_algorithm": true,
+    "acceptance_weights_and_thresholds": true,
+    "matrix_profile_geh_and_metric_roundoff_tolerances": true
+  },
+  "safetyfix1_retained": {
+    "td_shared_objective_failure_rejects_trial": true,
+    "zero_flowbundle_global_fallback": true,
+    "long_school_bounded_com_retry_and_no_false_stationarity": true
+  },
+  "live_visum_tested": false,
+  "windows_com_tested": false,
+  "limitations": [
+    "Original live full-parent proof was not persisted; exact complete list of live rejecting fields cannot be reconstructed.",
+    "Original logs report matching legacy snapshot and diagnostic hashes; two independent false rejections reproduced from actual producer schemas.",
+    "Changed dynamic skim CONTENT hashes remain a refusal; only validated execution epoch identity is normalized.",
+    "Material matrix/parameter/profile/11D drift or failed rollback still stops; no unsafe automatic continuation.",
+    "No automatic LoadVersion, direct OD matrix write or new component-specific skims introduced.",
+    "Other previous audit findings (count-incidence coverage, SupplyMix config fallback, DIAGFAST 11D parity) are outside this patch."
+  ]
+}

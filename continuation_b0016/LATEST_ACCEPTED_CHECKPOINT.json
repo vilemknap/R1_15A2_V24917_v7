@@ -1,0 +1,35 @@
+{
+  "accepted_count": 16,
+  "slot": "B",
+  "checkpoint": {
+    "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24915_RUNS\\RUN_20261019_113447_211124\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0016_d1211a44ac4d.ver",
+    "sha256": "797d5e3d23338ded3bff8e39a60c8a648c4118d139071bcbd61085d779e8cd65",
+    "size": 580941027
+  },
+  "semantic_restart_authority": {
+    "schema": "R1_15A2_SEMANTIC_RESTART_AUTHORITY_V2494",
+    "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24915_RUNS\\RUN_20261019_113447_211124\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0016_d1211a44ac4d.ver.semantic.json",
+    "semantic_state_hash": "46a0c61d45e55cc9d2a91be0c62839fee7ef9236924e59d6ebc27b62619c63d2",
+    "semantic_hashes": {
+      "fixed_link_hash": "83779fb0c29bc3f0e671b2ca3831289175b951a28740f8aff428c4c5b65b3f50",
+      "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+      "operations_hash": "8b7c5a1ffd4b2c3e8f6ab5a6bd6d37bad77a1e5cd6b2f7107e58cf79b2239b00",
+      "addval_hash": "189d17f4081b2d814659a8374f18c0bcd74ae1f79cf3cdbf9c0f38dddd3a7f74",
+      "matrix_hash": "4ffd9c56d8051ee901bcbbd183bf6a6fa631e177fae42518891dce0b996dcfef",
+      "generation_hash": "fb3d5de744e9fb37bc94fa64a2075ad6278d483a97540ab1a7e6151249bc52c3",
+      "td_hash": "1ee9dce7c8fa05082531209cf1292924d332c7af562f66f0fc74a540631ed12a"
+    },
+    "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+    "raw_ver_sha_used_for_restart_acceptance": false
+  },
+  "path_epoch_checkpoint": {
+    "enabled": true,
+    "epoch": 1,
+    "epoch_origin_state_hash": "7e07a967eafcbc45aae624595ea6eb86be3325815c580843a227ca5320408632",
+    "live_state_hash": "110a150824ebd264f652dfbba8657853bec196ee04398fbcf8565003e3ac71b9",
+    "basis_hash": "e44264e94cb77471256e2bc71e40c711de5bb1b611fb96acb436e713c5e10333",
+    "comparison_basis_hash": "ec95c5761b5dc6744849ad26af196b33dfd047c4e403ae68d640ad6dd6da60a7",
+    "persistent_cache_id": "EPOCH_20261019T095241Z_7e07a967eafc_e44264e94cb7",
+    "persistent_cache_dir": "C:\\Users\\vilem_knap\\AppData\\Local\\R1_15A2_PATH_CACHE_V248\\EPOCH_20261019T095241Z_7e07a967eafc_e44264e94cb7"
+  }
+}

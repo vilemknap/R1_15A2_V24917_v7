@@ -1,0 +1,267 @@
+--- /mnt/data/v24916_debug/00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py	2026-10-22 12:45:05.000000000 +0000
++++ 00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py	2026-10-22 15:45:21.788257879 +0000
+@@ -30,7 +30,10 @@
+ if _INJECTED_VISUM is not None and getattr(sys, "_r1_15a2_calibration_busy", False):
+     raise RuntimeError("ANOTHER_15A2_RUN_IS_ACTIVE_IN_THIS_VISUM_PROCESS")
+ for _name in list(sys.modules):
+-    if _name.startswith("r1_15a2_") or _name.startswith("R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2"):
++    # A fresh launcher must not mix API contracts from a previous R1_15A2 run
++    # in the same Visum Python host.  Purge both lower-case helper modules and
++    # upper-case entrypoint/runtime modules before importing this package.
++    if _name.startswith("r1_15a2_") or _name.startswith("R1_15A2_"):
+         sys.modules.pop(_name, None)
+ sys.path[:] = [str(HERE)] + [p for p in sys.path if p != str(HERE)]
+ 
+@@ -53,8 +56,82 @@
+     validate_active_runtime_delta,
+ )
+ 
+-BOOTSTRAP_SCHEMA = "R1_15A2_V24916_FRESH0_ISOLATED_BOOTSTRAP_V1"
++BOOTSTRAP_SCHEMA = "R1_15A2_V24916_FRESH0_ISOLATED_BOOTSTRAP_V2"
++BOOTSTRAPFIX_REVISION = "BOOTSTRAPFIX1_20261022"
+ BOOTSTRAP_FILE = "LATEST_BOOTSTRAP.json"
++BOOTSTRAP_FAILURE_FILE = "BOOTSTRAP_FAILED.json"
++PACKAGE_LOCATOR_FILE = "V24916_LAST_RUNS_LOCATION.txt"
++PACKAGE_FAILURE_FILE = "V24916_LAST_BOOTSTRAP_FAILURE.json"
++
++
++
++
++def _best_effort_package_text(name: str, text_value: str) -> None:
++    """Write a discoverable package-local breadcrumb without masking startup."""
++    try:
++        (HERE / name).write_text(str(text_value), encoding="utf-8")
++    except BaseException:
++        pass
++
++
++def _best_effort_package_json(name: str, payload) -> None:
++    try:
++        (HERE / name).write_text(
++            json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False, default=str),
++            encoding="utf-8")
++    except BaseException:
++        pass
++
++
++def _write_runs_locator(source_ver: Path, workspace: Path, stage: str) -> None:
++    _best_effort_package_text(
++        PACKAGE_LOCATOR_FILE,
++        "\n".join([
++            "R1 15A2 V24916 FRESH0 runtime location",
++            "stage=" + str(stage),
++            "source_ver=" + str(source_ver),
++            "runs_root=" + str(workspace),
++            "note=R1_15A2_V16_RUNS is created next to the opened .ver/project base, not necessarily inside this package folder.",
++            "",
++        ]))
++
++def _install_com_retry_budget_compat():
++    """Normalize historical 4-item COM retry budgets to the current 5-item API.
++
++    This is an additive launcher overlay only.  The sealed parent helper stays
++    byte-identical, so PERF1/PERF2 runtime-manifest authority is preserved.
++    """
++    provider = getattr(com, "_retry_budget", None)
++    if provider is None:
++        raise RuntimeError("COM_RETRY_BUDGET_PROVIDER_MISSING")
++    if getattr(provider, "_v24916_4to5_compat", False):
++        probe = tuple(provider({"enabled": False}))
++        if len(probe) != 5:
++            raise RuntimeError("COM_RETRY_BUDGET_COMPAT_PROBE_FAILED")
++        return {"status": "ALREADY_ACTIVE", "probe_length": len(probe)}
++
++    def compatible(policy):
++        raw = tuple(provider(policy))
++        if len(raw) == 5:
++            return raw
++        if len(raw) == 4:
++            return raw + (None,)
++        raise RuntimeError(
++            "COM_RETRY_BUDGET_CONTRACT_MISMATCH:expected=4_or_5 got=%d" % len(raw))
++
++    compatible._v24916_4to5_compat = True
++    compatible._v24916_original_provider = provider
++    com._retry_budget = compatible
++    probe = tuple(com._retry_budget({"enabled": False}))
++    if len(probe) != 5:
++        raise RuntimeError("COM_RETRY_BUDGET_COMPAT_PROBE_FAILED")
++    return {
++        "status": "ACTIVE",
++        "legacy_four_item_supported": True,
++        "current_five_item_supported": True,
++        "probe_length": len(probe),
++        "sealed_parent_file_modified_on_disk": False,
++    }
+ 
+ 
+ def _hash(value):
+@@ -121,6 +198,7 @@
+     row = {
+         "schema": BOOTSTRAP_SCHEMA,
+         "release": RELEASE,
++        "bootstrapfix_revision": BOOTSTRAPFIX_REVISION,
+         "updated_at": datetime.now().astimezone().isoformat(),
+     }
+     row.update(payload)
+@@ -258,19 +336,28 @@
+ def main():
+     bootstrap_path = None
+     workspace = None
++    source_ver = None
++    stage = "BIND_INJECTED_VISUM"
+     try:
++        print("=== R1 15A2 V24916 FRESH0 ISOLATED ACTIVE TARGETING ===")
++        print("Using currently opened version as new baseline.")
+         visum, _ = com.bind_injected(globals())
+         source_ver = Path(str(visum.IO.CurrentVersionFile)).resolve()
+         if not source_ver.is_file():
+             raise RuntimeError("CURRENT_VERSION_FILE_NOT_FOUND")
+ 
+-        early_io_status = runtime_io_hotfix.activate()
+-        early_telemetry_status = telemetry_failopen.activate()
++        # Allocate the isolated RUNS root before any runtime activation that may
++        # import/patch a mixed live Visum module graph.  This guarantees that a
++        # bootstrap failure always leaves a discoverable forensic record.
++        stage = "ALLOCATE_ISOLATED_RUNS_ROOT"
+         _, workspace = _isolated_workspace(source_ver)
+         bootstrap_path = workspace / BOOTSTRAP_FILE
++        _write_runs_locator(source_ver, workspace, stage)
++        print("RUNS root: " + str(workspace))
+         _write_bootstrap(
+             bootstrap_path,
+             status="BOOTSTRAP_STARTED",
++            stage=stage,
+             source_version=str(source_ver),
+             isolated_workspace=str(workspace),
+             accepted_count_start=0,
+@@ -287,14 +374,23 @@
+             parallel_v24915_note="SAFE_ONLY_WHEN_V24915_RUNS_IN_A_SEPARATE_VISUM_PROCESS",
+             runs_root_name=RUNS_ROOT_NAME,
+             lock_name=LOCK_NAME,
+-            pathfix3=early_io_status,
+-            telemetry_pathfix3=early_telemetry_status,
+         )
+ 
++        stage = "INSTALL_COM_RETRY_4TO5_COMPAT"
++        com_retry_compat = _install_com_retry_budget_compat()
++
++        stage = "ACTIVATE_IOFIX3"
++        early_io_status = runtime_io_hotfix.activate()
++
++        stage = "ACTIVATE_TELEMETRY_FAILOPEN"
++        early_telemetry_status = telemetry_failopen.activate()
++
++        stage = "LIVE_READ_ONLY_PREFLIGHT"
+         authority, manifest = _run_live_preflight(visum, workspace)
+         _write_bootstrap(
+             bootstrap_path,
+             status="PREFLIGHT_PASS_STARTING_FRESH0_CALIBRATION",
++            stage=stage,
+             source_version=str(source_ver),
+             isolated_workspace=str(workspace),
+             semantic_state_hash=authority.get("source_semantic_state_hash"),
+@@ -308,12 +404,17 @@
+             persistent_path_cache_enabled=False,
+             persistent_path_cache_reads_allowed=False,
+             persistent_path_cache_writes_allowed=False,
++            com_retry_4to5_compat=com_retry_compat,
++            pathfix3=early_io_status,
++            telemetry_pathfix3=early_telemetry_status,
+         )
+ 
++        stage = "INSTALL_ACTIVE_RUNTIME"
+         runtime_status = _install_runtime(visum, authority, manifest, workspace)
+         _write_bootstrap(
+             bootstrap_path,
+             status="CALIBRATION_HANDOFF",
++            stage=stage,
+             source_version=str(source_ver),
+             isolated_workspace=str(workspace),
+             authority_hash=authority.get("authority_hash"),
+@@ -322,28 +423,46 @@
+             outer_cycle_start=1,
+         )
+ 
++        stage = "PARENT_MAIN_FULL"
+         result = parent.main("FULL")
+         _write_bootstrap(
+             bootstrap_path,
+             status="CALIBRATION_RETURNED",
++            stage=stage,
+             source_version=str(source_ver),
+             isolated_workspace=str(workspace),
+             result=result,
+         )
++        _write_runs_locator(source_ver, workspace, "CALIBRATION_RETURNED")
+         return result
+     except Exception as exc:
++        tb = traceback.format_exc()
++        failure = {
++            "schema": BOOTSTRAP_SCHEMA,
++            "release": RELEASE,
++            "bootstrapfix_revision": BOOTSTRAPFIX_REVISION,
++            "status": "FAILED",
++            "stage": stage,
++            "source_version": str(source_ver) if source_ver is not None else None,
++            "isolated_workspace": str(workspace) if workspace is not None else None,
++            "expected_runs_root_name": RUNS_ROOT_NAME,
++            "package_root": str(HERE),
++            "exception_type": type(exc).__name__,
++            "exception": str(exc),
++            "traceback": tb,
++            "updated_at": datetime.now().astimezone().isoformat(),
++        }
+         if bootstrap_path is not None:
+             try:
+-                _write_bootstrap(
+-                    bootstrap_path,
+-                    status="FAILED",
+-                    isolated_workspace=str(workspace) if workspace is not None else None,
+-                    exception_type=type(exc).__name__,
+-                    exception=str(exc),
+-                    traceback=traceback.format_exc(),
+-                )
++                _write_bootstrap(bootstrap_path, **failure)
++                _atomic_json(Path(workspace) / BOOTSTRAP_FAILURE_FILE, failure)
+             except Exception:
+                 pass
++        _best_effort_package_json(PACKAGE_FAILURE_FILE, failure)
++        if source_ver is not None and workspace is not None:
++            _write_runs_locator(source_ver, workspace, "FAILED:" + stage)
++        print("BOOTSTRAP ERROR [%s]: %s: %s" % (stage, type(exc).__name__, str(exc)))
++        print(tb)
+         raise
+     finally:
+         sys.path[:] = _ORIGINAL_SYS_PATH
+--- /mnt/data/v24916_debug/START_HERE_V24916_FRESH0_ISOLATED_PATHFIX3_CZ.txt	2026-10-22 12:52:18.000000000 +0000
++++ START_HERE_V24916_FRESH0_ISOLATED_PATHFIX3_CZ.txt	2026-10-22 15:43:07.155494496 +0000
+@@ -25,3 +25,12 @@
+ 
+ Persistent path cache je vypnuta. Paths se cerstve enumeruji v tomto V24916 runu.
+ IOFIX3/PATHFIX3 a aktivni FlowBundle Generation + TD targeting zustavaji zapnute.
++
++
++BOOTSTRAPFIX1 / LIVE FAILURE VISIBILITY
++- R1_15A2_V16_RUNS se vytvari vedle otevreneho .ver (stabilni project base), ne nutne uvnitr slozky baliku.
++- Po startu vznikne v baliku V24916_LAST_RUNS_LOCATION.txt s presnou cestou.
++- RUNS root se zaklada jeste pred IOFIX3/telemetry aktivaci.
++- Pri chybe vznikne R1_15A2_V16_RUNS/BOOTSTRAP_FAILED.json a soucasne package-local V24916_LAST_BOOTSTRAP_FAILURE.json.
++- Konzole vypise presny bootstrap stage a plny traceback.
++- COM retry caller je zpetne kompatibilni s historickym 4-prvkovym i novym 5-prvkovym retry-budget kontraktem.
+--- /mnt/data/v24916_debug/V24916_PERF2C_RUNTIME_MANIFEST.json	2026-10-22 12:48:52.000000000 +0000
++++ V24916_PERF2C_RUNTIME_MANIFEST.json	2026-10-22 15:45:22.721767292 +0000
+@@ -1,11 +1,12 @@
+ {
+   "activation_stage": "FRESH0_ISOLATED_ACTIVE_GENERATION_AND_TD_TARGETING_IOFIX3_PATHFIX3_PERSISTENT_CACHE_DISABLED",
++  "bootstrapfix_revision": "BOOTSTRAPFIX1_20261022",
+   "cross_run_cache_restore_allowed": false,
+   "external_cache_read_allowed": false,
+   "persistent_path_cache_enabled": false,
+   "release": "R1_15A2_V24916_PERF2C_PROFILE488_FRESH0_UNIVERSAL_VER_ISOLATED_ACTIVE_TARGETING_IOFIX3_PATHFIX3_CACHE_DISABLED_20261022",
+   "required_files": {
+-    "00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py": "d56cd9d145fcdc50e787fe44f8d26963e3915d65b19243d8cab0ece8413d8aa4",
++    "00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py": "73757d4f36685047a350303b3a60d8d8dd8b5697e73e8e18e162010409a77edb",
+     "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_FRESH100_PROFILE488_FRESHCACHE_SAVEFIX1_NO_WALLCLOCK.py": "c1aa1f4883810cb2c0ad276f2b53b854b4f7329bf543ecee12865a08dd020441",
+     "authorities/COUNTLOCATION-2026-10-22-02-23-34.xlsx": "0244e311488e88f754a691e8c1d535608a13360e91086ee116d6d9e71bf7f860",
+     "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_CURRENT_126_20261022.csv": "2154cfd4fb080f63ec3f6e233d27bb8d7787a0598febf38c14e7851f3f66a7e0",

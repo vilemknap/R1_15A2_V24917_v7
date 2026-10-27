@@ -1,0 +1,19 @@
+R1 15A2 FRESH100 TGTD100 ONLY - SEMFIX1
+
+Observed live failure fixed:
+SOURCE_ADJACENT_SEMANTIC_SIDECAR_MISMATCH:fixed_link_hash,operations_hash,matrix_hash
+
+Root cause:
+The fresh-cycle-1 launcher declared the currently opened .ver to be the new baseline,
+but still hard-required an adjacent historical .ver.semantic.json to match it.
+After intentional model changes this historical sidecar is legitimately stale.
+
+Fix:
+- adjacent historical semantic sidecar is diagnostic-only in FRESH_CYCLE1 mode;
+- live currently opened .ver semantics become the fresh source authority;
+- source -> saved working-copy semantic identity remains a hard gate;
+- source .ver SHA remains a within-run mutation sentinel;
+- 100 TG/TD cycles, no ADDVAL, no global wall-clock limit remain unchanged.
+
+Regression:
+896 passed, 4 skipped.

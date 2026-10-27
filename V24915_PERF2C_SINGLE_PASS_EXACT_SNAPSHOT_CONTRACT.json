@@ -1,0 +1,53 @@
+{
+  "acceptance_changed": false,
+  "assignment_changed": false,
+  "candidate_math_changed": false,
+  "continuation_changed": false,
+  "cross_assignment_cache": false,
+  "cross_candidate_cache": false,
+  "cross_snapshot_cache": false,
+  "first_live_call_exact_shadow_parity": true,
+  "full_generation_values_required": true,
+  "full_matrix_values_required": true,
+  "full_operation_runtime_state_required": true,
+  "full_td_values_required": true,
+  "matrix_getvalues_semantics_changed": false,
+  "new_authority_token": false,
+  "new_mutation_epoch": false,
+  "optimized_read_exception_action": "PERMANENT_ADAPTER_LOCAL_FALLBACK_TO_UNTOUCHED_PARENT_SNAPSHOT",
+  "optimized_reads": [
+    "ONE_OPERATIONS_GETALL_SHARED_BY_TD_AND_OPERATION_INVENTORY",
+    "DSeg_BINDING_READS_ONLY_CODE_AND_ODMATRIX_NO",
+    "MATRIX_CODE_AND_NONZERO_NOT_READ_BECAUSE_NOT_IN_PUBLISHED_SNAPSHOT"
+  ],
+  "overnight50_changed": false,
+  "parent_package_revision": "V24915_PERF2_R5_OVERNIGHT50_B0016_CONTINUATION",
+  "parent_release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
+  "parity_mismatch_action": "PERMANENT_ADAPTER_LOCAL_FALLBACK_TO_UNTOUCHED_PARENT_SNAPSHOT",
+  "public_snapshot_schema_changed": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2C_R2_SINGLE_PASS_EXACT_SNAPSHOT_SUPPLY_TEMP_HOTFIX_20261020",
+  "rollback_changed": false,
+  "schema": "R1_15A2_V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_CONTRACT_V1",
+  "scope": "LOCAL_PER_SNAPSHOT_READ_COALESCING_PLUS_READONLY_MAIN_SQLITE_TEMP_SCHEMA_SUPPLY_HOTFIX",
+  "semantic_hashes_changed": false,
+  "supply_sqlite_hotfix": {
+    "connection_local_temp_schema_required": true,
+    "demand_convergence_gate_changed": false,
+    "demand_math_changed": false,
+    "path_cache_content_changed": false,
+    "path_cache_manifest_semantics_changed": false,
+    "persistent_main_database_uri_mode": "ro",
+    "persistent_main_database_writable": false,
+    "pragma_query_only_enabled": false,
+    "reconstructed_fields": [
+      "protected",
+      "cal_indices"
+    ],
+    "reconstruction_formula_changed": false,
+    "reopened_profile_index_state_reconstructed": true,
+    "supply_design_math_changed": false,
+    "supply_math_changed": false,
+    "supply_only_resume_launcher_added": true,
+    "temp_store": "MEMORY"
+  }
+}

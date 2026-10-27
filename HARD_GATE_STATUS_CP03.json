@@ -1,0 +1,15 @@
+{
+  "schema": "R1_15A2_V245_CP03_HARD_GATE_STATUS_V1",
+  "status": "PASS_OFFLINE_READY_FOR_BOUNDED_REAL_VISUM_RERUN",
+  "release": "R1_15A2_V2_4_5_CP03_LIVE_PATHLEN_HOTFIX_20261016",
+  "offline_tests": {"passed": 535, "failed": 0},
+  "root_cause_reproduced_from_live_evidence": true,
+  "known_failing_path_length": 261,
+  "new_equivalent_run_root_path_length": 235,
+  "helpers_decoupled_from_run_tree": true,
+  "rollback_state_evidence_before_diagnostics": true,
+  "mathematical_calibration_semantics_changed": false,
+  "live_visum_rerun_after_fix": false,
+  "production_ready": false,
+  "next_gate": "REAL_VISUM_V245_CP03_BOUNDED_RERUN_THROUGH_GENERATION_TRIAL_ROLLBACK_AND_FIRST_TD_ENTRY"
+}

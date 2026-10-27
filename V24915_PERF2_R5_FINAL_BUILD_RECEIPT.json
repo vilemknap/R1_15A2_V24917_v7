@@ -1,0 +1,13 @@
+{
+  "compileall": "PASS",
+  "config_sha256": "f5a97dfa63601ec443f4889ba48635d98e7593700f2a8a2da8b6685fe4e1a9e3",
+  "full_tests": "856 passed, 4 skipped, 0 failed",
+  "launcher_sha256": "79a749c1c248efe2431cb35f21bef531a09a2f409eacc0551f3a6d2ad6bf00d4",
+  "overnight_contract_sha256": "f855f750e0c4b79a27c59b3c6adabde6f76c8879654543d5ba1348cc29656169",
+  "package_revision": "V24915_PERF2_R5_OVERNIGHT50_B0016_CONTINUATION",
+  "r5_continuation_sha256": "89c288fe0ac83fb9b8a42bfea84cf76ac6032fa33e09d9a831513dd8a41dcdd4",
+  "runtime_manifest_sha256": "b7f7424dd40fd28d676d3ba62b033dd022bcb10ecfce1bac321ad0ff2dc9049a",
+  "runtime_preflight": "101/101 PASS",
+  "safety_sha256": "d78107663ff32b2dc58e03e850ee4f90815008e822d2b3e1c0d4aa9bd201ec1b",
+  "schema": "R1_15A2_V24915_PERF2_R5_BUILD_RECEIPT_V1"
+}

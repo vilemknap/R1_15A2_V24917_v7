@@ -1,0 +1,28 @@
+{
+  "schema": "R1_15A2_V246_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_6_ADAPTIVE_PERFORMANCE_20261016",
+  "runtime_base": "CP03_LIVE_PATHLEN_HOTFIX",
+  "runtime_base_sha256": "a36551a2c2df1cb9034087a32637137f6a8f453129fc2738c1de0aee9df597d1",
+  "cp02_role": "IMPLEMENTED_SAFE_PERFORMANCE_SUBSET_WITH_EXPLICIT_ADAPTIVE_SEMANTICS",
+  "cp03_role": "PRESERVED_RUNTIME_AND_PATHLEN_ROLLBACK_BASE",
+  "offline_tests": {
+    "passed": 554,
+    "failed": 0,
+    "skipped": 0
+  },
+  "compileall_pass": true,
+  "benchmark_status": "PASS_OFFLINE_EVIDENCE_ONLY",
+  "real_ptv_visum_2026_tested": false,
+  "production_ready": false,
+  "search_semantics": "ADAPTIVE_EXPLICIT_NOT_BITWISE_IDENTICAL",
+  "next_required_gate": "REAL_VISUM_BOUNDED_ACCEPTANCE_THEN_FULL_OVERNIGHT_RUN",
+  "required_launcher": "R1_15A2_FULL_OVERNIGHT_ADAPTIVE_V2_4_6.py",
+  "benchmark": {
+    "v245_assignment_or_recompute_calls": 21,
+    "v246_assignment_or_recompute_calls": 18,
+    "reduction_fraction": 0.14285714285714285,
+    "same_final_state": false,
+    "real_visum_wall_time_speedup_claim": null
+  },
+  "finecdf_v18_sha256": "abeb746ff49ac1f0e548e6b7945ec476e5c5e80897e6be1da6e2d42ae442d7d5"
+}

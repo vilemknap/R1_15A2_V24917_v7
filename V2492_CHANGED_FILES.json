@@ -1,0 +1,26 @@
+{
+  "files": [
+    "R1_15A2_CONFIG_V2_4_9_2.json",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_2.py",
+    "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+    "r1_15a2_core.py",
+    "r1_15a2_multiblock.py",
+    "r1_15a2_supply_visum.py",
+    "r1_15a2_overnight_controller_v242.py",
+    "r1_15a2_safety_v2492.py",
+    "tests/test_v2492_signed_generation_refinement.py",
+    "tests/test_v2492_release.py",
+    "README_R1_15A2_V2_4_9_2_SIGNED_GENERATION_REFINEMENT_CZ.md",
+    "LIVE_VISUM_ACCEPTANCE_V2_4_9_2_CZ.md",
+    "START_HERE_V2492_CZ.txt",
+    "V2492_IMPLEMENTATION_AND_TEST_REPORT.md",
+    "METHODOLOGY_STATUS_V2492.json",
+    "VERIFY_PACKAGE_V2_4_9_2.py",
+    "CURRENT_RELEASE.txt",
+    "V2492_SIGNED_GENERATION_SYNTHETIC_BENCHMARK.json",
+    "SOURCE_PATCH_V2490_TO_V2492.diff",
+    "V2492_RELEASE_STATUS.json",
+    "MANIFEST_V2492.json"
+  ],
+  "release": "R1_15A2_V2_4_9_2_SIGNED_GENERATION_REFINEMENT_20261018"
+}

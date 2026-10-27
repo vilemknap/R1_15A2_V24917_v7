@@ -1,0 +1,53 @@
+{
+  "schema": "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_AUTHORITY_V1",
+  "source_checkpoint_name": "ACCEPTED_B_0018_3d57d34487ba.ver",
+  "source_run_id": "RUN_20261020_004141_848876",
+  "source_checkpoint_sha256_provenance": "e9d47c369fb9ad5f5d5e230079c39109ba40ca73999d0e1d42ace642f28470af",
+  "source_checkpoint_size_provenance": 580938848,
+  "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+  "raw_ver_sha_used_for_restart_acceptance": false,
+  "accepted_count": 18,
+  "inherited_outer_cycles": 15,
+  "next_outer_cycle": 16,
+  "max_lineage_outer_cycle": 25,
+  "extension_outer_cycles": 10,
+  "extension_outer_cycle_start": 16,
+  "extension_outer_cycle_end": 25,
+  "inherited_completed_demand_cycles": 10,
+  "source_stationary_cycle_streak": 2,
+  "inherited_stationary_cycle_streak": 0,
+  "source_demand_converged": true,
+  "extension_resets_demand_convergence": true,
+  "supply_locked_during_extension": true,
+  "resume_substep": "GENERATION",
+  "td_realization_pending": false,
+  "snapshot_state_hash_diagnostic": "7c5c4ff0b08932cdfde6bd1362f5d32b224cf5ef2ca02938fcfa480789680b9a",
+  "semantic_state_hash": "cef9b4247114a01e54d45b885f3321a0a22387fe67fc7c1dfdd44f9d1134590e",
+  "semantic_hashes": {
+    "fixed_link_hash": "83779fb0c29bc3f0e671b2ca3831289175b951a28740f8aff428c4c5b65b3f50",
+    "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+    "operations_hash": "8b7c5a1ffd4b2c3e8f6ab5a6bd6d37bad77a1e5cd6b2f7107e58cf79b2239b00",
+    "addval_hash": "189d17f4081b2d814659a8374f18c0bcd74ae1f79cf3cdbf9c0f38dddd3a7f74",
+    "matrix_hash": "0dc8515d05e95640c67a1361ea2a5f1b63e4080450ac38d84ac7b611e5bd3a2c",
+    "generation_hash": "6af9eb82cc9582140685fc22675df3ad18dbf97079094a839203113f5f410763",
+    "td_hash": "6131d0d4816bea48f4063e5a74885ca2e62a53240b915ae1bc26f1b83fb8b96a"
+  },
+  "generation_reference_file": "continuation_b0016/GENERATION_COUNTS_REFERENCE.json",
+  "generation_reference_sha256": "57016672bc247a820075998e98453e7dd4155d6e5b3fd2dcdf752731f6c29e2c",
+  "generation_backtracking_scales": [1.0, 0.5, 0.25, 0.125, 0.0625],
+  "generation_max_trials_per_block": 5,
+  "bounded_inner_budget_stop_reasons": [
+    "MAX_ITERATIONS",
+    "TD_EVALUATION_BUDGET",
+    "TD_INNER_TIME_BUDGET"
+  ],
+  "source_evidence": {
+    "demand_converged_cycle": 15,
+    "stationary_cycle_streak": 2,
+    "supply_started": true,
+    "supply_failed_before_first_candidate_design_completed": true,
+    "live_matches_last_accepted": true,
+    "manual_reopen_required": false,
+    "safe_restart_from_latest_accepted_checkpoint": true
+  }
+}

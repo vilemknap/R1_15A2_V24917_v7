@@ -1,0 +1,32 @@
+V24916 A0004 ONECLICK1 - SPUSTENI
+================================
+
+TATO VERZE NAHRAZUJE DVOUKROKOVE 00_1 + 00_2.
+
+1) Otevri presne checkpoint:
+   ACCEPTED_B_0004_d26d01d6f9a5.ver
+
+2) Spust pouze:
+   00_0_SPUSTIT_V24916_A0004_ONECLICK_ACTIVE_TARGETING.py
+
+3) Launcher okamzite vytvori viditelnou slozku:
+   R1_15A2_V24916_PERF2C_PROFILE488_A0004_ACTIVE_TARGETING_RUNS
+   a v ni LATEST_BOOTSTRAP.json.
+
+4) Nejprve probehne read-only live preflight. Pri PASS se bez dalsiho zasahu
+   automaticky preda rizeni A0004 cycle-3 TD recovery runtime, ktery vytvori
+   skutecny RUN_* a nastavi persistent path-cache root.
+
+5) Pokud preflight nebo handoff selze, LATEST_BOOTSTRAP.json obsahuje exception
+   a traceback. Neni tedy nutne lovit chybu jen z dialogu Visumu.
+
+NEPOUZIVEJ pro bezny start stare 00_1/00_2. Jsou ponechane pouze pro diagnostiku.
+
+Continuation:
+  accepted_count = 4
+  outer_cycle = 3
+  resume_substep = TD_FINECDF_V17
+  TD component targeting = ON
+  Generation FlowBundle targeting = ON od dalsi Generation
+  Supply targeting = OFF
+  acceptance authority = beze zmeny

@@ -1,0 +1,11 @@
+{
+  "schema": "R1_15A2_V2482_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+  "status": "PASS_OFFLINE_TESTS_NOT_REAL_VISUM_ACCEPTANCE",
+  "offline_tests": "586 passed",
+  "compileall_pass": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "live_blocker_fixed": "NATIVE_CW:1:7 EXISTING_GEOMETRY_ZERO_SHARE_RESIDUAL",
+  "next_gate": "REAL_VISUM_V2482_RESTART_EXPECT_ZERO_INITIAL_REENUMERATION_AND_REACH_GENERATION_TRY_01"
+}

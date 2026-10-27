@@ -1,0 +1,572 @@
+--- /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP01_CHECKPOINT_ATOMICITY_20261016/r1_15a2_runtime_v1.py	2026-10-16 10:00:00.000000000 +0000
++++ /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP03_LIVE_PATHLEN_HOTFIX_20261016/r1_15a2_runtime_v1.py	2026-10-16 11:45:26.904453606 +0000
+@@ -33,6 +33,7 @@
+ import re
+ import shutil
+ import sys
++import tempfile
+ import time
+ import traceback
+ import zipfile
+@@ -405,9 +406,57 @@
+ # Helper diagnostics
+ # -----------------------------------------------------------------------------
+ 
++# Live V2.4.5 exposed a Windows MAX_PATH failure: deeply nested candidate /
++# rollback folders plus the helper's own output tree can exceed 260 characters.
++# Helpers therefore execute in a short OS-temporary workspace.  Only compact
++# evidence mirrors and ZIP archives are published back to the durable run tree.
++# This preserves the diagnostic semantics while decoupling helper I/O from the
++# controller's descriptive folder hierarchy.
++_HELPER_MIRROR_TEXT_PATTERNS = ("*fatal_error*.txt", "*_stdout.txt", "*.log")
++
++def _short_helper_workspace(stage):
++    token = re.sub(r"[^A-Za-z0-9]+", "", str(stage).upper())[:10] or "HELPER"
++    path = Path(tempfile.mkdtemp(prefix="R1A2_%s_" % token))
++    # Leave ample room for helper-created subdirectories / filenames.
++    # 220 is deliberately stricter than historical MAX_PATH=260.
++    if len(str(path)) > 120:
++        shutil.rmtree(str(path), ignore_errors=True)
++        raise RuntimeError("HELPER_TEMP_ROOT_TOO_LONG:%d:%s" % (len(str(path)), path))
++    return path
++
++def _copy_if_file(source, destination):
++    source = Path(source); destination = Path(destination)
++    if not source.is_file():
++        return None
++    destination.parent.mkdir(parents=True, exist_ok=True)
++    shutil.copy2(str(source), str(destination))
++    return destination
++
++def _mirror_helper_failure(workspace, mirror):
++    workspace = Path(workspace); mirror = Path(mirror)
++    mirror.mkdir(parents=True, exist_ok=True)
++    copied = []
++    seen = set()
++    for pattern in _HELPER_MIRROR_TEXT_PATTERNS:
++        for source in workspace.rglob(pattern):
++            if not source.is_file() or source.name in seen:
++                continue
++            target = mirror / source.name
++            _copy_if_file(source, target)
++            copied.append(str(target)); seen.add(source.name)
++    return copied
++
++def _archive_helper_workspace(workspace, zip_path):
++    workspace = Path(workspace); zip_path = Path(zip_path)
++    if workspace.exists():
++        zip_folder(workspace, zip_path)
++        return zip_path
++    return None
++
+ def run_helper(script, visum, stage, workspace, stage_log):
+-    script = Path(script); workspace = Path(workspace)
++    script = Path(script); workspace = Path(workspace); stage_log = Path(stage_log)
+     workspace.mkdir(parents=True, exist_ok=True)
++    stage_log.parent.mkdir(parents=True, exist_ok=True)
+     copy = workspace / script.name
+     if not script.is_file():
+         raise RuntimeError("Helper script missing: %s" % script)
+@@ -446,59 +495,93 @@
+ 
+ 
+ def run_12d(visum, out_dir, label, cfg):
+-    ws = Path(out_dir) / ("12D_" + label)
+-    if ws.exists():
+-        shutil.rmtree(str(ws), ignore_errors=True)
++    out_dir = Path(out_dir)
++    out_dir.mkdir(parents=True, exist_ok=True)
++    mirror = out_dir / ("12D_" + label)
++    if mirror.exists():
++        shutil.rmtree(str(mirror), ignore_errors=True)
++    scratch = _short_helper_workspace("12D_" + label)
+     helper_name = str(cfg.get("12d_helper_name", D12_NAME))
+     if Path(helper_name).name != helper_name or not helper_name.endswith(".py"):
++        shutil.rmtree(str(scratch), ignore_errors=True)
+         raise RuntimeError("Unsafe 12D helper selection")
+-    authority_rel = cfg.get("12d_authority_csv")
+-    if authority_rel:
+-        authority_path = (script_dir() / str(authority_rel)).resolve()
+-        if not authority_path.is_relative_to(script_dir().resolve()) or not authority_path.is_file():
+-            raise RuntimeError("CSD408 selected authority CSV unavailable or out of package")
+-        expected_sha = cfg.get("12d_authority_sha256")
+-        if not expected_sha or sha256_file(authority_path) != expected_sha:
+-            raise RuntimeError("CSD408 approved authority SHA256 mismatch")
+-        ws.mkdir(parents=True, exist_ok=True)
+-        shutil.copy2(str(authority_path), str(ws / authority_path.name))
+-    city_rel = cfg.get("12d_city_authority_csv")
+-    if city_rel:
+-        city_path = (script_dir() / str(city_rel)).resolve()
+-        if not city_path.is_relative_to(script_dir().resolve()) or not city_path.is_file():
+-            raise RuntimeError("Approved CITY90 RPDI authority missing or outside package")
+-        city_sha = cfg.get("12d_city_authority_sha256")
+-        if not city_sha or sha256_file(city_path) != city_sha:
+-            raise RuntimeError("CITY90 authoritative R1_OBS_RPDI SHA256 mismatch")
+-        ws.mkdir(parents=True, exist_ok=True)
+-        shutil.copy2(str(city_path), str(ws / city_path.name))
+-    run_helper(script_dir() / "helpers" / helper_name, visum, "12D_" + label, ws, Path(out_dir) / "20_STAGE_LOG.txt")
+-    detail_name = str(cfg.get("12d_detail_name", D12_DETAIL))
+-    if Path(detail_name).name != detail_name or not detail_name.endswith(".csv"):
+-        raise RuntimeError("Unsafe 12D detail selection")
+-    detail = find_file_recursive(ws, detail_name)
+-    summary = find_file_recursive(ws, D12_SUMMARY)
+-    if not detail or not summary:
+-        raise RuntimeError("12D output incomplete under %s" % ws)
+-    meta = read_json(summary)
+-    if meta.get("status") != "PASS":
+-        raise RuntimeError("12D not PASS: %s" % summary)
+-    rows = read_csv_auto(detail)
+-    expected_rows = int(cfg.get("expected_12d_rows", 444))
+-    expected_cal = int(cfg.get("expected_calibration_rows", 404))
+-    expected_val = int(cfg.get("expected_validation_rows", 40))
+-    cal_n = sum(1 for r in rows if sval(r.get("role", "")).upper() == "CALIBRATION")
+-    val_n = sum(1 for r in rows if sval(r.get("role", "")).upper() == "VALIDATION")
+-    if len(rows) != expected_rows or cal_n != expected_cal or val_n != expected_val:
+-        raise RuntimeError(
+-            "12D authority row gate failed: rows=%d/%d CAL=%d/%d VALID=%d/%d" %
+-            (len(rows), expected_rows, cal_n, expected_cal, val_n, expected_val)
+-        )
+-    zip_folder(ws, Path(out_dir) / ("12D_" + label + ".zip"))
+-    return {
+-        "rows": rows, "summary": meta, "detail_path": str(detail), "summary_path": str(summary),
+-        "row_gate": {"rows": len(rows), "calibration": cal_n, "validation": val_n},
+-    }
++    try:
++        authority_rel = cfg.get("12d_authority_csv")
++        if authority_rel:
++            authority_path = (script_dir() / str(authority_rel)).resolve()
++            if not authority_path.is_relative_to(script_dir().resolve()) or not authority_path.is_file():
++                raise RuntimeError("CSD408 selected authority CSV unavailable or out of package")
++            expected_sha = cfg.get("12d_authority_sha256")
++            if not expected_sha or sha256_file(authority_path) != expected_sha:
++                raise RuntimeError("CSD408 approved authority SHA256 mismatch")
++            shutil.copy2(str(authority_path), str(scratch / authority_path.name))
++        city_rel = cfg.get("12d_city_authority_csv")
++        if city_rel:
++            city_path = (script_dir() / str(city_rel)).resolve()
++            if not city_path.is_relative_to(script_dir().resolve()) or not city_path.is_file():
++                raise RuntimeError("Approved CITY90 RPDI authority missing or outside package")
++            city_sha = cfg.get("12d_city_authority_sha256")
++            if not city_sha or sha256_file(city_path) != city_sha:
++                raise RuntimeError("CITY90 authoritative R1_OBS_RPDI SHA256 mismatch")
++            shutil.copy2(str(city_path), str(scratch / city_path.name))
++        run_helper(script_dir() / "helpers" / helper_name, visum, "12D_" + label, scratch, out_dir / "20_STAGE_LOG.txt")
++        detail_name = str(cfg.get("12d_detail_name", D12_DETAIL))
++        if Path(detail_name).name != detail_name or not detail_name.endswith(".csv"):
++            raise RuntimeError("Unsafe 12D detail selection")
++        detail = find_file_recursive(scratch, detail_name)
++        summary = find_file_recursive(scratch, D12_SUMMARY)
++        if not detail or not summary:
++            raise RuntimeError("12D output incomplete in short helper workspace %s" % scratch)
++        meta = read_json(summary)
++        if meta.get("status") != "PASS":
++            raise RuntimeError("12D not PASS: %s" % summary)
++        rows = read_csv_auto(detail)
++        expected_rows = int(cfg.get("expected_12d_rows", 444))
++        expected_cal = int(cfg.get("expected_calibration_rows", 404))
++        expected_val = int(cfg.get("expected_validation_rows", 40))
++        cal_n = sum(1 for r in rows if sval(r.get("role", "")).upper() == "CALIBRATION")
++        val_n = sum(1 for r in rows if sval(r.get("role", "")).upper() == "VALIDATION")
++        if len(rows) != expected_rows or cal_n != expected_cal or val_n != expected_val:
++            raise RuntimeError(
++                "12D authority row gate failed: rows=%d/%d CAL=%d/%d VALID=%d/%d" %
++                (len(rows), expected_rows, cal_n, expected_cal, val_n, expected_val)
++            )
++        # Publish only compact, path-safe mirrors; the full raw helper tree lives
++        # in the ZIP evidence.  This avoids recreating the helper's nested tree
++        # inside already-deep TRY/ROLLBACK folders.
++        mirror.mkdir(parents=True, exist_ok=True)
++        detail_mirror = _copy_if_file(detail, mirror / detail.name)
++        summary_mirror = _copy_if_file(summary, mirror / summary.name)
++        for source in scratch.rglob("19_*AUTHORITY_CHECK.json"):
++            _copy_if_file(source, mirror / source.name)
++        for name in ("12d_PASS.txt", "12d_geh_forensic.log"):
++            source = find_file_recursive(scratch, name)
++            if source:
++                _copy_if_file(source, mirror / source.name)
++        evidence_zip = out_dir / ("12D_" + label + ".zip")
++        _archive_helper_workspace(scratch, evidence_zip)
++        write_json(mirror / "HELPER_WORKSPACE_POLICY.json", {
++            "execution_workspace_policy": "SHORT_OS_TEMP",
++            "execution_workspace_length": len(str(scratch)),
++            "durable_mirror": str(mirror),
++            "evidence_zip": str(evidence_zip),
++            "reason": "WINDOWS_MAX_PATH_HARDENING_CP03",
++        })
++        return {
++            "rows": rows, "summary": meta,
++            "detail_path": str(detail_mirror), "summary_path": str(summary_mirror),
++            "row_gate": {"rows": len(rows), "calibration": cal_n, "validation": val_n},
++            "helper_workspace_policy": "SHORT_OS_TEMP", "evidence_zip": str(evidence_zip),
++        }
++    except BaseException:
++        try:
++            _mirror_helper_failure(scratch, mirror)
++            _archive_helper_workspace(scratch, out_dir / ("12D_" + label + "_FAILED.zip"))
++        except Exception:
++            pass
++        raise
++    finally:
++        shutil.rmtree(str(scratch), ignore_errors=True)
+ 
+ 
+ # R1 15A2 requires the atomic IDP diagnostics of legacy 11D, NOT its old
+@@ -643,51 +726,89 @@
+ 
+ 
+ def run_11d(visum, out_dir, label, d12=None, cfg=None):
+-    ws = Path(out_dir) / ("11D_" + label)
+-    if ws.exists():
+-        shutil.rmtree(str(ws), ignore_errors=True)
+-    run_helper(script_dir() / "helpers" / D11_NAME, visum, "11D_" + label, ws, Path(out_dir) / "20_STAGE_LOG.txt")
+-    summary = find_file_recursive(ws, D11_SUMMARY)
+-    if not summary:
+-        raise RuntimeError("11D summary missing under %s (check 11D_*_stdout.txt and *fatal_error.txt)" % ws)
+-    meta = read_json(summary)
+-    decision = assess_11d_idp_gate(meta, d12, cfg or {})
+-    # Independently inspect the helper's original scaffold operation inventory,
+-    # which is kept in its own JSON. Fail closed if any correction is active.
+-    tff_file = find_file_recursive(ws, "r1_step11d_v1_3_component_dist_behavior_tflowfuzzy_scaffold_status.json")
+-    if not tff_file:
+-        decision["failures"].append("11D_TFLOWFUZZY_OPERATION_INVENTORY_MISSING")
+-    else:
+-        raw_tff = read_json(tff_file)
+-        ops = raw_tff.get("operations")
+-        if not isinstance(ops, list) or not ops:
+-            decision["failures"].append("11D_TFLOWFUZZY_OPERATION_INVENTORY_EMPTY")
++    out_dir = Path(out_dir)
++    out_dir.mkdir(parents=True, exist_ok=True)
++    mirror = out_dir / ("11D_" + label)
++    if mirror.exists():
++        shutil.rmtree(str(mirror), ignore_errors=True)
++    scratch = _short_helper_workspace("11D_" + label)
++    cfg = cfg or {}
++    try:
++        run_helper(script_dir() / "helpers" / D11_NAME, visum, "11D_" + label, scratch, out_dir / "20_STAGE_LOG.txt")
++        summary = find_file_recursive(scratch, D11_SUMMARY)
++        if not summary:
++            raise RuntimeError("11D summary missing in short helper workspace %s (check mirrored stdout/fatal evidence)" % scratch)
++        meta = read_json(summary)
++        decision = assess_11d_idp_gate(meta, d12, cfg)
++        # Independently inspect the helper's original scaffold operation inventory,
++        # which is kept in its own JSON. Fail closed if any correction is active.
++        tff_file = find_file_recursive(scratch, "r1_step11d_v1_3_component_dist_behavior_tflowfuzzy_scaffold_status.json")
++        if not tff_file:
++            decision["failures"].append("11D_TFLOWFUZZY_OPERATION_INVENTORY_MISSING")
+         else:
+-            active66 = []
+-            for op in ops:
+-                typ = fval(op.get("operation_type"), None)
+-                if typ == 66:
+-                    state = sval(op.get("active", "")).strip().upper()
+-                    if state not in ("0", "0.0", "FALSE", "F", "NO", "-0"):
+-                        active66.append(op.get("index"))
+-            if active66:
+-                decision["failures"].append("ACTIVE_DEMAND_MATRIX_CORRECTION_TYPE_66:" + str(active66))
+-    # Validate the exact three CSV sources used downstream, not only JSON rows.
+-    for suffix in ("component_model_dist_vs_idp_summary.csv",
+-                   "component_model_dist_vs_idp.csv", "component_model_dist_baseline.csv"):
+-        exact_name = D11_PREFIX + suffix
+-        if not find_file_recursive(ws, exact_name):
+-            decision["failures"].append("11D_REQUIRED_COMPONENT_CSV_MISSING:" + exact_name)
+-    decision["passes"] = not decision["failures"]
+-    if not decision["passes"]:
+-        decision["status"] = "FAIL_IDP_OR_READ_ONLY"
+-    write_json(ws / "11D_15A2_COMPATIBILITY_GATE.json", decision)
+-    # Evidence archive must be available even on a rejected diagnostic gate.
+-    zip_folder(ws, Path(out_dir) / ("11D_" + label + ".zip"))
+-    if not decision["passes"]:
+-        raise RuntimeError("11D 15A2 compatibility gate failed: %s; inspect %s" %
+-                           (",".join(decision["failures"][:8]), ws / "11D_15A2_COMPATIBILITY_GATE.json"))
+-    return {"summary": meta, "summary_path": str(summary), "idp_gate": decision}
++            raw_tff = read_json(tff_file)
++            ops = raw_tff.get("operations")
++            if not isinstance(ops, list) or not ops:
++                decision["failures"].append("11D_TFLOWFUZZY_OPERATION_INVENTORY_EMPTY")
++            else:
++                active66 = []
++                for op in ops:
++                    typ = fval(op.get("operation_type"), None)
++                    if typ == 66:
++                        state = sval(op.get("active", "")).strip().upper()
++                        if state not in ("0", "0.0", "FALSE", "F", "NO", "-0"):
++                            active66.append(op.get("index"))
++                if active66:
++                    decision["failures"].append("ACTIVE_DEMAND_MATRIX_CORRECTION_TYPE_66:" + str(active66))
++        required_sources = []
++        for suffix in ("component_model_dist_vs_idp_summary.csv",
++                       "component_model_dist_vs_idp.csv", "component_model_dist_baseline.csv"):
++            exact_name = D11_PREFIX + suffix
++            source = find_file_recursive(scratch, exact_name)
++            if not source:
++                decision["failures"].append("11D_REQUIRED_COMPONENT_CSV_MISSING:" + exact_name)
++            else:
++                required_sources.append(source)
++        decision["passes"] = not decision["failures"]
++        if not decision["passes"]:
++            decision["status"] = "FAIL_IDP_OR_READ_ONLY"
++        gate_source = scratch / "11D_15A2_COMPATIBILITY_GATE.json"
++        write_json(gate_source, decision)
++
++        # Compact durable mirror needed by downstream source loaders.
++        mirror.mkdir(parents=True, exist_ok=True)
++        summary_mirror = _copy_if_file(summary, mirror / summary.name)
++        if tff_file:
++            _copy_if_file(tff_file, mirror / tff_file.name)
++        for source in required_sources:
++            _copy_if_file(source, mirror / source.name)
++        _copy_if_file(gate_source, mirror / gate_source.name)
++        _mirror_helper_failure(scratch, mirror)
++        evidence_zip = out_dir / ("11D_" + label + ".zip")
++        _archive_helper_workspace(scratch, evidence_zip)
++        write_json(mirror / "HELPER_WORKSPACE_POLICY.json", {
++            "execution_workspace_policy": "SHORT_OS_TEMP",
++            "execution_workspace_length": len(str(scratch)),
++            "durable_mirror": str(mirror),
++            "evidence_zip": str(evidence_zip),
++            "reason": "WINDOWS_MAX_PATH_HARDENING_CP03",
++        })
++        if not decision["passes"]:
++            raise RuntimeError("11D 15A2 compatibility gate failed: %s; inspect %s" %
++                               (",".join(decision["failures"][:8]), mirror / "11D_15A2_COMPATIBILITY_GATE.json"))
++        return {"summary": meta, "summary_path": str(summary_mirror), "idp_gate": decision,
++                "helper_workspace_policy": "SHORT_OS_TEMP", "evidence_zip": str(evidence_zip)}
++    except BaseException:
++        try:
++            _mirror_helper_failure(scratch, mirror)
++            failed_zip = out_dir / ("11D_" + label + "_FAILED.zip")
++            if not (out_dir / ("11D_" + label + ".zip")).is_file():
++                _archive_helper_workspace(scratch, failed_zip)
++        except Exception:
++            pass
++        raise
++    finally:
++        shutil.rmtree(str(scratch), ignore_errors=True)
+ 
+ 
+ def run_diagnostics(visum, out_dir, label, cfg):
+--- /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP01_CHECKPOINT_ATOMICITY_20261016/r1_15a2_inplace_transaction_v239.py	2026-10-16 10:00:00.000000000 +0000
++++ /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP03_LIVE_PATHLEN_HOTFIX_20261016/r1_15a2_inplace_transaction_v239.py	2026-10-16 11:45:02.166131082 +0000
+@@ -113,6 +113,17 @@
+     gap = recompute_after_restore(adapter, block, folder)
+     after = adapter.snapshot()
+     snapshot_equal = after == before_snapshot
++    # Persist proof that the mutable model state has been restored BEFORE any
++    # file-heavy diagnostics run.  A diagnostic I/O failure must not erase the
++    # evidence that parameter restoration + recomputation already succeeded.
++    atomic_json(folder / "ROLLBACK_STATE_RESTORED.json", {
++        "block": block, "gap": gap, "snapshot_equal": bool(snapshot_equal),
++        "load_version_called": False, "save_version_called": False,
++        "direct_od_matrix_writes": False,
++        "status": "STATE_RESTORED_PENDING_DIAGNOSTIC_VERIFICATION" if snapshot_equal else "STATE_RESTORE_MISMATCH",
++    })
++    if not snapshot_equal:
++        raise SupplyContractError("INPLACE_ROLLBACK_SNAPSHOT_DIFFER")
+     diag = adapter.diagnostics(folder, "ROLLBACK")
+     diag_hash = diagnostic_hash_fn(diag)
+     diagnostic_equal = diag_hash == baseline_diag_hash
+--- /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP01_CHECKPOINT_ATOMICITY_20261016/r1_15a2_overnight_controller_v240.py	2026-10-16 10:00:00.000000000 +0000
++++ /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP03_LIVE_PATHLEN_HOTFIX_20261016/r1_15a2_overnight_controller_v240.py	2026-10-16 11:45:08.120627333 +0000
+@@ -222,14 +222,29 @@
+                     )
+                 atomic_json(folder / "ROLLBACK_SUMMARY.json", rb)
+             except Exception as rollback_exc:
++                rollback_tb = traceback.format_exc()
++                live_state = None
++                state_restored = False
++                snapshot_error = None
++                try:
++                    live_state = adapter.snapshot()
++                    state_restored = (live_state == before)
++                except Exception as snap_exc:
++                    snapshot_error = str(snap_exc)
++                status = ("ROLLBACK_DIAGNOSTIC_VERIFICATION_FAILED_STATE_RESTORED"
++                          if state_restored else "ROLLBACK_FAILED_MANUAL_REOPEN_LATEST_ACCEPTED")
+                 atomic_json(folder / "TRIAL_RESULT.json", {
+-                    "status": "ROLLBACK_FAILED_MANUAL_REOPEN_LATEST_ACCEPTED",
++                    "status": status,
+                     "block": block,
+                     "primary_error": None if primary_exc is None else str(primary_exc),
+                     "primary_traceback": primary_tb,
+                     "rollback_error": str(rollback_exc),
+-                    "rollback_traceback": traceback.format_exc(),
++                    "rollback_traceback": rollback_tb,
++                    "live_snapshot_matches_before_after_rollback_error": state_restored,
++                    "live_snapshot_error": snapshot_error,
+                 })
++                if state_restored:
++                    raise SupplyContractError("V240_ROLLBACK_DIAGNOSTIC_VERIFICATION_FAILED_STATE_RESTORED:" + block) from rollback_exc
+                 raise SupplyContractError("V240_ROLLBACK_FAILED_MANUAL_REOPEN_LATEST_ACCEPTED:" + block) from rollback_exc
+     if primary_exc is not None:
+         atomic_json(folder / "TRIAL_RESULT.json", {
+--- /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP01_CHECKPOINT_ATOMICITY_20261016/R1_15A2_FULL_OVERNIGHT_COUPLED_V2_4_5.py	2026-10-16 10:00:00.000000000 +0000
++++ /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP03_LIVE_PATHLEN_HOTFIX_20261016/R1_15A2_FULL_OVERNIGHT_COUPLED_V2_4_5.py	2026-10-16 11:44:55.962005096 +0000
+@@ -40,7 +40,7 @@
+ from r1_15a2_overnight_controller_v240 import OvernightControl, atomic_json
+ from r1_15a2_overnight_controller_v242 import run_overnight_calibration_coupled
+ 
+-RELEASE = "R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_20261016"
++RELEASE = "R1_15A2_V2_4_5_CP03_LIVE_PATHLEN_HOTFIX_20261016"
+ 
+ 
+ def load_config():
+@@ -71,6 +71,7 @@
+                             {str(p.relative_to(HERE)) for p in (HERE / "helpers").glob("*.py")})
+     cfg["implementation_files"] = {name: rt.sha256_file(HERE / name) for name in implementation}
+     cfg["implementation_hash"] = canonical_hash(cfg["implementation_files"])
++    cfg["cp03_live_hotfixes"] = ["SHORT_RUN_ROOT", "SHORT_OS_TEMP_11D_12D_HELPER_WORKSPACES", "ROLLBACK_STATE_EVIDENCE_BEFORE_DIAGNOSTICS"]
+     for module in (com, api_audit, rt, vp, supply_runtime):
+         if Path(module.__file__).resolve().parent != HERE.resolve():
+             raise RuntimeError("V245_MIXED_RELEASE_MODULE:" + module.__name__)
+@@ -106,7 +107,7 @@
+     source_sha_before = rt.sha256_file(source_ver)
+     # Resolve output location before SaveVersion changes CurrentVersionFile.
+     root, _ = api_audit.project_output_root(visum)
+-    runs = root.parent / "R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS"
++    runs = root.parent / "R1_15A2_V245_RUNS"
+     runs.mkdir(parents=True, exist_ok=True)
+     folder = runs / ("RUN_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
+     folder.mkdir()
+--- /dev/null	2026-10-09 01:32:19.208546263 +0000
++++ /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP03_LIVE_PATHLEN_HOTFIX_20261016/tests/test_v245_cp03_live_pathlen.py	2026-10-16 11:46:06.030652495 +0000
+@@ -0,0 +1,78 @@
++from pathlib import Path
++import csv
++import json
++import os
++
++import pytest
++
++import r1_15a2_runtime_v1 as rt
++import r1_15a2_inplace_transaction_v239 as tx
++
++
++def _fake_12d_helper(captured):
++    def fake(script, visum, stage, workspace, stage_log):
++        ws = Path(workspace)
++        captured['workspace'] = ws
++        captured['stage_log'] = Path(stage_log)
++        nested = ws / 'R1_12D_CSD2022_GEH_FORENSIC' / 'R1_12D_20990101_000000'
++        nested.mkdir(parents=True, exist_ok=True)
++        with (nested / rt.D12_DETAIL).open('w', newline='', encoding='utf-8-sig') as h:
++            w = csv.DictWriter(h, fieldnames=['role', 'model', 'observed'])
++            w.writeheader(); w.writerow({'role': 'CALIBRATION', 'model': 100, 'observed': 100})
++        (nested / rt.D12_SUMMARY).write_text(json.dumps({'status':'PASS'}), encoding='utf-8')
++        (nested / '19_CSD408_CITY90_AUTHORITY_CHECK.json').write_text(json.dumps({'status':'PASS'}), encoding='utf-8')
++        (nested / '12d_PASS.txt').write_text('PASS\n', encoding='utf-8')
++    return fake
++
++
++def test_cp03_12d_executes_outside_deep_controller_tree_and_publishes_compact_mirror(tmp_path, monkeypatch):
++    captured = {}
++    monkeypatch.setattr(rt, 'run_helper', _fake_12d_helper(captured))
++    deep = tmp_path / ('RUN_' + 'x'*40) / 'CALIBRATION' / 'DEMAND_CYCLE_01_GENERATION' / 'TRY_01' / 'ROLLBACK'
++    cfg = {'expected_12d_rows':1, 'expected_calibration_rows':1, 'expected_validation_rows':0}
++    result = rt.run_12d(None, deep, 'ROLLBACK', cfg)
++    scratch = captured['workspace']
++    assert not str(scratch).startswith(str(deep))
++    assert len(str(scratch)) <= 120
++    assert not scratch.exists()  # scratch is cleaned after durable evidence publication
++    mirror = deep / '12D_ROLLBACK'
++    assert Path(result['detail_path']).is_file()
++    assert Path(result['summary_path']).is_file()
++    assert (mirror / '19_CSD408_CITY90_AUTHORITY_CHECK.json').is_file()
++    assert (deep / '12D_ROLLBACK.zip').is_file()
++    policy = json.loads((mirror / 'HELPER_WORKSPACE_POLICY.json').read_text(encoding='utf-8'))
++    assert policy['execution_workspace_policy'] == 'SHORT_OS_TEMP'
++
++
++def test_cp03_known_live_failure_path_is_over_legacy_max_path_but_short_run_root_has_headroom():
++    old = (
++        "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\"
++        "R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS\\RUN_20261016_130246_304692\\"
++        "CALIBRATION\\DEMAND_CYCLE_01_GENERATION\\TRY_01\\ROLLBACK\\12D_ROLLBACK\\"
++        "R1_12D_CSD2022_GEH_FORENSIC\\R1_12D_20261016_132622\\01_DETAIL_498_FORENSIC.csv"
++    )
++    new = old.replace('R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS', 'R1_15A2_V245_RUNS')
++    assert len(old) == 261
++    assert len(new) == 235
++    assert len(new) < 240
++
++
++class _DiagFailAdapter:
++    def __init__(self, before):
++        self.before = before
++    def snapshot(self):
++        return self.before
++    def diagnostics(self, folder, label):
++        raise OSError('diagnostic I/O failed after state restore')
++
++
++def test_cp03_rollback_persists_state_restore_proof_before_diagnostic_io_failure(tmp_path, monkeypatch):
++    before = {'state_hash':'BASE', 'generation_values':{}, 'td_values':[], 'addval1':{}}
++    adapter = _DiagFailAdapter(before)
++    monkeypatch.setattr(tx, 'restore_parameters', lambda *a, **k: [])
++    monkeypatch.setattr(tx, 'recompute_after_restore', lambda *a, **k: 0.001)
++    with pytest.raises(OSError, match='diagnostic I/O failed'):
++        tx.rollback_and_verify(adapter, 'GENERATION', before, 'DH', lambda d:'DH', tmp_path)
++    proof = json.loads((tmp_path / 'ROLLBACK_STATE_RESTORED.json').read_text(encoding='utf-8'))
++    assert proof['snapshot_equal'] is True
++    assert proof['status'] == 'STATE_RESTORED_PENDING_DIAGNOSTIC_VERIFICATION'
+--- /dev/null	2026-10-09 01:32:19.208546263 +0000
++++ /mnt/data/r1_fix_livefail/R1_15A2_V2_4_5_CP03_LIVE_PATHLEN_HOTFIX_20261016/README_CP03_LIVE_PATHLEN_HOTFIX_CZ.md	2026-10-16 11:47:02.926287511 +0000
+@@ -0,0 +1,59 @@
++# R1 15A2 V2.4.5 CP03 — LIVE PATH LENGTH HOTFIX
++
++## Proč CP03 vznikl
++
++První reálný běh V2.4.5 dne 2026-10-16 skončil v prvním Generation trialu technickou chybou při zápisu 12D diagnostiky. Výpočetní logika nebyla příčinou: selhal zápis souboru do hluboce zanořeného adresáře.
++
++Pozorovaná cesta k `01_DETAIL_498_FORENSIC.csv` měla 261 znaků, tedy přesně za historickou hranicí Windows `MAX_PATH=260`. Helper byl spuštěn z hlubokého `.../DEMAND_CYCLE_01_GENERATION/TRY_01/ROLLBACK/12D_ROLLBACK/...` a sám pod sebe přidal další dvě úrovně.
++
++Run následně správně skončil fail-closed. Žádný kandidát nebyl přijat. Dodaný run status současně potvrzoval `live_matches_last_accepted=true`; zdrojový `.ver` zůstal beze změny.
++
++## Opravy
++
++1. **Krátký run root**
++   - nový runtime run root: `R1_15A2_V245_RUNS`
++   - nahrazuje dlouhé `R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS`
++   - stejná známá problematická cesta by tím klesla z 261 na 235 znaků.
++
++2. **12D a 11D helpery běží v krátkém OS temp workspace**
++   - helper už není fyzicky spuštěn uvnitř hlubokého TRY/ROLLBACK stromu;
++   - plná helper evidence se po doběhu uloží do ZIPu v run directory;
++   - do run tree se zkopírují jen kompaktní soubory nutné pro downstream logiku a audit;
++   - temp workspace se po bezpečném publikování evidence odstraní.
++
++3. **Output-directory lifecycle hardening**
++   - stage log parent directory se vytváří před zápisem;
++   - eliminuje další stejnou třídu `FileNotFoundError` při čerstvém stage adresáři.
++
++4. **Rollback evidence před diagnostikou**
++   - po obnovení parametrů a přepočtu se nejprve zapíše `ROLLBACK_STATE_RESTORED.json`;
++   - až potom se spouští file-heavy 12D/11D diagnostika;
++   - pokud diagnostika selže, evidence o již obnoveném modelovém stavu se neztratí.
++
++5. **Přesnější klasifikace rollback chyby**
++   - pokud po selhání rollback diagnostiky živý snapshot stále přesně odpovídá `before`, stav se označí `ROLLBACK_DIAGNOSTIC_VERIFICATION_FAILED_STATE_RESTORED` místo zavádějícího `MANUAL_REOPEN`;
++   - pokračování se přesto fail-closed zastaví, dokud diagnostická kontrola neprojde.
++
++## Testy
++
++- původní kompletní offline sada + nové regrese: **535 passed, 0 failed**;
++- nové testy přímo reprodukují známou 261znakovou cestu;
++- ověřují, že 12D běží mimo hluboký controller tree;
++- ověřují durable mirror + ZIP evidence;
++- ověřují, že důkaz obnoveného rollback stavu vzniká před následným diagnostickým I/O.
++
++## Co CP03 nemění
++
++Nemění matematiku TG, FineCDF TD, ADDVAL1, CAL/VALID role, 498 observation rows, targety IDP, native Multi policy ani acceptance kritéria. Neobsahuje PERF2/PERF3 optimalizace z CP02 návrhu.
++
++## Jak znovu spustit
++
++Rozbal CP03 do **nové samostatné složky** a spusť pouze:
++
++`R1_15A2_FULL_OVERNIGHT_COUPLED_V2_4_5.py`
++
++přes `Scripts > Execute script file` v PTV Visum 2026.
++
++Nepoužívej starou složku `R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_20261016`; obsahuje přesně kód, který vyprodukoval 261znakovou helper cestu.
++
++CP03 je offline ověřený hotfix. Skutečný druhý Visum COM run po této opravě zatím nebyl proveden.

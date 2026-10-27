@@ -1,0 +1,105 @@
+{
+  "source": "User-supplied live PTV Visum 2026 COM_API_PREFLIGHT.json (2026-10-15)",
+  "source_sha256": "bf860de170c567fb46927c0724bf9dee92f0987d8d0fc56a9e67d163e48d7c0f",
+  "source_release": "R1_15A2_V2_3_3_COM_API_AUDIT",
+  "live_source_status": "LIVE_API_BLOCKERS_FOUND",
+  "check_count": 94,
+  "pass_count": 92,
+  "fail_count": 2,
+  "original_blockers": [
+    {
+      "check": "ZONE_ATTRIBUTE:POP_ZP_2022",
+      "error": "ZONE: Could not find attribute with ID POP_ZP_2022."
+    },
+    {
+      "check": "APPROVED_COUNTLOCATION_RPDI_AND_ROLE",
+      "error": "COUNTLOCATION: Could not find attribute with ID R1_DIRECTION."
+    }
+  ],
+  "pathlink_sample_columns": [
+    "OrigZoneNo",
+    "DestZoneNo",
+    "PathIndex",
+    "Index",
+    "LinkNo",
+    "FromNodeNo",
+    "ToNodeNo"
+  ],
+  "pathlink_sample_first_rows": [
+    [
+      1.0,
+      7.0,
+      1.0,
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "",
+      "",
+      "",
+      1.0,
+      2000039.0,
+      1000386.0,
+      1002465.0
+    ],
+    [
+      "",
+      "",
+      "",
+      2.0,
+      2003601.0,
+      1002465.0,
+      1003233.0
+    ],
+    [
+      "",
+      "",
+      "",
+      3.0,
+      8001458.0,
+      1003233.0,
+      9000139.0
+    ],
+    [
+      "",
+      "",
+      "",
+      4.0,
+      8001478.0,
+      9000139.0,
+      9000146.0
+    ]
+  ],
+  "pathlink_v233_verdict": "HIERARCHICAL_PARENT_CHILD_BREAKS_FLAT_REQUIRED_ID_PARSER",
+  "pathlink_v234_solution": "STRICT_HIERARCHICAL_TO_FLAT_REAL_ROWS_WITH_TOPOLOGICAL_VALIDATION",
+  "active_prt_operation_scopes": [
+    {
+      "position": 17,
+      "dsegset": "LNV,NV"
+    },
+    {
+      "position": 18,
+      "dsegset": "NATIVE_CF,NATIVE_CL"
+    },
+    {
+      "position": 19,
+      "dsegset": "NATIVE_CS,NATIVE_CS_noT,NATIVE_CW,NATIVE_CW_noT"
+    },
+    {
+      "position": 20,
+      "dsegset": "EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CS_noT,EXOG_EE_CW,EXOG_EE_CW_noT,LNV,NATIVE_CF,NATIVE_CL,NATIVE_CS,NATIVE_CS_noT,NATIVE_CW,NATIVE_CW_noT,NV"
+    }
+  ],
+  "active_14a_preset": 0,
+  "active_foreign_postprocessing": 1,
+  "achieved_gap_attribute_in_quality_catalog": true,
+  "actual_gap_binding_approved": false,
+  "zone_population_attribute_missing_still_blocking": true,
+  "live_v234_tested": false,
+  "notes": [
+    "Live V2.3.3 artifact is diagnostic only. V2.3.4 patch tested offline on synthetic/mocked COM.",
+    "No real assignment, path-coverage export, OD reallocation, or Visum model modifications performed."
+  ]
+}

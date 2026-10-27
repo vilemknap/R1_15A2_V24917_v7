@@ -1,0 +1,59 @@
+{
+  "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D_UNCHANGED",
+  "acceptance_changed": false,
+  "accepted_count_start": 0,
+  "active_targeting": {
+    "dist_km_context": true,
+    "generation_flowbundle": true,
+    "supply_flowbundle": false,
+    "td_component_mask": true
+  },
+  "assignment_changed": false,
+  "calibration_math_changed": false,
+  "candidate_order_changed": false,
+  "entrypoint": "00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py",
+  "outer_cycle_start": 1,
+  "parallel_isolation": {
+    "lock_name": ".R1_15A2_V16.lock",
+    "runs_root_name": "R1_15A2_V16_RUNS",
+    "separate_visum_process_required": true,
+    "shared_v24915_lock": false,
+    "shared_v24915_runs_root": false
+  },
+  "pathfix3": {
+    "critical_io": "BOUNDED_RETRY_THEN_FAIL_CLOSED",
+    "enabled": true,
+    "path_length_preflight_before_model_mutation": true,
+    "projected_max_logical_path": 234,
+    "safe_logical_path_budget": 240,
+    "short_temp_name_policy": "OPAQUE_FIXED_LENGTH_SIBLING_NOT_DESTINATION_NAME_PLUS_SUFFIX",
+    "telemetry_io": "FAIL_OPEN",
+    "windows_extended_length_python_io": true
+  },
+  "persistent_path_cache": {
+    "cross_run_restore_allowed": false,
+    "enabled": false,
+    "fresh_live_path_enumeration_required": true,
+    "legacy_import_allowed": false,
+    "reads_allowed": false,
+    "within_run_path_basis_reuse_allowed": true,
+    "writes_allowed": false
+  },
+  "prior_lineage_resumed": false,
+  "profile488": {
+    "calibration": 488,
+    "live_identity_check": "ALL_488_COUNTLOCATIONS_READ_ONLY_BEFORE_START",
+    "rows": 488,
+    "validation": 0
+  },
+  "release": "R1_15A2_V24916_PERF2C_PROFILE488_FRESH0_UNIVERSAL_VER_ISOLATED_ACTIVE_TARGETING_IOFIX3_PATHFIX3_CACHE_DISABLED_20261022",
+  "schema": "R1_15A2_V24916_PROFILE488_FRESH0_UNIVERSAL_VER_ISOLATED_PATHFIX3_CONTRACT_V3",
+  "source_baseline": {
+    "captured_semantic_hash_role": "PROVENANCE_AND_WITHIN_LAUNCH_IMMUTABILITY_ONLY",
+    "current_open_ver_becomes_baseline": true,
+    "fixed_semantic_hash_required": false,
+    "package_baked_semantic_hash": null,
+    "policy": "CURRENT_OPEN_VER_IS_DYNAMIC_BASELINE_PROVENANCE_ONLY",
+    "structural_preflight_required": true
+  }
+}

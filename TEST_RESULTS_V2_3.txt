@@ -1,0 +1,8 @@
+R1 15A2 V2.3 -- SOURCE/COM-STUB/SYNTHETIC TESTS
+pytest: 141 PASSED (124 inherited from V2.2, 17 new V2.3)
+compileall: PASS
+synthetic controller: PASS (mock)
+numerical synthetic E2E: PASS
+no direct OD writes/new routing: PASS
+LIVE_VISUM_2026_COM: NOT EXECUTED
+PRODUCTION_READY: FALSE

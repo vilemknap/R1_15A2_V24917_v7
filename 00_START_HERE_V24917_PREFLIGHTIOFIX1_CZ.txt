@@ -1,0 +1,23 @@
+R1 15A2 V24917 PREFLIGHTIOFIX1 (2026-10-26) - oprava padu v LIVE_API_PREFLIGHT
+
+Pricina (RUN_20261026_023849_254377):
+  Kontrola ZONE_ATTRIBUTE:FP_2_SERVICE_stud PROSLA (681 zon, cisla, soucet 58 168).
+  Hned potom se prubezne prepisoval soubor API_PREFLIGHT\COM_API_PREFLIGHT.json
+  (os.replace .tmp -> .json) a Windows ho prave drzel zamceny (WinError 5
+  "Pristup byl odepren" - antivir / indexovani / OneDrive v Documents / otevreny nahled).
+  Chyba zapisu se zapsala jako DRUHY vysledek te same kontroly se stavem FAIL
+  -> "required failure" -> LIVE_API_PREFLIGHT_FAILED. Model je v poradku.
+
+Oprava (zadna zmena kontrol, cteni modelu, kalibrace ani akceptace):
+  zapis evidence preflightu opakuje docasne zamceni (~35 s), pak zapise primo,
+  a kdyz ani to nejde, necha kompletni .tmp a udalost zapise do stavu behu.
+  Puvodni soubory V24917 se nemeni (DIAGFAST/V24916 hashe plati dal).
+
+Instalace: zkopiruj 3 soubory do slozky R1_15A2_V24917_v4 (vedle 01_SPUSTIT_...):
+  01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py
+  r1_15a2_preflight_iofix_v24917.py
+  00_START_HERE_V24917_PREFLIGHTIOFIX1_CZ.txt
+Spusteni: otevri stejny .ver -> Scripts -> Run script file -> 01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py
+
+Doporuceni: slozku R1_15A2_V16_RUNS behem behu neotvirat v Pruzkumniku s nahledem
+a pokud jsou Documents synchronizovane OneDrive, synchronizaci behem behu pozastavit.

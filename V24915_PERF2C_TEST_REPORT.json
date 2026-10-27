@@ -1,0 +1,25 @@
+{
+  "calibration_complete": false,
+  "compileall": {
+    "passes": true
+  },
+  "created_utc": "2026-10-19T23:17:45.586106+00:00",
+  "focused": {
+    "failed": 0,
+    "passed": 19
+  },
+  "focused_plus_parent_performance": {
+    "failed": 0,
+    "passed": 128
+  },
+  "full_regression": {
+    "failed": 0,
+    "passed": 881,
+    "seconds": 16.56,
+    "skipped": 4
+  },
+  "live_visum_tested": false,
+  "production_ready": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
+  "schema": "R1_15A2_V24915_PERF2C_TEST_REPORT_V1"
+}

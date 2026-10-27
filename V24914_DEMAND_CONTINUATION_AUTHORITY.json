@@ -1,0 +1,101 @@
+{
+  "schema": "R1_15A2_V24914_DEMAND_CONTINUATION_AUTHORITY_V1",
+  "created_utc": "2026-10-19T05:49:46.364163+00:00",
+  "source_release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+  "source_run_id": "RUN_20261019_002326_649324",
+  "source_terminal_status": "DEMAND_SEARCH_INCOMPLETE_SUPPLY_LOCKED:MAX_ITERATIONS",
+  "source_checkpoint_name": "ACCEPTED_A_0009_8f7cac7a950a.ver",
+  "source_checkpoint_sha256": "59caf598f1c96ac5d4ea32c0834af747180c2adf4b7660968af1f9474b00783b",
+  "source_checkpoint_size": 580920089,
+  "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+  "raw_ver_sha_used_for_restart_acceptance": false,
+  "semantic_state_hash": "b599fdc7291e4a1d929db9818740e3f7aa7de53616b55238dcfcb2e8c40134a8",
+  "semantic_hashes": {
+    "fixed_link_hash": "83779fb0c29bc3f0e671b2ca3831289175b951a28740f8aff428c4c5b65b3f50",
+    "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+    "operations_hash": "8b7c5a1ffd4b2c3e8f6ab5a6bd6d37bad77a1e5cd6b2f7107e58cf79b2239b00",
+    "addval_hash": "189d17f4081b2d814659a8374f18c0bcd74ae1f79cf3cdbf9c0f38dddd3a7f74",
+    "matrix_hash": "48d452633ed3ae2d760f618c44e5231f46294678b4f8ff847b9c4f2d56ae26e9",
+    "generation_hash": "3785673ab68a47d66949975e35b7fc71ee27dc591297c0df657e5e04e2c02520",
+    "td_hash": "28b6569f3417ff4eb7c909a9e3a696a50f6dde2f1bfd5a7bbca35b2ebf427e94"
+  },
+  "accepted_count": 9,
+  "inherited_outer_cycles": 5,
+  "next_outer_cycle": 6,
+  "max_lineage_outer_cycle": 12,
+  "inherited_stationary_cycle_streak": 0,
+  "inherited_completed_demand_cycles": 0,
+  "demand_converged": false,
+  "supply_started": false,
+  "final_state_verified": true,
+  "source_cycle_summary": [
+    {
+      "cycle": 1,
+      "status": "PROGRESS_CONTINUE_DEMAND",
+      "generation_changed": true,
+      "td_changed": true,
+      "generation_completed": true,
+      "td_completed": true,
+      "search_complete": false,
+      "state_hash_start": "16d919fb3b2d268317605aaba710e20eac4fde2e15910739e70d89131055e574",
+      "state_hash_end": "11fa9632889a127db67a100d90e061b931ad5965eb66c0f10951f09c178e0197",
+      "joint_stationary": false
+    },
+    {
+      "cycle": 2,
+      "status": "PROGRESS_CONTINUE_DEMAND",
+      "generation_changed": true,
+      "td_changed": true,
+      "generation_completed": true,
+      "td_completed": true,
+      "search_complete": false,
+      "state_hash_start": "11fa9632889a127db67a100d90e061b931ad5965eb66c0f10951f09c178e0197",
+      "state_hash_end": "0bf0fe0b78ed7e2a7716f2ff761856bfe2acc33616f8af9b8aab96b80dabd5c5",
+      "joint_stationary": false
+    },
+    {
+      "cycle": 3,
+      "status": "PROGRESS_CONTINUE_DEMAND",
+      "generation_changed": true,
+      "td_changed": true,
+      "generation_completed": true,
+      "td_completed": true,
+      "search_complete": false,
+      "state_hash_start": "0bf0fe0b78ed7e2a7716f2ff761856bfe2acc33616f8af9b8aab96b80dabd5c5",
+      "state_hash_end": "b3861e88a36d5875f99eb6e71531da2644beeca5949a8e0b441260168ddc3e44",
+      "joint_stationary": false
+    },
+    {
+      "cycle": 4,
+      "status": "PROGRESS_CONTINUE_DEMAND",
+      "generation_changed": false,
+      "td_changed": true,
+      "generation_completed": true,
+      "td_completed": true,
+      "search_complete": false,
+      "state_hash_start": "b3861e88a36d5875f99eb6e71531da2644beeca5949a8e0b441260168ddc3e44",
+      "state_hash_end": "b9da1bb5bc89fd02561237d1e69cf388a9a5cc3466f499f8809c25ab8ca1cd7f",
+      "joint_stationary": false
+    },
+    {
+      "cycle": 5,
+      "status": "SEARCH_INCOMPLETE",
+      "generation_changed": true,
+      "td_changed": true,
+      "generation_completed": true,
+      "td_completed": true,
+      "search_complete": false,
+      "state_hash_start": "b9da1bb5bc89fd02561237d1e69cf388a9a5cc3466f499f8809c25ab8ca1cd7f",
+      "state_hash_end": "7e07a967eafcbc45aae624595ea6eb86be3325815c580843a227ca5320408632",
+      "joint_stationary": false
+    }
+  ],
+  "bounded_inner_budget_stop_reasons": [
+    "MAX_ITERATIONS",
+    "TD_EVALUATION_BUDGET",
+    "TD_INNER_TIME_BUDGET"
+  ],
+  "bounded_inner_budget_policy": "CONTINUE_OUTER_LOOP_WITH_SUPPLY_LOCKED; ACCEPTED_CHANGED_STATE_IS_DURABLE_PROGRESS; NO_CHANGE_IS_NOT_STATIONARITY",
+  "supply_unlock_criterion": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
+  "target_release": "R1_15A2_V2_4_9_14_DEMAND_CONTINUATION_SUPPLY_READY_20261019"
+}

@@ -1,0 +1,33 @@
+{
+  "release": "R1_15A2_V2_3_5_LIVE_POP_ZP_REMEDIATION",
+  "unit_tests": {
+    "passed": 263,
+    "failed": 0,
+    "status": "PASS"
+  },
+  "population_attribute_previous_invalid": "POP_ZP_2022",
+  "population_attribute_current": "POP_ZP",
+  "population_live_attribute_exists": true,
+  "source_forensic_status": "EVIDENCE_ONLY_NOT_AUTOMATIC_CLEARANCE",
+  "live_zones": {
+    "total": 681,
+    "domestic": 655,
+    "foreign_neighbouring": 15,
+    "foreign_population_effective": 6
+  },
+  "tg_binding_layers": {
+    "outer": "TG PRODUCTIONFUNCTION/ATTRACTIONFUNCTION [FP_*]/[FA_*]",
+    "inner": "Observed zone UDA FORMULA via independent live forensic report, not automatically revalidated every model change"
+  },
+  "countlocations": {
+    "total": 498,
+    "calibration": 462,
+    "validation": 36
+  },
+  "default_apply": false,
+  "live_visum_v235_tested": false,
+  "assignment_operation_ids_approved": false,
+  "achieved_gap_binding_approved": false,
+  "observation_collision_qa_acknowledged": false,
+  "numeric_authorities_unchanged": true
+}

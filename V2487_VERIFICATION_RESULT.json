@@ -1,0 +1,252 @@
+{
+  "schema": "R1_15A2_V2487_PACKAGE_VERIFICATION_V1",
+  "status": "PASS",
+  "release": "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
+  "root": "/mnt/data/r1_v2487_work/R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
+  "manifest_sha256": "6ae06f5e27ba4d73a4c31ba200b3e945a80712a31b97e79381811a768c23136e",
+  "file_count": 496,
+  "errors": [],
+  "config_validation": {
+    "passes": true,
+    "base_contract": {
+      "passes": true,
+      "base_contract": {
+        "passes": true,
+        "minimum_confirmed_stationary_cycles": 2
+      },
+      "bulk_link_read": true,
+      "adaptive_page_size": 2048,
+      "addval_step_units": [
+        4,
+        2,
+        1
+      ],
+      "generation_step_stages": [
+        "EXPLORE",
+        "FULL_VERIFY"
+      ],
+      "progressive_td_stages": [
+        "EXPLORE",
+        "REFINE",
+        "FULL_VERIFY"
+      ],
+      "path_epoch_limits": {
+        "DEMAND": 4,
+        "SUPPLY": 8
+      },
+      "minimum_confirmed_stationary_cycles": 2
+    },
+    "persistent_path_cache": true,
+    "retained_epoch_checkpoints": 3,
+    "max_total_cache_gib": 24.0,
+    "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
+    "legacy_import": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
+    "zero_share_residual_policy": {
+      "enabled": true,
+      "max_dseg_relative_volume": 0.01,
+      "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
+      "requires_existing_geometry": true,
+      "requires_path_volume_parity_pass": true,
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+    },
+    "generation_bound_constrained_projection": {
+      "enabled": true,
+      "mode": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP_THEN_DOMAIN_ONLY_PA_REBALANCE",
+      "relative_balance_tolerance": 1e-10,
+      "preserve_spatial_pattern": true,
+      "outward_bound_policy": "NO_GLOBAL_ABSOLUTE_MAX_CURRENT_VALUE_PLUS_RELATIVE_LOG_STEP",
+      "role_balance_policy": "ATTENUATE_ONLY_LARGER_IMPLEMENTABLE_PA_SIDE",
+      "opposite_sign_policy": "FAIL_CLOSED_UNCHANGED_GENERATION_GATE",
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+      "legacy_absolute_upper_bounds_enforced": false,
+      "current_live_values_are_authority": true
+    },
+    "generation_coefficient_authority": {
+      "enabled": true,
+      "mode": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP",
+      "current_value_source": "LIVE_VISUM_ZONE_ATTRIBUTES_AT_EACH_GENERATION_DESIGN",
+      "proposal_rule_multiplicative": "CURRENT_VALUE_TIMES_EXP_REQUESTED_LOG_STEP",
+      "proposal_rule_salary": "CURRENT_VALUE_PLUS_BOUNDED_DELTA",
+      "legacy_absolute_bounds_role": "DISABLED_NOT_ENFORCED",
+      "allow_current_above_legacy_max": true,
+      "allow_proposed_above_legacy_max": true,
+      "absolute_upper_bound": null,
+      "multiplicative_minimum": 0.0,
+      "preserve_zero_policy": "EXISTING_CONFIG_SEMANTICS_ONLY",
+      "salary_domain_policy": "FORMULA_FACTOR_FLOOR_PLUS_PER_BLOCK_DELTA_ONLY",
+      "require_finite_current": true,
+      "require_finite_proposed": true,
+      "relative_step_authority": "GENERATION_STEP_SCHEDULE_AND_BACKTRACKING_SCALE",
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+    },
+    "explicit_predecessor_read_compatibility": {
+      "enabled": true,
+      "target_release": "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
+      "allowed_contract_differences": [
+        "config_sha256",
+        "path_implementation_files",
+        "contract_hash"
+      ],
+      "predecessors": [
+        {
+          "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+          "source_config_sha256": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "c753e82075e2b521fcd53170f9f2d36c80ba151eb2bd0b6ea07b5cba6103b525",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+          "source_config_sha256": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+          "source_config_sha256": "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+            "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
+          "source_config_sha256": "4137a6e922147cb1810d9249d835a995fa211723de29ed2098bfb90555c1695d",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+            "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
+          "source_config_sha256": "709d0eb18d65fdb5cc02a24cdeaf199f53dda63af143f34fb2eda15fbaa55613",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+            "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016",
+          "source_config_sha256": "3315c25d3e9f0a1cd6088d47bc9276358ab24c3be4e127906a03da6758a8508f",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+            "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
+          "source_config_sha256": "e47c193e13ffab85dff08da524f02ff5c510dfd733276a72c42b1834c1ee033c",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+            "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
+          }
+        }
+      ],
+      "policy": "READ_ONLY_EXACT_PREDECESSOR_STORE_WITH_ALL_NONCONSUMER_CONTRACT_FIELDS_EXACT"
+    },
+    "stable_project_root": {
+      "enabled": true,
+      "selection": "PARENT_OF_OUTERMOST_QUALIFYING_R1_15A2_*_RUNS_ANCESTOR",
+      "qualifying_child_prefix": "RUN_",
+      "reject_nested_new_run": true,
+      "plain_source_fallback": "SOURCE_PARENT",
+      "source_version_remains_immutable_authority": true,
+      "release_owner": "V2.4.8.7_LIVE_COEFFICIENT_AUTHORITY"
+    }
+  },
+  "launcher": {
+    "release": "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
+    "implementation_hash": "89ed577e5ebc2b7203d2a240fd68a7e2b8e7527ecdb979b71678d14047adb67a",
+    "config_sha256": "7cc4b50edde935bab42c13c7be6f99e6653a6e6ad9948a2c2bb19e164e0eee4e",
+    "stable_project_root": {
+      "enabled": true,
+      "selection": "PARENT_OF_OUTERMOST_QUALIFYING_R1_15A2_*_RUNS_ANCESTOR",
+      "qualifying_child_prefix": "RUN_",
+      "reject_nested_new_run": true,
+      "plain_source_fallback": "SOURCE_PARENT",
+      "source_version_remains_immutable_authority": true,
+      "release_owner": "V2.4.8.7_LIVE_COEFFICIENT_AUTHORITY"
+    },
+    "generation_bound_constrained_projection": {
+      "enabled": true,
+      "mode": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP_THEN_DOMAIN_ONLY_PA_REBALANCE",
+      "relative_balance_tolerance": 1e-10,
+      "preserve_spatial_pattern": true,
+      "outward_bound_policy": "NO_GLOBAL_ABSOLUTE_MAX_CURRENT_VALUE_PLUS_RELATIVE_LOG_STEP",
+      "role_balance_policy": "ATTENUATE_ONLY_LARGER_IMPLEMENTABLE_PA_SIDE",
+      "opposite_sign_policy": "FAIL_CLOSED_UNCHANGED_GENERATION_GATE",
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+      "legacy_absolute_upper_bounds_enforced": false,
+      "current_live_values_are_authority": true
+    },
+    "predecessor_releases": [
+      "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+      "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+      "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+      "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
+      "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016",
+      "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
+      "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016"
+    ]
+  },
+  "stable_project_root": {
+    "selection": "OUTERMOST_QUALIFYING_RUNS_ANCESTOR_PARENT",
+    "cases": [
+      {
+        "case": "single",
+        "expected_depth": 1,
+        "observed_depth": 1,
+        "project_base": "/tmp/v2486_contract_pcuqbu7q/PROJECT",
+        "passes": true
+      },
+      {
+        "case": "double",
+        "expected_depth": 2,
+        "observed_depth": 2,
+        "project_base": "/tmp/v2486_contract_pcuqbu7q/PROJECT",
+        "passes": true
+      },
+      {
+        "case": "triple",
+        "expected_depth": 3,
+        "observed_depth": 3,
+        "project_base": "/tmp/v2486_contract_pcuqbu7q/PROJECT",
+        "passes": true
+      }
+    ],
+    "new_run_outside_prior_tree_postcondition": true
+  },
+  "live_coefficient_authority": {
+    "passes": true,
+    "authority": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP",
+    "legacy_absolute_upper_bounds_enforced": false,
+    "clipped_count": 0,
+    "zahr_current": 12.5,
+    "zahr_proposed": 13.541088345936982,
+    "domestic_prod_current": 4.5,
+    "domestic_prod_proposed": 4.590906030120401,
+    "domestic_att_current": 5.0,
+    "domestic_att_proposed": 5.517442038508572,
+    "work_relative_gap": 0.0,
+    "max_abs_effect_log_error": 6.938893903907228e-17
+  },
+  "compileall_pass": true,
+  "tests": {
+    "returncode": 0,
+    "stdout": "........................................................................ [ 11%]\n........................................................................ [ 23%]\n........................................................................ [ 35%]\n........................................................................ [ 46%]\n........................................................................ [ 58%]\n........................................................................ [ 70%]\n........................................................................ [ 81%]\n........................................................................ [ 93%]\n.......................................                                  [100%]\n615 passed in 13.53s\n",
+    "stderr": ""
+  },
+  "real_visum_tested": false,
+  "production_ready": false,
+  "elapsed_seconds": 19.118
+}

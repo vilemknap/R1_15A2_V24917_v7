@@ -1,0 +1,11 @@
+{
+  "authority_id": "REPLACE_WITH_APPROVED_11E_COMPONENT_AUTHORITY",
+  "status": "TEMPLATE_NOT_PRODUCTION_AUTHORITY",
+  "component_targets": {
+    "LONG_E_C": {"status": "REVIEW_REQUIRED", "bins": []},
+    "LONG_E_noC": {"status": "REVIEW_REQUIRED", "bins": []},
+    "LONG_noE_C": {"status": "REVIEW_REQUIRED", "bins": []},
+    "LONG_noE_noC": {"status": "REVIEW_REQUIRED", "bins": []},
+    "LONG_stud": {"status": "REVIEW_REQUIRED", "bins": []}
+  }
+}

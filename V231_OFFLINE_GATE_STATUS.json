@@ -1,0 +1,34 @@
+{
+  "status": "V231_CSD408_OFFLINE_VERIFIED_LIVE_PENDING",
+  "parent_version": "V2.3_OFFLINE_VERIFIED",
+  "release_version": "2.3.1",
+  "approved_roster_counts": {
+    "total": 408,
+    "CALIBRATION": 372,
+    "VALIDATION": 36,
+    "other_non_csd_excluded": 127
+  },
+  "approved_authority_sha256": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1",
+  "source_export_sha256": "f5e56d36f27e1d38cb36f7597adfaaa87bfeb81b3ecbfccefe13cf9f9266bb84",
+  "historical_444_missing_by_design": 36,
+  "preserved_physical_link_remaps": 12,
+  "mapping_review_count": 3,
+  "duplicate_physical_directed_link_count": 2,
+  "default_apply": false,
+  "qa_acknowledgement": false,
+  "offline_test_results": {
+    "tests": 155,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "mock_com_12d_end_to_end": "PASS_408_TOTAL_372_CAL_36_VALID",
+  "actual_live_visum_tested": false,
+  "production_ready": false,
+  "live_gates_pending": [
+    "Resolve 3 MAPPING_SCOPE_REVIEW profiles and 2 co-located inconsistent observations",
+    "Actual authoritative assignment-only operation IDs and convergence gap",
+    "Live CountLocation set 408 and physical directed-link parity",
+    "Current live network supply, path and matrix parity"
+  ]
+}

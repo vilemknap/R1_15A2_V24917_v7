@@ -1,0 +1,1587 @@
+--- /dev/null
++++ b/CP105_V24915_PERF2C_STATUS.json
+@@ -0,0 +1,18 @@
++{
++  "calibration_complete": false,
++  "checkpoint": "CP105_V24915_PERF2C_FINAL_SOURCE_AND_DELIVERY",
++  "compileall": true,
++  "focused_tests": 19,
++  "full_tests_failed": 0,
++  "full_tests_passed": 881,
++  "full_tests_skipped": 4,
++  "next_action": "Run from B0016 with PERF2C launcher and inspect first-call exact parity telemetry.",
++  "parent_files_modified": 0,
++  "parent_files_removed": 0,
++  "parent_sha256": "9dd18d27ce7800aa93164c13574b0009d1d78cfaa2ebec6e3131f6834f51d75b",
++  "production_ready": false,
++  "real_visum_tested": false,
++  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
++  "schema": "R1_15A2_V24915_PERF2C_CHECKPOINT_STATUS_V1",
++  "status": "OFFLINE_VERIFIED_READY_FOR_LIVE_PARITY_AND_TIMING"
++}
+--- /dev/null
++++ b/LIVE_VISUM_ACCEPTANCE_V24915_PERF2C_CZ.md
+@@ -0,0 +1,10 @@
++# Live Visum acceptance — PERF2C
++
++1. Open `ACCEPTED_B_0016_d1211a44ac4d.ver`.
++2. Run the PERF2C launcher.
++3. Require overlay preflight PASS and parent runtime preflight PASS.
++4. Require first snapshot telemetry `PERF2C_SINGLE_PASS_PARITY_PASS`.
++5. Require identical component hashes and `state_hash` to the parent full snapshot.
++6. Record snapshot wall time, Operations.GetAll count and fallback events.
++7. Any parity mismatch must use parent fallback; do not relax equality.
++8. Do not claim live speed-up until measured in Visum.
+--- /dev/null
++++ b/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C.py
+@@ -0,0 +1,116 @@
++# -*- coding: utf-8 -*-
++"""Runnable PERF2C overlay: exact single-pass full semantic snapshot.
++
++This wrapper preserves the complete R6/R5 calibration runtime and replaces only
++its VisumAdapter class with the additive PERF2C child.  The parent deployment
++preflight remains mandatory and an additional hash-pinned overlay preflight is
++merged into the same runtime evidence.
++"""
++from __future__ import annotations
++
++from pathlib import Path
++import sys
++
++HERE = Path(__file__).resolve().parent
++_INJECTED_VISUM = globals().get("Visum")
++_INJECTED_COM = globals().get("COM")
++_ORIGINAL_SYS_PATH = list(sys.path)
++
++if _INJECTED_VISUM is not None or _INJECTED_COM is not None:
++    if getattr(sys, "_r1_15a2_calibration_busy", False):
++        raise RuntimeError("ANOTHER_15A2_RUN_IS_ACTIVE")
++    for module_name in list(sys.modules):
++        if module_name.startswith("r1_15a2_"):
++            del sys.modules[module_name]
++sys.path[:] = [str(HERE)] + [path for path in sys.path if path != str(HERE)]
++
++import R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2 as parent
++from r1_15a2_trial_adapter_v24915p2c import VisumAdapter
++from r1_15a2_safety_v24915p2c import (
++    PACKAGE_REVISION, RELEASE, preflight_v24915p2c_overlay,
++)
++
++_parent_deployment_preflight = parent.preflight_v24915p2_deployment_files
++_parent_runtime_preflight = parent.validate_v24915p2_runtime_bundle
++_parent_load_config = parent.load_config
++
++
++def _combined_deployment_preflight(package_root=None):
++    base = dict(_parent_deployment_preflight(package_root))
++    overlay = dict(preflight_v24915p2c_overlay(package_root))
++    base["perf2c_overlay"] = overlay
++    base["files_checked_parent"] = base.get("files_checked", 0)
++    base["files_checked_overlay"] = overlay.get("files_checked", 0)
++    base["files_checked"] = (
++        int(base.get("files_checked_parent", 0))
++        + int(base.get("files_checked_overlay", 0)))
++    return base
++
++
++def _combined_runtime_preflight(cfg, package_root=None):
++    base = dict(_parent_runtime_preflight(cfg, package_root))
++    overlay = dict(preflight_v24915p2c_overlay(package_root))
++    base["perf2c_overlay"] = overlay
++    base["perf2c_single_pass_exact_snapshot"] = True
++    base["public_snapshot_schema_changed"] = False
++    base["cross_call_cache"] = False
++    return base
++
++
++def _load_config_with_overlay(execution_mode="FULL"):
++    cfg = _parent_load_config(execution_mode)
++    cfg["v24915_perf2c_runtime_options"] = {
++        "schema": "R1_15A2_V24915_PERF2C_CONFIG_V1",
++        "enabled": True,
++        "shadow_parity_once": True,
++        "fallback_to_legacy": True,
++        "public_snapshot_schema_changed": False,
++        "semantic_hashes_changed": False,
++        "matrix_fingerprint_semantics_changed": False,
++        "cross_call_cache": False,
++        "new_mutation_epoch": False,
++        "new_authority_token": False,
++    }
++    cfg["v24915_perf2c_overlay_revision"] = PACKAGE_REVISION
++    cfg["v24915_perf2c_features"] = [
++        "LOCAL_PER_SNAPSHOT_READ_CONTEXT_ONLY",
++        "FIRST_LIVE_CALL_EXACT_OBJECT_PARITY",
++        "PERMANENT_ADAPTER_LOCAL_FALLBACK_ON_MISMATCH_OR_READ_ERROR",
++        "ONE_OPERATIONS_GETALL_SHARED_BY_TD_AND_OPERATION_INVENTORY",
++        "DSeg_BINDING_READS_ONLY_PUBLISHED_SEMANTIC_FIELDS",
++        "FULL_MATRIX_GETVALUES_AND_ALL_STATE_HASHES_UNCHANGED",
++        "NO_CROSS_SNAPSHOT_CACHE",
++        "NO_NEW_EPOCH_OR_AUTHORITY_TOKEN",
++    ]
++    return cfg
++
++
++_OVERLAY_ACTIVE = False
++
++
++def _activate_overlay():
++    global _OVERLAY_ACTIVE
++    if _OVERLAY_ACTIVE:
++        return
++    parent.VisumAdapter = VisumAdapter
++    parent.RELEASE = RELEASE
++    parent.preflight_v24915p2_deployment_files = _combined_deployment_preflight
++    parent.validate_v24915p2_runtime_bundle = _combined_runtime_preflight
++    parent.load_config = _load_config_with_overlay
++    if _INJECTED_VISUM is not None:
++        parent.Visum = _INJECTED_VISUM
++    if _INJECTED_COM is not None:
++        parent.COM = _INJECTED_COM
++    _OVERLAY_ACTIVE = True
++
++
++def main(execution_mode="FULL"):
++    try:
++        _activate_overlay()
++        return parent.main(execution_mode)
++    finally:
++        sys.path[:] = _ORIGINAL_SYS_PATH
++
++
++if __name__ == "__main__" or _INJECTED_VISUM is not None or _INJECTED_COM is not None:
++    main("FULL")
+--- /dev/null
++++ b/README_R1_15A2_V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_CZ.md
+@@ -0,0 +1,20 @@
++# R1_15A2 V24915 PERF2C — Single-Pass Exact Snapshot
++
++Release: `R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020`
++
++This additive overlay keeps the complete R6/R5 calibration runtime and changes only the internal read plan of a full semantic `snapshot()`. It creates no cross-call cache, no new mutation epoch, no authority token, and no rollback path.
++
++## Optimization
++
++- TD parameter capture and Procedure Sequence inventory share one `Operations.GetAll` traversal.
++- DSeg binding capture reads only `CODE` and `ODMatrix.NO`, the only DSeg fields published by the semantic snapshot.
++- Matrix `GetValues()` remains exactly once per matrix and uses the unchanged float64 little-endian SHA.
++- The first live snapshot computes both parent and PERF2C payloads and requires exact object-level equality. Any mismatch or optimized-read exception permanently disables PERF2C for that adapter and returns the untouched parent snapshot.
++
++## Unchanged
++
++Candidate design, assignment, IPF, 12D/11D, acceptance, rollback, path cache, B0016 continuation and the 50-cycle/18-hour overnight budget are unchanged.
++
++## Launcher
++
++`R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C.py`
+--- /dev/null
++++ b/START_HERE_V24915_PERF2C_CZ.txt
+@@ -0,0 +1,11 @@
++R1_15A2 V24915 PERF2C — START HERE
++
++1. Otevřete ve Visumu původní ACCEPTED_B_0016_d1211a44ac4d.ver.
++2. Rozbalte celý balík do nové prázdné složky.
++3. Ve Visumu spusťte přes Scripts -> Execute script file:
++   R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C.py
++4. Nespouštějte původní PERF2 launcher.
++
++První full snapshot provede exact shadow parity proti R6 parentu. Mismatch nebo chyba optimalizovaného readu automaticky a trvale přepne daný běh na původní R6 snapshot.
++
++Continuation zůstává B0016 -> cycle 11 -> TD_FINECDF_V17. Limit zůstává 50 demand cyklů / 18 hodin.
+--- /dev/null
++++ b/V24915_PERF2C_IMPLEMENTATION_AND_TEST_REPORT.md
+@@ -0,0 +1,45 @@
++# V24915 PERF2C implementation and test report
++
++## Result
++
++`PERF2C_OFFLINE_VERIFIED_READY_FOR_LIVE_PARITY_AND_TIMING`
++
++## Parent
++
++- `R1_15A2_V24915_PERF2_R6_NONFINITE_DIAGNOSTIC_REFERENCE_HOTFIX_20261020`
++- SHA-256 `9dd18d27ce7800aa93164c13574b0009d1d78cfaa2ebec6e3131f6834f51d75b`
++- Parent files modified: **0**
++- Parent files removed: **0**
++
++## Implemented scope
++
++The full semantic snapshot schema and all hashes are unchanged. The optimization exists only inside one call:
++
++- one Procedure Sequence collection traversal is shared by TD and operation inventory;
++- DSeg binding capture omits NAME/MODE and matrix CODE/SUM because they never enter the published snapshot;
++- full matrix `GetValues()` remains once per matrix;
++- no data survives the snapshot call;
++- first live call requires exact legacy/optimized payload equality;
++- mismatch or optimized read failure permanently falls back to the untouched R6 parent implementation.
++
++## Synthetic read-count evidence
++
++- exact payload parity: **PASS**
++- Operations.GetAll: **2 -> 1**
++- OPERATIONTYPE/ACTIVE/COMMENT reads on the 3-operation synthetic model: **6 -> 3 each**
++- DSeg NAME/MODE reads: **3 -> 0 each**
++- matrix CODE reads: **6 -> 0**
++- matrix SUM reads: **3 -> 0**
++- Matrix.GetValues: **3 -> 3 (unchanged)**
++- generation bulk reads: **10 -> 10 (unchanged)**
++
++## Tests
++
++- focused PERF2C: **19 passed**
++- PERF2C + parent snapshot/performance gates: **128 passed**
++- full regression: **881 passed, 4 skipped, 0 failed**
++- compileall: **PASS**
++
++## Boundary
++
++No live Visum timing has been measured. `real_visum_tested=false`, `production_ready=false`, `calibration_complete=false`.
+--- /dev/null
++++ b/V24915_PERF2C_LEGACY_PARITY_REPORT.json
+@@ -0,0 +1,30 @@
++{
++  "component_hashes": {
++    "addval_hash": "d3dbb7fe42f83310a126751b6661ade1f246c704ce5be9bbbdb2cd68d423aeba",
++    "dseg_hash": "cc1c33db24fa224e1d302f1afc7c270af12272c8a66d443824c5cdbca474ecde",
++    "fixed_link_hash": "f10fe8857fbe37f95113908bcaabfaf3c0e0e231083cbe18e1017a47ae77c470",
++    "generation_hash": "52c280cc5569917b6d630a8c69fce5c471a3e0c992b429f08017711b227cb5c9",
++    "matrix_hash": "e69a5aabb4ba68bbb06bf9630b1a19b78265a5d9a36d99723c3a3f54eaabad91",
++    "operations_hash": "dde8065ba431d51f757ab65b372f3def5b292855b913eb233e3877f1c2e36cdb",
++    "state_hash": "6aa9d55ad6cb0d7ab0fdb8f11d97559fe74458f2a5b2338ec63978f3e2acf153",
++    "td_hash": "f5b5dd461cd6804ab09b406a5d2d0fa211ba752b1521f8f7f990bf927e3661b5"
++  },
++  "created_utc": "2026-10-19T23:17:45.586106+00:00",
++  "cross_call_cache": false,
++  "exact_payload_parity": true,
++  "exact_state_hash_parity": true,
++  "fallback": "PERMANENT_ADAPTER_LOCAL_PARENT_SNAPSHOT_FALLBACK",
++  "matrix_fingerprint_semantics_changed": false,
++  "public_snapshot_schema_changed": false,
++  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
++  "schema": "R1_15A2_V24915_PERF2C_LEGACY_PARITY_REPORT_V1",
++  "semantic_domains_tested": [
++    "ADDVAL1",
++    "FIXED_LINK",
++    "MATRIX",
++    "GENERATION",
++    "TD_PARAMETER",
++    "OPERATION_RUNTIME_STATE",
++    "DSEG_BINDING"
++  ]
++}
+--- /dev/null
++++ b/V24915_PERF2C_MACHINE_STATUS.json
+@@ -0,0 +1,52 @@
++{
++  "acceptance_changed": false,
++  "assignment_changed": false,
++  "calibration_complete": false,
++  "candidate_math_changed": false,
++  "continuation_changed": false,
++  "cross_call_cache": false,
++  "fallback_to_parent_snapshot": true,
++  "first_live_call_exact_shadow_parity": true,
++  "matrix_fingerprint_semantics_changed": false,
++  "new_authority_token": false,
++  "new_mutation_epoch": false,
++  "next_required_action": "Run the PERF2C launcher from ACCEPTED_B_0016 and inspect first-call parity plus snapshot timing telemetry.",
++  "overnight50_changed": false,
++  "parent_files_modified": 0,
++  "parent_files_removed": 0,
++  "parent_release": "R1_15A2_V24915_PERF2_R6_NONFINITE_DIAGNOSTIC_REFERENCE_HOTFIX_20261020",
++  "parent_sha256": "9dd18d27ce7800aa93164c13574b0009d1d78cfaa2ebec6e3131f6834f51d75b",
++  "production_ready": false,
++  "public_snapshot_schema_changed": false,
++  "real_visum_tested": false,
++  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
++  "rollback_changed": false,
++  "schema": "R1_15A2_V24915_PERF2C_MACHINE_STATUS_V1",
++  "scope": "SINGLE_PASS_EXACT_FULL_SNAPSHOT_LOCAL_PER_CALL_ONLY",
++  "status": "PERF2C_OFFLINE_VERIFIED_READY_FOR_LIVE_PARITY_AND_TIMING",
++  "tests": {
++    "calibration_complete": false,
++    "compileall": {
++      "passes": true
++    },
++    "created_utc": "2026-10-19T23:17:45.586106+00:00",
++    "focused": {
++      "failed": 0,
++      "passed": 19
++    },
++    "focused_plus_parent_performance": {
++      "failed": 0,
++      "passed": 128
++    },
++    "full_regression": {
++      "failed": 0,
++      "passed": 881,
++      "seconds": 16.56,
++      "skipped": 4
++    },
++    "live_visum_tested": false,
++    "production_ready": false,
++    "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
++    "schema": "R1_15A2_V24915_PERF2C_TEST_REPORT_V1"
++  }
++}
+--- /dev/null
++++ b/V24915_PERF2C_OVERLAY_MANIFEST.json
+@@ -0,0 +1,29 @@
++{
++  "file_count": 4,
++  "files": [
++    {
++      "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C.py",
++      "sha256": "db799fa3a3be9c090a0a0c9693f617a92433c538248dde841fd5c678b86f95dd",
++      "size": 4233
++    },
++    {
++      "path": "r1_15a2_single_pass_snapshot_v24915p2c.py",
++      "sha256": "599161fe370e133ba575047ad83ee7b709c07140931ecf3634cfb4d03e812b73",
++      "size": 18160
++    },
++    {
++      "path": "r1_15a2_trial_adapter_v24915p2c.py",
++      "sha256": "381e543dc833fff85c912ad9849fb03178c8e3f7f0bf6d843e515910abe36d91",
++      "size": 5788
++    },
++    {
++      "path": "V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_CONTRACT.json",
++      "sha256": "553f61dc60d889ef31a29d9849ca450a1f39c4fbc63f6e694b1ad642d5602c60",
++      "size": 1480
++    }
++  ],
++  "package_revision": "V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_R1",
++  "parent_release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
++  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
++  "schema": "R1_15A2_V24915_PERF2C_OVERLAY_MANIFEST_V1"
++}
+--- /dev/null
++++ b/V24915_PERF2C_PERFORMANCE_SYNTHETIC_BENCHMARK.json
+@@ -0,0 +1,88 @@
++{
++  "created_utc": "2026-10-19T23:17:45.586106+00:00",
++  "cross_call_cache": false,
++  "exact_payload_parity": true,
++  "exact_state_hash_parity": true,
++  "first_live_call_shadow_parity": true,
++  "matrix_getvalues": {
++    "legacy": 3,
++    "perf2c": 3
++  },
++  "measured_live_wall_time_speedup": null,
++  "note": "Synthetic COM-call benchmark only. Full matrix values and all semantic hashes are unchanged.",
++  "operation_attribute_reads": {
++    "ACTIVE": {
++      "legacy": 6,
++      "perf2c": 3
++    },
++    "COMMENT": {
++      "legacy": 6,
++      "perf2c": 3
++    },
++    "OPERATIONTYPE": {
++      "legacy": 6,
++      "perf2c": 3
++    }
++  },
++  "operations_getall": {
++    "legacy": 2,
++    "perf2c": 1
++  },
++  "public_snapshot_keys_legacy": [
++    "addval1",
++    "addval_hash",
++    "dseg_hash",
++    "dseg_map",
++    "fixed_link_hash",
++    "generation_hash",
++    "generation_values",
++    "matrices",
++    "matrix_hash",
++    "operations_hash",
++    "state_hash",
++    "td_hash",
++    "td_values"
++  ],
++  "public_snapshot_keys_perf2c": [
++    "addval1",
++    "addval_hash",
++    "dseg_hash",
++    "dseg_map",
++    "fixed_link_hash",
++    "generation_hash",
++    "generation_values",
++    "matrices",
++    "matrix_hash",
++    "operations_hash",
++    "state_hash",
++    "td_hash",
++    "td_values"
++  ],
++  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
++  "schema": "R1_15A2_V24915_PERF2C_SYNTHETIC_READ_COUNT_BENCHMARK_V1",
++  "state_hash": "6aa9d55ad6cb0d7ab0fdb8f11d97559fe74458f2a5b2338ec63978f3e2acf153",
++  "unused_dseg_metadata_reads": {
++    "MODE": {
++      "legacy": 3,
++      "perf2c": 0
++    },
++    "NAME": {
++      "legacy": 3,
++      "perf2c": 0
++    }
++  },
++  "unused_matrix_metadata_reads": {
++    "CODE": {
++      "legacy": 6,
++      "perf2c": 0
++    },
++    "SUM": {
++      "legacy": 3,
++      "perf2c": 0
++    }
++  },
++  "zone_attribute_bulk_reads": {
++    "legacy": 10,
++    "perf2c": 10
++  }
++}
+--- /dev/null
++++ b/V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_CONTRACT.json
+@@ -0,0 +1,33 @@
++{
++  "schema": "R1_15A2_V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_CONTRACT_V1",
++  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
++  "parent_release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
++  "parent_package_revision": "V24915_PERF2_R5_OVERNIGHT50_B0016_CONTINUATION",
++  "scope": "LOCAL_PER_SNAPSHOT_READ_COALESCING_ONLY",
++  "public_snapshot_schema_changed": false,
++  "semantic_hashes_changed": false,
++  "matrix_getvalues_semantics_changed": false,
++  "cross_snapshot_cache": false,
++  "cross_candidate_cache": false,
++  "cross_assignment_cache": false,
++  "new_mutation_epoch": false,
++  "new_authority_token": false,
++  "rollback_changed": false,
++  "candidate_math_changed": false,
++  "acceptance_changed": false,
++  "assignment_changed": false,
++  "continuation_changed": false,
++  "overnight50_changed": false,
++  "first_live_call_exact_shadow_parity": true,
++  "parity_mismatch_action": "PERMANENT_ADAPTER_LOCAL_FALLBACK_TO_UNTOUCHED_PARENT_SNAPSHOT",
++  "optimized_read_exception_action": "PERMANENT_ADAPTER_LOCAL_FALLBACK_TO_UNTOUCHED_PARENT_SNAPSHOT",
++  "optimized_reads": [
++    "ONE_OPERATIONS_GETALL_SHARED_BY_TD_AND_OPERATION_INVENTORY",
++    "DSeg_BINDING_READS_ONLY_CODE_AND_ODMATRIX_NO",
++    "MATRIX_CODE_AND_NONZERO_NOT_READ_BECAUSE_NOT_IN_PUBLISHED_SNAPSHOT"
++  ],
++  "full_matrix_values_required": true,
++  "full_generation_values_required": true,
++  "full_td_values_required": true,
++  "full_operation_runtime_state_required": true
++}
+--- /dev/null
++++ b/V24915_PERF2C_SNAPSHOT_READ_AUDIT.csv
+@@ -0,0 +1,9 @@
++﻿DOMAIN;LEGACY_READ;PERF2C_READ;STATUS;PROOF
++LINKS;read_links();one bulk/scalar link payload per snapshot;UNCHANGED;ADDVAL1 and fixed-link values share one payload
++DSEG_BINDINGS;rt.list_dsegs();CODE plus ODMatrix.NO only;OPTIMIZED;NAME/MODE and matrix CODE/SUM are not published by snapshot
++MATRICES;GetValues once per matrix;GetValues once per matrix;UNCHANGED;full float64-le SHA and validity gates preserved
++GENERATION;one GetMultiAttValues per generation attribute;same;UNCHANGED;no weakening or cross-call reuse
++TD_PARAMETERS;one Operations.GetAll traversal;shared traversal;OPTIMIZED;same DStrat and b/c resolution logic
++OPERATION_INVENTORY;second Operations.GetAll traversal;shared TD traversal;OPTIMIZED;runtime ACTIVE/TYPE/COMMENT/NAME preserved
++CROSS_CALL_CACHE;none;none;UNCHANGED;per-call context destroyed on return
++FIRST_CALL_PARITY;none;legacy plus optimized exact comparison once;SAFETY_COST;mismatch permanently falls back to parent snapshot
+--- /dev/null
++++ b/V24915_PERF2C_TEST_REPORT.json
+@@ -0,0 +1,25 @@
++{
++  "calibration_complete": false,
++  "compileall": {
++    "passes": true
++  },
++  "created_utc": "2026-10-19T23:17:45.586106+00:00",
++  "focused": {
++    "failed": 0,
++    "passed": 19
++  },
++  "focused_plus_parent_performance": {
++    "failed": 0,
++    "passed": 128
++  },
++  "full_regression": {
++    "failed": 0,
++    "passed": 881,
++    "seconds": 16.56,
++    "skipped": 4
++  },
++  "live_visum_tested": false,
++  "production_ready": false,
++  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
++  "schema": "R1_15A2_V24915_PERF2C_TEST_REPORT_V1"
++}
+--- /dev/null
++++ b/r1_15a2_safety_v24915p2c.py
+@@ -0,0 +1,97 @@
++# -*- coding: utf-8 -*-
++"""Fail-closed overlay preflight for PERF2C single-pass exact snapshot."""
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from typing import Any, Mapping
++
++import r1_15a2_runtime_v1 as rt
++from r1_15a2_supply import SupplyContractError
++
++RELEASE = "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020"
++PARENT_RELEASE = "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019"
++PACKAGE_REVISION = "V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_R1"
++MANIFEST_FILE = "V24915_PERF2C_OVERLAY_MANIFEST.json"
++MANIFEST_SHA256 = "02bf52bb1cad3345aa01f6325163aebca6935d7944f306c0b41a2b53aeaf48b2"
++CONTRACT_FILE = "V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_CONTRACT.json"
++CONTRACT_SHA256 = "553f61dc60d889ef31a29d9849ca450a1f39c4fbc63f6e694b1ad642d5602c60"
++
++
++def _require(condition: bool, code: str) -> None:
++    if not condition:
++        raise SupplyContractError(code)
++
++
++def preflight_v24915p2c_overlay(package_root=None) -> Mapping[str, Any]:
++    root = Path(package_root).resolve() if package_root is not None else Path(__file__).resolve().parent
++    manifest_path = root / MANIFEST_FILE
++    _require(manifest_path.is_file(), "V24915P2C_OVERLAY_MANIFEST_MISSING")
++    _require(rt.sha256_file(manifest_path) == MANIFEST_SHA256,
++             "V24915P2C_OVERLAY_MANIFEST_HASH_MISMATCH")
++    manifest = rt.read_json(manifest_path)
++    _require(manifest.get("schema") == "R1_15A2_V24915_PERF2C_OVERLAY_MANIFEST_V1",
++             "V24915P2C_OVERLAY_MANIFEST_SCHEMA_MISMATCH")
++    _require(manifest.get("release") == RELEASE,
++             "V24915P2C_OVERLAY_RELEASE_MISMATCH")
++    _require(manifest.get("parent_release") == PARENT_RELEASE,
++             "V24915P2C_OVERLAY_PARENT_MISMATCH")
++    _require(manifest.get("package_revision") == PACKAGE_REVISION,
++             "V24915P2C_OVERLAY_REVISION_MISMATCH")
++
++    failures = []
++    checked = 0
++    for row in manifest.get("files", []):
++        rel = str(row.get("path", ""))
++        path = root / rel
++        if not rel or not path.is_file():
++            failures.append({"path": rel, "reason": "MISSING"})
++            continue
++        checked += 1
++        if int(path.stat().st_size) != int(row.get("size", -1)):
++            failures.append({"path": rel, "reason": "SIZE_MISMATCH"})
++        elif rt.sha256_file(path) != row.get("sha256"):
++            failures.append({"path": rel, "reason": "SHA256_MISMATCH"})
++    _require(not failures, "V24915P2C_OVERLAY_INVALID:" + json.dumps(failures, sort_keys=True))
++
++    contract_path = root / CONTRACT_FILE
++    _require(contract_path.is_file() and rt.sha256_file(contract_path) == CONTRACT_SHA256,
++             "V24915P2C_CONTRACT_HASH_MISMATCH")
++    contract = rt.read_json(contract_path)
++    required_false = (
++        "public_snapshot_schema_changed", "semantic_hashes_changed",
++        "matrix_getvalues_semantics_changed", "cross_snapshot_cache",
++        "cross_candidate_cache", "cross_assignment_cache", "new_mutation_epoch",
++        "new_authority_token", "rollback_changed", "candidate_math_changed",
++        "acceptance_changed", "assignment_changed", "continuation_changed",
++        "overnight50_changed",
++    )
++    _require(all(contract.get(key) is False for key in required_false),
++             "V24915P2C_CONTRACT_UNSAFE_FLAG")
++    _require(contract.get("first_live_call_exact_shadow_parity") is True,
++             "V24915P2C_FIRST_CALL_PARITY_NOT_REQUIRED")
++    _require(contract.get("full_matrix_values_required") is True,
++             "V24915P2C_FULL_MATRIX_READ_NOT_REQUIRED")
++    return {
++        "passes": True,
++        "release": RELEASE,
++        "parent_release": PARENT_RELEASE,
++        "package_revision": PACKAGE_REVISION,
++        "manifest_path": str(manifest_path),
++        "manifest_sha256": MANIFEST_SHA256,
++        "contract_path": str(contract_path),
++        "contract_sha256": CONTRACT_SHA256,
++        "files_checked": checked,
++        "failures": [],
++        "public_snapshot_schema_changed": False,
++        "cross_call_cache": False,
++        "first_call_exact_shadow_parity": True,
++        "fallback_to_parent_snapshot": True,
++    }
++
++
++__all__ = [
++    "RELEASE", "PARENT_RELEASE", "PACKAGE_REVISION", "MANIFEST_FILE",
++    "MANIFEST_SHA256", "CONTRACT_FILE", "CONTRACT_SHA256",
++    "preflight_v24915p2c_overlay",
++]
+--- /dev/null
++++ b/r1_15a2_single_pass_snapshot_v24915p2c.py
+@@ -0,0 +1,462 @@
++# -*- coding: utf-8 -*-
++"""Exact single-pass semantic snapshot for V24915 PERF2C.
++
++The optimization is deliberately local to one ``snapshot()`` invocation.  It
++never caches data across candidates, assignments, diagnostics, or model writes.
++The public payload and all legacy semantic hashes remain unchanged.
++
++Only two proven duplicate/unused read classes are removed:
++
++* DSeg binding capture reads only CODE and ODMatrix.NO, because the legacy
++  semantic snapshot does not use DSeg NAME/MODE or matrix CODE/SUM.
++* Trip-distribution parameter capture and Procedure Sequence inventory share a
++  single Operations.GetAll result and one read of OPERATIONTYPE/ACTIVE/COMMENT.
++
++Everything else intentionally follows the legacy full snapshot contract.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import hashlib
++import math
++import time
++from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Tuple
++
++import numpy as np
++
++import r1_15a2_com_compat as com
++import r1_15a2_core as core
++import r1_15a2_multiblock as mb
++import r1_15a2_runtime_v1 as rt
++import r1_15a2_visum_parameters as vp
++from r1_15a2_supply import SupplyContractError, canonical_hash, integer, key_text, number
++
++SCHEMA = "R1_15A2_V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_V1"
++RELEASE = "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020"
++
++
++@dataclass(frozen=True)
++class OperationRecord:
++    """One exact, reusable read of a Procedure Sequence operation."""
++
++    position: int
++    obj: Any
++    operation_type_raw: Any
++    operation_type: int
++    active: int
++    comment: str
++    name: str
++
++
++class SnapshotReadContext:
++    """Per-call memoization only; the instance is discarded after snapshot()."""
++
++    def __init__(self, adapter: Any, *, clock: Callable[[], float] = time.perf_counter):
++        self.adapter = adapter
++        self.visum = adapter.visum
++        self.cfg = adapter.cfg
++        self.clock = clock
++        self._values: Dict[str, Any] = {}
++        self.loader_calls: Dict[str, int] = {}
++        self.loader_seconds: Dict[str, float] = {}
++
++    def get_once(self, key: str, loader: Callable[[], Any]) -> Any:
++        if key in self._values:
++            return self._values[key]
++        started = self.clock()
++        value = loader()
++        elapsed = self.clock() - started
++        self._values[key] = value
++        self.loader_calls[key] = self.loader_calls.get(key, 0) + 1
++        self.loader_seconds[key] = self.loader_seconds.get(key, 0.0) + elapsed
++        return value
++
++    def links(self) -> Mapping[Tuple[int, int, int], Mapping[str, Any]]:
++        return self.get_once("links", self.adapter.read_links)
++
++    def dseg_bindings(self) -> List[Dict[str, Any]]:
++        return self.get_once("dseg_bindings", lambda: _read_dseg_bindings(self.visum))
++
++    def operation_records(self) -> List[OperationRecord]:
++        return self.get_once("operation_records", lambda: _read_operation_records(self.visum))
++
++    def generation_values(self) -> Dict[str, Dict[str, float]]:
++        def load() -> Dict[str, Dict[str, float]]:
++            return {
++                attr: {
++                    str(zone_no): number(value)
++                    for zone_no, value in zip(
++                        self.adapter.zones,
++                        rt.read_zone_attr_strict(
++                            self.visum,
++                            attr,
++                            self.adapter.zones,
++                            zone_indices=self.adapter.zone_write_index_by_no,
++                            retry_policy=self.adapter.com_retry_policy,
++                        ),
++                    )
++                }
++                for attr in mb.GENERATION_ATTRS
++            }
++
++        return self.get_once("generation_values", load)
++
++    def td_and_operations(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
++        def load() -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
++            records = self.operation_records()
++            td_rows, td_operation_audit = _read_td_snapshot_from_records(self.visum, records)
++            operation_rows = _inventory_from_records(records, td_operation_audit)
++            return td_rows, operation_rows
++
++        return self.get_once("td_and_operations", load)
++
++    def telemetry(self) -> Dict[str, Any]:
++        return {
++            "schema": SCHEMA,
++            "loader_calls": dict(self.loader_calls),
++            "loader_seconds": dict(self.loader_seconds),
++            "per_call_cache_entries": sorted(self._values),
++            "cross_call_cache": False,
++        }
++
++
++def _read_dseg_bindings(visum: Any) -> List[Dict[str, Any]]:
++    """Read exactly the DSeg fields consumed by the legacy semantic snapshot.
++
++    ``rt.list_dsegs`` additionally reads DSeg NAME/MODE and matrix CODE/SUM.
++    Those values never enter ``dseg_map``, ``matrix_hash`` or ``state_hash`` in
++    the legacy full snapshot, so reading them here would be redundant COM I/O.
++    Error handling for CODE/ODMatrix.NO intentionally mirrors ``list_dsegs``.
++    """
++
++    rows: List[Dict[str, Any]] = []
++    for ds in rt.get_all(visum.Net.DemandSegments):
++        code = rt.sval(rt.att(ds, "CODE", "")).strip()
++        if not code:
++            continue
++        matrix_no: Any = ""
++        try:
++            matrix = ds.ODMatrix
++            if matrix is not None:
++                matrix_no = rt.ival(rt.att(matrix, "NO", None), "")
++        except Exception:
++            pass
++        rows.append({
++            "code": code,
++            "norm_code": rt.norm_code(code),
++            "object": ds,
++            "matrix_no": matrix_no,
++        })
++    return rows
++
++
++def _operation_text(op: Any, attribute: str) -> str:
++    try:
++        value = op.AttValue(attribute)
++        return "" if value is None else str(value)
++    except Exception:
++        return ""
++
++
++def _read_operation_records(visum: Any) -> List[OperationRecord]:
++    operations = com.collection_items(visum.Procedures.Operations, "Operations")
++    records: List[OperationRecord] = []
++    for position, op in enumerate(operations, 1):
++        operation_type_raw = op.AttValue("OPERATIONTYPE")
++        records.append(OperationRecord(
++            position=position,
++            obj=op,
++            operation_type_raw=operation_type_raw,
++            operation_type=com.exact_int(operation_type_raw, "OPERATIONTYPE"),
++            active=int(com.active_bool(op.AttValue("ACTIVE"))),
++            comment=_operation_text(op, "COMMENT"),
++            name=_operation_text(op, "NAME"),
++        ))
++    if not records:
++        raise RuntimeError("EMPTY_OPERATION_LIST")
++    return records
++
++
++def _find_td_operation_from_records(
++        records: Sequence[OperationRecord], required_codes: Sequence[str]):
++    """Exact local equivalent of vp._find_operation for TD operation 46."""
++
++    best = None
++    audit: List[Dict[str, Any]] = []
++    parameter_props = ("TripDistributionParameters", "TripDistributionParameter")
++    for record in records:
++        row: Dict[str, Any] = {
++            "index": record.position,
++            "operation_type": mb.sval(record.operation_type_raw),
++            "active": int(record.active),
++            "comment": record.comment,
++            "selected": 0,
++        }
++        if record.operation_type != 46:
++            audit.append(row)
++            continue
++        params = None
++        source = ""
++        for prop in parameter_props:
++            try:
++                params = getattr(record.obj, prop)
++                if params is not None:
++                    source = prop
++                    break
++            except Exception:
++                pass
++        row["parameter_source"] = source
++        row["parameter_status"] = "OK" if params is not None else "UNREADABLE"
++        score = 100 if record.active else 0
++        dset = ""
++        if params is not None:
++            for attr in ("DSTRATSET", "DStratSet", "DEMANDSTRATUMSET"):
++                dset = mb.sval(rt.att(params, attr, ""))
++                if dset:
++                    break
++            tokens = com.code_set(dset, "DSTRATSET") if dset else set()
++            score += sum(1 for code in required_codes if code.upper() in tokens)
++        row["dstratset"] = dset
++        if params is not None and (best is None or score > best[0]):
++            best = (score, record.obj, params, row)
++        audit.append(row)
++    if best is None:
++        return None, None, audit
++    required_upper = {code.upper() for code in required_codes}
++    complete_active = [
++        row for row in audit
++        if row.get("active") and row.get("parameter_status") == "OK"
++        and required_upper <= (
++            com.code_set(row["dstratset"]) if row.get("dstratset") else set())
++    ]
++    if len(complete_active) > 1:
++        for row in complete_active:
++            row["resolution_error"] = "AMBIGUOUS_ACTIVE_OPERATION_SCOPE"
++        return None, None, audit
++    best[3]["selected"] = 1
++    return best[1], best[2], audit
++
++
++def _read_td_snapshot_from_records(
++        visum: Any, records: Sequence[OperationRecord]) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
++    required_codes = [item["dstrat_code"] for item in mb.COMPONENT_REGISTRY.values()]
++    _op, params, operation_rows = _find_td_operation_from_records(records, required_codes)
++    if params is None:
++        raise RuntimeError("Could not locate readable Trip Distribution operation")
++    selected_ops = [row for row in operation_rows if int(row.get("selected", 0) or 0) == 1]
++    if not selected_ops or int(selected_ops[0].get("active", 0) or 0) != 1:
++        raise RuntimeError("Selected Trip Distribution operation is inactive or unresolved")
++    dset = mb.sval(selected_ops[0].get("dstratset"))
++    tokens = com.code_set(dset) if dset else set()
++    missing_set = [code for code in required_codes if code.upper() not in tokens]
++    if missing_set:
++        raise RuntimeError("Trip Distribution DStratSet misses: %s" % ",".join(missing_set))
++
++    rows: List[Dict[str, Any]] = []
++    for component, registry in mb.COMPONENT_REGISTRY.items():
++        d_obj, source = vp._dstrat_object(  # pylint: disable=protected-access
++            params, registry["dstrat_code"], ("TripDistribution",))
++        if d_obj is None:
++            rows.append({
++                "component": component,
++                "dstrat_code": registry["dstrat_code"],
++                "matrix_no": registry["matrix_no"],
++                "status": "DSTRAT_NOT_FOUND",
++                "source": source,
++            })
++            continue
++        grav = d_obj
++        grav_source = "DStratPara"
++        for prop in ("GravitationParameters", "GravityParameters", "DistributionParameters"):
++            try:
++                candidate = getattr(d_obj, prop)
++                if candidate is not None:
++                    grav = candidate
++                    grav_source = prop
++                    break
++            except Exception:
++                pass
++        b_attr, b_raw, b_mode = vp._read_any(grav, vp.TD_B_ATTRS)  # pylint: disable=protected-access
++        c_attr, c_raw, c_mode = vp._read_any(grav, vp.TD_C_ATTRS)  # pylint: disable=protected-access
++        b_value = mb.fval(b_raw, None)
++        c_value = mb.fval(c_raw, None)
++        status = "OK" if b_value is not None and c_value is not None else "PARAM_READ_INCOMPLETE"
++        rows.append({
++            "component": component,
++            "family": registry["family"],
++            "dstrat_code": registry["dstrat_code"],
++            "matrix_no": registry["matrix_no"],
++            "status": status,
++            "source": source,
++            "gravitation_source": grav_source,
++            "b_attr": b_attr,
++            "current_b": b_value,
++            "b_mode": b_mode,
++            "c_attr": c_attr,
++            "current_c": c_value,
++            "c_mode": c_mode,
++        })
++    compact_rows = [
++        {
++            "component": row.get("component"),
++            "current_b": row.get("current_b"),
++            "current_c": row.get("current_c"),
++            "status": row.get("status"),
++        }
++        for row in rows
++    ]
++    return compact_rows, operation_rows
++
++
++def _inventory_from_records(
++        records: Sequence[OperationRecord], td_operation_rows: Sequence[Mapping[str, Any]]) -> List[Dict[str, Any]]:
++    """Build exact com.operation_rows payload without rereading shared attrs."""
++
++    audit_by_position = {int(row["index"]): row for row in td_operation_rows}
++    inventory: List[Dict[str, Any]] = []
++    for record in records:
++        audit = audit_by_position.get(record.position, {})
++        operation_type = (
++            com.exact_int(audit.get("operation_type"), "OPERATIONTYPE")
++            if audit.get("operation_type") not in (None, "")
++            else record.operation_type
++        )
++        inventory.append({
++            "no": record.position,
++            "position": record.position,
++            "type": operation_type,
++            "active": int(audit.get("active", record.active)),
++            "comment": str(audit.get("comment", record.comment)),
++            "name": record.name,
++        })
++    return inventory
++
++
++def _matrix_fingerprint_exact(mat: Any) -> Tuple[Dict[str, Any], float]:
++    """Return exactly the legacy published row plus the validation sum.
++
++    The legacy helper also reads matrix CODE and counts nonzero cells, although
++    neither enters the published semantic snapshot.  PERF2C omits only those
++    unused operations; full matrix values and byte-level SHA semantics remain
++    unchanged.
++    """
++
++    values = mat.GetValues()
++    array = np.asarray(values, dtype="<f8")
++    if array.ndim != 2:
++        raise RuntimeError("matrix array is not 2D: shape=%r" % (array.shape,))
++    if not np.all(np.isfinite(array)) or np.any(array < 0):
++        raise RuntimeError("Demand matrix contains nonfinite or negative values")
++    contiguous = np.ascontiguousarray(array, dtype="<f8")
++    total = float(np.sum(contiguous))
++    row = {
++        "matrix_no": rt.ival(rt.att(mat, "NO", None), ""),
++        "rows": int(contiguous.shape[0]),
++        "cols": int(contiguous.shape[1]),
++        "sha256_float64_le": hashlib.sha256(contiguous.tobytes(order="C")).hexdigest(),
++    }
++    return row, total
++
++
++def single_pass_exact_snapshot(adapter: Any) -> Dict[str, Any]:
++    """Build the exact legacy full semantic snapshot with per-call coalescing."""
++
++    context = SnapshotReadContext(adapter)
++
++    links = context.links()
++    fixed: List[Dict[str, Any]] = []
++    addval_values: Dict[str, float] = {}
++    for key, row in sorted(links.items()):
++        addval_values[key_text(key)] = row["addval1"]
++        fixed.append({
++            name: value for name, value in row.items()
++            if name not in ("addval1", "object", "eligible")
++        })
++
++    dseg_rows = context.dseg_bindings()
++    if len({row["norm_code"] for row in dseg_rows}) != len(dseg_rows):
++        raise SupplyContractError("DUPLICATE_DSEG_IDENTITY")
++    dseg_map = {row["norm_code"]: row.get("matrix_no") for row in dseg_rows}
++    required = {
++        core.norm_code(value)
++        for value in (
++            adapter.cfg["supply"]["passenger_dsegs"]
++            + adapter.cfg["supply"].get("freight_dsegs", [])
++        )
++    }
++    if not required <= set(dseg_map):
++        raise SupplyContractError(
++            "REQUIRED_DEMAND_SEGMENT_MISSING:"
++            + ",".join(sorted(required - set(dseg_map))))
++    unbound = sorted(code for code in required if dseg_map[code] in (None, ""))
++    if unbound:
++        raise SupplyContractError(
++            "REQUIRED_DSEG_ODMATRIX_UNREADABLE:" + ",".join(unbound))
++
++    matrix_numbers = {
++        integer(row["matrix_no"])
++        for row in dseg_rows
++        if row.get("matrix_no") not in (None, "")
++    }
++    matrix_numbers.update(
++        integer(value)
++        for value in adapter.cfg["supply"].get("component_matrix_nos", []))
++    matrix_rows: List[Dict[str, Any]] = []
++    for matrix_no in sorted(matrix_numbers):
++        matrix = adapter.visum.Net.Matrices.ItemByKey(matrix_no)
++        row, matrix_sum = _matrix_fingerprint_exact(matrix)
++        expected_zones = adapter.cfg.get("expected_zones")
++        if expected_zones is not None and (row["rows"], row["cols"]) != (
++                int(expected_zones), int(expected_zones)):
++            raise SupplyContractError(
++                "DEMAND_MATRIX_AXIS_SHAPE_MISMATCH:%s" % matrix_no)
++        if not math.isfinite(matrix_sum) or matrix_sum < 0:
++            raise SupplyContractError("NONFINITE_OR_NEGATIVE_DEMAND")
++        matrix_rows.append(row)
++    if not matrix_rows:
++        raise SupplyContractError("EMPTY_DEMAND_FINGERPRINT")
++
++    generation_values = context.generation_values()
++    td_values, operations = context.td_and_operations()
++    if (len(td_values) != len(mb.COMPONENT_REGISTRY)
++            or any(row.get("status") != "OK" for row in td_values)):
++        raise SupplyContractError("COMPONENT_PARAMETER_SNAPSHOT_FAILED")
++    td_values = sorted(td_values, key=lambda row: row["component"])
++
++    result: Dict[str, Any] = {
++        "addval1": addval_values,
++        "addval_hash": canonical_hash(addval_values),
++        "fixed_link_hash": canonical_hash(fixed),
++        "matrix_hash": canonical_hash(matrix_rows),
++        "matrices": matrix_rows,
++        "dseg_map": dseg_map,
++        "dseg_hash": canonical_hash(dseg_map),
++        "generation_hash": canonical_hash(generation_values),
++        "generation_values": generation_values,
++        "td_values": td_values,
++        "td_hash": canonical_hash(td_values),
++        "operations_hash": canonical_hash(operations),
++    }
++    result["state_hash"] = canonical_hash(result)
++
++    telemetry_payload = context.telemetry()
++    telemetry_payload.update({
++        "state_hash": result["state_hash"],
++        "matrix_count": len(matrix_rows),
++        "dseg_count": len(dseg_rows),
++        "generation_attribute_count": len(generation_values),
++        "operation_count": len(operations),
++    })
++    adapter.last_perf2c_snapshot_telemetry = telemetry_payload
++    telemetry = getattr(adapter, "telemetry", None)
++    if telemetry is not None:
++        telemetry.event("PERF2C_SINGLE_PASS_EXACT_SNAPSHOT", **telemetry_payload)
++    return result
++
++
++__all__ = [
++    "SCHEMA",
++    "RELEASE",
++    "SnapshotReadContext",
++    "single_pass_exact_snapshot",
++]
+--- /dev/null
++++ b/r1_15a2_trial_adapter_v24915p2c.py
+@@ -0,0 +1,128 @@
++# -*- coding: utf-8 -*-
++"""PERF2C adapter: single-pass exact full snapshot with fail-safe fallback."""
++from __future__ import annotations
++
++from typing import Any, Dict, Mapping
++
++from r1_15a2_trial_adapter_v24915p2 import VisumAdapter as _PERF2
++from r1_15a2_single_pass_snapshot_v24915p2c import single_pass_exact_snapshot
++
++
++class VisumAdapter(_PERF2):
++    runtime_backend = "VISUM_COM_V24915_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT"
++
++    def __init__(self, visum, cfg, control=None):
++        super().__init__(visum, cfg, control)
++        feature = (cfg.get("v24915_perf2c_runtime_options") or
++                   ((cfg.get("performance", {}) or {}).get(
++                       "v24915_perf2c_single_pass_snapshot", {}) or {}))
++        self.perf2c_snapshot_enabled = feature.get("enabled", True) is True
++        self.perf2c_shadow_parity_once = feature.get(
++            "shadow_parity_once", True) is True
++        self.perf2c_fallback_to_legacy = feature.get(
++            "fallback_to_legacy", True) is True
++        self._perf2c_shadow_pending = self.perf2c_shadow_parity_once
++        self._perf2c_runtime_disabled = False
++        self.last_perf2c_snapshot_parity: Dict[str, Any] = {
++            "status": "NOT_RUN",
++            "public_snapshot_schema_changed": False,
++            "cross_call_cache": False,
++        }
++
++    @staticmethod
++    def _component_hashes(snapshot: Mapping[str, Any]) -> Dict[str, Any]:
++        keys = (
++            "addval_hash", "fixed_link_hash", "matrix_hash", "dseg_hash",
++            "generation_hash", "td_hash", "operations_hash", "state_hash",
++        )
++        return {key: snapshot.get(key) for key in keys}
++
++    def _record_snapshot_event(self, name: str, **payload: Any) -> None:
++        manager = getattr(self, "readback_manager", None)
++        if manager is not None:
++            manager._event(name, **payload)  # PERF2 telemetry API
++
++    def _disable_perf2c(self, reason: str, error: str = "") -> None:
++        self._perf2c_runtime_disabled = True
++        self.last_perf2c_snapshot_parity = {
++            "status": "DISABLED_FALLBACK_TO_LEGACY",
++            "reason": reason,
++            "error": error,
++            "public_snapshot_schema_changed": False,
++            "cross_call_cache": False,
++        }
++        self._record_snapshot_event(
++            "PERF2C_SINGLE_PASS_FALLBACK", reason=reason, error=error)
++
++    def legacy_snapshot_from_live_visum(self):
++        """Return exact full snapshot; optimize only the internals of this call.
++
++        The first live call performs an exact object-level parity check against
++        the untouched parent implementation.  A mismatch or any optimized-read
++        exception permanently disables PERF2C for this adapter instance and
++        returns the already-read legacy payload.
++        """
++
++        self._sync_readback_telemetry()
++        if not self.perf2c_snapshot_enabled or self._perf2c_runtime_disabled:
++            return super().legacy_snapshot_from_live_visum()
++
++        if self._perf2c_shadow_pending:
++            legacy = super().legacy_snapshot_from_live_visum()
++            try:
++                optimized = single_pass_exact_snapshot(self)
++            except Exception as exc:
++                self._disable_perf2c(
++                    "FIRST_CALL_OPTIMIZED_READ_FAILED", type(exc).__name__ + ":" + str(exc))
++                if not self.perf2c_fallback_to_legacy:
++                    raise
++                return legacy
++            if optimized != legacy:
++                self.last_perf2c_snapshot_parity = {
++                    "status": "EXACT_PARITY_MISMATCH_FALLBACK_TO_LEGACY",
++                    "legacy_hashes": self._component_hashes(legacy),
++                    "optimized_hashes": self._component_hashes(optimized),
++                    "legacy_keys": sorted(legacy),
++                    "optimized_keys": sorted(optimized),
++                    "public_snapshot_schema_changed": sorted(legacy) != sorted(optimized),
++                    "cross_call_cache": False,
++                }
++                self._perf2c_runtime_disabled = True
++                self._record_snapshot_event(
++                    "PERF2C_SINGLE_PASS_PARITY_FAIL",
++                    legacy_state_hash=legacy.get("state_hash"),
++                    optimized_state_hash=optimized.get("state_hash"))
++                if not self.perf2c_fallback_to_legacy:
++                    raise RuntimeError("V24915P2C_SINGLE_PASS_SNAPSHOT_PARITY_FAIL")
++                return legacy
++            self._perf2c_shadow_pending = False
++            self.last_perf2c_snapshot_parity = {
++                "status": "EXACT_PARITY_PASS",
++                "state_hash": optimized.get("state_hash"),
++                "component_hashes": self._component_hashes(optimized),
++                "public_snapshot_schema_changed": False,
++                "cross_call_cache": False,
++            }
++            self._record_snapshot_event(
++                "PERF2C_SINGLE_PASS_PARITY_PASS",
++                state_hash=optimized.get("state_hash"))
++            return optimized
++
++        try:
++            optimized = single_pass_exact_snapshot(self)
++            # Keep the parent telemetry counter semantics: this is still a full
++            # legacy-equivalent semantic snapshot, only read more efficiently.
++            self._record_snapshot_event("LEGACY_SNAPSHOT_TOTAL")
++            self._record_snapshot_event(
++                "PERF2C_SINGLE_PASS_SNAPSHOT_TOTAL",
++                state_hash=optimized.get("state_hash"))
++            return optimized
++        except Exception as exc:
++            self._disable_perf2c(
++                "OPTIMIZED_READ_FAILED", type(exc).__name__ + ":" + str(exc))
++            if not self.perf2c_fallback_to_legacy:
++                raise
++            return super().legacy_snapshot_from_live_visum()
++
++
++__all__ = ["VisumAdapter"]
+--- /dev/null
++++ b/tests/test_v24915p2c_release.py
+@@ -0,0 +1,77 @@
++# -*- coding: utf-8 -*-
++"""Packaging and fail-closed release gates for PERF2C overlay."""
++from __future__ import annotations
++
++import importlib.util
++import json
++from pathlib import Path
++
++import pytest
++
++import r1_15a2_safety_v24915p2c as safety
++from r1_15a2_supply import SupplyContractError
++
++ROOT = Path(__file__).resolve().parents[1]
++LAUNCHER = ROOT / "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C.py"
++
++
++def _load_launcher_module():
++    spec = importlib.util.spec_from_file_location("perf2c_launcher_test", LAUNCHER)
++    module = importlib.util.module_from_spec(spec)
++    assert spec.loader is not None
++    spec.loader.exec_module(module)
++    return module
++
++
++def test_overlay_manifest_and_contract_are_hash_pinned():
++    result = safety.preflight_v24915p2c_overlay(ROOT)
++    assert result["passes"] is True
++    assert result["files_checked"] == 4
++    assert result["public_snapshot_schema_changed"] is False
++    assert result["cross_call_cache"] is False
++    assert result["first_call_exact_shadow_parity"] is True
++
++
++def test_contract_forbids_state_machine_and_cross_call_cache_changes():
++    contract = json.loads((ROOT / safety.CONTRACT_FILE).read_text(encoding="utf-8"))
++    assert contract["scope"] == "LOCAL_PER_SNAPSHOT_READ_COALESCING_ONLY"
++    assert contract["cross_snapshot_cache"] is False
++    assert contract["new_mutation_epoch"] is False
++    assert contract["new_authority_token"] is False
++    assert contract["rollback_changed"] is False
++    assert contract["candidate_math_changed"] is False
++    assert contract["acceptance_changed"] is False
++    assert contract["first_live_call_exact_shadow_parity"] is True
++
++
++def test_wrapper_is_importable_and_patches_only_adapter_and_overlay_evidence():
++    module = _load_launcher_module()
++    assert module.RELEASE == safety.RELEASE
++    assert module._OVERLAY_ACTIVE is False
++    cfg = module._load_config_with_overlay("FULL")
++    feature = cfg["v24915_perf2c_runtime_options"]
++    assert feature["enabled"] is True
++    assert feature["shadow_parity_once"] is True
++    assert feature["fallback_to_legacy"] is True
++    assert feature["cross_call_cache"] is False
++    assert feature["new_mutation_epoch"] is False
++    assert feature["new_authority_token"] is False
++    # Parent calibration configuration remains the R5 overnight50 authority.
++    assert cfg["package_revision"] == "V24915_PERF2_R5_OVERNIGHT50_B0016_CONTINUATION"
++    assert cfg["coupled_demand"]["max_outer_cycles"] == 50
++    assert cfg["trial_calibration"]["max_runtime_seconds"] == 64800.0
++
++
++def test_overlay_preflight_detects_runtime_file_tamper(tmp_path):
++    for name in (
++        safety.MANIFEST_FILE,
++        safety.CONTRACT_FILE,
++        "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C.py",
++        "r1_15a2_single_pass_snapshot_v24915p2c.py",
++        "r1_15a2_trial_adapter_v24915p2c.py",
++    ):
++        (tmp_path / name).write_bytes((ROOT / name).read_bytes())
++    target = tmp_path / "r1_15a2_single_pass_snapshot_v24915p2c.py"
++    target.write_text(target.read_text(encoding="utf-8") + "\n# tampered\n", encoding="utf-8")
++    with pytest.raises(SupplyContractError, match="OVERLAY_INVALID"):
++        safety.preflight_v24915p2c_overlay(tmp_path)
+--- /dev/null
++++ b/tests/test_v24915p2c_single_pass_snapshot.py
+@@ -0,0 +1,283 @@
++# -*- coding: utf-8 -*-
++"""Exact parity, read-count, and fail-safe tests for PERF2C snapshot V2."""
++from __future__ import annotations
++
++from collections import Counter
++import copy
++from pathlib import Path
++from types import MethodType
++
++import pytest
++
++from conftest import FakeCollection
++from test_supply_visum_v22 import state_visum, small_cfg
++import r1_15a2_supply_visum as legacy_module
++import r1_15a2_trial_adapter_v24915p2c as adapter_module
++from r1_15a2_single_pass_snapshot_v24915p2c import single_pass_exact_snapshot
++
++
++class CountingCollection(FakeCollection):
++    def __init__(self, items, keys=None):
++        super().__init__(items, keys)
++        self.get_all_calls = 0
++        self.item_by_key_calls = 0
++
++    @property
++    def GetAll(self):
++        self.get_all_calls += 1
++        return tuple(self.items)
++
++    def ItemByKey(self, key):
++        self.item_by_key_calls += 1
++        return super().ItemByKey(key)
++
++
++def _instrument_visum():
++    visum = state_visum()
++    counts = {
++        "operation_attributes": Counter(),
++        "dseg_attributes": Counter(),
++        "matrix_attributes": Counter(),
++        "matrix_getvalues": Counter(),
++        "zone_getmulti": Counter(),
++    }
++
++    operations = list(visum.Procedures.Operations.items)
++    for index, operation in enumerate(operations, 1):
++        original = operation.AttValue
++
++        def counted(name, _original=original, _index=index):
++            counts["operation_attributes"][(int(_index), str(name).upper())] += 1
++            return _original(name)
++
++        object.__setattr__(operation, "AttValue", MethodType(lambda self, name, _fn=counted: _fn(name), operation))
++    visum.Procedures.Operations = CountingCollection(operations)
++
++    dsegs = list(visum.Net.DemandSegments.items)
++    for index, dseg in enumerate(dsegs, 1):
++        original = dseg.AttValue
++
++        def counted(name, _original=original, _index=index):
++            counts["dseg_attributes"][(int(_index), str(name).upper())] += 1
++            return _original(name)
++
++        object.__setattr__(dseg, "AttValue", MethodType(lambda self, name, _fn=counted: _fn(name), dseg))
++    visum.Net.DemandSegments = CountingCollection(dsegs)
++
++    matrices = list(visum.Net.Matrices.items)
++    matrix_keys = {}
++    for matrix in matrices:
++        matrix_no = int(matrix.AttValue("NO"))
++        matrix_keys[matrix_no] = matrix
++        original_att = matrix.AttValue
++        original_values = matrix.GetValues
++
++        def counted_att(name, _original=original_att, _no=matrix_no):
++            counts["matrix_attributes"][(int(_no), str(name).upper())] += 1
++            return _original(name)
++
++        def counted_values(_original=original_values, _no=matrix_no):
++            counts["matrix_getvalues"][int(_no)] += 1
++            return _original()
++
++        object.__setattr__(matrix, "AttValue", MethodType(lambda self, name, _fn=counted_att: _fn(name), matrix))
++        object.__setattr__(matrix, "GetValues", MethodType(lambda self, _fn=counted_values: _fn(), matrix))
++    visum.Net.Matrices = CountingCollection(matrices, matrix_keys)
++
++    original_zone_multi = visum.Net.Zones.GetMultiAttValues
++
++    def counted_zone_multi(attribute):
++        counts["zone_getmulti"][str(attribute).upper()] += 1
++        return original_zone_multi(attribute)
++
++    object.__setattr__(visum.Net.Zones, "GetMultiAttValues", MethodType(lambda self, attribute, _fn=counted_zone_multi: _fn(attribute), visum.Net.Zones))
++    return visum, counts
++
++
++def _runtime_cfg(tmp_path: Path):
++    cfg = copy.deepcopy(small_cfg())
++    cfg.update({
++        "apply": False,
++        "production_apply": False,
++        "trial_calibration": {"enabled": True},
++        "performance": {
++            "persistent_path_cache": {"enabled": False},
++            "v24915_perf2_candidate_readback_bundle": {
++                "enabled": True,
++                "shadow_parity_mode": True,
++                "fallback_to_legacy": True,
++                "require_exact_snapshot_parity": True,
++            },
++            "v24915_perf2c_single_pass_snapshot": {
++                "enabled": True,
++                "shadow_parity_once": True,
++                "fallback_to_legacy": True,
++            },
++        },
++        "runtime_persistent_path_cache_root": str(tmp_path / "cache"),
++    })
++    return cfg
++
++
++def _sum_counter(counter, attribute):
++    attribute = attribute.upper()
++    return sum(value for (_key, name), value in counter.items() if name == attribute)
++
++
++def test_single_pass_snapshot_is_exact_and_removes_only_proven_redundant_reads():
++    legacy_visum, legacy_counts = _instrument_visum()
++    optimized_visum, optimized_counts = _instrument_visum()
++    cfg = small_cfg()
++
++    legacy_adapter = legacy_module.VisumAdapter(legacy_visum, copy.deepcopy(cfg))
++    optimized_adapter = legacy_module.VisumAdapter(optimized_visum, copy.deepcopy(cfg))
++
++    legacy = legacy_adapter.snapshot()
++    optimized = single_pass_exact_snapshot(optimized_adapter)
++
++    assert optimized == legacy
++    assert optimized["state_hash"] == legacy["state_hash"]
++    assert sorted(optimized) == sorted(legacy)
++
++    # Matrix values remain full and exact: one GetValues per matrix in both.
++    assert sum(legacy_counts["matrix_getvalues"].values()) == len(legacy["matrices"])
++    assert sum(optimized_counts["matrix_getvalues"].values()) == len(optimized["matrices"])
++
++    # Legacy traverses Operations separately for TD and inventory; PERF2C once.
++    assert legacy_visum.Procedures.Operations.get_all_calls == 2
++    assert optimized_visum.Procedures.Operations.get_all_calls == 1
++    for attribute in ("OPERATIONTYPE", "ACTIVE", "COMMENT"):
++        assert _sum_counter(
++            optimized_counts["operation_attributes"], attribute
++        ) < _sum_counter(legacy_counts["operation_attributes"], attribute)
++
++    # Snapshot does not consume DSeg NAME/MODE or matrix CODE/SUM. PERF2C stops
++    # reading those unused values but preserves CODE and ODMatrix.NO identity.
++    assert _sum_counter(legacy_counts["dseg_attributes"], "NAME") > 0
++    assert _sum_counter(legacy_counts["dseg_attributes"], "MODE") > 0
++    assert _sum_counter(optimized_counts["dseg_attributes"], "NAME") == 0
++    assert _sum_counter(optimized_counts["dseg_attributes"], "MODE") == 0
++    assert _sum_counter(legacy_counts["matrix_attributes"], "CODE") > 0
++    assert _sum_counter(legacy_counts["matrix_attributes"], "SUM") > 0
++    assert _sum_counter(optimized_counts["matrix_attributes"], "CODE") == 0
++    assert _sum_counter(optimized_counts["matrix_attributes"], "SUM") == 0
++
++    # Generation values are not weakened or cached across calls.
++    assert optimized_counts["zone_getmulti"] == legacy_counts["zone_getmulti"]
++    telemetry = optimized_adapter.last_perf2c_snapshot_telemetry
++    assert telemetry["cross_call_cache"] is False
++    assert telemetry["loader_calls"]["links"] == 1
++    assert telemetry["loader_calls"]["dseg_bindings"] == 1
++    assert telemetry["loader_calls"]["operation_records"] == 1
++    assert telemetry["loader_calls"]["generation_values"] == 1
++    assert telemetry["loader_calls"]["td_and_operations"] == 1
++
++
++def test_per_call_context_does_not_reuse_live_state_across_snapshot_calls():
++    visum, counts = _instrument_visum()
++    adapter = legacy_module.VisumAdapter(visum, small_cfg())
++    first = single_pass_exact_snapshot(adapter)
++    matrix = visum.Net.Matrices.ItemByKey(9101)
++    matrix.values[0, 1] += 5.0
++    second = single_pass_exact_snapshot(adapter)
++    assert first["matrix_hash"] != second["matrix_hash"]
++    assert sum(counts["matrix_getvalues"].values()) == 2 * len(first["matrices"])
++
++
++def test_adapter_first_call_shadow_parity_then_uses_single_pass(tmp_path):
++    visum, _counts = _instrument_visum()
++    adapter = adapter_module.VisumAdapter(visum, _runtime_cfg(tmp_path))
++    first = adapter.legacy_snapshot_from_live_visum()
++    assert adapter.last_perf2c_snapshot_parity["status"] == "EXACT_PARITY_PASS"
++    second = adapter.legacy_snapshot_from_live_visum()
++    assert second == first
++    assert adapter._perf2c_runtime_disabled is False
++    assert adapter.last_perf2c_snapshot_telemetry["cross_call_cache"] is False
++
++
++def test_adapter_falls_back_permanently_when_optimized_read_fails(tmp_path, monkeypatch):
++    visum, _counts = _instrument_visum()
++    adapter = adapter_module.VisumAdapter(visum, _runtime_cfg(tmp_path))
++
++    def fail(_adapter):
++        raise RuntimeError("synthetic optimized failure")
++
++    monkeypatch.setattr(adapter_module, "single_pass_exact_snapshot", fail)
++    legacy = adapter.legacy_snapshot_from_live_visum()
++    assert legacy["state_hash"]
++    assert adapter._perf2c_runtime_disabled is True
++    assert adapter.last_perf2c_snapshot_parity["status"] == "DISABLED_FALLBACK_TO_LEGACY"
++    # A second call remains on untouched parent implementation; it does not
++    # retry the failed optimized path.
++    second = adapter.legacy_snapshot_from_live_visum()
++    assert second == legacy
++
++
++def test_adapter_parity_mismatch_returns_legacy_and_disables_optimization(tmp_path, monkeypatch):
++    visum, _counts = _instrument_visum()
++    adapter = adapter_module.VisumAdapter(visum, _runtime_cfg(tmp_path))
++    original = adapter_module.single_pass_exact_snapshot
++
++    def mismatch(instance):
++        result = original(instance)
++        result["state_hash"] = "0" * 64
++        return result
++
++    monkeypatch.setattr(adapter_module, "single_pass_exact_snapshot", mismatch)
++    returned = adapter.legacy_snapshot_from_live_visum()
++    assert returned["state_hash"] != "0" * 64
++    assert adapter._perf2c_runtime_disabled is True
++    assert adapter.last_perf2c_snapshot_parity["status"] == (
++        "EXACT_PARITY_MISMATCH_FALLBACK_TO_LEGACY")
++
++
++@pytest.mark.parametrize("invalid", [float("nan"), float("inf"), -1.0])
++def test_single_pass_preserves_matrix_validity_gate(invalid):
++    visum = state_visum()
++    visum.Net.Matrices.ItemByKey(9101).values[0, 1] = invalid
++    adapter = legacy_module.VisumAdapter(visum, small_cfg())
++    with pytest.raises(RuntimeError):
++        single_pass_exact_snapshot(adapter)
++
++@pytest.mark.parametrize("mutation", [
++    "ADDVAL1",
++    "FIXED_LINK",
++    "MATRIX",
++    "GENERATION",
++    "TD_PARAMETER",
++    "OPERATION_RUNTIME_STATE",
++    "DSEG_BINDING",
++])
++def test_exact_parity_is_preserved_across_each_semantic_state_domain(mutation):
++    legacy_visum = state_visum()
++    optimized_visum = state_visum()
++
++    def apply(visum):
++        if mutation == "ADDVAL1":
++            visum.Net.Links.items[0].SetAttValue("ADDVAL1", 1.25)
++        elif mutation == "FIXED_LINK":
++            visum.Net.Links.items[0].SetAttValue("LENGTH", 2.5)
++        elif mutation == "MATRIX":
++            visum.Net.Matrices.ItemByKey(9101).values[0, 1] += 7.0
++        elif mutation == "GENERATION":
++            visum.Net.Zones.rows[0]["ADD_PROD_W"] = 1.75
++        elif mutation == "TD_PARAMETER":
++            params = visum.Procedures.Operations.items[1].TripDistributionParameters
++            params.TripDistributionDStratParameters.ItemByKey(
++                "1_WORK_E_C").SetAttValue("PARA_C", -0.25)
++        elif mutation == "OPERATION_RUNTIME_STATE":
++            # Change a non-TD operation so the full snapshot remains readable.
++            visum.Procedures.Operations.items[-1].SetAttValue("ACTIVE", 0)
++        elif mutation == "DSEG_BINDING":
++            visum.Net.DemandSegments.items[0].ODMatrix = visum.Net.Matrices.ItemByKey(2)
++        else:  # pragma: no cover
++            raise AssertionError(mutation)
++
++    apply(legacy_visum)
++    apply(optimized_visum)
++    legacy_adapter = legacy_module.VisumAdapter(legacy_visum, small_cfg())
++    optimized_adapter = legacy_module.VisumAdapter(optimized_visum, small_cfg())
++    legacy = legacy_adapter.snapshot()
++    optimized = single_pass_exact_snapshot(optimized_adapter)
++    assert optimized == legacy
++    assert optimized["state_hash"] == legacy["state_hash"]

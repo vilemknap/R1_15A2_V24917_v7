@@ -1,0 +1,18 @@
+{
+  "calibration_complete": false,
+  "checkpoint": "CP105_V24915_PERF2C_FINAL_SOURCE_AND_DELIVERY",
+  "compileall": true,
+  "focused_tests": 19,
+  "full_tests_failed": 0,
+  "full_tests_passed": 881,
+  "full_tests_skipped": 4,
+  "next_action": "Run from B0016 with PERF2C launcher and inspect first-call exact parity telemetry.",
+  "parent_files_modified": 0,
+  "parent_files_removed": 0,
+  "parent_sha256": "9dd18d27ce7800aa93164c13574b0009d1d78cfaa2ebec6e3131f6834f51d75b",
+  "production_ready": false,
+  "real_visum_tested": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
+  "schema": "R1_15A2_V24915_PERF2C_CHECKPOINT_STATUS_V1",
+  "status": "OFFLINE_VERIFIED_READY_FOR_LIVE_PARITY_AND_TIMING"
+}

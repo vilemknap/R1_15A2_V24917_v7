@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/claude/fb/helpers/R1_12D_PROFILE_ROSTER_V24917.py", line 850, in <module>
+    main()
+    ~~~~^^
+  File "/home/claude/fb/helpers/R1_12D_PROFILE_ROSTER_V24917.py", line 815, in main
+    v = get_visum()
+  File "/home/claude/fb/helpers/R1_12D_PROFILE_ROSTER_V24917.py", line 223, in get_visum
+    raise RuntimeError("Visum/COM global object is not available. Run inside PTV Visum.")
+RuntimeError: Visum/COM global object is not available. Run inside PTV Visum.

@@ -1,0 +1,35 @@
+{
+  "script": "R1_OSRM_M9001_M9697_FINAL_PATCH_V1",
+  "status": "APPLIED_READBACK_VERIFIED",
+  "zone_count": 681,
+  "source_hashes": {
+    "11_OSRM_DURATION_MIN.csv": "913dffd8d37ef938c88b025dcd48aa62a2a4d0bdf4765b3c882b8a7102258072",
+    "osrm_distance_km.csv": "b7912e85a3b6f613a7b37e8324533275407ac30ce89ca53bb2d9891bb1ab050d",
+    "AMDY_INTRAZONAL_681_VALUES.csv": "9e07b9ec0c20b353a42c31c41adebc4d6309f3ecebb9c4c5a846f3c954c92d50",
+    "R1_INTRAZONAL_PARAMS.xlsx": "add4a5d6fdfacd7dcc4e8a72c6b9c260a503ba768c3b147427ebe47001098485"
+  },
+  "preflight": {
+    "M9001_changed_cells": 1361,
+    "M9697_changed_cells": 2041,
+    "M9001_Senica_target_cells": 1361,
+    "M9697_Senica_target_cells": 1361,
+    "M9697_diagonal_target_cells": 681,
+    "M9697_target_union_cells": 2041,
+    "M9001_non_target_max_diff_min": 0.0,
+    "M9697_non_target_max_diff_km": 0.0,
+    "zone_612_intrazonal_time_min": 12.5063713020484,
+    "zone_612_intrazonal_distance_km": 9.999022959618996,
+    "zone_612_OSRM_time_to_zone_1_min": 53.730000000000004,
+    "zone_1_OSRM_time_to_zone_612_min": 54.07833333333333,
+    "zone_612_OSRM_distance_to_zone_1_km": 49.979099999999995,
+    "zone_1_OSRM_distance_to_zone_612_km": 50.024699999999996,
+    "total_changed_cells": 3402
+  },
+  "no_procedures_executed": true,
+  "no_OD_matrices_modified": true,
+  "no_connectors_or_network_modified": true,
+  "downstream_status": "STALE: recompute native TD; previous OD / realization / assignment results not rebuilt",
+  "source": "User-provided RESULT.json from 2026-10-16 02:21 local PTV Visum execution",
+  "why_new_baseline_needed": "Native TD was NOT executed during repair; prior OD outputs are stale.",
+  "recommend_input_ver": "OSRM_AMDY_INPUTS_PATCHED_TD_STALE.ver"
+}

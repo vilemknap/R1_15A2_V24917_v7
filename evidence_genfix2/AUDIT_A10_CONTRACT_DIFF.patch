@@ -1,0 +1,20 @@
+--- original_audit/test_audit_regressions.py
++++ genfix2_audit_tests/test_audit_regressions.py
+@@ -153,12 +153,11 @@
+             h.ad.rows0=[dict(r,model=r['model']*10) for r in h.ad.rows0]
+         return orig(folder,block)
+     monkeypatch.setattr(h.ad,'assign_for_block',recompute)
+-    result=h.run(opts=dict(OPTS,max_trials=1))
+-    rec=result[4]
+-    record('A10_supply_recovery_unchecked',{'status':rec['status'],'changed':result[0],
+-           'objective_before':rec['objective_before'],'objective_after':rec['objective_after'],
+-           'accepted_transitions':h.ad.kept})
+-    assert not result[0] and rec['objective_after']['total'] <= rec['objective_before']['total']+1e-8
++    with pytest.raises(Exception, match='RECOVERY_NOT_EQUIVALENT_MANUAL_REOPEN'):
++        h.run(opts=dict(OPTS,max_trials=1))
++    assert not h.ad.kept, 'Recovery must not call candidate acceptance'
++    record('A10_supply_recovery_closed', {'status':'EXPLICIT_MANUAL_REOPEN_FAILURE',
++           'accepted_transitions':h.ad.kept,'accepted_change':False})
+ 
+ 
+ def test_control_mobility_pure_positive_step_is_limited():

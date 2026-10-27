@@ -1,0 +1,14 @@
+{
+  "schema": "R1_15A2_V2487_METHODOLOGY_STATUS_V1",
+  "release": "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
+  "zonal_coefficient_policy": "LIVE_CURRENT_VALUE_IS_AUTHORITY_NO_GLOBAL_ABSOLUTE_UPPER_BOUND",
+  "multiplicative_proposal": "CURRENT_TIMES_EXP_LOG_STEP",
+  "salary_proposal": "CURRENT_PLUS_BOUNDED_DELTA",
+  "preserved_zero_policy": "UNCHANGED",
+  "finite_and_formula_domain_gates": "REQUIRED",
+  "quality_acceptance_gates": "UNCHANGED",
+  "fresh_visum_assignment_required": true,
+  "live_12d_11d_required": true,
+  "path_enumeration_policy": "UNCHANGED_PERSISTENT_EPOCH",
+  "supply_addval1_policy": "UNCHANGED"
+}

@@ -1,0 +1,25 @@
+{
+  "release": "R1_15A2_V2_3_6_LIVE_TG_09F4_PREFEED_REMEDIATION",
+  "prior_live_preflight": "2026-10-16T00:18:11+02:00",
+  "previous_result": "110_PASS_1_FAIL_TG_FORMULA_PARAMETER_BINDINGS",
+  "implemented_exhaustive_formula_contract": 10,
+  "typed_real_09F4_prefeed_attributes": 20,
+  "current_live_v236_preflight_executed": false,
+  "actual_calibration_executed": false,
+  "expected_12d_rows": 498,
+  "calibration_rows": 462,
+  "validation_rows": 36,
+  "apply": false,
+  "assignment_operations_approved": false,
+  "gap_last_iteration_approved": false,
+  "csd_mapping_review_acknowledged": false,
+  "city90_bidirectional_qa_acknowledged": false,
+  "protected_numerical_and_observation_files_unchanged": true,
+  "independent_prefeed_effect_attribution_for_generation_apply": "PENDING",
+  "tests": {
+    "passed": 281,
+    "failed": 0,
+    "status": "PASS"
+  },
+  "standalone_inline_pytest_integration": "PASS"
+}

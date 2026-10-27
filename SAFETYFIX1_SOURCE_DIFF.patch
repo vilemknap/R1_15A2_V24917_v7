@@ -1,0 +1,537 @@
+--- MOBILITYFIX1/01_SPUSTIT_V24917_TARGETED_CATCHUP.py
++++ SAFETYFIX1/01_SPUSTIT_V24917_TARGETED_CATCHUP.py
+@@ -72,8 +72,11 @@
+     roster_status = roster.install_static(print_fn=print_fn)
+     import r1_15a2_long_school_generation_v24917 as lsgen
+     ls_status = lsgen.activate(visum)
+-    print_fn("R1 V24917 LONG/SCHOOL generation: %s" % ("ACTIVE (ADD_PROD_L, ADD_ATT_L, ADD_PROD_SCH, ADD_ATT_SCH)"
+-                                                      if ls_status.get("active") else "inactive - attributes missing"))
++    print_fn("R1 V24917 LONG/SCHOOL generation: %s" % (
++        "ACTIVE (all 4 attributes verified)" if ls_status.get("active") else
++        "DEFERRED (transient/unverified COM, W/S continues): " + str(ls_status.get("error"))
++        if ls_status.get("reason") != "ATTRIBUTES_MISSING" else
++        "INACTIVE (verified missing attribute): " + str(ls_status.get("failed_attr"))))
+     import r1_15a2_boundary_generation_v24917 as bdgen
+     bd_status = bdgen.activate(visum)
+     print_fn("R1 V24917 border-crossing P/A lever: %s" % (
+--- MOBILITYFIX1/r1_15a2_active_demand_evidence_v24917.py
++++ SAFETYFIX1/r1_15a2_active_demand_evidence_v24917.py
+@@ -16,6 +16,7 @@
+ from __future__ import annotations
+ 
+ from pathlib import Path
++import math
+ from typing import Any, Mapping
+ 
+ import r1_15a2_active_demand_evidence_v24916p2c as base
+@@ -41,6 +42,39 @@
+         return hash(self.epoch_hash)
+ 
+ 
++def safe_td_target_plan(plan: Mapping[str, Any]) -> dict:
++    """Fail to GLOBAL_IDP_FALLBACK instead of making unsupported TD selections.
++
++    The sealed V24916 target builder is intentionally not edited.  This layer
++    applies solely to the evidence published by V24917 and retains the full
++    FineCDF fallback when no positive network attribution is available.
++    """
++    out = dict(plan or {})
++    def positive_finite(value):
++        try:
++            number = float(value)
++        except (TypeError, ValueError, OverflowError):
++            return False
++        return math.isfinite(number) and number > 0.0
++
++    pressure = out.get("family_pressure") or {}
++    evidenced = {str(fam) for fam, info in pressure.items()
++                 if positive_finite((info or {}).get("evidence_weight", 0.0))}
++    positive = {str(row.get("component")) for row in out.get("alignment_rows", []) or []
++                if str(row.get("family")) in evidenced
++                and positive_finite(row.get("alignment_score", 0.0))}
++    selected = [str(c) for c in out.get("active_components", []) or [] if str(c) in positive]
++    out["active_components"] = selected
++    out["targeting_evidence_families"] = sorted(evidenced)
++    out["status"] = "ACTIVE" if selected else "GLOBAL_IDP_FALLBACK"
++    out["reason"] = ("POSITIVE_FLOWBUNDLE_EVIDENCE" if selected else
++                     "NO_POSITIVE_FLOWBUNDLE_EVIDENCE" if not evidenced else
++                     "NO_POSITIVE_ALIGNED_COMPONENT")
++    out["safetyfix1_no_zero_evidence_targeting"] = True
++    out["global_11d_evaluation_required"] = True
++    return out
++
++
+ class _PublishProxy:
+     """Manager proxy that substitutes the undefined ``dist`` at publish time."""
+ 
+@@ -50,6 +84,14 @@
+ 
+     def publish(self, **kwargs):
+         kwargs["skim_identity"] = EpochSkimIdentity(self._builder._v24917_epoch)
++        # SAFETYFIX1: sanitize the TD mask at the production publication
++        # boundary, keeping the sealed V24916 evidence/math file byte-exact.
++        # With zero family weight the legacy score is zero and an >= 0
++        # threshold used to select alphabetical components as if attributed.
++        payload = dict(kwargs.get("target_payload") or {})
++        if "td_targets" in payload:
++            payload["td_targets"] = safe_td_target_plan(payload["td_targets"])
++            kwargs["target_payload"] = payload
+         return self._manager.publish(**kwargs)
+ 
+     def __getattr__(self, name):
+@@ -83,4 +125,4 @@
+         return obj
+ 
+ 
+-__all__ = ["ActiveDemandEvidenceBuilder", "EpochSkimIdentity"]
++__all__ = ["ActiveDemandEvidenceBuilder", "EpochSkimIdentity", "safe_td_target_plan"]
+--- MOBILITYFIX1/r1_15a2_trial_adapter_v24917.py
++++ SAFETYFIX1/r1_15a2_trial_adapter_v24917.py
+@@ -56,7 +56,9 @@
+         if self.v24916_active_evidence is not None:
+             self.v24916_active_evidence = _FixedEvidenceBuilder.from_parent(self.v24916_active_evidence)
+         self.v24917_status = {"release": RELEASE, "designs": 0, "fit_fallbacks": 0,
+-                              "last_phase": None, "last_ratio": None}
++                              "last_phase": None, "last_ratio": None,
++                              "long_school_activation": dict(self.v24917_ls),
++                              "ls_incomplete_current_cycle": False}
+ 
+     # ------------------------------------------------------- GENFIX1 snapshot
+     def legacy_snapshot_from_live_visum(self):
+@@ -194,7 +196,11 @@
+                             ls = lsgen.design(self.visum, cfg, self.zones, context["incidence"], problem,
+                                               solution, self.generation_reference_values, policy.get("fit", {}))
+                         except Exception as ls_exc:
+-                            ls = {"steps": {}, "summary": {"status": "LS_DESIGN_ERROR", "error": repr(ls_exc)}}
++                            # W/S may continue, but the incomplete LONG/SCHOOL
++                            # search cannot certify demand stationarity.
++                            ls = {"steps": {}, "summary": {"status": "LS_DESIGN_ERROR", "error": repr(ls_exc),
++                                                           "search_complete": False,
++                                                           "recovery": "SKIP_LS_THIS_CYCLE_CONTINUE_WS"}}
+             except Exception as exc:
+                 fallback = type(exc).__name__ + ":" + str(exc)
+                 self.v24917_status["fit_fallbacks"] += 1
+@@ -227,10 +233,20 @@
+                                                         "family_summaries": copy.deepcopy(original_projection.family_summaries)}
+         context["projection"] = core.ProjectionResult(rows=rows, family_summaries=summaries,
+                                                       weighted_rmse=0.0 if solution else original_projection.weighted_rmse)
++        ls_activation = getattr(self, "v24917_ls", {}) or {}
++        ls_deferred = (not ls_activation.get("active", False) and
++                       ls_activation.get("reason") not in ("ATTRIBUTES_MISSING", None))
++        ls_design_error = (ls or {}).get("summary", {}).get("status") == "LS_DESIGN_ERROR"
++        self.v24917_status["ls_incomplete_current_cycle"] = bool(ls_deferred or ls_design_error)
+         context["v24917"] = {"release": RELEASE, "phase": phase, "overlay_phase": phase if not fallback else None,
+                              "model_obs_ratio": ratio, "raw_fit_summary": summary, "fit_summary": summary,
+                              "flowbundle_mask": mask["audit"], "bounds_count": len(bounds),
+-                             "long_school": (ls or {}).get("summary"), "boundary": (bd or {}).get("summary"),
++                             "long_school": ((ls or {}).get("summary") or
++                                             ({"status": "DEFERRED_READ_UNAVAILABLE",
++                                               "activation": dict(ls_activation), "search_complete": False}
++                                              if ls_deferred else {"status": "INACTIVE", "activation": dict(ls_activation)})),
++                             "long_school_search_incomplete": bool(ls_deferred or ls_design_error),
++                             "boundary": (bd or {}).get("summary"),
+                              "mobility_guard": mobility, "solver_converged": converged, "proposal_usable": usable,
+                              "status": "FIT_FALLBACK_PARENT_PROPOSAL" if fallback else "GUARDED_PROPOSAL"}
+         context["v24917_ls"], context["v24917_bd"] = ls, bd
+@@ -349,12 +365,22 @@
+         import r1_15a2_td_count_blend_v24917 as blend
+         try:
+             out = blend.outer_decision(decision, before, after, self.cfg)
+-        except Exception as exc:     # never abort a run on the blend; keep the sealed parent decision
++        except Exception as exc:
++            # SAFETYFIX1: reject THIS TD trial, never inherit a positive parent
++            # verdict without the mandatory shared GEH/11D acceptance.  The
++            # existing realization controller treats gate rejection as retryable
++            # backtracking, then restores and verifies the accepted parent.
++            # No exception escapes here: a recoverable scoring outage must not
++            # kill the entire coupled Generation/TD run.
+             self.v24917_status["td_blend_outer_failures"] = \
+                 self.v24917_status.get("td_blend_outer_failures", 0) + 1
+-            print("R1 V24917 TD BLEND WARNING: outer blend failed, parent decision kept: %r" % (exc,))
++            self.v24917_status["td_outer_incomplete_cycle"] = True
++            print("R1 V24917 TD BLEND: shared score unavailable; REJECT current trial, continue backtracking: %r" % (exc,))
+             out = dict(decision)
++            out["accepted"] = False
++            out["reasons"] = list(decision.get("reasons") or []) + ["V24917_TD_SHARED_OBJECTIVE_UNAVAILABLE"]
+             out["v24917_td_blend_error"] = repr(exc)[:2000]
++            out["v24917_td_blend_recovery"] = "REJECT_CURRENT_TRIAL_RETRY_OR_VERIFIED_PARENT_ROLLBACK"
+         self.v24917_status["td_blend_decisions"] = self.v24917_status.get("td_blend_decisions", 0) + 1
+         return out
+ 
+--- MOBILITYFIX1/r1_15a2_demand_policy_v1.py
++++ SAFETYFIX1/r1_15a2_demand_policy_v1.py
+@@ -576,7 +576,25 @@
+                 'R1_DEMAND_STATIONARY_EARLY_STOP_AFTER_%d_CYCLES' % policy.streak)
+         result = original(adapter, cfg, folder, control, state, diag, anchors, reference,
+                           policy_arg, outer_cycle=outer_cycle)
++        # SAFETYFIX1: a deferred LONG/SCHOOL search cannot certify an outer
++        # fixed point.  Preserve any valid W/S step; next TD wrapper will mark
++        # a recoverable progress continuation instead of terminating the run.
++        if getattr(adapter, "v24917_status", {}).get("ls_incomplete_current_cycle", False):
++            rec = dict(result[4])
++            rec.update(search_complete=False, stationarity_confirmed=False,
++                       ls_search_incomplete=True,
++                       ls_recovery="CONTINUE_OUTER_LOOP_WITHOUT_CLAIMING_STATIONARITY")
++            result = result[:4] + (rec,)
++            try:
++                controller.atomic_json(Path(folder) / 'GENERATION_BLOCK_RESULT.json', rec)
++            except Exception:
++                # The result remains in the caller's block record, which is
++                # also persisted by the outer controller.
++                pass
+         policy.note_generation(result[0], result[4])
++        if getattr(adapter, "v24917_status", {}).get("ls_incomplete_current_cycle", False):
++            policy.last_generation_complete = False
++            policy.streak = 0
+         return result
+     generation.__r1_demand_policy__ = True
+     return generation
+@@ -629,10 +647,32 @@
+                 pass
+             policy.note_td(outer_cycle, False, False, rec)
+             return False, state, diag, rec
++        if hasattr(adapter, 'v24917_status'):
++            adapter.v24917_status['td_outer_incomplete_cycle'] = False
+         changed, state2, diag2, rec = original(adapter, cfg, folder, control, state, diag,
+                                                package_root, outer_cycle=outer_cycle)
+         rec = dict(rec)
+         rec['td_run_policy_reason'] = reason
++        incomplete = []
++        if getattr(adapter, 'v24917_status', {}).get('td_outer_incomplete_cycle', False):
++            incomplete.append('TD_SHARED_OBJECTIVE_UNAVAILABLE')
++        if getattr(adapter, 'v24917_status', {}).get('ls_incomplete_current_cycle', False):
++            incomplete.append('LONG_SCHOOL_DESIGN_UNVERIFIED')
++        if incomplete:
++            # Recoverable candidate evidence failures must not certify a joint
++            # fixed point.  TD rejection has already passed verified rollback;
++            # W/S can continue independently when LONG/SCHOOL was deferred.
++            inner = dict(rec.get('inner') or {})
++            inner.update(progress_continue=True, search_complete=False,
++                         stationarity_confirmed=False, stop_reason=incomplete[0])
++            rec['inner'] = inner
++            rec['incomplete_search_reasons'] = incomplete
++            rec['td_outer_evidence_complete'] = 'TD_SHARED_OBJECTIVE_UNAVAILABLE' not in incomplete
++            try:
++                controller.atomic_json(Path(folder) / 'TD_FINECDF_BLOCK_RESULT.json', rec)
++            except Exception as exc:
++                # Do not hide an impossible diagnostic publication as success.
++                rec['td_evidence_write_error'] = repr(exc)
+         policy.note_td(outer_cycle, True, changed, rec)
+         return changed, state2, diag2, rec
+     td.__r1_demand_policy__ = True
+--- MOBILITYFIX1/r1_15a2_long_school_generation_v24917.py
++++ SAFETYFIX1/r1_15a2_long_school_generation_v24917.py
+@@ -46,32 +46,54 @@
+ 
+ 
+ def ls_options() -> dict:
+-    out = dict(LS_DEFAULTS)
+-    try:
+-        import r1_15a2_demand_policy_v1 as dp
+-        o = dp.load_options()
+-        for k in LS_DEFAULTS:
+-            if k in o:
+-                out[k] = o[k]
+-    except Exception:
+-        pass
+-    return out
++    # An invalid or unreadable run policy must never silently replace the
++    # operator's LONG/SCHOOL bounds with defaults. The generation adapter
++    # catches the design error, defers LS for this cycle and continues W/S.
++    import r1_15a2_demand_policy_v1 as dp
++    o = dp.load_options()
++    return {k: o.get(k, v) for k, v in LS_DEFAULTS.items()}
++
++
++def _attribute_missing(exc) -> bool:
++    """Identify a confirmed missing network attribute, not an arbitrary COM error."""
++    if isinstance(exc, (KeyError, AttributeError)):
++        return True
++    msg = str(exc).lower()
++    return any(marker in msg for marker in (
++        "unknown attribute", "attribute not found", "no such attribute",
++        "attribute does not exist", "invalid attribute id"))
++
++
++def availability(visum) -> Dict[str, Any]:
++    """Read-only, bounded RPC retry with explicit unknown/temporary/absent states."""
++    import r1_15a2_com_compat as com
++    retry = {"enabled": True, "max_attempts": 4, "initial_delay_seconds": 0.1,
++             "backoff_factor": 2.0, "max_delay_seconds": 0.5, "max_elapsed_seconds": 2.0}
++    for attr in ATTRS:
++        try:
++            com.com_call_with_retry(lambda a=attr: visum.Net.Zones.GetMultiAttValues(a, False),
++                                    label="LONG_SCHOOL_ATTRIBUTE_%s" % attr, retry_policy=retry)
++        except Exception as exc:
++            return {"available": False,
++                    "reason": ("ATTRIBUTES_MISSING" if _attribute_missing(exc) else
++                               "TRANSIENT_COM_EXHAUSTED" if com.is_retryable_com_error(exc) else
++                               "ATTRIBUTE_READ_UNVERIFIED"),
++                    "failed_attr": attr, "error": repr(exc)[:1000],
++                    "retryable_com": bool(com.is_retryable_com_error(exc)),
++                    "evidence_complete": bool(_attribute_missing(exc))}
++    return {"available": True, "reason": "ATTRIBUTES_VERIFIED", "evidence_complete": True}
+ 
+ 
+ def available(visum) -> bool:
+-    for a in ATTRS:
+-        try:
+-            visum.Net.Zones.GetMultiAttValues(a, False)
+-        except Exception:
+-            return False
+-    return True
++    return bool(availability(visum)["available"])
+ 
+ 
+ def activate(visum) -> Dict[str, Any]:
+-    """Extend the generation attribute catalogue (snapshot/rollback state) when present."""
++    """Extend snapshot/rollback only after confirming all four attributes."""
+     import r1_15a2_multiblock as mb
+-    if not available(visum):
+-        return {"active": False, "reason": "ATTRIBUTES_MISSING", "attrs": list(ATTRS)}
++    probe = availability(visum)
++    if not probe["available"]:
++        return {"active": False, "attrs": list(ATTRS), **probe}
+     for a in ATTRS:
+         if a not in mb.GENERATION_ATTRS:
+             mb.GENERATION_ATTRS.append(a)
+@@ -281,4 +303,4 @@
+     return out
+ 
+ 
+-__all__ = ["RELEASE", "ATTRS", "available", "activate", "design", "rows_at_scale"]
++__all__ = ["RELEASE", "ATTRS", "available", "availability", "activate", "design", "rows_at_scale"]
+--- MOBILITYFIX1/tests/test_v24917_targeted_catchup.py
++++ SAFETYFIX1/tests/test_v24917_targeted_catchup.py
+@@ -1009,7 +1009,7 @@
+     assert calls == [1] and tb._STATE["blend_init_failures"] == 1
+ 
+ 
+-def test_blendfix_outer_blend_failure_keeps_parent_decision(monkeypatch):
++def test_blendfix_outer_blend_failure_rejects_parent_decision(monkeypatch):
+     import r1_15a2_td_count_blend_v24917 as tb
+     import r1_15a2_trial_adapter_v24917 as a17
+     parent = {"accepted": False, "reasons": ["X"]}
+@@ -1018,7 +1018,7 @@
+     ad = a17.VisumAdapter.__new__(a17.VisumAdapter)
+     ad.cfg, ad.v24917_status = {}, {}
+     out = ad.block_gate("TD_FINECDF_SOFT_REFERENCE", {}, {}, [1])
+-    assert out["accepted"] is False and out["reasons"] == ["X"] and "v24917_td_blend_error" in out
++    assert out["accepted"] is False and out["reasons"] == ["X", "V24917_TD_SHARED_OBJECTIVE_UNAVAILABLE"] and "v24917_td_blend_error" in out
+     assert ad.v24917_status["td_blend_outer_failures"] == 1
+ 
+ 
+--- /dev/null
++++ SAFETYFIX1/tests/test_v24917_safetyfix1.py
+@@ -0,0 +1,211 @@
++"""SAFETYFIX1 regressions: reject unsafe TD trials, continue valid run; honest evidence."""
++from __future__ import annotations
++from types import SimpleNamespace
++import pytest
++
++
++def test_td_outer_error_rejects_only_trial_and_next_trial_can_pass(monkeypatch):
++    import r1_15a2_trial_adapter_v24917 as ta
++    import r1_15a2_td_count_blend_v24917 as blend
++    parent = ta.VisumAdapter.__mro__[1]
++    monkeypatch.setattr(parent, 'block_gate', lambda *a, **kw: {'accepted': True, 'reasons': [], 'policy': 'PARENT'})
++    def fail(*a, **kw): raise RuntimeError('joint count read unavailable')
++    monkeypatch.setattr(blend, 'outer_decision', fail)
++    adapter=ta.VisumAdapter.__new__(ta.VisumAdapter)
++    adapter.cfg = {}; adapter.v24917_status={}
++    first=adapter.block_gate('TD_FINECDF_SOFT_REFERENCE',{}, {}, [])
++    assert first['accepted'] is False
++    assert 'V24917_TD_SHARED_OBJECTIVE_UNAVAILABLE' in first['reasons']
++    assert 'REJECT_CURRENT_TRIAL' in first['v24917_td_blend_recovery']
++    assert adapter.v24917_status['td_blend_outer_failures']==1
++    # A fresh valid calculation must be allowed in the same run.
++    monkeypatch.setattr(blend, 'outer_decision', lambda decision,*args,**kw: dict(decision, v24917_td_joint_ok=True))
++    second=adapter.block_gate('TD_FINECDF_SOFT_REFERENCE',{}, {}, [])
++    assert second['accepted'] is True and second['v24917_td_joint_ok']
++    # All other block gates keep their established parent semantics.
++    other=adapter.block_gate('SUPPLY_ADDVAL1',{}, {}, [])
++    assert other['accepted'] is True
++
++
++def _targets():
++    return [{'component':n,'family':f,'target_status':'ACTIVE_COMPONENT_DIST_TARGET',
++             'l1_distance_half':l1,'rmse_share':.05,'mean_delta_model_minus_target':1.}
++            for f, nn in [('WORK',[('WORK_E_C',.1),('WORK_noE_noC',.4)]),
++                          ('SERVICE',[('SERV_E_C',.7),('SERV_E_noC',.3)])]
++            for n,l1 in nn]
++
++
++def _cfg():
++    return {'td':{'families':['WORK','SERVICE'],'distance_bin_edges_km':[5.,20.],
++                  'max_active_components_per_family':1,'max_active_components_total':2,
++                  'minimum_alignment_score':0.}}
++
++
++def test_no_flowbundle_evidence_uses_global_survey_not_alphabetical_targeting():
++    from r1_15a2_demand_evidence_v24916 import build_td_targeting
++    from r1_15a2_active_demand_evidence_v24917 import safe_td_target_plan
++    plan=safe_td_target_plan(build_td_targeting([], _targets(), _cfg()))
++    assert plan['status']=='GLOBAL_IDP_FALLBACK'
++    assert plan['reason']=='NO_POSITIVE_FLOWBUNDLE_EVIDENCE'
++    assert plan['active_components']==[]
++    assert plan['global_11d_evaluation_required']
++    assert all(r['alignment_score']==0 for r in plan['alignment_rows'])
++
++
++def test_one_family_without_evidence_is_not_falsely_selected():
++    from r1_15a2_demand_evidence_v24916 import build_td_targeting
++    from r1_15a2_active_demand_evidence_v24917 import safe_td_target_plan
++    flow=[{'family':'WORK','targeting_eligible':True,'flowbundle_volume':100.,
++           'residual':20.,'distance_km':10.},
++          {'family':'SERVICE','targeting_eligible':True,'flowbundle_volume':100.,
++           'residual':0.,'distance_km':10.}]
++    plan=safe_td_target_plan(build_td_targeting(flow,_targets(),_cfg()))
++    assert plan['status']=='ACTIVE'
++    assert plan['active_components']==['WORK_noE_noC']
++    assert plan['targeting_evidence_families']==['WORK']
++
++
++def test_zero_11d_error_never_masquerades_as_positive_component_evidence():
++    from r1_15a2_demand_evidence_v24916 import build_td_targeting
++    from r1_15a2_active_demand_evidence_v24917 import safe_td_target_plan
++    flow=[{'family':'WORK','targeting_eligible':True,'flowbundle_volume':100.,
++           'residual':20.,'distance_km':10.}]
++    targets=[dict(t, l1_distance_half=0, rmse_share=0, mean_delta_model_minus_target=0) for t in _targets()]
++    plan=safe_td_target_plan(build_td_targeting(flow,targets,_cfg()))
++    assert plan['active_components']==[] and plan['status']=='GLOBAL_IDP_FALLBACK'
++    assert plan['reason']=='NO_POSITIVE_ALIGNED_COMPONENT'
++
++
++class FakeRPC(RuntimeError):
++    hresult=-2147418111
++
++
++class FakeZones:
++    def __init__(self, fail_count=0, exception=None):
++        self.fail_count=fail_count;self.exception=exception; self.calls=[]
++    def GetMultiAttValues(self,attr,*args):
++        self.calls.append(attr)
++        if self.fail_count>0:
++            self.fail_count-=1
++            raise self.exception or FakeRPC('call was rejected by callee')
++        return [(1,1.0)]
++
++
++def fake_visum(zones): return SimpleNamespace(Net=SimpleNamespace(Zones=zones))
++
++
++def test_long_school_transient_com_retries_and_recovers(monkeypatch):
++    import r1_15a2_long_school_generation_v24917 as ls
++    import r1_15a2_com_compat as com
++    monkeypatch.setattr(com.time,'sleep',lambda s: None)
++    z=FakeZones(fail_count=2)
++    probe=ls.availability(fake_visum(z))
++    assert probe['available'] is True
++    assert len(z.calls)==6  # first attr 3 calls + remaining three attrs
++
++
++def test_long_school_exhausted_com_defers_instead_of_missing(monkeypatch):
++    import r1_15a2_long_school_generation_v24917 as ls
++    import r1_15a2_com_compat as com
++    monkeypatch.setattr(com.time,'sleep',lambda s: None)
++    z=FakeZones(fail_count=100)
++    status=ls.activate(fake_visum(z))
++    assert status['active'] is False
++    assert status['reason']=='TRANSIENT_COM_EXHAUSTED'
++    assert status['evidence_complete'] is False
++    assert len(z.calls)==4
++
++
++def test_long_school_confirmed_missing_is_distinct_and_nontransient_unknown_is_deferred():
++    import r1_15a2_long_school_generation_v24917 as ls
++    a=ls.activate(fake_visum(FakeZones(fail_count=1,exception=KeyError('ADD_PROD_L'))))
++    assert a['reason']=='ATTRIBUTES_MISSING' and a['evidence_complete']
++    b=ls.activate(fake_visum(FakeZones(fail_count=1,exception=OSError('COM busy / RPC_E_CALL_REJECTED'))))
++    assert b['reason']=='ATTRIBUTE_READ_UNVERIFIED' and not b['evidence_complete']
++
++
++def test_long_school_invalid_options_not_masked_by_defaults(monkeypatch):
++    import r1_15a2_long_school_generation_v24917 as ls
++    import r1_15a2_demand_policy_v1 as dp
++    monkeypatch.setattr(dp,'load_options',lambda: (_ for _ in ()).throw(RuntimeError('invalid run options')))
++    with pytest.raises(RuntimeError,match='invalid run options'):
++        ls.ls_options()
++
++
++def test_deferred_long_school_cannot_increment_stationarity_but_generation_continues():
++    import r1_15a2_demand_policy_v1 as dp
++    opt=dp.validate({})
++    policy=dp.DemandPolicy(opt)
++    policy.streak=1
++    adapter=SimpleNamespace(v24917_status={'ls_incomplete_current_cycle':True})
++    def generation(*a,**kw):return True,None,None,None,{'search_complete':True,'stationarity_confirmed':True}
++    controller=SimpleNamespace(UserStopRequested=RuntimeError)
++    wrapped=dp.wrap_generation(generation,policy,controller)
++    out=wrapped(adapter,{},None,None,None,None,None,None,None,outer_cycle=1)
++    assert out[0] is True
++    assert out[4]['ls_search_incomplete'] and not out[4]['stationarity_confirmed']
++    assert policy.last_generation_complete is False and policy.streak==0
++    policy.note_td(1,True,False,{'inner':{'search_complete':True}})
++    assert not policy.stop_due()
++
++
++def test_td_outer_unavailable_marks_progress_continue_not_stationary(tmp_path):
++    import r1_15a2_demand_policy_v1 as dp
++    policy=dp.DemandPolicy(dp.validate({'td_policy':'ALWAYS','stop_when_stationary_cycles':2}))
++    policy.last_generation_changed=False; policy.last_generation_complete=True; policy.streak=1
++    adapter=SimpleNamespace(v24917_status={})
++    baseline={'state_hash':'same'}
++    def one_td(*args,**kwargs):
++        adapter.v24917_status['td_outer_incomplete_cycle']=True
++        return False,baseline,{}, {'inner':{'search_complete':True,'stop_reason':'LOCAL_PLATEAU'},'td_realization_complete':True}
++    from r1_15a2_controller_v22 import atomic_json
++    ctrl=SimpleNamespace(atomic_json=atomic_json)
++    wrapped=dp.wrap_td(one_td,policy,ctrl)
++    changed,state,diag,rec=wrapped(adapter,{},tmp_path,None,baseline,{},None,outer_cycle=2)
++    assert changed is False and state is baseline
++    assert rec['inner']['progress_continue'] is True
++    assert rec['inner']['search_complete'] is False
++    assert policy.streak==0 and not policy.stop_due()
++    assert (tmp_path/'TD_FINECDF_BLOCK_RESULT.json').is_file()
++
++
++def test_production_publish_proxy_sanitizes_td_plan_without_mutating_sealed_builder():
++    from r1_15a2_active_demand_evidence_v24917 import _PublishProxy
++    class Manager:
++        def publish(self, **kw): return kw
++    raw={'status':'ACTIVE','active_components':['WORK_E_C'],
++         'family_pressure':{'WORK':{'evidence_weight':0.}},
++         'alignment_rows':[{'component':'WORK_E_C','family':'WORK','alignment_score':0.}]}
++    epoch=SimpleNamespace(summary=lambda: {'epoch_hash':'HASH'})
++    builder=SimpleNamespace(_v24917_epoch=epoch)
++    result=_PublishProxy(Manager(),builder).publish(target_payload={'td_targets':raw})
++    assert result['target_payload']['td_targets']['status']=='GLOBAL_IDP_FALLBACK'
++    assert result['target_payload']['td_targets']['active_components']==[]
++    assert result['skim_identity'].epoch_hash=='HASH'
++    assert raw['status']=='ACTIVE' and raw['active_components']==['WORK_E_C']
++
++
++def test_nonfinite_flowbundle_not_positive_evidence():
++    from r1_15a2_active_demand_evidence_v24917 import safe_td_target_plan
++    plan={'status':'ACTIVE','active_components':['WORK_E_C'],
++          'family_pressure':{'WORK':{'evidence_weight':float('inf')}},
++          'alignment_rows':[{'component':'WORK_E_C','family':'WORK','alignment_score':float('inf')}]}
++    result=safe_td_target_plan(plan)
++    assert result['status']=='GLOBAL_IDP_FALLBACK'
++
++
++def test_ls_unverified_forces_next_outer_cycle_even_with_complete_td(tmp_path):
++    import r1_15a2_demand_policy_v1 as dp
++    from r1_15a2_controller_v22 import atomic_json
++    opts=dp.validate({'td_policy':'ALWAYS'})
++    policy=dp.DemandPolicy(opts)
++    policy.last_generation_changed=False
++    policy.last_generation_complete=False
++    adapter=SimpleNamespace(v24917_status={'ls_incomplete_current_cycle':True})
++    parent={'state_hash':'same'}
++    def td(*a,**kw): return False,parent,{}, {'inner':{'search_complete':True},'td_realization_complete':True}
++    wrapped=dp.wrap_td(td,policy,SimpleNamespace(atomic_json=atomic_json))
++    _,_,_,rec=wrapped(adapter,{},tmp_path,None,parent,{},None,outer_cycle=1)
++    assert rec['inner']['progress_continue'] and rec['inner']['stop_reason']=='LONG_SCHOOL_DESIGN_UNVERIFIED'
++    assert 'LONG_SCHOOL_DESIGN_UNVERIFIED' in rec['incomplete_search_reasons']
++    assert policy.streak==0

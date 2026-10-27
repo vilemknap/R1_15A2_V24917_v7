@@ -1,0 +1,93 @@
+--- /mnt/data/perf2_hotfix_r5/R1_15A2_V24915_PERF2_RUN/r1_15a2_candidate_readback_bundle_v24915p2.py	2026-10-19 20:35:37.000000000 +0000
++++ /mnt/data/perf2_hotfix_r6/R1_15A2_V24915_PERF2_RUN/r1_15a2_candidate_readback_bundle_v24915p2.py	2026-10-19 22:31:30.410106376 +0000
+@@ -12,6 +12,8 @@
+ import copy
+ import hashlib
+ import json
++import math
++import numbers
+ import time
+ import uuid
+ from typing import Any, Callable, Dict, Mapping, Optional, Sequence
+@@ -30,6 +32,44 @@
+     return copy.deepcopy(value)
+ 
+ 
++def _diagnostic_hashable(value: Any) -> Any:
++    """Return a deterministic JSON-safe view used only for PERF2 diagnostics evidence.
++
++    Live 12D/11D diagnostics legitimately use non-finite sentinels (for example
++    an infinite objective when a denominator is zero).  CandidateReadbackBundle
++    is a performance/evidence layer and must never turn such a legacy-valid
++    diagnostic payload into a calibration failure.  Finite JSON-native values
++    are preserved exactly, so existing finite-payload hashes remain unchanged.
++    Non-finite reals are encoded explicitly rather than silently coerced.
++    """
++    if isinstance(value, dict):
++        return {k: _diagnostic_hashable(v) for k, v in value.items()}
++    if isinstance(value, (list, tuple)):
++        return [_diagnostic_hashable(v) for v in value]
++    if isinstance(value, bool) or value is None or isinstance(value, str):
++        return value
++    if isinstance(value, numbers.Integral):
++        return int(value)
++    if isinstance(value, numbers.Real):
++        out = float(value)
++        if math.isfinite(out):
++            return out
++        if math.isnan(out):
++            tag = "NAN"
++        elif out > 0.0:
++            tag = "POS_INF"
++        else:
++            tag = "NEG_INF"
++        return {"__r1_nonfinite_float__": tag}
++    if hasattr(value, "tolist"):
++        return _diagnostic_hashable(value.tolist())
++    return value
++
++
++def diagnostic_reference_hash(value: Any) -> str:
++    return canonical_hash(_diagnostic_hashable(value))
++
++
+ def _bundle_payload_dict(bundle: "CandidateReadbackBundle") -> Dict[str, Any]:
+     return {
+         "schema": bundle.schema,
+@@ -386,14 +426,28 @@
+         return bundle.snapshot()
+ 
+     def attach_diagnostics(self, diagnostics: Mapping[str, Any]) -> None:
+-        reference = {
+-            "diagnostics_payload_hash": canonical_hash(diagnostics),
+-            "d12_hash": canonical_hash((diagnostics.get("d12") or {})),
+-            "d11_hash": canonical_hash((diagnostics.get("d11") or {})),
+-            "signals_hash": canonical_hash((diagnostics.get("signals") or {})),
+-            "mutation_epoch": self.mutation_epoch,
+-            "assignment_epoch": self.assignment_epoch,
+-        }
++        # Diagnostics are live acceptance authority, whereas this reference is
++        # PERF2 evidence only.  Some valid diagnostic summaries intentionally
++        # contain +/-inf sentinels.  Hash a deterministic non-finite-safe view
++        # and, for any unexpected serialization type, fall back to legacy
++        # behavior rather than failing an otherwise valid calibration run.
++        try:
++            reference = {
++                "diagnostics_payload_hash": diagnostic_reference_hash(diagnostics),
++                "d12_hash": diagnostic_reference_hash((diagnostics.get("d12") or {})),
++                "d11_hash": diagnostic_reference_hash((diagnostics.get("d11") or {})),
++                "signals_hash": diagnostic_reference_hash((diagnostics.get("signals") or {})),
++                "mutation_epoch": self.mutation_epoch,
++                "assignment_epoch": self.assignment_epoch,
++            }
++        except (TypeError, ValueError, OverflowError) as exc:
++            self.pending_diagnostics_reference = None
++            self._event(
++                "BUNDLE_FALLBACK",
++                reason="DIAGNOSTICS_REFERENCE_HASH_UNAVAILABLE",
++                error=type(exc).__name__,
++            )
++            return
+         self.pending_diagnostics_reference = reference
+         bundle = self.try_current()
+         if bundle is None:

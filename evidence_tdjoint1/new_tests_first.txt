@@ -1,0 +1,506 @@
+FFFFFFF..FFF............................                                 [100%]
+=================================== FAILURES ===================================
+_________ test_reference_global_score_is_one_not_component_count[0.35] _________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_reference_global_score_is0')
+weight = 0.35
+
+    @pytest.mark.parametrize('weight',[.35,.60,.65,1.0])
+    def test_reference_global_score_is_one_not_component_count(tmp_path, weight):
+        b, mats, _ = make_blend(tmp_path, weight)
+        m=metric(); before=copy.deepcopy(m)
+>       b.apply(m,mats)
+
+tests/test_v24917_tdjoint1.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dcd80ec0>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.35
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+_________ test_reference_global_score_is_one_not_component_count[0.6] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_reference_global_score_is1')
+weight = 0.6
+
+    @pytest.mark.parametrize('weight',[.35,.60,.65,1.0])
+    def test_reference_global_score_is_one_not_component_count(tmp_path, weight):
+        b, mats, _ = make_blend(tmp_path, weight)
+        m=metric(); before=copy.deepcopy(m)
+>       b.apply(m,mats)
+
+tests/test_v24917_tdjoint1.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dc9107d0>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.6
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+_________ test_reference_global_score_is_one_not_component_count[0.65] _________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_reference_global_score_is2')
+weight = 0.65
+
+    @pytest.mark.parametrize('weight',[.35,.60,.65,1.0])
+    def test_reference_global_score_is_one_not_component_count(tmp_path, weight):
+        b, mats, _ = make_blend(tmp_path, weight)
+        m=metric(); before=copy.deepcopy(m)
+>       b.apply(m,mats)
+
+tests/test_v24917_tdjoint1.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dc9111d0>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.65
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+_________ test_reference_global_score_is_one_not_component_count[1.0] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_reference_global_score_is3')
+weight = 1.0
+
+    @pytest.mark.parametrize('weight',[.35,.60,.65,1.0])
+    def test_reference_global_score_is_one_not_component_count(tmp_path, weight):
+        b, mats, _ = make_blend(tmp_path, weight)
+        m=metric(); before=copy.deepcopy(m)
+>       b.apply(m,mats)
+
+tests/test_v24917_tdjoint1.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dceb2ea0>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 1.0
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+____________ test_global_count_contains_cross_component_interaction ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_global_count_contains_cro0')
+
+    def test_global_count_contains_cross_component_interaction(tmp_path):
+        b, mats, _ = make_blend(tmp_path)
+>       b.apply(metric(),mats)
+
+tests/test_v24917_tdjoint1.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dceb35c0>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.65
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+_____________________ test_effective_mode_reporting[True] ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_effective_mode_reporting_0')
+dynamic = True
+
+    @pytest.mark.parametrize('dynamic',[True,False])
+    def test_effective_mode_reporting(tmp_path,dynamic):
+>       b,mats,_=make_blend(tmp_path,dynamic=dynamic); b.apply(metric(),mats)
+                                                       ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_tdjoint1.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dccb1d90>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.65
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+_____________________ test_effective_mode_reporting[False] _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_effective_mode_reporting_1')
+dynamic = False
+
+    @pytest.mark.parametrize('dynamic',[True,False])
+    def test_effective_mode_reporting(tmp_path,dynamic):
+>       b,mats,_=make_blend(tmp_path,dynamic=dynamic); b.apply(metric(),mats)
+                                                       ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_tdjoint1.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dcddacf0>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.65
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+___________________ test_invalid_linear_map_rejected[empty] ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_invalid_linear_map_reject0')
+mode = 'empty'
+
+    @pytest.mark.parametrize('mode',['empty','nan','shape'])
+    def test_invalid_linear_map_rejected(tmp_path,mode):
+>       b,mats,_=make_blend(tmp_path); b.apply(metric(),mats)
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_tdjoint1.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dcd6aa50>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.65
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+____________________ test_invalid_linear_map_rejected[nan] _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_invalid_linear_map_reject1')
+mode = 'nan'
+
+    @pytest.mark.parametrize('mode',['empty','nan','shape'])
+    def test_invalid_linear_map_rejected(tmp_path,mode):
+>       b,mats,_=make_blend(tmp_path); b.apply(metric(),mats)
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_tdjoint1.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dcd405f0>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.65
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+___________________ test_invalid_linear_map_rejected[shape] ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-2/test_invalid_linear_map_reject2')
+mode = 'shape'
+
+    @pytest.mark.parametrize('mode',['empty','nan','shape'])
+    def test_invalid_linear_map_rejected(tmp_path,mode):
+>       b,mats,_=make_blend(tmp_path); b.apply(metric(),mats)
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_tdjoint1.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_count_blend_v24917.py:326: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:67: in score_blend
+    validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <r1_15a2_td_count_blend_v24917.CountModel object at 0x7fa5dcd40b90>
+targets = {'SERV_E_C': {'matrix_nos': [9106]}, 'WORK_E_C': {'matrix_nos': [9101]}}
+active = ['WORK_E_C', 'SERV_E_C'], count_weight = 0.65
+
+    def validate_count_model(model, targets, active, count_weight):
+        """Reject missing/empty attribution, not legitimate zero sensitivity.
+    
+        Coverage is reported, not silently represented as exact component paths.
+        A partial map remains the inherited approximation.  Both signs of the
+        observed count residual are retained in CountModel.q().
+        """
+        if count_weight <= 0:
+            return
+        linear = getattr(model, "linear", None)
+        if not linear:
+            raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+        families = set()
+        for key in active:
+            for no in targets[key]["matrix_nos"]:
+                if 9101 <= int(no) <= 9105 or int(no) == 9117:
+                    families.add("WORK")
+                elif 9106 <= int(no) <= 9110:
+                    families.add("SERVICE")
+        for family in families:
+            arrays = linear.get(family)
+            if arrays is None or not len(arrays[0]):
+>               raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:" + family)
+E               RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+
+r1_15a2_td_joint_v24917.py:56: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_tdjoint1.py::test_reference_global_score_is_one_not_component_count[0.35] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_reference_global_score_is_one_not_component_count[0.6] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_reference_global_score_is_one_not_component_count[0.65] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_reference_global_score_is_one_not_component_count[1.0] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_global_count_contains_cross_component_interaction - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_effective_mode_reporting[True] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_effective_mode_reporting[False] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_invalid_linear_map_rejected[empty] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_invalid_linear_map_rejected[nan] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+FAILED tests/test_v24917_tdjoint1.py::test_invalid_linear_map_rejected[shape] - RuntimeError: TDJOINT1_COUNT_INCIDENCE_EMPTY_FAMILY:SERVICE
+10 failed, 30 passed in 0.81s

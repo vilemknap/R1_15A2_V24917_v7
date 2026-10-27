@@ -1,0 +1,52 @@
+{
+  "schema": "R1_15A2_V248_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016",
+  "runtime_base": "CP07_FINAL_V2_4_7_PATH_EPOCH_RELEASE",
+  "runtime_base_sha256": "dbb18a8b0f0f4480965bbb994386ef12acd976f21a667bd39064156ff73864c3",
+  "development_checkpoints": [
+    "CP08_PERSISTENT_CACHE_CORE",
+    "CP09_PERSISTENT_CACHE_PRE_RELEASE"
+  ],
+  "offline_tests": {
+    "passed": 581,
+    "failed": 0,
+    "skipped": 0
+  },
+  "compileall_pass": true,
+  "persistent_cache_policy": "EXACT_ORIGIN_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
+  "publication_order": "STORE_THEN_MANIFEST_THEN_BINDING_THEN_INDEX",
+  "store_mode": "IMMUTABLE_READ_ONLY_AFTER_PUBLICATION",
+  "restore_checks": [
+    "MANIFEST_SELF_HASH",
+    "CONFIG_AND_RUNTIME_HASH_CONTRACT",
+    "OBSERVATION_AND_PROFILE_ORDER",
+    "LINK_AND_IMMUTABLE_CONTEXT",
+    "STORE_SIZE",
+    "SQLITE_QUICK_CHECK",
+    "SQLITE_FOREIGN_KEY_CHECK",
+    "STORE_SHA256_AND_SIDECAR",
+    "PATH_BASIS_HASH",
+    "PATH_COMPARISON_HASH",
+    "PATH_STRUCTURE_HASH"
+  ],
+  "legacy_import_policy": "EXACT_STATE_PLUS_ALL_PROFILE_FLOW_PARITY_COPY_TO_NEW_IMMUTABLE_V248_STORE",
+  "retention": {
+    "max_epoch_count": 3,
+    "max_total_gib": 24.0,
+    "pruned_bindings_removed": true,
+    "index_rebuilt_from_physical_survivors": true
+  },
+  "accepted_ver_checkpoint_contains_path_epoch_lineage": true,
+  "synthetic_user_benchmark": {
+    "status": "PASS",
+    "scope": "OFFLINE_CONTROLLER_RESTART_BEHAVIOR_NOT_REAL_VISUM_WALL_TIME",
+    "fresh_enumeration_calls": 1,
+    "exact_origin_restart_enumeration_calls": 0,
+    "accepted_state_restart_enumeration_calls": 0,
+    "restored_store_read_only": true
+  },
+  "real_ptv_visum_2026_tested": false,
+  "production_ready": false,
+  "next_required_gate": "REAL_VISUM_V248_FIRST_ENUMERATION_THEN_ORIGIN_AND_ACCEPTED_STATE_RESTART_WITH_ZERO_REENUMERATION",
+  "required_launcher": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8.py"
+}

@@ -1,0 +1,41 @@
+{
+  "manifests": [
+    {
+      "manifest": "DIAGFAST_V1_BASE_MANIFEST.json",
+      "files": 1059,
+      "passes": true,
+      "mismatches": []
+    },
+    {
+      "manifest": "DIAGFAST_V1_RELEASE_MANIFEST.json",
+      "files": 86,
+      "passes": true,
+      "mismatches": []
+    },
+    {
+      "manifest": "V24916_PERF2C_RUNTIME_MANIFEST.json",
+      "files": 50,
+      "passes": true,
+      "mismatches": []
+    },
+    {
+      "manifest": "V24917_RUNTIME_MANIFEST.json",
+      "files": 52,
+      "passes": true,
+      "mismatches": []
+    }
+  ],
+  "original_files_unchanged": 1146,
+  "original_files_missing": [],
+  "original_files_modified": [
+    "DIAGFAST_V1_RELEASE_MANIFEST.json",
+    "V24917_RUNTIME_MANIFEST.json",
+    "r1_15a2_runtime_delta_v24917.py",
+    "r1_15a2_step_search_v24917.py",
+    "r1_15a2_trial_adapter_v24917.py",
+    "r1_15a2_v24917_runtime.py",
+    "tools/refresh_v24917_manifests.py"
+  ],
+  "unexpected_original_changes": [],
+  "passes": true
+}

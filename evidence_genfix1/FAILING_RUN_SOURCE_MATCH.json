@@ -1,0 +1,8 @@
+{
+  "source": "Uploaded original ZIP vs failing EFFECTIVE_CONFIG.implementation_files",
+  "path_normalization": "Windows backslash to archive forward slash",
+  "matching_files": 219,
+  "unmatched_paths": [],
+  "different_files": [],
+  "passes": true
+}

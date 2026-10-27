@@ -1,0 +1,27 @@
+{
+  "group": 1,
+  "files": [
+    "tests/test_supply_v22.py",
+    "tests/test_supply_visum_v22.py",
+    "tests/test_two_mode_v238.py",
+    "tests/test_v235_population_live.py",
+    "tests/test_v236_live_tg_prefeed.py",
+    "tests/test_v237_15p_bounded_offdiag_stream.py",
+    "tests/test_v239_safety_gates.py",
+    "tests/test_v240_full_overnight.py",
+    "tests/test_v241_hierarchical_order.py",
+    "tests/test_v242_coupled_demand.py",
+    "tests/test_v242_finecdf_reference.py",
+    "tests/test_v243_recompute_folder_hotfix.py",
+    "tests/test_v244_native_multi_guard.py",
+    "tests/test_v245_checkpoint_atomicity_cp01.py",
+    "tests/test_v245_checkpoint_verifier_cp01.py",
+    "tests/test_v245_cp03_live_pathlen.py",
+    "tests/test_v245_native_bridge.py",
+    "tests/test_v245_repair.py",
+    "tests/test_v245_workflow.py"
+  ],
+  "exit_code": 0,
+  "seconds": 9.97196425200002,
+  "expected_cases": 291
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "R1_15A2_V247_REAL_RUN_POSTMORTEM_V1",
+  "release": "R1_15A2_V2_4_7_PATH_EPOCH_CALIBRATION_20261016",
+  "run_status": "FAILED",
+  "elapsed_seconds": 1951.235,
+  "accepted_count": 0,
+  "completed_demand_cycles": 0,
+  "supply_started": false,
+  "live_matches_last_accepted": true,
+  "source_file_unchanged": true,
+  "primary_trigger": "PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:NATIVE_CW:7:7",
+  "primary_trigger_interpretation": "Positive intrazonal OD 7->7 has no network path geometry and must not require path support.",
+  "terminal_error": "PATH_EPOCH_OBSOLETE_STORE_DELETE_FAILED:[WinError 32] Proces nemá přístup k souboru, neboť jej právě využívá jiný proces: 'C:\\\\Users\\\\vilem_knap\\\\Documents\\\\VISUM\\\\v45\\\\2022\\\\R1_15A2_V247_RUNS\\\\RUN_20261016_162053_068586\\\\CALIBRATION\\\\DEMAND_CYCLE_01_GENERATION\\\\DESIGN\\\\GENERATION_CACHE\\\\TWO_MODE_PATH_STORE.sqlite'",
+  "terminal_error_interpretation": "Windows file lock while retiring superseded local SQLite; cleanup must not be a calibration correctness gate after a verified refresh.",
+  "path_export": {
+    "export_complete": true,
+    "incidence_ready": true,
+    "all_selected_dsegs_complete": true,
+    "dseg_path_volume_parity_passes": true,
+    "dseg_count": 12,
+    "path_rows": 5203020,
+    "pathlink_rows": 53470275,
+    "geometry_route_count": 863565,
+    "full_geometry_read_count": 2,
+    "path_structure_hash": "2373d3eb3353ba2f29748a5739f2e5fe90c80f1da743173400fe9d6106baada8",
+    "path_basis_hash": "9fe5bda96c078fb36866677be11627c4d0930b3b826a85683643132ece50a1a1",
+    "parent_hash": "514904de1856614eee2b1800f3a2d36edf9dd554200d1bde1dc5f27d7ce1893d"
+  },
+  "path_epoch": {
+    "schema": "R1_15A2_PATH_EPOCH_V247",
+    "epoch": 1,
+    "origin_state_hash": "514904de1856614eee2b1800f3a2d36edf9dd554200d1bde1dc5f27d7ce1893d",
+    "basis_hash": "9fe5bda96c078fb36866677be11627c4d0930b3b826a85683643132ece50a1a1",
+    "comparison_basis_hash": "28a237ed075ecba19a1dd9033145ef26dc5e943bab1ff57f79fad962dfe72b1a",
+    "structure_hash": "2373d3eb3353ba2f29748a5739f2e5fe90c80f1da743173400fe9d6106baada8",
+    "sequence_evidence_ready": false,
+    "policy": "FREEZE_ENUMERATED_PATH_BASIS_UNTIL_LOCAL_PLATEAU",
+    "obsolete_store_retention": {
+      "retired": false,
+      "reason": "NO_PREVIOUS_STORE"
+    }
+  },
+  "latest_accepted_checkpoint": {
+    "accepted_count": 0,
+    "slot": "B",
+    "checkpoint": {
+      "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V247_RUNS\\RUN_20261016_162053_068586\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0000_61129884aaf7.ver",
+      "sha256": "4723d05c9bf38d4c4deea6f580161af29a2829c0499797b68053bc5afce8765c",
+      "size": 580858352
+    }
+  },
+  "v2481_required_fixes": [
+    "EXCLUDE_INTRAZONAL_POSITIVE_OD_FROM_NETWORK_PATH_SUPPORT_GAP",
+    "KEEP_OFFDIAGONAL_POSITIVE_OD_SUPPORT_GAP_FAIL_CLOSED",
+    "DEFER_WINDOWS_LOCKED_OBSOLETE_SQLITE_CLEANUP_AFTER_VERIFIED_REFRESH",
+    "REUSE_COMPLETE_V247_PATH_STORE_VIA_V248_PERSISTENT_LEGACY_IMPORT_WHEN_EXACT_STATE_AND_PROFILE_FLOW_PARITY_PASS"
+  ],
+  "source_evidence_sha256": {
+    "result": "67b3b87ffdefa49a0474bb34665e5466a3cef3224dc70c7542eb7ff137f01226",
+    "run_status": "55a441886d0c7e73193da5c61cfa8cf6f9f673e7f9d66479dcbf0032e50334ab",
+    "progress": "16cec607a80d789a4e705c9a7f932fc3dba25d3d6076028ebc326044c00d7579",
+    "path_epoch": "5741836d2391331bab31a15ec95ea3c9af708c604d9511d8c9e849dbd1573929",
+    "cache_audit": "9035352e2adc847f10eb95af4ad6dffe1cc0a98c97fe319c6086f01820b65943",
+    "export_summary": "9035352e2adc847f10eb95af4ad6dffe1cc0a98c97fe319c6086f01820b65943",
+    "latest_checkpoint": "ba9dd15da0fd7e7924c7a501e4dcda4ce6ba954b7f35bbae97caf3aa0b516b7e"
+  }
+}

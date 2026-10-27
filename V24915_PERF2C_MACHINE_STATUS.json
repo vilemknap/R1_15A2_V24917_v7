@@ -1,0 +1,52 @@
+{
+  "acceptance_changed": false,
+  "assignment_changed": false,
+  "calibration_complete": false,
+  "candidate_math_changed": false,
+  "continuation_changed": false,
+  "cross_call_cache": false,
+  "fallback_to_parent_snapshot": true,
+  "first_live_call_exact_shadow_parity": true,
+  "matrix_fingerprint_semantics_changed": false,
+  "new_authority_token": false,
+  "new_mutation_epoch": false,
+  "next_required_action": "Run the PERF2C launcher from ACCEPTED_B_0016 and inspect first-call parity plus snapshot timing telemetry.",
+  "overnight50_changed": false,
+  "parent_files_modified": 0,
+  "parent_files_removed": 0,
+  "parent_release": "R1_15A2_V24915_PERF2_R6_NONFINITE_DIAGNOSTIC_REFERENCE_HOTFIX_20261020",
+  "parent_sha256": "9dd18d27ce7800aa93164c13574b0009d1d78cfaa2ebec6e3131f6834f51d75b",
+  "production_ready": false,
+  "public_snapshot_schema_changed": false,
+  "real_visum_tested": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
+  "rollback_changed": false,
+  "schema": "R1_15A2_V24915_PERF2C_MACHINE_STATUS_V1",
+  "scope": "SINGLE_PASS_EXACT_FULL_SNAPSHOT_LOCAL_PER_CALL_ONLY",
+  "status": "PERF2C_OFFLINE_VERIFIED_READY_FOR_LIVE_PARITY_AND_TIMING",
+  "tests": {
+    "calibration_complete": false,
+    "compileall": {
+      "passes": true
+    },
+    "created_utc": "2026-10-19T23:17:45.586106+00:00",
+    "focused": {
+      "failed": 0,
+      "passed": 19
+    },
+    "focused_plus_parent_performance": {
+      "failed": 0,
+      "passed": 128
+    },
+    "full_regression": {
+      "failed": 0,
+      "passed": 881,
+      "seconds": 16.56,
+      "skipped": 4
+    },
+    "live_visum_tested": false,
+    "production_ready": false,
+    "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
+    "schema": "R1_15A2_V24915_PERF2C_TEST_REPORT_V1"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "added": [
+    "CP20_V2489_CORE_CHECKPOINT_STATUS.json",
+    "LIVE_VISUM_ACCEPTANCE_V2_4_8_9_CZ.md",
+    "METHODOLOGY_STATUS_V2489.json",
+    "R1_15A2_CONFIG_V2_4_8_9.json",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_9.py",
+    "README_R1_15A2_V2_4_8_9_TD_REALIZATION_STABILIZATION_CZ.md",
+    "START_HERE_V2489_CZ.txt",
+    "V2489_COMPILEALL.log",
+    "V2489_COMPILEALL_RETURN_CODE.txt",
+    "V2489_FULL_PYTEST.log",
+    "V2489_FULL_PYTEST_PRE_RELEASE.log",
+    "V2489_IMPLEMENTATION_AND_TEST_REPORT.md",
+    "V2489_LIVE_FAILURE_POSTMORTEM.md",
+    "V2489_RECOVERY_JOURNAL.json",
+    "V2489_RELEASE_STATUS.json",
+    "V2489_TEST_REPORT.json",
+    "VERIFY_PACKAGE_V2_4_8_9.py",
+    "r1_15a2_safety_v2489.py",
+    "tests/test_v2489_release.py",
+    "tests/test_v2489_td_realization_stabilization.py"
+  ],
+  "base_release": "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016",
+  "changed": [
+    "CURRENT_RELEASE.txt",
+    "README.md",
+    "r1_15a2_overnight_controller_v242.py",
+    "r1_15a2_runtime_v1.py"
+  ],
+  "created_utc": "2026-10-16T21:16:14.526341+00:00",
+  "removed": [],
+  "schema": "R1_15A2_V2489_CHANGED_FILES_V1",
+  "target_release": "R1_15A2_V2_4_8_9_TD_REALIZATION_STABILIZATION_20261016"
+}

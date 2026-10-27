@@ -1,0 +1,386 @@
+{
+  "schema": "R1_15A2_15R_SAME_MODE_PATHLINK_FINGERPRINT_V1",
+  "status": "SAMPLE_IDENTICAL_WITHIN_MODE_REVIEW_REQUIRED",
+  "loaded_version_file": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_2022_vraceny_zonalni_atributy_osrm_doplneno_local.ver",
+  "apply": false,
+  "assignment_executed": false,
+  "writes_to_visum": false,
+  "window_ranges": [
+    [
+      1,
+      256
+    ],
+    [
+      8193,
+      8448
+    ],
+    [
+      65537,
+      65792
+    ]
+  ],
+  "results": [
+    {
+      "dseg_code": "NATIVE_CW",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "c8a8d673d6ac51e96c8ac200e898ddcd1ecd696ba89f84ddd22310a968b4755e",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        },
+        "8193-8448": {
+          "hash_sha256": "c548e371e297adf42b068ced4966dd7e00e9accd57762ec5c795eaa65a8e9432",
+          "rows": 256,
+          "parent_rows": 9,
+          "child_rows": 247
+        },
+        "65537-65792": {
+          "hash_sha256": "b4e0b06c09b34b17f60f0d09eb07a7de5b315ea9d58db44b9867142976013f8c",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "NATIVE_CS",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "c8a8d673d6ac51e96c8ac200e898ddcd1ecd696ba89f84ddd22310a968b4755e",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        },
+        "8193-8448": {
+          "hash_sha256": "c548e371e297adf42b068ced4966dd7e00e9accd57762ec5c795eaa65a8e9432",
+          "rows": 256,
+          "parent_rows": 9,
+          "child_rows": 247
+        },
+        "65537-65792": {
+          "hash_sha256": "b4e0b06c09b34b17f60f0d09eb07a7de5b315ea9d58db44b9867142976013f8c",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "NATIVE_CF",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "c8a8d673d6ac51e96c8ac200e898ddcd1ecd696ba89f84ddd22310a968b4755e",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        },
+        "8193-8448": {
+          "hash_sha256": "c548e371e297adf42b068ced4966dd7e00e9accd57762ec5c795eaa65a8e9432",
+          "rows": 256,
+          "parent_rows": 9,
+          "child_rows": 247
+        },
+        "65537-65792": {
+          "hash_sha256": "b4e0b06c09b34b17f60f0d09eb07a7de5b315ea9d58db44b9867142976013f8c",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "NATIVE_CL",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "c8a8d673d6ac51e96c8ac200e898ddcd1ecd696ba89f84ddd22310a968b4755e",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        },
+        "8193-8448": {
+          "hash_sha256": "c548e371e297adf42b068ced4966dd7e00e9accd57762ec5c795eaa65a8e9432",
+          "rows": 256,
+          "parent_rows": 9,
+          "child_rows": 247
+        },
+        "65537-65792": {
+          "hash_sha256": "b4e0b06c09b34b17f60f0d09eb07a7de5b315ea9d58db44b9867142976013f8c",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "EXOG_EE_CW",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "c8a8d673d6ac51e96c8ac200e898ddcd1ecd696ba89f84ddd22310a968b4755e",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        },
+        "8193-8448": {
+          "hash_sha256": "c548e371e297adf42b068ced4966dd7e00e9accd57762ec5c795eaa65a8e9432",
+          "rows": 256,
+          "parent_rows": 9,
+          "child_rows": 247
+        },
+        "65537-65792": {
+          "hash_sha256": "b4e0b06c09b34b17f60f0d09eb07a7de5b315ea9d58db44b9867142976013f8c",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "EXOG_EE_CS",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "c8a8d673d6ac51e96c8ac200e898ddcd1ecd696ba89f84ddd22310a968b4755e",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        },
+        "8193-8448": {
+          "hash_sha256": "c548e371e297adf42b068ced4966dd7e00e9accd57762ec5c795eaa65a8e9432",
+          "rows": 256,
+          "parent_rows": 9,
+          "child_rows": 247
+        },
+        "65537-65792": {
+          "hash_sha256": "b4e0b06c09b34b17f60f0d09eb07a7de5b315ea9d58db44b9867142976013f8c",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "EXOG_EE_CF",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "c8a8d673d6ac51e96c8ac200e898ddcd1ecd696ba89f84ddd22310a968b4755e",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        },
+        "8193-8448": {
+          "hash_sha256": "c548e371e297adf42b068ced4966dd7e00e9accd57762ec5c795eaa65a8e9432",
+          "rows": 256,
+          "parent_rows": 9,
+          "child_rows": 247
+        },
+        "65537-65792": {
+          "hash_sha256": "b4e0b06c09b34b17f60f0d09eb07a7de5b315ea9d58db44b9867142976013f8c",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "EXOG_EE_CL",
+      "expected_mode": "C",
+      "live_mode": "C",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "c8a8d673d6ac51e96c8ac200e898ddcd1ecd696ba89f84ddd22310a968b4755e",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        },
+        "8193-8448": {
+          "hash_sha256": "c548e371e297adf42b068ced4966dd7e00e9accd57762ec5c795eaa65a8e9432",
+          "rows": 256,
+          "parent_rows": 9,
+          "child_rows": 247
+        },
+        "65537-65792": {
+          "hash_sha256": "b4e0b06c09b34b17f60f0d09eb07a7de5b315ea9d58db44b9867142976013f8c",
+          "rows": 256,
+          "parent_rows": 6,
+          "child_rows": 250
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "NATIVE_CW_noT",
+      "expected_mode": "C_NOT",
+      "live_mode": "C_NOT",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "d03ee7aa6ec2b39d6fa8cd225e686c6cf68e851dd35edf6c6a302b48810b387b",
+          "rows": 256,
+          "parent_rows": 4,
+          "child_rows": 252
+        },
+        "8193-8448": {
+          "hash_sha256": "402616598e18b09ae6a3a7286cd15dcefc5adbf5767581538dfe088da11e5881",
+          "rows": 256,
+          "parent_rows": 3,
+          "child_rows": 253
+        },
+        "65537-65792": {
+          "hash_sha256": "1a016ba7867028160ba34d773e44c0f023904a276df0b37eb9e1388196f2a6b1",
+          "rows": 256,
+          "parent_rows": 2,
+          "child_rows": 254
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "NATIVE_CS_noT",
+      "expected_mode": "C_NOT",
+      "live_mode": "C_NOT",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "d03ee7aa6ec2b39d6fa8cd225e686c6cf68e851dd35edf6c6a302b48810b387b",
+          "rows": 256,
+          "parent_rows": 4,
+          "child_rows": 252
+        },
+        "8193-8448": {
+          "hash_sha256": "402616598e18b09ae6a3a7286cd15dcefc5adbf5767581538dfe088da11e5881",
+          "rows": 256,
+          "parent_rows": 3,
+          "child_rows": 253
+        },
+        "65537-65792": {
+          "hash_sha256": "1a016ba7867028160ba34d773e44c0f023904a276df0b37eb9e1388196f2a6b1",
+          "rows": 256,
+          "parent_rows": 2,
+          "child_rows": 254
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "EXOG_EE_CW_noT",
+      "expected_mode": "C_NOT",
+      "live_mode": "C_NOT",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "d03ee7aa6ec2b39d6fa8cd225e686c6cf68e851dd35edf6c6a302b48810b387b",
+          "rows": 256,
+          "parent_rows": 4,
+          "child_rows": 252
+        },
+        "8193-8448": {
+          "hash_sha256": "402616598e18b09ae6a3a7286cd15dcefc5adbf5767581538dfe088da11e5881",
+          "rows": 256,
+          "parent_rows": 3,
+          "child_rows": 253
+        },
+        "65537-65792": {
+          "hash_sha256": "1a016ba7867028160ba34d773e44c0f023904a276df0b37eb9e1388196f2a6b1",
+          "rows": 256,
+          "parent_rows": 2,
+          "child_rows": 254
+        }
+      },
+      "status": "SAMPLED"
+    },
+    {
+      "dseg_code": "EXOG_EE_CS_noT",
+      "expected_mode": "C_NOT",
+      "live_mode": "C_NOT",
+      "samples": {
+        "1-256": {
+          "hash_sha256": "d03ee7aa6ec2b39d6fa8cd225e686c6cf68e851dd35edf6c6a302b48810b387b",
+          "rows": 256,
+          "parent_rows": 4,
+          "child_rows": 252
+        },
+        "8193-8448": {
+          "hash_sha256": "402616598e18b09ae6a3a7286cd15dcefc5adbf5767581538dfe088da11e5881",
+          "rows": 256,
+          "parent_rows": 3,
+          "child_rows": 253
+        },
+        "65537-65792": {
+          "hash_sha256": "1a016ba7867028160ba34d773e44c0f023904a276df0b37eb9e1388196f2a6b1",
+          "rows": 256,
+          "parent_rows": 2,
+          "child_rows": 254
+        }
+      },
+      "status": "SAMPLED"
+    }
+  ],
+  "no_reuse_authorization": true,
+  "interpretation": "Only bounded windows of official saved paths; no guarantee outside samples",
+  "route_filter_source": "COM_ENUM",
+  "by_mode": {
+    "C": {
+      "dsegs": [
+        "NATIVE_CW",
+        "NATIVE_CS",
+        "NATIVE_CF",
+        "NATIVE_CL",
+        "EXOG_EE_CW",
+        "EXOG_EE_CS",
+        "EXOG_EE_CF",
+        "EXOG_EE_CL"
+      ],
+      "tested_windows": [
+        "1-256",
+        "8193-8448",
+        "65537-65792"
+      ],
+      "identical_by_window": {
+        "1-256": true,
+        "8193-8448": true,
+        "65537-65792": true
+      },
+      "all_sample_windows_identical": true,
+      "caveat": "SAMPLE_ONLY; NOT PROOF OF FULL MODE-WIDE GEOMETRY IDENTITY"
+    },
+    "C_NOT": {
+      "dsegs": [
+        "NATIVE_CW_noT",
+        "NATIVE_CS_noT",
+        "EXOG_EE_CW_noT",
+        "EXOG_EE_CS_noT"
+      ],
+      "tested_windows": [
+        "1-256",
+        "8193-8448",
+        "65537-65792"
+      ],
+      "identical_by_window": {
+        "1-256": true,
+        "8193-8448": true,
+        "65537-65792": true
+      },
+      "all_sample_windows_identical": true,
+      "caveat": "SAMPLE_ONLY; NOT PROOF OF FULL MODE-WIDE GEOMETRY IDENTITY"
+    }
+  },
+  "elapsed_seconds": 3.683
+}

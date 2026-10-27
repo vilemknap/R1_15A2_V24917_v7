@@ -1,0 +1,22 @@
+# První live-Visum gate V2.1
+
+- [ ] Otevřený poslední čistý pre-cluster `.ver`.
+- [ ] Assignment je konvergovaný a paths jsou uložené jako routes.
+- [ ] `apply=false`.
+- [ ] Přesně 681 ZoneNo = 1…681.
+- [ ] 12D: 444 řádků, 404 CAL, 40 VALID.
+- [ ] Vybraná TG operation aktivní a před TD.
+- [ ] Vybraná TD operation aktivní a obsahuje 16 požadovaných strata.
+- [ ] Assignment je po TD.
+- [ ] Master není uvnitř Procedure Sequence.
+- [ ] Všech 14 TG dependency atributů je numerických ve všech zónách.
+- [ ] Saved path volume sedí na `ODMatrix.SUM` po každém DSeg.
+- [ ] Path-link coverage a path-vs-12D parity PASS.
+- [ ] `GENERATION` candidate neobsahuje explicitně excluded ani neaktivní ZAHR zóny.
+- [ ] P/A implemented relative gap pod limitem.
+- [ ] WORK/SERVICE/SCHOOL target bins mají exact coverage.
+- [ ] LONG je buď `NO_COMPONENT_LONG_AUTHORITY`, nebo má podepsanou per-component authority; agregovaný CL target se nepoužije jako pět targetů.
+- [ ] Design-only evidence ručně zkontrolována.
+- [ ] Pro první apply: `R1_15A2_V21_APPLY=1`, `max_accepted_blocks=1`.
+- [ ] Po rejectu zkontrolovat `98*_ROLLBACK_*` PASS.
+- [ ] Po acceptu archivovat `ACCEPTED.ver`, summary, manifest a hashe.

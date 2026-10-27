@@ -1,0 +1,81 @@
+{
+  "schema": "R1_15A2_V24913_SUPPLY_ROUTE_CHOICE_CONTRACT_V1",
+  "release": "R1_15A2_V2_4_9_13_SUPPLY_ROUTE_CHOICE_READINESS_20261019",
+  "purpose": "Make the ADDVAL1 route-choice phase operational after verified joint TG/TD convergence without relaxing technical model-integrity gates.",
+  "phase_entry": {
+    "requires_coupled_demand_convergence": true,
+    "criterion": "CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
+    "minimum_stationary_cycle_streak": 2,
+    "supply_only_source_state_must_match_demand_converged_state_hash": true,
+    "demand_hashes_frozen_during_supply": ["matrix_hash", "generation_hash", "td_hash"]
+  },
+  "actuator": {
+    "object_type": "LINK",
+    "attribute": "ADDVAL1",
+    "equivalent_seconds_per_addval1": 10.0,
+    "lattice_addval": 0.5,
+    "lattice_seconds": 5.0,
+    "step_ladder_seconds": [80, 40, 20, 10, 5],
+    "max_step_addval": 8.0,
+    "max_cumulative_addval_from_run_start": 15.0,
+    "absolute_addval_range": [-100.0, 100.0],
+    "max_bundle_equivalent_seconds": 360.0,
+    "max_changed_links": 30
+  },
+  "candidate_search": {
+    "max_candidates": 40,
+    "max_trials_per_supply_block": 40,
+    "max_driver_profiles": 80,
+    "minimum_driver_geh": 5.0,
+    "minimum_driver_absolute_residual": 100.0,
+    "minimum_attribution_coverage": 0.9,
+    "minimum_path_coverage": 0.9,
+    "minimum_path_volume_coverage": 0.95,
+    "ordering": "BRANCH_LOCAL_DESCENDING_STEP",
+    "partial_backtracking_ladders_allowed": false,
+    "candidate_proposal_basis": "OFFICIAL_VISUM_SAVED_PRT_ORDERED_PATH_LINKS",
+    "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+  },
+  "acceptance": {
+    "through_supply_cycle": 100,
+    "cal_weighted_mean_geh_must_improve": true,
+    "shared_fixed_reference_objective_must_improve": true,
+    "minimum_positive_improvement_epsilon": 1e-12,
+    "max_severity20_relative_degradation": 0.2,
+    "max_severity30_relative_degradation": 0.25,
+    "max_geh40_net_count_increase": 20,
+    "max_single_profile_geh_increase": 20.0,
+    "high_geh_threshold": 60.0,
+    "max_existing_high_geh_increase": 15.0,
+    "protected_before_geh": 5.0,
+    "protected_after_hard_geh": 20.0,
+    "max_protected_catastrophic": 0,
+    "max_idp_mean_degradation": 0.02,
+    "max_idp_component_degradation": 0.08
+  },
+  "hard_technical_guards_unchanged": [
+    "observation authority identity",
+    "fresh Visum assignment",
+    "assignment gap readback",
+    "ADDVAL write readback",
+    "demand freeze",
+    "path and flow parity",
+    "rollback verification",
+    "reproducible reapply",
+    "source version immutability",
+    "semantic checkpoint identity",
+    "positive minimum generalized cost"
+  ],
+  "explicitly_not_implemented": {
+    "VDF_parameter_calibration": "FROZEN; not identifiable from count observations alone",
+    "capacity_or_v0_calibration": "FROZEN",
+    "turn_addval_calibration": "NOT IMPLEMENTED",
+    "connector_addval_calibration": "NOT IMPLEMENTED",
+    "strategic_turn_share_and_cordon_pair_objective": "NOT BUNDLED; required authority files are absent from the V24912 package"
+  },
+  "truth_boundary": {
+    "offline_verified": false,
+    "real_visum_supply_tested": false,
+    "production_ready": false
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "review": "R1 15A2 live design-only first run 2026-10-16",
+  "observed_first_run_status": "BLOCKED_OR_FAILED",
+  "observed_error": "11D did not finish with read-only PASS: C:\\Users\\vilem_knap\\OneDrive - Valbek\\Dokumenty\\R1\\VISUM\\Síť příprava\\AKTUALNI\\v45\\2022\\R1_15A2_V2_3_7_RUNS\\RUN_20261016_012441_890809\\CALIBRATION\\BASELINE\\11D_CURRENT\\r1_step11d_v1_3_component_dist_behavior_summary.json",
+  "apply": false,
+  "accepted_blocks": 0,
+  "emergency_rollback_verified": true,
+  "procseq_passes": true,
+  "procseq_43_operations_count": 43,
+  "type_66_correction_operations": [],
+  "diagnostic_11d_original_summary_uploaded": false,
+  "diagnostic_11d_original_status_exact": "NOT_KNOWN_FROM_USER_UPLOADS",
+  "root_cause_supported": "Legacy 11D requires inactive TFlowFuzzy type 66 but the supplied procedure inventory has no such type; 11D status must be REVIEW unless superseded by other legacy review reasons.",
+  "secondary_bug": "11D output files use fixed r1_step11d_v1_3_component_dist_behavior_ prefix, but R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py previously searched without prefix.",
+  "12d_pass_inferred_from_control_flow": "run_12d returns before run_11d; exception originated in run_11d. Exact 12D artifact not among user uploads.",
+  "supply_assignment_approval_still_missing": true,
+  "fix_semantics": "DESIGN-only permits legacy 11D review when sealed 12D 498 and strict 11 atomic IDP read-only gates pass; apply=true still blocks legacy review; raw helper output preserved.",
+  "config_apply_changed": false,
+  "config_maximum_gap": 0.005,
+  "tests": "322/322 PASS offline mocks; no new live Visum execution",
+  "modified_code_files": [
+    "r1_15a2_runtime_v1.py",
+    "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py"
+  ],
+  "unmodified_reference_files": {
+    "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py": {
+      "sha256": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e",
+      "matches_previous": true
+    },
+    "helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py": {
+      "sha256": "1d38bf86a75662c9284a9bbe9983a96cb9166a4446fdaa921c436b48e18bb3d3",
+      "matches_previous": true
+    },
+    "R1_15A2_CONFIG_V2_3_7.json": {
+      "sha256": "20636437d4acf817e689690c05c512f450c75f19a27ce54491240037490ee670",
+      "matches_previous": true
+    },
+    "r1_15a2_core.py": {
+      "sha256": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
+      "matches_previous": true
+    },
+    "r1_15a2_multiblock.py": {
+      "sha256": "a55f99fad6b5b835ccbffc5e01754b30658e9ff281529e1c900d759242efc726",
+      "matches_previous": true
+    },
+    "r1_15a2_supply_visum.py": {
+      "sha256": "6b31f1e73272b0a24376c5483b626315be3f1a062e6e2dabdd11246763fc111d",
+      "matches_previous": true
+    },
+    "R1_15A2_DESIGN_ONLY_FIRST_RUN_V2_3_7.py": {
+      "sha256": "bda52d14b6ba74f328f3e30db7773f52a41eda72098a6fddb86249a24d7c32ee",
+      "matches_previous": true
+    }
+  }
+}

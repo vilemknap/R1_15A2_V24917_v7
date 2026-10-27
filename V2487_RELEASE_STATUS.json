@@ -1,0 +1,17 @@
+{
+  "schema": "R1_15A2_V2487_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_8_7_LIVE_COEFFICIENT_AUTHORITY_20261016",
+  "created_utc": "2026-10-16T19:34:04.537128+00:00",
+  "status": "PASS_OFFLINE_FULL_SUITE_LIVE_COEFFICIENT_AUTHORITY_NOT_REAL_VISUM_ACCEPTANCE",
+  "problem_fixed": "HISTORICAL_3_AND_10_VALUES_NO_LONGER_ABSOLUTE_ZONAL_COEFFICIENT_BOUNDS",
+  "coefficient_authority": "LIVE_CURRENT_VALUE_RELATIVE_LOG_STEP",
+  "legacy_absolute_upper_bounds_enforced": false,
+  "full_tests": "615 passed",
+  "compileall_pass": true,
+  "real_v2484_proposal_replay_pass": true,
+  "stable_project_root_retained": true,
+  "persistent_cache_compatibility_through": "V2.4.8.6",
+  "real_visum_tested": false,
+  "production_ready": false,
+  "next_required_gate": "REAL_VISUM_V2487_GENERATION_TRY_01_WITH_ZONE_619_COEFFICIENTS_ALLOWED_ABOVE_10_AND_UNCHANGED_ACCEPTANCE_GATES"
+}

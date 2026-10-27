@@ -1,0 +1,836 @@
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_AUTHORITY.json	2026-10-20 05:38:21.979638845 +0000
+@@ -0,0 +1,53 @@
++{
++  "schema": "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_AUTHORITY_V1",
++  "source_checkpoint_name": "ACCEPTED_B_0018_3d57d34487ba.ver",
++  "source_run_id": "RUN_20261020_004141_848876",
++  "source_checkpoint_sha256_provenance": "e9d47c369fb9ad5f5d5e230079c39109ba40ca73999d0e1d42ace642f28470af",
++  "source_checkpoint_size_provenance": 580938848,
++  "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
++  "raw_ver_sha_used_for_restart_acceptance": false,
++  "accepted_count": 18,
++  "inherited_outer_cycles": 15,
++  "next_outer_cycle": 16,
++  "max_lineage_outer_cycle": 25,
++  "extension_outer_cycles": 10,
++  "extension_outer_cycle_start": 16,
++  "extension_outer_cycle_end": 25,
++  "inherited_completed_demand_cycles": 10,
++  "source_stationary_cycle_streak": 2,
++  "inherited_stationary_cycle_streak": 0,
++  "source_demand_converged": true,
++  "extension_resets_demand_convergence": true,
++  "supply_locked_during_extension": true,
++  "resume_substep": "GENERATION",
++  "td_realization_pending": false,
++  "snapshot_state_hash_diagnostic": "7c5c4ff0b08932cdfde6bd1362f5d32b224cf5ef2ca02938fcfa480789680b9a",
++  "semantic_state_hash": "cef9b4247114a01e54d45b885f3321a0a22387fe67fc7c1dfdd44f9d1134590e",
++  "semantic_hashes": {
++    "fixed_link_hash": "83779fb0c29bc3f0e671b2ca3831289175b951a28740f8aff428c4c5b65b3f50",
++    "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
++    "operations_hash": "8b7c5a1ffd4b2c3e8f6ab5a6bd6d37bad77a1e5cd6b2f7107e58cf79b2239b00",
++    "addval_hash": "189d17f4081b2d814659a8374f18c0bcd74ae1f79cf3cdbf9c0f38dddd3a7f74",
++    "matrix_hash": "0dc8515d05e95640c67a1361ea2a5f1b63e4080450ac38d84ac7b611e5bd3a2c",
++    "generation_hash": "6af9eb82cc9582140685fc22675df3ad18dbf97079094a839203113f5f410763",
++    "td_hash": "6131d0d4816bea48f4063e5a74885ca2e62a53240b915ae1bc26f1b83fb8b96a"
++  },
++  "generation_reference_file": "continuation_b0016/GENERATION_COUNTS_REFERENCE.json",
++  "generation_reference_sha256": "57016672bc247a820075998e98453e7dd4155d6e5b3fd2dcdf752731f6c29e2c",
++  "generation_backtracking_scales": [1.0, 0.5, 0.25, 0.125, 0.0625],
++  "generation_max_trials_per_block": 5,
++  "bounded_inner_budget_stop_reasons": [
++    "MAX_ITERATIONS",
++    "TD_EVALUATION_BUDGET",
++    "TD_INNER_TIME_BUDGET"
++  ],
++  "source_evidence": {
++    "demand_converged_cycle": 15,
++    "stationary_cycle_streak": 2,
++    "supply_started": true,
++    "supply_failed_before_first_candidate_design_completed": true,
++    "live_matches_last_accepted": true,
++    "manual_reopen_required": false,
++    "safe_restart_from_latest_accepted_checkpoint": true
++  }
++}
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_CONTRACT.json	2026-10-20 05:38:21.980583704 +0000
+@@ -0,0 +1,31 @@
++{
++  "schema": "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_CONTRACT_V1",
++  "parent_release": "R1_15A2_V24915_PERF2C_R2_SUPPLY_TEMP_SQLITE_HOTFIX_20261020",
++  "source_checkpoint": "ACCEPTED_B_0018_3d57d34487ba.ver",
++  "outer_cycle_start": 16,
++  "outer_cycle_end": 25,
++  "outer_cycle_count": 10,
++  "supply_locked_through_extension": true,
++  "review_required_after_cycle_25": true,
++  "generation_backtracking_scales_before": [1.0, 0.5, 0.25],
++  "generation_backtracking_scales_after": [1.0, 0.5, 0.25, 0.125, 0.0625],
++  "generation_max_trials_before": 3,
++  "generation_max_trials_after": 5,
++  "generation_step_math_changed": false,
++  "generation_candidate_direction_math_changed": false,
++  "td_math_changed": false,
++  "td_realization_scales_changed": false,
++  "assignment_method_changed": false,
++  "assignment_gap_changed": false,
++  "geh_acceptance_changed": false,
++  "idp_acceptance_changed": false,
++  "guard_policy_changed": false,
++  "early_exploration_acceptance_horizon_changed": false,
++  "direct_od_writes_changed": false,
++  "path_cache_semantics_changed": false,
++  "snapshot_semantics_changed": false,
++  "rollback_semantics_changed": false,
++  "supply_candidate_math_changed": false,
++  "extension_terminal_policy": "STOP_AFTER_OUTER_CYCLE_25_WITH_SUPPLY_LOCKED_FOR_REVIEW",
++  "notes": "The only search-space expansion is two smaller Generation backtracking scales. Demand is resumed from exact B0018 semantics. Supply is deliberately not unlocked during the ten-cycle diagnostic extension."
++}
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ V24915_PERF2C_R3_OVERLAY_MANIFEST.json	2026-10-20 05:39:28.997511630 +0000
+@@ -0,0 +1,28 @@
++{
++  "schema": "R1_15A2_V24915_PERF2C_R3_OVERLAY_MANIFEST_V1",
++  "release": "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_16_25_20261020",
++  "parent_release": "R1_15A2_V2_4_9_15_PERF2C_R2_SINGLE_PASS_EXACT_SNAPSHOT_SUPPLY_TEMP_HOTFIX_20261020",
++  "package_revision": "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_16_25",
++  "files": [
++    {
++      "path": "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_AUTHORITY.json",
++      "size": 2636,
++      "sha256": "d2d3224f3e5e5f82c079285ff0a05594453c393d647cfab7bf9c2f854496941f"
++    },
++    {
++      "path": "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_CONTRACT.json",
++      "size": 1499,
++      "sha256": "85548aa7024b10f41f4ca8e10866d849547a2a8df4746706d0366c9acaae22e2"
++    },
++    {
++      "path": "r1_15a2_demand_extension_b0018_v24915p2c3.py",
++      "size": 9588,
++      "sha256": "1896e99ef77a1baf92eed47ac33fd9f8db9ee7c0776aa8e5090b9817be399bcb"
++    },
++    {
++      "path": "R1_15A2_DEMAND_EXTENSION_B0018_CYCLES16_25_V2_4_9_15_PERF2C_R3.py",
++      "size": 6593,
++      "sha256": "adb2da6e24f76e2b63714f1879532a4e6ee69e3310d873cc1b273f8b94a2ae66"
++    }
++  ]
++}
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ r1_15a2_demand_extension_b0018_v24915p2c3.py	2026-10-20 05:38:51.545245629 +0000
+@@ -0,0 +1,186 @@
++# -*- coding: utf-8 -*-
++"""Fail-closed B0018 demand extension for PERF2C R3.
++
++This module intentionally presents the small compatibility surface expected by
++V24915 PERF2's existing continuation hook.  The parent launcher calls the
++functions using historical B0016 names; internally they are strict B0018-only
++resolvers.  A semantic mismatch never falls back to A0009/B0016.
++"""
++from __future__ import annotations
++
++import copy
++import json
++from pathlib import Path
++from typing import Any, Dict, Mapping
++
++import r1_15a2_runtime_v1 as rt
++from r1_15a2_supply import SupplyContractError, canonical_hash
++
++SCHEMA = "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_AUTHORITY_V1"
++AUTHORITY_FILE = "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_AUTHORITY.json"
++AUTHORITY_SHA256 = "d2d3224f3e5e5f82c079285ff0a05594453c393d647cfab7bf9c2f854496941f"
++EXPECTED_CHECKPOINT_NAME = "ACCEPTED_B_0018_3d57d34487ba.ver"
++EXPECTED_SEMANTIC_STATE_HASH = "cef9b4247114a01e54d45b885f3321a0a22387fe67fc7c1dfdd44f9d1134590e"
++EXPECTED_ACCEPTED_COUNT = 18
++EXPECTED_NEXT_OUTER_CYCLE = 16
++EXPECTED_MAX_LINEAGE_OUTER_CYCLE = 25
++EXPECTED_GENERATION_REFERENCE_SHA256 = "57016672bc247a820075998e98453e7dd4155d6e5b3fd2dcdf752731f6c29e2c"
++BOUNDED_INNER_BUDGET_STOP_REASONS = (
++    "MAX_ITERATIONS",
++    "TD_EVALUATION_BUDGET",
++    "TD_INNER_TIME_BUDGET",
++)
++
++
++def _require(condition: bool, code: str) -> None:
++    if not condition:
++        raise SupplyContractError(code)
++
++
++def _root(package_root=None) -> Path:
++    return Path(package_root).resolve() if package_root is not None else Path(__file__).resolve().parent
++
++
++def load_authority(package_root=None) -> Dict[str, Any]:
++    root = _root(package_root)
++    path = root / AUTHORITY_FILE
++    _require(path.is_file(), "V24915P2C3_B0018_AUTHORITY_MISSING")
++    _require(rt.sha256_file(path) == AUTHORITY_SHA256,
++             "V24915P2C3_B0018_AUTHORITY_HASH_MISMATCH")
++    authority = rt.read_json(path)
++    _require(authority.get("schema") == SCHEMA,
++             "V24915P2C3_B0018_AUTHORITY_SCHEMA_MISMATCH")
++    _require(authority.get("source_checkpoint_name") == EXPECTED_CHECKPOINT_NAME,
++             "V24915P2C3_B0018_CHECKPOINT_NAME_MISMATCH")
++    _require(int(authority.get("accepted_count", -1)) == EXPECTED_ACCEPTED_COUNT,
++             "V24915P2C3_B0018_ACCEPTED_COUNT_MISMATCH")
++    _require(int(authority.get("inherited_outer_cycles", -1)) == 15 and
++             int(authority.get("next_outer_cycle", -1)) == EXPECTED_NEXT_OUTER_CYCLE,
++             "V24915P2C3_B0018_CYCLE_BOUNDARY_MISMATCH")
++    _require(int(authority.get("max_lineage_outer_cycle", -1)) == EXPECTED_MAX_LINEAGE_OUTER_CYCLE,
++             "V24915P2C3_B0018_MAX_CYCLE_MISMATCH")
++    _require(int(authority.get("extension_outer_cycles", -1)) == 10 and
++             int(authority.get("extension_outer_cycle_start", -1)) == 16 and
++             int(authority.get("extension_outer_cycle_end", -1)) == 25,
++             "V24915P2C3_B0018_EXTENSION_BUDGET_MISMATCH")
++    _require(int(authority.get("inherited_stationary_cycle_streak", -1)) == 0,
++             "V24915P2C3_B0018_STATIONARY_RESET_MISMATCH")
++    _require(authority.get("source_demand_converged") is True and
++             authority.get("extension_resets_demand_convergence") is True and
++             authority.get("supply_locked_during_extension") is True,
++             "V24915P2C3_B0018_PHASE_POLICY_MISMATCH")
++    _require(authority.get("resume_substep") == "GENERATION" and
++             authority.get("td_realization_pending") is False,
++             "V24915P2C3_B0018_RESUME_SUBSTEP_MISMATCH")
++    _require(authority.get("semantic_state_hash") == EXPECTED_SEMANTIC_STATE_HASH,
++             "V24915P2C3_B0018_SEMANTIC_STATE_HASH_MISMATCH")
++    expected_hashes = authority.get("semantic_hashes") or {}
++    _require(set(expected_hashes) == {
++        "fixed_link_hash", "dseg_hash", "operations_hash", "addval_hash",
++        "matrix_hash", "generation_hash", "td_hash"},
++        "V24915P2C3_B0018_SEMANTIC_FIELDS_MISMATCH")
++    from r1_15a2_restart_v2494 import semantic_state_hash
++    _require(semantic_state_hash(dict(expected_hashes)) == EXPECTED_SEMANTIC_STATE_HASH,
++             "V24915P2C3_B0018_AUTHORITY_SELF_INCONSISTENT")
++    _require(authority.get("generation_backtracking_scales") == [1.0, 0.5, 0.25, 0.125, 0.0625] and
++             int(authority.get("generation_max_trials_per_block", -1)) == 5,
++             "V24915P2C3_B0018_GENERATION_SEARCH_GRID_MISMATCH")
++    _require(tuple(authority.get("bounded_inner_budget_stop_reasons", ())) ==
++             BOUNDED_INNER_BUDGET_STOP_REASONS,
++             "V24915P2C3_B0018_BUDGET_REASON_SET_MISMATCH")
++    ref_path = root / str(authority.get("generation_reference_file", ""))
++    _require(ref_path.is_file(), "V24915P2C3_B0018_GENERATION_REFERENCE_MISSING")
++    _require(rt.sha256_file(ref_path) == EXPECTED_GENERATION_REFERENCE_SHA256 ==
++             authority.get("generation_reference_sha256"),
++             "V24915P2C3_B0018_GENERATION_REFERENCE_HASH_MISMATCH")
++    out = copy.deepcopy(dict(authority))
++    out["authority_path"] = str(path)
++    out["authority_sha256"] = AUTHORITY_SHA256
++    return out
++
++
++def matches_b0016_live_semantic(live_semantic: Mapping[str, Any], package_root=None) -> bool:
++    """Compatibility name; matches only the exact B0018 semantic authority."""
++    try:
++        authority = load_authority(package_root)
++    except Exception:
++        return False
++    return live_semantic.get("semantic_state_hash") == authority.get("semantic_state_hash")
++
++
++def resolve_b0016(source_version, live_semantic: Mapping[str, Any], package_root=None) -> Dict[str, Any]:
++    """Compatibility name; resolve exact B0018 -> cycle 16 demand continuation."""
++    root = _root(package_root)
++    authority = load_authority(root)
++    source_version = Path(source_version).resolve()
++    _require(source_version.is_file(), "V24915P2C3_B0018_SOURCE_VERSION_MISSING")
++    _require(source_version.name == EXPECTED_CHECKPOINT_NAME,
++             "V24915P2C3_B0018_SOURCE_CHECKPOINT_NAME_MISMATCH")
++    _require(live_semantic.get("semantic_state_hash") == EXPECTED_SEMANTIC_STATE_HASH,
++             "V24915P2C3_B0018_LIVE_SEMANTIC_STATE_MISMATCH")
++    actual = live_semantic.get("semantic_hashes") or {}
++    expected = authority.get("semantic_hashes") or {}
++    mismatches = {name: {"expected": value, "actual": actual.get(name)}
++                  for name, value in expected.items() if actual.get(name) != value}
++    _require(not mismatches,
++             "V24915P2C3_B0018_LIVE_SEMANTIC_FIELDS_MISMATCH:" +
++             json.dumps(mismatches, sort_keys=True))
++    ref_path = root / authority["generation_reference_file"]
++    reference = rt.read_json(ref_path)
++    _require(reference.get("schema") == "R1_15A2_SHARED_OBJECTIVE_V22",
++             "V24915P2C3_B0018_GENERATION_REFERENCE_SCHEMA_MISMATCH")
++    return {
++        "schema": "R1_15A2_V24915_RESOLVED_B0018_DEMAND_EXTENSION_V1",
++        "enabled": True,
++        "mode": "EXACT_SEMANTIC_B0018_DEMAND_EXTENSION_CYCLES16_25_SUPPLY_LOCKED",
++        "source_version": str(source_version),
++        "source_version_name": source_version.name,
++        "expected_source_checkpoint_name": EXPECTED_CHECKPOINT_NAME,
++        "source_checkpoint_name_matches": True,
++        "source_release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
++        "source_run_id": authority.get("source_run_id"),
++        "source_terminal_status": "FAILED_SUPPLY:FAILED",
++        "source_error_class": "SUPPLY_TEMP_SQLITE_QUERY_ONLY_BLOCKED_TEMP_TABLE",
++        "accepted_count": EXPECTED_ACCEPTED_COUNT,
++        "inherited_outer_cycles": 15,
++        "next_outer_cycle": EXPECTED_NEXT_OUTER_CYCLE,
++        "max_lineage_outer_cycle": EXPECTED_MAX_LINEAGE_OUTER_CYCLE,
++        "inherited_stationary_cycle_streak": 0,
++        "inherited_completed_demand_cycles": int(authority.get("inherited_completed_demand_cycles", 10)),
++        "semantic_state_hash": EXPECTED_SEMANTIC_STATE_HASH,
++        "semantic_hashes": copy.deepcopy(expected),
++        "resume_substep": "GENERATION",
++        "generation_reference": copy.deepcopy(reference),
++        "generation_reference_sha256": EXPECTED_GENERATION_REFERENCE_SHA256,
++        "bounded_inner_budget_stop_reasons": list(BOUNDED_INNER_BUDGET_STOP_REASONS),
++        "continue_bounded_budget_without_accepted_change": True,
++        "supply_unlock_criterion": "DISABLED_DURING_B0018_EXTENSION_REVIEW_AFTER_CYCLE25",
++        "raw_ver_sha_role": authority.get("raw_ver_sha_role"),
++        "raw_ver_sha_used_for_restart_acceptance": False,
++        "authority_path": str(root / AUTHORITY_FILE),
++        "authority_sha256": AUTHORITY_SHA256,
++        "b0018_demand_extension": {
++            "outer_cycle_start": 16,
++            "outer_cycle_end": 25,
++            "outer_cycle_count": 10,
++            "stationary_streak_reset": True,
++            "supply_locked": True,
++            "generation_backtracking_scales": [1.0, 0.5, 0.25, 0.125, 0.0625],
++            "generation_max_trials_per_block": 5,
++            "acceptance_thresholds_changed": False,
++            "td_math_changed": False,
++        },
++    }
++
++
++def resolve_a0009(source_version, live_semantic: Mapping[str, Any], package_root=None) -> Dict[str, Any]:
++    raise SupplyContractError(
++        "V24915P2C3_DEMAND_EXTENSION_REQUIRES_EXACT_B0018_SEMANTIC_CHECKPOINT")
++
++
++__all__ = [
++    "AUTHORITY_FILE", "AUTHORITY_SHA256", "EXPECTED_CHECKPOINT_NAME",
++    "EXPECTED_SEMANTIC_STATE_HASH", "EXPECTED_ACCEPTED_COUNT",
++    "EXPECTED_NEXT_OUTER_CYCLE", "EXPECTED_MAX_LINEAGE_OUTER_CYCLE",
++    "load_authority", "matches_b0016_live_semantic", "resolve_b0016", "resolve_a0009",
++]
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ r1_15a2_safety_v24915p2c3.py	2026-10-20 05:39:47.298176560 +0000
+@@ -0,0 +1,146 @@
++# -*- coding: utf-8 -*-
++"""Fail-closed safety gates for PERF2C R3 B0018 Demand extension 16..25."""
++from __future__ import annotations
++
++import copy
++import json
++from pathlib import Path
++from typing import Any, Mapping
++
++import r1_15a2_runtime_v1 as rt
++from r1_15a2_supply import SupplyContractError, canonical_hash
++
++RELEASE = "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_16_25_20261020"
++PARENT_RELEASE = "R1_15A2_V2_4_9_15_PERF2C_R2_SINGLE_PASS_EXACT_SNAPSHOT_SUPPLY_TEMP_HOTFIX_20261020"
++PACKAGE_REVISION = "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_16_25"
++MANIFEST_FILE = "V24915_PERF2C_R3_OVERLAY_MANIFEST.json"
++MANIFEST_SHA256 = "dee2e15b1ed761ddd94fdeaa6357bf30d3d171c47cd621057570645152042754"
++CONTRACT_FILE = "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_CONTRACT.json"
++CONTRACT_SHA256 = "85548aa7024b10f41f4ca8e10866d849547a2a8df4746706d0366c9acaae22e2"
++AUTHORITY_FILE = "V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_AUTHORITY.json"
++AUTHORITY_SHA256 = "d2d3224f3e5e5f82c079285ff0a05594453c393d647cfab7bf9c2f854496941f"
++
++
++def _require(condition: bool, code: str) -> None:
++    if not condition:
++        raise SupplyContractError(code)
++
++
++def _canon(value: Any) -> str:
++    return canonical_hash(value)
++
++
++def preflight_v24915p2c3_overlay(package_root=None) -> Mapping[str, Any]:
++    root = Path(package_root).resolve() if package_root is not None else Path(__file__).resolve().parent
++    manifest_path = root / MANIFEST_FILE
++    _require(manifest_path.is_file(), "V24915P2C3_MANIFEST_MISSING")
++    _require(rt.sha256_file(manifest_path) == MANIFEST_SHA256,
++             "V24915P2C3_MANIFEST_HASH_MISMATCH")
++    manifest = rt.read_json(manifest_path)
++    _require(manifest.get("schema") == "R1_15A2_V24915_PERF2C_R3_OVERLAY_MANIFEST_V1",
++             "V24915P2C3_MANIFEST_SCHEMA_MISMATCH")
++    _require(manifest.get("release") == RELEASE and
++             manifest.get("parent_release") == PARENT_RELEASE and
++             manifest.get("package_revision") == PACKAGE_REVISION,
++             "V24915P2C3_MANIFEST_IDENTITY_MISMATCH")
++    failures=[]; checked=0
++    for row in manifest.get("files", []):
++        rel=str(row.get("path", "")); path=root / rel
++        if not rel or not path.is_file():
++            failures.append({"path":rel,"reason":"MISSING"}); continue
++        checked += 1
++        if int(path.stat().st_size) != int(row.get("size", -1)):
++            failures.append({"path":rel,"reason":"SIZE_MISMATCH"})
++        elif rt.sha256_file(path) != row.get("sha256"):
++            failures.append({"path":rel,"reason":"SHA256_MISMATCH"})
++    _require(not failures, "V24915P2C3_MANIFEST_INVALID:"+json.dumps(failures,sort_keys=True))
++    for name, digest, code in (
++        (CONTRACT_FILE, CONTRACT_SHA256, "CONTRACT"),
++        (AUTHORITY_FILE, AUTHORITY_SHA256, "AUTHORITY"),
++    ):
++        path=root/name
++        _require(path.is_file() and rt.sha256_file(path)==digest,
++                 "V24915P2C3_%s_HASH_MISMATCH" % code)
++    contract=rt.read_json(root/CONTRACT_FILE)
++    _require(contract.get("outer_cycle_start")==16 and contract.get("outer_cycle_end")==25 and
++             contract.get("outer_cycle_count")==10,
++             "V24915P2C3_CONTRACT_CYCLE_RANGE_MISMATCH")
++    _require(contract.get("supply_locked_through_extension") is True and
++             contract.get("review_required_after_cycle_25") is True,
++             "V24915P2C3_CONTRACT_SUPPLY_LOCK_MISSING")
++    for key in (
++        "generation_step_math_changed", "generation_candidate_direction_math_changed",
++        "td_math_changed", "td_realization_scales_changed", "assignment_method_changed",
++        "assignment_gap_changed", "geh_acceptance_changed", "idp_acceptance_changed",
++        "guard_policy_changed", "early_exploration_acceptance_horizon_changed",
++        "direct_od_writes_changed", "path_cache_semantics_changed",
++        "snapshot_semantics_changed", "rollback_semantics_changed",
++        "supply_candidate_math_changed",
++    ):
++        _require(contract.get(key) is False, "V24915P2C3_UNSAFE_CONTRACT_FLAG:"+key)
++    from r1_15a2_demand_extension_b0018_v24915p2c3 import load_authority
++    authority=load_authority(root)
++    return {
++        "passes": True, "release": RELEASE, "parent_release": PARENT_RELEASE,
++        "package_revision": PACKAGE_REVISION, "files_checked": checked,
++        "manifest_sha256": MANIFEST_SHA256, "contract_sha256": CONTRACT_SHA256,
++        "authority_sha256": AUTHORITY_SHA256,
++        "source_checkpoint": authority.get("source_checkpoint_name"),
++        "outer_cycles": [16,25], "outer_cycle_count": 10,
++        "supply_locked_during_extension": True,
++        "generation_backtracking_scales": [1.0,0.5,0.25,0.125,0.0625],
++    }
++
++
++def validate_v24915p2c3_config_delta(child: Mapping[str, Any], base: Mapping[str, Any], package_root=None) -> Mapping[str, Any]:
++    """Prove exact four-field runtime delta over the already validated R2 config."""
++    c=copy.deepcopy(dict(child)); b=copy.deepcopy(dict(base))
++    _require(int(b.get("coupled_demand",{}).get("max_outer_cycles",-1))==50,
++             "V24915P2C3_PARENT_OUTER_CAP_NOT_50")
++    _require(int(b.get("coupled_demand",{}).get("min_stationary_cycles",-1))==2,
++             "V24915P2C3_PARENT_STATIONARITY_NOT_2")
++    _require(b.get("backtracking_scales")==[1.0,0.5,0.25],
++             "V24915P2C3_PARENT_GENERATION_SCALES_DRIFT")
++    _require(int(b.get("trial_calibration",{}).get("max_trials_per_block",{}).get("GENERATION",-1))==3,
++             "V24915P2C3_PARENT_GENERATION_TRIAL_CAP_DRIFT")
++
++    _require(int(c.get("coupled_demand",{}).get("max_outer_cycles",-1))==25,
++             "V24915P2C3_CHILD_OUTER_CAP_NOT_25")
++    _require(int(c.get("coupled_demand",{}).get("min_stationary_cycles",-1))==11,
++             "V24915P2C3_SUPPLY_LOCK_STATIONARITY_NOT_11")
++    _require(c.get("backtracking_scales")==[1.0,0.5,0.25,0.125,0.0625],
++             "V24915P2C3_CHILD_GENERATION_SCALES_MISMATCH")
++    _require(int(c.get("trial_calibration",{}).get("max_trials_per_block",{}).get("GENERATION",-1))==5,
++             "V24915P2C3_CHILD_GENERATION_TRIAL_CAP_NOT_5")
++    _require(int(c.get("early_exploration_acceptance",{}).get("through_outer_cycle",-1))==12,
++             "V24915P2C3_EARLY_ACCEPTANCE_HORIZON_DRIFT")
++    td_scales=c.get("coupled_demand",{}).get("finecdf_td",{}).get("realization_backtracking_scales")
++    _require(td_scales==b.get("coupled_demand",{}).get("finecdf_td",{}).get("realization_backtracking_scales"),
++             "V24915P2C3_TD_REALIZATION_SCALES_DRIFT")
++    _require(int(c.get("coupled_demand",{}).get("finecdf_td",{}).get("progressive_schedule",[])[-1].get("through_outer_cycle",-1))>=25,
++             "V24915P2C3_FINECDF_SCHEDULE_DOES_NOT_COVER_25")
++    _require(int(c.get("performance",{}).get("generation_step_schedule",[])[-1].get("through_outer_cycle",-1))>=25,
++             "V24915P2C3_GENERATION_SCHEDULE_DOES_NOT_COVER_25")
++    ext=c.get("v24915_perf2c_r3_demand_extension") or {}
++    _require(ext.get("enabled") is True and ext.get("outer_cycle_start")==16 and
++             ext.get("outer_cycle_end")==25 and ext.get("outer_cycle_count")==10 and
++             ext.get("supply_locked_during_extension") is True,
++             "V24915P2C3_RUNTIME_EXTENSION_METADATA_INVALID")
++
++    # Normalize exactly the reviewed child dimensions and demand-extension metadata.
++    c["coupled_demand"]["max_outer_cycles"] = b["coupled_demand"]["max_outer_cycles"]
++    c["coupled_demand"]["min_stationary_cycles"] = b["coupled_demand"]["min_stationary_cycles"]
++    c["backtracking_scales"] = copy.deepcopy(b["backtracking_scales"])
++    c["trial_calibration"]["max_trials_per_block"]["GENERATION"] = b["trial_calibration"]["max_trials_per_block"]["GENERATION"]
++    c.pop("v24915_perf2c_r3_demand_extension", None)
++    c.pop("v24915_perf2c_r3_overlay_revision", None)
++    _require(_canon(c)==_canon(b), "V24915P2C3_UNREVIEWED_CONFIG_DRIFT")
++    preflight_v24915p2c3_overlay(package_root)
++    return {"passes":True,"outer_cycles":[16,25],"count":10,"supply_locked":True}
++
++
++__all__=[
++    "RELEASE","PARENT_RELEASE","PACKAGE_REVISION","MANIFEST_FILE","MANIFEST_SHA256",
++    "CONTRACT_FILE","CONTRACT_SHA256","AUTHORITY_FILE","AUTHORITY_SHA256",
++    "preflight_v24915p2c3_overlay","validate_v24915p2c3_config_delta",
++]
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ R1_15A2_DEMAND_EXTENSION_B0018_CYCLES16_25_V2_4_9_15_PERF2C_R3.py	2026-10-20 05:39:18.357143308 +0000
+@@ -0,0 +1,153 @@
++# -*- coding: utf-8 -*-
++"""PERF2C R3: exact B0018 Demand extension, outer cycles 16..25.
++
++This is deliberately Demand-only.  It resumes from the exact semantic B0018
++checkpoint, resets the inherited stationary streak, expands only Generation
++backtracking to two smaller scales, runs at most ten additional coupled Demand
++outer cycles, and keeps Supply locked for explicit review after cycle 25.
++"""
++from __future__ import annotations
++
++import copy
++from pathlib import Path
++import sys
++
++HERE = Path(__file__).resolve().parent
++_INJECTED_VISUM = globals().get("Visum")
++_INJECTED_COM = globals().get("COM")
++_ORIGINAL_SYS_PATH = list(sys.path)
++
++if _INJECTED_VISUM is not None or _INJECTED_COM is not None:
++    if getattr(sys, "_r1_15a2_calibration_busy", False):
++        raise RuntimeError("ANOTHER_15A2_RUN_IS_ACTIVE")
++    for module_name in list(sys.modules):
++        if module_name.startswith("r1_15a2_"):
++            del sys.modules[module_name]
++sys.path[:] = [str(HERE)] + [path for path in sys.path if path != str(HERE)]
++
++import R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C as perf2c
++import r1_15a2_demand_extension_b0018_v24915p2c3 as extension_continuation
++from r1_15a2_safety_v24915p2c3 import (
++    RELEASE, PACKAGE_REVISION, preflight_v24915p2c3_overlay,
++    validate_v24915p2c3_config_delta,
++)
++
++_BASE_LOAD_CONFIG = perf2c._load_config_with_overlay
++_BASE_COMBINED_RUNTIME_PREFLIGHT = perf2c._combined_runtime_preflight
++_BASE_COMBINED_DEPLOYMENT_PREFLIGHT = perf2c._combined_deployment_preflight
++_EXTENSION_ACTIVE = False
++
++
++def _load_config_extension(execution_mode="FULL"):
++    if str(execution_mode).upper() != "FULL":
++        raise RuntimeError("V24915P2C3_DEMAND_EXTENSION_FULL_MODE_ONLY")
++    base_cfg = _BASE_LOAD_CONFIG("FULL")
++    cfg = copy.deepcopy(base_cfg)
++    cfg["coupled_demand"]["max_outer_cycles"] = 25
++    # Start=16 and inherited streak is forcibly reset to zero.  Eleven
++    # consecutive stationary cycles cannot fit into the ten-cycle extension,
++    # therefore the existing controller cannot unlock Supply inside this run.
++    cfg["coupled_demand"]["min_stationary_cycles"] = 11
++    cfg["backtracking_scales"] = [1.0, 0.5, 0.25, 0.125, 0.0625]
++    cfg["trial_calibration"]["max_trials_per_block"]["GENERATION"] = 5
++    cfg["v24915_perf2c_r3_demand_extension"] = {
++        "schema": "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_RUNTIME_V1",
++        "enabled": True,
++        "source_checkpoint": "ACCEPTED_B_0018_3d57d34487ba.ver",
++        "outer_cycle_start": 16,
++        "outer_cycle_end": 25,
++        "outer_cycle_count": 10,
++        "reset_stationary_streak": True,
++        "supply_locked_during_extension": True,
++        "review_required_after_cycle_25": True,
++        "generation_backtracking_scales": [1.0, 0.5, 0.25, 0.125, 0.0625],
++        "generation_max_trials_per_block": 5,
++        "acceptance_thresholds_changed": False,
++        "td_math_changed": False,
++        "assignment_changed": False,
++    }
++    cfg["v24915_perf2c_r3_overlay_revision"] = PACKAGE_REVISION
++    validate_v24915p2c3_config_delta(cfg, base_cfg, HERE)
++    return cfg
++
++
++def _deployment_preflight_extension(package_root=None):
++    base = dict(_BASE_COMBINED_DEPLOYMENT_PREFLIGHT(package_root))
++    overlay = dict(preflight_v24915p2c3_overlay(package_root))
++    base["perf2c_r3_b0018_demand_extension"] = overlay
++    base["files_checked_perf2c_r3"] = overlay.get("files_checked", 0)
++    base["files_checked"] = int(base.get("files_checked", 0)) + int(overlay.get("files_checked", 0))
++    return base
++
++
++def _runtime_preflight_extension(cfg, package_root=None):
++    # Reconstruct the exact PERF2C R2 parent config and run every parent gate on
++    # it.  Then validate that the live child differs only in the reviewed R3
++    # extension dimensions.
++    base_cfg = _BASE_LOAD_CONFIG("FULL")
++    validate_v24915p2c3_config_delta(cfg, base_cfg, package_root)
++    base = dict(_BASE_COMBINED_RUNTIME_PREFLIGHT(base_cfg, package_root))
++    overlay = dict(preflight_v24915p2c3_overlay(package_root))
++    base["perf2c_r3_b0018_demand_extension"] = overlay
++    base["demand_extension_outer_cycles"] = [16, 25]
++    base["demand_extension_count"] = 10
++    base["supply_locked_during_extension"] = True
++    base["generation_backtracking_scales"] = [1.0, 0.5, 0.25, 0.125, 0.0625]
++    return base
++
++
++def _wrap_controller(original):
++    def run(adapter, cfg, folder, control, package_root):
++        result = original(adapter, cfg, folder, control, package_root)
++        cycles = [int(row.get("cycle")) for row in result.get("demand_cycles", [])
++                  if isinstance(row, dict) and row.get("cycle") is not None]
++        if result.get("supply_started") is True:
++            raise RuntimeError("V24915P2C3_SUPPLY_STARTED_DURING_DEMAND_EXTENSION")
++        if str(result.get("status")) == "DEMAND_MAX_OUTER_CYCLES_REACHED_SUPPLY_LOCKED":
++            expected = list(range(16, 26))
++            if cycles != expected:
++                raise RuntimeError(
++                    "V24915P2C3_EXTENSION_CYCLE_SEQUENCE_MISMATCH:%r" % (cycles,))
++            result["status"] = "DEMAND_EXTENSION_16_25_COMPLETED_SUPPLY_LOCKED"
++            result["demand_extension_complete"] = True
++            result["demand_extension_outer_cycles"] = expected
++            result["demand_extension_review_required"] = True
++            result["supply_started"] = False
++            result["continuation_required"] = True
++            result["next_outer_cycle"] = 26
++        return result
++    return run
++
++
++def _activate_extension():
++    global _EXTENSION_ACTIVE
++    if _EXTENSION_ACTIVE:
++        return
++    perf2c._INJECTED_VISUM = _INJECTED_VISUM
++    perf2c._INJECTED_COM = _INJECTED_COM
++    perf2c._activate_overlay()
++    parent = perf2c.parent
++    original_controller = parent.run_overnight_calibration_coupled
++    parent.RELEASE = RELEASE
++    parent.load_config = _load_config_extension
++    parent.preflight_v24915p2_deployment_files = _deployment_preflight_extension
++    parent.validate_v24915p2_runtime_bundle = _runtime_preflight_extension
++    parent.demand_continuation_r5 = extension_continuation
++    parent.run_overnight_calibration_coupled = _wrap_controller(original_controller)
++    if _INJECTED_VISUM is not None:
++        parent.Visum = _INJECTED_VISUM
++    if _INJECTED_COM is not None:
++        parent.COM = _INJECTED_COM
++    _EXTENSION_ACTIVE = True
++
++
++def main():
++    try:
++        _activate_extension()
++        return perf2c.parent.main("FULL")
++    finally:
++        sys.path[:] = _ORIGINAL_SYS_PATH
++
++
++if __name__ == "__main__" or _INJECTED_VISUM is not None or _INJECTED_COM is not None:
++    main()
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ tests/test_v24915p2c_r3_b0018_demand_extension.py	2026-10-20 05:40:02.429956033 +0000
+@@ -0,0 +1,101 @@
++import importlib.util
++from pathlib import Path
++
++import pytest
++
++import r1_15a2_demand_extension_b0018_v24915p2c3 as ext
++from r1_15a2_safety_v24915p2c3 import (
++    preflight_v24915p2c3_overlay, validate_v24915p2c3_config_delta,
++)
++import R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C as perf2c
++
++ROOT = Path(__file__).resolve().parents[1]
++LAUNCHER = ROOT / "R1_15A2_DEMAND_EXTENSION_B0018_CYCLES16_25_V2_4_9_15_PERF2C_R3.py"
++
++
++def _load_launcher():
++    spec = importlib.util.spec_from_file_location("perf2c_r3_extension_launcher_test", LAUNCHER)
++    mod = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(mod)
++    return mod
++
++
++def test_r3_overlay_preflight_passes_and_is_b0018_only():
++    report = preflight_v24915p2c3_overlay(ROOT)
++    assert report["passes"] is True
++    assert report["source_checkpoint"] == "ACCEPTED_B_0018_3d57d34487ba.ver"
++    assert report["outer_cycles"] == [16, 25]
++    assert report["outer_cycle_count"] == 10
++    assert report["supply_locked_during_extension"] is True
++
++
++def test_b0018_authority_is_self_consistent_and_resolves_16_to_25(tmp_path):
++    auth = ext.load_authority(ROOT)
++    source = tmp_path / ext.EXPECTED_CHECKPOINT_NAME
++    source.write_bytes(b"fixture")
++    live = {
++        "semantic_state_hash": auth["semantic_state_hash"],
++        "semantic_hashes": dict(auth["semantic_hashes"]),
++    }
++    assert ext.matches_b0016_live_semantic(live, ROOT) is True
++    resolved = ext.resolve_b0016(source, live, ROOT)
++    assert resolved["accepted_count"] == 18
++    assert resolved["inherited_outer_cycles"] == 15
++    assert resolved["next_outer_cycle"] == 16
++    assert resolved["max_lineage_outer_cycle"] == 25
++    assert resolved["inherited_stationary_cycle_streak"] == 0
++    assert resolved["resume_substep"] == "GENERATION"
++    assert resolved["b0018_demand_extension"]["outer_cycle_count"] == 10
++    assert resolved["b0018_demand_extension"]["supply_locked"] is True
++
++
++def test_wrong_semantic_is_not_accepted_and_never_falls_back(tmp_path):
++    auth = ext.load_authority(ROOT)
++    bad = {
++        "semantic_state_hash": "0" * 64,
++        "semantic_hashes": dict(auth["semantic_hashes"]),
++    }
++    assert ext.matches_b0016_live_semantic(bad, ROOT) is False
++    with pytest.raises(Exception, match="REQUIRES_EXACT_B0018"):
++        ext.resolve_a0009(tmp_path / "whatever.ver", bad, ROOT)
++
++
++def test_extension_config_is_exact_reviewed_delta_and_supply_cannot_unlock():
++    launcher = _load_launcher()
++    base = perf2c._load_config_with_overlay("FULL")
++    child = launcher._load_config_extension("FULL")
++    assert validate_v24915p2c3_config_delta(child, base, ROOT)["passes"] is True
++    assert child["coupled_demand"]["max_outer_cycles"] == 25
++    assert child["coupled_demand"]["min_stationary_cycles"] == 11
++    assert child["backtracking_scales"] == [1.0, 0.5, 0.25, 0.125, 0.0625]
++    assert child["trial_calibration"]["max_trials_per_block"]["GENERATION"] == 5
++    assert 25 - 16 + 1 == 10
++    assert 10 < child["coupled_demand"]["min_stationary_cycles"]
++    assert child["early_exploration_acceptance"]["through_outer_cycle"] == 12
++    assert child["coupled_demand"]["finecdf_td"]["realization_backtracking_scales"] == \
++        base["coupled_demand"]["finecdf_td"]["realization_backtracking_scales"]
++
++
++def test_controller_wrapper_relabels_only_exact_completed_16_25_extension():
++    launcher = _load_launcher()
++    def original(*args, **kwargs):
++        return {
++            "status": "DEMAND_MAX_OUTER_CYCLES_REACHED_SUPPLY_LOCKED",
++            "supply_started": False,
++            "demand_cycles": [{"cycle": i} for i in range(16, 26)],
++        }
++    wrapped = launcher._wrap_controller(original)
++    out = wrapped(None, None, None, None, None)
++    assert out["status"] == "DEMAND_EXTENSION_16_25_COMPLETED_SUPPLY_LOCKED"
++    assert out["demand_extension_complete"] is True
++    assert out["demand_extension_outer_cycles"] == list(range(16, 26))
++    assert out["supply_started"] is False
++    assert out["next_outer_cycle"] == 26
++
++
++def test_controller_wrapper_fails_closed_if_supply_starts():
++    launcher = _load_launcher()
++    def original(*args, **kwargs):
++        return {"status": "X", "supply_started": True, "demand_cycles": []}
++    with pytest.raises(RuntimeError, match="SUPPLY_STARTED_DURING_DEMAND_EXTENSION"):
++        launcher._wrap_controller(original)(None, None, None, None, None)
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ START_HERE_V24915_PERF2C_R3_DEMAND_EXTENSION_CZ.txt	2026-10-20 05:41:41.071248127 +0000
+@@ -0,0 +1,45 @@
++R1_15A2 V24915 PERF2C R3 — B0018 DEMAND EXTENSION 16–25
++
++UCEL
++- Pokracovat z presneho accepted checkpointu B0018.
++- Spustit 10 dalsich coupled Demand outer cyklu: 16,17,...,25.
++- Supply po dobu extension NEPOUSTET.
++- Po cyklu 25 STOP a vyhodnotit, zda doslo k dalsim accepted zmenam a ke zvyseni modelovych intenzit.
++
++ZDROJOVY CHECKPOINT
++ACCEPTED_B_0018_3d57d34487ba.ver
++source run: RUN_20261020_004141_848876
++
++SPUSTENI
++1. Ve Visumu otevri presne ACCEPTED_B_0018_3d57d34487ba.ver.
++2. Rozbal cely R3 ZIP do nove prazdne slozky.
++3. Ve Visumu spust pouze:
++   R1_15A2_DEMAND_EXTENSION_B0018_CYCLES16_25_V2_4_9_15_PERF2C_R3.py
++
++NEMENIT / NESPOUSTET
++- Nepoustej R2 SUPPLY_ONLY launcher.
++- Nepoustej znovu B0016 continuation.
++- Neprejmenovavej B0018 checkpoint.
++
++CO SE MENI
++- outer Demand rozsah je presne 16–25 (10 cyklu)
++- inherited stationary streak se resetuje na 0
++- Supply je po dobu extension zamceny
++- Generation backtracking: 1.0, 0.5, 0.25, 0.125, 0.0625
++- Generation max trials: 5
++
++CO SE NEMENI
++- Generation candidate direction/math
++- GEH/IDP acceptance thresholds
++- guard policy
++- TD FineCDF matematika a realization scales
++- assignment metoda/gap
++- rollback
++- path-cache semantics
++- snapshot semantics PERF2C/R2
++
++OCEKAVANY TERMINALNI STATUS
++DEMAND_EXTENSION_16_25_COMPLETED_SUPPLY_LOCKED
++
++Pokud budou behem extension prijaty zmeny, pouzij po cyklu 25 posledni accepted B-checkpoint.
++Pokud nebude prijata zadna zmena, zustane autoritativni B0018.
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ V24915_PERF2C_R3_IMPLEMENTATION_AND_TEST_REPORT.md	2026-10-20 05:41:56.274231670 +0000
+@@ -0,0 +1,43 @@
++# V24915 PERF2C R3 — B0018 Demand extension 16–25
++
++## Scope
++
++R3 je uzce ohranicena continuation vetev nad PERF2C R2. Neopakuje Demand od B0016 a nespousti Supply. Vychozim stavem je presne semantic B0018 `ACCEPTED_B_0018_3d57d34487ba.ver` z runu `RUN_20261020_004141_848876`.
++
++## Reviewed delta
++
++- `next_outer_cycle = 16`
++- `max_lineage_outer_cycle = 25`
++- 10 outer cycles: 16..25
++- inherited stationary streak: 2 -> runtime reset 0
++- Supply lock: ano, po celou extension
++- Generation backtracking scales: `[1.0, 0.5, 0.25]` -> `[1.0, 0.5, 0.25, 0.125, 0.0625]`
++- Generation max trials: 3 -> 5
++
++Generation direction/math, GEH/IDP acceptance, guards, TD math, TD realization scales, assignment, rollback, path cache a PERF2C snapshot semantics se nemeni.
++
++Supply lock je realizovan fail-closed: `min_stationary_cycles=11`, zatimco exact continuation muze vykonat maximalne 10 cyklu (16..25) a inherited streak je vynulovan. Proto existujici coupled controller nemuze behem extension Supply odemknout. Wrapper navic explicitne failne, pokud by `supply_started=True` presto nastalo.
++
++## B0018 authority
++
++Semantic state hash:
++`cef9b4247114a01e54d45b885f3321a0a22387fe67fc7c1dfdd44f9d1134590e`
++
++Snapshot diagnostic state hash:
++`7c5c4ff0b08932cdfde6bd1362f5d32b224cf5ef2ca02938fcfa480789680b9a`
++
++Accepted count at resume: 18.
++
++Raw `.ver` SHA je pouze provenance; restart acceptance je semantic. Presny filename B0018 je ale povinny.
++
++## Tests
++
++- R3 focused: 6 passed
++- R3 + R2/PERF2C/R5/continuation/release focused: 42 passed, 1 skipped
++- full regression: 893 passed, 4 skipped, 0 failed
++- compileall: PASS
++- combined deployment preflight: PASS, 111 files checked
++- combined runtime preflight: PASS
++- exact extension config delta gate: PASS
++
++`real_visum_tested = false` pro tuto R3 extension. Live B0018 evidence pochazi z predchoziho runu, ale samotne cykly 16..25 jeste nebyly spusteny.
+--- /dev/null	2026-10-20 02:02:54.000705602 +0000
++++ V24915_PERF2C_R3_MACHINE_STATUS.json	2026-10-20 05:41:41.075175957 +0000
+@@ -0,0 +1,20 @@
++{
++  "schema": "R1_15A2_V24915_PERF2C_R3_MACHINE_STATUS_V1",
++  "status": "OFFLINE_VERIFIED_READY_FOR_LIVE_B0018_DEMAND_EXTENSION",
++  "release": "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_16_25_20261020",
++  "source_checkpoint": "ACCEPTED_B_0018_3d57d34487ba.ver",
++  "source_accepted_count": 18,
++  "next_outer_cycle": 16,
++  "last_outer_cycle": 25,
++  "extension_outer_cycles": 10,
++  "supply_locked_during_extension": true,
++  "generation_backtracking_scales": [1.0, 0.5, 0.25, 0.125, 0.0625],
++  "generation_max_trials_per_block": 5,
++  "full_regression": {"passed": 893, "skipped": 4, "failed": 0},
++  "compileall": true,
++  "deployment_preflight": true,
++  "runtime_preflight": true,
++  "real_visum_tested": false,
++  "production_ready": false,
++  "calibration_complete": false
++}

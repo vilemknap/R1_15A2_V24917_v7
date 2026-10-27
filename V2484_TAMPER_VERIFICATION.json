@@ -1,0 +1,141 @@
+{
+  "schema": "R1_15A2_V2484_PACKAGE_VERIFICATION_V1",
+  "status": "FAILED",
+  "release": "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
+  "root": "/mnt/data/v2484_tamper",
+  "manifest_sha256": "ef71750d853f4f6fbbb6935efd69dc4a93934ae727864dfedf842cae7b9880ec",
+  "file_count": 447,
+  "errors": [
+    "SIZE:R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_4.py"
+  ],
+  "config_validation": {
+    "passes": true,
+    "base_contract": {
+      "passes": true,
+      "base_contract": {
+        "passes": true,
+        "minimum_confirmed_stationary_cycles": 2
+      },
+      "bulk_link_read": true,
+      "adaptive_page_size": 2048,
+      "addval_step_units": [
+        4,
+        2,
+        1
+      ],
+      "generation_step_stages": [
+        "EXPLORE",
+        "FULL_VERIFY"
+      ],
+      "progressive_td_stages": [
+        "EXPLORE",
+        "REFINE",
+        "FULL_VERIFY"
+      ],
+      "path_epoch_limits": {
+        "DEMAND": 4,
+        "SUPPLY": 8
+      },
+      "minimum_confirmed_stationary_cycles": 2
+    },
+    "persistent_path_cache": true,
+    "retained_epoch_checkpoints": 3,
+    "max_total_cache_gib": 24.0,
+    "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
+    "legacy_import": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
+    "zero_share_residual_policy": {
+      "enabled": true,
+      "max_dseg_relative_volume": 0.01,
+      "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
+      "requires_existing_geometry": true,
+      "requires_path_volume_parity_pass": true,
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+    },
+    "explicit_predecessor_read_compatibility": {
+      "enabled": true,
+      "target_release": "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
+      "allowed_contract_differences": [
+        "config_sha256",
+        "path_implementation_files",
+        "contract_hash"
+      ],
+      "predecessors": [
+        {
+          "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+          "source_config_sha256": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "c753e82075e2b521fcd53170f9f2d36c80ba151eb2bd0b6ea07b5cba6103b525",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+          "source_config_sha256": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        }
+      ],
+      "policy": "READ_ONLY_EXACT_PREDECESSOR_STORE_WITH_ALL_NONCONSUMER_CONTRACT_FIELDS_EXACT"
+    }
+  },
+  "launcher": {
+    "release": "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
+    "implementation_hash": "b1eda31452a1e52bfbbfad7ee8e9a904295da91890e7c4732d0f270b9930ab72",
+    "config_sha256": "4137a6e922147cb1810d9249d835a995fa211723de29ed2098bfb90555c1695d",
+    "zero_share_policy": {
+      "enabled": true,
+      "max_dseg_relative_volume": 0.01,
+      "action": "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
+      "requires_existing_geometry": true,
+      "requires_path_volume_parity_pass": true,
+      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+    },
+    "predecessor_cache_compatibility": {
+      "enabled": true,
+      "target_release": "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
+      "allowed_contract_differences": [
+        "config_sha256",
+        "path_implementation_files",
+        "contract_hash"
+      ],
+      "predecessors": [
+        {
+          "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+          "source_config_sha256": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "c753e82075e2b521fcd53170f9f2d36c80ba151eb2bd0b6ea07b5cba6103b525",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        },
+        {
+          "source_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+          "source_config_sha256": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+          "source_path_implementation_files": {
+            "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
+            "r1_15a2_trial_adapter_v240.py": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+            "r1_15a2_persistent_path_cache_v248.py": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045"
+          }
+        }
+      ],
+      "policy": "READ_ONLY_EXACT_PREDECESSOR_STORE_WITH_ALL_NONCONSUMER_CONTRACT_FIELDS_EXACT"
+    }
+  },
+  "run_root_hotfix": {
+    "mode": "PRIOR_RUN_TREE_NORMALIZED",
+    "base": "/mnt/data/v2484_tamper/.v2484_contract_check/PROJECT",
+    "expected": "/mnt/data/v2484_tamper/.v2484_contract_check/PROJECT",
+    "normalized": true,
+    "observed_v2483_failed_destination_length": 278,
+    "observed_v2484_normalized_destination_length": 208
+  },
+  "compileall_pass": true,
+  "tests": null,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "elapsed_seconds": 0.474
+}

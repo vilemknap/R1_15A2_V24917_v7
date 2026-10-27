@@ -1,0 +1,25 @@
+{
+  "bootstrapfix_revision": "BOOTSTRAPFIX1_20261022",
+  "compileall_passes": true,
+  "focused_tests": "25 passed",
+  "full_tests": "1000 passed, 4 skipped, 0 failed",
+  "parent_perf2_deployment_passes": true,
+  "perf2c_overlay_passes": true,
+  "production_ready": false,
+  "protected_parent_files": {
+    "R1_15A2_VISUM_COM_PREFLIGHT_V2_3_6_INLINE.py": {
+      "current_sha256": "55c5ad82ac3c3e02eba02e80220eb7e8afb9fd90cff19c07e68112a2bb0813f6",
+      "original_sha256": "55c5ad82ac3c3e02eba02e80220eb7e8afb9fd90cff19c07e68112a2bb0813f6",
+      "unchanged": true
+    },
+    "r1_15a2_com_compat.py": {
+      "current_sha256": "a06924770db29ea9b5726c68f9be99a4d2c5730545705a15d70b2dc41d3995d8",
+      "original_sha256": "a06924770db29ea9b5726c68f9be99a4d2c5730545705a15d70b2dc41d3995d8",
+      "unchanged": true
+    }
+  },
+  "real_visum_retest_after_fix": false,
+  "runtime_manifest_passes": true,
+  "runtime_manifest_rows": 45,
+  "schema": "R1_15A2_V24916_BOOTSTRAPFIX1_VERIFICATION_V1"
+}

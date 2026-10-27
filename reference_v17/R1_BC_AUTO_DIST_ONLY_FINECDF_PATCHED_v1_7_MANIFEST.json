@@ -1,0 +1,26 @@
+{
+  "schema": "R1_BC_FINECDF_PATCHED_V1_7",
+  "files": [
+    {
+      "name": "R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7.py",
+      "bytes": 406388,
+      "sha256": "2160f79fbd5de1645635327cb46e4a7daf6a14304af3e683d4f5dce98ebccf82"
+    },
+    {
+      "name": "README_R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7.txt",
+      "bytes": 4141,
+      "sha256": "b4f82964706eff971dc31f2ae55174abae7f242ac9f65cfc70e9ea47973397c2"
+    },
+    {
+      "name": "R1_BC_FINECDF_PATCHED_v1_7_PATCH_PROOF.json",
+      "bytes": 1743,
+      "sha256": "0f270aed6b2eaf416f9ceb23e14e3599b8b6730a3a7b4c649411238ac8a316e2"
+    },
+    {
+      "name": "R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_v1_7_TEST_REPORT.json",
+      "bytes": 1166,
+      "sha256": "22e99deba5bc5b74ad6031ce64fee3e3c53f484c975c5e28d4c68808c1673836"
+    }
+  ],
+  "package_sha256_reference": "Independent file SHA256 below"
+}

@@ -1,0 +1,12 @@
+{
+  "changed_parent_runtime_files": 0,
+  "passes": true,
+  "perf2c_overlay_preflight_passes": true,
+  "removed_files": 0,
+  "reviewed_parent_file": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF2C_FRESH100_PROFILE488_FRESHCACHE_SAVEFIX1_NO_WALLCLOCK.py",
+  "reviewed_parent_modified": false,
+  "reviewed_parent_sha256": "c1aa1f4883810cb2c0ad276f2b53b854b4f7329bf543ecee12865a08dd020441",
+  "schema": "R1_15A2_V24916_FRESH0_PATHFIX3_PARENT_SHA_AUDIT_V1",
+  "shortroot_parent_is_additive_copy": "r1_15a2_fresh0_shortroot_parent_v24916.py",
+  "v24915_perf2_deployment_preflight_passes": true
+}

@@ -1,0 +1,88 @@
+{
+  "created_utc": "2026-10-19T23:17:45.586106+00:00",
+  "cross_call_cache": false,
+  "exact_payload_parity": true,
+  "exact_state_hash_parity": true,
+  "first_live_call_shadow_parity": true,
+  "matrix_getvalues": {
+    "legacy": 3,
+    "perf2c": 3
+  },
+  "measured_live_wall_time_speedup": null,
+  "note": "Synthetic COM-call benchmark only. Full matrix values and all semantic hashes are unchanged.",
+  "operation_attribute_reads": {
+    "ACTIVE": {
+      "legacy": 6,
+      "perf2c": 3
+    },
+    "COMMENT": {
+      "legacy": 6,
+      "perf2c": 3
+    },
+    "OPERATIONTYPE": {
+      "legacy": 6,
+      "perf2c": 3
+    }
+  },
+  "operations_getall": {
+    "legacy": 2,
+    "perf2c": 1
+  },
+  "public_snapshot_keys_legacy": [
+    "addval1",
+    "addval_hash",
+    "dseg_hash",
+    "dseg_map",
+    "fixed_link_hash",
+    "generation_hash",
+    "generation_values",
+    "matrices",
+    "matrix_hash",
+    "operations_hash",
+    "state_hash",
+    "td_hash",
+    "td_values"
+  ],
+  "public_snapshot_keys_perf2c": [
+    "addval1",
+    "addval_hash",
+    "dseg_hash",
+    "dseg_map",
+    "fixed_link_hash",
+    "generation_hash",
+    "generation_values",
+    "matrices",
+    "matrix_hash",
+    "operations_hash",
+    "state_hash",
+    "td_hash",
+    "td_values"
+  ],
+  "release": "R1_15A2_V2_4_9_15_PERF2C_SINGLE_PASS_EXACT_SNAPSHOT_20261020",
+  "schema": "R1_15A2_V24915_PERF2C_SYNTHETIC_READ_COUNT_BENCHMARK_V1",
+  "state_hash": "6aa9d55ad6cb0d7ab0fdb8f11d97559fe74458f2a5b2338ec63978f3e2acf153",
+  "unused_dseg_metadata_reads": {
+    "MODE": {
+      "legacy": 3,
+      "perf2c": 0
+    },
+    "NAME": {
+      "legacy": 3,
+      "perf2c": 0
+    }
+  },
+  "unused_matrix_metadata_reads": {
+    "CODE": {
+      "legacy": 6,
+      "perf2c": 0
+    },
+    "SUM": {
+      "legacy": 3,
+      "perf2c": 0
+    }
+  },
+  "zone_attribute_bulk_reads": {
+    "legacy": 10,
+    "perf2c": 10
+  }
+}

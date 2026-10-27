@@ -1,0 +1,76 @@
+{
+  "schema": "R1_15A2_V24917_TIMING_V1",
+  "label": "GENERATION",
+  "note": "inclusive wall seconds; nested stages (e.g. assignment inside rollback) overlap",
+  "block": {
+    "snapshot": {
+      "calls": 4,
+      "seconds": 56.787
+    },
+    "generation_design": {
+      "calls": 1,
+      "seconds": 973.248
+    }
+  },
+  "cumulative": {
+    "snapshot": {
+      "calls": 13,
+      "seconds": 204.45607749998453,
+      "max": 33.190849999999045
+    },
+    "save_version": {
+      "calls": 3,
+      "seconds": 7.487718900003529,
+      "max": 2.8120331000027363
+    },
+    "procedure_sequence": {
+      "calls": 1,
+      "seconds": 5.615547299996251,
+      "max": 5.615547299996251
+    },
+    "evidence_zip": {
+      "calls": 6,
+      "seconds": 0.47443820000626147,
+      "max": 0.10517529999924591
+    },
+    "diag_12d": {
+      "calls": 3,
+      "seconds": 64.44247349999205,
+      "max": 62.19118339999841
+    },
+    "diag_11d": {
+      "calls": 3,
+      "seconds": 87.46190920000663,
+      "max": 39.44106770000508
+    },
+    "diagnostics_total": {
+      "calls": 1,
+      "seconds": 161.4448177000013,
+      "max": 161.4448177000013
+    },
+    "checkpoint_accepted": {
+      "calls": 1,
+      "seconds": 17.85439900000347,
+      "max": 17.85439900000347
+    },
+    "checkpoint_best_so_far": {
+      "calls": 1,
+      "seconds": 0.017893999996886123,
+      "max": 0.017893999996886123
+    },
+    "generation_design": {
+      "calls": 1,
+      "seconds": 973.2481161000032,
+      "max": 973.2481161000032
+    }
+  },
+  "savings": {
+    "sha_hits": 20,
+    "deferred_kept": 0,
+    "deferred_skipped": 0,
+    "hardlinks": 1,
+    "copies": 0,
+    "iz_cache_hits": 12,
+    "iz_cache_verifies": 1
+  }
+}

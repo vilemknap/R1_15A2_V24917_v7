@@ -1,0 +1,9 @@
+﻿DOMAIN;LEGACY_READ;PERF2C_READ;STATUS;PROOF
+LINKS;read_links();one bulk/scalar link payload per snapshot;UNCHANGED;ADDVAL1 and fixed-link values share one payload
+DSEG_BINDINGS;rt.list_dsegs();CODE plus ODMatrix.NO only;OPTIMIZED;NAME/MODE and matrix CODE/SUM are not published by snapshot
+MATRICES;GetValues once per matrix;GetValues once per matrix;UNCHANGED;full float64-le SHA and validity gates preserved
+GENERATION;one GetMultiAttValues per generation attribute;same;UNCHANGED;no weakening or cross-call reuse
+TD_PARAMETERS;one Operations.GetAll traversal;shared traversal;OPTIMIZED;same DStrat and b/c resolution logic
+OPERATION_INVENTORY;second Operations.GetAll traversal;shared TD traversal;OPTIMIZED;runtime ACTIVE/TYPE/COMMENT/NAME preserved
+CROSS_CALL_CACHE;none;none;UNCHANGED;per-call context destroyed on return
+FIRST_CALL_PARITY;none;legacy plus optimized exact comparison once;SAFETY_COST;mismatch permanently falls back to parent snapshot

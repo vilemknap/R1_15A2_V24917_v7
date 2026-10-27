@@ -1,0 +1,26 @@
+{
+  "V24917_RUNTIME_MANIFEST.json": {
+    "items": 59,
+    "errors": []
+  },
+  "GENFIX2_PAYLOAD_MANIFEST.json": {
+    "items": 1222,
+    "errors": []
+  },
+  "V24916_PERF2C_RUNTIME_MANIFEST.json": {
+    "items": 50,
+    "errors": []
+  },
+  "DIAGFAST_V1_BASE_MANIFEST.json": {
+    "items": 1059,
+    "errors": []
+  },
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "items": 96,
+    "errors": []
+  },
+  "V24916_COMBUSY_TD09C16_PACKAGE_MANIFEST.json": {
+    "items": 1058,
+    "errors": []
+  }
+}

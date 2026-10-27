@@ -1,0 +1,34 @@
+{
+  "schema": "R1_15A2_V2483_CHANGED_FILES_V1",
+  "parent_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+  "release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+  "added": [
+    "R1_15A2_CONFIG_V2_4_8_3.json",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_3.py",
+    "README_R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_CZ.md",
+    "SOURCE_PATCH_V2482_TO_V2483.diff",
+    "START_HERE_V2483_CZ.txt",
+    "V2483_COMPILEALL.log",
+    "V2483_FULL_PYTEST.log",
+    "V2483_RELEASE_STATUS.json",
+    "r1_15a2_safety_v2483.py",
+    "tests/test_v2483_cache_compat.py"
+  ],
+  "modified": [
+    "r1_15a2_persistent_path_cache_v248.py",
+    "r1_15a2_trial_adapter_v240.py"
+  ],
+  "removed": [],
+  "modified_details": [
+    {
+      "path": "r1_15a2_persistent_path_cache_v248.py",
+      "parent_sha256": "2c891fc4e5238119af92a03487651aae224a9ce51f8e7b824008162bf8f60045",
+      "current_sha256": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v240.py",
+      "parent_sha256": "33c304cc19cdb8c698d0dc0103537c122599ea43949b6329c8d67cc8c5f324f1",
+      "current_sha256": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484"
+    }
+  ]
+}

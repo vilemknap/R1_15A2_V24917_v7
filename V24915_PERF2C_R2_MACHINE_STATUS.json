@@ -1,0 +1,31 @@
+{
+  "calibration_complete": false,
+  "combined_deployment_files": 107,
+  "compileall": "PASS",
+  "demand_replay_required": false,
+  "direct_supply_resume_checkpoint": "ACCEPTED_B_0018_3d57d34487ba.ver",
+  "direct_supply_resume_requires_demand_converged_authority": true,
+  "focused_tests_passed": 37,
+  "full_regression": {
+    "failed": 0,
+    "passed": 887,
+    "skipped": 4
+  },
+  "latent_reopen_state_fix": [
+    "cal_indices",
+    "protected"
+  ],
+  "live_failure_root_cause": "SQLITE_QUERY_ONLY_BLOCKED_CONNECTION_LOCAL_TEMP_TABLE_ON_MODE_RO_PERSISTENT_CACHE",
+  "package_revision": "V24915_PERF2C_R2_SUPPLY_TEMP_SQLITE_HOTFIX",
+  "parent_runtime_manifest": {
+    "failures": 0,
+    "files": 101
+  },
+  "persistent_main_database_mode": "URI_MODE_RO",
+  "persistent_main_database_writable": false,
+  "production_ready": false,
+  "real_visum_tested": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2C_R2_SINGLE_PASS_EXACT_SNAPSHOT_SUPPLY_TEMP_HOTFIX_20261020",
+  "schema": "R1_15A2_V24915_PERF2C_R2_MACHINE_STATUS_V1",
+  "temp_schema": "MEMORY_CONNECTION_LOCAL"
+}

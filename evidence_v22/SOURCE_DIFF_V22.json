@@ -1,0 +1,162 @@
+{
+  "parent_zip_sha256": "8bb9b461424ea6d1780791bbc949d70ba4e61ae2c613298cd5071f2170a9bcbf",
+  "baseline_file_count": 30,
+  "baseline_inventory": {
+    ".zip": {
+      "size_bytes": 1011848,
+      "sha256": "39d8c98805a21c0163932a85bc6b2879f7aedc9e866f8733cbcd83b041cd6bd8"
+    },
+    "AUDIT_REPORT_V2_1.md": {
+      "size_bytes": 3718,
+      "sha256": "eaf62202d0d761e6387123faf6428566a61bcbfa7dcf7939319bc69c4d698795"
+    },
+    "CHANGELOG_V2_1.md": {
+      "size_bytes": 742,
+      "sha256": "f5689d55d87c1e04ca5edb9b285cd83e002f158f223514b52757f09a746ff563"
+    },
+    "LIVE_VISUM_FIRST_RUN_CHECKLIST_V2_1.md": {
+      "size_bytes": 1243,
+      "sha256": "fcebbd1afcb8daf5f225c4261d86b647e09b1421666346b5de677401ef019cc7"
+    },
+    "MANIFEST.json": {
+      "size_bytes": 4989,
+      "sha256": "82482f8c70f204f7479c6f0c75084e6728b42d04dab1bb773970144bbe6b07d4"
+    },
+    "METHOD_SPEC_R1_15A2_V2_1.md": {
+      "size_bytes": 2307,
+      "sha256": "a563afcd7b9a3e86136c7ac2ccdec6d861ac9a9127110ae567caed97c8e151aa"
+    },
+    "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py": {
+      "size_bytes": 40950,
+      "sha256": "e632bd12866cedfa84a5f181286aec3e69ee9c3291a46c9064a2156d9b7095e0"
+    },
+    "R1_15A2_CONFIG_V2_1.json": {
+      "size_bytes": 6508,
+      "sha256": "879f3f1f459e956cc13b29e45e0e2f093da37ba8ff9ac4329314889c14302bf8"
+    },
+    "README_R1_15A2_V2_1.md": {
+      "size_bytes": 3712,
+      "sha256": "c6e5611aedbdab6805d64a60d86147fcaf0eaf52d8a919bbf973ff5bfc07f2da"
+    },
+    "REQUIREMENTS.txt": {
+      "size_bytes": 141,
+      "sha256": "f62d616acee3080757c1c06298852db0a6ab776f5c268a67960799d4ae8e80da"
+    },
+    "SHA256SUMS.txt": {
+      "size_bytes": 2805,
+      "sha256": "8ac394b1ffc890744c2e204a8f69982b87047c30f2cef4bd6bca6e4b32637586"
+    },
+    "STATIC_AUDIT.json": {
+      "size_bytes": 1368,
+      "sha256": "cf6dbd731651e5b77e1eaf679b7cd28197406270cb9dea79da8e3550784b8904"
+    },
+    "SYNTHETIC_EVIDENCE/00_SYNTHETIC_DEMO_REPORT.json": {
+      "size_bytes": 4738,
+      "sha256": "ffc4c182e28ed0abe00a96fea289f5196729a6517ce42ae33c1fefa40ec10ffb"
+    },
+    "SYNTHETIC_EVIDENCE/SYNTHETIC_RUN_LOG.txt": {
+      "size_bytes": 4738,
+      "sha256": "ffc4c182e28ed0abe00a96fea289f5196729a6517ce42ae33c1fefa40ec10ffb"
+    },
+    "TEST_RESULTS.txt": {
+      "size_bytes": 1546,
+      "sha256": "0470610a2a77dbe42fc0bbf3371618c1d3424519d771ccfee3e793b198d27332"
+    },
+    "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json": {
+      "size_bytes": 1285,
+      "sha256": "fbb340f4c9e306f44cd4da97d93999f9f9db0439f7e37a7cde09aee643e75bc2"
+    },
+    "authorities/R1_LONG_COMPONENT_AUTHORITY_TEMPLATE.json": {
+      "size_bytes": 452,
+      "sha256": "bad29ece7c8479ed00ce66a159bad60aa4d01ce7652c63b0c53b237a83820658"
+    },
+    "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json": {
+      "size_bytes": 2442,
+      "sha256": "a5008321c3a3ba65e8a7bd81c6b6591475afabd0aa7665295dd82ba4cd7b46bf"
+    },
+    "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py": {
+      "size_bytes": 1194943,
+      "sha256": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e"
+    },
+    "helpers/R1_12D_CSD2022_GEH_FORENSIC_444_PROCSEQ_EMBEDDED.py": {
+      "size_bytes": 81615,
+      "sha256": "5600be71e94d488da03a046e66a7a8c8a9d2deee0f7f9877c8eebb172a6e1249"
+    },
+    "r1_15a2_core.py": {
+      "size_bytes": 81281,
+      "sha256": "3a9811ffc5044a1d60b7ee6b6f367aa544331d817716c2e1f88a6d344faf3343"
+    },
+    "r1_15a2_multiblock.py": {
+      "size_bytes": 36981,
+      "sha256": "1412f910cc60b8edd5c6bb23ccca89b62d6d92986b7723ffe46652bd0221e5c6"
+    },
+    "r1_15a2_runtime_v1.py": {
+      "size_bytes": 73594,
+      "sha256": "856245c89a3f313b701b9dc5a3d58006ea4a48b62f9fdbc947f562bc200beaa6"
+    },
+    "r1_15a2_visum_parameters.py": {
+      "size_bytes": 13280,
+      "sha256": "b7a325bc7cd3ee0bb2427623a9041e13dd09eb53b31e3ab18137f5c8f2367472"
+    },
+    "tests/conftest.py": {
+      "size_bytes": 2334,
+      "sha256": "70354284a8accf97d8fc9249b979aa37a82d0bb77b263c811638c5a2cdca822d"
+    },
+    "tests/run_synthetic_e2e.py": {
+      "size_bytes": 6293,
+      "sha256": "0cff73b1c056e679b1b3dbfd69f5f482003f60878ade2d47a31c64731d6706db"
+    },
+    "tests/test_acceptance.py": {
+      "size_bytes": 2283,
+      "sha256": "3fdc535eab6d2b8052dc9cbc9ebc128f9ca65cfa77590e8dc7c2e1a9074b0d53"
+    },
+    "tests/test_core_deep.py": {
+      "size_bytes": 5582,
+      "sha256": "854d2a2ed1b9dd8e88a0bea54479861f2c1ac9be39ccf15cc2171eea59f14f9a"
+    },
+    "tests/test_multiblock.py": {
+      "size_bytes": 8450,
+      "sha256": "3bcb480645bb0799bf650479c1fe5901af3506c79d668bc348533bb0832ec027"
+    },
+    "tests/test_visum_and_master.py": {
+      "size_bytes": 6292,
+      "sha256": "673eb63512a1426ce8065022fd025264be9e1e9384b1e643656e890fbd5ffca0"
+    }
+  },
+  "modified": [
+    "r1_15a2_runtime_v1.py"
+  ],
+  "added": [
+    "CHANGELOG_V2_2.md",
+    "LIVE_VISUM_FIRST_RUN_CHECKLIST_V2_2.md",
+    "METHOD_SPEC_R1_15A2_V2_2.md",
+    "R1_15A2_CONFIG_V2_2.json",
+    "R1_15A2_SUPPLY_DEMAND_MASTER_V2_2.py",
+    "README.md",
+    "README_R1_15A2_V2_2.md",
+    "VERIFY_PACKAGE_V2_2.py",
+    "authorities/IMPEDANCE_FUNCTIONS.csv",
+    "authorities/VDF_REGISTRY.csv",
+    "authorities/VDF_TYPE_MAPPING.csv",
+    "evidence_v22/PROTECTED_SOURCE_PARITY.json",
+    "evidence_v22/STATIC_AUDIT_V22.json",
+    "provenance/V21_MANIFEST.json",
+    "provenance/V21_SHA256SUMS.txt",
+    "provenance/V21_STATIC_AUDIT.json",
+    "provenance/V21_TEST_RESULTS.txt",
+    "r1_15a2_controller_v22.py",
+    "r1_15a2_supply.py",
+    "r1_15a2_supply_visum.py",
+    "tests/run_v22_synthetic_controller_demo.py",
+    "tests/synthetic_v22_adapter.py",
+    "tests/test_controller_v22.py",
+    "tests/test_supply_v22.py",
+    "tests/test_supply_visum_v22.py"
+  ],
+  "removed_or_relocated": [
+    "MANIFEST.json",
+    "SHA256SUMS.txt",
+    "STATIC_AUDIT.json",
+    "TEST_RESULTS.txt"
+  ]
+}

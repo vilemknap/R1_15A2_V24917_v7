@@ -1,0 +1,14 @@
+{
+  "test_generated_historical_artifacts_restored": [
+    "V24916_LAST_BOOTSTRAP_FAILURE.json",
+    "V24916_LAST_RUNS_LOCATION.txt",
+    "evidence/A04_11d_ignored.json",
+    "evidence/A05_unbounded_matrix_drift.json",
+    "evidence/A06_td_11d_ignored.json",
+    "evidence/A07_duplicate_profiles.json",
+    "evidence/A08_supply_dirty_assignment.json",
+    "evidence/A09_supply_io_escapes_rollback.json",
+    "evidence/A11_guard_error_fails_open.json",
+    "evidence/A12_fallback_bypasses_mobility.json"
+  ]
+}

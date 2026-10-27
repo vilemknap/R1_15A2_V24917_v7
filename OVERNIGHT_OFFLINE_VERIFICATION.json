@@ -1,0 +1,17 @@
+{
+  "schema": "R1_15A2_V238_OVERNIGHT_10H_OFFLINE_VERIFICATION_V1",
+  "status": "OFFLINE_PASS_NOT_LIVE_VISUM",
+  "regression_tests": 412,
+  "regression_test_result": "PASS",
+  "deadline_cooperative_limit_seconds": 36000,
+  "deadline_test": "PASS",
+  "manual_stop_test": "PASS",
+  "design_only_apply_false": "PASS",
+  "assignment_operations_empty": "PASS",
+  "epsilon_0_005": "PASS",
+  "protected_file_count": 30,
+  "python_code_unchanged_from_V238": true,
+  "change_only_config_path": "/two_mode/max_runtime_seconds",
+  "full_runtime_in_live_visum_tested": false,
+  "license_os_sleep_restart_and_disk_requirements_external": true
+}

@@ -1,0 +1,29 @@
+{
+  "status": "V232_CSD408_CITY90_OFFLINE_VERIFIED_LIVE_PENDING",
+  "parent_version": "V2.3.1",
+  "release_version": "2.3.2",
+  "approved_observations": {
+    "CSD_CAL": 372,
+    "CSD_VALID": 36,
+    "CITY_CAL": 90,
+    "CITY_INACTIVE_EXCLUDED": 37,
+    "total": 498
+  },
+  "observed_source": "R1_OBS_RPDI",
+  "already_converted_passenger_cars": true,
+  "additional_conversion": false,
+  "city_model_scope": "SUM_OF_TWO_PHYSICAL_DIRECTIONAL_LINK_FLOWS",
+  "city_weight": 0.9,
+  "csd_weight": 1.0,
+  "city_authority_sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
+  "all_tests_passed": 165,
+  "live_visum_tested": false,
+  "production_ready": false,
+  "default_apply": false,
+  "live_gates_pending": [
+    "90 CITY reverse physical links",
+    "CSD mapping 3 reviews and 2 contradictory collocated count pairs",
+    "live actual paths/persistence/convergence",
+    "frozen OD/supply state and verified rollback"
+  ]
+}

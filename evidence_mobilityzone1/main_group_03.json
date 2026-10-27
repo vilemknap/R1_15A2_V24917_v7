@@ -1,0 +1,33 @@
+{
+  "group": 3,
+  "files": [
+    "tests/test_v24916_demand_evidence.py",
+    "tests/test_v24916_dynamic_assignment_skims.py",
+    "tests/test_v24916_fastcal1_policy.py",
+    "tests/test_v24916_flowbundle_targeting.py",
+    "tests/test_v24916_fresh0_isolated.py",
+    "tests/test_v24916_fresh0_pathfix3.py",
+    "tests/test_v24916_integrated_hotfixes.py",
+    "tests/test_v24916_perf2c_adapter_inheritance.py",
+    "tests/test_v24916_perf2c_integration.py",
+    "tests/test_v24916_profile488_gatefix1.py",
+    "tests/test_v24916_td09c_native16_compat.py",
+    "tests/test_v24916_universal_ver_preflight.py",
+    "tests/test_v24917_boundary_generation.py",
+    "tests/test_v24917_boundary_pa.py",
+    "tests/test_v24917_combusy2.py",
+    "tests/test_v24917_fast_trial_assignment.py",
+    "tests/test_v24917_generation_state_genfix1.py",
+    "tests/test_v24917_generation_transaction_genfix1.py",
+    "tests/test_v24917_genfix1_adapter.py",
+    "tests/test_v24917_genfix2.py",
+    "tests/test_v24917_install_chain.py",
+    "tests/test_v24917_intrazonal_penalty.py",
+    "tests/test_v24917_longguard1.py",
+    "tests/test_v24917_mobility_guard.py",
+    "tests/test_v24917_mobilityfix1.py"
+  ],
+  "exit_code": 0,
+  "seconds": 7.905523990000006,
+  "expected_cases": 289
+}

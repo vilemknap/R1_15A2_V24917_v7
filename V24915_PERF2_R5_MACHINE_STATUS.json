@@ -1,0 +1,33 @@
+{
+  "acceptance_changed": false,
+  "accepted_count_at_resume": 16,
+  "assignment_method_changed": false,
+  "candidate_math_changed": false,
+  "compileall": "PASS",
+  "early_exploration_through_cycle": 12,
+  "finecdf_inner_runtime_seconds": 14400.0,
+  "finecdf_max_iterations": 35,
+  "finecdf_max_td_evaluations": 180,
+  "global_runtime_hours": 18.0,
+  "global_runtime_seconds": 64800.0,
+  "max_outer_cycles": 50,
+  "min_stationary_cycles": 2,
+  "package_revision": "V24915_PERF2_R5_OVERNIGHT50_B0016_CONTINUATION",
+  "post_cycle_12_acceptance": "EXISTING_V2495_FALLBACK_UNCHANGED",
+  "production_ready": false,
+  "real_visum_tested": false,
+  "resume_outer_cycle": 11,
+  "resume_substep": "TD_FINECDF_V17",
+  "runtime_manifest_files_checked": 101,
+  "schema": "R1_15A2_V24915_PERF2_R5_MACHINE_STATUS_V1",
+  "source_checkpoint": "ACCEPTED_B_0016_d1211a44ac4d.ver",
+  "status": "R5_OFFLINE_VERIFIED_READY_FOR_LIVE_OVERNIGHT_B0016",
+  "supply_max_cycles": 100,
+  "tests": {
+    "focused_r5_passed": 5,
+    "full_failed": 0,
+    "full_passed": 856,
+    "full_skipped": 4,
+    "perf2_subset_passed": 63
+  }
+}

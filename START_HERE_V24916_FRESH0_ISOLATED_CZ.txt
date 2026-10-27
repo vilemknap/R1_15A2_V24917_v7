@@ -1,0 +1,36 @@
+V24916 FRESH0 UNIVERSAL_VER ISOLATED ACTIVE TARGETING - START HERE
+
+1. Spust samostatnou instanci Visumu. Paralelni V24915 muze bezet v jinem procesu.
+2. Otevri libovolny .ver, ktery chces pouzit jako novou baseline. Neni pozadovan zadny predem znamy semantic hash.
+3. Spust pouze:
+   00_0_SPUSTIT_V24916_FRESH0_ISOLATED_ACTIVE_TARGETING.py
+
+Otevreny .ver se dynamicky stane baseline pro novou lineage:
+- accepted_count = 0
+- outer_cycle = 1
+- zadny inherited checkpoint
+- zadna persistentni path cache ani cross-run restore
+- vlastni lock .R1_15A2_V16.lock
+- vlastni run root R1_15A2_V16_RUNS
+
+Univerzalni neznamena bez kontrol. Pred startem musi live model fail-closed projit:
+- vsech 488 PROFILE488 CountLocations: existence, observation a link/from/to identity,
+- required DSeg inventory,
+- zone order a DIST_KM,
+- FlowBundle DIRECTED i BOTH smoke test,
+- PERF2C snapshot parity a runtime manifest,
+- model se nesmi zmenit mezi preflightem a handoffem do kalibrace.
+
+Semantic state hash se pouze zachyti z aktualne otevreneho .ver jako provenance a jako within-launch immutability proof. Neni porovnavan s zadnou hodnotou zabudovanou v baliku.
+
+Persistent path cache je vypnuta. Paths se cerstve enumeruji v tomto V24916 runu.
+IOFIX3/PATHFIX3 a aktivni FlowBundle Generation + TD targeting zustavaji zapnute.
+
+
+BOOTSTRAPFIX1 / LIVE FAILURE VISIBILITY
+- R1_15A2_V16_RUNS se vytvari vedle otevreneho .ver (stabilni project base), ne nutne uvnitr slozky baliku.
+- Po startu vznikne v baliku V24916_LAST_RUNS_LOCATION.txt s presnou cestou.
+- RUNS root se zaklada jeste pred IOFIX3/telemetry aktivaci.
+- Pri chybe vznikne R1_15A2_V16_RUNS/BOOTSTRAP_FAILED.json a soucasne package-local V24916_LAST_BOOTSTRAP_FAILURE.json.
+- Konzole vypise presny bootstrap stage a plny traceback.
+- Launcher runtime overlay podporuje historicky 4-prvkovy i novy 5-prvkovy COM retry-budget kontrakt; sealed parent soubor zustava byte-identicky.

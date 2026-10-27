@@ -1,0 +1,16 @@
+{
+  "schema": "R1_15A2_V24913_DEVELOPMENT_CHECKPOINT_V1",
+  "checkpoint": "CP68_V24913_FULL_REGRESSION_AND_SAFETY_PASS",
+  "release": "R1_15A2_V2_4_9_13_SUPPLY_ROUTE_CHOICE_READINESS_20261019",
+  "status": "PASS_PENDING_FINAL_PACKAGE",
+  "focused_pytest": "72 passed, 1 skipped",
+  "full_pytest": "766 passed, 3 skipped",
+  "compileall": "PASS",
+  "config_validation_pass": true,
+  "runtime_bundle_validation_pass": true,
+  "tamper_detection_pass": true,
+  "runtime_manifest_files": 62,
+  "real_visum_supply_tested": false,
+  "production_ready": false,
+  "created_utc": "2026-10-18T23:32:39.442399+00:00"
+}

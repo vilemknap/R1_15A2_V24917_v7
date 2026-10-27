@@ -1,0 +1,50 @@
+{
+  "schema": "R1_15A2_V2483_PREDECESSOR_CACHE_COMPATIBILITY_VERIFICATION_V1",
+  "status": "PASS",
+  "target_release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+  "target_config_sha256": "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8",
+  "actual_v2481_contract_validation": {
+    "mode": "EXPLICIT_PREDECESSOR_READ_COMPATIBILITY",
+    "target_release": "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
+    "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+    "source_config_sha256": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+    "target_config_sha256": "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8",
+    "allowed_path_implementation_differences": [
+      "r1_15a2_persistent_path_cache_v248.py",
+      "r1_15a2_trial_adapter_v240.py",
+      "r1_15a2_two_mode_v238.py"
+    ],
+    "policy": "READ_ONLY_STORE_EXACT_DATA_CONTRACT_NO_ROUTE_SHARE_INVENTION"
+  },
+  "predecessor_rule_checks": [
+    {
+      "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+      "config_file": "R1_15A2_CONFIG_V2_4_8_1.json",
+      "config_sha256_expected": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+      "config_sha256_actual": "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
+      "config_sha256_pass": true,
+      "module_hash_checks": {
+        "r1_15a2_two_mode_v238.py": true,
+        "r1_15a2_trial_adapter_v240.py": true,
+        "r1_15a2_persistent_path_cache_v248.py": true
+      },
+      "passes": true
+    },
+    {
+      "source_release": "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
+      "config_file": "R1_15A2_CONFIG_V2_4_8_2.json",
+      "config_sha256_expected": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+      "config_sha256_actual": "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
+      "config_sha256_pass": true,
+      "module_hash_checks": {
+        "r1_15a2_two_mode_v238.py": true,
+        "r1_15a2_trial_adapter_v240.py": true,
+        "r1_15a2_persistent_path_cache_v248.py": true
+      },
+      "passes": true
+    }
+  ],
+  "all_nonconsumer_contract_fields_must_match": true,
+  "store_integrity_and_basis_readback_remain_required": true,
+  "real_visum_tested": false
+}

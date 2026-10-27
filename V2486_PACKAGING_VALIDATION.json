@@ -1,0 +1,11 @@
+{
+  "schema": "R1_15A2_V2486_PACKAGING_VALIDATION_V1",
+  "candidate_archive_sha256": "d055b08d28d7ad4678278c776a7650b98d06928fd8ad20dec2067e0a297d70bd",
+  "candidate_zip_integrity_pass": true,
+  "candidate_independent_verifier_pass": true,
+  "candidate_independent_pytest": "607 passed",
+  "candidate_tamper_detection_pass": true,
+  "final_archive_must_repeat_all_checks": true,
+  "real_visum_tested": false,
+  "production_ready": false
+}

@@ -1,0 +1,658 @@
+--- SAFETYFIX1/r1_15a2_parent_equivalence_v24917.py
++++ SAFETYFIX2/r1_15a2_parent_equivalence_v24917.py
+@@ -22,7 +22,7 @@
+ from r1_15a2_com_compat import com_call_with_retry, zone_identity
+ from r1_15a2_supply import SupplyContractError, canonical_hash
+ 
+-RELEASE = "R1_15A2_V24917_GENFIX2_PARENT_EQUIVALENCE_20261027"
++RELEASE = "R1_15A2_V24917_PARENT_EQUIVALENCE_TDROLLBACKFIX1_20261027"
+ MATRIX_ATOL = 1.0e-7
+ MATRIX_RTOL = 1.0e-10
+ MARGIN_ATOL = 1.0e-6
+@@ -229,6 +229,139 @@
+     return result
+ 
+ 
++def _diagnostic_signals(signals):
++    """Normalize ONLY the producer's documented inactive atomic LONG sentinel.
++
++    build_td_signals uses +inf objective for the five atomic LONG components
++    when only LONG_COMPOSITE has a survey authority. That sentinel is not a
++    failed numerical measurement. NaN, -inf, active objectives and all other
++    nonfinite quantities remain invalid. All authority/status fields are kept.
++    """
++    out = copy.deepcopy(signals)
++    from r1_15a2_multiblock import COMPONENT_REGISTRY
++    for component, signal in out.items():
++        if not isinstance(signal, Mapping):
++            continue
++        value = signal.get("objective")
++        if (COMPONENT_REGISTRY.get(component, {}).get("family") == "LONG"
++                and signal.get("component") == component
++                and signal.get("family") == "LONG"
++                and signal.get("calibratable") is False
++                and signal.get("authority_status") == "NO_COMPONENT_LONG_AUTHORITY"
++                and signal.get("policy_reason") == "AGGREGATE_CL_TARGET_IS_GUARD_ONLY"
++                and isinstance(value, numbers.Real) and not isinstance(value, bool)
++                and math.isinf(float(value)) and float(value) > 0):
++            signal["objective"] = {"sentinel": "NOT_APPLICABLE_ATOMIC_LONG_WITHOUT_AUTHORITY"}
++    return out
++
++
++def _sha256_text(value):
++    return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
++
++
++def _dynamic_summary(diag, errors, side):
++    """Validate each dynamic epoch, then compare its content, not execution IDs.
++
++    Only the three known producer locations are normalized. Content hashes,
++    matrix identity/shape/units, zone order, statuses and metrics stay exact or
++    subject to the existing metric roundoff check. Unknown metadata is NOT
++    removed globally. This does not reuse an old epoch or skip its freshness
++    check: verify_parent also binds the returned diagnostics to the live manager.
++    """
++    summary = copy.deepcopy((diag.get("d11") or {}).get("summary", {}))
++    if not isinstance(summary, Mapping):
++        errors.append(side + ":INVALID_11D_SUMMARY")
++        return summary
++    authority = summary.get("dynamic_distance_authority")
++    classification = summary.get("dist_classification_matrix") or {}
++    rows = summary.get("component_dist_summary_rows") or []
++    dynamic = (authority is not None or "dynamic_skim_epoch" in diag
++               or classification.get("code") == "VISUM_DYNAMIC_ASSIGNMENT_DIS_KM"
++               or any(isinstance(r, Mapping) and "dynamic_skim_epoch" in r for r in rows))
++    if not dynamic:
++        return summary
++    from r1_15a2_dynamic_skim_v24916p2c import SCHEMA, REQUIRED_NATIVE_DSEGS, _hash
++    def require(ok, message):
++        if not ok:
++            raise ValueError(message)
++    try:
++        require(isinstance(authority, Mapping), "MISSING_DYNAMIC_AUTHORITY")
++        require(authority.get("schema") == SCHEMA, "UNKNOWN_DYNAMIC_AUTHORITY_SCHEMA")
++        require(authority.get("role") == "ACTIVE_TD_CALIBRATION_DISTANCE_AUTHORITY"
++                and authority.get("source") == "VISUM_FRESH_ASSIGNMENT_PATHS_PRT_DIS",
++                "DYNAMIC_AUTHORITY_ROLE_OR_SOURCE")
++        for key in ("epoch", "assignment_epoch"):
++            require(isinstance(authority.get(key), int) and not isinstance(authority[key], bool)
++                    and authority[key] > 0, "INVALID_" + key)
++        require(isinstance(authority.get("assignment_token"), str) and bool(authority["assignment_token"]),
++                "INVALID_ASSIGNMENT_TOKEN")
++        require(_sha256_text(authority.get("zone_order_sha256")), "INVALID_ZONE_HASH")
++        positions = authority.get("operation_positions")
++        require(isinstance(positions, (list, tuple)) and len(positions) == len(REQUIRED_NATIVE_DSEGS)
++                and all(isinstance(n, int) and not isinstance(n, bool) and n > 0 for n in positions)
++                and len(set(positions)) == len(positions), "INVALID_SKIM_OPERATIONS")
++        meta = authority.get("matrix_meta_by_dseg")
++        require(isinstance(meta, Mapping) and set(meta) == set(REQUIRED_NATIVE_DSEGS), "DSEG_INVENTORY")
++        matrix_nos, shapes = [], []
++        for dseg in REQUIRED_NATIVE_DSEGS:
++            m = meta[dseg]
++            require(isinstance(m, Mapping), "INVALID_MATRIX_METADATA:" + dseg)
++            require(m.get("canonical_dseg") == dseg and m.get("unit") == "km"
++                    and str(m.get("matrix_code", "")).upper() == "DIS", "MATRIX_SEMANTICS:" + dseg)
++            require(_sha256_text(m.get("values_sha256")), "INVALID_MATRIX_HASH:" + dseg)
++            no = m.get("matrix_no")
++            require(isinstance(no, int) and not isinstance(no, bool) and no > 0, "INVALID_MATRIX_ID:" + dseg)
++            shape = m.get("shape")
++            require(isinstance(shape, (list, tuple)) and len(shape) == 2
++                    and all(isinstance(n, int) and not isinstance(n, bool) and n > 0 for n in shape)
++                    and shape[0] == shape[1], "INVALID_MATRIX_SHAPE:" + dseg)
++            matrix_nos.append(no)
++            shapes.append(tuple(shape))
++        require(len(set(matrix_nos)) == len(matrix_nos) and len(set(shapes)) == 1,
++                "DUPLICATE_MATRIX_OR_MISMATCHED_AXES")
++        family = authority.get("family_hashes")
++        require(isinstance(family, Mapping) and set(family) == {"WORK", "SERVICE", "LONG", "FOREIGN"}
++                and all(_sha256_text(v) for v in family.values()), "INVALID_FAMILY_HASHES")
++        payload = {key: authority[key] for key in ("schema", "epoch", "assignment_epoch",
++                   "assignment_token", "zone_order_sha256", "operation_positions", "family_hashes")}
++        payload["matrix_hashes"] = {k: meta[k]["values_sha256"] for k in REQUIRED_NATIVE_DSEGS}
++        require(_hash(payload) == authority.get("epoch_hash"), "EPOCH_HASH_SELF_INCONSISTENT")
++        require(diag.get("dynamic_skim_epoch") == authority, "TOP_LEVEL_EPOCH_MISMATCH")
++        require(classification.get("code") == "VISUM_DYNAMIC_ASSIGNMENT_DIS_KM"
++                and classification.get("classification") == "DYNAMIC_ASSIGNMENT_PATH_VOLUME_WEIGHTED_DIS",
++                "CLASSIFICATION_AUTHORITY_MISMATCH")
++        for key, auth_key in (("assignment_epoch", "assignment_epoch"), ("skim_epoch", "epoch"),
++                              ("skim_epoch_hash", "epoch_hash"), ("zone_order_sha256", "zone_order_sha256"),
++                              ("family_hashes", "family_hashes")):
++            require(classification.get(key) == authority[auth_key], "CLASSIFICATION_REFERENCE:" + key)
++        for row in rows:
++            if row.get("distance_authority") == "DYNAMIC_ASSIGNMENT_DIS_KM" or "dynamic_skim_epoch" in row:
++                require(row.get("distance_authority") == "DYNAMIC_ASSIGNMENT_DIS_KM"
++                        and row.get("dynamic_skim_epoch") == authority["epoch"]
++                        and row.get("dynamic_skim_epoch_hash") == authority["epoch_hash"],
++                        "COMPONENT_EPOCH_REFERENCE:" + str(row.get("component")))
++        gate = (diag.get("d11") or {}).get("idp_gate")
++        if gate is not None:
++            require(gate.get("passes") is True, "IDP_GATE_FAILED")
++            for key, auth_key in (("dynamic_assignment_epoch", "assignment_epoch"),
++                                  ("dynamic_skim_epoch", "epoch"), ("dynamic_skim_epoch_hash", "epoch_hash")):
++                require(gate.get(key) == authority[auth_key], "IDP_GATE_REFERENCE:" + key)
++    except (KeyError, TypeError, ValueError, AttributeError) as exc:
++        errors.append(side + ":DYNAMIC_AUTHORITY_INVALID:" + str(exc))
++        return summary
++    # Execution identity is intentionally different after a new assignment.
++    # No other fields are discarded, including every matrix/family content hash.
++    for key in ("epoch", "assignment_epoch", "assignment_token", "epoch_hash"):
++        summary["dynamic_distance_authority"].pop(key)
++    for key in ("assignment_epoch", "skim_epoch", "skim_epoch_hash"):
++        summary["dist_classification_matrix"].pop(key)
++    for row in summary.get("component_dist_summary_rows", []):
++        if row.get("distance_authority") == "DYNAMIC_ASSIGNMENT_DIS_KM":
++            row.pop("dynamic_skim_epoch", None)
++            row.pop("dynamic_skim_epoch_hash", None)
++    return summary
++
++
+ def compare_diagnostics(before, after):
+     import r1_15a2_td_rollback_tolerant_v24917 as tr
+     b = (before.get("d12") or {}).get("rows", [])
+@@ -242,14 +375,17 @@
+             errors.append(domain + ":MISSING")
+             continue
+         if domain == "d11":
+-            x, y = before.get(domain, {}).get("summary", {}), after.get(domain, {}).get("summary", {})
++            x, y = _dynamic_summary(before, errors, "before"), _dynamic_summary(after, errors, "after")
+         else:
+-            x, y = before.get(domain, {}), after.get(domain, {})
++            x, y = _diagnostic_signals(before.get(domain, {})), _diagnostic_signals(after.get(domain, {}))
+         semantic_differences(x, y, domain, errors)
+     return {"passes": bool(not drift["violations"] and not drift["missing"] and geh_ok and not errors),
+             "profile_drift": drift, "weighted_geh_before": gb, "weighted_geh_after": ga,
+             "geh_tol": tr.GEH_TOL, "component_differences": errors,
+-            "signal_atol": SIGNAL_ATOL, "signal_rtol": SIGNAL_RTOL}
++            "signal_atol": SIGNAL_ATOL, "signal_rtol": SIGNAL_RTOL,
++            "comparison_contract": "TDROLLBACKFIX1_CONTENT_NOT_EXECUTION_IDENTITY",
++            "dynamic_skim_hash_policy": "MATRIX_AND_FAMILY_CONTENT_HASHES_EXACT; EPOCH_REFERENCE_SELF_CHECKED",
++            "inactive_long_objective_policy": "ONLY_DOCUMENTED_POSITIVE_INFINITY_SENTINEL"}
+ 
+ 
+ def verify_parent(adapter, before, after, baseline_diag, diag, allow_td=False, ctrl=None, cfg=None, folder=None):
+@@ -270,7 +406,18 @@
+         params.append("UNEXPLAINED_STATE_HASH_CHANGE")
+     matrices = compare_matrices(adapter, before, after)
+     diagnostic = compare_diagnostics(baseline_diag, diag)
++    # The new diagnostics must refer to the currently valid assignment epoch.
++    # Do not restore/reuse the old dynamic-skim object merely to match its IDs.
++    manager = getattr(adapter, "v24916_dynamic_skims", None)
++    if manager is not None:
++        try:
++            current = manager.require_current().summary()
++            if current != (diag.get("d11") or {}).get("summary", {}).get("dynamic_distance_authority"):
++                params.append("LIVE_DYNAMIC_SKIM_EPOCH_DIAGNOSTICS_MISMATCH")
++        except Exception as exc:
++            params.append("LIVE_DYNAMIC_SKIM_FRESHNESS:" + type(exc).__name__ + ":" + str(exc))
+     return {"passes": not params and matrices["passes"] and diagnostic["passes"],
++            "release": RELEASE,
+             "parameter_differences": params, "matrix_proof": matrices, "diagnostics": diagnostic}
+ 
+ 
+--- SAFETYFIX1/r1_15a2_td_rollback_tolerant_v24917.py
++++ SAFETYFIX2/r1_15a2_td_rollback_tolerant_v24917.py
+@@ -11,10 +11,11 @@
+ 
+ import functools
+ import math
++import json
+ from pathlib import Path
+ from typing import Any, Dict, List, Mapping
+ 
+-RELEASE = "R1_15A2_V24917_TDROLLBACK_GENFIX2_20261027"
++RELEASE = "R1_15A2_V24917_TDROLLBACKFIX1_20261027"
+ PARAM_EXCLUDE = {"td_values", "td_hash", "state_hash", "matrices", "matrix_hash"}
+ ABS_TOL = 0.5          # vehicles per profile
+ REL_TOL = 1.0e-4       # of the profile volume
+@@ -124,11 +125,11 @@
+     """Return a decision dict; on success it carries the recomputed (state, diag)."""
+     from r1_15a2_supply import SupplyContractError
+     folder = Path(folder)
+-    state = adapter.snapshot()
++    state = _live_snapshot(adapter)
+     params = parameter_differences(before, state)
+     mats = matrix_differences(before, state)
+     rec: Dict[str, Any] = {"release": RELEASE, "parameter_differences": params,
+-                           "changed_matrices": mats[:50], "changed_matrix_count": len(mats)}
++                           "changed_matrices": mats[:50], "changed_matrix_count": len(mats), "_state": state}
+     td_ok = True
+     try:
+         ctrl._td_expected_freeze(before, state, [], cfg or {}, folder / "TDROLLBACK1_TD_FREEZE_AUDIT.json")
+@@ -140,7 +141,7 @@
+         rec["status"] = "REFUSED_PARAMETERS_NOT_RESTORED"
+         return rec
+     diag = adapter.diagnostics(folder / "TDROLLBACK1_DIAGNOSTICS", "ROLLBACK_TOLERANT")
+-    if adapter.snapshot() != state:
++    if _live_snapshot(adapter) != state:
+         rec["status"] = "REFUSED_DIAGNOSTICS_CHANGED_MODEL"
+         return rec
+     import r1_15a2_parent_equivalence_v24917 as eq
+@@ -158,19 +159,68 @@
+     return rec
+ 
+ 
++def _live_snapshot(adapter):
++    # The GENFIX1 reader includes fresh IZ penalties and bypasses candidate caches.
++    reader = getattr(adapter, "generation_guard_snapshot", None)
++    return reader() if callable(reader) else adapter.snapshot()
++
++
++def _write_final_proof(ctrl, folder, before, state, proof, mode):
++    """The final verifier owns the result; a legacy PASS alone is provisional."""
++    folder = Path(folder)
++    evidence_path = folder / "TDROLLBACKFIX1_PARENT_PROOF.json"
++    result_path = folder / "ROLLBACK_ALL_TD_RESULT.json"
++    legacy = None
++    try:
++        from r1_15a2_runtime_io_hotfix_profile488 import _native_path
++        with open(_native_path(result_path), encoding="utf-8-sig") as f:
++            legacy = json.load(f)
++    except (OSError, ValueError):
++        pass
++    public = {"release": RELEASE, "verification_mode": mode,
++              "before_state_hash": before.get("state_hash"),
++              "after_state_hash": state.get("state_hash"),
++              "next_generation_permitted": bool(proof["passes"]),
++              "accepted_optimization_step": False,
++              "parent_equivalence": proof}
++    ctrl.atomic_json(evidence_path, public)
++    summary = dict(legacy or {})
++    summary.update({"passes": bool(proof["passes"]),
++                    "status": "VERIFIED_PARENT" if proof["passes"] else "PARENT_PROOF_FAILED",
++                    "verification_layer": RELEASE, "legacy_result": legacy,
++                    "parent_equivalence": proof, "proof_path": str(evidence_path),
++                    "next_generation_permitted": bool(proof["passes"]),
++                    "direct_od_matrix_writes": False, "load_version_called": False})
++    ctrl.atomic_json(result_path, summary)
++    return evidence_path
++
++
++def _proof_failure(proof, evidence_path, prefix="GENFIX2_TD_ROLLBACK_FULL_PARENT_PROOF_FAILED"):
++    from r1_15a2_supply import SupplyContractError
++    reasons = list(proof.get("parameter_differences", []))
++    matrices = proof.get("matrix_proof", {})
++    if not matrices.get("passes"):
++        reasons.append(matrices.get("reason", "MATRIX_PROOF_FAILED"))
++    diagnostic = proof.get("diagnostics", {})
++    reasons.extend(diagnostic.get("component_differences", []))
++    drift = diagnostic.get("profile_drift", {})
++    if drift.get("violations") or drift.get("missing"):
++        reasons.append("PROFILE_DRIFT_OR_IDENTITY")
++    if not diagnostic.get("passes") and not reasons:
++        reasons.append("DIAGNOSTIC_OR_GEH_EQUIVALENCE")
++    message = prefix + ":" + ";".join(str(x) for x in reasons[:6])[:1200]
++    exc = SupplyContractError(message + ";proof=" + str(evidence_path))
++    exc.parent_equivalence = proof
++    exc.evidence_path = str(evidence_path)
++    return exc
++
++
+ def wrap_rollback_td_all(orig, ctrl):
+     @functools.wraps(orig)
+     def _rollback_td_all(adapter, before, baseline_diag, folder, cfg=None):
++        import r1_15a2_parent_equivalence_v24917 as eq
+         try:
+             state, diag = orig(adapter, before, baseline_diag, folder, cfg)
+-            if adapter is not None and baseline_diag is not None:
+-                import r1_15a2_parent_equivalence_v24917 as eq
+-                from r1_15a2_supply import SupplyContractError
+-                proof = eq.verify_parent(adapter, before, state, baseline_diag, diag,
+-                                         allow_td=True, ctrl=ctrl, cfg=cfg, folder=folder)
+-                if adapter.snapshot() != state or not proof["passes"]:
+-                    raise SupplyContractError("GENFIX2_TD_ROLLBACK_FULL_PARENT_PROOF_FAILED")
+-            return state, diag
+         except Exception as exc:
+             if "V242_TD_ROLLBACK_NOT_IDENTICAL" not in str(exc):
+                 raise
+@@ -180,24 +230,61 @@
+             except Exception as exc2:
+                 rec = {"release": RELEASE, "status": "REFUSED_CHECK_ERROR", "error": repr(exc2)[:2000]}
+             public = {k: v for k, v in rec.items() if not k.startswith("_")}
+-            try:
+-                ctrl.atomic_json(folder / "TDROLLBACK1_TOLERANT_RESULT.json", public)
+-            except Exception:
+-                pass
++            ctrl.atomic_json(folder / "TDROLLBACK1_TOLERANT_RESULT.json", public)
+             _STATE["events"].append({k: public.get(k) for k in ("status", "changed_matrix_count")})
+             del _STATE["events"][:-50]
+             if rec.get("status") != "PARAMETER_EXACT_NUMERICALLY_EQUIVALENT_RECOMPUTE":
+                 _STATE["refused"] += 1
++                if "parent_equivalence" in rec:
++                    evidence = _write_final_proof(ctrl, folder, before, rec.get("_state", before),
++                                                  rec["parent_equivalence"], "NUMERIC_RECOMPUTE_REFUSED")
++                    raise _proof_failure(rec["parent_equivalence"], evidence,
++                                         prefix="V242_TD_ROLLBACK_NOT_IDENTICAL") from exc
+                 raise
++            state, diag = rec["_state"], rec["_diag"]
++            proof = rec["parent_equivalence"]
++            mode = "BYTE_BOUND_NUMERIC_RECOMPUTE"
++        else:
++            if adapter is None or baseline_diag is None:
++                return state, diag  # compatibility for pure dispatcher tests
++            if diag is baseline_diag:
++                diag = adapter.diagnostics(Path(folder) / "TDROLLBACKFIX1_LIVE_DIAGNOSTICS", "ROLLBACK")
++            try:
++                proof = eq.verify_parent(adapter, before, state, baseline_diag, diag,
++                                         allow_td=True, ctrl=ctrl, cfg=cfg, folder=folder)
++            except Exception as exc:
++                proof = {"passes": False,
++                         "parameter_differences": ["PARENT_PROOF_EVALUATION_ERROR:" + type(exc).__name__ + ":" + str(exc)],
++                         "matrix_proof": {"passes": False, "reason": "PROOF_EVALUATION_INCOMPLETE"},
++                         "diagnostics": {"passes": False, "component_differences": []}}
++            mode = "LEGACY_EQUALITY_PLUS_FULL_PARENT_PROOF"
++        # Always read through the live reader when available, not a cached bundle.
++        try:
++            stable = _live_snapshot(adapter) == state
++        except Exception as exc:
++            stable = False
++            proof["parameter_differences"].append("FINAL_LIVE_READ:" + type(exc).__name__ + ":" + str(exc))
++        proof["live_snapshot_stable"] = stable
++        if not stable:
++            proof["passes"] = False
++            proof["parameter_differences"].append("LIVE_SNAPSHOT_NOT_EQUAL_RETURNED_STATE")
++        if proof["passes"]:
++            try:
++                proof["parent_cache_rebind"] = eq.rebind_verified_parent(adapter, state, diag)
++            except Exception as exc:
++                proof["passes"] = False
++                proof["parameter_differences"].append("PARENT_CACHE_REBIND:" + type(exc).__name__ + ":" + str(exc))
++        evidence_path = _write_final_proof(ctrl, folder, before, state, proof, mode)
++        if not proof["passes"]:
++            _STATE["refused"] += 1
++            raise _proof_failure(proof, evidence_path)
++        if mode == "BYTE_BOUND_NUMERIC_RECOMPUTE":
+             _STATE["tolerant_accepts"] += 1
+-            state, diag = rec["_state"], rec["_diag"]
+-            import r1_15a2_parent_equivalence_v24917 as eq
+-            eq.rebind_verified_parent(adapter, state, diag)
+-            print("R1 V24917 TDROLLBACK1: TD rollback parameter-exact, recomputed loads numerically "
+-                  "equivalent (max %.3g veh, weighted GEH %.6f -> %.6f) - continuing"
+-                  % (public["profile_drift"]["max_abs_diff"], public["weighted_geh_before"],
+-                     public["weighted_geh_after"]))
+-            return state, diag
++        # Expose proof in ordinary adapter telemetry; never count a rollback as acceptance.
++        if isinstance(getattr(adapter, "v24917_status", None), dict):
++            adapter.v24917_status["last_td_rollback_proof"] = {
++                "passes": True, "mode": mode, "path": str(evidence_path), "accepted_change": False}
++        return state, diag
+     _rollback_td_all.__r1_tdrollback1__ = True
+     return _rollback_td_all
+ 
+@@ -221,7 +308,7 @@
+         guarded_stage.__r1_genfix2_matrix_proof__ = True
+         ctrl._finecdf_td_once_impl = guarded_stage
+     _STATE["installed"] = True
+-    print_fn("V24917 TDROLLBACK1: TD rollback accepts a parameter-exact recompute within "
++    print_fn("V24917 TDROLLBACKFIX1: epoch identity separated from content; full proof recorded; tolerances "
+              "%.2g veh / %.0e rel per profile and %.2g weighted GEH" % (ABS_TOL, REL_TOL, GEH_TOL))
+     return status()
+ 
+--- SAFETYFIX1/tests/test_v24917_tdrollbackfix1.py
++++ SAFETYFIX2/tests/test_v24917_tdrollbackfix1.py
+@@ -0,0 +1,266 @@
++"""TDROLLBACKFIX1: real diagnostic schemas, unchanged guards and verified continuation."""
++import copy
++import hashlib
++import importlib.util
++import json
++import math
++import sys
++from pathlib import Path
++from types import SimpleNamespace as NS
++
++import pytest
++import r1_15a2_parent_equivalence_v24917 as eq
++import r1_15a2_td_rollback_tolerant_v24917 as tr
++import r1_15a2_multiblock as mb
++from r1_15a2_supply import SupplyContractError
++from r1_15a2_controller_v22 import atomic_json
++from r1_15a2_dynamic_skim_v24916p2c import SCHEMA, REQUIRED_NATIVE_DSEGS, _hash
++from test_v24917_genfix2 import diagnostics, ArrayAdapter
++from test_v2490_td_soft_reference import SoftAdapter, Control, _restore, _soft_cfg
++
++def dynamic_diag(epoch=1):
++    d=diagnostics(); sha=lambda s: hashlib.sha256(s.encode()).hexdigest()
++    meta={k:{'matrix_no':700+i,'matrix_code':'DIS','dseg_code':k,'canonical_dseg':k,
++             'values_sha256':sha(k),'shape':[2,2],'unit':'km'} for i,k in enumerate(REQUIRED_NATIVE_DSEGS)}
++    fam={k:sha(k) for k in ('WORK','SERVICE','LONG','FOREIGN')}
++    payload={'schema':SCHEMA,'epoch':epoch,'assignment_epoch':epoch,'assignment_token':'assignment-%s'%epoch,
++             'zone_order_sha256':sha('zones'),'operation_positions':list(range(31,37)),
++             'matrix_hashes':{k:v['values_sha256'] for k,v in meta.items()},'family_hashes':fam}
++    authority={k:v for k,v in payload.items() if k!='matrix_hashes'}
++    authority.update(matrix_meta_by_dseg=meta,epoch_hash=_hash(payload),role='ACTIVE_TD_CALIBRATION_DISTANCE_AUTHORITY',
++                     static_r1_osrm_dist_km_role='REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION',source='VISUM_FRESH_ASSIGNMENT_PATHS_PRT_DIS')
++    s=d['d11']['summary']
++    s['dynamic_distance_authority']=authority
++    s['dist_classification_matrix']={'code':'VISUM_DYNAMIC_ASSIGNMENT_DIS_KM','classification':'DYNAMIC_ASSIGNMENT_PATH_VOLUME_WEIGHTED_DIS',
++        'assignment_epoch':epoch,'skim_epoch':epoch,'skim_epoch_hash':authority['epoch_hash'],
++        'zone_order_sha256':authority['zone_order_sha256'],'family_hashes':fam,'readback':{'nonfinite_cells':0,'negative_cells':0}}
++    s['component_dist_summary_rows'][0].update(distance_authority='DYNAMIC_ASSIGNMENT_DIS_KM',dynamic_distance_family='WORK',
++        dynamic_skim_epoch=epoch,dynamic_skim_epoch_hash=authority['epoch_hash'])
++    d['dynamic_skim_epoch']=copy.deepcopy(authority)
++    d['d11']['idp_gate']={'passes':True,'status':'PASS_ATOMIC_IDP_DYNAMIC_ASSIGNMENT_SKIM','dynamic_assignment_epoch':epoch,
++        'dynamic_skim_epoch':epoch,'dynamic_skim_epoch_hash':authority['epoch_hash']}
++    return d
++
++
++def long_diagnostic():
++    d = diagnostics()
++    signals = mb.build_td_signals([], [], [], config={})
++    d['signals'] = {k: v for k, v in signals.items() if k.startswith('LONG_')}
++    return d
++
++
++def rehash(d):
++    authority = d['d11']['summary']['dynamic_distance_authority']
++    payload = {k: authority[k] for k in ('schema','epoch','assignment_epoch','assignment_token',
++               'zone_order_sha256','operation_positions','family_hashes')}
++    payload['matrix_hashes'] = {k: authority['matrix_meta_by_dseg'][k]['values_sha256'] for k in REQUIRED_NATIVE_DSEGS}
++    authority['epoch_hash'] = _hash(payload)
++    cls = d['d11']['summary']['dist_classification_matrix']
++    cls.update(assignment_epoch=authority['assignment_epoch'], skim_epoch=authority['epoch'],
++               skim_epoch_hash=authority['epoch_hash'], family_hashes=copy.deepcopy(authority['family_hashes']),
++               zone_order_sha256=authority['zone_order_sha256'])
++    for r in d['d11']['summary']['component_dist_summary_rows']:
++        r.update(dynamic_skim_epoch=authority['epoch'], dynamic_skim_epoch_hash=authority['epoch_hash'])
++    d['dynamic_skim_epoch'] = copy.deepcopy(authority)
++    d['d11']['idp_gate'].update(dynamic_skim_epoch=authority['epoch'], dynamic_assignment_epoch=authority['assignment_epoch'],
++                              dynamic_skim_epoch_hash=authority['epoch_hash'])
++
++
++def test_real_producer_inactive_long_equal_to_itself():
++    d=long_diagnostic()
++    assert len(d['signals']) == 5
++    assert all(math.isinf(v['objective']) for v in d['signals'].values())
++    assert eq.compare_diagnostics(d, copy.deepcopy(d))['passes']
++    assert all(math.isinf(v['objective']) for v in d['signals'].values())  # no mutation
++
++
++@pytest.mark.parametrize('value',[float('nan'),float('-inf'),0.,100.])
++def test_inactive_long_sentinel_may_not_hide_invalid_or_changed_objective(value):
++    b=long_diagnostic();a=copy.deepcopy(b)
++    a['signals']['LONG_E_C']['objective']=value
++    assert not eq.compare_diagnostics(b,a)['passes']
++
++
++@pytest.mark.parametrize('change',['calibratable','authority','reason','family','component','volume'])
++def test_inactive_long_status_and_data_remain_protected(change):
++    b=long_diagnostic();a=copy.deepcopy(b);s=a['signals']['LONG_E_C']
++    if change=='calibratable':s['calibratable']=True
++    elif change=='authority':s['authority_status']='ACTIVE_COMPONENT_DIST_TARGET'
++    elif change=='reason':s['policy_reason']='ACTIVE'
++    elif change=='family':s['family']='WORK'
++    elif change=='component':s['component']='OTHER'
++    else:s['total_volume']=10000.
++    assert not eq.compare_diagnostics(b,a)['passes']
++
++
++@pytest.mark.parametrize('domain',['signal','active_long','11d','count'])
++def test_identical_nonfinite_metrics_are_not_valid_measurements(domain):
++    b=diagnostics()
++    if domain=='signal':b['signals']['WORK']['cdf_rmse']=float('inf')
++    elif domain=='active_long':
++        b=long_diagnostic();b['signals']['LONG_E_C']['calibratable']=True
++    elif domain=='11d':b['d11']['summary']['component_dist_summary_rows'][0]['mean']=float('inf')
++    else:b['d12']['rows'][0]['model']=float('nan')
++    assert not eq.compare_diagnostics(b,copy.deepcopy(b))['passes']
++
++
++def test_new_epoch_same_byte_content_and_metrics_is_equivalent():
++    b=dynamic_diag(1);a=dynamic_diag(5);saved=copy.deepcopy(a)
++    assert eq.compare_diagnostics(b,a)['passes']
++    assert a == saved
++    assert b['dynamic_skim_epoch']['epoch_hash'] != a['dynamic_skim_epoch']['epoch_hash']
++
++
++@pytest.mark.parametrize('change',['matrix','family','zone','unit','shape','operation','readback','mean','status','unknown_epoch'])
++def test_dynamic_semantics_are_not_waived_by_epoch_normalization(change):
++    b=dynamic_diag(1);a=dynamic_diag(2);s=a['d11']['summary'];auth=s['dynamic_distance_authority']
++    if change=='matrix':auth['matrix_meta_by_dseg']['NATIVE_CW']['values_sha256']='1'*64
++    elif change=='family':auth['family_hashes']['WORK']='1'*64
++    elif change=='zone':auth['zone_order_sha256']='1'*64
++    elif change=='unit':auth['matrix_meta_by_dseg']['NATIVE_CW']['unit']='min'
++    elif change=='shape':auth['matrix_meta_by_dseg']['NATIVE_CW']['shape']=[3,3]
++    elif change=='operation':auth['operation_positions'][-1]=44
++    elif change=='readback':s['dist_classification_matrix']['readback']['nonfinite_cells']=1
++    elif change=='mean':s['component_dist_summary_rows'][0]['mean']+=1
++    elif change=='status':s['final_status']='REVIEW_ERROR'
++    else:s['unknown_epoch']=2;b['d11']['summary']['unknown_epoch']=1
++    rehash(a)
++    assert not eq.compare_diagnostics(b,a)['passes']
++
++
++@pytest.mark.parametrize('change',['hash','top','component','classification','gate','missing_authority','no_top'])
++def test_dynamic_epoch_must_be_internally_coherent(change):
++    b=dynamic_diag(1);a=dynamic_diag(2);s=a['d11']['summary']
++    if change=='hash':s['dynamic_distance_authority']['epoch_hash']='0'*64
++    elif change=='top':a['dynamic_skim_epoch']['epoch']=1
++    elif change=='component':s['component_dist_summary_rows'][0]['dynamic_skim_epoch']=1
++    elif change=='classification':s['dist_classification_matrix']['skim_epoch']=1
++    elif change=='gate':a['d11']['idp_gate']['passes']=False
++    elif change=='missing_authority':s.pop('dynamic_distance_authority')
++    else:a.pop('dynamic_skim_epoch')
++    assert not eq.compare_diagnostics(b,a)['passes']
++
++
++def test_full_parent_checks_live_dynamic_manager(tmp_path):
++    ad=ArrayAdapter();b=dynamic_diag(1);a=dynamic_diag(2);state=ad.snapshot()
++    ad.v24916_dynamic_skims=NS(require_current=lambda:NS(summary=lambda:dynamic_diag(3)['dynamic_skim_epoch']))
++    p=eq.verify_parent(ad,state,state,b,a)
++    assert not p['passes'] and 'LIVE_DYNAMIC_SKIM_EPOCH_DIAGNOSTICS_MISMATCH' in p['parameter_differences']
++    ad.v24916_dynamic_skims=NS(require_current=lambda:(_ for _ in ()).throw(RuntimeError('STALE_ASSIGNMENT')))
++    assert not eq.verify_parent(ad,state,state,b,a)['passes']
++
++
++def test_full_parent_success_is_persisted_and_returns_live_diag(tmp_path):
++    ad=ArrayAdapter();before=ad.snapshot();baseline=dynamic_diag(1);ad.diag=dynamic_diag(2)
++    ad.path_epoch_accepts=6
++    ctrl=NS(_td_expected_freeze=lambda *a:None,atomic_json=atomic_json)
++    def original(*args):
++        atomic_json(tmp_path/'ROLLBACK_ALL_TD_RESULT.json',{'passes':True,'gap':.004,'snapshot_equal':True,'diagnostic_equal':True})
++        return ad.snapshot(),copy.deepcopy(ad.diag)
++    with eq.parent_scope(ad,before,tmp_path):
++        ad.path_epoch_accepts=7
++        state,diag=tr.wrap_rollback_td_all(original,ctrl)(ad,before,baseline,tmp_path,{})
++    out=json.loads((tmp_path/'ROLLBACK_ALL_TD_RESULT.json').read_text())
++    assert out['passes'] and out['legacy_result']['passes']
++    assert out['parent_equivalence']['passes'] and out['next_generation_permitted']
++    assert ad.path_epoch_accepts==6
++    assert diag['dynamic_skim_epoch']['epoch']==2
++    assert baseline['dynamic_skim_epoch']['epoch']==1
++
++
++def test_failed_full_proof_overrides_legacy_pass_and_preserves_details(tmp_path):
++    ad=ArrayAdapter();before=ad.snapshot();baseline=diagnostics();ad.diag['signals']['WORK']['cdf_rmse']=2.
++    ctrl=NS(_td_expected_freeze=lambda *a:None,atomic_json=atomic_json)
++    def original(*args):
++        atomic_json(tmp_path/'ROLLBACK_ALL_TD_RESULT.json',{'passes':True,'gap':.004})
++        return ad.snapshot(),copy.deepcopy(ad.diag)
++    with pytest.raises(SupplyContractError,match='FULL_PARENT_PROOF_FAILED:signals.WORK.cdf_rmse') as err:
++        tr.wrap_rollback_td_all(original,ctrl)(ad,before,baseline,tmp_path,{})
++    out=json.loads((tmp_path/'ROLLBACK_ALL_TD_RESULT.json').read_text())
++    assert out['passes'] is False and out['legacy_result']['passes'] is True
++    assert out['next_generation_permitted'] is False
++    assert Path(err.value.evidence_path).is_file()
++    assert not err.value.parent_equivalence['passes']
++
++
++def test_cached_equal_snapshot_does_not_waive_fresh_live_read(tmp_path):
++    ad=ArrayAdapter();before=ad.snapshot();baseline=diagnostics()
++    ad.generation_guard_snapshot=lambda:dict(before, generation_hash='CHANGED')
++    ctrl=NS(_td_expected_freeze=lambda *a:None,atomic_json=atomic_json)
++    with pytest.raises(SupplyContractError,match='LIVE_SNAPSHOT_NOT_EQUAL'):
++        tr.wrap_rollback_td_all(lambda *args:(before,baseline),ctrl)(ad,before,baseline,tmp_path,{})
++
++
++def load_controller():
++    path=Path(__file__).resolve().parents[1]/'r1_15a2_overnight_controller_coupled_v24915p2_force100.py'
++    spec=importlib.util.spec_from_file_location('_tdrollbackfix1_controller_test',path)
++    mod=importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(mod)
++    return mod
++
++
++class DynamicAdapter(SoftAdapter):
++    def __init__(self):
++        super().__init__(always_reject=True)
++        self.epoch=1
++        self.v24917_status={}
++        self.v24916_dynamic_skims=NS(require_current=lambda:NS(summary=lambda:dynamic_diag(self.epoch)['dynamic_skim_epoch']))
++    def assign(self,folder,*,supply_only):
++        value=super().assign(folder,supply_only=supply_only)
++        self.epoch+=1
++        return value
++    def diagnostics(self,folder,label):
++        d=dynamic_diag(self.epoch)
++        d['signals'].update(long_diagnostic()['signals'])
++        return d
++
++
++def test_real_active_td_dispatch_rejects_rolls_back_then_runs_next_cycle(tmp_path,monkeypatch):
++    import r1_15a2_active_controller_patch_v24916p2c as active
++    import r1_15a2_demand_policy_v1 as dp
++    c=load_controller();active.install(c)
++    c._rollback_td_all=tr.wrap_rollback_td_all(c._rollback_td_all,c)
++    monkeypatch.setattr(c,'restore_td_parameters',_restore)
++    def inner(*a,**kw):
++        return {'changed_rows':[{'component':'WORK_E_C','after_b':.2,'after_c':-.4}],
++                'stop_reason':'MAX_ITERATIONS','progress_continue':True,'search_complete':False}
++    monkeypatch.setattr(active,'targeted_run_finecdf_inner',inner)
++    policy=dp.DemandPolicy(dp.validate({'td_policy':'ALWAYS'}))
++    policy.last_generation_complete=True
++    wrapped=dp.wrap_td(c._finecdf_td_once,policy,c)
++    ad=DynamicAdapter();cfg=_soft_cfg((1.,.5));state=ad.snapshot();diag=ad.diagnostics(tmp_path,'BASE')
++    for cycle in (1,2):
++        changed,state,diag,rec=wrapped(ad,cfg,tmp_path/str(cycle),Control(),state,diag,tmp_path,outer_cycle=cycle)
++        assert not changed and rec['status']=='FINECDF_TD_PLATEAU'
++        assert rec['td_realization_complete'] and rec['inner']['progress_continue']
++        assert state==ad.snapshot() and ad.b==0 and ad.c==-.1
++        assert not policy.stop_due()
++    assert len(ad.assign_calls)==6  # two candidates + verified restore, twice
++    assert ad.epoch==7
++    assert len(list(tmp_path.rglob('TDROLLBACKFIX1_PARENT_PROOF.json')))==2
++
++
++def test_safetyfix1_score_failure_and_fixed_rollback_continue_together(tmp_path,monkeypatch):
++    import r1_15a2_active_controller_patch_v24916p2c as active
++    import r1_15a2_demand_policy_v1 as dp
++    import r1_15a2_trial_adapter_v24917 as ta
++    import r1_15a2_td_count_blend_v24917 as blend
++    c=load_controller();active.install(c);c._rollback_td_all=tr.wrap_rollback_td_all(c._rollback_td_all,c)
++    monkeypatch.setattr(c,'restore_td_parameters',_restore)
++    monkeypatch.setattr(active,'targeted_run_finecdf_inner',lambda *a,**kw:{'changed_rows':[
++        {'component':'WORK_E_C','after_b':.2,'after_c':-.4}],'search_complete':True,'stop_reason':'LOCAL_PLATEAU'})
++    monkeypatch.setattr(ta._V24916ActiveAdapter,'block_gate',lambda *a,**kw:{'accepted':True,'reasons':[]})
++    monkeypatch.setattr(blend,'outer_decision',lambda *a,**kw:(_ for _ in ()).throw(RuntimeError('SCORE_READ_FAILED')))
++    ad=DynamicAdapter()
++    gate=ta.VisumAdapter.__new__(ta.VisumAdapter)
++    gate.v24917_status=ad.v24917_status
++    gate.cfg={}
++    ad.block_gate=gate.block_gate
++    policy=dp.DemandPolicy(dp.validate({'td_policy':'ALWAYS'}));policy.last_generation_complete=True
++    wrapped=dp.wrap_td(c._finecdf_td_once,policy,c)
++    state=ad.snapshot();diag=ad.diagnostics(tmp_path,'BASE')
++    changed,after,d,rec=wrapped(ad,_soft_cfg((1.,.5)),tmp_path,Control(),state,diag,tmp_path,outer_cycle=1)
++    assert not changed and after==state and rec['td_realization_complete']
++    assert rec['inner']['progress_continue'] and not rec['inner']['search_complete']
++    assert 'TD_SHARED_OBJECTIVE_UNAVAILABLE' in rec['incomplete_search_reasons']
++    assert ad.v24917_status['td_blend_outer_failures']==2 and not policy.stop_due()

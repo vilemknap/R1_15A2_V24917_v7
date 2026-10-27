@@ -1,0 +1,2810 @@
+--- V21/MANIFEST.json
++++ V22/MANIFEST.json
+@@ -1,153 +0,0 @@
+-{
+-  "package": "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_V2_1_AUDITED",
+-  "version": "2.1-audited",
+-  "created_at": "2026-10-15T14:51:22.424833+00:00",
+-  "default_apply": false,
+-  "live_visum_tested": false,
+-  "pytest_passed": 40,
+-  "clean_extract_gate": "PASS",
+-  "synthetic_e2e": "PASS",
+-  "long_component_production_authority": "NOT_ATTACHED_FAIL_CLOSED",
+-  "files": [
+-    {
+-      "path": ".zip",
+-      "size": 1011848,
+-      "sha256": "39d8c98805a21c0163932a85bc6b2879f7aedc9e866f8733cbcd83b041cd6bd8"
+-    },
+-    {
+-      "path": "AUDIT_REPORT_V2_1.md",
+-      "size": 3718,
+-      "sha256": "eaf62202d0d761e6387123faf6428566a61bcbfa7dcf7939319bc69c4d698795"
+-    },
+-    {
+-      "path": "CHANGELOG_V2_1.md",
+-      "size": 742,
+-      "sha256": "f5689d55d87c1e04ca5edb9b285cd83e002f158f223514b52757f09a746ff563"
+-    },
+-    {
+-      "path": "LIVE_VISUM_FIRST_RUN_CHECKLIST_V2_1.md",
+-      "size": 1243,
+-      "sha256": "fcebbd1afcb8daf5f225c4261d86b647e09b1421666346b5de677401ef019cc7"
+-    },
+-    {
+-      "path": "METHOD_SPEC_R1_15A2_V2_1.md",
+-      "size": 2307,
+-      "sha256": "a563afcd7b9a3e86136c7ac2ccdec6d861ac9a9127110ae567caed97c8e151aa"
+-    },
+-    {
+-      "path": "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+-      "size": 40950,
+-      "sha256": "e632bd12866cedfa84a5f181286aec3e69ee9c3291a46c9064a2156d9b7095e0"
+-    },
+-    {
+-      "path": "R1_15A2_CONFIG_V2_1.json",
+-      "size": 6508,
+-      "sha256": "879f3f1f459e956cc13b29e45e0e2f093da37ba8ff9ac4329314889c14302bf8"
+-    },
+-    {
+-      "path": "README_R1_15A2_V2_1.md",
+-      "size": 3712,
+-      "sha256": "c6e5611aedbdab6805d64a60d86147fcaf0eaf52d8a919bbf973ff5bfc07f2da"
+-    },
+-    {
+-      "path": "REQUIREMENTS.txt",
+-      "size": 141,
+-      "sha256": "f62d616acee3080757c1c06298852db0a6ab776f5c268a67960799d4ae8e80da"
+-    },
+-    {
+-      "path": "STATIC_AUDIT.json",
+-      "size": 1368,
+-      "sha256": "cf6dbd731651e5b77e1eaf679b7cd28197406270cb9dea79da8e3550784b8904"
+-    },
+-    {
+-      "path": "SYNTHETIC_EVIDENCE/00_SYNTHETIC_DEMO_REPORT.json",
+-      "size": 4738,
+-      "sha256": "ffc4c182e28ed0abe00a96fea289f5196729a6517ce42ae33c1fefa40ec10ffb"
+-    },
+-    {
+-      "path": "SYNTHETIC_EVIDENCE/SYNTHETIC_RUN_LOG.txt",
+-      "size": 4738,
+-      "sha256": "ffc4c182e28ed0abe00a96fea289f5196729a6517ce42ae33c1fefa40ec10ffb"
+-    },
+-    {
+-      "path": "TEST_RESULTS.txt",
+-      "size": 1546,
+-      "sha256": "0470610a2a77dbe42fc0bbf3371618c1d3424519d771ccfee3e793b198d27332"
+-    },
+-    {
+-      "path": "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json",
+-      "size": 1285,
+-      "sha256": "fbb340f4c9e306f44cd4da97d93999f9f9db0439f7e37a7cde09aee643e75bc2"
+-    },
+-    {
+-      "path": "authorities/R1_LONG_COMPONENT_AUTHORITY_TEMPLATE.json",
+-      "size": 452,
+-      "sha256": "bad29ece7c8479ed00ce66a159bad60aa4d01ce7652c63b0c53b237a83820658"
+-    },
+-    {
+-      "path": "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json",
+-      "size": 2442,
+-      "sha256": "a5008321c3a3ba65e8a7bd81c6b6591475afabd0aa7665295dd82ba4cd7b46bf"
+-    },
+-    {
+-      "path": "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py",
+-      "size": 1194943,
+-      "sha256": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e"
+-    },
+-    {
+-      "path": "helpers/R1_12D_CSD2022_GEH_FORENSIC_444_PROCSEQ_EMBEDDED.py",
+-      "size": 81615,
+-      "sha256": "5600be71e94d488da03a046e66a7a8c8a9d2deee0f7f9877c8eebb172a6e1249"
+-    },
+-    {
+-      "path": "r1_15a2_core.py",
+-      "size": 81281,
+-      "sha256": "3a9811ffc5044a1d60b7ee6b6f367aa544331d817716c2e1f88a6d344faf3343"
+-    },
+-    {
+-      "path": "r1_15a2_multiblock.py",
+-      "size": 36981,
+-      "sha256": "1412f910cc60b8edd5c6bb23ccca89b62d6d92986b7723ffe46652bd0221e5c6"
+-    },
+-    {
+-      "path": "r1_15a2_runtime_v1.py",
+-      "size": 73594,
+-      "sha256": "856245c89a3f313b701b9dc5a3d58006ea4a48b62f9fdbc947f562bc200beaa6"
+-    },
+-    {
+-      "path": "r1_15a2_visum_parameters.py",
+-      "size": 13280,
+-      "sha256": "b7a325bc7cd3ee0bb2427623a9041e13dd09eb53b31e3ab18137f5c8f2367472"
+-    },
+-    {
+-      "path": "tests/conftest.py",
+-      "size": 2334,
+-      "sha256": "70354284a8accf97d8fc9249b979aa37a82d0bb77b263c811638c5a2cdca822d"
+-    },
+-    {
+-      "path": "tests/run_synthetic_e2e.py",
+-      "size": 6293,
+-      "sha256": "0cff73b1c056e679b1b3dbfd69f5f482003f60878ade2d47a31c64731d6706db"
+-    },
+-    {
+-      "path": "tests/test_acceptance.py",
+-      "size": 2283,
+-      "sha256": "3fdc535eab6d2b8052dc9cbc9ebc128f9ca65cfa77590e8dc7c2e1a9074b0d53"
+-    },
+-    {
+-      "path": "tests/test_core_deep.py",
+-      "size": 5582,
+-      "sha256": "854d2a2ed1b9dd8e88a0bea54479861f2c1ac9be39ccf15cc2171eea59f14f9a"
+-    },
+-    {
+-      "path": "tests/test_multiblock.py",
+-      "size": 8450,
+-      "sha256": "3bcb480645bb0799bf650479c1fe5901af3506c79d668bc348533bb0832ec027"
+-    },
+-    {
+-      "path": "tests/test_visum_and_master.py",
+-      "size": 6292,
+-      "sha256": "673eb63512a1426ce8065022fd025264be9e1e9384b1e643656e890fbd5ffca0"
+-    }
+-  ]
+-}
+--- V21/R1_15A2_CONFIG_V2_2.json
++++ V22/R1_15A2_CONFIG_V2_2.json
+@@ -0,0 +1,337 @@
++{
++  "version": "2.2-addval1-supply",
++  "apply": false,
++  "run_procseq": true,
++  "max_cycles": 2,
++  "max_accepted_blocks": 1,
++  "block_schedule": [
++    "SUPPLY_ADDVAL1",
++    "GENERATION",
++    "TD_COMPONENT_WORK",
++    "TD_COMPONENT_SERVICE",
++    "TD_COMPONENT_SCHOOL",
++    "TD_COMPONENT_LONG"
++  ],
++  "backtracking_scales": [
++    1.0,
++    0.5,
++    0.25
++  ],
++  "calibration_role": "CALIBRATION",
++  "guidance_mode": "POSITIVE_ONLY",
++  "mutable_dsegs": [
++    "NATIVE_CW",
++    "NATIVE_CW_noT",
++    "NATIVE_CS",
++    "NATIVE_CS_noT"
++  ],
++  "path_export_dsegs": [
++    "NATIVE_CW",
++    "NATIVE_CW_noT",
++    "NATIVE_CS",
++    "NATIVE_CS_noT"
++  ],
++  "include_exog_ee_paths": false,
++  "mutable_relation_policy": "BOTH_ENDPOINTS_ACTUATABLE",
++  "explicit_excluded_zone_nos": [],
++  "require_active_tg_td": true,
++  "require_active_assignment": true,
++  "require_parameter_persistence_after_procseq": true,
++  "require_mutable_matrix_change_for_generation_apply": true,
++  "require_rollback_verification": true,
++  "expected_12d_rows": 444,
++  "expected_calibration_rows": 404,
++  "expected_validation_rows": 40,
++  "require_path_parity_for_apply": true,
++  "min_path_link_coverage": 0.98,
++  "min_path_link_volume_coverage": 0.995,
++  "require_dseg_path_volume_parity_for_apply": true,
++  "dseg_path_volume_relative_tolerance": 0.01,
++  "parity_min_model": 100.0,
++  "parity_p95_relative_tolerance": 0.02,
++  "parity_p99_relative_tolerance": 0.05,
++  "min_driver_geh": 10.0,
++  "min_driver_abs_residual": 300.0,
++  "min_mutable_share": 0.3,
++  "protected_geh": 5.0,
++  "protected_warn_geh": 10.0,
++  "protected_hard_geh": 30.0,
++  "overroute_penalty_geh": 5.0,
++  "observed_weight_floor": 100.0,
++  "driver_weight_multiplier": 1.0,
++  "overroute_weight_multiplier": 1.5,
++  "protected_weight_multiplier": 3.0,
++  "neutral_weight_multiplier": 0.35,
++  "min_od_volume": 5.0,
++  "max_solver_variables": 50000,
++  "max_od_relative_up": 0.08,
++  "max_od_relative_down": 0.04,
++  "ridge_lambda": 0.15,
++  "l1_lambda": 0.002,
++  "tiny_od_penalty_power": 0.5,
++  "solver_max_iter": 1200,
++  "solver_tolerance": 1e-07,
++  "solver_check_every": 10,
++  "power_iterations": 35,
++  "projection_method": "MARGINALS",
++  "projection_gain": 1.0,
++  "projection_ridge_volume": 250.0,
++  "projection_ridge_lambda": 0.3,
++  "projection_max_iter": 1200,
++  "projection_tolerance": 1e-08,
++  "projection_min_volume_weight": 1.0,
++  "min_od_guidance_for_projection": 1e-05,
++  "max_add_log_up": 0.04,
++  "max_add_log_down": 0.02,
++  "min_add_log_step": 5e-05,
++  "preserve_zero_add": true,
++  "add_min": 0.0,
++  "add_max": 3.0,
++  "salary": {
++    "enabled": true,
++    "income_attr": "AV_INCOME",
++    "salary_attr": "ADD_SALARY",
++    "work_attraction_attr": "ADD_ATT_W",
++    "formula_offset": 1000.0,
++    "formula_denominator": 2700.0,
++    "factor_floor": 0.05,
++    "salary_min": 0.0,
++    "salary_max": 3.0,
++    "max_abs_delta_per_block": 0.04,
++    "min_eligible_zones": 8,
++    "zone_add_ridge_lambda": 1.0,
++    "basis_ridge_lambda": 0.2,
++    "include_intercept": false
++  },
++  "zahr": {
++    "enabled": true,
++    "domestic_mask_attr": "NOT_ZAHR",
++    "domestic_threshold": 0.5,
++    "neighbour_attr": "ZAHR_SUSED",
++    "population_attr": "POP_ZP_2022",
++    "min": 0.0,
++    "max": 10.0,
++    "preserve_zero": true,
++    "seed_floor": 0.0,
++    "explicit_excluded_zone_nos": []
++  },
++  "td": {
++    "enabled": true,
++    "component_policy": {
++      "WORK": "AUTO",
++      "SERVICE": "AUTO",
++      "SCHOOL": "AUTO",
++      "LONG": "AUTO"
++    },
++    "min_conditioned_volume": 1000.0,
++    "school_min_conditioned_volume": 500.0,
++    "long_min_conditioned_volume": 80.0,
++    "min_l1_for_mutation": 0.06,
++    "mean_relative_deadband": 0.01,
++    "max_components_per_block": 2,
++    "b_shape_gain": 0.4,
++    "c_mean_gain": 0.18,
++    "c_tail_gain": 0.12,
++    "c_b_compensation": 0.35,
++    "max_abs_b_delta": 0.08,
++    "max_abs_c_delta": 0.04,
++    "long_b_gain_multiplier": 0.25,
++    "long_c_gain_multiplier": 0.5,
++    "long_max_abs_b_delta": 0.02,
++    "long_max_abs_c_delta": 0.018,
++    "b_min": 0.0,
++    "b_max": 5.0,
++    "c_min": -3.0,
++    "c_max": 0.0,
++    "td_objective_l1_weight": 1.0,
++    "td_objective_mean_weight": 0.5,
++    "td_objective_rmse_weight": 0.25,
++    "min_selected_component_relative_improvement": 0.002,
++    "max_selected_component_relative_degradation": 0.0,
++    "max_nonselected_component_objective_degradation": 0.01,
++    "max_cal_geh2_relative_degradation": 0.005,
++    "max_global_idp_mean_degradation": 0.002,
++    "max_global_idp_component_degradation": 0.01,
++    "long_authority_file": "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json"
++  },
++  "matrix_scope_by_block": {
++    "GENERATION": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT",
++        "NATIVE_CS",
++        "NATIVE_CS_noT"
++      ],
++      "matrix_nos": [
++        9101,
++        9102,
++        9103,
++        9104,
++        9105,
++        9106,
++        9107,
++        9108,
++        9109,
++        9110
++      ]
++    },
++    "TD_COMPONENT_WORK": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT"
++      ],
++      "matrix_nos": [
++        9101,
++        9102,
++        9103,
++        9104,
++        9105
++      ]
++    },
++    "TD_COMPONENT_SERVICE": {
++      "dseg_codes": [
++        "NATIVE_CS",
++        "NATIVE_CS_noT"
++      ],
++      "matrix_nos": [
++        9106,
++        9107,
++        9108,
++        9109,
++        9110
++      ]
++    },
++    "TD_COMPONENT_SCHOOL": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT"
++      ],
++      "matrix_nos": [
++        9117
++      ]
++    },
++    "TD_COMPONENT_LONG": {
++      "dseg_codes": [
++        "NATIVE_CL"
++      ],
++      "matrix_nos": [
++        9111,
++        9112,
++        9113,
++        9114,
++        9115
++      ]
++    }
++  },
++  "min_changed_matrices_by_block": {
++    "GENERATION": 1,
++    "TD_COMPONENT_WORK": 1,
++    "TD_COMPONENT_SERVICE": 1,
++    "TD_COMPONENT_SCHOOL": 1,
++    "TD_COMPONENT_LONG": 1
++  },
++  "min_cal_objective_relative_improvement": 0.001,
++  "max_new_geh20": 0,
++  "max_new_geh30": 0,
++  "max_protected_to_warn": 3,
++  "max_protected_to_hard": 0,
++  "idp_max_mean_degradation": 0.005,
++  "idp_max_component_degradation": 0.02,
++  "max_generation_effect_log_error": 0.01,
++  "max_generation_pa_relative_gap": 0.02,
++  "require_solver_convergence_for_apply": true,
++  "require_projection_convergence_for_apply": true,
++  "tg_dependency_contract_file": "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json",
++  "require_tg_dependency_contract_for_apply": true,
++  "enable_kordon_pairs": false,
++  "kordon_pair_role": "DIAGNOSTIC",
++  "kordon_category": "OA",
++  "skip_wiggly_pair_paths": true,
++  "expected_zones": 681,
++  "supply": {
++    "enabled": true,
++    "lattice": 1.0,
++    "max_step": 1.0,
++    "max_cumulative": 4.0,
++    "absolute_min": -50.0,
++    "absolute_max": 50.0,
++    "minimum_cost_seconds": 0.001,
++    "max_bundle_equivalent_seconds": 60.0,
++    "max_edges": 6,
++    "max_candidates": 8,
++    "max_driver_profiles": 8,
++    "min_geh": 10.0,
++    "min_residual": 300.0,
++    "min_attribution_coverage": 0.995,
++    "min_path_coverage": 0.98,
++    "min_path_volume_coverage": 0.995,
++    "parity_relative_tolerance": 0.02,
++    "parity_absolute_tolerance": 1.0,
++    "prior_lambda": 0.0001,
++    "prior_sigma": 2.0,
++    "passenger_dsegs": [
++      "NATIVE_CW",
++      "NATIVE_CW_noT",
++      "NATIVE_CS",
++      "NATIVE_CS_noT",
++      "NATIVE_CL",
++      "NATIVE_CF",
++      "EXOG_EE_CW",
++      "EXOG_EE_CW_noT",
++      "EXOG_EE_CS",
++      "EXOG_EE_CS_noT",
++      "EXOG_EE_CL",
++      "EXOG_EE_CF"
++    ],
++    "freight_dsegs": [
++      "LNV",
++      "NV"
++    ],
++    "component_matrix_nos": [
++      9101,
++      9102,
++      9103,
++      9104,
++      9105,
++      9106,
++      9107,
++      9108,
++      9109,
++      9110,
++      9111,
++      9112,
++      9113,
++      9114,
++      9115,
++      9116,
++      9117
++    ],
++    "excluded_link_keys": [],
++    "editable_link_types": null,
++    "assignment_operations": [],
++    "operation_number_attribute": "NO",
++    "gap_readback": {
++      "object_path": [
++        "Net"
++      ],
++      "attribute": null,
++      "maximum_gap": 1e-06
++    },
++    "link_attributes": {},
++    "impedance_authority_csv": "authorities/IMPEDANCE_FUNCTIONS.csv",
++    "impedance_authority_basis": "USER_SUPPLIED_CURRENT_EXPORTED_SNAPSHOT",
++    "equivalent_seconds_per_addval1": 10.0,
++    "fixed_input_hashes": {
++      "authorities/VDF_REGISTRY.csv": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287",
++      "authorities/VDF_TYPE_MAPPING.csv": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07"
++    },
++    "impedance_file_sha256": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef"
++  },
++  "shared_objective": {
++    "cal_weight": 1.0,
++    "idp_weight": 1.0,
++    "minimum_improvement": 1e-08,
++    "reference_policy": "FIXED_INITIAL_CAL_SCALE_AND_COMPONENT_WEIGHTS"
++  },
++  "require_all_path_export_dsegs": true
++}--- V21/R1_15A2_SUPPLY_DEMAND_MASTER_V2_2.py
++++ V22/R1_15A2_SUPPLY_DEMAND_MASTER_V2_2.py
+@@ -0,0 +1,61 @@
++# -*- coding: utf-8 -*-
++"""Run manually from Visum Scripts, NOT inside Procedure Sequence.
++
++Default: design-only. ADDVAL1 +1 = +10 generalized SECONDS.
++Live APPLY requires approved operation IDs/types/DSeg scope and gap readback.
++"""
++from pathlib import Path
++import json
++import os
++import sys
++from datetime import datetime
++
++HERE = Path(__file__).resolve().parent
++sys.path.insert(0, str(HERE))
++import r1_15a2_runtime_v1 as rt
++from r1_15a2_supply_visum import VisumAdapter
++from r1_15a2_controller_v22 import run_calibration
++from r1_15a2_supply import canonical_hash
++
++
++def load_config():
++    path = HERE / "R1_15A2_CONFIG_V2_2.json"
++    cfg = rt.read_json(path)
++    cfg["apply"] = rt.env_bool("R1_15A2_V22_APPLY", cfg["apply"])
++    cfg["config_path"] = str(path)
++    cfg["config_sha256"] = rt.sha256_file(path)
++    implementation_files = [
++        "R1_15A2_SUPPLY_DEMAND_MASTER_V2_2.py", "r1_15a2_controller_v22.py",
++        "r1_15a2_supply.py", "r1_15a2_supply_visum.py", "r1_15a2_runtime_v1.py",
++        "r1_15a2_core.py", "r1_15a2_multiblock.py", "r1_15a2_visum_parameters.py",
++        "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
++        "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py",
++        "helpers/R1_12D_CSD2022_GEH_FORENSIC_444_PROCSEQ_EMBEDDED.py"]
++    cfg["implementation_hash"] = canonical_hash({name: rt.sha256_file(HERE / name) for name in implementation_files})
++    for key, target in (("tg_dependency_contract_file", "tg_dependency_contract"),
++                        (None, "long_authority")):
++        rel = cfg[key] if key else cfg["td"]["long_authority_file"]
++        p = HERE / rel
++        cfg[target] = rt.read_json(p)
++        cfg[target + "_path"] = str(p)
++        cfg[target + "_sha256"] = rt.sha256_file(p)
++    return cfg
++
++
++def main():
++    cfg = load_config()
++    visum = globals().get("Visum")
++    if visum is None:
++        visum = globals().get("COM")
++    if visum is None:
++        visum, _ = rt.get_visum()
++    adapter = VisumAdapter(visum, cfg)
++    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
++    folder = HERE / "R1_15A2_V2_2_RUNS" / ("RUN_" + stamp)
++    result = run_calibration(adapter, cfg, folder, resume_from=os.environ.get("R1_15A2_V22_RESUME_FROM") or None)
++    print("R1 15A2 V2.2: %s; evidence: %s" % (result["status"], folder))
++    return result
++
++
++if __name__ == "__main__":
++    main()
+--- V21/STATIC_AUDIT.json
++++ V22/STATIC_AUDIT.json
+@@ -1,61 +0,0 @@
+-{
+-  "status": "PASS_STATIC_AUDIT",
+-  "local_imports": [
+-    {
+-      "file": "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+-      "local_imports": [
+-        "r1_15a2_core",
+-        "r1_15a2_multiblock",
+-        "r1_15a2_runtime_v1",
+-        "r1_15a2_visum_parameters"
+-      ],
+-      "missing": []
+-    },
+-    {
+-      "file": "r1_15a2_core.py",
+-      "local_imports": [],
+-      "missing": []
+-    },
+-    {
+-      "file": "r1_15a2_multiblock.py",
+-      "local_imports": [],
+-      "missing": []
+-    },
+-    {
+-      "file": "r1_15a2_runtime_v1.py",
+-      "local_imports": [
+-        "r1_15a2_core"
+-      ],
+-      "missing": []
+-    },
+-    {
+-      "file": "r1_15a2_visum_parameters.py",
+-      "local_imports": [
+-        "r1_15a2_multiblock",
+-        "r1_15a2_runtime_v1"
+-      ],
+-      "missing": []
+-    }
+-  ],
+-  "missing_local_imports": [],
+-  "forbidden_direct_od_write_patterns": {
+-    ".SetValues(": 0,
+-    ".SetValuesToResultMatrix(": 0,
+-    ".SetValuesRaw(": 0
+-  },
+-  "default_apply": false,
+-  "block_schedule": [
+-    "GENERATION",
+-    "TD_COMPONENT_WORK",
+-    "TD_COMPONENT_SERVICE",
+-    "TD_COMPONENT_SCHOOL",
+-    "TD_COMPONENT_LONG"
+-  ],
+-  "component_count": 16,
+-  "helper_count": 2,
+-  "authority_files": [
+-    "R1_LONG_AUTHORITY_CONTRACT_V2_1.json",
+-    "R1_LONG_COMPONENT_AUTHORITY_TEMPLATE.json",
+-    "R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json"
+-  ]
+-}
+--- V21/VERIFY_PACKAGE_V2_2.py
++++ V22/VERIFY_PACKAGE_V2_2.py
+@@ -0,0 +1,29 @@
++"""Read-only hash/inventory verification of the delivered V2.2 package."""
++from pathlib import Path
++import hashlib
++import json
++import sys
++
++
++def verify(root=None):
++    root = Path(root or Path(__file__).resolve().parent)
++    manifest = json.loads((root / 'MANIFEST.json').read_text(encoding='utf-8'))
++    errors = []
++    for rel, expected in manifest['files'].items():
++        path = root / rel
++        if not path.is_file():
++            errors.append('MISSING:' + rel)
++        elif path.stat().st_size != expected['size_bytes'] or hashlib.sha256(path.read_bytes()).hexdigest() != expected['sha256']:
++            errors.append('HASH_OR_SIZE:' + rel)
++    actual = {str(p.relative_to(root)).replace('\\', '/') for p in root.rglob('*')
++              if p.is_file() and not any(x in p.parts for x in ('__pycache__', '.pytest_cache', 'R1_15A2_V2_2_RUNS'))}
++    allowed = set(manifest['files']) | {'MANIFEST.json', 'SHA256SUMS.txt'}
++    errors += ['UNDECLARED:' + rel for rel in sorted(actual - allowed)]
++    result = {'status': 'PASS' if not errors else 'FAIL', 'file_count': len(manifest['files']), 'errors': errors,
++              'verification': 'FILE_HASH_AND_INVENTORY_ONLY_NOT_LIVE_VISUM'}
++    print(json.dumps(result, indent=2))
++    return result
++
++
++if __name__ == '__main__':
++    sys.exit(0 if verify()['status'] == 'PASS' else 1)
+--- V21/provenance/V21_MANIFEST.json
++++ V22/provenance/V21_MANIFEST.json
+@@ -0,0 +1,153 @@
++{
++  "package": "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_V2_1_AUDITED",
++  "version": "2.1-audited",
++  "created_at": "2026-10-15T14:51:22.424833+00:00",
++  "default_apply": false,
++  "live_visum_tested": false,
++  "pytest_passed": 40,
++  "clean_extract_gate": "PASS",
++  "synthetic_e2e": "PASS",
++  "long_component_production_authority": "NOT_ATTACHED_FAIL_CLOSED",
++  "files": [
++    {
++      "path": ".zip",
++      "size": 1011848,
++      "sha256": "39d8c98805a21c0163932a85bc6b2879f7aedc9e866f8733cbcd83b041cd6bd8"
++    },
++    {
++      "path": "AUDIT_REPORT_V2_1.md",
++      "size": 3718,
++      "sha256": "eaf62202d0d761e6387123faf6428566a61bcbfa7dcf7939319bc69c4d698795"
++    },
++    {
++      "path": "CHANGELOG_V2_1.md",
++      "size": 742,
++      "sha256": "f5689d55d87c1e04ca5edb9b285cd83e002f158f223514b52757f09a746ff563"
++    },
++    {
++      "path": "LIVE_VISUM_FIRST_RUN_CHECKLIST_V2_1.md",
++      "size": 1243,
++      "sha256": "fcebbd1afcb8daf5f225c4261d86b647e09b1421666346b5de677401ef019cc7"
++    },
++    {
++      "path": "METHOD_SPEC_R1_15A2_V2_1.md",
++      "size": 2307,
++      "sha256": "a563afcd7b9a3e86136c7ac2ccdec6d861ac9a9127110ae567caed97c8e151aa"
++    },
++    {
++      "path": "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
++      "size": 40950,
++      "sha256": "e632bd12866cedfa84a5f181286aec3e69ee9c3291a46c9064a2156d9b7095e0"
++    },
++    {
++      "path": "R1_15A2_CONFIG_V2_1.json",
++      "size": 6508,
++      "sha256": "879f3f1f459e956cc13b29e45e0e2f093da37ba8ff9ac4329314889c14302bf8"
++    },
++    {
++      "path": "README_R1_15A2_V2_1.md",
++      "size": 3712,
++      "sha256": "c6e5611aedbdab6805d64a60d86147fcaf0eaf52d8a919bbf973ff5bfc07f2da"
++    },
++    {
++      "path": "REQUIREMENTS.txt",
++      "size": 141,
++      "sha256": "f62d616acee3080757c1c06298852db0a6ab776f5c268a67960799d4ae8e80da"
++    },
++    {
++      "path": "STATIC_AUDIT.json",
++      "size": 1368,
++      "sha256": "cf6dbd731651e5b77e1eaf679b7cd28197406270cb9dea79da8e3550784b8904"
++    },
++    {
++      "path": "SYNTHETIC_EVIDENCE/00_SYNTHETIC_DEMO_REPORT.json",
++      "size": 4738,
++      "sha256": "ffc4c182e28ed0abe00a96fea289f5196729a6517ce42ae33c1fefa40ec10ffb"
++    },
++    {
++      "path": "SYNTHETIC_EVIDENCE/SYNTHETIC_RUN_LOG.txt",
++      "size": 4738,
++      "sha256": "ffc4c182e28ed0abe00a96fea289f5196729a6517ce42ae33c1fefa40ec10ffb"
++    },
++    {
++      "path": "TEST_RESULTS.txt",
++      "size": 1546,
++      "sha256": "0470610a2a77dbe42fc0bbf3371618c1d3424519d771ccfee3e793b198d27332"
++    },
++    {
++      "path": "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json",
++      "size": 1285,
++      "sha256": "fbb340f4c9e306f44cd4da97d93999f9f9db0439f7e37a7cde09aee643e75bc2"
++    },
++    {
++      "path": "authorities/R1_LONG_COMPONENT_AUTHORITY_TEMPLATE.json",
++      "size": 452,
++      "sha256": "bad29ece7c8479ed00ce66a159bad60aa4d01ce7652c63b0c53b237a83820658"
++    },
++    {
++      "path": "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json",
++      "size": 2442,
++      "sha256": "a5008321c3a3ba65e8a7bd81c6b6591475afabd0aa7665295dd82ba4cd7b46bf"
++    },
++    {
++      "path": "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py",
++      "size": 1194943,
++      "sha256": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e"
++    },
++    {
++      "path": "helpers/R1_12D_CSD2022_GEH_FORENSIC_444_PROCSEQ_EMBEDDED.py",
++      "size": 81615,
++      "sha256": "5600be71e94d488da03a046e66a7a8c8a9d2deee0f7f9877c8eebb172a6e1249"
++    },
++    {
++      "path": "r1_15a2_core.py",
++      "size": 81281,
++      "sha256": "3a9811ffc5044a1d60b7ee6b6f367aa544331d817716c2e1f88a6d344faf3343"
++    },
++    {
++      "path": "r1_15a2_multiblock.py",
++      "size": 36981,
++      "sha256": "1412f910cc60b8edd5c6bb23ccca89b62d6d92986b7723ffe46652bd0221e5c6"
++    },
++    {
++      "path": "r1_15a2_runtime_v1.py",
++      "size": 73594,
++      "sha256": "856245c89a3f313b701b9dc5a3d58006ea4a48b62f9fdbc947f562bc200beaa6"
++    },
++    {
++      "path": "r1_15a2_visum_parameters.py",
++      "size": 13280,
++      "sha256": "b7a325bc7cd3ee0bb2427623a9041e13dd09eb53b31e3ab18137f5c8f2367472"
++    },
++    {
++      "path": "tests/conftest.py",
++      "size": 2334,
++      "sha256": "70354284a8accf97d8fc9249b979aa37a82d0bb77b263c811638c5a2cdca822d"
++    },
++    {
++      "path": "tests/run_synthetic_e2e.py",
++      "size": 6293,
++      "sha256": "0cff73b1c056e679b1b3dbfd69f5f482003f60878ade2d47a31c64731d6706db"
++    },
++    {
++      "path": "tests/test_acceptance.py",
++      "size": 2283,
++      "sha256": "3fdc535eab6d2b8052dc9cbc9ebc128f9ca65cfa77590e8dc7c2e1a9074b0d53"
++    },
++    {
++      "path": "tests/test_core_deep.py",
++      "size": 5582,
++      "sha256": "854d2a2ed1b9dd8e88a0bea54479861f2c1ac9be39ccf15cc2171eea59f14f9a"
++    },
++    {
++      "path": "tests/test_multiblock.py",
++      "size": 8450,
++      "sha256": "3bcb480645bb0799bf650479c1fe5901af3506c79d668bc348533bb0832ec027"
++    },
++    {
++      "path": "tests/test_visum_and_master.py",
++      "size": 6292,
++      "sha256": "673eb63512a1426ce8065022fd025264be9e1e9384b1e643656e890fbd5ffca0"
++    }
++  ]
++}
+--- V21/provenance/V21_STATIC_AUDIT.json
++++ V22/provenance/V21_STATIC_AUDIT.json
+@@ -0,0 +1,61 @@
++{
++  "status": "PASS_STATIC_AUDIT",
++  "local_imports": [
++    {
++      "file": "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
++      "local_imports": [
++        "r1_15a2_core",
++        "r1_15a2_multiblock",
++        "r1_15a2_runtime_v1",
++        "r1_15a2_visum_parameters"
++      ],
++      "missing": []
++    },
++    {
++      "file": "r1_15a2_core.py",
++      "local_imports": [],
++      "missing": []
++    },
++    {
++      "file": "r1_15a2_multiblock.py",
++      "local_imports": [],
++      "missing": []
++    },
++    {
++      "file": "r1_15a2_runtime_v1.py",
++      "local_imports": [
++        "r1_15a2_core"
++      ],
++      "missing": []
++    },
++    {
++      "file": "r1_15a2_visum_parameters.py",
++      "local_imports": [
++        "r1_15a2_multiblock",
++        "r1_15a2_runtime_v1"
++      ],
++      "missing": []
++    }
++  ],
++  "missing_local_imports": [],
++  "forbidden_direct_od_write_patterns": {
++    ".SetValues(": 0,
++    ".SetValuesToResultMatrix(": 0,
++    ".SetValuesRaw(": 0
++  },
++  "default_apply": false,
++  "block_schedule": [
++    "GENERATION",
++    "TD_COMPONENT_WORK",
++    "TD_COMPONENT_SERVICE",
++    "TD_COMPONENT_SCHOOL",
++    "TD_COMPONENT_LONG"
++  ],
++  "component_count": 16,
++  "helper_count": 2,
++  "authority_files": [
++    "R1_LONG_AUTHORITY_CONTRACT_V2_1.json",
++    "R1_LONG_COMPONENT_AUTHORITY_TEMPLATE.json",
++    "R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json"
++  ]
++}
+--- V21/r1_15a2_controller_v22.py
++++ V22/r1_15a2_controller_v22.py
+@@ -0,0 +1,395 @@
++"""One accepted-state authority for supply, generation and component TD.
++
++Every trial starts from the same saved PRE state, is assigned, evaluated and
++rolled back. Only the best eligible, actually evaluated state is published.
++"""
++from __future__ import annotations
++import copy
++import json
++import math
++import numbers
++import os
++from pathlib import Path
++import traceback
++
++import r1_15a2_core as core
++import r1_15a2_multiblock as mb
++from r1_15a2_supply import (SupplyContractError, SupplyPolicy, canonical_hash,
++                          number, key_text, observation_identity, shared_ledger)
++
++
++def report_safe(value):
++    """Represent unavailable diagnostic metrics as null, not a selection failure.
++
++    Scientific state and objective values are separately validated as finite.
++    In particular a missing/zero-observation VALID report must not veto CAL.
++    """
++    if isinstance(value, dict):
++        return {str(k): report_safe(v) for k, v in value.items()}
++    if isinstance(value, (list, tuple)):
++        return [report_safe(x) for x in value]
++    if isinstance(value, bool) or value is None or isinstance(value, str):
++        return value
++    if isinstance(value, numbers.Integral):
++        return int(value)
++    if isinstance(value, numbers.Real):
++        return float(value) if math.isfinite(float(value)) else None
++    if hasattr(value, "tolist"):
++        return report_safe(value.tolist())
++    return value
++
++
++def atomic_json(path, value):
++    path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
++    temp = path.with_name(path.name + ".tmp")
++    with temp.open("w", encoding="utf-8") as f:
++        json.dump(report_safe(value), f, ensure_ascii=False, indent=2, allow_nan=False)
++        f.flush(); os.fsync(f.fileno())
++    os.replace(temp, path)
++
++
++def json_read(path):
++    with Path(path).open(encoding="utf-8-sig") as f:
++        return json.load(f)
++
++
++def target_identity(signals, components):
++    values = []
++    for comp in components:
++        sig = signals.get(comp)
++        if not sig or not sig.get("calibratable"):
++            raise SupplyContractError("SHARED_COMPONENT_AUTHORITY_LOST:" + comp)
++        bins = [{k: r[k] for k in ("bin_low", "bin_high", "target_share")} for r in sig["model_bins"]]
++        values.append({"component": comp, "authority_id": sig.get("authority_id"),
++                       "target_status": sig.get("target_status"), "bins": bins})
++    return canonical_hash(values)
++
++
++def build_reference(diag, cfg):
++    components = sorted(k for k, v in diag["signals"].items() if v.get("calibratable"))
++    if not components:
++        raise SupplyContractError("NO_COMPONENT_OBJECTIVE_AUTHORITY")
++    metrics = mb.td_component_metrics(diag["signals"], components, cfg)
++    weights = {r["component"]: number(r["weight"]) for r in metrics["components"]}
++    if len(weights) != len(components):
++        raise SupplyContractError("MISSING_COMPONENT_REFERENCE")
++    return {"schema": "R1_15A2_SHARED_OBJECTIVE_V22", "components": components,
++            "component_weights": weights, "target_hash": target_identity(diag["signals"], components),
++            "observation_hash": observation_identity(diag["d12"]["rows"]),
++            "cal_scale": max(1.0, number(core.csd_metrics(diag["d12"]["rows"])["objective_geh2_mean"]))}
++
++
++def ledger(diag, state, anchors, policy, reference, cfg):
++    if target_identity(diag["signals"], reference["components"]) != reference["target_hash"]:
++        raise SupplyContractError("COMPONENT_TARGET_CHANGED")
++    if observation_identity(diag["d12"]["rows"]) != reference["observation_hash"]:
++        raise SupplyContractError("OBSERVATION_AUTHORITY_CHANGED")
++    metrics = mb.td_component_metrics(diag["signals"], reference["components"], cfg)
++    if metrics["n"] != len(reference["components"]):
++        raise SupplyContractError("INCOMPLETE_COMPONENT_OBJECTIVE")
++    weights = reference["component_weights"]
++    total = sum(number(r["objective"])*weights[r["component"]] for r in metrics["components"])
++    component_loss = total / sum(weights.values())
++    return shared_ledger(diag["d12"]["rows"], component_loss, state["addval1"], anchors, policy, reference, cfg)
++
++
++def diagnostic_hash(diag):
++    return canonical_hash({"counts": observation_identity(diag["d12"]["rows"], include_model=True),
++                           "signals": report_safe(diag["signals"])})
++
++
++def assert_freeze(before, after, block, rows=None, candidate=None, cfg=None):
++    for name in ("fixed_link_hash", "dseg_hash", "operations_hash"):
++        if before[name] != after[name]:
++            raise SupplyContractError("FIXED_CONTEXT_CHANGED:" + name)
++    if block == "SUPPLY_ADDVAL1" or block == "BASELINE_ASSIGNMENT":
++        for name in ("matrix_hash", "generation_hash", "td_hash"):
++            if before[name] != after[name]:
++                raise SupplyContractError("SUPPLY_MUTATED_DEMAND:" + name)
++        expected = dict(before["addval1"])
++        for row in (candidate or {}).get("changes", []):
++            k = key_text(row["key"])
++            if k not in expected or expected[k] != number(row["expected_old"]):
++                raise SupplyContractError("SUPPLY_EXPECTED_OLD_CHANGED")
++            expected[k] = number(row["new"])
++        if expected != after["addval1"]:
++            raise SupplyContractError("SUPPLY_ADDITIONAL_OR_OVERWRITTEN_LINK_CHANGE")
++        return
++    if before["addval1"] != after["addval1"]:
++        raise SupplyContractError("DEMAND_MUTATED_ADDVAL1")
++    if block == "GENERATION":
++        if before["td_hash"] != after["td_hash"]:
++            raise SupplyContractError("GENERATION_MUTATED_TD")
++        expected = copy.deepcopy(before["generation_values"])
++        for row in rows or []:
++            attr = row["attr"]; z = str(row["zone_no"])
++            if abs(expected[attr][z]-number(row["current"])) > 1e-10:
++                raise SupplyContractError("GENERATION_EXPECTED_OLD_CHANGED")
++            expected[attr][z] = number(row["proposed"])
++        if canonical_hash(expected) != canonical_hash(after["generation_values"]):
++            raise SupplyContractError("UNREQUESTED_GENERATION_PARAMETER_CHANGE")
++    else:
++        if before["generation_hash"] != after["generation_hash"]:
++            raise SupplyContractError("TD_MUTATED_GENERATION")
++        expected = copy.deepcopy(before["td_values"])
++        bycomp = {r["component"]: r for r in expected}
++        for row in rows or []:
++            bycomp[row["component"]]["current_b"] = number(row["candidate_b"])
++            bycomp[row["component"]]["current_c"] = number(row["candidate_c"])
++        if canonical_hash(expected) != canonical_hash(after["td_values"]):
++            raise SupplyContractError("UNREQUESTED_TD_PARAMETER_CHANGE")
++    bmap = {r["matrix_no"]: r for r in before["matrices"]}
++    amap = {r["matrix_no"]: r for r in after["matrices"]}
++    if set(bmap) != set(amap):
++        raise SupplyContractError("MATRIX_SET_CHANGED")
++    scope = (cfg or {}).get("matrix_scope_by_block", {}).get(block, {})
++    required_nos = set(scope.get("matrix_nos", []))
++    for code in scope.get("dseg_codes", []):
++        no = before["dseg_map"].get(core.norm_code(code))
++        if no is None:
++            raise SupplyContractError("BLOCK_DSEG_MISSING")
++        required_nos.add(int(no))
++    changed = [no for no in required_nos if no in bmap and bmap[no]["sha256_float64_le"] != amap[no]["sha256_float64_le"]]
++    if not required_nos or len(changed) < int((cfg or {}).get("min_changed_matrices_by_block", {}).get(block, 1)):
++        raise SupplyContractError("REQUIRED_BLOCK_MATRICES_UNCHANGED")
++
++
++def publish(folder, checkpoint, state, diag, reference, anchors, cfg_hash, block, cycle, value):
++    payload = {"schema": "R1_15A2_ACCEPTED_STATE_V22", "checkpoint": checkpoint, "snapshot": state,
++               "diagnostic_hash": diagnostic_hash(diag), "reference": reference,
++               "original_addval_anchors": anchors, "config_hash": cfg_hash,
++               "block": block, "cycle": cycle, "ledger": value}
++    payload["accepted_state_hash"] = canonical_hash(payload)
++    atomic_json(Path(folder) / "ACCEPTED_STATE.json", payload)
++    return payload
++
++
++def restore_published(adapter, folder, cfg_hash):
++    record = json_read(Path(folder) / "ACCEPTED_STATE.json")
++    raw = {k: v for k, v in record.items() if k != "accepted_state_hash"}
++    if canonical_hash(raw) != record.get("accepted_state_hash") or record.get("config_hash") != cfg_hash:
++        raise SupplyContractError("RECOVERY_AUTHORITY_MISMATCH")
++    adapter.restore(record["checkpoint"], record["snapshot"])
++    adapter.baseline_addval = {tuple(int(x) for x in k.split("|")): v for k, v in record["original_addval_anchors"].items()}
++    return record
++
++
++def run_calibration(adapter, cfg, folder, *, resume_from=None):
++    folder = Path(folder); folder.mkdir(parents=True, exist_ok=True)
++    policy = SupplyPolicy.from_config(cfg)
++    science = {k: v for k, v in cfg.items() if k not in
++               ("apply", "max_cycles", "max_accepted_blocks", "resume_from", "config_path", "config_sha256") and not k.endswith("_path")}
++    cfg_hash = canonical_hash(science)
++    result = {"status": "STARTED", "apply": bool(cfg.get("apply")), "blocks": [], "cycles": [],
++              "accepted_count": 0, "config_hash": cfg_hash, "writes_direct_od_matrix": False,
++              "runtime_backend": getattr(adapter, "runtime_backend", "UNSPECIFIED_ADAPTER")}
++    atomic_json(folder / "EFFECTIVE_CONFIG.json", cfg)
++    active_restore = None
++    try:
++        if cfg.get("apply") and not cfg.get("run_procseq", True):
++            raise SupplyContractError("APPLY_REQUIRES_REAL_ASSIGNMENT_EXECUTION")
++        if cfg.get("supply", {}).get("enabled") is False and "SUPPLY_ADDVAL1" in cfg.get("block_schedule", []):
++            raise SupplyContractError("DISABLED_SUPPLY_IN_ACTIVE_SCHEDULE")
++        allowed = {"SUPPLY_ADDVAL1", "GENERATION", "TD_COMPONENT_WORK", "TD_COMPONENT_SERVICE", "TD_COMPONENT_SCHOOL", "TD_COMPONENT_LONG"}
++        schedule = cfg.get("block_schedule", [])
++        if not schedule or len(set(schedule)) != len(schedule) or not set(schedule) <= allowed:
++            raise SupplyContractError("INVALID_BLOCK_SCHEDULE")
++        for budget in ("max_cycles", "max_accepted_blocks"):
++            x = number(cfg.get(budget, 1))
++            if x != int(x) or not 1 <= x <= 100:
++                raise SupplyContractError("INVALID_BUDGET:" + budget)
++        scales = cfg.get("backtracking_scales", [])
++        if not scales or any(not 0 < number(x) <= 1 for x in scales):
++            raise SupplyContractError("INVALID_BACKTRACKING_SCALES")
++        resumed = restore_published(adapter, resume_from, cfg_hash) if resume_from else None
++        if resumed:
++            result["recovery_semantics"] = "RESTART_CYCLE_FROM_ACCEPTED_WITH_PRESERVED_ANCHORS"
++        result["preflight"] = adapter.preflight(folder)
++        if resumed:
++            adapter.baseline_addval = {tuple(int(x) for x in k.split("|")): v for k, v in resumed["original_addval_anchors"].items()}
++        baseline_folder = folder / "BASELINE"; baseline_folder.mkdir()
++        if cfg.get("apply"):
++            initial = adapter.snapshot(); initial_checkpoint = adapter.save(baseline_folder / "BEFORE_ASSIGNMENT.ver")
++            active_restore = (initial_checkpoint, initial)
++            adapter.assign(baseline_folder, supply_only=True)
++            assert_freeze(initial, adapter.snapshot(), "BASELINE_ASSIGNMENT")
++            active_restore = None
++        diag_parent = adapter.snapshot()
++        diag_pre = adapter.save(baseline_folder / "READ_ONLY_GUARD.ver")
++        active_restore = (diag_pre, diag_parent)
++        diag = adapter.diagnostics(baseline_folder)
++        state = adapter.snapshot()
++        if state != diag_parent:
++            raise SupplyContractError("BASELINE_DIAGNOSTICS_CHANGED_MODEL")
++        active_restore = None
++        reference = resumed["reference"] if resumed else build_reference(diag, cfg)
++        anchors = resumed["original_addval_anchors"] if resumed else dict(state["addval1"])
++        value = ledger(diag, state, anchors, policy, reference, cfg)
++        atomic_json(folder / "OBJECTIVE_REFERENCE.json", reference)
++        atomic_json(folder / "ORIGINAL_ADDVAL1_ANCHORS.json", anchors)
++        if not cfg.get("apply"):
++            for block in cfg["block_schedule"]:
++                out = folder / ("DESIGN_" + block); out.mkdir()
++                rec = {"block": block}
++                try:
++                    active_restore = (diag_pre, diag_parent)
++                    if block == "SUPPLY_ADDVAL1":
++                        design = adapter.supply_design(diag, out, state)
++                        rec.update(status="DESIGNED", candidates=len(design["candidates"]))
++                    elif block == "GENERATION":
++                        ctx = adapter.generation_design(diag, out)
++                        # The existing generation implementation is only designed here.
++                        design = adapter.generation_preview(ctx, 1.0)
++                        atomic_json(out / "GENERATION_PROPOSAL.json", design)
++                        rec.update(status="DESIGNED", candidates=len(design["candidate_rows"]))
++                    else:
++                        design = adapter.td_design(diag, block, 1.0, out)
++                        atomic_json(out / "TD_PROPOSAL.json", design)
++                        rec.update(status="DESIGNED" if design["candidate_rows"] else "NO_COMPONENT_CANDIDATE",
++                                   candidates=len(design["candidate_rows"]))
++                    if adapter.snapshot() != state:
++                        raise SupplyContractError("DESIGN_ONLY_CHANGED_MODEL")
++                    active_restore = None
++                except Exception as exc:
++                    rec.update(status="BLOCKED", error=str(exc))
++                    if active_restore:
++                        adapter.restore(*active_restore)
++                        active_restore = None
++                        rec["rollback_verified"] = True
++                result["blocks"].append(rec)
++            result["status"] = "DESIGN_ONLY_BLOCKERS" if any(x["status"] == "BLOCKED" for x in result["blocks"]) else "DESIGN_ONLY_READY_FOR_LIVE_APPLY_GATE"
++            return result
++        cp = adapter.save(baseline_folder / "ACCEPTED_BASELINE.ver")
++        publish(folder, cp, state, diag, reference, anchors, cfg_hash, "BASELINE", 0, value)
++        max_accepted = int(cfg.get("max_accepted_blocks", 1))
++        for cycle in range(1, int(cfg.get("max_cycles", 2))+1):
++            accepted_this_cycle = 0; examined = []
++            for block in cfg["block_schedule"]:
++                if (folder / "STOP_REQUESTED").exists():
++                    result["status"] = "SAFE_STOP_AT_BLOCK_BOUNDARY"
++                    return result
++                if result["accepted_count"] >= max_accepted:
++                    result["status"] = "BOUNDED_ACCEPTED_LIMIT"
++                    return result
++                examined.append(block)
++                out = folder / ("CYCLE_%02d_%s" % (cycle, block)); out.mkdir()
++                rec = {"cycle": cycle, "block": block, "attempts": []}; result["blocks"].append(rec)
++                before = adapter.snapshot()
++                if before != state:
++                    raise SupplyContractError("ACCEPTED_STATE_MUTATED_BETWEEN_BLOCKS")
++                context = None
++                try:
++                    if block == "SUPPLY_ADDVAL1":
++                        design = adapter.supply_design(diag, out, state)
++                        candidates = design["candidates"]
++                    elif block == "GENERATION":
++                        context = adapter.generation_design(diag, out)
++                        candidates = [{"scale": float(x)} for x in cfg["backtracking_scales"]]
++                    else:
++                        candidates = [{"scale": float(x)} for x in cfg["backtracking_scales"]]
++                except Exception as exc:
++                    rec.update(status="BLOCKED_DESIGN", error=str(exc))
++                    continue
++                if not candidates:
++                    rec["status"] = "NO_CANDIDATE"; continue
++                pre = adapter.save(out / "PRE.ver")
++                if adapter.snapshot() != before:
++                    raise SupplyContractError("DESIGN_OR_SAVE_CHANGED_STATE")
++                best = None
++                for ordinal, candidate in enumerate(candidates, start=1):
++                    attempt_folder = out / ("TRY_%02d" % ordinal); attempt_folder.mkdir()
++                    trial = {"candidate": candidate, "status": "STARTED"}; rec["attempts"].append(trial)
++                    rows = []
++                    try:
++                        if adapter.snapshot() != before:
++                            raise SupplyContractError("TRIAL_NOT_FROM_IDENTICAL_PARENT")
++                        if block.startswith("TD_"):
++                            design = adapter.td_design(diag, block, candidate["scale"], attempt_folder)
++                            rows = design["candidate_rows"]
++                            atomic_json(attempt_folder / "TD_DESIGN.json", design)
++                            if not rows:
++                                trial["status"] = "NO_COMPONENT_CANDIDATE"; continue
++                        atomic_json(folder / "IN_FLIGHT.json", {"checkpoint": pre, "snapshot": before,
++                                    "config_hash": cfg_hash, "block": block, "cycle": cycle})
++                        active_restore = (pre, before)
++                        if block == "SUPPLY_ADDVAL1":
++                            adapter.apply_supply(candidate, before, attempt_folder)
++                        elif block == "GENERATION":
++                            rows = adapter.apply_generation(context, candidate["scale"], attempt_folder)
++                        else:
++                            adapter.apply_td(rows)
++                        adapter.assign(attempt_folder, supply_only=(block == "SUPPLY_ADDVAL1"))
++                        if block != "SUPPLY_ADDVAL1":
++                            adapter.parameter_persistence(block, rows)
++                        after = adapter.snapshot()
++                        assert_freeze(before, after, block, rows, candidate, cfg)
++                        after_diag = adapter.diagnostics(attempt_folder, "AFTER")
++                        if adapter.snapshot() != after:
++                            raise SupplyContractError("DIAGNOSTICS_CHANGED_MODEL")
++                        after_value = ledger(after_diag, after, anchors, policy, reference, cfg)
++                        decision = adapter.block_gate(block, diag, after_diag, rows)
++                        delta = value["total"]-after_value["total"]
++                        decision["shared_ledger_before"] = value; decision["shared_ledger_after"] = after_value
++                        if delta <= number(cfg.get("shared_objective", {}).get("minimum_improvement", 1e-8)):
++                            decision["accepted"] = False
++                            decision["reasons"].append("SHARED_OBJECTIVE_NOT_IMPROVED")
++                        atomic_json(attempt_folder / "ACCEPTANCE.json", decision)
++                        trial.update(status="ELIGIBLE" if decision["accepted"] else "REJECTED", decision=decision)
++                        if decision["accepted"] and (best is None or after_value["total"] < best["value"]["total"]):
++                            saved = adapter.save(attempt_folder / "EVALUATED_CANDIDATE.ver")
++                            best = {"checkpoint": saved, "snapshot": after, "diag": after_diag, "value": after_value,
++                                    "trial": ordinal, "candidate": candidate}
++                    except Exception as exc:
++                        trial.update(status="FAILED_ROLLED_BACK", error=str(exc), traceback=traceback.format_exc())
++                    finally:
++                        if active_restore:
++                            adapter.restore(pre, before)
++                            active_restore = None
++                            rollback_diag = adapter.diagnostics(attempt_folder, "ROLLBACK")
++                            if diagnostic_hash(rollback_diag) != diagnostic_hash(diag):
++                                raise SupplyContractError("ROLLBACK_ASSIGNMENT_DIAGNOSTICS_DIFFER")
++                            trial["rollback_verified"] = True
++                            atomic_json(attempt_folder / "TRIAL_RESULT.json", trial)
++                            if (folder / "IN_FLIGHT.json").exists():
++                                (folder / "IN_FLIGHT.json").unlink()
++                if best is None:
++                    rec["status"] = "NO_ACCEPTED_CANDIDATE"
++                    continue
++                active_restore = (pre, before)
++                adapter.restore(best["checkpoint"], best["snapshot"])
++                adopted_diag = adapter.diagnostics(out, "SELECTED")
++                if diagnostic_hash(adopted_diag) != diagnostic_hash(best["diag"]):
++                    raise SupplyContractError("SELECTED_STATE_ASSIGNMENT_MISMATCH")
++                accepted_cp = adapter.save(out / "ACCEPTED.ver")
++                if adapter.snapshot() != best["snapshot"]:
++                    raise SupplyContractError("SELECTED_CHECKPOINT_CHANGED_PARAMETERS")
++                publish(folder, accepted_cp, best["snapshot"], adopted_diag, reference, anchors, cfg_hash,
++                        block, cycle, best["value"])
++                active_restore = None
++                state = best["snapshot"]; diag = adopted_diag; value = best["value"]
++                rec.update(status="ACCEPTED", selected_trial=best["trial"], ledger=value,
++                           checkpoint=accepted_cp)
++                result["accepted_count"] += 1; accepted_this_cycle += 1
++            review = {"cycle": cycle, "examined": examined, "accepted": accepted_this_cycle,
++                      "scientific_optimum_claimed": False}
++            result["cycles"].append(review)
++            if not accepted_this_cycle:
++                blocked = any(r.get("status") == "BLOCKED_DESIGN" or
++                              any(t.get("status", "").startswith("FAILED") for t in r.get("attempts", []))
++                              for r in result["blocks"] if r.get("cycle") == cycle)
++                result["status"] = "BLOCKED_CYCLE_NO_ACCEPTED_CANDIDATE" if blocked else "COMPLETE_CYCLE_NO_ACCEPTED_IMPROVEMENT"
++                return result
++        result["status"] = "BOUNDED_CYCLE_LIMIT"
++    except Exception as exc:
++        result.update(status="BLOCKED_OR_FAILED", error=str(exc), traceback=traceback.format_exc())
++        if active_restore:
++            try:
++                adapter.restore(*active_restore)
++                result["emergency_rollback_verified"] = True
++            except Exception as restore_exc:
++                result["emergency_rollback_verified"] = False
++                result["rollback_error"] = str(restore_exc)
++                result["status"] = "ROLLBACK_FAILED_STOP_MANUAL_RECOVERY_REQUIRED"
++    finally:
++        atomic_json(folder / "RUN_STATUS.json", result)
++    return result
+--- V21/r1_15a2_runtime_v1.py
++++ V22/r1_15a2_runtime_v1.py
+@@ -662,7 +662,7 @@
+ 
+ def export_actual_paths_and_build_incidence(
+     visum, out_dir, cfg, profiles, actuatable_zones,
+-    station_map=None, pair_authority=None,
++    station_map=None, pair_authority=None, route_batch_callback=None, build_incidence=True,
+ ):
+     """Export official saved paths one DSeg at a time and build sparse incidence.
+ 
+@@ -687,6 +687,15 @@
+     if not dsegs:
+         raise RuntimeError("No selected assignment-ready passenger demand segments found.")
+     selected_codes = set(x["norm_code"] for x in dsegs)
++    if len(selected_codes) != len(dsegs):
++        raise RuntimeError("Duplicate selected DSeg codes")
++    if cfg.get("require_all_path_export_dsegs", False):
++        expected = {norm_code(x) for x in cfg.get("path_export_dsegs", [])}
++        if expected != selected_codes:
++            raise RuntimeError("Exact saved-path DSeg scope mismatch: missing=%s unexpected=%s" %
++                               (sorted(expected-selected_codes), sorted(selected_codes-expected)))
++    if not build_incidence and route_batch_callback is None:
++        raise RuntimeError("Supply path export requires an actual-route collector")
+     required_mutable = set(norm_code(x) for x in cfg.get("mutable_dsegs", []) if norm_code(x))
+     missing_mutable = sorted(required_mutable - selected_codes)
+     if missing_mutable:
+@@ -827,8 +836,11 @@
+                 status["status"] = "PASS_ZERO_MATRIX_NO_SAVED_PATHS_EXPECTED"
+                 selected_complete += 1
+                 selected_zero_matrix += 1
+-            elif path_rows_ds and link_rows_ds and not path_error and not link_error:
++            elif path_rows_ds and (link_rows_ds or (not build_incidence and all(
++                    r.get("OrigZoneNo") == r.get("DestZoneNo") for r in path_rows_ds))) and not path_error and not link_error:
+                 try:
++                    if route_batch_callback is not None:
++                        status["actual_route_collector"] = route_batch_callback(path_rows_ds, link_rows_ds, ds)
+                     local = build_actual_path_incidence(
+                         path_rows_ds,
+                         link_rows_ds,
+@@ -839,8 +851,9 @@
+                         station_link_to_labels=station_map,
+                         pair_authority=pair_authority,
+                         skip_wiggly_pair_paths=bool(cfg.get("skip_wiggly_pair_paths", True)),
+-                    )
+-                    batches.append(local)
++                    ) if build_incidence else {"variable_count": 0, "incidence_nnz": 0}
++                    if build_incidence:
++                        batches.append(local)
+                     status["incidence_batch_variables"] = int(local.get("variable_count", 0) or 0)
+                     status["incidence_batch_nnz"] = int(local.get("incidence_nnz", 0) or 0)
+                     status["complete"] = 1
+@@ -910,6 +923,14 @@
+             "Incomplete official saved-path authority for selected DSegs: %s" %
+             (" | ".join(fatal_errors) if fatal_errors else "completion count mismatch")
+         )
++    if not build_incidence:
++        if not dseg_volume_parity_passes:
++            summary["status"] = "FAIL_DSEG_PATH_VOLUME_PARITY"
++            write_json(out_dir / "03A_PATH_EXPORT_SUMMARY.json", summary)
++            raise RuntimeError("Supply saved paths do not reconstruct DSeg matrix totals")
++        summary["status"] = "PASS_EXPORTED_TO_ACTUAL_ROUTE_COLLECTOR"
++        write_json(out_dir / "03A_PATH_EXPORT_SUMMARY.json", summary)
++        return None, summary
+     if not batches:
+         summary["status"] = "FAIL_NO_NONZERO_SAVED_PATH_BATCHES"
+         write_json(out_dir / "03A_PATH_EXPORT_SUMMARY.json", summary)
+@@ -1514,6 +1535,8 @@
+     arr = np.asarray(values, dtype="<f8")
+     if arr.ndim != 2:
+         raise RuntimeError("matrix array is not 2D: shape=%r" % (arr.shape,))
++    if not np.all(np.isfinite(arr)) or np.any(arr < 0):
++        raise RuntimeError("Demand matrix contains nonfinite or negative values")
+     contiguous = np.ascontiguousarray(arr, dtype="<f8")
+     return {
+         "fingerprint_key": sval(key), "source": source, "label": label,
+--- V21/r1_15a2_supply.py
++++ V22/r1_15a2_supply.py
+@@ -0,0 +1,394 @@
++"""Exact saved-route supply proposals. No routing engine and no OD writes.
++
++One raw ADDVAL1 unit adds TEN SECONDS to C/C_noT generalized link cost.
++Route incidence proposes bounded changes, never substitutes for a new assignment.
++"""
++from __future__ import annotations
++from collections import Counter, defaultdict
++from dataclasses import dataclass
++from typing import Mapping
++import csv
++import hashlib
++import json
++import math
++
++import r1_15a2_core as core
++
++
++class SupplyContractError(RuntimeError):
++    """A missing or violated scientific/runtime contract, not a no-improvement result."""
++
++
++def canonical_hash(value):
++    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
++                                     ensure_ascii=True, allow_nan=False).encode()).hexdigest()
++
++
++def number(value, label="number"):
++    out = core.fval(value, None)
++    if isinstance(value, bool) or out is None or not math.isfinite(out):
++        raise SupplyContractError("INVALID_NUMERIC:" + label)
++    return float(out)
++
++
++def integer(value, label="integer"):
++    out = number(value, label)
++    if out != round(out):
++        raise SupplyContractError("NONINTEGER_KEY:" + label)
++    return int(out)
++
++
++def edge_key(row):
++    names = (("link_no", "LinkNo", "NO"), ("from_node_no", "FromNodeNo", "FROMNODENO"),
++             ("to_node_no", "ToNodeNo", "TONODENO"))
++    return tuple(integer(core.first_value(row, group), group[0]) for group in names)
++
++
++def key_text(key):
++    return "|".join(str(integer(x)) for x in key)
++
++
++def observation_identity(rows, *, include_model=False):
++    result = []
++    seen = set()
++    for row in rows:
++        ident = str(core.first_value(row, ("countlocation_no", "obs_id", "code"), "")).strip()
++        role = str(row.get("role", "")).upper()
++        if not ident or ident in seen or role not in ("CALIBRATION", "VALIDATION", "DIAGNOSTIC"):
++            raise SupplyContractError("INVALID_OBSERVATION_IDENTITY")
++        seen.add(ident)
++        rec = {"id": ident, "role": role, "key": edge_key(row),
++               "observed": number(row.get("observed"), "observed"),
++               "period": str(row.get("period", row.get("time_basis", "")))}
++        if rec["observed"] < 0:
++            raise SupplyContractError("NEGATIVE_OBSERVATION")
++        if include_model:
++            rec["model"] = number(row.get("model"), "model")
++            if rec["model"] < 0:
++                raise SupplyContractError("NEGATIVE_MODEL_FLOW")
++        result.append(rec)
++    if not result:
++        raise SupplyContractError("EMPTY_OBSERVATION_AUTHORITY")
++    return canonical_hash(sorted(result, key=lambda x: x["id"]))
++
++
++@dataclass(frozen=True)
++class SupplyPolicy:
++    lattice: float = 1.0
++    max_step: float = 1.0
++    max_cumulative: float = 4.0
++    absolute_min: float = -50.0
++    absolute_max: float = 50.0
++    minimum_cost_seconds: float = 0.001
++    max_bundle_equivalent_seconds: float = 60.0
++    max_edges: int = 6
++    max_candidates: int = 8
++    max_driver_profiles: int = 8
++    min_geh: float = 10.0
++    min_residual: float = 300.0
++    min_attribution_coverage: float = 0.995
++    min_path_coverage: float = 0.98
++    min_path_volume_coverage: float = 0.995
++    parity_relative_tolerance: float = 0.02
++    parity_absolute_tolerance: float = 1.0
++    prior_lambda: float = 0.0001
++    prior_sigma: float = 2.0
++
++    @classmethod
++    def from_config(cls, cfg):
++        raw = cfg.get("supply", {})
++        if number(raw.get("equivalent_seconds_per_addval1", 10.0)) != 10.0:
++            raise SupplyContractError("ADDVAL1_MUST_EQUAL_TEN_GENERALIZED_SECONDS")
++        known = cls.__dataclass_fields__
++        obj = cls(**{k: raw[k] for k in known if k in raw})
++        for k in known:
++            v = number(getattr(obj, k), k)
++            if k not in ("absolute_min", "absolute_max") and v < 0:
++                raise SupplyContractError("NEGATIVE_POLICY:" + k)
++        for k in ("max_edges", "max_candidates", "max_driver_profiles"):
++            if integer(getattr(obj, k), k) < 1:
++                raise SupplyContractError("INVALID_BUDGET:" + k)
++        if obj.lattice != 1.0 or obj.max_step < obj.lattice or obj.prior_sigma <= 0 or obj.prior_lambda <= 0:
++            raise SupplyContractError("INVALID_SECONDS_LATTICE_OR_PRIOR")
++        if obj.absolute_min > obj.absolute_max or obj.max_cumulative < obj.lattice:
++            raise SupplyContractError("INVALID_ADDVAL_BOUNDS")
++        if any(not 0 < getattr(obj, k) <= 1 for k in
++               ("min_attribution_coverage", "min_path_coverage", "min_path_volume_coverage")):
++            raise SupplyContractError("INVALID_COVERAGE_POLICY")
++        if obj.minimum_cost_seconds <= 0 or obj.max_bundle_equivalent_seconds < 10:
++            raise SupplyContractError("INVALID_COST_DOMAIN_OR_BUNDLE_BUDGET")
++        return obj
++
++
++def validate_impedance_csv(path):
++    """Verify the user-supplied active expression contract, retaining inactive rows."""
++    with open(path, encoding="utf-8-sig", newline="") as f:
++        rows = list(csv.DictReader(f, delimiter=";"))
++    result = {}
++    for cls in ("C", "C_noT", "LNV", "NV"):
++        rr = [r for r in rows if r.get("TSYSCODE") == cls]
++        switches = {integer(r.get("USE_DETAILED")) for r in rr}
++        expected_switch = 1 if cls in ("C", "C_noT") else 0
++        if switches != {expected_switch}:
++            raise SupplyContractError("IMPEDANCE_SWITCH:" + cls)
++        for kind in ("LINK", "CONNECTOR", "TURN", "MAINTURN"):
++            selected = kind if expected_switch else "GENERAL"
++            terms = [r for r in rr if r.get("NETOBJECTTYPE") == selected]
++            if len(terms) != 1:
++                raise SupplyContractError("IMPEDANCE_TERM_COUNT:" + cls + ":" + kind)
++            term = terms[0]
++            source = "C" if cls == "C_noT" and kind == "LINK" else cls
++            has_add = cls in ("C", "C_noT") and kind == "LINK"
++            if (number(term["FIRST_COEFF"]) != 100 or term["FIRST_ATTR"] != "TCUR_PRTSYS(%s)" % source
++                or term["OPERATION"] != ("Add" if has_add else "None")
++                or number(term["SECOND_COEFF"]) != (1000 if has_add else 0)
++                or (has_add and term["SECOND_ATTR"] != "ADDVAL1")):
++                raise SupplyContractError("ACTIVE_IMPEDANCE_CHANGED:" + cls + ":" + kind)
++            result[cls + ":" + kind] = {"time_source": source,
++                "equivalent_seconds_per_addval1": 10.0 if has_add else 0.0}
++    return {"schema": "R1_15A2_ADDVAL1_TEN_SECONDS_V1", "stored_terms": len(rows),
++            "effective": result, "authority_hash": canonical_hash(rows)}
++
++
++class ActualRouteCollector:
++    """Consume one official DSeg batch; retain only CAL driver/edge aggregates.
++
++    Alternatives are explicit paths of the SAME (DSeg, origin, destination).
++    Shared edges cancel in the conditional contrast. No graph search is used.
++    """
++    def __init__(self, profiles, policy, parent_hash, editable_keys):
++        self.policy = policy
++        self.parent_hash = parent_hash
++        self.profiles = [dict(x) for x in profiles]
++        self.authority_hash = observation_identity(profiles, include_model=False)
++        observation_identity(profiles, include_model=True)
++        self.keys = [edge_key(x) for x in profiles]
++        self.editable = set(editable_keys)
++        self.flow = [0.0 for _ in profiles]
++        self.drivers = []
++        duplicate_physical = {}
++        for index, row in enumerate(profiles):
++            if str(row.get("role", "")).upper() != "CALIBRATION":
++                continue
++            obs = number(row["observed"]); model = number(row["model"])
++            if obs <= 0 or abs(model-obs) < policy.min_residual or core.geh(model, obs) < policy.min_geh:
++                continue
++            key = self.keys[index]
++            if key in duplicate_physical:
++                prev = profiles[duplicate_physical[key]]
++                if number(prev["observed"]) != obs or number(prev["model"]) != model:
++                    raise SupplyContractError("CONFLICTING_DUPLICATE_COUNT")
++                continue
++            duplicate_physical[key] = index
++            self.drivers.append(index)
++        self.drivers.sort(key=lambda i: (-core.geh(number(profiles[i]["model"]), number(profiles[i]["observed"])), self.keys[i]))
++        self.drivers = self.drivers[:policy.max_driver_profiles]
++        self.edge_contrast = {i: defaultdict(float) for i in self.drivers}
++        self.support = {i: 0.0 for i in self.drivers}
++        self.market_counts = {i: 0 for i in self.drivers}
++        self.probe_only_counts = {i: 0 for i in self.drivers}
++        self.batches = []
++        self.edge_max_multiplicity = Counter()
++        self.profile_index_by_key = defaultdict(list)
++        for i, key in enumerate(self.keys):
++            self.profile_index_by_key[key].append(i)
++
++    def consume(self, path_rows, pathlink_rows, dseg):
++        code = core.norm_code(dseg["code"])
++        if code in {r["dseg"] for r in self.batches}:
++            raise SupplyContractError("DUPLICATE_DSEG_BATCH")
++        paths = {}
++        for row in path_rows:
++            pk = (core.norm_code(row.get("dseg_code", code)),
++                  integer(row.get("OrigZoneNo")), integer(row.get("DestZoneNo")), integer(row.get("Index")))
++            vol = number(row.get("Vol(AP)"), "path volume")
++            if pk[0] != code or pk in paths or vol < 0:
++                raise SupplyContractError("INVALID_OR_DUPLICATE_SAVED_PATH")
++            paths[pk] = {"volume": vol, "links": {}}
++        for row in pathlink_rows:
++            pk = (core.norm_code(row.get("dseg_code", code)), integer(row.get("OrigZoneNo")),
++                  integer(row.get("DestZoneNo")), integer(row.get("PathIndex")))
++            if pk not in paths:
++                raise SupplyContractError("ORPHAN_SAVED_PATH_LINK")
++            idx = integer(row.get("Index"), "link index")
++            if idx in paths[pk]["links"]:
++                raise SupplyContractError("DUPLICATE_SAVED_PATH_LINK_INDEX")
++            paths[pk]["links"][idx] = edge_key(row)
++        markets = defaultdict(list)
++        covered_volume = 0.0; total_volume = 0.0; covered = 0; positive = 0
++        batch_hasher = hashlib.sha256()
++        for pk, rec in sorted(paths.items()):
++            v = rec["volume"]
++            if v == 0:
++                continue
++            positive += 1; total_volume += v
++            seq = tuple(edge for _, edge in sorted(rec["links"].items()))
++            if not seq:
++                if pk[1] == pk[2]:
++                    covered += 1; covered_volume += v
++                    batch_hasher.update(json.dumps([pk, v, []], separators=(",", ":")).encode())
++                continue
++            if any(a[2] != b[1] for a, b in zip(seq, seq[1:])):
++                raise SupplyContractError("DISCONNECTED_OFFICIAL_PATH_LINK_SEQUENCE")
++            covered += 1; covered_volume += v
++            occurrences = Counter(seq)
++            for edge, n in occurrences.items():
++                self.edge_max_multiplicity[edge] = max(self.edge_max_multiplicity[edge], n)
++            for edge, multiplicity in occurrences.items():
++                for i in self.profile_index_by_key.get(edge, ()):
++                    self.flow[i] += v * multiplicity
++            markets[pk[:3]].append((seq, occurrences, v))
++            batch_hasher.update(json.dumps([pk, v, seq], separators=(",", ":")).encode())
++        for market, routes in markets.items():
++            for i in self.drivers:
++                profile = self.keys[i]
++                on = [r for r in routes if profile in r[1]]
++                if not on:
++                    continue
++                off = [r for r in routes if profile not in r[1]]
++                on_volume = sum(r[2] for r in on)
++                off_volume = sum(r[2] for r in off)
++                self.support[i] += sum(r[2] * r[1][profile] for r in on)
++                self.market_counts[i] += 1
++                if not off:
++                    self.probe_only_counts[i] += 1
++                on_edges = defaultdict(float); off_edges = defaultdict(float)
++                for seq, occurrences, v in on:
++                    for edge, n in occurrences.items():
++                        if edge in self.editable: on_edges[edge] += v*n
++                for seq, occurrences, v in off:
++                    for edge, n in occurrences.items():
++                        if edge in self.editable: off_edges[edge] += v*n
++                for edge in set(on_edges) | set(off_edges):
++                    contrast = on_edges[edge] / on_volume
++                    if off_volume:
++                        contrast -= off_edges[edge] / off_volume
++                    self.edge_contrast[i][edge] += on_volume * contrast
++        stats = {"dseg": code, "positive_paths": positive, "covered_paths": covered,
++                 "path_coverage": covered/max(1, positive),
++                 "volume_coverage": covered_volume/max(1e-30, total_volume),
++                 "total_volume": total_volume, "covered_volume": covered_volume,
++                 "official_route_batch_hash": batch_hasher.hexdigest()}
++        self.batches.append(stats)
++        if stats["path_coverage"] < self.policy.min_path_coverage or stats["volume_coverage"] < self.policy.min_path_volume_coverage:
++            raise SupplyContractError("INSUFFICIENT_OFFICIAL_PATH_COVERAGE")
++        return stats
++
++    def finish(self):
++        if not self.batches:
++            raise SupplyContractError("NO_OFFICIAL_ROUTE_BATCH")
++        parity = []
++        for i, row in enumerate(self.profiles):
++            model = number(row["model"])
++            diff = abs(self.flow[i]-model)
++            tol = max(self.policy.parity_absolute_tolerance, self.policy.parity_relative_tolerance*abs(model))
++            parity.append({"id": str(core.first_value(row, ("countlocation_no", "obs_id", "code"))),
++                           "role": row["role"], "model": model, "actual_path_flow": self.flow[i],
++                           "absolute_diff": diff, "passes": diff <= tol})
++        # Flow parity is a technical export gate, never a validation-target loss.
++        if not all(row["passes"] for row in parity):
++            raise SupplyContractError("ALL_PASSENGER_PATH_TO_PROFILE_FLOW_PARITY")
++        return {"parent_hash": self.parent_hash, "observation_authority_hash": self.authority_hash,
++                "assignment_path_hash": canonical_hash(self.batches), "dseg_batches": self.batches,
++                "profile_parity": parity, "driver_count": len(self.drivers),
++                "uses_reconstructed_routes": False}
++
++
++def addval_prior(values, baseline, policy):
++    if set(values) != set(baseline):
++        raise SupplyContractError("ADDVAL_BASELINE_KEYS_CHANGED")
++    return policy.prior_lambda * sum(((number(values[k])-number(baseline[k]))/policy.prior_sigma)**2 for k in values)
++
++
++def check_addval_change(key, old, new, baseline, link, policy):
++    old = number(old); new = number(new); baseline = number(baseline)
++    if not link.get("eligible", False):
++        raise SupplyContractError("UNAUTHORIZED_LINK")
++    if abs((new-baseline)/policy.lattice-round((new-baseline)/policy.lattice)) > 1e-10:
++        raise SupplyContractError("BASELINE_RELATIVE_INTEGER_LATTICE")
++    if abs(new-old) > policy.max_step+1e-12 or abs(new-baseline) > policy.max_cumulative+1e-12:
++        raise SupplyContractError("ADDVAL_STEP_OR_CUMULATIVE_BOUND")
++    if not policy.absolute_min <= new <= policy.absolute_max:
++        raise SupplyContractError("ADDVAL_ABSOLUTE_BOUND")
++    # TCUR is NOT used for this minimum: congestion cannot justify negative cost.
++    if number(link["t0_c_seconds"]) + 10*new < policy.minimum_cost_seconds:
++        raise SupplyContractError("NONPOSITIVE_MINIMUM_GENERALIZED_COST")
++    return {"key": list(key), "expected_old": old, "new": new, "delta": new-old,
++            "equivalent_seconds": 10*(new-old)}
++
++
++def propose_supply(collector, links, baseline_values, policy):
++    authority = collector.finish()
++    candidates = []; rejected = []; seen = set()
++    for i in collector.drivers:
++        row = collector.profiles[i]
++        model = number(row["model"]); obs = number(row["observed"])
++        coverage = collector.support[i]/max(model, 1e-30)
++        if coverage < policy.min_attribution_coverage:
++            rejected.append({"profile": i, "reason": "LOW_ATTRIBUTION_COVERAGE", "coverage": coverage})
++            continue
++        sign = 1 if model > obs else -1
++        contrasts = collector.edge_contrast[i]
++        kinds = [("PROFILE_BUNDLE_DETRACT" if sign > 0 else "PROFILE_BUNDLE_ATTRACT", sign,
++                  [(k, v) for k, v in contrasts.items() if v > 1e-10])]
++        if sign < 0:
++            kinds.append(("BYPASS_BUNDLE_DETRACT", 1, [(k, -v) for k, v in contrasts.items() if v < -1e-10]))
++        for kind, direction, scored in kinds:
++            ordered = sorted(scored, key=lambda kv: (-kv[1], kv[0]))
++            legal = []
++            limit = min(policy.max_edges, int(policy.max_bundle_equivalent_seconds//10))
++            for key, score in ordered:
++                if key not in links or key not in baseline_values:
++                    raise SupplyContractError("PATH_LINK_NOT_IN_STATE")
++                old = links[key]["addval1"]
++                try:
++                    change = check_addval_change(key, old, old+direction*policy.lattice,
++                                                 baseline_values[key], links[key], policy)
++                except SupplyContractError as exc:
++                    rejected.append({"key": list(key), "profile": i, "reason": str(exc)})
++                    continue
++                change["contrast_flow"] = score
++                change["maximum_path_multiplicity"] = max(1, collector.edge_max_multiplicity[key])
++                cost_bound = sum(abs(x["equivalent_seconds"])*x["maximum_path_multiplicity"] for x in legal)
++                if cost_bound + abs(change["equivalent_seconds"])*change["maximum_path_multiplicity"] > policy.max_bundle_equivalent_seconds + 1e-12:
++                    continue
++                legal.append(change)
++                if len(legal) == limit:
++                    break
++            # Integer backtracking shrinks support, never manufactures a half-unit.
++            sizes = sorted({len(legal), max(1, len(legal)//2), 1}, reverse=True) if legal else []
++            for size in sizes:
++                changes = legal[:size]
++                signature = canonical_hash(sorted([(x["key"], x["new"]) for x in changes]))
++                if signature in seen:
++                    continue
++                seen.add(signature)
++                candidates.append({"candidate_id": kind + "_" + signature[:12], "kind": kind,
++                    "parent_hash": collector.parent_hash, "assignment_path_hash": authority["assignment_path_hash"],
++                    "driver_profile": str(core.first_value(row, ("countlocation_no", "obs_id", "code"))),
++                    "changes": changes, "coverage": coverage, "market_count": collector.market_counts[i],
++                    "no_saved_alternative_markets": collector.probe_only_counts[i],
++                    "confidence": "EXACT_SAVED_ROUTE_CONTRAST" if not collector.probe_only_counts[i] else "ACTUAL_PATH_PROBE_REQUIRES_NEW_ASSIGNMENT",
++                    "equivalent_impedance_budget_seconds": sum(abs(x["equivalent_seconds"])*x["maximum_path_multiplicity"] for x in changes)})
++                if len(candidates) >= policy.max_candidates:
++                    return {"candidates": candidates, "skipped": rejected, "authority": authority}
++    return {"candidates": candidates, "skipped": rejected, "authority": authority}
++
++
++def shared_ledger(cal_rows, component_loss, values, baseline_values, policy, reference, cfg):
++    observation_identity(cal_rows, include_model=True)
++    cal = core.csd_metrics(cal_rows, "CALIBRATION", True)
++    raw_cal = number(cal["objective_geh2_mean"])
++    raw_idp = number(component_loss, "component loss")
++    if raw_idp < 0:
++        raise SupplyContractError("NEGATIVE_COMPONENT_LOSS")
++    weights = cfg.get("shared_objective", {})
++    cal_weight = number(weights.get("cal_weight", 1.0)); idp_weight = number(weights.get("idp_weight", 1.0))
++    scale = number(reference["cal_scale"])
++    if cal_weight <= 0 or idp_weight < 0 or scale <= 0:
++        raise SupplyContractError("INVALID_OBJECTIVE_REFERENCE")
++    terms = {"CSD_CAL": cal_weight*raw_cal/scale, "COMPONENT_IDP": idp_weight*raw_idp,
++             "ADDVAL1_PRIOR": addval_prior(values, baseline_values, policy)}
++    return {"raw_cal": raw_cal, "raw_component_idp": raw_idp, "terms": terms,
++            "total": sum(terms.values()), "reference_hash": canonical_hash(reference),
++            "validation_used": False}
+--- V21/r1_15a2_supply_visum.py
++++ V22/r1_15a2_supply_visum.py
+@@ -0,0 +1,405 @@
++"""Visum adapter for the V2.2 shared controller.
++
++Uses the existing official PrT list exporter and existing TG/TD implementation.
++No alternative routing, guessed operation IDs, or direct OD writes.
++"""
++from __future__ import annotations
++from contextlib import contextmanager
++from pathlib import Path
++import hashlib
++import importlib.util
++import json
++import math
++import re
++import numpy as np
++
++import r1_15a2_core as core
++import r1_15a2_multiblock as mb
++import r1_15a2_runtime_v1 as rt
++import r1_15a2_visum_parameters as vp
++from r1_15a2_supply import (SupplyContractError, SupplyPolicy, ActualRouteCollector,
++    propose_supply, canonical_hash, key_text, number, integer, check_addval_change,
++    validate_impedance_csv, observation_identity)
++
++HERE = Path(__file__).resolve().parent
++_spec = importlib.util.spec_from_file_location("r1_15a2_v21_base_for_v22", HERE / "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py")
++base = importlib.util.module_from_spec(_spec)
++_spec.loader.exec_module(base)
++
++
++def strict_collection(collection):
++    rows = rt.get_all(collection)
++    count = integer(collection.Count, "COM collection count")
++    if len(rows) != count:
++        raise SupplyContractError("INCOMPLETE_COM_COLLECTION")
++    return rows
++
++
++def read_path_attribute(visum, spec):
++    obj = visum
++    for name in spec.get("object_path", []):
++        if not isinstance(name, str) or not name.isidentifier() or name.startswith("_"):
++            raise SupplyContractError("INVALID_COM_OBJECT_PATH")
++        obj = getattr(obj, name)
++    name = spec.get("attribute")
++    if not isinstance(name, str) or not name:
++        raise SupplyContractError("LIVE_ATTRIBUTE_NOT_CONFIGURED")
++    return obj.AttValue(name)
++
++
++def operation_inventory(visum, cfg):
++    result = []
++    noattr = cfg.get("supply", {}).get("operation_number_attribute", "NO")
++    for op in strict_collection(visum.Procedures.Operations):
++        no = integer(op.AttValue(noattr), "operation number")
++        typ = integer(op.AttValue("OPERATIONTYPE"), "operation type")
++        active = op.AttValue("ACTIVE")
++        if active not in (0, 1, False, True, "0", "1"):
++            raise SupplyContractError("UNKNOWN_ACTIVE_FLAG")
++        result.append({"no": no, "type": typ, "active": int(str(active) in ("1", "True")),
++                       "comment": str(rt.att(op, "COMMENT", "")),
++                       "name": str(rt.att(op, "NAME", "")), "object": op})
++    if len({r["no"] for r in result}) != len(result) or not result:
++        raise SupplyContractError("DUPLICATE_OR_EMPTY_OPERATION_LIST")
++    return result
++
++
++def assignment_plan(visum, cfg):
++    inventory = operation_inventory(visum, cfg)
++    approved = cfg.get("supply", {}).get("assignment_operations", [])
++    reasons = []
++    if not approved:
++        reasons.append("ASSIGNMENT_OPERATION_NUMBERS_AND_TYPES_REQUIRE_APPROVAL")
++    byno = {r["no"]: r for r in inventory}
++    wanted = set()
++    for rule in approved:
++        no = integer(rule["no"]); typ = integer(rule["operation_type"])
++        if no in wanted:
++            raise SupplyContractError("DUPLICATE_APPROVED_OPERATION")
++        wanted.add(no)
++        row = byno.get(no)
++        if row is None or row["type"] != typ or not row["active"] or typ in (45, 46):
++            reasons.append("APPROVED_ASSIGNMENT_OPERATION_MISMATCH:%s" % no)
++        if row and "15A2" in (row["comment"] + row["name"]).upper():
++            reasons.append("RECURSIVE_MASTER_OPERATION")
++    gap = cfg.get("supply", {}).get("gap_readback", {})
++    if not gap.get("attribute"):
++        reasons.append("ASSIGNMENT_GAP_READBACK_NOT_CONFIGURED")
++    else:
++        try:
++            observed_gap = number(read_path_attribute(visum, gap), "current gap")
++            if observed_gap < 0 or number(gap.get("maximum_gap", 1e-6)) <= 0:
++                raise SupplyContractError("INVALID_GAP_DOMAIN")
++        except Exception as exc:
++            reasons.append("ASSIGNMENT_GAP_READBACK_UNAVAILABLE:" + str(exc))
++    covered = set()
++    for rule in approved:
++        row = byno.get(integer(rule["no"]))
++        if row is None:
++            continue
++        try:
++            obj = row["object"]
++            for name in rule.get("dseg_object_path", []):
++                if not isinstance(name, str) or not name.isidentifier() or name.startswith("_"):
++                    raise SupplyContractError("INVALID_DSEG_OBJECT_PATH")
++                obj = getattr(obj, name)
++            value = obj.AttValue(rule.get("dseg_attribute", "DSEGSET"))
++            if not isinstance(value, str):
++                raise SupplyContractError("NONSTRING_DSEGSET_REQUIRES_EXPLICIT_ADAPTER")
++            covered.update(core.norm_code(x) for x in re.split(r"[,;{}\s]+", value) if x)
++        except Exception as exc:
++            reasons.append("ASSIGNMENT_DSEG_SCOPE_UNREADABLE:%s:%s" % (rule["no"], exc))
++    required = {core.norm_code(x) for x in cfg.get("supply", {}).get("passenger_dsegs", [])}
++    required.update(core.norm_code(x) for x in cfg.get("supply", {}).get("freight_dsegs", []))
++    if approved and not required <= covered:
++        reasons.append("ASSIGNMENT_OMITS_REQUIRED_PASSENGER_OR_FREIGHT:" + ",".join(sorted(required-covered)))
++    extra = {core.norm_code(x) for x in cfg.get("supply", {}).get("allowed_extra_assignment_dsegs", [])}
++    if approved and covered - required - extra:
++        reasons.append("UNAPPROVED_EXTRA_ASSIGNMENT_DSEGS:" + ",".join(sorted(covered-required-extra)))
++    return {"passes": not reasons, "reasons": reasons, "approved_numbers": sorted(wanted),
++            "covered_dsegs": sorted(covered),
++            "inventory": [{k: v for k, v in r.items() if k != "object"} for r in inventory]}
++
++
++@contextmanager
++def assignment_only_operations(visum, cfg):
++    """Disable everything except explicitly approved assignment operations; restore flags."""
++    plan = assignment_plan(visum, cfg)
++    if not plan["passes"]:
++        raise SupplyContractError("ASSIGNMENT_ONLY_PLAN_BLOCKED:" + ";".join(plan["reasons"]))
++    old = operation_inventory(visum, cfg)
++    selected = set(plan["approved_numbers"])
++    try:
++        for row in old:
++            expected = int(row["no"] in selected)
++            row["object"].SetAttValue("ACTIVE", expected)
++            if int(row["object"].AttValue("ACTIVE")) != expected:
++                raise SupplyContractError("OPERATION_FLAG_WRITE_MISMATCH")
++        current = operation_inventory(visum, cfg)
++        if {r["no"] for r in current if r["active"]} != selected:
++            raise SupplyContractError("ASSIGNMENT_ONLY_SELECTION_MISMATCH")
++        yield plan
++    finally:
++        errors = []
++        for row in old:
++            try:
++                row["object"].SetAttValue("ACTIVE", row["active"])
++                if int(row["object"].AttValue("ACTIVE")) != row["active"]:
++                    raise SupplyContractError("ACTIVE_READBACK")
++            except Exception as exc:
++                errors.append(str(exc))
++        if errors:
++            raise SupplyContractError("OPERATION_FLAGS_RESTORE_FAILED:" + ";".join(errors))
++        restored = operation_inventory(visum, cfg)
++        if [(r["no"], r["type"], r["active"]) for r in old] != [(r["no"], r["type"], r["active"]) for r in restored]:
++            raise SupplyContractError("OPERATION_SET_CHANGED")
++
++
++class VisumAdapter:
++    runtime_backend = "VISUM_COM"
++    def __init__(self, visum, cfg):
++        self.visum = visum
++        self.cfg = cfg
++        self.policy = SupplyPolicy.from_config(cfg)
++        self.zones = rt.zone_numbers(visum)
++        self.actuatable_zones = None
++        self.baseline_addval = None
++        self.supply_path_proof = None
++        rt.Visum = visum
++        base.Visum = visum
++
++    def preflight(self, folder):
++        folder = Path(folder)
++        if len(self.zones) != integer(self.cfg.get("expected_zones", 681)):
++            raise SupplyContractError("ZONE_AUTHORITY_COUNT")
++        supply = self.cfg["supply"]
++        rt.write_json(folder / "00_DSEG_INVENTORY.json", [
++            {k: v for k, v in row.items() if k != "object"} for row in rt.list_dsegs(self.visum)])
++        formula = validate_impedance_csv(HERE / supply["impedance_authority_csv"])
++        expected_hash = supply["impedance_file_sha256"]
++        if rt.sha256_file(HERE / supply["impedance_authority_csv"]) != expected_hash:
++            raise SupplyContractError("IMPEDANCE_AUTHORITY_FILE_CHANGED")
++        for name, digest in supply.get("fixed_input_hashes", {}).items():
++            if rt.sha256_file(HERE / name) != digest:
++                raise SupplyContractError("FROZEN_VDF_AUTHORITY_CHANGED")
++        self.actuatable_zones, zinfo = base.generation_actuator_zone_scope(self.visum, self.zones, self.cfg, folder)
++        tg = vp.audit_trip_generation_contract(self.visum, self.cfg)
++        seq = rt.audit_procseq(self.visum, folder, self.cfg)
++        plan = assignment_plan(self.visum, self.cfg)
++        rt.write_json(folder / "00_SUPPLY_ASSIGNMENT_PLAN.json", plan)
++        links = self.read_links()
++        self.baseline_addval = {key: row["addval1"] for key, row in links.items()}
++        eligible = [key for key, row in links.items() if row["eligible"]]
++        unsafe = [list(k) for k in eligible if links[k]["t0_c_seconds"]+10*links[k]["addval1"] < self.policy.minimum_cost_seconds]
++        if unsafe:
++            plan["reasons"].append("BASELINE_OUTSIDE_POSITIVE_COST_DOMAIN")
++            plan["passes"] = False
++        snapshot = self.snapshot()
++        if self.cfg.get("apply") and (not tg.get("passes") or not seq.get("passes") or not plan["passes"]):
++            rt.write_json(folder / "00_PREFLIGHT_BLOCKED.json", {"tg": tg, "procseq": seq, "supply": plan, "unsafe_keys": unsafe})
++            raise SupplyContractError("LIVE_APPLY_PREFLIGHT_BLOCKED")
++        result = {"tg": tg, "procseq": seq, "supply_assignment": plan, "zones": zinfo,
++                  "impedance": formula, "impedance_basis": "USER_SUPPLIED_EXPORTED_FORMULA_AUTHORITY",
++                  "eligible_links": len(eligible), "unsafe_minimum_cost_keys": unsafe,
++                  "apply_preflight_passes": bool(tg.get("passes") and seq.get("passes") and plan["passes"])}
++        rt.write_json(folder / "00_PREFLIGHT.json", result)
++        return result
++
++    def read_links(self):
++        maps = self.cfg["supply"].get("link_attributes", {})
++        attrs = {"link_no": "NO", "from_node_no": "FROMNODENO", "to_node_no": "TONODENO",
++                 "addval1": "ADDVAL1", "t0_c_seconds": "T0_PRTSYS(C)", "capacity": "CAPPRT",
++                 "length": "LENGTH", "type_no": "TYPENO", "tsys": "TSYSSET"}
++        attrs.update(maps)
++        excluded = {tuple(integer(x) for x in key) for key in self.cfg["supply"].get("excluded_link_keys", [])}
++        allowed_types = self.cfg["supply"].get("editable_link_types")
++        rows = {}
++        for obj in strict_collection(self.visum.Net.Links):
++            raw = {name: obj.AttValue(attr) for name, attr in attrs.items()}
++            key = tuple(integer(raw[name]) for name in ("link_no", "from_node_no", "to_node_no"))
++            if key in rows:
++                raise SupplyContractError("DUPLICATE_DIRECTED_LINK_KEY")
++            for name in ("addval1", "t0_c_seconds", "capacity", "length", "type_no"):
++                raw[name] = number(raw[name], name)
++            if min(raw["t0_c_seconds"], raw["capacity"], raw["length"]) < 0:
++                raise SupplyContractError("INVALID_PHYSICAL_LINK_ATTRIBUTE")
++            tsys = {core.norm_code(x) for x in re.split(r"[,;{}\s]+", str(raw["tsys"])) if x}
++            raw["tsys"] = sorted(tsys)
++            raw["eligible"] = bool({"C", "C_NOT"} & tsys) and key not in excluded
++            if allowed_types is not None:
++                raw["eligible"] = raw["eligible"] and integer(raw["type_no"]) in allowed_types
++            raw["object"] = obj
++            rows[key] = raw
++        if not rows:
++            raise SupplyContractError("EMPTY_LINK_NETWORK")
++        return rows
++
++    def snapshot(self):
++        links = self.read_links()
++        fixed = []
++        values = {}
++        for key, row in sorted(links.items()):
++            values[key_text(key)] = row["addval1"]
++            fixed.append({k: v for k, v in row.items() if k not in ("addval1", "object", "eligible")})
++        dsrows = rt.list_dsegs(self.visum)
++        if len({r["norm_code"] for r in dsrows}) != len(dsrows):
++            raise SupplyContractError("DUPLICATE_DSEG_IDENTITY")
++        dsmap = {r["norm_code"]: r.get("matrix_no") for r in dsrows}
++        required = {core.norm_code(x) for x in self.cfg["supply"]["passenger_dsegs"] + self.cfg["supply"].get("freight_dsegs", [])}
++        if not required <= set(dsmap):
++            raise SupplyContractError("REQUIRED_DEMAND_SEGMENT_MISSING:" + ",".join(sorted(required-set(dsmap))))
++        numbers = set(integer(r["matrix_no"]) for r in dsrows if r.get("matrix_no") not in (None, ""))
++        numbers.update(integer(x) for x in self.cfg["supply"].get("component_matrix_nos", []))
++        mats = []
++        for no in sorted(numbers):
++            mat = self.visum.Net.Matrices.ItemByKey(no)
++            row = rt._fingerprint_matrix_object(mat, "MATRIX:%d" % no, "ALL_DEMAND")
++            if not math.isfinite(row["sum"]) or row["sum"] < 0:
++                raise SupplyContractError("NONFINITE_OR_NEGATIVE_DEMAND")
++            mats.append({k: row[k] for k in ("matrix_no", "rows", "cols", "sha256_float64_le")})
++        if not mats:
++            raise SupplyContractError("EMPTY_DEMAND_FINGERPRINT")
++        zone = {attr: {str(z): number(v) for z, v in zip(self.zones,
++                    rt.read_zone_attr_strict(self.visum, attr, self.zones))}
++                for attr in mb.GENERATION_ATTRS}
++        td = base.td_snapshot(self.visum)
++        if len(td) != len(mb.COMPONENT_REGISTRY) or any(r.get("status") != "OK" for r in td):
++            raise SupplyContractError("COMPONENT_PARAMETER_SNAPSHOT_FAILED")
++        ops = [{k: v for k, v in r.items() if k != "object"} for r in operation_inventory(self.visum, self.cfg)]
++        result = {"addval1": values, "addval_hash": canonical_hash(values),
++                  "fixed_link_hash": canonical_hash(fixed), "matrix_hash": canonical_hash(mats),
++                  "matrices": mats, "dseg_map": dsmap,
++                  "dseg_hash": canonical_hash(dsmap), "generation_hash": canonical_hash(zone),
++                  "generation_values": zone, "td_values": sorted(td, key=lambda r: r["component"]),
++                  "td_hash": canonical_hash(sorted(td, key=lambda r: r["component"])),
++                  "operations_hash": canonical_hash(ops)}
++        result["state_hash"] = canonical_hash(result)
++        return result
++
++    def save(self, path):
++        return rt.save_version(self.visum, path)
++
++    def restore(self, checkpoint, snapshot):
++        if rt.sha256_file(checkpoint["path"]) != checkpoint["sha256"]:
++            raise SupplyContractError("CHECKPOINT_BYTES_CHANGED")
++        rt.load_version(self.visum, checkpoint["path"])
++        self.zones = rt.zone_numbers(self.visum)
++        current = self.snapshot()
++        if current != snapshot:
++            raise SupplyContractError("ROLLBACK_STATE_NOT_IDENTICAL")
++        return current
++
++    def gap(self):
++        spec = self.cfg["supply"].get("gap_readback", {})
++        gap = number(read_path_attribute(self.visum, spec), "assignment gap")
++        if gap < 0 or gap > number(spec.get("maximum_gap", 1e-6)):
++            raise SupplyContractError("ASSIGNMENT_NOT_TIGHT")
++        return gap
++
++    def assign(self, folder, *, supply_only):
++        if supply_only:
++            with assignment_only_operations(self.visum, self.cfg):
++                rt.execute_procseq(self.visum, folder)
++                gap = self.gap()
++        else:
++            rt.execute_procseq(self.visum, folder)
++            gap = self.gap()
++        rt.write_json(Path(folder) / "ASSIGNMENT_QUALITY.json", {"gap": gap, "supply_only": supply_only, "passes": True})
++        return gap
++
++    def diagnostics(self, folder, label="CURRENT"):
++        d12, d11 = rt.run_diagnostics(self.visum, folder, label, self.cfg)
++        observation_identity(d12["rows"], include_model=True)
++        signals, _ = base.build_td_signals_from_11d(d11, self.cfg)
++        return {"d12": d12, "d11": d11, "signals": signals}
++
++    def supply_design(self, diag, folder, snapshot):
++        links = self.read_links()
++        collector = ActualRouteCollector(diag["d12"]["rows"], self.policy, snapshot["state_hash"],
++                                         [k for k, r in links.items() if r["eligible"]])
++        cfg = dict(self.cfg, path_export_dsegs=list(self.cfg["supply"]["passenger_dsegs"]),
++                   mutable_dsegs=[], include_exog_ee_paths=True, require_all_path_export_dsegs=True)
++        _, export = rt.export_actual_paths_and_build_incidence(self.visum, folder, cfg, diag["d12"]["rows"], [],
++                                 route_batch_callback=collector.consume, build_incidence=False)
++        design = propose_supply(collector, links, self.baseline_addval, self.policy)
++        design["path_export_summary"] = export
++        self.supply_path_proof = {"parent_hash": snapshot["state_hash"],
++                                  "assignment_path_hash": design["authority"]["assignment_path_hash"]}
++        rt.write_json(Path(folder) / "SUPPLY_PATH_DESIGN.json", design)
++        return design
++
++    def apply_supply(self, candidate, snapshot, folder):
++        if candidate["parent_hash"] != snapshot["state_hash"] or self.snapshot() != snapshot:
++            raise SupplyContractError("STALE_SUPPLY_PARENT")
++        proof = self.supply_path_proof or {}
++        if proof.get("parent_hash") != snapshot["state_hash"] or not proof.get("assignment_path_hash") or candidate.get("assignment_path_hash") != proof["assignment_path_hash"]:
++            raise SupplyContractError("UNVERIFIED_OR_STALE_ACTUAL_PATH_PROOF")
++        links = self.read_links()
++        keys = [tuple(x["key"]) for x in candidate["changes"]]
++        if len(set(keys)) != len(keys) or not keys:
++            raise SupplyContractError("DUPLICATE_OR_EMPTY_SUPPLY_WRITE")
++        # Complete validation BEFORE the first COM write.
++        for change in candidate["changes"]:
++            key = tuple(change["key"])
++            if links[key]["addval1"] != number(change["expected_old"]):
++                raise SupplyContractError("STALE_EXPECTED_OLD_ADDVAL1")
++            check_addval_change(key, change["expected_old"], change["new"],
++                                self.baseline_addval[key], links[key], self.policy)
++        audit = []
++        for change in candidate["changes"]:
++            key = tuple(change["key"]); obj = links[key]["object"]
++            attr = self.cfg["supply"].get("link_attributes", {}).get("addval1", "ADDVAL1")
++            obj.SetAttValue(attr, change["new"])
++            observed = number(obj.AttValue(attr), "ADDVAL1 readback")
++            audit.append({**change, "readback": observed})
++            if abs(observed-change["new"]) > 1e-10:
++                raise SupplyContractError("ADDVAL1_READBACK_FAILED")
++        rt.write_json(Path(folder) / "SUPPLY_WRITE_READBACK.json", audit)
++
++    def generation_design(self, diag, folder):
++        return base.path_guidance_design(self.visum, folder, self.cfg, diag["d12"], self.zones, self.actuatable_zones)
++
++    def generation_preview(self, context, scale):
++        return base.generation_candidate(self.visum, self.zones, context["projection"], self.cfg, scale)
++
++    def apply_generation(self, context, scale, folder):
++        if self.cfg.get("require_solver_convergence_for_apply", True) and not context["result"].converged:
++            raise SupplyContractError("GENERATION_SOLVER_NOT_CONVERGED")
++        fams = context["projection"].family_summaries
++        if self.cfg.get("require_projection_convergence_for_apply", True) and (not fams or not all(x.get("converged") for x in fams)):
++            raise SupplyContractError("GENERATION_PROJECTION_NOT_CONVERGED")
++        design = base.generation_candidate(self.visum, self.zones, context["projection"], self.cfg, scale)
++        gate = base.generation_apply_gate(design, self.cfg)
++        rt.write_json(Path(folder) / "GENERATION_DESIGN.json", design)
++        if not gate["passes"]:
++            raise SupplyContractError("GENERATION_GATE:" + ";".join(gate["reasons"]))
++        rows = design["candidate_rows"]
++        audit = rt.apply_add_candidate(self.visum, rows, self.zones)
++        if not audit or any(x.get("status") != "OK" for x in audit):
++            raise SupplyContractError("GENERATION_READBACK_FAILED")
++        return rows
++
++    def td_design(self, diag, block, scale, folder):
++        design, signals, state = base.design_td_block(self.visum, diag["d11"], base.block_family(block), self.cfg, scale, folder)
++        return design
++
++    def apply_td(self, rows):
++        audit = vp.apply_td_candidates(self.visum, rows)
++        if not audit or any(x.get("status") != "OK" for x in audit):
++            raise SupplyContractError("TD_READBACK_FAILED")
++
++    def parameter_persistence(self, block, rows):
++        if block == "GENERATION":
++            result = rt.verify_add_candidate_persistence(self.visum, rows, self.zones)
++        else:
++            result = vp.verify_td_persistence(self.visum, rows)
++        if not result or any(x.get("status") != "OK" for x in result):
++            raise SupplyContractError("CANDIDATE_PARAMETERS_OVERWRITTEN")
++
++    def block_gate(self, block, before, after, rows):
++        if block in ("SUPPLY_ADDVAL1", "GENERATION"):
++            return core.acceptance_decision(before["d12"]["rows"], after["d12"]["rows"],
++                        before["d11"]["summary"], after["d11"]["summary"], self.cfg)
++        return base.td_acceptance_decision(before["d12"]["rows"], after["d12"]["rows"],
++                 before["d11"]["summary"], after["d11"]["summary"], before["signals"], after["signals"],
++                 [r["component"] for r in rows], self.cfg)
+--- V21/tests/run_v22_synthetic_controller_demo.py
++++ V22/tests/run_v22_synthetic_controller_demo.py
+@@ -0,0 +1,29 @@
++"""Reproducible OFFLINE state-machine demo, not a Visum assignment benchmark."""
++from pathlib import Path
++import json,sys
++sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
++from synthetic_v22_adapter import SyntheticAdapter,synthetic_config
++from r1_15a2_controller_v22 import run_calibration
++
++
++def main(output):
++    output=Path(output)
++    cfg=synthetic_config();adapter=SyntheticAdapter(cfg)
++    result=run_calibration(adapter,cfg,output/'transactions')
++    assert result['accepted_count']==3,result
++    assert result['blocks'][0]['selected_trial']==2,result
++    report={'scope':'SYNTHETIC_CONTROLLER_WITH_DETERMINISTIC_STUB_NOT_VISUM_NOT_DIAL_B',
++            'live_visum_tested':False,'accepted_blocks':result['accepted_count'],
++            'supply_selected_trial':result['blocks'][0]['selected_trial'],
++            'final_addval1':adapter.state['a'],'final_q':adapter.state['q'],'final_b':adapter.state['b'],
++            'assignment_stub_calls':len(adapter.assignments),'verified_restores':adapter.restores,
++            'accepted_ledgers':[b['ledger'] for b in result['blocks'] if b.get('status')=='ACCEPTED'],
++            'status':result['status']}
++    (output/'DEMO_REPORT.json').write_text(json.dumps(report,indent=2))
++    print(json.dumps(report,indent=2))
++    return report
++
++
++if __name__=='__main__':
++    if len(sys.argv)!=2:raise SystemExit('Usage: python tests/run_v22_synthetic_controller_demo.py OUTPUT_DIRECTORY')
++    main(sys.argv[1])
+--- V21/tests/synthetic_v22_adapter.py
++++ V22/tests/synthetic_v22_adapter.py
+@@ -0,0 +1,97 @@
++"""Deterministic synthetic adapter, NOT a Visum or traffic-equilibrium emulator.
++
++Only verifies the real controller's transactions, selection and state isolation.
++"""
++import copy,json,hashlib
++from pathlib import Path
++from r1_15a2_supply import canonical_hash,SupplyContractError,key_text
++from r1_15a2_supply_visum import base
++import r1_15a2_core as core
++
++
++class SyntheticAdapter:
++    runtime_backend = "SYNTHETIC_STATE_MACHINE_STUB_NOT_ASSIGNMENT"
++    def __init__(self,cfg,*,mutate_supply_demand=False,flat=False,broken_restore=False,fail_save=False):
++        self.cfg=cfg
++        self.state={'a':{'1|1|2':0.,'2|2|3':0.},'q':1000.,'generation':1.,'b':0.}
++        self.baseline_addval=None;self.assignments=[];self.restores=0;self.saves=[]
++        self.mutate_supply_demand=mutate_supply_demand;self.flat=flat
++        self.broken_restore=broken_restore;self.fail_save=fail_save
++    def preflight(self,folder):
++        self.baseline_addval={tuple(map(int,k.split('|'))):v for k,v in self.state['a'].items()}
++        return {'apply_preflight_passes':True,'SYNTHETIC_TEST_ONLY':True}
++    def snapshot(self):
++        s=self.state
++        gen={'ADD_PROD_W':{'1':s['generation']}}
++        td=[{'component':'WORK_E_C','current_b':s['b'],'current_c':-.1,'status':'OK'}]
++        mats=[{'matrix_no':9101,'rows':2,'cols':2,'sha256_float64_le':canonical_hash([s['q'],s['b']])}]
++        ds={'NATIVE_CW':9101}
++        out={'addval1':dict(s['a']),'addval_hash':canonical_hash(s['a']),
++             'fixed_link_hash':'fixed','matrix_hash':canonical_hash(mats),'matrices':mats,
++             'dseg_map':ds,'dseg_hash':canonical_hash(ds),'generation_hash':canonical_hash(gen),
++             'generation_values':gen,'td_values':td,'td_hash':canonical_hash(td),'operations_hash':'ops'}
++        out['state_hash']=canonical_hash(out)
++        return out
++    def save(self,path):
++        path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
++        if self.fail_save and path.name=='EVALUATED_CANDIDATE.ver':raise RuntimeError('INJECTED_SAVE_FAILURE')
++        path.write_text(json.dumps({'SYNTHETIC_CHECKPOINT_NOT_VISUM':True,'state':self.state}))
++        self.saves.append(str(path))
++        return {'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'size':path.stat().st_size}
++    def restore(self,checkpoint,snapshot):
++        self.restores+=1
++        p=Path(checkpoint['path'])
++        if hashlib.sha256(p.read_bytes()).hexdigest()!=checkpoint['sha256']:raise SupplyContractError('CHECKPOINT_BYTES_CHANGED')
++        self.state=json.loads(p.read_text())['state']
++        if self.broken_restore:self.state['a']['1|1|2']=99
++        if self.snapshot()!=snapshot:raise SupplyContractError('ROLLBACK_STATE_NOT_IDENTICAL')
++        return self.snapshot()
++    def assign(self,folder,*,supply_only):
++        self.assignments.append({'supply_only':supply_only,'a':dict(self.state['a']),'q':self.state['q']})
++        if self.mutate_supply_demand and supply_only and any(self.state['a'].values()):self.state['q']+=1
++        return 0.
++    def diagnostics(self,folder,label='CURRENT'):
++        s=self.state
++        model=600. if self.flat else .6*s['q']-200*s['a']['1|1|2']-350*s['a']['2|2|3']
++        error=.4 if self.flat else .4-.2*s['b']
++        sig={'component':'WORK_E_C','calibratable':True,'authority_id':'SYNTHETIC_ONLY',
++             'target_status':'ACTIVE_COMPONENT_DIST_TARGET','l1_half':error,'rmse_share':error,
++             'mean_target':10.,'mean_delta':-10*error,'conditioned_volume':s['q'],
++             'model_bins':[{'bin_low':0.,'bin_high':10.,'target_share':.5,'model_share':.5+error},
++                           {'bin_low':10.,'bin_high':20.,'target_share':.5,'model_share':.5-error}]}
++        counts=[{'countlocation_no':'a','role':'CALIBRATION','link_no':1,'from_node_no':1,'to_node_no':2,'observed':1000.,'model':model},
++                {'countlocation_no':'v','role':'VALIDATION','link_no':2,'from_node_no':2,'to_node_no':3,'observed':100.,'model':100.}]
++        summary={'component_dist_summary_rows':[{'component':'WORK_E_C','family':'WORK','target_status':'ACTIVE_COMPONENT_DIST_TARGET',
++                  'mean_model_conditioned':10-10*error,'mean_target':10.,'l1_distance_half':error,'rmse_share':error}]}
++        return {'d12':{'rows':counts},'d11':{'summary':summary},'signals':{'WORK_E_C':sig}}
++    def supply_design(self,diag,folder,snapshot):
++        return {'candidates':[{'candidate_id':'candidate_'+str(i),'parent_hash':snapshot['state_hash'],
++                 'changes':[{'key':list(map(int,k.split('|'))),'expected_old':v,'new':v-1,'delta':-1,'equivalent_seconds':-10}]} for i,(k,v) in enumerate(snapshot['addval1'].items())]}
++    def apply_supply(self,candidate,snapshot,folder):
++        if self.snapshot()!=snapshot:raise SupplyContractError('STALE_PARENT')
++        for r in candidate['changes']:self.state['a'][key_text(r['key'])]=r['new']
++    def generation_design(self,diag,folder):return {}
++    def generation_preview(self,context,scale):
++        old=self.state['generation'];new=old+.03*scale
++        return {'candidate_rows':[{'zone_no':1,'attr':'ADD_PROD_W','current':old,'proposed':new}]}
++    def apply_generation(self,context,scale,folder):
++        rows=self.generation_preview(context,scale)['candidate_rows']
++        self.state['generation']=rows[0]['proposed'];self.state['q']=1000*self.state['generation']
++        return rows
++    def td_design(self,diag,block,scale,folder):
++        return {'candidate_rows':[{'component':'WORK_E_C','candidate_b':self.state['b']+.08*scale,'candidate_c':-.1}]}
++    def apply_td(self,rows):self.state['b']=rows[0]['candidate_b']
++    def parameter_persistence(self,block,rows):pass
++    def block_gate(self,block,before,after,rows):
++        if block in ('SUPPLY_ADDVAL1','GENERATION'):
++            return core.acceptance_decision(before['d12']['rows'],after['d12']['rows'],before['d11']['summary'],after['d11']['summary'],self.cfg)
++        return base.td_acceptance_decision(before['d12']['rows'],after['d12']['rows'],before['d11']['summary'],after['d11']['summary'],
++                          before['signals'],after['signals'],[r['component'] for r in rows],self.cfg)
++
++
++def synthetic_config():
++    return {'apply':True,'max_cycles':1,'max_accepted_blocks':10,
++            'block_schedule':['SUPPLY_ADDVAL1','GENERATION','TD_COMPONENT_WORK'],
++            'backtracking_scales':[1.,.5,.25],
++            'matrix_scope_by_block':{'GENERATION':{'matrix_nos':[9101]},'TD_COMPONENT_WORK':{'matrix_nos':[9101]}},
++            'shared_objective':{'cal_weight':1.,'idp_weight':1.,'minimum_improvement':1e-8},'td':{},'supply':{}}
+--- V21/tests/test_controller_v22.py
++++ V22/tests/test_controller_v22.py
+@@ -0,0 +1,164 @@
++import copy,json
++from pathlib import Path
++import pytest
++from synthetic_v22_adapter import SyntheticAdapter,synthetic_config
++from r1_15a2_controller_v22 import run_calibration,assert_freeze,build_reference,ledger
++from r1_15a2_supply import SupplyContractError,SupplyPolicy
++
++
++def test_full_controller_all_blocks_best_supply_and_one_pointer(tmp_path):
++    cfg=synthetic_config();a=SyntheticAdapter(cfg)
++    result=run_calibration(a,cfg,tmp_path)
++    assert result['status']=='BOUNDED_CYCLE_LIMIT',result
++    assert result['accepted_count']==3
++    assert result['blocks'][0]['selected_trial']==2
++    assert a.state['a']=={'1|1|2':0.,'2|2|3':-1.}
++    assert a.state['q']>1000 and a.state['b']>0
++    record=json.loads((tmp_path/'ACCEPTED_STATE.json').read_text())
++    assert record['block']=='TD_COMPONENT_WORK'
++    assert set(record['original_addval_anchors'].values())=={0.}
++    totals=[r['ledger']['total'] for r in result['blocks'] if r['status']=='ACCEPTED']
++    assert all(b<a for a,b in zip(totals,totals[1:]))
++    assert all(t.get('rollback_verified') for r in result['blocks'] for t in r['attempts'])
++
++
++def test_supply_failure_does_not_abort_demand_cycle(tmp_path):
++    cfg=synthetic_config();a=SyntheticAdapter(cfg,mutate_supply_demand=True)
++    result=run_calibration(a,cfg,tmp_path)
++    assert result['accepted_count']==2,result
++    assert result['blocks'][0]['status']=='NO_ACCEPTED_CANDIDATE'
++    assert all(t['status']=='FAILED_ROLLED_BACK' for t in result['blocks'][0]['attempts'])
++    assert a.state['a']=={'1|1|2':0.,'2|2|3':0.}
++    assert result['cycles'][0]['examined']==cfg['block_schedule']
++
++
++def test_no_progress_only_after_complete_cycle(tmp_path):
++    cfg=synthetic_config();a=SyntheticAdapter(cfg,flat=True)
++    result=run_calibration(a,cfg,tmp_path)
++    assert result['status']=='COMPLETE_CYCLE_NO_ACCEPTED_IMPROVEMENT',result
++    assert result['accepted_count']==0
++    assert result['cycles'][0]['examined']==cfg['block_schedule']
++    assert result['cycles'][0]['scientific_optimum_claimed'] is False
++    assert a.state['q']==1000 and a.state['b']==0
++
++
++def test_apply_bound_not_misreported_as_convergence(tmp_path):
++    cfg=synthetic_config();cfg['max_accepted_blocks']=1;a=SyntheticAdapter(cfg)
++    result=run_calibration(a,cfg,tmp_path)
++    assert result['status']=='BOUNDED_ACCEPTED_LIMIT' and result['accepted_count']==1
++    assert result['cycles']==[]
++
++
++def test_save_failure_never_publishes_candidate(tmp_path):
++    cfg=synthetic_config();cfg['block_schedule']=['SUPPLY_ADDVAL1'];a=SyntheticAdapter(cfg,fail_save=True)
++    result=run_calibration(a,cfg,tmp_path)
++    assert result['accepted_count']==0
++    assert json.loads((tmp_path/'ACCEPTED_STATE.json').read_text())['block']=='BASELINE'
++    assert all(v==0 for v in a.state['a'].values())
++
++
++def test_rollback_failure_is_fatal(tmp_path):
++    cfg=synthetic_config();a=SyntheticAdapter(cfg,broken_restore=True)
++    result=run_calibration(a,cfg,tmp_path)
++    assert result['status']=='ROLLBACK_FAILED_STOP_MANUAL_RECOVERY_REQUIRED',result
++    assert result['accepted_count']==0
++
++
++def test_dry_run_has_no_assignments_or_accepted_state(tmp_path):
++    cfg=synthetic_config();cfg['apply']=False;a=SyntheticAdapter(cfg)
++    original=a.snapshot();result=run_calibration(a,cfg,tmp_path)
++    assert result['status']=='DESIGN_ONLY_READY_FOR_LIVE_APPLY_GATE',result
++    assert a.snapshot()==original and not a.assignments
++    assert not (tmp_path/'ACCEPTED_STATE.json').exists()
++
++
++def test_resume_preserves_original_anchor_and_objective_reference(tmp_path):
++    cfg=synthetic_config();cfg['max_accepted_blocks']=1
++    a=SyntheticAdapter(cfg);first=tmp_path/'first';r=run_calibration(a,cfg,first)
++    assert r['accepted_count']==1
++    old=json.loads((first/'ACCEPTED_STATE.json').read_text())
++    b=SyntheticAdapter(cfg);second=tmp_path/'second';r=run_calibration(b,cfg,second,resume_from=first)
++    assert r.get('recovery_semantics')=='RESTART_CYCLE_FROM_ACCEPTED_WITH_PRESERVED_ANCHORS',r
++    assert json.loads((second/'ORIGINAL_ADDVAL1_ANCHORS.json').read_text())==old['original_addval_anchors']
++    assert json.loads((second/'OBJECTIVE_REFERENCE.json').read_text())==old['reference']
++
++
++@pytest.mark.parametrize('field',['fixed_link_hash','matrix_hash','generation_hash','td_hash','operations_hash','dseg_hash'])
++def test_supply_freeze_rejects_cross_block_mutations(field):
++    a=SyntheticAdapter(synthetic_config());b=a.snapshot();after=copy.deepcopy(b);after[field]='tampered'
++    with pytest.raises(SupplyContractError):assert_freeze(b,after,'SUPPLY_ADDVAL1')
++
++
++def test_demand_rejects_addval_mutation():
++    a=SyntheticAdapter(synthetic_config());b=a.snapshot();after=copy.deepcopy(b);after['addval1']['1|1|2']=1.
++    with pytest.raises(SupplyContractError,match='DEMAND_MUTATED'):assert_freeze(b,after,'GENERATION')
++
++
++def test_shared_ledger_does_not_use_validation_targets():
++    cfg=synthetic_config();a=SyntheticAdapter(cfg);d=a.diagnostics(None);st=a.snapshot();ref=build_reference(d,cfg)
++    l1=ledger(d,st,st['addval1'],SupplyPolicy(),ref,cfg)
++    changed=copy.deepcopy(d);changed['d12']['rows'][1]['observed']=999999.
++    changed['d12']['rows'][1]['model']=3.
++    ref2=build_reference(changed,cfg)
++    l2=ledger(changed,st,st['addval1'],SupplyPolicy(),ref2,cfg)
++    assert l1['total']==l2['total'] and l1['terms']==l2['terms']
++
++
++def test_target_change_cannot_improve_objective_by_redefinition():
++    cfg=synthetic_config();a=SyntheticAdapter(cfg);d=a.diagnostics(None);ref=build_reference(d,cfg);st=a.snapshot()
++    d['signals']['WORK_E_C']['model_bins'][0]['target_share']=.9
++    with pytest.raises(SupplyContractError,match='TARGET_CHANGED'):ledger(d,st,st['addval1'],SupplyPolicy(),ref,cfg)
++
++
++def test_stop_request_checked_at_safe_boundary(tmp_path):
++    cfg=synthetic_config();a=SyntheticAdapter(cfg);(tmp_path/'STOP_REQUESTED').touch()
++    r=run_calibration(a,cfg,tmp_path)
++    assert r['status']=='SAFE_STOP_AT_BLOCK_BOUNDARY' and r['accepted_count']==0
++    assert (tmp_path/'ACCEPTED_STATE.json').exists()
++
++
++def test_unknown_block_is_not_silently_skipped(tmp_path):
++    cfg=synthetic_config();cfg['block_schedule']=['UNKNOWN'];a=SyntheticAdapter(cfg)
++    r=run_calibration(a,cfg,tmp_path)
++    assert r['status']=='BLOCKED_OR_FAILED' and 'INVALID_BLOCK_SCHEDULE' in r['error']
++
++
++def test_component_objective_weights_stay_at_initial_reference():
++    cfg=synthetic_config();a=SyntheticAdapter(cfg);d=a.diagnostics(None);ref=build_reference(d,cfg);state=a.snapshot()
++    first=ledger(d,state,state['addval1'],SupplyPolicy(),ref,cfg)
++    d['signals']['WORK_E_C']['conditioned_volume']=9999999
++    second=ledger(d,state,state['addval1'],SupplyPolicy(),ref,cfg)
++    assert first['total']==second['total']
++
++
++def test_tampered_accepted_pointer_blocks_resume(tmp_path):
++    cfg=synthetic_config();cfg['max_accepted_blocks']=1;a=SyntheticAdapter(cfg)
++    first=tmp_path/'first';run_calibration(a,cfg,first)
++    path=first/'ACCEPTED_STATE.json';record=json.loads(path.read_text());record['original_addval_anchors']['1|1|2']=99
++    path.write_text(json.dumps(record))
++    b=SyntheticAdapter(cfg);r=run_calibration(b,cfg,tmp_path/'second',resume_from=first)
++    assert r['status']=='BLOCKED_OR_FAILED' and 'RECOVERY_AUTHORITY_MISMATCH' in r['error']
++    assert not b.assignments
++
++
++def test_empty_validation_objective_does_not_veto_calibration(tmp_path):
++    class EmptyValidation(SyntheticAdapter):
++        def diagnostics(self,folder,label='CURRENT'):
++            d=super().diagnostics(folder,label)
++            d['d12']['rows'][1]['observed']=0.
++            return d
++    cfg=synthetic_config();cfg['max_accepted_blocks']=1
++    a=EmptyValidation(cfg);result=run_calibration(a,cfg,tmp_path)
++    assert result['accepted_count']==1,result
++    data=json.loads((tmp_path/'RUN_STATUS.json').read_text())
++    report=data['blocks'][0]['attempts'][0]['decision']['validation_before_report_only']
++    assert report['n']==0 and report['objective_geh2_mean'] is None
++
++
++def test_v22_entrypoint_config_is_dry_run_and_binds_source_identity():
++    import R1_15A2_SUPPLY_DEMAND_MASTER_V2_2 as entry
++    cfg=entry.load_config()
++    assert cfg['apply'] is False
++    assert len(cfg['implementation_hash'])==64
++    assert cfg['supply']['equivalent_seconds_per_addval1']==10
++    assert cfg['supply']['assignment_operations']==[]
+--- V21/tests/test_supply_v22.py
++++ V22/tests/test_supply_v22.py
+@@ -0,0 +1,173 @@
++from pathlib import Path
++from dataclasses import replace
++import copy, csv, json
++import pytest
++from r1_15a2_supply import *
++
++ROOT = Path(__file__).resolve().parents[1]
++A=(11,1,2); P=(12,2,4); B=(13,2,3); C=(14,3,4); T=(15,4,5)
++
++
++def profile(key=P, model=600., obs=1000., role="CALIBRATION", ident="a"):
++    return dict(link_no=key[0],from_node_no=key[1],to_node_no=key[2],observed=obs,model=model,role=role,countlocation_no=ident)
++
++
++def route_rows(code="NATIVE_CW", volumes=(600.,400.), routes=((A,P,T),(A,B,C,T)), origin=10, dest=20):
++    pp=[]; ll=[]
++    for i,(vol,seq) in enumerate(zip(volumes,routes),1):
++        pp.append({"dseg_code":code,"OrigZoneNo":origin,"DestZoneNo":dest,"Index":i,"Vol(AP)":vol})
++        for j,k in enumerate(seq,1):
++            ll.append({"dseg_code":code,"OrigZoneNo":origin,"DestZoneNo":dest,"PathIndex":i,"Index":j,
++                       "LinkNo":k[0],"FromNodeNo":k[1],"ToNodeNo":k[2]})
++    return pp,ll
++
++
++def collector(profiles=None, code="NATIVE_CW", policy=None):
++    policy=policy or SupplyPolicy(min_residual=1.,min_geh=1.)
++    x=ActualRouteCollector(profiles or [profile()],policy,"parent",[A,P,B,C,T])
++    pp,ll=route_rows(code)
++    x.consume(pp,ll,{"code":code})
++    return x
++
++
++def links():
++    return {k:{"addval1":0.,"eligible":True,"t0_c_seconds":60.} for k in (A,P,B,C,T)}
++
++
++def test_active_formula_ten_seconds_and_no_freight_offset():
++    a=validate_impedance_csv(ROOT/'authorities/IMPEDANCE_FUNCTIONS.csv')
++    assert a['stored_terms']==31
++    assert a['effective']['C:LINK']['equivalent_seconds_per_addval1']==10
++    assert a['effective']['C_noT:LINK']['time_source']=='C'
++    assert a['effective']['LNV:LINK']['equivalent_seconds_per_addval1']==0
++    assert a['effective']['C:TURN']['equivalent_seconds_per_addval1']==0
++
++
++@pytest.mark.parametrize('delta',[-1.,1.])
++def test_raw_step_has_ten_second_effect(delta):
++    r=check_addval_change(P,0,delta,0,links()[P],SupplyPolicy())
++    assert r['equivalent_seconds']==10*delta
++
++
++def test_decimal_anchor_is_not_silently_rounded():
++    r=check_addval_change(P,.25,1.25,.25,links()[P],SupplyPolicy())
++    assert r['new']==1.25 and r['delta']==1
++
++
++@pytest.mark.parametrize('value',[float('nan'),float('inf'),True,.5,5.])
++def test_bad_candidate_rejected(value):
++    with pytest.raises(SupplyContractError):
++        check_addval_change(P,0,value,0,links()[P],SupplyPolicy())
++
++
++@pytest.mark.parametrize('field,value',[('lattice',.5),('max_step',0),('prior_lambda',0),('prior_sigma',0),('min_path_coverage',1.1),('max_edges',1.5)])
++def test_bad_policy_rejected(field,value):
++    with pytest.raises(SupplyContractError):SupplyPolicy.from_config({'supply':{field:value}})
++
++
++def test_negative_bound_uses_free_flow_not_congestion():
++    row=dict(links()[P],t0_c_seconds=9.)
++    with pytest.raises(SupplyContractError,match='NONPOSITIVE'):
++        check_addval_change(P,0,-1,0,row,SupplyPolicy())
++
++
++def test_prior_anchored_at_original_not_last_accepted():
++    p=SupplyPolicy()
++    assert addval_prior({'e':2},{'e':0},p)==pytest.approx(4*addval_prior({'e':1},{'e':0},p))
++
++
++def test_exact_on_bypass_contrast_cancels_common_links():
++    x=collector(); d=propose_supply(x,links(),{k:0. for k in links()},x.policy)
++    assert len(d['candidates'])>=2
++    changed={tuple(c['key']) for r in d['candidates'] for c in r['changes']}
++    assert A not in changed and T not in changed
++    assert P in changed and B in changed and C in changed
++    assert any(r['kind']=='BYPASS_BUNDLE_DETRACT' for r in d['candidates'])
++    assert all(abs(c['delta'])==1 for r in d['candidates'] for c in r['changes'])
++
++
++@pytest.mark.parametrize('code',['NATIVE_CL','NATIVE_CF','EXOG_EE_CW','EXOG_EE_CL','EXOG_EE_CF'])
++def test_fixed_demand_routes_are_supply_scope(code):
++    x=collector(code=code)
++    assert propose_supply(x,links(),{k:0. for k in links()},x.policy)['candidates']
++
++
++def test_unrelated_od_does_not_support_bypass():
++    x=collector()
++    pp,ll=route_rows('NATIVE_CS',(100000.,),((A,B,C,T),),origin=999,dest=888)
++    x.consume(pp,ll,{'code':'NATIVE_CS'})
++    assert x.edge_contrast[0][B]==pytest.approx(-600.)
++
++
++def test_validation_targets_do_not_change_proposals():
++    f=profile(A,1000,1000,'VALIDATION','v')
++    a=collector([profile(),f]); f2=dict(f,observed=900000)
++    b=collector([profile(),f2])
++    ca=propose_supply(a,links(),{k:0 for k in links()},a.policy)['candidates']
++    cb=propose_supply(b,links(),{k:0 for k in links()},b.policy)['candidates']
++    assert ca==cb
++
++
++@pytest.mark.parametrize('defect',['duplicate_path','duplicate_index','orphan_link','fractional_key','negative_volume','disconnected','missing_links'])
++def test_bad_actual_paths_fail_closed(defect):
++    pp,ll=route_rows()
++    if defect=='duplicate_path':pp.append(copy.deepcopy(pp[0]))
++    if defect=='duplicate_index':ll.append(copy.deepcopy(ll[0]))
++    if defect=='orphan_link':ll[0]['PathIndex']=777
++    if defect=='fractional_key':ll[0]['LinkNo']=11.2
++    if defect=='negative_volume':pp[0]['Vol(AP)']=-1
++    if defect=='disconnected':ll[1]['FromNodeNo']=99
++    if defect=='missing_links':ll=[r for r in ll if r['PathIndex']==2]
++    x=ActualRouteCollector([profile()],SupplyPolicy(),"parent",links())
++    with pytest.raises(SupplyContractError):x.consume(pp,ll,{'code':'NATIVE_CW'})
++
++
++def test_parity_uses_all_model_flow_not_reconstructed_denominator():
++    x=collector([profile(model=900)])
++    with pytest.raises(SupplyContractError,match='PARITY'):x.finish()
++
++
++def test_duplicate_profile_does_not_multiply_driver_signal():
++    x=collector([profile(),profile(ident='b')]);assert len(x.drivers)==1
++
++
++def test_conflicting_duplicate_profile_is_rejected():
++    with pytest.raises(SupplyContractError,match='CONFLICTING'):
++        collector([profile(),profile(obs=2000,ident='b')])
++
++
++def test_budget_and_integer_support_backtracking():
++    p=SupplyPolicy(min_residual=1,min_geh=1,max_bundle_equivalent_seconds=10,max_candidates=20)
++    x=collector(policy=p); d=propose_supply(x,links(),{k:0 for k in links()},p)
++    assert all(len(r['changes'])==1 and r['equivalent_impedance_budget_seconds']==10 for r in d['candidates'])
++
++
++def test_actual_intrazonal_route_may_have_no_physical_link():
++    x=ActualRouteCollector([profile(model=0)],SupplyPolicy(),"p",links())
++    pp,ll=route_rows('NATIVE_CW',(30,), ((),), origin=1,dest=1)
++    s=x.consume(pp,ll,{'code':'NATIVE_CW'}); assert s['volume_coverage']==1
++    assert x.finish()['profile_parity'][0]['passes']
++
++
++def test_single_saved_path_is_labelled_probe_not_proved_response():
++    x=ActualRouteCollector([profile(model=1000,obs=1500)],SupplyPolicy(),"p",links())
++    pp,ll=route_rows(volumes=(1000,),routes=((A,P,T),))
++    x.consume(pp,ll,{'code':'NATIVE_CW'})
++    d=propose_supply(x,links(),{k:0 for k in links()},x.policy)
++    assert all(r['confidence']=='ACTUAL_PATH_PROBE_REQUIRES_NEW_ASSIGNMENT' for r in d['candidates'])
++
++
++def test_unit_contract_cannot_be_overridden():
++    with pytest.raises(SupplyContractError,match='TEN_GENERALIZED_SECONDS'):
++        SupplyPolicy.from_config({'supply':{'equivalent_seconds_per_addval1':600}})
++
++
++def test_repeated_link_multiplicity_is_counted_in_path_budget():
++    reverse=(99,4,2)
++    seq=(A,P,reverse,P,T)
++    pol=SupplyPolicy(min_geh=1,min_residual=1,max_bundle_equivalent_seconds=10)
++    x=ActualRouteCollector([profile(model=2000,obs=1000)],pol,'p',[P])
++    pp,ll=route_rows(volumes=(1000,),routes=(seq,))
++    x.consume(pp,ll,{'code':'NATIVE_CW'})
++    assert x.flow[0]==2000 and x.edge_max_multiplicity[P]==2
++    assert not propose_supply(x,links(),{k:0 for k in links()},pol)['candidates']
+--- V21/tests/test_supply_visum_v22.py
++++ V22/tests/test_supply_visum_v22.py
+@@ -0,0 +1,178 @@
++"""COM-shaped stubs only. Operation type 900 and GAP are SYNTHETIC_TEST_ONLY."""
++from pathlib import Path
++import copy
++import numpy as np
++import pytest
++from conftest import FakeAttr,FakeCollection,FakeOperation,FakeVisum
++from test_visum_and_master import make_visum
++from test_supply_v22 import route_rows,profile,A,P,B,C,T
++import r1_15a2_runtime_v1 as rt
++from r1_15a2_supply import ActualRouteCollector,SupplyPolicy,SupplyContractError
++from r1_15a2_supply_visum import assignment_only_operations,assignment_plan,VisumAdapter
++
++
++class Matrix(FakeAttr):
++    def __init__(self,no,values):
++        super().__init__(NO=no,CODE='M'+str(no))
++        self.values=np.array(values,dtype=float)
++    def GetValues(self):return self.values.tolist()
++    def AttValue(self,name):
++        if name=='SUM':return float(self.values.sum())
++        return super().AttValue(name)
++
++
++def small_cfg():
++    return {'supply':{'passenger_dsegs':['NATIVE_CW'],'freight_dsegs':['LNV','NV'],
++            'assignment_operations':[{'no':3,'operation_type':900,'dseg_attribute':'DSEGSET'}],
++            'gap_readback':{'object_path':['Net'],'attribute':'GAP','maximum_gap':1e-6},
++            'component_matrix_nos':[9101]}}
++
++
++def op_visum():
++    ops=[FakeOperation(NO=1,OPERATIONTYPE=45,ACTIVE=1,NAME='TG'),
++         FakeOperation(NO=2,OPERATIONTYPE=46,ACTIVE=1,NAME='TD'),
++         FakeOperation(NO=3,OPERATIONTYPE=900,ACTIVE=1,NAME='Synthetic assignment',DSEGSET='NATIVE_CW,LNV,NV')]
++    v=FakeVisum(operations=ops);v.Net.SetAttValue('GAP',1e-7)
++    return v
++
++
++def test_assignment_only_flags_and_restore_after_success():
++    v=op_visum()
++    with assignment_only_operations(v,small_cfg()):
++        assert [x.AttValue('ACTIVE') for x in v.Procedures.Operations.items]==[0,0,1]
++    assert [x.AttValue('ACTIVE') for x in v.Procedures.Operations.items]==[1,1,1]
++
++
++def test_assignment_only_flags_restore_after_exception():
++    v=op_visum()
++    with pytest.raises(RuntimeError,match='EXEC_FAILED'):
++        with assignment_only_operations(v,small_cfg()):raise RuntimeError('EXEC_FAILED')
++    assert [x.AttValue('ACTIVE') for x in v.Procedures.Operations.items]==[1,1,1]
++
++
++@pytest.mark.parametrize('defect',['unapproved','wrong_type','inactive','TG','no_gap','missing_freight'])
++def test_assignment_plan_rejects_unqualified_execution(defect):
++    v=op_visum();cfg=small_cfg()
++    if defect=='unapproved':cfg['supply']['assignment_operations']=[]
++    if defect=='wrong_type':cfg['supply']['assignment_operations'][0]['operation_type']=901
++    if defect=='inactive':v.Procedures.Operations.items[2].SetAttValue('ACTIVE',0)
++    if defect=='TG':cfg['supply']['assignment_operations']=[{'no':1,'operation_type':45}]
++    if defect=='no_gap':cfg['supply']['gap_readback']['attribute']=None
++    if defect=='missing_freight':v.Procedures.Operations.items[2].SetAttValue('DSEGSET','NATIVE_CW')
++    assert not assignment_plan(v,cfg)['passes']
++    with pytest.raises(SupplyContractError):
++        with assignment_only_operations(v,cfg):pass
++
++
++def state_visum():
++    v=make_visum()
++    for i,op in enumerate(v.Procedures.Operations.items,1):op.SetAttValue('NO',i)
++    assignment=FakeOperation(NO=3,OPERATIONTYPE=900,ACTIVE=1,COMMENT='ASSIGNMENT',DSEGSET='NATIVE_CW,LNV,NV')
++    v.Procedures.Operations=FakeCollection(v.Procedures.Operations.items+[assignment])
++    mats=[Matrix(9101,[[0.,1000.],[0.,0.]]),Matrix(2,[[0.,30.],[0.,0.]]),Matrix(3,[[0.,50.],[0.,0.]])]
++    v.Net.Matrices=FakeCollection(mats,{m.AttValue('NO'):m for m in mats})
++    v.Net.DemandSegments=FakeCollection([FakeAttr(CODE=code,ODMatrix=mat) for code,mat in zip(['NATIVE_CW','LNV','NV'],mats)])
++    v.Net.Links=FakeCollection([FakeAttr(NO=k[0],FROMNODENO=k[1],TONODENO=k[2],ADDVAL1=0.,CAPPRT=5000,LENGTH=1.,TYPENO=1,TSYSSET='C,C_noT',**{'T0_PRTSYS(C)':60.}) for k in [A,P,B,C,T,(11,2,1)]])
++    v.Net.SetAttValue('GAP',1e-7)
++    return v
++
++
++def test_snapshot_preserves_direction_and_all_demand_matrices():
++    adapter=VisumAdapter(state_visum(),small_cfg());snap=adapter.snapshot()
++    assert '11|1|2' in snap['addval1'] and '11|2|1' in snap['addval1']
++    assert {r['matrix_no'] for r in snap['matrices']}=={2,3,9101}
++    assert len(snap['td_values'])==16
++
++
++def test_snapshot_detects_nonrequested_freight_matrix_mutation():
++    v=state_visum();adapter=VisumAdapter(v,small_cfg());before=adapter.snapshot()
++    v.Net.Matrices.ItemByKey(2).values[0,1]+=5
++    after=adapter.snapshot()
++    assert before['matrix_hash']!=after['matrix_hash']
++
++
++def test_addval_write_expected_old_and_all_readback(tmp_path):
++    v=state_visum();a=VisumAdapter(v,small_cfg());s=a.snapshot()
++    a.baseline_addval={k:r['addval1'] for k,r in a.read_links().items()}
++    a.supply_path_proof={'parent_hash':s['state_hash'],'assignment_path_hash':'synthetic-proof'}
++    candidate={'parent_hash':s['state_hash'],'assignment_path_hash':'synthetic-proof','changes':[{'key':list(P),'expected_old':0.,'new':-1.}]}
++    a.apply_supply(candidate,s,tmp_path)
++    assert a.read_links()[P]['addval1']==-1
++    with pytest.raises(SupplyContractError,match='STALE'):a.apply_supply(candidate,s,tmp_path)
++
++
++def test_assignment_executes_no_tg_td_and_checks_gap(tmp_path):
++    v=state_visum();a=VisumAdapter(v,small_cfg());calls=[]
++    def execute():
++        active=[r.AttValue('NO') for r in v.Procedures.Operations.items if r.AttValue('ACTIVE')]
++        calls.append(active)
++    v.Procedures.Execute=execute
++    assert a.assign(tmp_path,supply_only=True)==pytest.approx(1e-7)
++    assert calls==[[3]]
++    v.Net.SetAttValue('GAP',.1)
++    with pytest.raises(SupplyContractError,match='NOT_TIGHT'):a.assign(tmp_path,supply_only=True)
++    assert all(x.AttValue('ACTIVE') for x in v.Procedures.Operations.items)
++
++
++class OfficialList:
++    def __init__(self,kind,pathrows,linkrows):self.kind=kind;self.pp=pathrows;self.ll=linkrows
++    def AddKeyColumns(self):pass
++    def AddColumn(self,col):pass
++    def SetObjects(self,zero,code,allroutes):self.code=code
++    def SaveToArray(self):
++        if self.kind=='paths':
++            return [[r['OrigZoneNo'],r['DestZoneNo'],r['Index'],r['Vol(AP)'],0,0,0,0,0,1] for r in self.pp]
++        return [[r['OrigZoneNo'],r['DestZoneNo'],r['PathIndex'],r['Index'],r['LinkNo'],r['FromNodeNo'],r['ToNodeNo']] for r in self.ll]
++
++
++def exporter_visum():
++    v=state_visum();pp,ll=route_rows()
++    lists=FakeAttr(CreatePrTPathList=lambda:OfficialList('paths',pp,ll),CreatePrTPathLinkList=lambda:OfficialList('links',pp,ll))
++    v.Workbench=FakeAttr(Lists=lists)
++    return v
++
++
++def test_live_export_path_callback_uses_actual_order_and_all_volume(tmp_path):
++    v=exporter_visum();cfg={'path_export_dsegs':['NATIVE_CW'],'mutable_dsegs':[],'require_all_path_export_dsegs':True}
++    collector=ActualRouteCollector([profile()],SupplyPolicy(),'p',[A,P,B,C,T])
++    inc,summary=rt.export_actual_paths_and_build_incidence(v,tmp_path,cfg,[profile()],[],route_batch_callback=collector.consume,build_incidence=False)
++    assert inc is None and summary['dseg_path_volume_parity_passes']
++    assert collector.finish()['profile_parity'][0]['actual_path_flow']==600
++    assert (tmp_path/'03_PRT_PATHS_ALL.csv').exists()
++
++
++def test_export_cannot_silently_drop_exog_dseg(tmp_path):
++    cfg={'path_export_dsegs':['NATIVE_CW','EXOG_EE_CF'],'mutable_dsegs':[],'require_all_path_export_dsegs':True}
++    with pytest.raises(RuntimeError,match='scope mismatch'):
++        rt.export_actual_paths_and_build_incidence(exporter_visum(),tmp_path,cfg,[profile()],[],route_batch_callback=lambda *args:None,build_incidence=False)
++
++
++def test_export_matrix_volume_parity_is_hard_gate(tmp_path):
++    v=exporter_visum();v.Net.Matrices.ItemByKey(9101).values[0,1]=1500
++    cfg={'path_export_dsegs':['NATIVE_CW'],'mutable_dsegs':[],'require_all_path_export_dsegs':True}
++    collector=ActualRouteCollector([profile()],SupplyPolicy(),'p',[A,P,B,C,T])
++    with pytest.raises(RuntimeError,match='matrix totals'):
++        rt.export_actual_paths_and_build_incidence(v,tmp_path,cfg,[profile()],[],route_batch_callback=collector.consume,build_incidence=False)
++
++
++def test_extra_aggregate_dseg_cannot_be_assigned_twice():
++    v=op_visum();v.Procedures.Operations.items[2].SetAttValue('DSEGSET','NATIVE_CW,LNV,NV,R1_OA_CAL')
++    assert not assignment_plan(v,small_cfg())['passes']
++
++
++def test_gap_reader_is_probed_before_any_assignment():
++    v=op_visum();c=small_cfg();c['supply']['gap_readback']['attribute']='NONEXISTENT'
++    assert not assignment_plan(v,c)['passes']
++
++
++@pytest.mark.parametrize('value',[float('nan'),float('inf'),-1.])
++def test_matrix_fingerprint_rejects_invalid_cells(value):
++    m=Matrix(1,[[1.,value],[0.,1.]])
++    with pytest.raises(RuntimeError):rt._fingerprint_matrix_object(m,'x','test')
++
++
++def test_raw_candidate_without_current_path_authority_is_rejected(tmp_path):
++    v=state_visum();a=VisumAdapter(v,small_cfg());s=a.snapshot()
++    a.baseline_addval={k:r['addval1'] for k,r in a.read_links().items()}
++    candidate={'parent_hash':s['state_hash'],'changes':[{'key':list(P),'expected_old':0.,'new':-1.}]}
++    with pytest.raises(SupplyContractError,match='ACTUAL_PATH_PROOF'):a.apply_supply(candidate,s,tmp_path)

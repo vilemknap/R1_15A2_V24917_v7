@@ -1,0 +1,54 @@
+R1 15A2 PROFILE488 - A0004 / cycle 3 TD recovery
+=================================================
+
+PROC TENTO BALIK EXISTUJE
+------------------------
+Puvodni beh RUN_20261022_030700_218899 nespadl na kalibracni matematice.
+Po accepted Generation v outer cycle 3 selhal pouze zapis performance telemetry
+PERFORMANCE/SUMMARY.json pres Windows os.replace() s WinError 5.
+TD rollback byl nasledne overen jako exact: snapshot_equal=true,
+diagnostic_equal=true.
+
+CO OTEVRIT VE VISUMU
+--------------------
+Otevri PRESNE:
+  ACCEPTED_B_0004_d26d01d6f9a5.ver
+
+Nepouzivej BEST_SO_FAR_0002 a nepouzivej nahodnou working-copy verzi z padleho behu.
+Launcher navic fail-closed overi jmeno checkpointu i presny semantic state/hash set.
+
+CO SPUSTIT
+----------
+  R1_15A2_RESUME_PROFILE488_A0004_CYCLE3_TD_TELEMETRYFIX1.py
+
+CO SE STANE
+-----------
+- accepted_count zacina na 4;
+- lineage pokracuje outer cycle 3;
+- cycles 1 a 2 se neopakuji;
+- accepted Generation v cycle 3 se NEOPAKUJE;
+- prvni aktivni krok je FineCDF TD v cycle 3;
+- puvodni GENERATION_COUNTS_REFERENCE je zachovan;
+- cil zustava presne 100 TG/TD outer cycles;
+- globalni wall-clock limit zustava vypnuty;
+- cross-run path cache se neprebira: nova recovery run si udela vlastni fresh path epoch;
+- kalibracni matematika, acceptance, assignment a inner FineCDF budget se nemeni.
+
+TELEMETRY HOTFIX
+----------------
+Hash-lockovany parent r1_15a2_perf_v246.py zustava na disku byte-for-byte puvodni.
+Novy runtime overlay meni jen privatni telemetry JSON writer v pameti:
+- os.replace se pri Windows locku omezenne opakuje;
+- po trvalem locku se zkusí unikatni FALLBACK snapshot;
+- telemetry I/O chyba NIKDY nepropadne do kalibrace.
+
+Recovery authority:
+  PROFILE488_A0004_CYCLE3_TD_RECOVERY_AUTHORITY.json
+Expected semantic state hash:
+  c853dba4c29526903c5a16c496d5863e3506a12fcf5a5b8103ba3bb98cb2d97d
+
+TESTY
+-----
+Focused recovery + telemetry tests: PASS
+Full regression: 910 passed, 4 skipped
+Real live Visum recovery nebyl v tomto prostredi spusten.

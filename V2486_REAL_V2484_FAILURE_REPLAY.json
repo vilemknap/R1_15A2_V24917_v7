@@ -1,0 +1,53 @@
+{
+  "schema": "R1_15A2_V2486_REAL_V2484_FAILURE_REPLAY_V1",
+  "created_utc": "2026-10-16T18:39:06.382346+00:00",
+  "source_evidence_file": "GENERATION_DESIGN(2).json",
+  "source_evidence_sha256": "d5a22f32ff564edde397aa031156f2612b2e902867da432a0a4e2067cf2b7bbf",
+  "input_normalized_rows": 1374,
+  "output_rows": 1372,
+  "skipped_rows": 2,
+  "clipped_count": 2,
+  "clipped_zone_attrs": [
+    [
+      619,
+      "ZAHR_PROD_SERV"
+    ],
+    [
+      619,
+      "ZAHR_PROD_WORK"
+    ]
+  ],
+  "role_rebalance": {
+    "WORK": {
+      "requested_prod_delta_before": 1674.0538619109655,
+      "requested_att_delta_before": 2034.6776609155581,
+      "relative_gap_before": 0.1772387862371872,
+      "scaled_role": "ATT",
+      "scale": 0.8254246807900927,
+      "status": "BALANCED_BY_ROLE_ATTENUATION",
+      "target_delta": 1674.0538619109655,
+      "achieved_scaled_role_delta": 1674.0538619109357,
+      "requested_prod_delta_after": 1674.0538619109655,
+      "requested_att_delta_after": 1674.0538619109357,
+      "relative_gap_after": 1.779270796523963e-14
+    },
+    "SERVICE": {
+      "requested_prod_delta_before": 3691.184919452171,
+      "requested_att_delta_before": 3801.866971595385,
+      "relative_gap_before": 0.02911255258801662,
+      "scaled_role": "ATT",
+      "scale": 0.9714138925064617,
+      "status": "BALANCED_BY_ROLE_ATTENUATION",
+      "target_delta": 3691.184919452171,
+      "achieved_scaled_role_delta": 3691.184919455016,
+      "requested_prod_delta_after": 3691.184919452171,
+      "requested_att_delta_after": 3691.184919455016,
+      "relative_gap_after": 7.707279611355136e-13
+    }
+  },
+  "unresolved_families": [],
+  "saturated_output_write_present": false,
+  "passes": true,
+  "real_visum_recomputed": false,
+  "scope": "PURE_PROPOSAL_REPLAY_FROM_LIVE_V2484_DESIGN_EVIDENCE"
+}

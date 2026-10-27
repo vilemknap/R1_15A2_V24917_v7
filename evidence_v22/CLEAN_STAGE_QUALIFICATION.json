@@ -1,0 +1,116 @@
+{
+  "pytest": {
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/mnt/data/r1_15a2_v22/QUALIFY_CLEAN_STAGE/pytest.xml"
+    ],
+    "cwd": "/mnt/data/r1_15a2_v22/CANDIDATE_CLEAN",
+    "return_code": 0,
+    "seconds": 8.015,
+    "log": "/mnt/data/r1_15a2_v22/QUALIFY_CLEAN_STAGE/pytest.log",
+    "log_sha256": "2b589d9d75b072265319bd892a6ff602e4ab5bb51e44252ac46bdeaf6bd7d14b"
+  },
+  "test_counts": {
+    "tests": 124,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "compileall": {
+    "command": [
+      "python",
+      "-m",
+      "compileall",
+      "-q",
+      "-f",
+      "/mnt/data/r1_15a2_v22/CANDIDATE_CLEAN"
+    ],
+    "cwd": "/mnt/data/r1_15a2_v22/CANDIDATE_CLEAN",
+    "return_code": 0,
+    "seconds": 3.947,
+    "log": "/mnt/data/r1_15a2_v22/QUALIFY_CLEAN_STAGE/compileall.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "isolated_import_and_config": {
+    "command": [
+      "python",
+      "-c",
+      "from pathlib import Path\nimport importlib,json\nroot=Path.cwd().resolve()\nnames=['R1_15A2_SUPPLY_DEMAND_MASTER_V2_2','r1_15a2_controller_v22','r1_15a2_supply','r1_15a2_supply_visum','r1_15a2_runtime_v1','r1_15a2_core','r1_15a2_multiblock','r1_15a2_visum_parameters']\nmods={n:importlib.import_module(n) for n in names}\npaths={n:str(Path(m.__file__).resolve()) for n,m in mods.items()}\nassert all(Path(p).is_relative_to(root) for p in paths.values())\ncfg=mods[names[0]].load_config()\nassert cfg['apply'] is False and cfg['max_accepted_blocks']==1\nassert cfg['supply']['equivalent_seconds_per_addval1']==10.0\nassert not cfg['supply']['assignment_operations'] and cfg['supply']['gap_readback']['attribute'] is None\nassert 'SUPPLY_ADDVAL1' in cfg['block_schedule']\nprint(json.dumps({'imports':paths,'implementation_hash':cfg['implementation_hash'],'status':'PASS','live_apply_gate':'PENDING_EXPLICIT_OPERATION_AND_GAP_CONFIGURATION'},indent=2))\n"
+    ],
+    "cwd": "/mnt/data/r1_15a2_v22/CANDIDATE_CLEAN",
+    "return_code": 0,
+    "seconds": 1.02,
+    "log": "/mnt/data/r1_15a2_v22/QUALIFY_CLEAN_STAGE/imports.log",
+    "log_sha256": "eba08eac2c45e0e5a0083040b3edc67aaa53ae1142d5fe02db485be2c038efec"
+  },
+  "demo": {
+    "command": [
+      "python",
+      "tests/run_v22_synthetic_controller_demo.py",
+      "/mnt/data/r1_15a2_v22/QUALIFY_CLEAN_STAGE/synthetic_demo"
+    ],
+    "cwd": "/mnt/data/r1_15a2_v22/CANDIDATE_CLEAN",
+    "return_code": 0,
+    "seconds": 1.018,
+    "log": "/mnt/data/r1_15a2_v22/QUALIFY_CLEAN_STAGE/demo.log",
+    "log_sha256": "e270e3d87fd10b3b54d12d9d22d7a132f9340da2308a6066adfe19baa04396c0"
+  },
+  "synthetic_demo_report": {
+    "scope": "SYNTHETIC_CONTROLLER_WITH_DETERMINISTIC_STUB_NOT_VISUM_NOT_DIAL_B",
+    "live_visum_tested": false,
+    "accepted_blocks": 3,
+    "supply_selected_trial": 2,
+    "final_addval1": {
+      "1|1|2": 0.0,
+      "2|2|3": -1.0
+    },
+    "final_q": 1030.0,
+    "final_b": 0.08,
+    "assignment_stub_calls": 9,
+    "verified_restores": 11,
+    "accepted_ledgers": [
+      {
+        "raw_cal": 2.5641025641025643,
+        "raw_component_idp": 0.7000000000000001,
+        "terms": {
+          "CSD_CAL": 0.01282051282051282,
+          "COMPONENT_IDP": 0.7000000000000001,
+          "ADDVAL1_PRIOR": 2.5e-05
+        },
+        "total": 0.7128455128205129,
+        "reference_hash": "a0e59abe8702a8040b7569f56663f1a092688898192351120441c8b54dda77b8",
+        "validation_used": false
+      },
+      {
+        "raw_cal": 1.0406504065040652,
+        "raw_component_idp": 0.7000000000000001,
+        "terms": {
+          "CSD_CAL": 0.005203252032520325,
+          "COMPONENT_IDP": 0.7000000000000001,
+          "ADDVAL1_PRIOR": 2.5e-05
+        },
+        "total": 0.7052282520325204,
+        "reference_hash": "a0e59abe8702a8040b7569f56663f1a092688898192351120441c8b54dda77b8",
+        "validation_used": false
+      },
+      {
+        "raw_cal": 1.0406504065040652,
+        "raw_component_idp": 0.672,
+        "terms": {
+          "CSD_CAL": 0.005203252032520325,
+          "COMPONENT_IDP": 0.672,
+          "ADDVAL1_PRIOR": 2.5e-05
+        },
+        "total": 0.6772282520325204,
+        "reference_hash": "a0e59abe8702a8040b7569f56663f1a092688898192351120441c8b54dda77b8",
+        "validation_used": false
+      }
+    ],
+    "status": "BOUNDED_CYCLE_LIMIT"
+  }
+}

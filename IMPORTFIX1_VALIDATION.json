@@ -1,0 +1,68 @@
+{
+  "release": "R1_15A2_V24917_SUPPLYCOSTFIX1_IMPORTFIX1_20261027",
+  "parent_archive": "R1_15A2_V24917_GENFIX2_TDJOINT1_SUPPLYCOSTFIX1_20261027_FULL.zip",
+  "parent_archive_sha256": "5cf7fb747b057ef0c6116985bbba02822cd11c5b01b2e0eb72b58be4fe831592",
+  "modified_existing_files": [
+    "DIAGFAST_V1_RELEASE_MANIFEST.json",
+    "V24917_RUNTIME_MANIFEST.json",
+    "r1_15a2_v24917_runtime.py",
+    "tests/test_v24917_runtime_install.py"
+  ],
+  "production_modules_changed": [
+    "r1_15a2_v24917_runtime.py"
+  ],
+  "tests_added": 3,
+  "test_runs": {
+    "tests_main": {
+      "passed": 1390,
+      "skipped": 4,
+      "failed": 0
+    },
+    "tdjoint": {
+      "passed": 51,
+      "skipped": 0,
+      "failed": 0
+    },
+    "diagfast": {
+      "passed": 138,
+      "skipped": 0,
+      "failed": 0
+    },
+    "genfix2_audit": {
+      "passed": 18,
+      "skipped": 0,
+      "failed": 0
+    }
+  },
+  "total": {
+    "passed": 1597,
+    "skipped": 4,
+    "failed": 0
+  },
+  "integrity_manifests": {
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": 0
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 96,
+      "mismatches": 0
+    },
+    "V24916_PERF2C_RUNTIME_MANIFEST.json": {
+      "files": 50,
+      "mismatches": 0
+    },
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 58,
+      "mismatches": 0
+    }
+  },
+  "source_python_compiled": 435,
+  "visum_live_tested": false,
+  "change_scope": "EARLY_MANIFEST_VERIFIED_ABSOLUTE_PATH_PRELOAD_OF_PARENT_EQUIVALENCE_MODULE",
+  "demand_and_route_choice_formulas_changed": false,
+  "run_options_changed": false,
+  "authority_files_changed": 0,
+  "protected_v24916_payload_unchanged": 1059,
+  "diagfast_11d_parity_mismatch": "NOT_FIXED_NONFATAL_FALLBACK_TO_LEGACY"
+}

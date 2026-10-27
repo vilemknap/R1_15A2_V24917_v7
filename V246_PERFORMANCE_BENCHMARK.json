@@ -1,0 +1,103 @@
+{
+  "schema": "R1_15A2_V246_PERFORMANCE_BENCHMARK_V1",
+  "status": "PASS_OFFLINE_EVIDENCE_ONLY",
+  "scientific_boundary": {
+    "real_ptv_visum_tested": false,
+    "real_wall_time_speedup_claim": null,
+    "adaptive_search_is_bitwise_identical": false,
+    "reason": "V2.4.6 deliberately changes the optimization path while retaining hard acceptance and rollback gates."
+  },
+  "measured_offline_synthetic": {
+    "v245": {
+      "status": "COMPLETED_CONFIGURED_DEMAND_AND_SUPPLY_SEARCH",
+      "elapsed_seconds": 0.11598834200003694,
+      "assignment_or_recompute_calls": 21,
+      "accepted_count": 3,
+      "demand_cycles": 3,
+      "generation_attempts_by_cycle": [
+        3,
+        3,
+        3
+      ],
+      "supply_attempts_by_block": [
+        2,
+        2
+      ],
+      "final_state_hash": "f03b148d54b63f980a99afeee11b5bf45ddbec9d573aec569db9363e05a8b6a2",
+      "final_state": {
+        "a": {
+          "1|1|2": 0.0,
+          "2|2|3": -1.0
+        },
+        "q": 1030.0,
+        "generation": 1.03,
+        "b": 0.08
+      },
+      "calibration_complete": true,
+      "backend": "SYNTHETIC_COM_SHAPED_NOT_PTV_VISUM"
+    },
+    "v246": {
+      "status": "COMPLETED_CONFIGURED_DEMAND_AND_SUPPLY_SEARCH",
+      "elapsed_seconds": 0.08024191900017286,
+      "assignment_or_recompute_calls": 18,
+      "accepted_count": 4,
+      "demand_cycles": 3,
+      "generation_attempts_by_cycle": [
+        1,
+        3,
+        3
+      ],
+      "supply_attempts_by_block": [
+        1,
+        1,
+        2
+      ],
+      "final_state_hash": "38279b0c9c200277bccd11f767ac89a6f31450ec81e9f31240ae4e6f9bd90729",
+      "final_state": {
+        "a": {
+          "1|1|2": -2.0,
+          "2|2|3": 0.0
+        },
+        "q": 1030.0,
+        "generation": 1.03,
+        "b": 0.08
+      },
+      "calibration_complete": true,
+      "backend": "SYNTHETIC_COM_SHAPED_NOT_PTV_VISUM"
+    },
+    "assignment_call_reduction": 3,
+    "assignment_call_reduction_fraction": 0.14285714285714285,
+    "same_final_state": false,
+    "interpretation": "The synthetic landscape completed in both versions. V2.4.6 used fewer expensive calls, but accepted a different valid adaptive path; this is not an equivalence proof or a real-Visum timing result."
+  },
+  "measured_offline_lazy_evidence": {
+    "backend": "SYNTHETIC_SQLITE_PATH_STORE_NOT_PTV_VISUM",
+    "routes_per_mode": 600,
+    "path_length": 30,
+    "incidence_only_seconds": 0.005479763000039384,
+    "deferred_sequence_seconds": 0.0003396329998395231,
+    "incidence_ready_before_sequence": true,
+    "sequence_ready_after_deferred_build": true,
+    "sqlite_bytes": 618496
+  },
+  "derived_from_observed_live_dimensions": {
+    "path_export": {
+      "observed_raw_rows": 32383846,
+      "old_page_size": 256,
+      "new_requested_page_size": 2048,
+      "old_request_count_ceiling": 126500,
+      "new_request_count_ceiling_if_2048_supported": 15813,
+      "request_reduction_fraction_if_supported": 0.87499604743083,
+      "caveat": "Adaptive fallback may use smaller pages; this is a request-count derivation, not measured wall time."
+    },
+    "link_attribute_read": {
+      "observed_link_count": 8287,
+      "attributes": 9,
+      "old_scalar_attvalue_calls": 74583,
+      "new_bulk_plus_identity_calls": 8296,
+      "call_reduction_fraction": 0.888768217958516,
+      "caveat": "Derived COM-call count; real latency depends on Visum and machine state."
+    }
+  },
+  "evidence_hash": "1661029c85b67cae38bd58bfaf4e793ea41e43d8e5b7f91844fce78645b5e71e"
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "R1_15A2_V24916_BOOTSTRAPFIX1_MACHINE_STATUS_V1",
+  "bootstrapfix_revision": "BOOTSTRAPFIX1_20261022",
+  "status": "OFFLINE_PASS_READY_FOR_REAL_VISUM_BOOTSTRAP_RETRY",
+  "overall_pass": true,
+  "focused_tests_passed": 25,
+  "full_tests_passed": 1000,
+  "full_tests_skipped": 4,
+  "full_tests_failed": 0,
+  "compileall_pass": true,
+  "runtime_manifest_pass": true,
+  "parent_perf2_deployment_pass": true,
+  "perf2c_overlay_pass": true,
+  "sealed_parent_com_helper_modified": false,
+  "runs_root_allocated_before_runtime_hotfix_activation": true,
+  "legacy_four_item_retry_budget_supported_by_launcher_overlay": true,
+  "bootstrap_failure_trace_persisted": true,
+  "package_local_runs_locator_enabled": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "calibration_complete": false,
+  "next_gate": "REAL_VISUM_FRESH0_BOOTSTRAP_AND_LIVE_READ_ONLY_PREFLIGHT"
+}

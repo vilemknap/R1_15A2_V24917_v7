@@ -1,0 +1,80 @@
+{
+  "donor_delta": {
+    "combusy_hotfix1_to_td09c_hotfix2": {
+      "added_files": 5,
+      "changed_parent_files": 0
+    },
+    "iofix4_base_to_combusy_hotfix1": {
+      "added_files": 5,
+      "changed_parent_files": 0
+    }
+  },
+  "excluded_donor_artifacts": [
+    "aggressive donor launchers",
+    "aggressive donor tuning/config as replacement for FASTCAL1",
+    "older runtime_io_hotfix_profile488.py implementation",
+    "historical A0004 recovery entrypoints"
+  ],
+  "inputs": {
+    "aggressive_iofix4_base": {
+      "path": "/mnt/data/R1_15A2_PROFILE488_AGGRESSIVE_TGTD_V1_FIX1_IOFIX4_BASE_20261022(3).zip",
+      "sha256": "f88e672818e8485b54f6eb1a406dfb319d1285030f7ca66ab8d392527d983d4b"
+    },
+    "combusy_hotfix1": {
+      "path": "/mnt/data/R1_15A2_AGGRESSIVE_V1_FIX1_COMBUSY_RETRY_HOTFIX1_FULL_20261023(2).zip",
+      "sha256": "599d2e2e5ff537c93584e69e59de5c8ddabc8de733c48eebfc172087f1833c16"
+    },
+    "td09c_hotfix2": {
+      "path": "/mnt/data/R1_15A2_AGGRESSIVE_FIX1_COMBUSY_TD09C16_HOTFIX2_FULL_20261023(1).zip",
+      "sha256": "c3f5a2d77a6c0b6b6512fca9fcadd9ccc7b0112c6a945da1f862c437cc490543"
+    },
+    "v24916_parent": {
+      "path": "/mnt/data/R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_20261023.zip",
+      "sha256": "f690c9ccecc22bc308c1f490ac9f9645941e390530d10a6ff48f6c7bbab5c6fc"
+    }
+  },
+  "integration": {
+    "combusy": {
+      "activated_before_live_preflight": true,
+      "module": "r1_15a2_com_busy_snapshot_hotfix_v24916.py",
+      "read_only": true,
+      "status": "PORTED_TO_V24916"
+    },
+    "iofix4": {
+      "older_module_not_copied_over_newer_runtime": true,
+      "status": "SUPERSEDED_BY_CURRENT_V24916_IOFIX3_PATHFIX3",
+      "telemetry_equivalence_verified": true
+    },
+    "td09c": {
+      "allowed_scopes": [
+        "FULL17",
+        "NATIVE16_FOREIGN_SEPARATE"
+      ],
+      "dynamic_skims_preserved": true,
+      "foreign_9116_frozen": true,
+      "module": "r1_15a2_td09c_16or17_hotfix_v24916.py",
+      "status": "PORTED_TO_ACTIVE_V24916_BRIDGE"
+    }
+  },
+  "passes": true,
+  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+  "schema": "R1_15A2_V24916_DONOR_FIX_INTEGRATION_AUDIT_V1",
+  "tests": {
+    "compileall": "PASS",
+    "focused_v24916": {
+      "failed": 0,
+      "passed": 111,
+      "skipped": 0
+    },
+    "full_partitioned": {
+      "failed": 0,
+      "partitions": 6,
+      "passed": 1033,
+      "skipped": 4
+    },
+    "runtime_manifest": {
+      "passes": true,
+      "rows": 50
+    }
+  }
+}

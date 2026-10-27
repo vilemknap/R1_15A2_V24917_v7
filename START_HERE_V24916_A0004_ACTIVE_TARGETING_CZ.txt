@@ -1,0 +1,54 @@
+V24916 PROFILE488 A0004 CYCLE3 TD RESUME IOFIX1 ACTIVE TARGETING
+
+Tento release je REBASE na nahrany parent A0004/CYCLE3/TD_RESUME/IOFIX1/NO_WALLCLOCK.
+NENI to novy fresh cycle-1 start.
+
+AUTORITA STARTU
+- otevrit presne: ACCEPTED_B_0004_d26d01d6f9a5.ver
+- SHA-256 checkpointu: 6347623c247819a9a061adcfdd8176c0af1fd6546b866331114ee5e91049c9bc
+- semantic_state_hash: c853dba4c29526903c5a16c496d5863e3506a12fcf5a5b8103ba3bb98cb2d97d
+- accepted_count = 4
+- outer cycle = 3
+- resume substep = TD_FINECDF_V17
+- Generation v cycle 3 je jiz accepted a NESMI se znovu spustit
+
+POSTUP
+1. Rozbalit balik do nove prazdne slozky.
+2. Ve Visumu otevrit presny A0004 accepted checkpoint vyse.
+3. Spustit pouze: 00_1_SPUSTIT_V24916_A0004_PREFLIGHT.py
+4. Ocekavany PASS status:
+   PASS_READY_FOR_STEP_2_A0004_CYCLE3_TD_RESUME_ACTIVE_TARGETING
+5. Bez zmeny modelu spustit:
+   00_2_SPUSTIT_V24916_A0004_CYCLE3_TD_RESUME_ACTIVE_TARGETING.py
+
+CO SE STANE
+- continuation zustane accepted_count=4 / cycle 3
+- prvni kalibracni substep je TD, ne Generation
+- pred resumed TD se pri chybejicim in-run cache vybuduje novy fresh path epoch
+- cross-run path-cache restore je zakazan
+- TD FlowBundle/DIST_KM component targeting je aktivni uz v resumed TD
+- Generation FlowBundle targeting se poprve pouzije pri dalsim Generation kroku
+- Supply zustava zamceny do Demand convergence
+- acceptance zustava fresh assignment + live PROFILE488 12D + live 11D
+
+PROFILE488 GATE
+Parent obsahuje PROFILE488 helper/authority, ale v top-level configu ponechal legacy gate 498/462/36.
+V24916 overlay to explicitne koriguje pouze za behu na 488/488/0. Parent soubory jsou byte-identicke a nebyly upraveny.
+
+OFFLINE TESTY
+- focused: 69 passed
+- full: 974 passed, 4 skipped, 0 failed
+- compileall: PASS
+- parent SHA audit: 0 changed, 0 missing
+- parent deployment/PERF2C/A0004 runtime preflight: PASS
+- V24916 runtime manifest: PASS
+
+LIVE VISUM
+Tento konkretni rebased release jeste nebyl real-Visum otestovan.
+
+
+PREFLIGHT_CACHEFIX1 (2026-10-22)
+- opravena live chyba PERSISTENT_PATH_CACHE_ROOT_MISSING ve STEP 1;
+- read-only preflight nyní persistent path cache neinicializuje;
+- kalibrační STEP 2 zachovává persistent cache aktivní a root zakládá až po vytvoření RUN_*;
+- A0004 continuation, IOFIX1, PROFILE488, FlowBundle Generation targeting a TD mask jsou beze změny.

@@ -1,0 +1,62 @@
+{
+  "compileall": {
+    "log": "COMPILEALL.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "passes": true,
+    "return_code": 0
+  },
+  "faults_covered": [
+    "RPC_E_CALL_REJECTED",
+    "matrix GetValues exception",
+    "bulk link read exception",
+    "generation read exception",
+    "TD snapshot exception",
+    "operation inventory exception",
+    "profile read exception",
+    "mutation during capture",
+    "payload tampering",
+    "session/run/parent/block/candidate/epoch mismatch",
+    "assignment failure"
+  ],
+  "focused": {
+    "duration_seconds": 0.71,
+    "failed": 0,
+    "log": "FOCUSED_PYTEST.log",
+    "log_sha256": "caf005cfab2108a2b5425b1873cf31cf30c36f22217a647e0dc8fd861dec638d",
+    "passed": 61,
+    "scope": [
+      "PERF1 exact-safe inherited tests",
+      "CandidateReadbackBundle lifecycle",
+      "snapshot parity/read-count",
+      "invalidation-before-side-effect",
+      "fault injection",
+      "release gates",
+      "counterfactual PERF1/PERF2 replay"
+    ],
+    "skipped": 0
+  },
+  "full_regression": {
+    "collected": 848,
+    "duration_seconds": 31.67,
+    "failed": 0,
+    "log": "FULL_PYTEST_VERBOSE.log",
+    "log_sha256": "2349283972e361f3732e6e987f795181fad091919a348036475434093cd731ea",
+    "passed": 844,
+    "single_process": true,
+    "skipped": 4
+  },
+  "new_perf2_tests": {
+    "candidate_readback_bundle": 16,
+    "counterfactual_replay": 1,
+    "fault_injection": 18,
+    "invalidation": 7,
+    "release": 4,
+    "snapshot_parity": 5,
+    "total": 51
+  },
+  "production_ready": false,
+  "real_visum_tested": false,
+  "release": "R1_15A2_V2_4_9_15_PERF2_CANDIDATE_READBACK_BUNDLE_20261019",
+  "schema": "R1_15A2_V24915_PERF2_TEST_REPORT_V1",
+  "status": "PASS"
+}

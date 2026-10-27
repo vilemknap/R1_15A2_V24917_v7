@@ -1,0 +1,58 @@
+{
+  "inactive_long_identity": {
+    "passes": false,
+    "profile_drift": {
+      "profiles": 1,
+      "missing": [],
+      "violations": 0,
+      "max_abs_diff": 0.0,
+      "max_rel_diff": 0.0,
+      "worst_profile": null,
+      "abs_tol": 0.5,
+      "rel_tol": 0.0001,
+      "identity_errors": []
+    },
+    "weighted_geh_before": 6.030226891555273,
+    "weighted_geh_after": 6.030226891555273,
+    "geh_tol": 0.01,
+    "component_differences": [
+      "signals.LONG_E_C.objective:NUMERIC",
+      "signals.LONG_E_noC.objective:NUMERIC",
+      "signals.LONG_noE_C.objective:NUMERIC",
+      "signals.LONG_noE_noC.objective:NUMERIC",
+      "signals.LONG_stud.objective:NUMERIC"
+    ],
+    "signal_atol": 1e-09,
+    "signal_rtol": 1e-08
+  },
+  "dynamic_epoch_only": {
+    "passes": false,
+    "profile_drift": {
+      "profiles": 1,
+      "missing": [],
+      "violations": 0,
+      "max_abs_diff": 0.0,
+      "max_rel_diff": 0.0,
+      "worst_profile": null,
+      "abs_tol": 0.5,
+      "rel_tol": 0.0001,
+      "identity_errors": []
+    },
+    "weighted_geh_before": 6.030226891555273,
+    "weighted_geh_after": 6.030226891555273,
+    "geh_tol": 0.01,
+    "component_differences": [
+      "d11.component_dist_summary_rows[0].dynamic_skim_epoch:NUMERIC",
+      "d11.component_dist_summary_rows[0].dynamic_skim_epoch_hash:VALUE",
+      "d11.dist_classification_matrix.assignment_epoch:NUMERIC",
+      "d11.dist_classification_matrix.skim_epoch:NUMERIC",
+      "d11.dist_classification_matrix.skim_epoch_hash:VALUE",
+      "d11.dynamic_distance_authority.assignment_epoch:NUMERIC",
+      "d11.dynamic_distance_authority.assignment_token:VALUE",
+      "d11.dynamic_distance_authority.epoch:NUMERIC",
+      "d11.dynamic_distance_authority.epoch_hash:VALUE"
+    ],
+    "signal_atol": 1e-09,
+    "signal_rtol": 1e-08
+  }
+}

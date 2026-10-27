@@ -1,0 +1,22 @@
+{
+  "schema": "R1_15A2_V2493_RELEASE_STATUS_V1",
+  "updated_utc": "2026-10-18T11:09:26.460209+00:00",
+  "release": "R1_15A2_V2_4_9_3_METHOD_AND_COM_CORRECTIONS_20261018",
+  "status": "PASS_FINAL_SOURCE_BYTES_OFFLINE_TESTS_NOT_REAL_VISUM_ACCEPTANCE",
+  "offline_tests": "692 passed",
+  "compileall_pass": true,
+  "config_validation_pass": true,
+  "weighted_mean_geh_enabled": true,
+  "profile_passage_sums_diagnostic_only": true,
+  "global_long_composite_enabled": true,
+  "bounded_transient_com_retry_enabled": true,
+  "persistent_cache_v2492_compatibility_pinned": true,
+  "td_soft_reference_retained": true,
+  "native_ipf_tolerance_relaxed": false,
+  "package_verifier_pass": true,
+  "independent_archive_readback_pending": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "package_verifier_full_pytest": "692 passed",
+  "preliminary_manifest_sha256": "facb27fda3d8e5d01c4f4b63d821f402861c090fb187609e2237a4e96d5c7497"
+}

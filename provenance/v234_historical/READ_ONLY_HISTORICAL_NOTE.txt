@@ -1,0 +1,1 @@
+Original V2.3.4 verifier/manifests are archived as provenance. Their checksums refer to ORIGINAL V2.3.4; do not use them on the V2.3.5-modified source tree. Use root VERIFY_PACKAGE_V2_3_5.py instead.

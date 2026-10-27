@@ -1,0 +1,57 @@
+{
+  "schema": "R1_15A2_15P_EVIDENCE_AND_OFFLINE_REMEDIATION_20261016",
+  "probe_loaded_version": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_2022_vraceny_zonalni_atributy_osrm_doplneno_local.ver",
+  "prior_export_version_warning": "Previous 03D and 15P were generated in different .ver files; no exact cross-version route/OD parity is inferred.",
+  "bounded_probes": [
+    {
+      "dseg": "NATIVE_CW",
+      "rows": 240,
+      "pages": 3,
+      "status": "BOUNDED_PAGES_READABLE"
+    },
+    {
+      "dseg": "NATIVE_CW_noT",
+      "rows": 240,
+      "pages": 3,
+      "status": "BOUNDED_PAGES_READABLE"
+    }
+  ],
+  "matrix_component_diagonal": [
+    {
+      "dseg": "NATIVE_CW",
+      "total": 153670.99374558456,
+      "intrazonal": 37865.66160295146,
+      "interzonal": 115805.3321426331,
+      "intrazonal_fraction": 0.24640734519906402
+    },
+    {
+      "dseg": "NATIVE_CW_noT",
+      "total": 51152.92290226964,
+      "intrazonal": 12619.314599107305,
+      "interzonal": 38533.608303162335,
+      "intrazonal_fraction": 0.24669782063514087
+    },
+    {
+      "dseg": "NATIVE_CS",
+      "total": 222511.68743978988,
+      "intrazonal": 68502.7753365731,
+      "interzonal": 154008.91210321677,
+      "intrazonal_fraction": 0.30786147067043157
+    },
+    {
+      "dseg": "NATIVE_CS_noT",
+      "total": 95100.17432298808,
+      "intrazonal": 29354.760550469793,
+      "interzonal": 65745.41377251828,
+      "intrazonal_fraction": 0.30867199518238964
+    }
+  ],
+  "previous_dseg_parity_failure_count": 4,
+  "previous_dseg_parity_rows": 4,
+  "core_root_cause": "Previous exporter compares saved paths with full OD SUM instead of offdiagonal and unbounded path-link COM read.",
+  "full_saved_path_to_interzonal_parity_live_proven": false,
+  "full_bounded_pathlink_export_live_proven": false,
+  "first_followup": "Run short 15Q COM 256-row throughput smoke on exact intended base .ver; report JSON.",
+  "apply_permitted": false,
+  "offline_only": true
+}

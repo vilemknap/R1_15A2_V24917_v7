@@ -1,0 +1,20 @@
+{
+  "schema": "R1_15A2_V24915_PERF2C_R3_MACHINE_STATUS_V1",
+  "status": "OFFLINE_VERIFIED_READY_FOR_LIVE_B0018_DEMAND_EXTENSION",
+  "release": "R1_15A2_V24915_PERF2C_R3_B0018_DEMAND_EXTENSION_16_25_20261020",
+  "source_checkpoint": "ACCEPTED_B_0018_3d57d34487ba.ver",
+  "source_accepted_count": 18,
+  "next_outer_cycle": 16,
+  "last_outer_cycle": 25,
+  "extension_outer_cycles": 10,
+  "supply_locked_during_extension": true,
+  "generation_backtracking_scales": [1.0, 0.5, 0.25, 0.125, 0.0625],
+  "generation_max_trials_per_block": 5,
+  "full_regression": {"passed": 893, "skipped": 4, "failed": 0},
+  "compileall": true,
+  "deployment_preflight": true,
+  "runtime_preflight": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "calibration_complete": false
+}

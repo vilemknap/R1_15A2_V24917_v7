@@ -1,0 +1,45 @@
+{
+  "schema": "R1_15A2_V246_PACKAGE_VERIFICATION_V1",
+  "status": "PASS",
+  "root": "/mnt/data/r1_15av2_release/R1_15A2_V2_4_6_ADAPTIVE_PERFORMANCE_20261016",
+  "manifest_sha256": "98ae358314ed60ee67da57d9406cffdec9cc5c02091c027267b739c185e0a0b8",
+  "file_count": 348,
+  "errors": [],
+  "config_validation": {
+    "passes": true,
+    "base_contract": {
+      "passes": true,
+      "minimum_confirmed_stationary_cycles": 2
+    },
+    "bulk_link_read": true,
+    "adaptive_page_size": 2048,
+    "addval_step_units": [
+      4,
+      2,
+      1
+    ],
+    "generation_step_stages": [
+      "EXPLORE",
+      "FULL_VERIFY"
+    ],
+    "progressive_td_stages": [
+      "EXPLORE",
+      "REFINE",
+      "FULL_VERIFY"
+    ],
+    "minimum_confirmed_stationary_cycles": 2
+  },
+  "launcher": {
+    "release": "R1_15A2_V2_4_6_ADAPTIVE_PERFORMANCE_20261016",
+    "implementation_hash": "f60f2332adbc4caac88bf2ec62883abbaf21063bce88167544d41bc1e56b4918",
+    "implementation_file_count": 32
+  },
+  "compileall_pass": true,
+  "tests": {
+    "returncode": 0,
+    "stdout": "........................................................................ [ 12%]\n........................................................................ [ 25%]\n........................................................................ [ 38%]\n........................................................................ [ 51%]\n........................................................................ [ 64%]\n........................................................................ [ 77%]\n........................................................................ [ 90%]\n..................................................                       [100%]\n554 passed in 8.89s\n",
+    "stderr": ""
+  },
+  "real_visum_tested": false,
+  "elapsed_seconds": 11.342
+}

@@ -1,0 +1,914 @@
+{
+  "schema": "R1_15A2_498_AUTHORITY_DIRECTED_OVERLAP_STATIC_QA_V1",
+  "basis": "EXACT_UNMODIFIED_AUTHORITY_CSVS_NOT_LIVE_12D_MODEL_VALUES",
+  "files": [
+    {
+      "filename": "R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
+      "sha256": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1"
+    },
+    {
+      "filename": "R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
+      "sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1"
+    }
+  ],
+  "approved_observations": 498,
+  "groups": {
+    "CSD2022": 408,
+    "CITY_RPDI_LEGACY": 90
+  },
+  "same_source_conflicting_scope_groups": [
+    {
+      "source_group": "CSD2022",
+      "scope": [
+        [
+          2003608,
+          1000663,
+          1000670
+        ]
+      ],
+      "ids": [
+        920260,
+        920420
+      ],
+      "observed": [
+        2103.0,
+        1373.0
+      ]
+    },
+    {
+      "source_group": "CSD2022",
+      "scope": [
+        [
+          2003608,
+          1000670,
+          1000663
+        ]
+      ],
+      "ids": [
+        920259,
+        920421
+      ],
+      "observed": [
+        2103.0,
+        1373.0
+      ]
+    }
+  ],
+  "same_source_conflicting_scope_group_count": 2,
+  "shared_directed_edges": [
+    {
+      "directed_edge": [
+        2001295,
+        1324,
+        1003434
+      ],
+      "ids": [
+        920031,
+        912139
+      ],
+      "roles": [
+        "VALIDATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        5304.0,
+        13704.14532415317
+      ]
+    },
+    {
+      "directed_edge": [
+        2001295,
+        1003434,
+        1324
+      ],
+      "ids": [
+        920030,
+        912139
+      ],
+      "roles": [
+        "VALIDATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        5303.0,
+        13704.14532415317
+      ]
+    },
+    {
+      "directed_edge": [
+        2001652,
+        1001060,
+        1002944
+      ],
+      "ids": [
+        920057,
+        912122
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        721.0,
+        4100.29144994834
+      ]
+    },
+    {
+      "directed_edge": [
+        2001652,
+        1002944,
+        1001060
+      ],
+      "ids": [
+        920058,
+        912122
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        722.0,
+        4100.29144994834
+      ]
+    },
+    {
+      "directed_edge": [
+        2001825,
+        1001046,
+        1002950
+      ],
+      "ids": [
+        920071,
+        912130
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        3288.0,
+        7217.98957757018
+      ]
+    },
+    {
+      "directed_edge": [
+        2001825,
+        1002950,
+        1001046
+      ],
+      "ids": [
+        920072,
+        912130
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        3289.0,
+        7217.98957757018
+      ]
+    },
+    {
+      "directed_edge": [
+        2002409,
+        1001809,
+        1003011
+      ],
+      "ids": [
+        920133,
+        912067
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        622.0,
+        2763.835125448029
+      ]
+    },
+    {
+      "directed_edge": [
+        2002409,
+        1003011,
+        1001809
+      ],
+      "ids": [
+        920134,
+        912067
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        622.0,
+        2763.835125448029
+      ]
+    },
+    {
+      "directed_edge": [
+        2002464,
+        1002144,
+        1002988
+      ],
+      "ids": [
+        920136,
+        912069
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        906.0,
+        2245.161290322581
+      ]
+    },
+    {
+      "directed_edge": [
+        2002464,
+        1002988,
+        1002144
+      ],
+      "ids": [
+        920135,
+        912069
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        906.0,
+        2245.161290322581
+      ]
+    },
+    {
+      "directed_edge": [
+        2002776,
+        1003245,
+        1003247
+      ],
+      "ids": [
+        920149,
+        912083
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        7755.0,
+        17776.78345665771
+      ]
+    },
+    {
+      "directed_edge": [
+        2002776,
+        1003247,
+        1003245
+      ],
+      "ids": [
+        920150,
+        912083
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        7755.0,
+        17776.78345665771
+      ]
+    },
+    {
+      "directed_edge": [
+        2002777,
+        1000972,
+        1003249
+      ],
+      "ids": [
+        920152,
+        912032
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        10634.0,
+        13819.7931060867
+      ]
+    },
+    {
+      "directed_edge": [
+        2002777,
+        1003249,
+        1000972
+      ],
+      "ids": [
+        920151,
+        912032
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        10634.0,
+        13819.7931060867
+      ]
+    },
+    {
+      "directed_edge": [
+        2003081,
+        1001665,
+        1002498
+      ],
+      "ids": [
+        920165,
+        912086
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        8594.0,
+        19397.9004245283
+      ]
+    },
+    {
+      "directed_edge": [
+        2003081,
+        1002498,
+        1001665
+      ],
+      "ids": [
+        920166,
+        912086
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        8593.0,
+        19397.9004245283
+      ]
+    },
+    {
+      "directed_edge": [
+        2003084,
+        1000013,
+        1003025
+      ],
+      "ids": [
+        920168,
+        912085
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        5421.0,
+        10776.6244615697
+      ]
+    },
+    {
+      "directed_edge": [
+        2003084,
+        1003025,
+        1000013
+      ],
+      "ids": [
+        920167,
+        912085
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        5422.0,
+        10776.6244615697
+      ]
+    },
+    {
+      "directed_edge": [
+        2003086,
+        1000248,
+        1002434
+      ],
+      "ids": [
+        920169,
+        912089
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2594.0,
+        3499.2901757785
+      ]
+    },
+    {
+      "directed_edge": [
+        2003086,
+        1002434,
+        1000248
+      ],
+      "ids": [
+        920170,
+        912089
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2594.0,
+        3499.2901757785
+      ]
+    },
+    {
+      "directed_edge": [
+        2003091,
+        1000249,
+        1000986
+      ],
+      "ids": [
+        920171,
+        912091
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2636.0,
+        6281.489497024495
+      ]
+    },
+    {
+      "directed_edge": [
+        2003091,
+        1000986,
+        1000249
+      ],
+      "ids": [
+        920172,
+        912091
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2635.0,
+        6281.489497024495
+      ]
+    },
+    {
+      "directed_edge": [
+        2003410,
+        1002066,
+        1002600
+      ],
+      "ids": [
+        920218,
+        912105
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        6315.0,
+        10879.9900366488
+      ]
+    },
+    {
+      "directed_edge": [
+        2003410,
+        1002600,
+        1002066
+      ],
+      "ids": [
+        920219,
+        912105
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        6314.0,
+        10879.9900366488
+      ]
+    },
+    {
+      "directed_edge": [
+        2003458,
+        1002406,
+        1003041
+      ],
+      "ids": [
+        920239,
+        912098
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        4291.0,
+        12115.5864155015
+      ]
+    },
+    {
+      "directed_edge": [
+        2003458,
+        1003041,
+        1002406
+      ],
+      "ids": [
+        920238,
+        912098
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        4291.0,
+        12115.5864155015
+      ]
+    },
+    {
+      "directed_edge": [
+        2003608,
+        1000663,
+        1000670
+      ],
+      "ids": [
+        920260,
+        920420
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CSD2022"
+      ],
+      "observed": [
+        2103.0,
+        1373.0
+      ]
+    },
+    {
+      "directed_edge": [
+        2003608,
+        1000670,
+        1000663
+      ],
+      "ids": [
+        920259,
+        920421
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CSD2022"
+      ],
+      "observed": [
+        2103.0,
+        1373.0
+      ]
+    },
+    {
+      "directed_edge": [
+        2003903,
+        1000385,
+        1001773
+      ],
+      "ids": [
+        920384,
+        912140
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2777.0,
+        25312.70484013836
+      ]
+    },
+    {
+      "directed_edge": [
+        2003903,
+        1001773,
+        1000385
+      ],
+      "ids": [
+        920383,
+        912140
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2777.0,
+        25312.70484013836
+      ]
+    },
+    {
+      "directed_edge": [
+        2004286,
+        1000620,
+        1003296
+      ],
+      "ids": [
+        920441,
+        912102
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        9224.0,
+        17243.6355849669
+      ]
+    },
+    {
+      "directed_edge": [
+        2004762,
+        1001564,
+        1003560
+      ],
+      "ids": [
+        920235,
+        912106
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        4891.0,
+        12026.412629087
+      ]
+    },
+    {
+      "directed_edge": [
+        2004762,
+        1003560,
+        1001564
+      ],
+      "ids": [
+        920234,
+        912106
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        4891.0,
+        12026.412629087
+      ]
+    },
+    {
+      "directed_edge": [
+        8001495,
+        9000052,
+        9000822
+      ],
+      "ids": [
+        920418,
+        912138
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2623.0,
+        27952.37922532497
+      ]
+    },
+    {
+      "directed_edge": [
+        8001495,
+        9000822,
+        9000052
+      ],
+      "ids": [
+        920417,
+        912138
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2624.0,
+        27952.37922532497
+      ]
+    },
+    {
+      "directed_edge": [
+        9800559,
+        1002924,
+        9900290
+      ],
+      "ids": [
+        920025,
+        912135
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2846.0,
+        11471.14329673642
+      ]
+    },
+    {
+      "directed_edge": [
+        9800559,
+        9900290,
+        1002924
+      ],
+      "ids": [
+        920024,
+        912135
+      ],
+      "roles": [
+        "CALIBRATION",
+        "CALIBRATION"
+      ],
+      "sources": [
+        "CSD2022",
+        "CITY_RPDI_LEGACY"
+      ],
+      "observed": [
+        2846.0,
+        11471.14329673642
+      ]
+    }
+  ],
+  "shared_directed_edge_count": 37,
+  "shared_across_sources_count": 35,
+  "note": "CITY BOTH contributes the reversed directed edge too; overlapping evidence is not assumed erroneous, but must be methodologically reviewed before APPLY."
+}

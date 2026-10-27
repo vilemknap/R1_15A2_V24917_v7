@@ -1,0 +1,1071 @@
+--- /mnt/data/unify_v2485/root/R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016/r1_15a2_multiblock.py	2026-10-16 18:30:00.000000000 +0000
++++ /mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/r1_15a2_multiblock.py	2026-10-16 18:37:23.464288910 +0000
+@@ -526,6 +526,257 @@
+     }
+ 
+ 
++
++def _generation_requested_margin_delta(row: Mapping[str, Any], alpha: float = 1.0) -> float:
++    """Exact marginal change implied by the requested log effect.
++
++    This is used only for the constrained generation proposal.  The accepted
++    state is still decided by a fresh Visum recomputation and live diagnostics.
++    """
++    base = max(0.0, float(fval(row.get("base_margin_volume"), 0.0) or 0.0))
++    step = float(fval(row.get("requested_log_step"), 0.0) or 0.0) * float(alpha)
++    return base * math.expm1(step)
++
++
++def _generation_role_scale(rows: Sequence[Mapping[str, Any]], target: float) -> Tuple[Optional[float], float]:
++    """Find alpha in [0,1] so scaled role effect reaches ``target``.
++
++    Scaling every log-effect on one P/A side preserves the spatial pattern of
++    the path-guided proposal while attenuating only the side that has more
++    implementable marginal change after parameter bounds are respected.
++    """
++    total = sum(_generation_requested_margin_delta(r) for r in rows)
++    if abs(target) <= 1.0e-14:
++        return 0.0, 0.0
++    if abs(total - target) <= 1.0e-12 * max(1.0, abs(total), abs(target)):
++        return 1.0, total
++    # Attenuation can only reach a target lying between zero and the original
++    # total.  Anything else remains a fail-closed gate condition.
++    if total == 0.0 or target * total < 0.0 or abs(target) > abs(total) + 1.0e-12:
++        return None, total
++    lo, hi = 0.0, 1.0
++    flo = -target
++    fhi = total - target
++    if abs(flo) <= 1.0e-14:
++        return 0.0, 0.0
++    if abs(fhi) <= 1.0e-14:
++        return 1.0, total
++    if flo * fhi > 0.0:
++        return None, total
++    for _ in range(80):
++        mid = 0.5 * (lo + hi)
++        value = sum(_generation_requested_margin_delta(r, mid) for r in rows)
++        fm = value - target
++        if abs(fm) <= 1.0e-12 * max(1.0, abs(target)):
++            return mid, value
++        if flo * fm <= 0.0:
++            hi = mid
++            fhi = fm
++        else:
++            lo = mid
++            flo = fm
++    alpha = 0.5 * (lo + hi)
++    value = sum(_generation_requested_margin_delta(r, alpha) for r in rows)
++    return alpha, value
++
++
++def _constrain_generation_projection(normalized: Sequence[Mapping[str, Any]],
++                                     zone_map: Mapping[int, Mapping[str, Any]],
++                                     cfg: Mapping[str, Any],
++                                     skipped: List[Dict[str, Any]],
++                                     min_step: float) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
++    """Make generation guidance feasible under hard actuator bounds.
++
++    V2.4.8.4 exposed a real case where a ZAHR production actuator was already
++    at its hard maximum (10.0), yet the balanced P/A projection requested a
++    further positive effect.  The legacy mapper clamped that row to no change
++    *after* projection, leaving the opposite attraction side intact and thus
++    creating a deterministic P/A gap.  Backtracking could not cure the relative
++    gap because the same saturated row remained unavailable at every scale.
++
++    V2.4.8.5 clips only direct single-actuator rows to their exact feasible log
++    range, records the lost request explicitly, then attenuates the larger P/A
++    side within each family to the smaller implementable side.  This preserves
++    the proposal's spatial pattern and never invents capacity.  Joint
++    WORK-attraction ADD_ATT_W+salary rows are intentionally left to the existing
++    exact joint mapper because they have two actuators.
++    """
++    policy = cfg.get("generation_bound_constrained_projection", {}) or {}
++    if policy.get("enabled") is not True:
++        return [dict(r) for r in normalized], {
++            "enabled": False,
++            "policy": "LEGACY_POST_PROJECTION_CLAMP",
++            "clipped_count": 0,
++            "role_rebalance": {},
++            "unresolved_families": [],
++        }
++
++    zcfg = cfg.get("zahr", {})
++    attr_min = float(cfg.get("add_min", 0.0)); attr_max = float(cfg.get("add_max", 3.0))
++    zahr_min = float(zcfg.get("min", 0.0)); zahr_max = float(zcfg.get("max", 10.0))
++    preserve_zero_zahr = bool(zcfg.get("preserve_zero", True))
++    preserve_zero_domestic = bool(cfg.get("preserve_zero_add", True))
++    clipped_audit: List[Dict[str, Any]] = []
++    active: List[Dict[str, Any]] = []
++
++    for source in normalized:
++        row = dict(source)
++        z = int(row["zone_no"]); zr = zone_map[z]
++        requested = float(row.get("requested_log_step", 0.0) or 0.0)
++        # WORK domestic attraction is normally a joint ADD_ATT_W + ADD_SALARY
++        # actuator.  A preserved zero ADD_ATT_W, however, makes the whole
++        # multiplicative term unavailable even if salary could move; treat it
++        # like every other zero-capacity actuator before P/A balancing.
++        joint_work_att = (row["family"], row["role"], row["branch"]) == ("WORK", "ATT", "DOMESTIC")
++        current = fval(zr.get(row["attr"]), None)
++        low, high = (zahr_min, zahr_max) if row["branch"] == "ZAHR" else (attr_min, attr_max)
++        preserve_zero = preserve_zero_zahr if row["branch"] == "ZAHR" else preserve_zero_domestic
++        seed_floor = (float(zcfg.get("seed_floor", 0.0)) if row["branch"] == "ZAHR"
++                      else float(cfg.get("add_seed_floor", 0.0)))
++        if current is None:
++            # Unreadable values remain fail-closed in the existing mapper/gate.
++            active.append(row)
++            continue
++        if float(current) <= EPS:
++            if preserve_zero or seed_floor <= EPS:
++                audit = dict(row)
++                audit.update({
++                    "reason": "ZERO_CAPACITY_CONSTRAINED_PROJECTION",
++                    "current": float(current),
++                    "lower_bound": low,
++                    "upper_bound": high,
++                    "projection_requested_log_step": requested,
++                    "constrained_requested_log_step": 0.0,
++                    "projection_requested_margin_delta": _generation_requested_margin_delta(row),
++                })
++                clipped_audit.append(audit)
++                skipped.append(dict(audit, reason="PRESERVED_ZERO_CONSTRAINED_PROJECTION"))
++                continue
++            old = seed_floor
++        else:
++            old = float(current)
++        if joint_work_att and float(current) > EPS:
++            active.append(row)
++            continue
++        lo_log = -float("inf") if low <= 0.0 else math.log(max(EPS, low) / old)
++        hi_log = math.log(max(EPS, high) / old) if high > 0.0 else -float("inf")
++        constrained = min(hi_log, max(lo_log, requested))
++        if abs(constrained - requested) > 1.0e-12:
++            audit = dict(row)
++            audit.update({
++                "reason": "BOUND_CONSTRAINED_PROJECTION",
++                "current": old,
++                "lower_bound": low,
++                "upper_bound": high,
++                "projection_requested_log_step": requested,
++                "constrained_requested_log_step": constrained,
++                "projection_requested_margin_delta": _generation_requested_margin_delta(row),
++            })
++            clipped_audit.append(audit)
++            row["projection_requested_log_step"] = requested
++            row["requested_log_step"] = constrained
++            row["projection_guided_margin_delta"] = row.get("guided_margin_delta")
++            row["projection_projected_margin_delta"] = row.get("projected_margin_delta")
++            row["guided_margin_delta"] = _generation_requested_margin_delta(row)
++            row["projected_margin_delta"] = _generation_requested_margin_delta(row)
++        if abs(float(row.get("requested_log_step", 0.0) or 0.0)) < min_step:
++            audit = dict(row)
++            audit.update({"reason": "BOUND_SATURATED_CONSTRAINED_PROJECTION", "current": old,
++                          "lower_bound": low, "upper_bound": high})
++            skipped.append(audit)
++            continue
++        active.append(row)
++
++    role_audit: Dict[str, Any] = {}
++    unresolved: List[str] = []
++    balance_tol = float(policy.get("relative_balance_tolerance", 1.0e-10))
++    for family in ("WORK", "SERVICE"):
++        fam = [r for r in active if r["family"] == family]
++        prod = [r for r in fam if r["role"] == "PROD"]
++        att = [r for r in fam if r["role"] == "ATT"]
++        p0 = sum(_generation_requested_margin_delta(r) for r in prod)
++        a0 = sum(_generation_requested_margin_delta(r) for r in att)
++        rel0 = abs(p0 - a0) / max(1.0, abs(p0), abs(a0))
++        rec: Dict[str, Any] = {
++            "requested_prod_delta_before": p0,
++            "requested_att_delta_before": a0,
++            "relative_gap_before": rel0,
++            "scaled_role": None,
++            "scale": 1.0,
++        }
++        if rel0 <= balance_tol:
++            rec.update({"requested_prod_delta_after": p0, "requested_att_delta_after": a0,
++                        "relative_gap_after": rel0, "status": "ALREADY_BALANCED"})
++            role_audit[family] = rec
++            continue
++        # If the two sides request opposite directions, attenuation cannot make
++        # the proposal P/A-consistent without changing its sign.  Leave it for
++        # the unchanged hard generation gate to reject.
++        if p0 * a0 < 0.0:
++            rec.update({"status": "OPPOSITE_SIGN_UNRESOLVED",
++                        "requested_prod_delta_after": p0, "requested_att_delta_after": a0,
++                        "relative_gap_after": rel0})
++            unresolved.append(family)
++            role_audit[family] = rec
++            continue
++        if abs(p0) >= abs(a0):
++            scaled_role, rows_to_scale, target = "PROD", prod, a0
++        else:
++            scaled_role, rows_to_scale, target = "ATT", att, p0
++        alpha, achieved = _generation_role_scale(rows_to_scale, target)
++        if alpha is None:
++            rec.update({"status": "ATTENUATION_UNRESOLVED", "scaled_role": scaled_role,
++                        "requested_prod_delta_after": p0, "requested_att_delta_after": a0,
++                        "relative_gap_after": rel0})
++            unresolved.append(family)
++            role_audit[family] = rec
++            continue
++        for row in rows_to_scale:
++            old_step = float(row.get("requested_log_step", 0.0) or 0.0)
++            if alpha < 1.0 - 1.0e-15:
++                row["pre_pa_rebalance_requested_log_step"] = old_step
++                row["pa_rebalance_factor"] = alpha
++                row["requested_log_step"] = old_step * alpha
++                row["pre_pa_rebalance_guided_margin_delta"] = row.get("guided_margin_delta")
++                row["pre_pa_rebalance_projected_margin_delta"] = row.get("projected_margin_delta")
++                row["guided_margin_delta"] = _generation_requested_margin_delta(row)
++                row["projected_margin_delta"] = _generation_requested_margin_delta(row)
++        p1 = sum(_generation_requested_margin_delta(r) for r in prod)
++        a1 = sum(_generation_requested_margin_delta(r) for r in att)
++        rel1 = abs(p1 - a1) / max(1.0, abs(p1), abs(a1))
++        rec.update({
++            "status": "BALANCED_BY_ROLE_ATTENUATION" if rel1 <= balance_tol else "BALANCE_TOLERANCE_NOT_MET",
++            "scaled_role": scaled_role,
++            "scale": alpha,
++            "target_delta": target,
++            "achieved_scaled_role_delta": achieved,
++            "requested_prod_delta_after": p1,
++            "requested_att_delta_after": a1,
++            "relative_gap_after": rel1,
++        })
++        if rel1 > balance_tol:
++            unresolved.append(family)
++        role_audit[family] = rec
++
++    # Remove rows attenuated effectively to zero; keep an explicit audit row.
++    final_rows: List[Dict[str, Any]] = []
++    for row in active:
++        if abs(float(row.get("requested_log_step", 0.0) or 0.0)) < min_step:
++            skipped.append(dict(row, reason="PA_REBALANCE_TO_NO_IMPLEMENTED_EFFECT"))
++        else:
++            final_rows.append(row)
++    return final_rows, {
++        "enabled": True,
++        "policy": "DIRECT_ACTUATOR_CAPACITY_CLIP_THEN_SAME_FAMILY_ROLE_ATTENUATION",
++        "preserve_spatial_pattern": True,
++        "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++        "clipped_count": len(clipped_audit),
++        "clipped_rows": clipped_audit,
++        "role_rebalance": role_audit,
++        "unresolved_families": sorted(set(unresolved)),
++        "relative_balance_tolerance": balance_tol,
++    }
++
+ def design_generation_candidates(projection_rows: Sequence[Mapping[str, Any]],
+                                  zone_rows: Sequence[Mapping[str, Any]], cfg: Mapping[str, Any],
+                                  scale: float = 1.0) -> Dict[str, Any]:
+@@ -590,7 +841,22 @@
+             if add_att is not None and add_att > EPS:
+                 work_att_domestic.append(row)
+ 
+-    # requested_log_step is already backtracked; do not scale a second time.
++    normalized, bound_constraint_audit = _constrain_generation_projection(
++        normalized, zone_map, cfg, skipped, min_step)
++    # Rebuild the joint salary basis after bound-constrained P/A attenuation so
++    # salary and ADD_ATT_W implement the constrained attraction request, not the
++    # pre-constraint projection.
++    work_att_domestic = []
++    for row in normalized:
++        if (row["family"], row["role"], row["branch"]) != ("WORK", "ATT", "DOMESTIC"):
++            continue
++        zr = zone_map[row["zone_no"]]
++        add_att = fval(zr.get(sval(cfg.get("salary", {}).get("work_attraction_attr", "ADD_ATT_W"))), None)
++        if add_att is not None and add_att > EPS:
++            work_att_domestic.append(row)
++
++    # requested_log_step is already backtracked and capacity-constrained; do not
++    # scale a second time.
+     salary_delta, salary_residual, salary_summary = _salary_joint_design(work_att_domestic, zone_map, cfg, scale=1.0)
+     salary_cfg = cfg.get("salary", {})
+     salary_attr = sval(salary_cfg.get("salary_attr", "ADD_SALARY"))
+@@ -691,6 +957,7 @@
+             "attrs_changed": attrs_changed, "salary": salary_summary,
+             "max_abs_effect_log_error": max_effect_error,
+             "estimated_pa_delta_by_family": dict(implemented_totals),
++            "bound_constrained_projection": bound_constraint_audit,
+             "backtracking_scale": scale, "scale_applied_once": True,
+             "implemented_effect_row_count": len(effect_rows),
+         },
+--- /mnt/data/unify_v2485/root/R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016/R1_15A2_CONFIG_V2_4_8_5.json	2026-10-16 17:03:15.000000000 +0000
++++ /mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/R1_15A2_CONFIG_V2_4_8_6.json	2026-10-16 18:35:03.898875600 +0000
+@@ -462,7 +462,7 @@
+       "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+     }
+   },
+-  "safety_gate_release": "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
++  "safety_gate_release": "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
+   "production_apply": false,
+   "trial_calibration": {
+     "enabled": true,
+@@ -507,7 +507,9 @@
+     "v248_persistent_path_cache_policy": "HASHED_SQLITE_PLUS_STATE_BINDINGS_FAIL_CLOSED",
+     "v2481_live_hotfix": "INTRAZONAL_NO_PATH_SUPPORT_GAP_PLUS_NONFATAL_WINDOWS_SQLITE_RETIRE_LOCK",
+     "v2484_hotfix": "STABLE_PROJECT_RUN_ROOT_WHEN_CURRENT_VERSION_IS_ACCEPTED_CHECKPOINT_INSIDE_PRIOR_RUN_TREE",
+-    "v2485_hotfix": "OUTERMOST_PRIOR_RUN_TREE_NORMALIZATION_PLUS_RUN_ROOT_POSTCONDITION"
++    "v2485_root_hotfix": "OUTERMOST_PRIOR_RUN_TREE_NORMALIZATION_PLUS_RUN_ROOT_POSTCONDITION",
++    "v2485_generation_hotfix": "BOUND_CONSTRAINED_GENERATION_PROJECTION_CLIPS_SATURATED_DIRECT_ACTUATORS_AND_REBALANCES_PA_BEFORE_TRIAL",
++    "v2486_unified_hotfix": "STABLE_PROJECT_ROOT_PLUS_BOUND_CONSTRAINED_GENERATION_PROJECTION_IN_ONE_RELEASE"
+   },
+   "calibration_phases": [
+     {
+@@ -530,7 +532,7 @@
+       "must_converge_before_next_phase": true
+     }
+   ],
+-  "release": "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
++  "release": "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
+   "coupled_demand": {
+     "enabled": true,
+     "methodology": "GENERATION_COUNTS_UPDATE_THEN_FINECDF_TD_WITHIN_SAME_OUTER_CYCLE_REPEAT_TO_JOINT_FIXED_POINT",
+@@ -555,7 +557,7 @@
+       "strict_fixed_marginal_reject": false,
+       "methodological_note": "Do not impose external strict-IPF style marginal equality on native Visum Multi/Lohse-Schnabel balancing; freeze P/A inputs, evaluate the actual native TD output, and retain marginal deviations as diagnostics.",
+       "reference_script_id": "R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_V1_8_20261016",
+-      "integration_id": "15A2_V2_4_8_PERSISTENT_PATH_EPOCH_PROGRESSIVE_ADAPTIVE_FINECDF_V18",
++      "integration_id": "15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_PROGRESSIVE_ADAPTIVE_FINECDF_V18",
+       "progressive_schedule": [
+         {
+           "name": "EXPLORE",
+@@ -649,7 +651,7 @@
+       "intrazonal_positive_od_policy": "NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_SUPPORT_GAP",
+       "obsolete_store_windows_lock_policy": "DEFER_CLEANUP_AFTER_VERIFIED_REFRESH_NOT_FATAL",
+       "zero_share_residual_policy": "EXISTING_GEOMETRY_ZERO_SAVED_SHARE_WITHIN_DSEG_PARITY_TOLERANCE_IS_GUIDANCE_EXCLUDED_NOT_REENUMERATED",
+-      "predecessor_cache_compatibility_policy": "EXACT_V2481_OR_V2482_READ_ONLY_CONSUMER_MIGRATION_ONLY",
++      "predecessor_cache_compatibility_policy": "EXACT_V2481_THROUGH_V2485_READ_ONLY_CONSUMER_MIGRATION_ONLY",
+       "run_root_policy": "NORMALIZE_TO_PROJECT_BASE_OUTSIDE_PRIOR_R1_15A2_*_RUNS_TREE"
+     },
+     "persistent_path_cache": {
+@@ -669,7 +671,7 @@
+       "max_total_cache_gib": 24.0,
+       "explicit_predecessor_read_compatibility": {
+         "enabled": true,
+-        "target_release": "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
++        "target_release": "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016",
+         "allowed_contract_differences": [
+           "config_sha256",
+           "path_implementation_files",
+@@ -711,6 +713,24 @@
+               "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
+               "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
+             }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
++            "source_config_sha256": "709d0eb18d65fdb5cc02a24cdeaf199f53dda63af143f34fb2eda15fbaa55613",
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++              "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
++            }
++          },
++          {
++            "source_release": "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016",
++            "source_config_sha256": "3315c25d3e9f0a1cd6088d47bc9276358ab24c3be4e127906a03da6758a8508f",
++            "source_path_implementation_files": {
++              "r1_15a2_two_mode_v238.py": "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++              "r1_15a2_trial_adapter_v240.py": "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++              "r1_15a2_persistent_path_cache_v248.py": "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b"
++            }
+           }
+         ],
+         "policy": "READ_ONLY_EXACT_PREDECESSOR_STORE_WITH_ALL_NONCONSUMER_CONTRACT_FIELDS_EXACT"
+@@ -722,8 +742,10 @@
+       "qualifying_child_prefix": "RUN_",
+       "reject_nested_new_run": true,
+       "plain_source_fallback": "SOURCE_PARENT",
+-      "source_version_remains_immutable_authority": true
+-    }
++      "source_version_remains_immutable_authority": true,
++      "release_owner": "V2.4.8.6_UNIFIED"
++    },
++    "generation_bound_constrained_projection": "CONFIGURED_AT_TOP_LEVEL_AND_VALIDATED_FAIL_CLOSED"
+   },
+   "path_epoch_method": {
+     "initial_export": "FIRST_GENERATION_DESIGN_AFTER_BASELINE",
+@@ -737,5 +759,15 @@
+     "checkpoint_after_enumeration": "IMMUTABLE_SQLITE_PLUS_MANIFEST_PLUS_SHA256",
+     "accepted_state_lineage": "STATE_HASH_TO_PATH_CACHE_BINDING",
+     "legacy_v247_reuse": "EXACT_STATE_AND_ALL_PROFILE_FLOW_PARITY_ONLY"
++  },
++  "generation_bound_constrained_projection": {
++    "enabled": true,
++    "mode": "DIRECT_ACTUATOR_CAPACITY_CLIP_THEN_SAME_FAMILY_ROLE_ATTENUATION",
++    "relative_balance_tolerance": 1e-10,
++    "preserve_spatial_pattern": true,
++    "outward_bound_policy": "CLIP_TO_EXACT_FEASIBLE_LOG_EFFECT",
++    "role_balance_policy": "ATTENUATE_ONLY_LARGER_IMPLEMENTABLE_PA_SIDE",
++    "opposite_sign_policy": "FAIL_CLOSED_UNCHANGED_GENERATION_GATE",
++    "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D"
+   }
+ }
+--- /mnt/data/unify_v2485/root/R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_5.py	2026-10-16 17:03:15.000000000 +0000
++++ /mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_6.py	2026-10-16 18:33:33.329217669 +0000
+@@ -1,5 +1,5 @@
+ # -*- coding: utf-8 -*-
+-"""R1 15A2 V2.4.8.5 stable project-root live-run hotfix: persistent path-epoch calibration.
++"""R1 15A2 V2.4.8.6 unified stable-root and generation-saturation hotfix: persistent path-epoch calibration.
+ 
+ Extends V2.4.7 with immutable cross-run path-epoch checkpoints and accepted-state bindings.
+ Adaptive search can follow a different accepted path than V2.4.5, while every
+@@ -40,12 +40,12 @@
+ import r1_15a2_visum_parameters as vp
+ from r1_15a2_supply import canonical_hash
+ from r1_15a2_safety_v248 import final_artifact_name
+-from r1_15a2_safety_v2485 import validate_v2485_config
++from r1_15a2_safety_v2486 import validate_v2486_config
+ from r1_15a2_trial_adapter_v243 import VisumAdapter
+ from r1_15a2_overnight_controller_v240 import OvernightControl, atomic_json
+ from r1_15a2_overnight_controller_v242 import run_overnight_calibration_coupled
+ 
+-RELEASE = "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016"
++RELEASE = "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016"
+ 
+ 
+ def _is_runs_root(path):
+@@ -119,12 +119,12 @@
+ def _assert_new_run_is_not_nested(run_directory, prior_run_roots):
+     for prior in prior_run_roots:
+         if _is_relative_to(run_directory, prior):
+-            raise RuntimeError("V2485_NEW_RUN_STILL_NESTED_UNDER_PRIOR_RUN_TREE:%s" % prior)
++            raise RuntimeError("V2486_NEW_RUN_STILL_NESTED_UNDER_PRIOR_RUN_TREE:%s" % prior)
+ 
+ 
+ 
+ def load_config():
+-    path = HERE / "R1_15A2_CONFIG_V2_4_8_5.json"
++    path = HERE / "R1_15A2_CONFIG_V2_4_8_6.json"
+     cfg = rt.read_json(path)
+     # Hard locks: working-copy calibration is not production release/apply.
+     cfg["apply"] = False
+@@ -133,7 +133,7 @@
+     cfg["config_path"] = str(path)
+     cfg["config_sha256"] = rt.sha256_file(path)
+     implementation = [
+-        "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_5.py",
++        "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_6.py",
+         "r1_15a2_trial_adapter_v243.py", "r1_15a2_trial_adapter_v240.py", "r1_15a2_overnight_controller_v240.py",
+         "r1_15a2_overnight_controller_v242.py", "r1_15a2_finecdf_bridge_v242.py",
+         "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
+@@ -141,7 +141,7 @@
+         "r1_15a2_two_mode_v238.py", "r1_15a2_com_compat.py", "r1_15a2_live_api_audit.py",
+         "r1_15a2_controller_v22.py", "r1_15a2_sequence_v23.py", "r1_15a2_supply.py",
+         "r1_15a2_supply_visum.py", "r1_15a2_runtime_v1.py", "r1_15a2_core.py",
+-        "r1_15a2_multiblock.py", "r1_15a2_visum_parameters.py", "r1_15a2_safety_v246.py", "r1_15a2_safety_v247.py", "r1_15a2_safety_v248.py", "r1_15a2_safety_v2482.py", "r1_15a2_safety_v2483.py", "r1_15a2_persistent_path_cache_v248.py", "r1_15a2_perf_v246.py",
++        "r1_15a2_multiblock.py", "r1_15a2_visum_parameters.py", "r1_15a2_safety_v246.py", "r1_15a2_safety_v247.py", "r1_15a2_safety_v248.py", "r1_15a2_safety_v2482.py", "r1_15a2_safety_v2483.py", "r1_15a2_safety_v2485.py", "r1_15a2_safety_v2486.py", "r1_15a2_persistent_path_cache_v248.py", "r1_15a2_perf_v246.py",
+         "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+     ]
+     # Include every local runtime module and diagnostic helper, not just the
+@@ -177,6 +177,15 @@
+         "ZERO_SAVED_SHARE_EXISTING_GEOMETRY_RESIDUAL_WITHIN_PARITY_IS_GUIDANCE_EXCLUDED",
+         "EXPLICIT_V2481_V2482_READ_ONLY_CACHE_CONTRACT_COMPATIBILITY",
+     ]
++    cfg["v2486_unified_features"] = [
++        "OUTERMOST_PRIOR_RUN_TREE_NORMALIZATION",
++        "NEW_RUN_OUTSIDE_ALL_DETECTED_PRIOR_RUN_ROOTS_POSTCONDITION",
++        "DIRECT_ACTUATOR_CAPACITY_CLIP_BEFORE_GENERATION_TRIAL",
++        "SAME_FAMILY_PA_ROLE_ATTENUATION_PRESERVES_SPATIAL_PATTERN",
++        "SATURATED_REQUESTS_AUDITED_NOT_SILENTLY_DROPPED",
++        "UNCHANGED_FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D_ACCEPTANCE",
++        "READ_ONLY_CACHE_COMPATIBILITY_V2481_THROUGH_BOTH_V2485_BRANCHES",
++    ]
+     for module in (com, api_audit, rt, vp, supply_runtime):
+         if Path(module.__file__).resolve().parent != HERE.resolve():
+             raise RuntimeError("V248_MIXED_RELEASE_MODULE:" + module.__name__)
+@@ -200,7 +209,7 @@
+                     "period_basis": r["period_basis"],
+                     "observed_scope": r.get("vehicle_scope_original", r.get("vehicle_scope")),
+                 })
+-    validate_v2485_config(cfg, HERE)
++    validate_v2486_config(cfg, HERE)
+     return cfg
+ 
+ 
+@@ -216,7 +225,7 @@
+     project_layout = _stable_project_layout(source_ver)
+     project_base = project_layout["project_base"]
+     project_base_mode = project_layout["mode"]
+-    runs = project_base / "R1_15A2_V2485_RUNS"
++    runs = project_base / "R1_15A2_V2486_RUNS"
+     runs.mkdir(parents=True, exist_ok=True)
+     folder = runs / ("RUN_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
+     folder.mkdir()
+@@ -245,6 +254,7 @@
+                               if local_appdata else
+                               project_base / "R1_15A2_PATH_CACHE_V248")
+                 legacy_roots = [
++                    project_base / "R1_15A2_V2485_RUNS",
+                     project_base / "R1_15A2_V2484_RUNS",
+                     project_base / "R1_15A2_V2483_RUNS",
+                     project_base / "R1_15A2_V2482_RUNS",
+@@ -298,6 +308,9 @@
+                     "path_enumeration_policy": "AUTHORIZED_PERSISTENT_CACHE_OR_FRESH_ENUMERATION_THEN_ONLY_AT_LOCAL_PLATEAU",
+                     "path_epoch_acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
+                     "persistent_path_cache_policy": "HASHED_SQLITE_PLUS_ACCEPTED_STATE_BINDINGS_FAIL_CLOSED",
++                    "stable_project_root_policy": "OUTERMOST_PRIOR_RUN_TREE_NORMALIZED_AND_POSTCONDITION_CHECKED",
++                    "generation_bound_projection_policy": "CLIP_DIRECT_ACTUATOR_CAPACITY_THEN_ATTENUATE_LARGER_PA_ROLE",
++                    "generation_bound_projection_acceptance": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+                     "cp03_live_path_hotfix_retained": True,
+                 }
+                 atomic_json(folder / "METHODOLOGY_STATUS.json", methodology)
+--- /dev/null	2026-10-11 15:17:33.438045107 +0000
++++ /mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/r1_15a2_safety_v2486.py	2026-10-16 18:33:56.192971121 +0000
+@@ -0,0 +1,147 @@
++# -*- coding: utf-8 -*-
++"""V2.4.8.6 unified stable-root and generation-saturation safety contract.
++
++Retains the V2.4.8 persistent-cache and zero-share contracts, requires the
++outermost prior-run-tree normalization, and locks the bound-constrained
++Generation projection introduced after the real V2.4.8.4 saturation failure.
++"""
++from __future__ import annotations
++
++from r1_15a2_safety_v248 import *  # noqa: F401,F403
++from r1_15a2_safety_v248 import validate_v248_config
++from r1_15a2_supply import SupplyContractError
++
++RELEASE = "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016"
++_SOURCE_RULES = {
++    "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016":
++        "5c7417c7cf33dd6426c4eda3937a5e84e4c17f8798403fca8333099948ccbf02",
++    "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016":
++        "724e98e85bf1b9a2391b34b33eb525e268440082f5ae59b4b629417b38b8de4f",
++    "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016":
++        "d4629fdf4ccc0ddf3b48fa2f35db42c9079ae7bfff1943a025a13cc56a377be8",
++    "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016":
++        "4137a6e922147cb1810d9249d835a995fa211723de29ed2098bfb90555c1695d",
++    "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016":
++        "709d0eb18d65fdb5cc02a24cdeaf199f53dda63af143f34fb2eda15fbaa55613",
++    "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016":
++        "3315c25d3e9f0a1cd6088d47bc9276358ab24c3be4e127906a03da6758a8508f",
++}
++_ALLOWED_CACHE_MODULES = {
++    "r1_15a2_two_mode_v238.py",
++    "r1_15a2_trial_adapter_v240.py",
++    "r1_15a2_persistent_path_cache_v248.py",
++}
++
++
++def _require(condition, code):
++    if not condition:
++        raise SupplyContractError(code)
++
++
++def validate_v2486_config(cfg, package_root=None):
++    base = validate_v248_config(cfg, package_root)
++    _require(cfg.get("release") == RELEASE and cfg.get("safety_gate_release") == RELEASE,
++             "V2486_RELEASE_IDENTITY_MISSING")
++
++    stable = cfg.get("performance", {}).get("stable_project_root", {})
++    _require(stable.get("enabled") is True, "V2486_STABLE_PROJECT_ROOT_DISABLED")
++    _require(stable.get("selection") == "PARENT_OF_OUTERMOST_QUALIFYING_R1_15A2_*_RUNS_ANCESTOR",
++             "V2486_PROJECT_ROOT_SELECTION_CHANGED")
++    _require(stable.get("qualifying_child_prefix") == "RUN_",
++             "V2486_RUN_TREE_QUALIFIER_CHANGED")
++    _require(stable.get("reject_nested_new_run") is True,
++             "V2486_NESTED_RUN_POSTCONDITION_DISABLED")
++    _require(stable.get("plain_source_fallback") == "SOURCE_PARENT",
++             "V2486_PLAIN_SOURCE_FALLBACK_CHANGED")
++    _require(stable.get("source_version_remains_immutable_authority") is True,
++             "V2486_SOURCE_AUTHORITY_CHANGED")
++
++    zero = cfg.get("two_mode", {}).get("zero_share_residual_policy", {})
++    _require(zero.get("enabled") is True, "V2486_ZERO_SHARE_RESIDUAL_POLICY_DISABLED")
++    _require(zero.get("action") == "EXCLUDE_FROM_GUIDANCE_PRESERVE_BASE_MARGINS",
++             "V2486_ZERO_SHARE_RESIDUAL_ACTION_CHANGED")
++    _require(zero.get("requires_existing_geometry") is True and
++             zero.get("requires_path_volume_parity_pass") is True,
++             "V2486_ZERO_SHARE_SAFETY_GATE_MISSING")
++    _require(zero.get("acceptance_authority") == "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++             "V2486_ZERO_SHARE_ACCEPTANCE_AUTHORITY_CHANGED")
++    limit = zero.get("max_dseg_relative_volume")
++    base_limit = cfg.get("dseg_path_volume_relative_tolerance")
++    _require(not isinstance(limit, bool) and isinstance(limit, (int, float)) and
++             0.0 < float(limit) <= float(base_limit),
++             "V2486_ZERO_SHARE_RESIDUAL_TOLERANCE_INVALID")
++
++    generation = cfg.get("generation_bound_constrained_projection", {})
++    _require(generation.get("enabled") is True,
++             "V2486_GENERATION_BOUND_CONSTRAINT_DISABLED")
++    _require(generation.get("mode") ==
++             "DIRECT_ACTUATOR_CAPACITY_CLIP_THEN_SAME_FAMILY_ROLE_ATTENUATION",
++             "V2486_GENERATION_BOUND_CONSTRAINT_MODE_CHANGED")
++    _require(generation.get("preserve_spatial_pattern") is True,
++             "V2486_GENERATION_SPATIAL_PATTERN_NOT_LOCKED")
++    tol = generation.get("relative_balance_tolerance")
++    _require(not isinstance(tol, bool) and isinstance(tol, (int, float)) and
++             0.0 < float(tol) <= 1.0e-6,
++             "V2486_GENERATION_BALANCE_TOLERANCE_INVALID")
++    _require(generation.get("outward_bound_policy") == "CLIP_TO_EXACT_FEASIBLE_LOG_EFFECT",
++             "V2486_GENERATION_BOUND_POLICY_CHANGED")
++    _require(generation.get("role_balance_policy") ==
++             "ATTENUATE_ONLY_LARGER_IMPLEMENTABLE_PA_SIDE",
++             "V2486_GENERATION_ROLE_BALANCE_POLICY_CHANGED")
++    _require(generation.get("opposite_sign_policy") ==
++             "FAIL_CLOSED_UNCHANGED_GENERATION_GATE",
++             "V2486_GENERATION_OPPOSITE_SIGN_POLICY_CHANGED")
++    _require(generation.get("acceptance_authority") ==
++             "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++             "V2486_GENERATION_ACCEPTANCE_AUTHORITY_CHANGED")
++
++    compat = cfg.get("performance", {}).get("persistent_path_cache", {}).get(
++        "explicit_predecessor_read_compatibility", {})
++    _require(compat.get("enabled") is True and compat.get("target_release") == RELEASE,
++             "V2486_PREDECESSOR_CACHE_COMPATIBILITY_DISABLED")
++    _require(compat.get("policy") ==
++             "READ_ONLY_EXACT_PREDECESSOR_STORE_WITH_ALL_NONCONSUMER_CONTRACT_FIELDS_EXACT",
++             "V2486_PREDECESSOR_CACHE_POLICY_CHANGED")
++    _require(compat.get("allowed_contract_differences") ==
++             ["config_sha256", "path_implementation_files", "contract_hash"],
++             "V2486_ALLOWED_CONTRACT_DIFFERENCES_CHANGED")
++    predecessors = compat.get("predecessors")
++    _require(isinstance(predecessors, list) and len(predecessors) == len(_SOURCE_RULES),
++             "V2486_PREDECESSOR_RULE_COUNT_INVALID")
++    seen = set()
++    for row in predecessors:
++        _require(isinstance(row, dict), "V2486_PREDECESSOR_RULE_INVALID")
++        source_release = row.get("source_release")
++        _require(source_release in _SOURCE_RULES and
++                 row.get("source_config_sha256") == _SOURCE_RULES[source_release],
++                 "V2486_PREDECESSOR_IDENTITY_CHANGED")
++        impl = row.get("source_path_implementation_files")
++        _require(isinstance(impl, dict) and set(impl) == _ALLOWED_CACHE_MODULES and
++                 all(isinstance(value, str) and len(value) == 64 for value in impl.values()),
++                 "V2486_PREDECESSOR_MODULE_HASH_SET_INVALID")
++        seen.add(source_release)
++    _require(seen == set(_SOURCE_RULES), "V2486_PREDECESSOR_RULE_MISSING")
++
++    impl = cfg.get("implementation_files", {})
++    required_impl = (
++        "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_6.py",
++        "r1_15a2_safety_v2486.py",
++        "r1_15a2_multiblock.py",
++        "r1_15a2_persistent_path_cache_v248.py",
++        "r1_15a2_trial_adapter_v240.py",
++        "r1_15a2_two_mode_v238.py",
++    )
++    for name in required_impl:
++        _require(isinstance(impl.get(name), str) and len(impl[name]) == 64,
++                 "V2486_IMPLEMENTATION_HASH_MISSING:" + name)
++
++    return dict(
++        base,
++        zero_share_residual_policy=zero,
++        generation_bound_constrained_projection=generation,
++        explicit_predecessor_read_compatibility=compat,
++        stable_project_root=stable,
++    )
++
++
++__all__ = ["validate_v2486_config"]
+--- /dev/null	2026-10-11 15:17:33.438045107 +0000
++++ /mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/tests/test_v2486_generation_saturation.py	2026-10-16 18:37:35.848085401 +0000
+@@ -0,0 +1,168 @@
++from __future__ import annotations
++import math
++import pytest
++import r1_15a2_multiblock as mb
++
++
++def _cfg():
++    return {
++        "preserve_zero_add": True,
++        "add_min": 0.0,
++        "add_max": 3.0,
++        "min_add_log_step": 1e-8,
++        "explicit_excluded_zone_nos": [],
++        "generation_bound_constrained_projection": {
++            "enabled": True,
++            "mode": "DIRECT_ACTUATOR_CAPACITY_CLIP_THEN_SAME_FAMILY_ROLE_ATTENUATION",
++            "relative_balance_tolerance": 1e-10,
++            "preserve_spatial_pattern": True,
++            "outward_bound_policy": "CLIP_TO_EXACT_FEASIBLE_LOG_EFFECT",
++            "role_balance_policy": "ATTENUATE_ONLY_LARGER_IMPLEMENTABLE_PA_SIDE",
++            "opposite_sign_policy": "FAIL_CLOSED_UNCHANGED_GENERATION_GATE",
++            "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++        },
++        "zahr": {
++            "domestic_mask_attr": "NOT_ZAHR",
++            "domestic_threshold": 0.5,
++            "neighbour_attr": "ZAHR_SUSED",
++            "population_attr": "POP_ZP",
++            "min": 0.0,
++            "max": 10.0,
++            "preserve_zero": True,
++            "seed_floor": 0.0,
++            "explicit_excluded_zone_nos": [],
++        },
++        # Disable salary in the unit contract so the test isolates the hard
++        # ZAHR production bound and the P/A attenuation itself.
++        "salary": {"enabled": False},
++    }
++
++
++def _zones():
++    return [
++        {
++            "zone_no": 1, "NOT_ZAHR": 1, "ZAHR_SUSED": 0, "POP_ZP": 100,
++            "ADD_PROD_W": 1.0, "ADD_ATT_W": 1.0, "ADD_PROD_S": 1.0, "ADD_ATT_S": 1.0,
++            "ZAHR_PROD_WORK": 1.0, "ZAHR_ATR_WORK": 1.0,
++            "ZAHR_PROD_SERV": 1.0, "ZAHR_ATR_SERV": 1.0,
++        },
++        {
++            "zone_no": 2, "NOT_ZAHR": 1, "ZAHR_SUSED": 0, "POP_ZP": 100,
++            "ADD_PROD_W": 1.0, "ADD_ATT_W": 1.0, "ADD_PROD_S": 1.0, "ADD_ATT_S": 1.0,
++            "ZAHR_PROD_WORK": 1.0, "ZAHR_ATR_WORK": 1.0,
++            "ZAHR_PROD_SERV": 1.0, "ZAHR_ATR_SERV": 1.0,
++        },
++        {
++            "zone_no": 619, "NOT_ZAHR": 0, "ZAHR_SUSED": 1, "POP_ZP": 100,
++            "ADD_PROD_W": 1.0, "ADD_ATT_W": 1.0, "ADD_PROD_S": 1.0, "ADD_ATT_S": 1.0,
++            "ZAHR_PROD_WORK": 10.0, "ZAHR_ATR_WORK": 8.0,
++            "ZAHR_PROD_SERV": 10.0, "ZAHR_ATR_SERV": 8.0,
++        },
++    ]
++
++
++def test_v2486_saturated_zahr_production_is_capacity_clipped_and_pa_rebalanced():
++    # Start from a balanced projection: domestic + saturated ZAHR production
++    # together equal the single domestic attraction request.
++    prod_dom = math.expm1(0.02) * 1000.0
++    prod_zahr = math.expm1(0.08) * 1000.0
++    att_step = math.log1p((prod_dom + prod_zahr) / 1000.0)
++    projection = [
++        {"zone_no": 1, "family": "WORK", "role": "PROD", "log_step": 0.02,
++         "base_margin_volume": 1000.0, "guided_margin_delta": prod_dom, "projected_margin_delta": prod_dom},
++        {"zone_no": 619, "family": "WORK", "role": "PROD", "log_step": 0.08,
++         "base_margin_volume": 1000.0, "guided_margin_delta": prod_zahr, "projected_margin_delta": prod_zahr},
++        {"zone_no": 2, "family": "WORK", "role": "ATT", "log_step": att_step,
++         "base_margin_volume": 1000.0, "guided_margin_delta": prod_dom + prod_zahr,
++         "projected_margin_delta": prod_dom + prod_zahr},
++    ]
++    d = mb.design_generation_candidates(projection, _zones(), _cfg(), 1.0)
++    audit = d["summary"]["bound_constrained_projection"]
++    assert audit["enabled"] is True
++    assert audit["clipped_count"] == 1
++    assert audit["role_rebalance"]["WORK"]["status"] == "BALANCED_BY_ROLE_ATTENUATION"
++    assert audit["role_rebalance"]["WORK"]["scaled_role"] == "ATT"
++    assert 0.0 < audit["role_rebalance"]["WORK"]["scale"] < 1.0
++    # The saturated ZAHR production actuator must never be written above 10.
++    assert not any(r["zone_no"] == 619 and r["attr"] == "ZAHR_PROD_WORK" for r in d["candidate_rows"])
++    assert any(r.get("reason") == "BOUND_SATURATED_CONSTRAINED_PROJECTION" for r in d["skipped_rows"])
++    work = d["summary"]["estimated_pa_delta_by_family"]["WORK"]
++    rel = work["estimated_abs_gap"] / max(1.0, abs(work["estimated_prod_delta"]), abs(work["estimated_att_delta"]))
++    assert rel < 1e-9
++    assert d["summary"]["max_abs_effect_log_error"] < 1e-9
++
++
++def test_v2486_unconstrained_generation_matches_legacy_when_no_bound_is_hit():
++    c = _cfg()
++    projection = [
++        {"zone_no": 1, "family": "WORK", "role": "PROD", "log_step": 0.02, "base_margin_volume": 1000.0},
++        {"zone_no": 2, "family": "WORK", "role": "ATT", "log_step": math.log1p(math.expm1(0.02)), "base_margin_volume": 1000.0},
++    ]
++    d = mb.design_generation_candidates(projection, _zones(), c, 1.0)
++    audit = d["summary"]["bound_constrained_projection"]
++    assert audit["clipped_count"] == 0
++    assert audit["role_rebalance"]["WORK"]["status"] == "ALREADY_BALANCED"
++    assert len(d["candidate_rows"]) == 2
++    assert d["summary"]["max_abs_effect_log_error"] < 1e-9
++
++
++def test_v2486_preserved_zero_direct_actuator_is_removed_before_pa_balance():
++    c = _cfg()
++    zones = _zones()
++    # A preserved zero production actuator has no implementable multiplicative
++    # effect. The opposite attraction side must be attenuated to zero before the
++    # live trial, rather than creating a deterministic P/A gap after mapping.
++    zones[0]["ADD_PROD_S"] = 0.0
++    projection = [
++        {"zone_no": 1, "family": "SERVICE", "role": "PROD", "log_step": 0.04,
++         "base_margin_volume": 1000.0},
++        {"zone_no": 2, "family": "SERVICE", "role": "ATT", "log_step": 0.04,
++         "base_margin_volume": 1000.0},
++    ]
++    d = mb.design_generation_candidates(projection, zones, c, 1.0)
++    audit = d["summary"]["bound_constrained_projection"]
++    assert audit["clipped_count"] == 1
++    assert audit["role_rebalance"]["SERVICE"]["status"] == "BALANCED_BY_ROLE_ATTENUATION"
++    assert audit["role_rebalance"]["SERVICE"]["scale"] == pytest.approx(0.0)
++    assert not d["candidate_rows"]
++    assert any(r.get("reason") == "PRESERVED_ZERO_CONSTRAINED_PROJECTION"
++               for r in d["skipped_rows"])
++    service = d["summary"]["estimated_pa_delta_by_family"].get("SERVICE", {})
++    assert abs(service.get("estimated_prod_delta", 0.0)) < 1e-12
++    assert abs(service.get("estimated_att_delta", 0.0)) < 1e-12
++
++
++def test_v2486_real_failure_shape_balances_work_and_service_saturation():
++    c = _cfg()
++    zones = _zones()
++    # Shape and magnitudes taken from the V2484 live failure evidence. The two
++    # ZAHR production actuators are already at 10.0 and must not be written.
++    projection = [
++        {"zone_no": 1, "family": "WORK", "role": "PROD",
++         "log_step": math.log1p(1674.0538619109655 / 100000.0),
++         "base_margin_volume": 100000.0},
++        {"zone_no": 619, "family": "WORK", "role": "PROD",
++         "log_step": 0.07596206623275155, "base_margin_volume": 4569.390251114766},
++        {"zone_no": 2, "family": "WORK", "role": "ATT",
++         "log_step": math.log1p(2034.6776609155581 / 100000.0),
++         "base_margin_volume": 100000.0},
++        {"zone_no": 1, "family": "SERVICE", "role": "PROD",
++         "log_step": math.log1p(3691.184919452171 / 100000.0),
++         "base_margin_volume": 100000.0},
++        {"zone_no": 619, "family": "SERVICE", "role": "PROD",
++         "log_step": 0.038636728182244603, "base_margin_volume": 2810.1727117179607},
++        {"zone_no": 2, "family": "SERVICE", "role": "ATT",
++         "log_step": math.log1p(3801.866971595385 / 100000.0),
++         "base_margin_volume": 100000.0},
++    ]
++    d = mb.design_generation_candidates(projection, zones, c, 1.0)
++    audit = d["summary"]["bound_constrained_projection"]
++    assert audit["clipped_count"] == 2
++    assert audit["unresolved_families"] == []
++    for family in ("WORK", "SERVICE"):
++        rec = audit["role_rebalance"][family]
++        assert rec["status"] == "BALANCED_BY_ROLE_ATTENUATION"
++        assert rec["relative_gap_after"] < 1e-9
++    assert not any(r.get("zone_no") == 619 and r.get("attr") in
++                   {"ZAHR_PROD_WORK", "ZAHR_PROD_SERV"}
++                   for r in d["candidate_rows"])
+--- /dev/null	2026-10-11 15:17:33.438045107 +0000
++++ /mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/tests/test_v2486_stable_project_root.py	2026-10-16 18:34:07.700951343 +0000
+@@ -0,0 +1,168 @@
++from pathlib import Path
++from types import SimpleNamespace
++import importlib.util
++import json
++
++import pytest
++
++ROOT = Path(__file__).resolve().parents[1]
++LAUNCHER = ROOT / "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_6.py"
++
++
++def load_launcher():
++    spec = importlib.util.spec_from_file_location("v2486_launcher", LAUNCHER)
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def _write_source(path):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_bytes(b"immutable-source")
++    return path
++
++
++def test_single_prior_run_checkpoint_normalizes_to_project_base(tmp_path):
++    module = load_launcher()
++    project = tmp_path / "project"
++    source = _write_source(project / "R1_15A2_V2481_RUNS" / "RUN_1" /
++                           "CALIBRATION" / "CHECKPOINTS" / "ACCEPTED.ver")
++    layout = module._stable_project_layout(source)
++    assert layout["project_base"] == project.resolve()
++    assert layout["mode"] == "OUTERMOST_PRIOR_RUN_TREE_NORMALIZED"
++    assert layout["detected_run_roots_nearest_first"] == [
++        (project / "R1_15A2_V2481_RUNS").resolve()
++    ]
++
++
++def test_repeatedly_nested_failed_runs_choose_outermost_project_base(tmp_path):
++    module = load_launcher()
++    project = tmp_path / "project"
++    outer = project / "R1_15A2_V2481_RUNS"
++    inner = (outer / "RUN_OLD" / "CALIBRATION" / "CHECKPOINTS" /
++             "R1_15A2_V2483_RUNS")
++    source = _write_source(inner / "RUN_BAD" / "CALIBRATION" / "CHECKPOINTS" /
++                           "ACCEPTED.ver")
++    layout = module._stable_project_layout(source)
++    assert layout["project_base"] == project.resolve()
++    assert layout["outermost_run_root"] == outer.resolve()
++    assert layout["detected_run_roots_nearest_first"] == [
++        inner.resolve(), outer.resolve()
++    ]
++    assert module._stable_project_base(source) == (
++        project.resolve(), "OUTERMOST_PRIOR_RUN_TREE_NORMALIZED")
++
++
++def test_triple_nested_failed_runs_choose_outermost_project_base(tmp_path):
++    module = load_launcher()
++    project = tmp_path / "project"
++    r1 = project / "R1_15A2_V2481_RUNS"
++    r2 = r1 / "RUN_A" / "CALIBRATION" / "CHECKPOINTS" / "R1_15A2_V2483_RUNS"
++    r3 = r2 / "RUN_B" / "CALIBRATION" / "CHECKPOINTS" / "R1_15A2_V2484_RUNS"
++    source = _write_source(r3 / "RUN_C" / "CALIBRATION" / "CHECKPOINTS" / "ACCEPTED.ver")
++    layout = module._stable_project_layout(source)
++    assert layout["project_base"] == project.resolve()
++    assert layout["detected_run_roots_nearest_first"] == [
++        r3.resolve(), r2.resolve(), r1.resolve()
++    ]
++
++
++def test_unrelated_runs_named_archive_without_run_child_is_not_normalized(tmp_path):
++    module = load_launcher()
++    source = _write_source(tmp_path / "R1_15A2_ARCHIVE_RUNS" / "models" / "model.ver")
++    layout = module._stable_project_layout(source)
++    assert layout["project_base"] == source.parent.resolve()
++    assert layout["mode"] == "SOURCE_PARENT"
++    assert layout["detected_run_roots_nearest_first"] == []
++
++
++def test_postcondition_rejects_new_run_below_any_prior_run_tree(tmp_path):
++    module = load_launcher()
++    prior = tmp_path / "R1_15A2_V2481_RUNS"
++    bad = prior / "RUN_X" / "CALIBRATION" / "CHECKPOINTS" / "R1_15A2_V2486_RUNS" / "RUN_NEW"
++    bad.mkdir(parents=True)
++    with pytest.raises(RuntimeError, match="V2486_NEW_RUN_STILL_NESTED"):
++        module._assert_new_run_is_not_nested(bad, [prior])
++    good = tmp_path / "R1_15A2_V2486_RUNS" / "RUN_NEW"
++    good.mkdir(parents=True)
++    module._assert_new_run_is_not_nested(good, [prior])
++
++
++def test_v2486_config_retains_zero_share_and_expands_read_compatibility():
++    module = load_launcher()
++    cfg = module.load_config()
++    assert module.RELEASE == "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016"
++    assert cfg["release"] == module.RELEASE
++    stable = cfg["performance"]["stable_project_root"]
++    assert stable["enabled"] is True
++    assert stable["reject_nested_new_run"] is True
++    compat = cfg["performance"]["persistent_path_cache"]["explicit_predecessor_read_compatibility"]
++    assert compat["enabled"] is True
++    assert compat["target_release"] == module.RELEASE
++    assert {r["source_release"] for r in compat["predecessors"]} == {
++        "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
++        "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016",
++        "R1_15A2_V2_4_8_3_CACHE_COMPAT_HOTFIX_20261016",
++        "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
++        "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016",
++        "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016",
++    }
++    assert cfg["two_mode"]["zero_share_residual_policy"]["enabled"] is True
++    generation = cfg["generation_bound_constrained_projection"]
++    assert generation["enabled"] is True
++    assert generation["mode"] == "DIRECT_ACTUATOR_CAPACITY_CLIP_THEN_SAME_FAMILY_ROLE_ATTENUATION"
++
++
++def test_v2486_v2481_predecessor_cache_contract_is_still_authorized(tmp_path):
++    from test_v2483_cache_compat import source_and_target
++    from r1_15a2_persistent_path_cache_v248 import PersistentPathCacheManager
++    from r1_15a2_two_mode_v238 import QuietControl
++    from test_supply_v22 import links
++
++    source, target, rows, snap, policy, manifest = source_and_target(tmp_path)
++    release = "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016"
++    target["release"] = release
++    compat = target["performance"]["persistent_path_cache"]["explicit_predecessor_read_compatibility"]
++    compat["target_release"] = release
++    manager = PersistentPathCacheManager(target, QuietControl())
++    result = manager.validate_manifest(manifest, snap, rows, links(), manifest["sqlite_schema"])
++    assert result["mode"] == "EXPLICIT_PREDECESSOR_READ_COMPATIBILITY"
++    assert result["target_release"] == release
++
++
++def test_launcher_initialization_writes_run_at_outer_project_root(tmp_path, monkeypatch):
++    module = load_launcher()
++    project = tmp_path / "PROJECT"
++    outer = project / "R1_15A2_V2481_RUNS"
++    inner = outer / "RUN_OLD" / "CALIBRATION" / "CHECKPOINTS" / "R1_15A2_V2483_RUNS"
++    source = _write_source(inner / "RUN_BAD" / "CALIBRATION" / "CHECKPOINTS" / "ACCEPTED.ver")
++    source_before = source.read_bytes()
++    visum = SimpleNamespace(IO=SimpleNamespace(CurrentVersionFile=str(source)))
++    monkeypatch.setattr(module.com, "bind_injected", lambda _g: (visum, "TEST"))
++    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "LOCALAPPDATA"))
++
++    def stop_after_root(_visum, path):
++        path = Path(path)
++        path.parent.mkdir(parents=True, exist_ok=True)
++        path.write_bytes(b"working-copy")
++        raise RuntimeError("TEST_STOP_AFTER_RUN_ROOT_EVIDENCE")
++
++    monkeypatch.setattr(module.rt, "save_version", stop_after_root)
++    result = module._main_impl()
++    assert result["status"] == "FULL_OVERNIGHT_FAILED"
++    assert "TEST_STOP_AFTER_RUN_ROOT_EVIDENCE" in result["error"]
++    runs = project / "R1_15A2_V2486_RUNS"
++    run_dirs = [p for p in runs.iterdir() if p.is_dir() and p.name.startswith("RUN_")]
++    assert len(run_dirs) == 1
++    run = run_dirs[0]
++    authority = json.loads((run / "RUN_ROOT_AUTHORITY.json").read_text(encoding="utf-8"))
++    assert Path(authority["project_base"]) == project.resolve()
++    assert authority["project_base_mode"] == "OUTERMOST_PRIOR_RUN_TREE_NORMALIZED"
++    assert authority["normalization_depth"] == 2
++    assert Path(authority["runs_root"]) == runs.resolve()
++    assert authority["postcondition_new_run_outside_all_detected_prior_run_roots"] is True
++    cache_location = json.loads((run / "PERSISTENT_PATH_CACHE_LOCATION.json").read_text(encoding="utf-8"))
++    assert all(Path(p).parent == project.resolve() for p in cache_location["legacy_roots"])
++    assert (inner / "RUN_BAD" / "CALIBRATION" / "CHECKPOINTS" / "R1_15A2_V2486_RUNS").exists() is False
++    assert source.read_bytes() == source_before
++    assert not (project / ".R1_15A2_FULL_CALIBRATION.lock").exists()
+--- /dev/null	2026-10-11 15:17:33.438045107 +0000
++++ /mnt/data/r1_v2486_work/R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016/tests/test_v2486_unified_cache_compat.py	2026-10-16 18:38:04.340691455 +0000
+@@ -0,0 +1,63 @@
++from copy import deepcopy
++from pathlib import Path
++import importlib.util
++
++import pytest
++
++from r1_15a2_persistent_path_cache_v248 import PersistentPathCacheManager
++from r1_15a2_supply import canonical_hash
++from r1_15a2_two_mode_v238 import QuietControl
++from test_supply_v22 import links
++from test_v2483_cache_compat import source_and_target
++
++ROOT = Path(__file__).resolve().parents[1]
++LAUNCHER = ROOT / "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_6.py"
++TARGET_RELEASE = "R1_15A2_V2_4_8_6_UNIFIED_ROOT_SATURATION_20261016"
++SOURCES = {
++    "R1_15A2_V2_4_8_5_STABLE_PROJECT_ROOT_20261016":
++        "709d0eb18d65fdb5cc02a24cdeaf199f53dda63af143f34fb2eda15fbaa55613",
++    "R1_15A2_V2_4_8_5_GENERATION_SATURATION_HOTFIX_20261016":
++        "3315c25d3e9f0a1cd6088d47bc9276358ab24c3be4e127906a03da6758a8508f",
++}
++PATH_HASHES = {
++    "r1_15a2_two_mode_v238.py":
++        "a58980069e942b6782f6d906443e81922f81e6596eb5de5be456719f96ce15ad",
++    "r1_15a2_trial_adapter_v240.py":
++        "af28f414d6b9ddc882023c06637e06f075aeb394d3fd60fa5dd20c4107837484",
++    "r1_15a2_persistent_path_cache_v248.py":
++        "4aa3b8b6a5688a2637fc91c62f73ed9dfd9743d957631df6e47807240f0ad08b",
++}
++
++
++def load_actual_compatibility():
++    spec = importlib.util.spec_from_file_location("v2486_cache_launcher", LAUNCHER)
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module.load_config()["performance"]["persistent_path_cache"][
++        "explicit_predecessor_read_compatibility"]
++
++
++@pytest.mark.parametrize("source_release", sorted(SOURCES))
++def test_v2486_accepts_both_divergent_v2485_cache_contracts(source_release, tmp_path):
++    _source, target, rows, snap, _policy, manifest = source_and_target(tmp_path)
++    target = deepcopy(target)
++    target["release"] = TARGET_RELEASE
++    target["config_sha256"] = "9" * 64
++    target["performance"]["persistent_path_cache"][
++        "explicit_predecessor_read_compatibility"] = load_actual_compatibility()
++
++    # Recast the synthetic predecessor manifest as the exact V2485 source
++    # identity while keeping every non-consumer contract field unchanged.
++    manifest = deepcopy(manifest)
++    manifest["release"] = source_release
++    contract = manifest["contract"]
++    contract["config_sha256"] = SOURCES[source_release]
++    contract["path_implementation_files"].update(PATH_HASHES)
++    contract["contract_hash"] = canonical_hash(
++        {k: v for k, v in contract.items() if k != "contract_hash"})
++
++    manager = PersistentPathCacheManager(target, QuietControl())
++    result = manager.validate_manifest(manifest, snap, rows, links(), manifest["sqlite_schema"])
++    assert result["mode"] == "EXPLICIT_PREDECESSOR_READ_COMPATIBILITY"
++    assert result["source_release"] == source_release
++    assert result["target_release"] == TARGET_RELEASE

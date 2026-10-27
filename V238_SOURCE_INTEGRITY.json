@@ -1,0 +1,50 @@
+{
+  "parent_zip": "R1_15A2_V2_3_7_15P_BOUNDED_PATHLINK_OFFDIAG_CANDIDATE_20261016.zip",
+  "parent_zip_sha256": "c8b16f47587d6470b496135962c6e381436fa31ace4e9403d43933166a4cf20a",
+  "protected_unchanged_files": {
+    "R1_15A2_CONFIG_V2_3_7.json": "d19be67278575d5487aca8d3f499ec5a5d65dd8398bf77329092dddb15079e6c",
+    "authorities/CSD408_SELECTED_PROFILE_AUDIT.md": "08b3bf7ee34c5bdf89422e35824d704f567616caa377b05e4672bdecf1a41d7e",
+    "authorities/IMPEDANCE_FUNCTIONS.csv": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef",
+    "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
+    "authorities/R1_CITY_RPDI_SOURCE_AUDIT.json": "905325d758851c70af94783dcc26f7f6c0de8bc90e5e0a053c6b6e9df4882e20",
+    "authorities/R1_CSD2022_APPROVED_408_QA.json": "c8f34f5c8a4286d8c6a58998ffabebcbb6945b8c18d7a5e456e73dd0854523ad",
+    "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1",
+    "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json": "fbb340f4c9e306f44cd4da97d93999f9f9db0439f7e37a7cde09aee643e75bc2",
+    "authorities/R1_LONG_COMPONENT_AUTHORITY_TEMPLATE.json": "bad29ece7c8479ed00ce66a159bad60aa4d01ce7652c63b0c53b237a83820658",
+    "authorities/R1_TG_NESTED_FORMULA_POP_ZP_LIVE_EVIDENCE_20261015.json": "4a2a0e70e0369ec880b9862ef4a5b3766b27211df32b2f543dd6a23581e4d725",
+    "authorities/R1_TG_OPERATION_5_ADDITIVE_LIVE_EVIDENCE_20261016.json": "cdcb079018465c838238c1361fe1049b82765cadedc098d0e4fc0a355786ba53",
+    "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json": "a5008321c3a3ba65e8a7bd81c6b6591475afabd0aa7665295dd82ba4cd7b46bf",
+    "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_5.json": "37219c610d8a4548771d84023974162d5ee48c26e6ea52b3529bb5930a35d743",
+    "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6.json": "5003204eacf77d3389255bd0710d687dbbfa417cfce68b0a79be7d800bc8c11a",
+    "authorities/VDF_REGISTRY.csv": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287",
+    "authorities/VDF_TYPE_MAPPING.csv": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07",
+    "authorities/source/COUNTLOCATION-2026-10-15-19-27-20_pro15A9_v2(1).xlsx": "f5e56d36f27e1d38cb36f7597adfaaa87bfeb81b3ecbfccefe13cf9f9266bb84",
+    "authorities/source/COUNTLOCATION_20261015_SELECTED_EXPORT.xlsx": "f5e56d36f27e1d38cb36f7597adfaaa87bfeb81b3ecbfccefe13cf9f9266bb84",
+    "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e",
+    "helpers/R1_12D_CSD2022_GEH_FORENSIC_408_APPROVED.py": "881390765f9264ba2f695df70dd2d956d0243c7748505270eb76b4c3dc44ed30",
+    "helpers/R1_12D_CSD2022_GEH_FORENSIC_444_PROCSEQ_EMBEDDED.py": "5600be71e94d488da03a046e66a7a8c8a9d2deee0f7f9877c8eebb172a6e1249",
+    "helpers/R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py": "1d38bf86a75662c9284a9bbe9983a96cb9166a4446fdaa921c436b48e18bb3d3",
+    "r1_15a2_com_compat.py": "36d7ff10d173d9cdea8edc5f56b3f75cc43dfd5dd4dc6f87a115a952c6484901",
+    "r1_15a2_core.py": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
+    "r1_15a2_multiblock.py": "a55f99fad6b5b835ccbffc5e01754b30658e9ff281529e1c900d759242efc726",
+    "r1_15a2_runtime_v1.py": "ca2ab5ebd0ed940d95ff2f6c038788c2c4d9271bd5c840c657c222580d75f262",
+    "r1_15a2_sequence_v23.py": "cd20953e769c2dd69be131cc8fcace98c5304d5c8d754dcef2787a113af55414",
+    "r1_15a2_supply.py": "c35e6440b63bbc9ba2ec060ef77543d420e0411b5b463dee8479171e0a46198e",
+    "r1_15a2_supply_visum.py": "6b31f1e73272b0a24376c5483b626315be3f1a062e6e2dabdd11246763fc111d",
+    "r1_15a2_visum_parameters.py": "652afa99abca769415bdb451af9b20ff6cdf9b7bcc4f4a87164b1be56d9e617b"
+  },
+  "modified_existing_files": [
+    "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+    "README.md",
+    "r1_15a2_controller_v22.py"
+  ],
+  "modified_existing_python_files": [
+    "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+    "r1_15a2_controller_v22.py"
+  ],
+  "missing_parent_payload_files": [],
+  "new_two_mode_entrypoint": "R1_15A2_DESIGN_ONLY_TWO_MODE_V2_3_8.py",
+  "all_authorities_and_helpers_unchanged": true,
+  "geometry_reuse_basis": "EXPERIMENTAL; SAME_RUN_FULL_KEYS_AND_SAMPLES_NOT_FULL_GEOMETRY_IDENTITY",
+  "apply_permitted": false
+}

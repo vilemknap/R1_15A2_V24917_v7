@@ -1,0 +1,10 @@
+{
+  "max_abs_diff": 18.6181922442629,
+  "max_relative_abs_diff": 0.0021224299073038903,
+  "mean_relative_abs_diff": 0.00040987896116106406,
+  "n": 235,
+  "p95_relative_abs_diff": 0.001772052833591335,
+  "p99_relative_abs_diff": 0.00203265556068343,
+  "passes": true,
+  "status": "PASS"
+}

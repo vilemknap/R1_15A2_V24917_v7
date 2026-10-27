@@ -1,0 +1,38 @@
+{
+  "checkpoint": "CP08_PERSISTENT_CACHE_CORE",
+  "compileall_pass": true,
+  "created_utc": "2026-10-16T14:39:57.472355+00:00",
+  "features": [
+    "IMMUTABLE_SQLITE_PATH_EPOCH_CHECKPOINT",
+    "SHA256_PLUS_SQLITE_INTEGRITY_ON_RESTORE",
+    "EXACT_ORIGIN_STATE_REUSE",
+    "EXPLICIT_DESCENDANT_ACCEPTED_STATE_BINDING",
+    "LEGACY_V247_EXACT_STATE_IMPORT",
+    "READ_ONLY_ACTIVE_STORE",
+    "RETENTION_AND_BINDING_GARBAGE_COLLECTION",
+    "FAIL_CLOSED_MANIFEST_AND_BINDING_TAMPER_DETECTION"
+  ],
+  "key_file_sha256": {
+    "R1_15A2_CONFIG_V2_4_8.json": "f79b77dbdb043d35ff7a898ee3c5c7b48b2bb8a07eb28f83b4cfa8a60a238852",
+    "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8.py": "e8ea7ad387cac2a3a7a9748b4ac6e2c229fe0f87b7c108e4561efe8e64c91778",
+    "r1_15a2_persistent_path_cache_v248.py": "a0e714ef65c4f92b12be3aa2cec6fed86051e79f8239a17220826485454769c7",
+    "r1_15a2_safety_v248.py": "2ed36dee29670b689727ab5789e17a431bb361d7bc00c0d4edcbd4bcafc5f944",
+    "r1_15a2_trial_adapter_v240.py": "d1b352cb162b1dd5c0e4283167979a233fbed90d4e18265fa69fb9b826d2d69f",
+    "r1_15a2_two_mode_v238.py": "16f49575fe83792b2dea530923bfe63a6d9543e7cd9f33e78c7c33b35d5ae9ab",
+    "tests/test_v248_persistent_path_cache.py": "58d3047f20b316ffa9b15ca0fb89db59dff0152256ac38b25863c49c6e65f738"
+  },
+  "next_gate": "DOCUMENTATION_VERIFIER_FULL_PACKAGE_INDEPENDENT_UNPACK_THEN_REAL_VISUM_BOUNDED_RESTART_TEST",
+  "production_ready": false,
+  "real_visum_com_tested": false,
+  "release": "R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016",
+  "schema": "R1_15A2_V248_CP08_PERSISTENT_CACHE_CORE_STATUS_V1",
+  "source_parent": "CP07_FINAL_V2_4_7_PATH_EPOCH_RELEASE",
+  "status": "PASS_SOURCE_CHECKPOINT_OFFLINE_NOT_REAL_VISUM_COM",
+  "tests": {
+    "command": "pytest -q -p no:cacheprovider tests",
+    "failed": 0,
+    "log": "/mnt/data/v248_full_pytest_2.log",
+    "passed": 578,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "R1_15A2_V2495_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_9_5_GEH20_HYSTERESIS_SEVERITY_BUDGET_20261018",
+  "status": "PASS_SOURCE_AND_OFFLINE_REGRESSION_REAL_VISUM_ACCEPTANCE_PENDING",
+  "focused_tests": "70 passed",
+  "full_pytest": "725 passed",
+  "compileall_pass": true,
+  "geh20_hysteresis": [
+    19.5,
+    20.5
+  ],
+  "generation_material_new_geh20_limit": 3,
+  "generation_single_profile_geh_increase_limit": 2.0,
+  "generation_total_new_geh20_excess_limit": 2.0,
+  "td_material_new_geh20_limit": 1,
+  "td_single_profile_geh_increase_limit": 1.0,
+  "td_total_new_geh20_excess_limit": 0.75,
+  "new_geh30_limit": 0,
+  "continuous_penalty": "DEFERRED_NOT_IMPLEMENTED_IN_V2495",
+  "v2494_path_export_retry_retained": true,
+  "v2494_semantic_restart_retained": true,
+  "weighted_mean_geh_retained": true,
+  "global_long_composite_retained": true,
+  "signed_generation_retained": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "next_gate": "BOUNDED_REAL_VISUM_V2495_FROM_USER_SELECTED_ACCEPTED_CHECKPOINT"
+}

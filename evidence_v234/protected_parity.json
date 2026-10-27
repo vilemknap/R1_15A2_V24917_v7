@@ -1,0 +1,57 @@
+{
+  "all_unchanged": true,
+  "files": {
+    "r1_15a2_core.py": {
+      "parent": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7",
+      "updated": "f8c46886dc5fead310812f053037e005bee3c4bb641aa9439f11f222fb9976d7"
+    },
+    "r1_15a2_multiblock.py": {
+      "parent": "1412f910cc60b8edd5c6bb23ccca89b62d6d92986b7723ffe46652bd0221e5c6",
+      "updated": "1412f910cc60b8edd5c6bb23ccca89b62d6d92986b7723ffe46652bd0221e5c6"
+    },
+    "r1_15a2_sequence_v23.py": {
+      "parent": "6ba3bc757846f192524dc4700ade8f5be1fce93a7afde0aaa704b218f3e3ac0f",
+      "updated": "6ba3bc757846f192524dc4700ade8f5be1fce93a7afde0aaa704b218f3e3ac0f"
+    },
+    "r1_15a2_supply.py": {
+      "parent": "c7595ce0be6652d3dbe1e6f73af7adad0e88fead64a9972c74660607e5651228",
+      "updated": "c7595ce0be6652d3dbe1e6f73af7adad0e88fead64a9972c74660607e5651228"
+    },
+    "r1_15a2_supply_visum_v23.py": {
+      "parent": "c699bfbd7c5b42d87a77c4ec299aaa8b8b6aab6feccc49a9da444859c893a459",
+      "updated": "c699bfbd7c5b42d87a77c4ec299aaa8b8b6aab6feccc49a9da444859c893a459"
+    },
+    "helpers/R1_11D_V1_3_COMPONENT_DIST_BEHAVIOR_DIAGNOSTICS.py": {
+      "parent": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e",
+      "updated": "5cecba5c1c69a50cd6fff092caa99d6bdfc2840b590f2a646d82fb4d26d1fa8e"
+    },
+    "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv": {
+      "parent": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1",
+      "updated": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1"
+    },
+    "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv": {
+      "parent": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
+      "updated": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1"
+    },
+    "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json": {
+      "parent": "a5008321c3a3ba65e8a7bd81c6b6591475afabd0aa7665295dd82ba4cd7b46bf",
+      "updated": "a5008321c3a3ba65e8a7bd81c6b6591475afabd0aa7665295dd82ba4cd7b46bf"
+    },
+    "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json": {
+      "parent": "fbb340f4c9e306f44cd4da97d93999f9f9db0439f7e37a7cde09aee643e75bc2",
+      "updated": "fbb340f4c9e306f44cd4da97d93999f9f9db0439f7e37a7cde09aee643e75bc2"
+    },
+    "authorities/IMPEDANCE_FUNCTIONS.csv": {
+      "parent": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef",
+      "updated": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef"
+    },
+    "authorities/VDF_REGISTRY.csv": {
+      "parent": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287",
+      "updated": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287"
+    },
+    "authorities/VDF_TYPE_MAPPING.csv": {
+      "parent": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07",
+      "updated": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07"
+    }
+  }
+}

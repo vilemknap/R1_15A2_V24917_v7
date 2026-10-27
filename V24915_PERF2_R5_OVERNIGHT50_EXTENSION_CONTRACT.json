@@ -1,0 +1,20 @@
+{
+  "schema": "R1_15A2_V24915_PERF2_R5_OVERNIGHT50_EXTENSION_CONTRACT_V1",
+  "package_revision": "V24915_PERF2_R5_OVERNIGHT50_B0016_CONTINUATION",
+  "source_lineage_outer_cycle_cap": 12,
+  "extended_lineage_outer_cycle_cap": 50,
+  "global_runtime_seconds": 64800.0,
+  "finecdf_inner_runtime_seconds": 14400.0,
+  "minimum_stationary_cycles": 2,
+  "supply_max_cycles": 100,
+  "early_exploration_acceptance_through_outer_cycle": 12,
+  "post_cycle_12_acceptance": "EXISTING_V2495_FALLBACK_UNCHANGED",
+  "generation_final_stage_extended_only": true,
+  "finecdf_full_verify_stage_extended_only": true,
+  "candidate_math_changed": false,
+  "assignment_method_changed": false,
+  "acceptance_thresholds_changed": false,
+  "stationarity_rule_changed": false,
+  "supply_unlock_rule_changed": false,
+  "intent": "OVERNIGHT_RUNTIME_BUDGET_EXTENSION_ONLY; STOP_EARLY_ON_EXISTING_CONVERGENCE_RULE"
+}

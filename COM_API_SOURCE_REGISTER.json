@@ -1,0 +1,109 @@
+{
+  "review_date": "2026-10-15",
+  "source_policy": "Primary PTV documentation and maintainer source only; public documentation plus attached exact parent code. No access to installed live Visum COM.",
+  "sources": [
+    {
+      "id": "COM01",
+      "title": "PTV Visum 2026 COM: IOperations",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IOperations.html",
+      "supported_point": "Operations are identified by 1-based position, not a network NO attribute."
+    },
+    {
+      "id": "COM02",
+      "title": "PTV Visum 2026 COM: IOperations members",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IOperations_members.html",
+      "supported_point": "GetAll property, ItemByKey, GetParent/GetChildren; Count is not a documented member."
+    },
+    {
+      "id": "COM03",
+      "title": "PTV Visum 2026 COM: OperationType",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~OperationType.html",
+      "supported_point": "PrT assignment101; PuT100; TG45; TD46; script65; group75; PrT skims103."
+    },
+    {
+      "id": "COM04",
+      "title": "PTV Visum 2026 COM: CreatePrTPathList",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~ILists~CreatePrTPathList.html",
+      "supported_point": "Read-only object property. Official Python uses SetObjects(0,\"C\",0) and explicit AddColumn key IDs."
+    },
+    {
+      "id": "COM05",
+      "title": "PTV Visum 2026 COM: ILists",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~ILists_members.html",
+      "supported_point": "Distinct path, path-link and assignment-quality list properties."
+    },
+    {
+      "id": "COM06",
+      "title": "PTV Visum 2026 COM: GetMultiAttValues",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~ILinks~GetMultiAttValues.html",
+      "supported_point": "Returned keys are GetAll indices, not object numbers. OnlyActive defaults True; pass False for full scope."
+    },
+    {
+      "id": "COM07",
+      "title": "PTV Visum 2026 COM: SetMultiAttValues",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~ILinks~SetMultiAttValues.html",
+      "supported_point": "Third argument Add=False means replacement; it is NOT an OnlyActive selector."
+    },
+    {
+      "id": "COM08",
+      "title": "PTV Visum 2026 COM: IOperation members",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IOperation_members.html",
+      "supported_point": "Typed TG/TD/PrT parameter object properties are distinct."
+    },
+    {
+      "id": "COM09",
+      "title": "PTV Visum 2026 COM: AddMatrix",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~INet~AddMatrix.html",
+      "supported_point": "Official example creates zone demand matrix using ObjectTypeRef2, MatrixType3."
+    },
+    {
+      "id": "COM10",
+      "title": "PTV Visum 2026 COM: IMatrix attributes",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IMatrix_attributes.html",
+      "supported_point": "MatrixType, DataSourceType and ObjectTypeRef are different attributes. NumRows/NumCols are read-only outputs. MatrixUnit is maintained separately."
+    },
+    {
+      "id": "COM11",
+      "title": "PTV Visum 2026 COM: AddUserDefinedAttribute",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IScreenlines~AddUserDefinedAttribute.html",
+      "supported_point": "Examples: integer1, float2, text5, Boolean9. Existing correct types were not replaced with Vissim enums."
+    },
+    {
+      "id": "COM12",
+      "title": "PTV Visum 2026 COM: GetPath",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IVisum~GetPath.html",
+      "supported_point": "Returns configured project directory for file type; not necessarily the full loaded version filename."
+    },
+    {
+      "id": "RUN01",
+      "title": "PTV Visum 2026: integrating scripts",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_EN-DE/en-us/Content/2_Mit_Skripten_arbeiten/2_14_Skript-Dateien%20oder%20Skript-Code%20in%20den%20Verfahrensablauf%20einbinden.htm",
+      "supported_point": "Standard3.13 supports COM. Hub does not. Legacy script-file execution can use a wx thread. LoadVersion forbidden inside a running procedure sequence."
+    },
+    {
+      "id": "RUN02",
+      "title": "PTV support: COM documentation",
+      "url": "https://support.ptvgroup.com/en-us/knowledgebase/article/KA-05080",
+      "supported_point": "Installed COM help and COM examples are the exact local reference where public pages omit details."
+    },
+    {
+      "id": "PY01",
+      "title": "pywin32 maintainer source: dynamic.py",
+      "url": "https://github.com/mhammond/pywin32/blob/main/com/win32com/client/dynamic.py",
+      "supported_point": "CDispatch.__call__ invokes the default member. callable(COM property) does not imply a factory that should be called again."
+    },
+    {
+      "id": "COM13",
+      "title": "PTV Visum 2026 COM object library overview",
+      "url": "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB_P.html",
+      "supported_point": "Confirms interface names for type-library extraction; does not establish every parameter attribute signature."
+    }
+  ],
+  "not_publicly_resolved": [
+    "Exact live achieved-gap binding and its assignment scope",
+    "Specific operation positions in the current loaded model",
+    "Complete TG/TD per-stratum parameter attribute catalogs for this installed service pack",
+    "Bounded SaveToArray signature if absent in installed type info",
+    "Full node/turn/connector/VDF live snapshot parity"
+  ]
+}

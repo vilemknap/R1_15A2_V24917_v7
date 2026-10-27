@@ -1,0 +1,18 @@
+{
+  "compileall_pass": true,
+  "ipf_tolerance_relaxed": false,
+  "production_ready": false,
+  "pytest": "640 passed",
+  "real_visum_tested": false,
+  "release": "R1_15A2_V2_4_8_9_TD_REALIZATION_STABILIZATION_20261016",
+  "restart_authority": "B_0000_NOT_A_0001_FROM_LEGACY_ABSOLUTE_CAP_BRANCH",
+  "rollback_evidence": "ATOMIC_COPY_PLUS_CENTRAL_SHORT_RUN_ROOT_MIRROR",
+  "root_causes_fixed": [
+    "NATIVE_20B_IPF_NONCONVERGENCE_AFTER_FINECDF_TARGET",
+    "ROLLBACK_11D_EVIDENCE_COPY_WINERROR3_LONG_OR_MISSING_PATH",
+    "NEXT_GENERATION_COULD_PROCEED_WITHOUT_EXPLICIT_TD_REALIZATION_STATE"
+  ],
+  "schema": "R1_15A2_V2489_RELEASE_STATUS_V1",
+  "status": "PASS_OFFLINE_REGRESSION_PENDING_FINAL_ARCHIVE_READBACK_AND_REAL_VISUM",
+  "td_realization": "BACKTRACK_B_AND_LOG_NEG_C_FROM_ACCEPTED_PARENT"
+}

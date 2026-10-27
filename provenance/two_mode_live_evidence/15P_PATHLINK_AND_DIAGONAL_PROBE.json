@@ -1,0 +1,247 @@
+{
+  "schema": "R1_15A2_15P_BOUNDED_PATHLINK_MATRIX_DIAG_V1",
+  "started": "2026-10-16T02:53:44.307876+02:00",
+  "loaded_version_file": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_2022_vraceny_zonalni_atributy_osrm_doplneno_local.ver",
+  "apply": false,
+  "assignment_executed": false,
+  "writes_to_visum": false,
+  "matrix_diagonals": [
+    {
+      "dseg_code": "NATIVE_CW",
+      "matrix_no": 9301,
+      "matrix_sum": 153670.99374558456,
+      "diagonal_intra_zonal_sum": 37865.66160295146,
+      "interzonal_sum": 115805.3321426331,
+      "intrazonal_fraction": 0.24640734519906402,
+      "interzonal_fraction": 0.753592654800936,
+      "matrix_shape": [
+        681,
+        681
+      ],
+      "matrix_sum_matches_visum": true
+    },
+    {
+      "dseg_code": "NATIVE_CW_noT",
+      "matrix_no": 9302,
+      "matrix_sum": 51152.92290226964,
+      "diagonal_intra_zonal_sum": 12619.314599107305,
+      "interzonal_sum": 38533.608303162335,
+      "intrazonal_fraction": 0.24669782063514087,
+      "interzonal_fraction": 0.7533021793648591,
+      "matrix_shape": [
+        681,
+        681
+      ],
+      "matrix_sum_matches_visum": true
+    },
+    {
+      "dseg_code": "NATIVE_CS",
+      "matrix_no": 9303,
+      "matrix_sum": 222511.68743978988,
+      "diagonal_intra_zonal_sum": 68502.7753365731,
+      "interzonal_sum": 154008.91210321677,
+      "intrazonal_fraction": 0.30786147067043157,
+      "interzonal_fraction": 0.6921385293295684,
+      "matrix_shape": [
+        681,
+        681
+      ],
+      "matrix_sum_matches_visum": true
+    },
+    {
+      "dseg_code": "NATIVE_CS_noT",
+      "matrix_no": 9304,
+      "matrix_sum": 95100.17432298808,
+      "diagonal_intra_zonal_sum": 29354.760550469793,
+      "interzonal_sum": 65745.41377251828,
+      "intrazonal_fraction": 0.30867199518238964,
+      "interzonal_fraction": 0.6913280048176103,
+      "matrix_shape": [
+        681,
+        681
+      ],
+      "matrix_sum_matches_visum": true
+    }
+  ],
+  "pathlink_probes": [
+    {
+      "dseg_code": "NATIVE_CW",
+      "status": "BOUNDED_PAGES_READABLE",
+      "stage": "COMPLETE",
+      "pages": [
+        {
+          "first": 1,
+          "last": 80,
+          "returned": 80,
+          "first_row": [
+            1.0,
+            7.0,
+            1.0,
+            "",
+            "",
+            "",
+            ""
+          ],
+          "last_row": [
+            "",
+            "",
+            "",
+            31.0,
+            8000025.0,
+            9000525.0,
+            9000199.0
+          ]
+        },
+        {
+          "first": 81,
+          "last": 160,
+          "returned": 80,
+          "first_row": [
+            "",
+            "",
+            "",
+            32.0,
+            8000027.0,
+            9000199.0,
+            1001699.0
+          ],
+          "last_row": [
+            "",
+            "",
+            "",
+            9.0,
+            8001474.0,
+            9000148.0,
+            1003259.0
+          ]
+        },
+        {
+          "first": 161,
+          "last": 240,
+          "returned": 80,
+          "first_row": [
+            "",
+            "",
+            "",
+            10.0,
+            2004183.0,
+            1003259.0,
+            1003309.0
+          ],
+          "last_row": [
+            "",
+            "",
+            "",
+            41.0,
+            8500090.0,
+            1001884.0,
+            9900097.0
+          ]
+        }
+      ],
+      "route_filter_source": "HOST_COM_ENUM",
+      "bounded_signature": {
+        "memid": 11,
+        "invkind": 1,
+        "args": [
+          "FirstObject",
+          "LastObject"
+        ]
+      },
+      "sample_route_parents": 5,
+      "sample_link_children": 235,
+      "sample_rows": 240
+    },
+    {
+      "dseg_code": "NATIVE_CW_noT",
+      "status": "BOUNDED_PAGES_READABLE",
+      "stage": "COMPLETE",
+      "pages": [
+        {
+          "first": 1,
+          "last": 80,
+          "returned": 80,
+          "first_row": [
+            1.0,
+            7.0,
+            1.0,
+            "",
+            "",
+            "",
+            ""
+          ],
+          "last_row": [
+            "",
+            "",
+            "",
+            17.0,
+            2003591.0,
+            1003260.0,
+            1000656.0
+          ]
+        },
+        {
+          "first": 81,
+          "last": 160,
+          "returned": 80,
+          "first_row": [
+            "",
+            "",
+            "",
+            18.0,
+            2003582.0,
+            1000656.0,
+            1000670.0
+          ],
+          "last_row": [
+            "",
+            "",
+            "",
+            27.0,
+            8000653.0,
+            9000354.0,
+            9000555.0
+          ]
+        },
+        {
+          "first": 161,
+          "last": 240,
+          "returned": 80,
+          "first_row": [
+            "",
+            "",
+            "",
+            28.0,
+            8000658.0,
+            9000555.0,
+            1003311.0
+          ],
+          "last_row": [
+            "",
+            "",
+            "",
+            10.0,
+            2003587.0,
+            1000626.0,
+            1002390.0
+          ]
+        }
+      ],
+      "route_filter_source": "HOST_COM_ENUM",
+      "bounded_signature": {
+        "memid": 11,
+        "invkind": 1,
+        "args": [
+          "FirstObject",
+          "LastObject"
+        ]
+      },
+      "sample_route_parents": 4,
+      "sample_link_children": 236,
+      "sample_rows": 240
+    }
+  ],
+  "limits": "Only 3 x 80 path-link rows for two DSegs; not a full path or volume parity audit",
+  "status": "EVIDENCE_BOUNDED_PROBE_PASSED",
+  "finished": "2026-10-16T02:53:45.865652+02:00"
+}

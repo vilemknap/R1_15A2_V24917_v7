@@ -1,0 +1,85 @@
+{
+  "added_count": 13,
+  "added_files": [
+    {
+      "path": "R1_15A2_CONFIG_V2_4_9_15_PERF1.json",
+      "sha256": "360b80d1cd259250d551eed1b8891431f854bd87486a9ea48d7cbfbfdd9243e6",
+      "size": 70300
+    },
+    {
+      "path": "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_9_15_PERF1.py",
+      "sha256": "7020f21ce3a389495a722b37a37b77f416646dc751cb7dbc1f166a1964ae19ab",
+      "size": 42989
+    },
+    {
+      "path": "V24915_PERF1_EXACT_SAFE_ACCELERATION_CONTRACT.json",
+      "sha256": "d74dc335cf3d43414527bc1beb6bbfeb1d4cfcbee400e10c68e59c09b9495375",
+      "size": 1782
+    },
+    {
+      "path": "V24915_PERF1_RUNTIME_BUNDLE_MANIFEST.json",
+      "sha256": "a37ba6c3b436400d588f94c27a1001c677f4b53107dd2cb1e1ed69730f51ebd9",
+      "size": 12439
+    },
+    {
+      "path": "r1_15a2_acceleration_v24915p1.py",
+      "sha256": "132aada68b462fb4b3c5afce894161667b848314a083f39d218f75376fa4069e",
+      "size": 25479
+    },
+    {
+      "path": "r1_15a2_inplace_transaction_v24915p1.py",
+      "sha256": "71b95ee19cf8fb6ec76a8505c6a864b6eca9d941d7fa5205a32893d1daddc494",
+      "size": 8081
+    },
+    {
+      "path": "r1_15a2_overnight_controller_coupled_v24915p1.py",
+      "sha256": "30953079addaebcaf96673391e08667f5087a95e3fce559b4305105e6167a35c",
+      "size": 63041
+    },
+    {
+      "path": "r1_15a2_overnight_controller_v24915p1.py",
+      "sha256": "76381e38bf3cee3265048ed4ad27951dff684425ca1d0b094e0409057e641e50",
+      "size": 42881
+    },
+    {
+      "path": "r1_15a2_safety_v24915p1.py",
+      "sha256": "9b3711f42f0253df3433d8cbc3773d71bfb1f7fe19b7f6ad5ec712b8d0e26eee",
+      "size": 13031
+    },
+    {
+      "path": "r1_15a2_supply_handoff_v24915p1.py",
+      "sha256": "e19a667f5a555894c832a57b808cd72d57510d6e6c5f6175076ebb755ea3eead",
+      "size": 4576
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24915p1.py",
+      "sha256": "75a58053d55ccbbe647f338285d8801c81829f528d7c7a1f84e50f5f2aa8adf9",
+      "size": 2549
+    },
+    {
+      "path": "tests/test_v24915_perf1_exact_safe_acceleration.py",
+      "sha256": "94f37304eaaed9579b5918d857ef5f4721064d2f2ec9a072a373a82266185468",
+      "size": 10170
+    },
+    {
+      "path": "tests/test_v24915_perf1_release.py",
+      "sha256": "68f9194f0a4fe71a5938b9ca6ce54a8c63402851373533dc832fa58474e74c1b",
+      "size": 4087
+    }
+  ],
+  "baseline_file_count": 723,
+  "baseline_tree_sha256": "5a64ad476aeb68c0622815f2c3dc63b0d72b08df1b05f3930ec927af5e2d2456",
+  "implementation_file_count_before_evidence": 736,
+  "implementation_tree_sha256": "0bc7afddb9025df62d015b829eaec02f2c11604d207fb2366d1f50af5712dad1",
+  "modified_parent_count": 0,
+  "modified_parent_files": [],
+  "parent_release": "R1_15A2_V2_4_9_15_COM_BUSY_RETRY_SAFE_FINALIZER_20261019",
+  "parent_tree_byte_preserved": true,
+  "release": "R1_15A2_V2_4_9_15_PERF1_EXACT_SAFE_ACCELERATION_20261019",
+  "removed_parent_count": 0,
+  "removed_parent_files": [],
+  "schema": "R1_15A2_V24915_PERF1_IMPLEMENTATION_SOURCE_INVENTORY_V1",
+  "source_patch": "V24915_PERF1_SOURCE_PATCH.diff",
+  "source_patch_sha256": "125affd7287b4b777b6da547c63b7334304971683ef9e329934e25bcf5da7a20",
+  "tree_hash_scope": "ALL_FILES_PRESENT_BEFORE_EVIDENCE_GENERATION_EXCLUDING_CACHE_AND_PYC"
+}

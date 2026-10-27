@@ -1,0 +1,61 @@
+{
+  "status": "PASS_STATIC_AUDIT",
+  "local_imports": [
+    {
+      "file": "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+      "local_imports": [
+        "r1_15a2_core",
+        "r1_15a2_multiblock",
+        "r1_15a2_runtime_v1",
+        "r1_15a2_visum_parameters"
+      ],
+      "missing": []
+    },
+    {
+      "file": "r1_15a2_core.py",
+      "local_imports": [],
+      "missing": []
+    },
+    {
+      "file": "r1_15a2_multiblock.py",
+      "local_imports": [],
+      "missing": []
+    },
+    {
+      "file": "r1_15a2_runtime_v1.py",
+      "local_imports": [
+        "r1_15a2_core"
+      ],
+      "missing": []
+    },
+    {
+      "file": "r1_15a2_visum_parameters.py",
+      "local_imports": [
+        "r1_15a2_multiblock",
+        "r1_15a2_runtime_v1"
+      ],
+      "missing": []
+    }
+  ],
+  "missing_local_imports": [],
+  "forbidden_direct_od_write_patterns": {
+    ".SetValues(": 0,
+    ".SetValuesToResultMatrix(": 0,
+    ".SetValuesRaw(": 0
+  },
+  "default_apply": false,
+  "block_schedule": [
+    "GENERATION",
+    "TD_COMPONENT_WORK",
+    "TD_COMPONENT_SERVICE",
+    "TD_COMPONENT_SCHOOL",
+    "TD_COMPONENT_LONG"
+  ],
+  "component_count": 16,
+  "helper_count": 2,
+  "authority_files": [
+    "R1_LONG_AUTHORITY_CONTRACT_V2_1.json",
+    "R1_LONG_COMPONENT_AUTHORITY_TEMPLATE.json",
+    "R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_1.json"
+  ]
+}

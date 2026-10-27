@@ -1,0 +1,17 @@
+{
+  "schema": "R1_15A2_V2488_RECOVERY_JOURNAL_V1",
+  "release": "R1_15A2_V2_4_8_8_PATH_CACHE_SEMANTIC_COMPAT_20261016",
+  "checkpoints": [
+    {
+      "checkpoint": "CP18_V2488_PATH_CACHE_SEMANTIC_COMPAT_CORE",
+      "role": "CORE_RECOVERY_CHECKPOINT",
+      "drive_file_id": "1jGp1Cjj_oLUnuSUz-VZzHaBUi-zNbGk1",
+      "sha256": "34713463f2ec21fca741599195562677c8b43dd80fb51d51ae0c7665d0e96ad4",
+      "readback_verified": true,
+      "targeted_tests": "43 passed",
+      "compileall_pass": true
+    }
+  ],
+  "next_checkpoint": "CP19_V2488_FINAL_RELEASE_AFTER_FINAL_ARCHIVE_READBACK",
+  "canonical_pointer_update_allowed_only_after_cp19_readback": true
+}

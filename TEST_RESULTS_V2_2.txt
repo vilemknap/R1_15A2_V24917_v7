@@ -1,0 +1,40 @@
+R1 15A2 V2.2
+
+{
+  "status": "V22_OFFLINE_VERIFIED_LIVE_APPLY_GATE_PENDING",
+  "parent_version": "2.1-audited",
+  "version": "2.2",
+  "parent_zip_sha256": "8bb9b461424ea6d1780791bbc949d70ba4e61ae2c613298cd5071f2170a9bcbf",
+  "offline_test_counts": {
+    "tests": 124,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "compileall_pass": true,
+  "isolated_import_pass": true,
+  "protected_source_parity_pass": true,
+  "modified_existing_runtime": true,
+  "root_production_static_no_direct_od_write_pass": true,
+  "synthetic_controller_e2e_pass": true,
+  "live_visum_tested": false,
+  "production_ready": false,
+  "default_apply": false,
+  "max_accepted_blocks_default": 1,
+  "unit_contract": "+1 ADDVAL1 = +10 generalized seconds",
+  "live_gates_pending": [
+    "Explicit actual assignment operation numbers/types and DSeg scope",
+    "Actual readable assignment convergence gap",
+    "Current live formula/VDF/supply snapshot confirmation",
+    "Live saved-path coverage/parity",
+    "Live parameter/matrix freeze and rollback qualification"
+  ],
+  "test_backend_limits": [
+    "Unit tests and COM-shaped stubs are not live Visum execution",
+    "Controller demo uses deterministic stub, not Visum or Dial-B"
+  ],
+  "recovery_semantics": "RESTART_CYCLE_FROM_ACCEPTED_WITH_PRESERVED_ANCHORS",
+  "snapshot_limits": "Declared directed-link fields, matrices, generation/TD parameters and operation inventory; VDF/impedance are supplied sealed exports, not automatic full live node/turn/connector/VDF extraction"
+}
+
+Raw logs: evidence_v22/. Final ZIP round-trip verification is also delivered externally.

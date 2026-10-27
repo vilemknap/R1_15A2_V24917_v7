@@ -1,0 +1,36 @@
+{
+  "script_id": "R1_BC_AUTO_DIST_ONLY_FINECDF_PATCHED_V1_7_20261016",
+  "status": "LOCAL_TESTED_NOT_REAL_VISUM_COM",
+  "total_local_tests": 42,
+  "test_suites": [
+    {
+      "name": "Original 512-node IDP authority",
+      "tests": 7,
+      "status": "PASS",
+      "report_file": "test_r1_bc_v1_7_authority.log"
+    },
+    {
+      "name": "Silent file I/O + run launch mock",
+      "tests": 6,
+      "status": "PASS",
+      "report_file": "test_r1_bc_v1_7_finecdf_io.log"
+    },
+    {
+      "name": "Native TD auto calibration COM mock",
+      "tests": 19,
+      "status": "PASS",
+      "report_file": "test_r1_bc_v1_7_full.log"
+    },
+    {
+      "name": "3402-cell patched input preflight",
+      "tests": 10,
+      "status": "PASS",
+      "report_file": "test_r1_bc_v1_7_patch_attestation.log"
+    }
+  ],
+  "failures": 0,
+  "new_validation": "Checks all 3402 OSRM/AMDY patched cells in current opened Visum before native TD, with tolerance 0.001 per cell.",
+  "fresh_baseline": "First native TD rebuilds all 16 OD result matrices from corrected M9001/M9697 before any b/c perturbation.",
+  "same_target_values_as_v1_6": true,
+  "real_visum_run_tested": false
+}

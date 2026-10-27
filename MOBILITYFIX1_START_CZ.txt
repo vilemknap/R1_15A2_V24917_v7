@@ -1,0 +1,33 @@
+R1_15A2 V24917 - MOBILITYFIX1 (navazuje na PROCSEQFIX1)
+=======================================================
+
+Tento balicek je KOMPLETNI. Nerozbalujte jej pres drive pouzivanou verzi.
+
+1. Ukoncete Visum a znovu jej spustte (vycisteni nactenych Python modulu).
+2. Rozbalte cely soubor *MOBILITYFIX1_20261027_FULL.zip do NOVE slozky.
+3. V PTV Visum otevete overeny vychozi model
+   ACCEPTED_A_0019_eaf3d7aea007.ver.
+   Predchozi beh skoncil bez prijateho kalibracniho kroku. Neprepisujte
+   zdrojovy .ver ani nenavazujte na nedokonceny pokus jako na prijaty stav.
+4. Ve Visumu zvolte Scripts > Run script file a vyberte JEDEN launcher:
+   01_SPUSTIT_V24917_TDJOINT1.py       = 65 % intenzity / 35 % IDP
+   02_SPUSTIT_V24917_TDJOINT1_60_40.py = 60 % intenzity / 40 % IDP
+5. Sledujte PROCSEQ_BOOTSTRAPFIX1.json, LIVE_API_PREFLIGHT a prvni cyklus.
+   Zacatek generation je prvni zivy test opravy MOBILITYFIX1.
+6. Pokud nastane dalsi MOBILITY2_BLOCKED_DATA_NOT_A_PLATEAU, nemente
+   ochrannou hranici ani nevypinejte mobility guard. Predlozte:
+   - GENERATION_BLOCK_RESULT.json (pole mobility_block)
+   - V24917_MOBILITY_BLOCKED.json z GENERATION/DESIGN/V24917_TARGETED_GENERATION
+   - 00_RESULT.json, RUN_STATUS.json a CONSOLE_CAPTURE.log.
+   Tyto soubory nyni obsahují puvodni vyjimku a fazi (ZONE_AUTHORITY_READ,
+   MOBILITY_OPTIONS, FLOWBUNDLE_MASK nebo MOBILITY_GUARD).
+
+Oprava znamena: nulova produkce zony nevynucuje kladny ADD_PROD; pri
+kladne produkci vyzaduje guard kladny konecny multiplikator. Chybejici
+nebo neplatna data zustavaji blokujici chybou. Vnejsi akceptacni brany,
+TD, SupplyMix, generacni matematika ani profily se nemeni.
+
+Stav overeni: 1456 hlavni + 138 DIAGFAST + 18 GENFIX2 audit testu
+proslo, 4 historicke preskoceni. Zivy PTV Visum test nelze provest
+na tomto stroji. Pricina puvodniho ziveho padu nebyla z dodanych
+logu definitivne urcena; chybel V24917_MOBILITY_BLOCKED.json.

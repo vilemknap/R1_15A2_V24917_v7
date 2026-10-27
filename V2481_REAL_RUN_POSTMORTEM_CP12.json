@@ -1,0 +1,23 @@
+{
+  "schema": "R1_15A2_V2481_REAL_RUN_POSTMORTEM_V1",
+  "source_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+  "status": "FAILED_SAFE",
+  "error": "PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:NATIVE_CW:1:7",
+  "state_hash_start": "514904de1856614eee2b1800f3a2d36edf9dd554200d1bde1dc5f27d7ce1893d",
+  "elapsed_seconds": 1372.145,
+  "accepted_count": 0,
+  "supply_started": false,
+  "live_matches_last_accepted": true,
+  "source_file_unchanged": true,
+  "fresh_epoch_basis_hash": "9fe5bda96c078fb36866677be11627c4d0930b3b826a85683643132ece50a1a1",
+  "fresh_epoch_comparison_hash": "28a237ed075ecba19a1dd9033145ef26dc5e943bab1ff57f79fad962dfe72b1a",
+  "fresh_epoch_structure_hash": "2373d3eb3353ba2f29748a5739f2e5fe90c80f1da743173400fe9d6106baada8",
+  "same_as_restored_epoch": true,
+  "nativ_cw_matrix_interzonal": 115805.3321426331,
+  "nativ_cw_saved_path_interzonal": 115793.589,
+  "nativ_cw_unexplained_interzonal_residual": 11.7431426330877,
+  "nativ_cw_relative_residual": 0.00010140416175849408,
+  "existing_path_parity_tolerance": 0.01,
+  "root_cause": "EXISTING_GEOMETRY_WITH_ZERO_SAVED_DSEG_PATH_SHARE_BUT_SMALL_POSITIVE_LIVE_OD; FULL_REENUMERATION_CANNOT_RESOLVE_WHEN_BASIS_IS_IDENTICAL",
+  "v2482_policy": "EXCLUDE_ZERO_SHARE_RESIDUAL_FROM_PATH_GUIDANCE_ONLY_WHEN_AGGREGATE_DSEG_RESIDUAL_IS_WITHIN_EXISTING_PATH_PARITY_TOLERANCE; PRESERVE_IN_PROJECTION_BASE_MARGINS; FRESH_VISUM_ASSIGNMENT_REMAINS_ACCEPTANCE_AUTHORITY; MISSING_GEOMETRY_STILL_FORCES_REENUMERATION"
+}

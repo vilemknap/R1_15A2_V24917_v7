@@ -1,0 +1,13 @@
+{
+  "release": "R1_15A2_V2_4_9_14_DEMAND_CONTINUATION_SUPPLY_READY_20261019",
+  "implementation_complete": true,
+  "offline_tested": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "continuation_source": "V24912_ACCEPTED_A_0009",
+  "accepted_count_start": 9,
+  "next_outer_cycle": 6,
+  "max_lineage_outer_cycle": 12,
+  "supply_unlock_criterion": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
+  "next_required_gate": "REAL_VISUM_V24914_CONTINUATION_FROM_A0009"
+}

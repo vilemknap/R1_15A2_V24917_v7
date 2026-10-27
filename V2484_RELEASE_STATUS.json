@@ -1,0 +1,17 @@
+{
+  "schema": "R1_15A2_V2484_RELEASE_STATUS_V1",
+  "release": "R1_15A2_V2_4_8_4_RUN_ROOT_HOTFIX_20261016",
+  "status": "PASS_OFFLINE_TESTS_NOT_REAL_VISUM_ACCEPTANCE",
+  "live_failure_fixed": "V2483 nested its run root under a prior accepted-checkpoint directory and exceeded Windows MAX_PATH during 11D mirror copy",
+  "fix_scope": "launcher output-root and legacy-root normalization only; path-incidence and zero-share policy unchanged",
+  "persistent_cache_root": "%LOCALAPPDATA%\\R1_15A2_PATH_CACHE_V248",
+  "predecessor_cache_compatibility": [
+    "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+    "R1_15A2_V2_4_8_2_ZERO_SHARE_RESIDUAL_HOTFIX_20261016"
+  ],
+  "offline_tests": "593 passed",
+  "compileall_pass": true,
+  "real_visum_tested": false,
+  "production_ready": false,
+  "next_gate": "REAL_VISUM_RESTART; expect RUN_ROOT_AUTHORITY project_base outside any prior RUNS tree, then cache restore and generation"
+}

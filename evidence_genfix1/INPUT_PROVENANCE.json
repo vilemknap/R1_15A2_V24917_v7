@@ -1,0 +1,65 @@
+{
+  "release": "R1_15A2_V24917_MOBILITY1_GENFIX1_20261027",
+  "source_package": {
+    "name": "R1_15A2_V24917_MOBILITY1_20261027_FULL (1).zip",
+    "sha256": "6714d83afa5cda71e04862f778fa540846a41a0d06ad5c8617954f88b168fe28",
+    "bytes": 12234211
+  },
+  "failure": "V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:V242_GENERATION_TRIAL_PARENT_CHANGED",
+  "failure_trial": 1,
+  "accepted_count": 0,
+  "supply_started": false,
+  "confirmed_solver_converged": true,
+  "historical_changed_snapshot_domain": "NOT_RECORDED_IN_SUPPLIED_LOGS",
+  "proven_source_defects": [
+    "TRANSIENT_OPTIONAL_COM_READ_ERRORS_CAN_BE_PUBLISHED_AS_EMPTY_SNAPSHOT_VALUES",
+    "STEP1_PARAMETER_ONLY_RESTORE_DISCARDS_RECOVERY_OWNERSHIP_WHILE_DEMAND_REMAINS_REJECTED_TRIAL"
+  ],
+  "inputs": [
+    {
+      "name": "GENERATION_BLOCK_RESULT(20261027-000221).json",
+      "sha256": "19d751802bed40435c79676ea3b99f1811115d708b831ab1c926cfafac67bdae",
+      "bytes": 2205
+    },
+    {
+      "name": "DEMAND_CYCLE_01_RESULT(20261027-000228).json",
+      "sha256": "269f8fce47faaa867b73f9912e4fb7b24ebd8054a5cd5189a7521d013bd8a558",
+      "bytes": 363
+    },
+    {
+      "name": "STEP1_PLAN_01.json",
+      "sha256": "a8680087b72f268d3fef294239ee80eb96c55740911d71666589bf253ec07646",
+      "bytes": 3455
+    },
+    {
+      "name": "V24917_TIMING.json",
+      "sha256": "df2746805fbb3a307f47cd529f4804ddc0fdea7f13ab89588fd713f0bd13f5f3",
+      "bytes": 1773
+    },
+    {
+      "name": "05C_PATH_PARITY_SUMMARY.json",
+      "sha256": "f201978a132216b565023b8a2cc6584923faf1f52b65c5982e405aede578811b",
+      "bytes": 296
+    },
+    {
+      "name": "07B_SOLVER_SUMMARY.json",
+      "sha256": "14d5e2d360c910775d716b311cdf030814c3b9087c1204bc1faa34c590628c3c",
+      "bytes": 2887
+    },
+    {
+      "name": "RUN_STATUS(20261027-000228).json",
+      "sha256": "1be6bb3a6cc27661d348ca4a7ff0f79132475b86fe4cc7569501e6f298379da8",
+      "bytes": 47089
+    },
+    {
+      "name": "EFFECTIVE_CONFIG(20261027-000229).json",
+      "sha256": "8cf6e5cfdefb3405c96ebffca22b90c51aa17de51e801e9891971d68f218821f",
+      "bytes": 242884
+    },
+    {
+      "name": "TWO_MODE_CACHE_REUSE(1).json",
+      "sha256": "d72e7de90f3dbeb951839e8795cf82bea20419591a7a81c448ad67c8f4c65200",
+      "bytes": 860
+    }
+  ]
+}

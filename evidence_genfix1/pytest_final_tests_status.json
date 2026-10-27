@@ -1,0 +1,12 @@
+{
+  "suite": "tests",
+  "exit_code": 0,
+  "seconds": 35.03,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests"
+  ]
+}

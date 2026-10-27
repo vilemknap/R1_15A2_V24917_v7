@@ -1,0 +1,427 @@
+{
+  "schema": "R1_15A2_V24912_GUARD_AUDIT_AND_COUNTERFACTUAL_REPLAY_V2",
+  "release": "R1_15A2_V2_4_9_12_GUARD_POLICY_REBASE_20261018",
+  "created_at_utc": "2026-10-18T20:56:03.464791+00:00",
+  "basis": "OFFLINE_REPLAY_OF_ACTUAL_V2496_LIVE_VISUM_DIAGNOSTICS_NO_NEW_VISUM_RUN",
+  "source_files": {
+    "generation": {
+      "path": "/mnt/data/GENERATION_BLOCK_RESULT(8).json",
+      "sha256": "d300bc1e342701d8c04f85dc20789dfac094d35b5ccda7d4233dce764d671c59"
+    },
+    "td": {
+      "path": "/mnt/data/TD_FINECDF_BLOCK_RESULT(6).json",
+      "sha256": "a560c6beec9f03ef69ac782bb281e7c777f4ffa115d19b25d10dd384b9f25445"
+    },
+    "cycle": {
+      "path": "/mnt/data/DEMAND_CYCLE_01_RESULT(20261018-204549).json",
+      "sha256": "90553f2920ec1af50330c220edc53b12e793eb7b604e1b925e08d34e0f348d54"
+    },
+    "run_status": {
+      "path": "/mnt/data/RUN_STATUS(20261018-204549).json",
+      "sha256": "8ecc436320ab4a2830e96c8d9520d46f1071815a04b6791d7da61bf953e252ef"
+    },
+    "latest_accepted": {
+      "path": "/mnt/data/LATEST_ACCEPTED_CHECKPOINT(20261018-204548).json",
+      "sha256": "8e447edc952b33d77df888b62c6414ab1ba9de74eaf93f6472588009e696a701"
+    },
+    "best_so_far": {
+      "path": "/mnt/data/BEST_SO_FAR_CHECKPOINT(1).json",
+      "sha256": "35d58707425330da2910f3b7ec5d9b5ac4b10f8d506f74508eda62dba30a16eb"
+    },
+    "effective_config": {
+      "path": "/mnt/data/EFFECTIVE_CONFIG(20261018-204547).json",
+      "sha256": "135ee2d8771b18ded5c254d7aadc267a2c65b702621d4674dcb95cc24697eb53"
+    },
+    "rollback": {
+      "path": "/mnt/data/ROLLBACK_PARAMETER_READBACK(1).json",
+      "sha256": "eb96cb873dfece8066272710276f7d35b23c73590b0a3a4950c1950c840298b6"
+    }
+  },
+  "policy": {
+    "policy_level": "BASELINE_RELATIVE_BUDGET_V24912",
+    "through_outer_cycle": 12,
+    "generation": {
+      "minimum_positive_relative_improvement": 0.0,
+      "positive_improvement_epsilon": 1e-12,
+      "max_cal_relative_degradation_for_severity_tradeoff": 0.02,
+      "min_severity20_relative_improvement": 0.01,
+      "min_severity30_relative_improvement": 0.01,
+      "min_geh20_count_reduction": 3,
+      "min_geh30_count_reduction": 1,
+      "max_severity20_relative_degradation": 0.08,
+      "max_severity30_relative_degradation": 0.1,
+      "max_geh40_net_count_increase": 5
+    },
+    "td": {
+      "min_selected_relative_improvement": 0.0025,
+      "max_cal_relative_degradation": 0.05,
+      "min_benefit_cost_ratio": 1.5,
+      "max_selected_component_relative_degradation": 0.2,
+      "max_nonselected_component_relative_degradation": 0.2,
+      "max_severity20_relative_degradation": 0.25,
+      "max_severity30_relative_degradation": 0.3,
+      "max_geh40_net_count_increase": 15
+    },
+    "severity": {
+      "geh20_role": "DIAGNOSTIC_CONTINUOUS_PENALTY",
+      "geh30_role": "DIAGNOSTIC_CONTINUOUS_PENALTY",
+      "geh35_role": "WARNING",
+      "geh40_role": "SOFT_NET_COUNT_BUDGET",
+      "max_new_geh40": 0,
+      "max_single_profile_geh_increase": 15.0,
+      "absolute_geh_ceiling": 60.0,
+      "protected_before_geh": 5.0,
+      "protected_after_hard_geh": 20.0,
+      "max_protected_catastrophic": 0,
+      "severity_score_power": 2.0,
+      "policy_level": "BASELINE_RELATIVE_BUDGET_V24912",
+      "absolute_geh_ceiling_role": "DIAGNOSTIC_THRESHOLD_NOT_STATE_VETO",
+      "high_geh_threshold": 60.0,
+      "max_high_geh_increase": 10.0
+    }
+  },
+  "guard_matrix": [
+    {
+      "guard": "OBSERVATION_AUTHORITY",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "CAL/VALID role, observed value and observation set must be identical before/after."
+    },
+    {
+      "guard": "SEMANTIC_MODEL_STATE_IDENTITY",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Cross-run restart uses semantic hashes; raw .ver SHA is provenance/sentinel only."
+    },
+    {
+      "guard": "FROZEN_DEMAND_SUPPLY_CONTEXT",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Frozen matrices/foreign/AddVal state remain protected by existing owners."
+    },
+    {
+      "guard": "NATIVE_IPF_TOLERANCE",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Never relaxed; native IPF nonconvergence remains retryable/fail-closed."
+    },
+    {
+      "guard": "FRESH_TG_TD_ASSIGNMENT_12D_11D",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Fresh Visum recomputation remains acceptance authority."
+    },
+    {
+      "guard": "PARAMETER_WRITE_READBACK",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Generation/TD writes and rollback must read back exactly."
+    },
+    {
+      "guard": "GENERATION_COEFFICIENT_ENVELOPE",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Absolute/relative coefficient envelopes and P/A consistency unchanged."
+    },
+    {
+      "guard": "ROLLBACK_FINAL_STATE_VERIFY",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Rejected trials must restore and verify state before continuing."
+    },
+    {
+      "guard": "PROTECTED_GEH_LT5_TO_GE20",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Catastrophic damage to a previously good profile remains forbidden."
+    },
+    {
+      "guard": "SINGLE_PROFILE_GEH_DELTA_GT15",
+      "level": "HARD",
+      "change": "UNCHANGED",
+      "rationale": "Independent catastrophic per-profile increase guard."
+    },
+    {
+      "guard": "HIGH_GEH_AFTER_GT60_DELTA_GT10",
+      "level": "HARD",
+      "change": "NEW_BASELINE_RELATIVE",
+      "rationale": "Replaces absolute after-state GEH60 wall; material worsening stays hard."
+    },
+    {
+      "guard": "GEH60_THRESHOLD_CROSSING",
+      "level": "DIAGNOSTIC",
+      "change": "REBASED",
+      "rationale": "Crossing 60 by itself is not a veto if delta/severity/net budgets pass."
+    },
+    {
+      "guard": "GEH40_TRANSITIONS",
+      "level": "SOFT_BUDGET",
+      "change": "REBASED",
+      "rationale": "Uses net after-before GEH40 count: Generation <=5, TD <=15."
+    },
+    {
+      "guard": "GEH35",
+      "level": "WARNING",
+      "change": "UNCHANGED_ROLE",
+      "rationale": "Warning only during coupled-demand exploration."
+    },
+    {
+      "guard": "GEH20_CONTINUOUS_SEVERITY",
+      "level": "SOFT_BUDGET",
+      "change": "REBASED",
+      "rationale": "Generation max +8%, TD max +25% relative severity score."
+    },
+    {
+      "guard": "GEH30_CONTINUOUS_SEVERITY",
+      "level": "SOFT_BUDGET",
+      "change": "REBASED",
+      "rationale": "Generation max +10%, TD max +30% relative severity score."
+    },
+    {
+      "guard": "GEN_WEIGHTED_GEH_POSITIVE",
+      "level": "ACCEPTANCE",
+      "change": "UNCHANGED",
+      "rationale": "Any real positive weighted-mean-GEH improvement can pass if hard/severity guards pass."
+    },
+    {
+      "guard": "GEN_NONMONOTONIC_TRADEOFF",
+      "level": "ACCEPTANCE",
+      "change": "UNCHANGED",
+      "rationale": "Up to +2% CAL cost only with material severity improvement."
+    },
+    {
+      "guard": "TD_SELECTED_OBJECTIVE",
+      "level": "ACCEPTANCE",
+      "change": "UNCHANGED",
+      "rationale": "Minimum aggregate selected TD improvement 0.25%."
+    },
+    {
+      "guard": "TD_CAL_COST",
+      "level": "ACCEPTANCE",
+      "change": "UNCHANGED",
+      "rationale": "Maximum CAL weighted-GEH degradation 5%."
+    },
+    {
+      "guard": "TD_BENEFIT_COST",
+      "level": "ACCEPTANCE",
+      "change": "UNCHANGED",
+      "rationale": "Minimum benefit/cost ratio 1.5 when CAL cost is positive."
+    },
+    {
+      "guard": "TD_COMPONENT_DEGRADATION",
+      "level": "ACCEPTANCE",
+      "change": "UNCHANGED",
+      "rationale": "Selected and nonselected component cost cap 20%."
+    },
+    {
+      "guard": "CYCLE9_AUTOMATIC_TIGHTENING",
+      "level": "REMOVED_WITHIN_HORIZON",
+      "change": "REBASED",
+      "rationale": "Baseline-relative exploration stays active through all 12 coupled-demand cycles."
+    }
+  ],
+  "counterfactual_replay": [
+    {
+      "block": "GENERATION",
+      "scale": 1.0,
+      "old_accepted": false,
+      "new_accepted": true,
+      "old_reasons": [
+        "NEW_SEVERE_GEH_PROFILE"
+      ],
+      "new_reasons": [],
+      "cal_objective_relative_improvement": 0.0007519041700225234,
+      "cal_before": 50.54802191844727,
+      "cal_after": 50.5100146499804,
+      "severity20_relative_degradation": 0.0,
+      "severity30_relative_degradation": 0.0,
+      "geh40_before": 243,
+      "geh40_after": 243,
+      "geh40_net_count_increase": 0,
+      "new_geh60_crossings": 1,
+      "high_geh_delta_violations": 0,
+      "single_profile_gt15_count": 0,
+      "new_severity_passes": true,
+      "new_severity_violation_codes": []
+    },
+    {
+      "block": "GENERATION",
+      "scale": 0.5,
+      "old_accepted": false,
+      "new_accepted": false,
+      "old_reasons": [
+        "CAL_GEH_OBJECTIVE_NOT_IMPROVED",
+        "NEW_SEVERE_GEH_PROFILE",
+        "SHARED_OBJECTIVE_NOT_IMPROVED"
+      ],
+      "new_reasons": [
+        "CAL_GEH_OBJECTIVE_NOT_IMPROVED",
+        "SHARED_OBJECTIVE_NOT_IMPROVED"
+      ],
+      "cal_objective_relative_improvement": -0.0003543024719783868,
+      "cal_before": 50.54802191844727,
+      "cal_after": 50.56593120756659,
+      "severity20_relative_degradation": 0.0009315078849804802,
+      "severity30_relative_degradation": 0.0009821020709555601,
+      "geh40_before": 243,
+      "geh40_after": 243,
+      "geh40_net_count_increase": 0,
+      "new_geh60_crossings": 0,
+      "high_geh_delta_violations": 0,
+      "single_profile_gt15_count": 0,
+      "new_severity_passes": true,
+      "new_severity_violation_codes": []
+    },
+    {
+      "block": "GENERATION",
+      "scale": 0.25,
+      "old_accepted": false,
+      "new_accepted": true,
+      "old_reasons": [
+        "NEW_SEVERE_GEH_PROFILE"
+      ],
+      "new_reasons": [],
+      "cal_objective_relative_improvement": 0.00031162800375584285,
+      "cal_before": 50.54802191844727,
+      "cal_after": 50.53226973928302,
+      "severity20_relative_degradation": 0.0,
+      "severity30_relative_degradation": 0.0,
+      "geh40_before": 243,
+      "geh40_after": 243,
+      "geh40_net_count_increase": 0,
+      "new_geh60_crossings": 0,
+      "high_geh_delta_violations": 0,
+      "single_profile_gt15_count": 0,
+      "new_severity_passes": true,
+      "new_severity_violation_codes": []
+    },
+    {
+      "block": "TD",
+      "scale": 1.0,
+      "old_accepted": false,
+      "new_accepted": false,
+      "old_reasons": [
+        "RETRYABLE_NATIVE_IPF_NONCONVERGENCE"
+      ],
+      "new_reasons": [
+        "RETRYABLE_NATIVE_IPF_NONCONVERGENCE"
+      ],
+      "native_ipf_retry": true
+    },
+    {
+      "block": "TD",
+      "scale": 0.5,
+      "old_accepted": false,
+      "new_accepted": false,
+      "old_reasons": [
+        "CAL_CSD_DEGRADED_TOO_MUCH",
+        "NEW_SEVERE_GEH_PROFILE"
+      ],
+      "new_reasons": [
+        "CAL_CSD_DEGRADED_TOO_MUCH",
+        "NEW_SEVERE_GEH_PROFILE"
+      ],
+      "selected_relative_improvement": 0.41029593403930537,
+      "cal_csd_relative_degradation": 0.05061814304229911,
+      "benefit_cost_ratio": 8.105708929235927,
+      "severity20_relative_degradation": 0.11147785878312673,
+      "severity30_relative_degradation": 0.11901737000670642,
+      "geh40_before": 243,
+      "geh40_after": 262,
+      "geh40_net_count_increase": 19,
+      "new_geh60_crossings": 8,
+      "high_geh_delta_violations": 25,
+      "single_profile_gt15_count": 6,
+      "new_severity_passes": false,
+      "new_severity_violation_codes": [
+        "SINGLE_PROFILE_GEH_INCREASE_EXCEEDED",
+        "V24912_GEH40_NET_COUNT_BUDGET_EXCEEDED",
+        "V24912_HIGH_GEH_DELTA_BUDGET_EXCEEDED"
+      ]
+    },
+    {
+      "block": "TD",
+      "scale": 0.25,
+      "old_accepted": false,
+      "new_accepted": true,
+      "old_reasons": [
+        "NEW_SEVERE_GEH_PROFILE"
+      ],
+      "new_reasons": [],
+      "selected_relative_improvement": 0.21616332420257447,
+      "cal_csd_relative_degradation": 0.026212344617437714,
+      "benefit_cost_ratio": 8.24662300749595,
+      "severity20_relative_degradation": 0.05665556659469775,
+      "severity30_relative_degradation": 0.060554580068332524,
+      "geh40_before": 243,
+      "geh40_after": 254,
+      "geh40_net_count_increase": 11,
+      "new_geh60_crossings": 3,
+      "high_geh_delta_violations": 0,
+      "single_profile_gt15_count": 0,
+      "new_severity_passes": true,
+      "new_severity_violation_codes": []
+    },
+    {
+      "block": "TD",
+      "scale": 0.125,
+      "old_accepted": false,
+      "new_accepted": true,
+      "old_reasons": [
+        "NEW_SEVERE_GEH_PROFILE"
+      ],
+      "new_reasons": [],
+      "selected_relative_improvement": 0.1097590876722495,
+      "cal_csd_relative_degradation": 0.013767435731321456,
+      "benefit_cost_ratio": 7.972369714611652,
+      "severity20_relative_degradation": 0.030148604993532602,
+      "severity30_relative_degradation": 0.0322764337892772,
+      "geh40_before": 243,
+      "geh40_after": 245,
+      "geh40_net_count_increase": 2,
+      "new_geh60_crossings": 3,
+      "high_geh_delta_violations": 0,
+      "single_profile_gt15_count": 0,
+      "new_severity_passes": true,
+      "new_severity_violation_codes": []
+    },
+    {
+      "block": "TD",
+      "scale": 0.0625,
+      "old_accepted": false,
+      "new_accepted": true,
+      "old_reasons": [
+        "NEW_SEVERE_GEH_PROFILE"
+      ],
+      "new_reasons": [],
+      "selected_relative_improvement": 0.05493397095779776,
+      "cal_csd_relative_degradation": 0.006871959295283046,
+      "benefit_cost_ratio": 7.993931366197813,
+      "severity20_relative_degradation": 0.01457223929249653,
+      "severity30_relative_degradation": 0.015559002853313223,
+      "geh40_before": 243,
+      "geh40_after": 245,
+      "geh40_net_count_increase": 2,
+      "new_geh60_crossings": 2,
+      "high_geh_delta_violations": 0,
+      "single_profile_gt15_count": 0,
+      "new_severity_passes": true,
+      "new_severity_violation_codes": []
+    }
+  ],
+  "assertions": {
+    "generation_1_0_accept": true,
+    "generation_0_5_reject": true,
+    "generation_0_25_accept": true,
+    "td_0_5_reject": true,
+    "td_0_25_accept": true,
+    "td_0_125_accept": true,
+    "td_0_0625_accept": true
+  },
+  "important_correction_to_prior_draft": {
+    "new_geh60_crossing_is_not_unconditionally_hard": true,
+    "reason": "Actual TD scale 0.25 has three small new GEH60 crossings. A contract that made every GEH60 crossing hard could not simultaneously accept that observed Pareto candidate. V24912 therefore uses GEH>60 plus delta>10 as the hard per-profile rule."
+  },
+  "real_visum_tested": false,
+  "production_ready": false
+}

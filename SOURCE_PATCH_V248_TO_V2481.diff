@@ -1,0 +1,2483 @@
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md	2026-10-16 15:17:35.652428862 +0000
+@@ -0,0 +1,14 @@
++# LIVE VISUM ACCEPTANCE - V2.4.8.1
++
++Pro první bounded rerun po V2.4.7:
++
++1. Neodstraňovat složku `R1_15A2_V247_RUNS/RUN_20261016_162053_068586`.
++2. Otevřít `ACCEPTED_B_0000_61129884aaf7.ver` z tohoto runu.
++3. Spustit `R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py`.
++4. V novém runu zkontrolovat `PERSISTENT_PATH_CACHE_RESTORE.json`.
++5. Preferovaný výsledek: `matched_by=LEGACY_EXACT_STATE_IMPORT` a žádný nový úvodní path export.
++6. Potvrdit, že `NATIVE_CW:7:7` nevyvolá `PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION`.
++7. Nechat doběhnout alespoň Generation design + první kandidát/rollback a vstup do FineCDF.
++8. Pokud se později objeví skutečná nová kladná OFF-DIAGONÁLNÍ relace bez supportu, nová enumerace je správná a povinná.
++9. Pokud Windows zamkne starý superseded SQLite při cleanupu, run nesmí spadnout; audit musí uvést `DELETE_DEFERRED_WINDOWS_FILE_LOCK`.
++10. Production-ready až po úspěšném real Visum gate; offline testy samy nestačí.
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_CONFIG_V2_4_8.json /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_CONFIG_V2_4_8.json
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_CONFIG_V2_4_8.json	2026-10-16 14:43:10.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_CONFIG_V2_4_8.json	2026-10-16 15:16:26.719055962 +0000
+@@ -634,7 +634,9 @@
+       "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
+       "persistent_epoch_checkpoint_after_every_successful_enumeration": true,
+       "legacy_import_policy": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
+-      "persistent_cache_read_only_during_calibration": true
++      "persistent_cache_read_only_during_calibration": true,
++      "intrazonal_positive_od_policy": "NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_SUPPORT_GAP",
++      "obsolete_store_windows_lock_policy": "DEFER_CLEANUP_AFTER_VERIFIED_REFRESH_NOT_FATAL"
+     },
+     "persistent_path_cache": {
+       "enabled": true,
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_CONFIG_V2_4_8_1.json /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_CONFIG_V2_4_8_1.json
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_CONFIG_V2_4_8_1.json	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_CONFIG_V2_4_8_1.json	2026-10-16 15:16:19.881913704 +0000
+@@ -0,0 +1,672 @@
++{
++  "version": "2.4.7-path-epoch-calibration-tg-td-supply",
++  "apply": false,
++  "run_procseq": true,
++  "max_cycles": 2,
++  "max_accepted_blocks": 1,
++  "block_schedule": [
++    "GENERATION",
++    "TD_FINECDF_V17",
++    "SUPPLY_ADDVAL1"
++  ],
++  "backtracking_scales": [
++    1.0,
++    0.5,
++    0.25
++  ],
++  "calibration_role": "CALIBRATION",
++  "guidance_mode": "POSITIVE_ONLY",
++  "mutable_dsegs": [
++    "NATIVE_CW",
++    "NATIVE_CW_noT",
++    "NATIVE_CS",
++    "NATIVE_CS_noT"
++  ],
++  "path_export_dsegs": [
++    "NATIVE_CW",
++    "NATIVE_CW_noT",
++    "NATIVE_CS",
++    "NATIVE_CS_noT"
++  ],
++  "include_exog_ee_paths": false,
++  "mutable_relation_policy": "BOTH_ENDPOINTS_ACTUATABLE",
++  "explicit_excluded_zone_nos": [],
++  "require_active_tg_td": true,
++  "require_active_assignment": true,
++  "require_parameter_persistence_after_procseq": true,
++  "require_mutable_matrix_change_for_generation_apply": true,
++  "require_rollback_verification": true,
++  "expected_12d_rows": 498,
++  "expected_calibration_rows": 462,
++  "expected_validation_rows": 36,
++  "require_path_parity_for_apply": true,
++  "min_path_link_coverage": 0.98,
++  "min_path_link_volume_coverage": 0.995,
++  "require_dseg_path_volume_parity_for_apply": true,
++  "dseg_path_volume_relative_tolerance": 0.01,
++  "parity_min_model": 100.0,
++  "parity_p95_relative_tolerance": 0.02,
++  "parity_p99_relative_tolerance": 0.05,
++  "min_driver_geh": 10.0,
++  "min_driver_abs_residual": 300.0,
++  "min_mutable_share": 0.3,
++  "protected_geh": 5.0,
++  "protected_warn_geh": 10.0,
++  "protected_hard_geh": 30.0,
++  "overroute_penalty_geh": 5.0,
++  "observed_weight_floor": 100.0,
++  "driver_weight_multiplier": 1.0,
++  "overroute_weight_multiplier": 1.5,
++  "protected_weight_multiplier": 3.0,
++  "neutral_weight_multiplier": 0.35,
++  "min_od_volume": 5.0,
++  "max_solver_variables": 50000,
++  "max_od_relative_up": 0.08,
++  "max_od_relative_down": 0.04,
++  "ridge_lambda": 0.15,
++  "l1_lambda": 0.002,
++  "tiny_od_penalty_power": 0.5,
++  "solver_max_iter": 1200,
++  "solver_tolerance": 1e-07,
++  "solver_check_every": 10,
++  "power_iterations": 35,
++  "projection_method": "MARGINALS",
++  "projection_gain": 1.0,
++  "projection_ridge_volume": 250.0,
++  "projection_ridge_lambda": 0.3,
++  "projection_max_iter": 1200,
++  "projection_tolerance": 1e-08,
++  "projection_min_volume_weight": 1.0,
++  "min_od_guidance_for_projection": 1e-05,
++  "max_add_log_up": 0.04,
++  "max_add_log_down": 0.02,
++  "min_add_log_step": 5e-05,
++  "preserve_zero_add": true,
++  "add_min": 0.0,
++  "add_max": 3.0,
++  "salary": {
++    "enabled": true,
++    "income_attr": "AV_INCOME",
++    "salary_attr": "ADD_SALARY",
++    "work_attraction_attr": "ADD_ATT_W",
++    "formula_offset": 1000.0,
++    "formula_denominator": 2700.0,
++    "factor_floor": 0.05,
++    "salary_min": 0.0,
++    "salary_max": 3.0,
++    "max_abs_delta_per_block": 0.04,
++    "min_eligible_zones": 8,
++    "zone_add_ridge_lambda": 1.0,
++    "basis_ridge_lambda": 0.2,
++    "include_intercept": false
++  },
++  "zahr": {
++    "enabled": true,
++    "domestic_mask_attr": "NOT_ZAHR",
++    "domestic_threshold": 0.5,
++    "neighbour_attr": "ZAHR_SUSED",
++    "population_attr": "POP_ZP",
++    "min": 0.0,
++    "max": 10.0,
++    "preserve_zero": true,
++    "seed_floor": 0.0,
++    "explicit_excluded_zone_nos": []
++  },
++  "td": {
++    "enabled": true,
++    "component_policy": {
++      "WORK": "AUTO",
++      "SERVICE": "AUTO",
++      "SCHOOL": "AUTO",
++      "LONG": "AUTO"
++    },
++    "min_conditioned_volume": 1000.0,
++    "school_min_conditioned_volume": 500.0,
++    "long_min_conditioned_volume": 80.0,
++    "min_l1_for_mutation": 0.06,
++    "mean_relative_deadband": 0.01,
++    "max_components_per_block": 2,
++    "b_shape_gain": 0.4,
++    "c_mean_gain": 0.18,
++    "c_tail_gain": 0.12,
++    "c_b_compensation": 0.35,
++    "max_abs_b_delta": 0.08,
++    "max_abs_c_delta": 0.04,
++    "long_b_gain_multiplier": 0.25,
++    "long_c_gain_multiplier": 0.5,
++    "long_max_abs_b_delta": 0.02,
++    "long_max_abs_c_delta": 0.018,
++    "b_min": 0.0,
++    "b_max": 5.0,
++    "c_min": -3.0,
++    "c_max": 0.0,
++    "td_objective_l1_weight": 1.0,
++    "td_objective_mean_weight": 0.5,
++    "td_objective_rmse_weight": 0.25,
++    "min_selected_component_relative_improvement": 0.002,
++    "max_selected_component_relative_degradation": 0.0,
++    "max_nonselected_component_objective_degradation": 0.01,
++    "max_cal_geh2_relative_degradation": 0.005,
++    "max_global_idp_mean_degradation": 0.002,
++    "max_global_idp_component_degradation": 0.01,
++    "long_authority_file": "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json"
++  },
++  "matrix_scope_by_block": {
++    "GENERATION": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT",
++        "NATIVE_CS",
++        "NATIVE_CS_noT"
++      ],
++      "matrix_nos": [
++        9101,
++        9102,
++        9103,
++        9104,
++        9105,
++        9106,
++        9107,
++        9108,
++        9109,
++        9110
++      ]
++    },
++    "TD_COMPONENT_WORK": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT"
++      ],
++      "matrix_nos": [
++        9101,
++        9102,
++        9103,
++        9104,
++        9105
++      ]
++    },
++    "TD_COMPONENT_SERVICE": {
++      "dseg_codes": [
++        "NATIVE_CS",
++        "NATIVE_CS_noT"
++      ],
++      "matrix_nos": [
++        9106,
++        9107,
++        9108,
++        9109,
++        9110
++      ]
++    },
++    "TD_COMPONENT_SCHOOL": {
++      "dseg_codes": [
++        "NATIVE_CW",
++        "NATIVE_CW_noT"
++      ],
++      "matrix_nos": [
++        9117
++      ]
++    },
++    "TD_COMPONENT_LONG": {
++      "dseg_codes": [
++        "NATIVE_CL"
++      ],
++      "matrix_nos": [
++        9111,
++        9112,
++        9113,
++        9114,
++        9115
++      ]
++    },
++    "TD_FINECDF_V17": {
++      "matrix_nos": [
++        9101,
++        9102,
++        9103,
++        9104,
++        9105,
++        9106,
++        9107,
++        9108,
++        9109,
++        9110,
++        9111,
++        9112,
++        9113,
++        9114,
++        9115,
++        9117
++      ],
++      "dseg_codes": []
++    }
++  },
++  "min_changed_matrices_by_block": {
++    "GENERATION": 1,
++    "TD_COMPONENT_WORK": 1,
++    "TD_COMPONENT_SERVICE": 1,
++    "TD_COMPONENT_SCHOOL": 1,
++    "TD_COMPONENT_LONG": 1,
++    "TD_FINECDF_V17": 1
++  },
++  "min_cal_objective_relative_improvement": 0.001,
++  "max_new_geh20": 0,
++  "max_new_geh30": 0,
++  "max_protected_to_warn": 3,
++  "max_protected_to_hard": 0,
++  "idp_max_mean_degradation": 0.005,
++  "idp_max_component_degradation": 0.02,
++  "max_generation_effect_log_error": 0.01,
++  "max_generation_pa_relative_gap": 0.02,
++  "require_solver_convergence_for_apply": true,
++  "require_projection_convergence_for_apply": true,
++  "tg_dependency_contract_file": "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6.json",
++  "require_tg_dependency_contract_for_apply": true,
++  "enable_kordon_pairs": false,
++  "kordon_pair_role": "DIAGNOSTIC",
++  "kordon_category": "OA",
++  "skip_wiggly_pair_paths": true,
++  "expected_zones": 681,
++  "supply": {
++    "enabled": true,
++    "lattice": 1.0,
++    "max_step": 4.0,
++    "max_cumulative": 4.0,
++    "absolute_min": -50.0,
++    "absolute_max": 50.0,
++    "minimum_cost_seconds": 0.001,
++    "max_bundle_equivalent_seconds": 120.0,
++    "max_edges": 12,
++    "max_candidates": 10,
++    "max_driver_profiles": 24,
++    "min_geh": 10.0,
++    "min_residual": 300.0,
++    "min_attribution_coverage": 0.995,
++    "min_path_coverage": 0.98,
++    "min_path_volume_coverage": 0.995,
++    "parity_relative_tolerance": 0.02,
++    "parity_absolute_tolerance": 1.0,
++    "prior_lambda": 0.0001,
++    "prior_sigma": 2.0,
++    "passenger_dsegs": [
++      "NATIVE_CW",
++      "NATIVE_CW_noT",
++      "NATIVE_CS",
++      "NATIVE_CS_noT",
++      "NATIVE_CL",
++      "NATIVE_CF",
++      "EXOG_EE_CW",
++      "EXOG_EE_CW_noT",
++      "EXOG_EE_CS",
++      "EXOG_EE_CS_noT",
++      "EXOG_EE_CL",
++      "EXOG_EE_CF"
++    ],
++    "freight_dsegs": [
++      "LNV",
++      "NV"
++    ],
++    "component_matrix_nos": [
++      9101,
++      9102,
++      9103,
++      9104,
++      9105,
++      9106,
++      9107,
++      9108,
++      9109,
++      9110,
++      9111,
++      9112,
++      9113,
++      9114,
++      9115,
++      9116,
++      9117
++    ],
++    "excluded_link_keys": [],
++    "editable_link_types": null,
++    "assignment_operations": [
++      {
++        "no": 20,
++        "operation_type": 101,
++        "dseg_object_path": [
++          "PrTAssignmentParameters"
++        ],
++        "dseg_attribute": "DSEGSET",
++        "expected_dsegs": [
++          "EXOG_EE_CF",
++          "EXOG_EE_CL",
++          "EXOG_EE_CS",
++          "EXOG_EE_CS_NOT",
++          "EXOG_EE_CW",
++          "EXOG_EE_CW_NOT",
++          "LNV",
++          "NATIVE_CF",
++          "NATIVE_CL",
++          "NATIVE_CS",
++          "NATIVE_CS_NOT",
++          "NATIVE_CW",
++          "NATIVE_CW_NOT",
++          "NV"
++        ]
++      }
++    ],
++    "operation_number_attribute": "POSITION",
++    "gap_readback": {
++      "source": "PRT_ASS_QUALITY_LIST",
++      "operation_no": 20,
++      "maximum_gap": 0.005
++    },
++    "link_attributes": {},
++    "impedance_authority_csv": "authorities/IMPEDANCE_FUNCTIONS.csv",
++    "impedance_authority_basis": "USER_SUPPLIED_CURRENT_EXPORTED_SNAPSHOT",
++    "equivalent_seconds_per_addval1": 10.0,
++    "fixed_input_hashes": {
++      "authorities/VDF_REGISTRY.csv": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287",
++      "authorities/VDF_TYPE_MAPPING.csv": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07"
++    },
++    "impedance_file_sha256": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef",
++    "sequence": {
++      "enabled": true,
++      "source": "OFFICIAL_VISUM_SAVED_PRT_ORDERED_PATH_LINKS",
++      "design_mode": "DIVERGE_REJOIN_VOLUME_WEIGHTED_CONTIGUOUS_BRANCHES",
++      "sequence_cap_schedule": [
++        8,
++        4,
++        2,
++        1
++      ],
++      "max_unique_sequences": 100000,
++      "max_pairs_per_market": 64,
++      "max_collateral_volume_to_driver_ratio": null,
++      "all_path_impact_required": true,
++      "validation_target_input_allowed": false,
++      "design_only_duplicate_scope_policy": "DIAGNOSTIC_EXCLUDE_CONFLICTED_DRIVERS",
++      "step_units_schedule": [
++        4,
++        2,
++        1
++      ]
++    },
++    "assignment_scope_authority": "R1_15A2_ASSIGNMENT_SCOPE_AUTHORITY_V239_OP20_ONLY"
++  },
++  "shared_objective": {
++    "cal_weight": 1.0,
++    "idp_weight": 1.0,
++    "minimum_improvement": 1e-08,
++    "reference_policy": "FIXED_INITIAL_CAL_SCALE_AND_COMPONENT_WEIGHTS"
++  },
++  "require_all_path_export_dsegs": true,
++  "12d_helper_name": "R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py",
++  "12d_detail_name": "01_DETAIL_498_FORENSIC.csv",
++  "12d_authority_csv": "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
++  "12d_authority_sha256": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1",
++  "csd408_mapping_review_acknowledged": false,
++  "12d_city_authority_csv": "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
++  "12d_city_authority_sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
++  "city90_bidirectional_qa_acknowledged": false,
++  "observation_value_policy": "SEALED_R1_OBS_RPDI_NO_ADDITIONAL_VEHICLE_CONVERSION",
++  "api_audit_only": false,
++  "run_full_com_api_audit": true,
++  "require_verified_bounded_pathlink_com": true,
++  "pathlink_page_size": 256,
++  "pathlink_max_pages": 500000,
++  "path_export_fail_fast": true,
++  "dseg_path_volume_parity_basis": "OFFDIAGONAL_INTERZONAL",
++  "two_mode": {
++    "enabled": true,
++    "design_only": true,
++    "representatives": {
++      "C": "NATIVE_CW",
++      "C_NOT": "NATIVE_CW_noT"
++    },
++    "page_size": 2048,
++    "max_runtime_seconds": 36000.0,
++    "max_parent_rows_per_dseg": 1500000,
++    "max_geometry_rows_per_mode": 100000000,
++    "max_links_per_path": 100000,
++    "commit_routes": 5000,
++    "max_store_gib": 12.0,
++    "min_free_disk_gib": 1.0,
++    "sample_windows": [
++      [
++        1,
++        256
++      ],
++      [
++        8193,
++        8448
++      ],
++      [
++        65537,
++        65792
++      ]
++    ],
++    "progress_interval_seconds": 2.0,
++    "zero_link_policy": "EXPLICIT_COMPLETE_PARENT_PRESERVE_VOLUME_NO_LINK_ATTRIBUTION",
++    "page_size_fallbacks": [
++      1024,
++      512,
++      256,
++      80
++    ],
++    "path_epoch_volume_comparison_decimals": 6
++  },
++  "safety_gate_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
++  "production_apply": false,
++  "trial_calibration": {
++    "enabled": true,
++    "mode": "ISOLATED_WORKING_COPY_REAL_ASSIGNMENT_ACCEPT_REJECT",
++    "max_runtime_seconds": 36000.0,
++    "progress_interval_seconds": 2.0,
++    "max_cycles": 100,
++    "max_accepted_states": 100,
++    "max_trials_per_block": {
++      "SUPPLY_ADDVAL1": 6,
++      "GENERATION": 3,
++      "TD_COMPONENT_WORK": 3,
++      "TD_COMPONENT_SERVICE": 3,
++      "TD_COMPONENT_SCHOOL": 3,
++      "TD_COMPONENT_LONG": 3
++    },
++    "require_reproducible_reapply": true,
++    "rollback_method": "RESTORE_CALIBRATED_PARAMETERS_THEN_REAL_RECOMPUTE_NO_LOADVERSION",
++    "geometry_policy": "PROVISIONAL_TWO_MODE_FOR_PROPOSAL_ONLY_REAL_ASSIGNMENT_DECIDES",
++    "full_network_link_eligibility": true,
++    "global_link_count_cap": null,
++    "phase_order_authority": "COUPLED_DEMAND_GENERATION_THEN_FINECDF_TD_REPEAT__THEN_SUPPLY_ADDVAL1",
++    "supply_start_requires_converged_phases": [
++      "COUPLED_DEMAND"
++    ],
++    "demand_parameters_frozen_during_supply": true,
++    "phase_transition_checkpoint": true,
++    "phase_blocking_error_policy": "FAIL_CLOSED_DO_NOT_ADVANCE_TO_NEXT_PHASE",
++    "methodology_note": "TG_AND_TD_ARE_ONE_COUPLED_DEMAND_PHASE; ADDVAL1_ONLY_AFTER_JOINT_FIXED_POINT",
++    "finecdf_v17_inner_replaces_legacy_td_component_blocks": true,
++    "v243_hotfix": "CREATE_RECOMPUTE_OUTPUT_DIRECTORY_BEFORE_PROCSEQ_AND_REQUIRE_VERIFIED_FINAL_STATE_BEFORE_FINAL_SAVE",
++    "v244_native_multi_guard": "NATIVE_VISUM_MULTI_OUTPUT_IS_AUTHORITY__MARGINALS_DIAGNOSTIC_ONLY__NO_EXTERNAL_STRICT_IPF_REJECT",
++    "technical_error_policy": "FAIL_CLOSED_NOT_STATIONARITY",
++    "final_artifact_policy": "EXPLICIT_VERIFIED_STATE_COMPLETE_OR_PARTIAL_DISTINCT_NAMES",
++    "recovery_policy": "DEFER_COOPERATIVE_STOP_UNTIL_MUTATED_STATE_RESTORED_OR_VERIFIED",
++    "finecdf_v18_adaptive_inner_replaces_v17": true,
++    "cp03_path_length_hotfix_retained": true,
++    "cp02_performance_design_implemented": true,
++    "path_epoch_calibration": true,
++    "path_enumeration_policy": "ENUMERATE_ON_PLATEAU_ONLY_AFTER_INITIAL_BUILD",
++    "v247_path_epoch_policy": "FREEZE_PROPOSAL_PATH_BASIS_ACROSS_ACCEPTED_STATES_REFRESH_ONLY_AT_PLATEAU",
++    "v248_persistent_path_cache_policy": "HASHED_SQLITE_PLUS_STATE_BINDINGS_FAIL_CLOSED",
++    "v2481_live_hotfix": "INTRAZONAL_NO_PATH_SUPPORT_GAP_PLUS_NONFATAL_WINDOWS_SQLITE_RETIRE_LOCK"
++  },
++  "calibration_phases": [
++    {
++      "name": "COUPLED_DEMAND",
++      "blocks": [
++        "GENERATION",
++        "TD_FINECDF_V17"
++      ],
++      "max_cycles": 12,
++      "convergence_rule": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
++      "must_converge_before_next_phase": true
++    },
++    {
++      "name": "SUPPLY_ROUTE_CHOICE",
++      "blocks": [
++        "SUPPLY_ADDVAL1"
++      ],
++      "max_cycles": 100,
++      "convergence_rule": "FULL_SUPPLY_CYCLE_WITH_ZERO_ACCEPTED",
++      "must_converge_before_next_phase": true
++    }
++  ],
++  "release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
++  "coupled_demand": {
++    "enabled": true,
++    "methodology": "GENERATION_COUNTS_UPDATE_THEN_FINECDF_TD_WITHIN_SAME_OUTER_CYCLE_REPEAT_TO_JOINT_FIXED_POINT",
++    "max_outer_cycles": 12,
++    "convergence_rule": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
++    "generation_objective": "CAL_GEH2_COUNTS_ONLY; IDP_DEFERRED_TO_IMMEDIATE_TD_SUBSTEP",
++    "generation_validation_role": "REPORT_ONLY",
++    "finecdf_td": {
++      "reference_script": "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
++      "reference_sha256": "abeb746ff49ac1f0e548e6b7945ec476e5c5e80897e6be1da6e2d42ae442d7d5",
++      "primary_objective": "512_POINT_ORIGINAL_IDP_CDF_PLUS_MEAN_DISTANCE",
++      "max_iterations": 35,
++      "max_td_evaluations": 180,
++      "max_stagnant_iterations": 6,
++      "max_runtime_seconds": 14400.0,
++      "foreign_fixed": true,
++      "generation_frozen": true,
++      "addval1_frozen": true,
++      "direct_od_matrix_writes": false,
++      "rollback_method": "RESTORE_BC_THEN_RERUN_NATIVE_TD",
++      "native_multi_guard_policy": "DIAGNOSTIC_ONLY_NATIVE_OUTPUT_AUTHORITY",
++      "strict_fixed_marginal_reject": false,
++      "methodological_note": "Do not impose external strict-IPF style marginal equality on native Visum Multi/Lohse-Schnabel balancing; freeze P/A inputs, evaluate the actual native TD output, and retain marginal deviations as diagnostics.",
++      "reference_script_id": "R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_V1_8_20261016",
++      "integration_id": "15A2_V2_4_8_PERSISTENT_PATH_EPOCH_PROGRESSIVE_ADAPTIVE_FINECDF_V18",
++      "progressive_schedule": [
++        {
++          "name": "EXPLORE",
++          "through_outer_cycle": 2,
++          "max_iterations": 4,
++          "max_td_evaluations": 28,
++          "allow_progress_continue": true
++        },
++        {
++          "name": "REFINE",
++          "through_outer_cycle": 4,
++          "max_iterations": 10,
++          "max_td_evaluations": 60,
++          "allow_progress_continue": true
++        },
++        {
++          "name": "FULL_VERIFY",
++          "through_outer_cycle": 12,
++          "max_iterations": 35,
++          "max_td_evaluations": 180,
++          "allow_progress_continue": false
++        }
++      ]
++    },
++    "supply_start_gate": "COUPLED_DEMAND_JOINT_FIXED_POINT_REQUIRED",
++    "supply_max_cycles": 100,
++    "min_stationary_cycles": 2
++  },
++  "performance": {
++    "release": "V2.4.8",
++    "search_semantics": "PERSISTENT_PATH_EPOCH_ADAPTIVE_EXPLICIT_NOT_BITWISE_IDENTICAL",
++    "telemetry": {
++      "enabled": true,
++      "schema": "R1_15A2_V246_PERFORMANCE_TELEMETRY_V1"
++    },
++    "bulk_link_read": {
++      "enabled": true,
++      "fallback_to_scalar": true,
++      "verify_object_no": true
++    },
++    "lazy_supply_sequence_evidence": {
++      "enabled": true,
++      "policy": "BUILD_INCIDENCE_FOR_TG_DEFER_BRANCH_PAIRS_UNTIL_SUPPLY"
++    },
++    "first_sufficient": {
++      "enabled": true,
++      "generation_min_relative_improvement": 0.001,
++      "supply_min_relative_improvement": 0.001,
++      "gate": "EXISTING_ACCEPTANCE_MUST_PASS_BEFORE_EARLY_STOP"
++    },
++    "native_call_accounting": "INCLUDES_ASSIGNMENT_TD_TG_ROLLBACK_DIAGNOSTICS_SAVEVERSION_PATH_EXPORT",
++    "generation_step_schedule": [
++      {
++        "name": "EXPLORE",
++        "through_outer_cycle": 2,
++        "max_od_relative_up": 0.12,
++        "max_add_log_up": 0.08,
++        "salary_max_abs_delta_per_block": 0.08
++      },
++      {
++        "name": "FULL_VERIFY",
++        "through_outer_cycle": 12,
++        "max_od_relative_up": 0.08,
++        "max_add_log_up": 0.04,
++        "salary_max_abs_delta_per_block": 0.04
++      }
++    ],
++    "path_epochs": {
++      "enabled": true,
++      "policy": "INITIAL_ENUMERATION_REUSED_UNTIL_LOCAL_PLATEAU_THEN_FRESH_REENUMERATION",
++      "live_od_reweighting": true,
++      "live_profile_rebind": true,
++      "new_positive_od_policy": "MANDATORY_REENUMERATION_NO_INVENTED_PATH_SHARE",
++      "stationarity_requires_fresh_identical_basis": true,
++      "max_demand_reenumerations": 4,
++      "max_supply_reenumerations": 8,
++      "basis_hash": "GEOMETRY_PARENT_KEYS_AND_SAVED_PATH_VOLUMES",
++      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
++      "initial_enumeration_required": true,
++      "refresh_trigger": "COMPLETE_LOCAL_PLATEAU_ON_CURRENT_PATH_BASIS",
++      "fresh_assignment_acceptance_authority": true,
++      "new_positive_od_without_epoch_support_forces_reenumeration": true,
++      "comparison_basis": "GEOMETRY_PARENT_KEYS_AND_PATH_VOLUMES_ROUNDED_6_DECIMALS",
++      "cleanup_obsolete_sqlite_after_verified_refresh": true,
++      "retain_sqlite_stores": 1,
++      "initial_epoch_source": "AUTHORIZED_PERSISTENT_CACHE_OR_FRESH_ENUMERATION",
++      "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
++      "persistent_epoch_checkpoint_after_every_successful_enumeration": true,
++      "legacy_import_policy": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
++      "persistent_cache_read_only_during_calibration": true,
++      "intrazonal_positive_od_policy": "NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_SUPPORT_GAP",
++      "obsolete_store_windows_lock_policy": "DEFER_CLEANUP_AFTER_VERIFIED_REFRESH_NOT_FATAL"
++    },
++    "persistent_path_cache": {
++      "enabled": true,
++      "publication_required": true,
++      "root_policy": "LOCALAPPDATA_UNSYNCED_WITH_PROJECT_FALLBACK",
++      "verify_sha256_on_restore": true,
++      "sqlite_quick_check_on_restore": true,
++      "sqlite_full_integrity_check_on_publish": true,
++      "accepted_state_binding_required_for_descendant_reuse": true,
++      "allow_legacy_v247_import": true,
++      "legacy_import_requires_exact_origin_state": true,
++      "legacy_import_requires_all_profile_flow_parity": true,
++      "retain_epoch_checkpoints": 3,
++      "persistent_store_mode": "IMMUTABLE_READ_ONLY_AFTER_PUBLICATION",
++      "latest_pointer_publish_order": "STORE_THEN_MANIFEST_THEN_BINDING_THEN_INDEX",
++      "max_total_cache_gib": 24.0
++    }
++  },
++  "path_epoch_method": {
++    "initial_export": "FIRST_GENERATION_DESIGN_AFTER_BASELINE",
++    "reuse_scope": "GENERATION_AND_SUPPLY_PROPOSAL_ONLY",
++    "demand_reweighting": "CURRENT_OD_TOTALS_ON_FROZEN_PATH_SHARES",
++    "supply_rebinding": "CURRENT_LIVE_PROFILE_RESIDUALS_ON_FROZEN_ROUTE_GEOMETRY",
++    "refresh_trigger": "COMPLETE_NO_ACCEPTED_IMPROVEMENT_CYCLE",
++    "final_stationarity": "FRESH_REENUMERATION_RETURNS_IDENTICAL_PATH_BASIS",
++    "network_acceptance": "EVERY_CANDIDATE_REQUIRES_FRESH_VISUM_ASSIGNMENT_AND_LIVE_DIAGNOSTICS",
++    "cross_run_startup": "RESTORE_HASHED_PATH_EPOCH_IF_ORIGIN_OR_ACCEPTED_STATE_BINDING_MATCHES",
++    "checkpoint_after_enumeration": "IMMUTABLE_SQLITE_PLUS_MANIFEST_PLUS_SHA256",
++    "accepted_state_lineage": "STATE_HASH_TO_PATH_CACHE_BINDING",
++    "legacy_v247_reuse": "EXACT_STATE_AND_ALL_PROFILE_FLOW_PARITY_ONLY"
++  }
++}
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py	2026-10-16 15:16:19.882232765 +0000
+@@ -0,0 +1,299 @@
++# -*- coding: utf-8 -*-
++"""R1 15A2 V2.4.8.1 live-run hotfix: persistent path-epoch calibration.
++
++Extends V2.4.7 with immutable cross-run path-epoch checkpoints and accepted-state bindings.
++Adaptive search can follow a different accepted path than V2.4.5, while every
++candidate still requires the unchanged live assignment and acceptance gates.
++
++Run manually from Visum Scripts > Execute script file, never from Procedure Sequence.
++The source .ver is preserved. The script first saves an isolated working copy,
++then performs real candidate writes, real Visum recomputations, live acceptance,
++and no-LoadVersion in-place rollback for rejected candidates.
++"""
++from __future__ import annotations
++
++from datetime import datetime
++from pathlib import Path
++import contextlib
++import csv
++import json
++import os
++import sys
++import traceback
++
++HERE = Path(__file__).resolve().parent
++if globals().get("Visum") is not None or globals().get("COM") is not None:
++    if getattr(sys, "_r1_15a2_calibration_busy", False):
++        raise RuntimeError("ANOTHER_15A2_RUN_IS_ACTIVE")
++    for name in list(sys.modules):
++        if name.startswith("r1_15a2_"):
++            del sys.modules[name]
++_ORIGINAL_SYS_PATH = list(sys.path)
++# A previous Visum run may have left another release ahead of this directory.
++# Give this complete release first priority even when HERE is already present.
++sys.path[:] = [str(HERE)] + [p for p in sys.path if p != str(HERE)]
++
++import r1_15a2_com_compat as com
++import r1_15a2_live_api_audit as api_audit
++import r1_15a2_runtime_v1 as rt
++import r1_15a2_supply_visum as supply_runtime
++import r1_15a2_visum_parameters as vp
++from r1_15a2_supply import canonical_hash
++from r1_15a2_safety_v248 import validate_v248_config, final_artifact_name
++from r1_15a2_trial_adapter_v243 import VisumAdapter
++from r1_15a2_overnight_controller_v240 import OvernightControl, atomic_json
++from r1_15a2_overnight_controller_v242 import run_overnight_calibration_coupled
++
++RELEASE = "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016"
++
++
++def load_config():
++    path = HERE / "R1_15A2_CONFIG_V2_4_8_1.json"
++    cfg = rt.read_json(path)
++    # Hard locks: working-copy calibration is not production release/apply.
++    cfg["apply"] = False
++    cfg["production_apply"] = False
++    cfg["trial_calibration"]["enabled"] = True
++    cfg["config_path"] = str(path)
++    cfg["config_sha256"] = rt.sha256_file(path)
++    implementation = [
++        "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py",
++        "r1_15a2_trial_adapter_v243.py", "r1_15a2_trial_adapter_v240.py", "r1_15a2_overnight_controller_v240.py",
++        "r1_15a2_overnight_controller_v242.py", "r1_15a2_finecdf_bridge_v242.py",
++        "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
++        "r1_15a2_inplace_transaction_v239.py", "r1_15a2_assignment_authority_v239.py",
++        "r1_15a2_two_mode_v238.py", "r1_15a2_com_compat.py", "r1_15a2_live_api_audit.py",
++        "r1_15a2_controller_v22.py", "r1_15a2_sequence_v23.py", "r1_15a2_supply.py",
++        "r1_15a2_supply_visum.py", "r1_15a2_runtime_v1.py", "r1_15a2_core.py",
++        "r1_15a2_multiblock.py", "r1_15a2_visum_parameters.py", "r1_15a2_safety_v246.py", "r1_15a2_safety_v247.py", "r1_15a2_safety_v248.py", "r1_15a2_persistent_path_cache_v248.py", "r1_15a2_perf_v246.py",
++        "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
++    ]
++    # Include every local runtime module and diagnostic helper, not just the
++    # manually enumerated immediate imports. Old aliases cannot pass as V245.
++    implementation = sorted(set(implementation) |
++                            {str(p.relative_to(HERE)) for p in HERE.glob("r1_15a2_*.py")} |
++                            {str(p.relative_to(HERE)) for p in (HERE / "helpers").glob("*.py")})
++    cfg["implementation_files"] = {name: rt.sha256_file(HERE / name) for name in implementation}
++    cfg["implementation_hash"] = canonical_hash(cfg["implementation_files"])
++    cfg["cp03_live_hotfixes"] = ["SHORT_RUN_ROOT", "SHORT_OS_TEMP_11D_12D_HELPER_WORKSPACES", "ROLLBACK_STATE_EVIDENCE_BEFORE_DIAGNOSTICS"]
++    cfg["cp02_performance_features"] = [
++        "PER_OPERATION_TELEMETRY", "BULK_LINK_COM_READ_WITH_VERIFIED_FALLBACK",
++        "ADAPTIVE_BOUNDED_PATH_PAGING", "LAZY_SUPPLY_SEQUENCE_EVIDENCE",
++        "FIRST_SUFFICIENT_LIVE_CANDIDATE", "ADAPTIVE_GENERATION_STEP_SCHEDULE",
++        "PROGRESSIVE_FINECDF_V18", "ADAPTIVE_FINECDF_TRUST_REGION",
++        "ADDVAL1_STEP_UNITS_4_2_1",
++    ]
++    cfg["v248_persistent_path_cache_features"] = [
++        "INITIAL_PATH_ENUMERATION_ONCE",
++        "FROZEN_PATH_BASIS_REUSED_ACROSS_ACCEPTED_STATES",
++        "LIVE_OD_TOTAL_REWEIGHT_ON_FROZEN_PATH_SHARES",
++        "LIVE_PROFILE_RESIDUAL_REBIND_WITHOUT_COM_REENUMERATION",
++        "REENUMERATE_ONLY_AFTER_COMPLETE_LOCAL_PLATEAU",
++        "FRESH_IDENTICAL_PATH_BASIS_REQUIRED_FOR_STATIONARITY",
++        "NEW_POSITIVE_OD_FORCES_REENUMERATION_NO_INVENTED_SHARE",
++        "IMMUTABLE_SQLITE_CHECKPOINT_AFTER_EVERY_SUCCESSFUL_ENUMERATION",
++        "SHA256_AND_SQLITE_INTEGRITY_VERIFIED_CROSS_RUN_RESTORE",
++        "EXPLICIT_ACCEPTED_STATE_TO_PATH_EPOCH_BINDINGS",
++        "LEGACY_V247_EXACT_STATE_IMPORT_WITH_ALL_PROFILE_FLOW_PARITY",
++        "READ_ONLY_PERSISTENT_STORE_DURING_CALIBRATION",
++        "INTRAZONAL_POSITIVE_OD_NEVER_REQUIRES_NETWORK_PATH_SUPPORT",
++        "WINDOWS_OBSOLETE_SQLITE_DELETE_LOCK_IS_NONFATAL_AFTER_VERIFIED_REFRESH",
++    ]
++    for module in (com, api_audit, rt, vp, supply_runtime):
++        if Path(module.__file__).resolve().parent != HERE.resolve():
++            raise RuntimeError("V248_MIXED_RELEASE_MODULE:" + module.__name__)
++    for rel, target in ((cfg["tg_dependency_contract_file"], "tg_dependency_contract"),
++                        (cfg["td"]["long_authority_file"], "long_authority")):
++        p = HERE / rel
++        cfg[target] = rt.read_json(p)
++        cfg[target + "_path"] = str(p)
++        cfg[target + "_sha256"] = rt.sha256_file(p)
++    cfg["api_approved_observations"] = []
++    for fn in ("R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv", "R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv"):
++        with (HERE / "authorities" / fn).open(encoding="utf-8-sig", newline="") as h:
++            for r in csv.DictReader(h):
++                cfg["api_approved_observations"].append({
++                    "no": int(r["countlocation_no"]),
++                    "observed": float(r["observed_passenger_cars_O"]),
++                    "role": r["role"], "weight": float(r["live_weight"]),
++                    "edge_key": [int(r[k]) for k in ("current_link_no", "current_from_node_no", "current_to_node_no")],
++                    "direction": r.get("observation_direction", "DIRECTIONAL"),
++                    "countlocation_code": r["countlocation_code"], "profile_id": r["profile_id"],
++                    "period_basis": r["period_basis"],
++                    "observed_scope": r.get("vehicle_scope_original", r.get("vehicle_scope")),
++                })
++    validate_v248_config(cfg, HERE)
++    return cfg
++
++
++def _main_impl():
++    visum, _ = com.bind_injected(globals())
++    source_ver = Path(str(visum.IO.CurrentVersionFile))
++    if not source_ver.is_file():
++        raise RuntimeError("CURRENT_VERSION_FILE_NOT_FOUND")
++    source_sha_before = rt.sha256_file(source_ver)
++    # Resolve output location before SaveVersion changes CurrentVersionFile.
++    root, _ = api_audit.project_output_root(visum)
++    runs = root.parent / "R1_15A2_V2481_RUNS"
++    runs.mkdir(parents=True, exist_ok=True)
++    folder = runs / ("RUN_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
++    folder.mkdir()
++    (runs / "LATEST_RUN.txt").write_text(str(folder), encoding="utf-8")
++    (folder / "00_RELEASE.txt").write_text(RELEASE + "\n", encoding="utf-8")
++    lock = source_ver.parent / ".R1_15A2_FULL_CALIBRATION.lock"
++    have_lock = False
++    adapter = None
++    control = None
++    prior_runtime_visum = getattr(rt, "Visum", None)
++    prior_base_visum = getattr(supply_runtime.base, "Visum", None)
++    result = {"status": "STARTING", "release": RELEASE, "production_apply": False, "trial_writes": True}
++    with (folder / "CONSOLE_CAPTURE.log").open("w", encoding="utf-8") as console:
++        with contextlib.redirect_stdout(console), contextlib.redirect_stderr(console):
++            try:
++                fd = os.open(str(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
++                have_lock = True
++                with os.fdopen(fd, "w", encoding="utf-8") as h:
++                    json.dump({"pid": os.getpid(), "run": str(folder)}, h)
++                have_lock = True
++                sys._r1_15a2_calibration_busy = True
++                cfg = load_config()
++                local_appdata = os.environ.get("LOCALAPPDATA")
++                cache_root = (Path(local_appdata) / "R1_15A2_PATH_CACHE_V248"
++                              if local_appdata else
++                              root.parent / "R1_15A2_PATH_CACHE_V248")
++                legacy_roots = [
++                    root.parent / "R1_15A2_V247_RUNS",
++                    root.parent / "R1_15A2_V246_RUNS",
++                    root.parent / "R1_15A2_V245_RUNS",
++                    root.parent / "R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS",
++                    source_ver.parent / "R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS",
++                ]
++                cfg["runtime_persistent_path_cache_root"] = str(cache_root)
++                cfg["runtime_legacy_path_cache_roots"] = [str(x) for x in legacy_roots]
++                cfg["runtime_source_version_sha256"] = source_sha_before
++                cfg["runtime_source_version_path"] = str(source_ver)
++                atomic_json(folder / "PERSISTENT_PATH_CACHE_LOCATION.json", {
++                    "root": str(cache_root),
++                    "root_policy": cfg["performance"]["persistent_path_cache"]["root_policy"],
++                    "legacy_roots": [str(x) for x in legacy_roots],
++                    "source_version": str(source_ver),
++                    "source_sha256": source_sha_before,
++                })
++                methodology = {
++                    "production_release": False,
++                    "working_copy_trial_calibration": True,
++                    "csd408_mapping_review_acknowledged": bool(cfg.get("csd408_mapping_review_acknowledged", False)),
++                    "city90_bidirectional_qa_acknowledged": bool(cfg.get("city90_bidirectional_qa_acknowledged", False)),
++                    "two_mode_full_geometry_identity_proven": False,
++                    "two_mode_geometry_role": "CANDIDATE_PROPOSAL_ONLY",
++                    "candidate_acceptance_role": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
++                    "duplicate_policy": cfg.get("supply", {}).get("sequence", {}).get("design_only_duplicate_scope_policy"),
++                    "observation_contract": "498_INDEPENDENT_ROWS_PRESERVED_CAL_VALID_ROLES_UNCHANGED",
++                    "calibration_order": ["COUPLED_DEMAND:GENERATION_THEN_FINECDF_TD_REPEAT", "SUPPLY_ROUTE_CHOICE"],
++                    "supply_addval1_role": "FINAL_ROUTE_CHOICE_LINK_TUNING_AFTER_COUPLED_DEMAND_FIXED_POINT_ONLY",
++                    "trip_generation_and_distribution_relationship": "ONE_COUPLED_DEMAND_PHASE_NOT_INDEPENDENT_PHASES",
++                    "td_authority": "HASH_LOCKED_R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_V1_8_512_POINT_IDP",
++                    "native_multi_guard_policy": "DIAGNOSTIC_ONLY_NATIVE_OUTPUT_AUTHORITY",
++                    "performance_search_semantics": "PERSISTENT_PATH_EPOCH_ADAPTIVE_EXPLICIT_NOT_BITWISE_IDENTICAL",
++                    "path_enumeration_policy": "AUTHORIZED_PERSISTENT_CACHE_OR_FRESH_ENUMERATION_THEN_ONLY_AT_LOCAL_PLATEAU",
++                    "path_epoch_acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
++                    "persistent_path_cache_policy": "HASHED_SQLITE_PLUS_ACCEPTED_STATE_BINDINGS_FAIL_CLOSED",
++                    "cp03_live_path_hotfix_retained": True,
++                }
++                atomic_json(folder / "METHODOLOGY_STATUS.json", methodology)
++                result["methodology_status"] = methodology
++                atomic_json(folder / "SOURCE_VERSION_AUTHORITY.json", {
++                    "source_version": str(source_ver), "source_sha256_before": source_sha_before,
++                    "policy": "SOURCE_FILE_MUST_REMAIN_UNTOUCHED_WORK_ONLY_ON_SAVED_COPY",
++                })
++                # Isolate all subsequent writes from the user's source .ver.
++                working = folder / "WORKING_START.ver"
++                working_cp = rt.save_version(visum, working)
++                atomic_json(folder / "WORKING_COPY.json", working_cp)
++                control = OvernightControl(folder, cfg)
++                rt.Visum = visum
++
++                # Full API audit remains read-only and catches COM/schema drift before writes.
++                def td_check():
++                    state = vp.read_td_parameter_state(visum)
++                    return {"passes": all(r["status"] == "OK" for r in state["rows"]),
++                            "rows": state["rows"], "operation_rows": state["operation_rows"]}
++                control.checkpoint("LIVE_API_PREFLIGHT", force=True)
++                report = api_audit.collect_live_api(visum, cfg, folder / "API_PREFLIGHT", extra_checks=(
++                    ("TG_FORMULA_PARAMETER_BINDINGS", lambda: vp.audit_trip_generation_contract(visum, cfg)),
++                    ("TD_COMPONENT_PARAMETER_BINDINGS", td_check),
++                    ("PROCSEQ_TYPE_ORDER", lambda: rt.audit_procseq(visum, folder / "API_PREFLIGHT", cfg)),
++                ))
++                if report["required_failures"]:
++                    result = {"status": "LIVE_API_PREFLIGHT_FAILED", "required_failures": report["required_failures"]}
++                else:
++                    adapter = VisumAdapter(visum, cfg, control)
++                    result = run_overnight_calibration_coupled(adapter, cfg, folder / "CALIBRATION", control, HERE)
++
++                # Save a final deliverable only when the controller exposes a verified live state.
++                final_name = final_artifact_name(result)
++                if adapter is not None and final_name is not None:
++                    try:
++                        live = adapter.snapshot()
++                        if live["state_hash"] != result["final_state_hash"]:
++                            raise RuntimeError("FINAL_LIVE_STATE_DIFFERS_FROM_CONTROLLER_ACCEPTED_STATE")
++                        if rt.sha256_file(source_ver) != source_sha_before:
++                            raise RuntimeError("SOURCE_FILE_CHANGED_BEFORE_FINAL_SAVE")
++                        final_cp = rt.save_version(visum, folder / final_name)
++                        if adapter.snapshot() != live:
++                            raise RuntimeError("SAVEVERSION_CHANGED_VERIFIED_MODEL_STATE")
++                        result["final_accepted_version"] = final_cp
++                    except Exception as exc:
++                        result["final_save_error"] = str(exc)
++                        result["status"] = "FINAL_SAVE_FAILED_USE_LATEST_ACCEPTED_CHECKPOINT"
++                elif adapter is not None:
++                    result["final_accepted_version_not_written"] = "NO_VERIFIED_FINAL_STATE_OR_FAILED_RUN"
++            except BaseException as exc:
++                result = {"status": "FULL_OVERNIGHT_FAILED", "error": str(exc), "traceback": traceback.format_exc(),
++                          "production_apply": False, "trial_writes": True}
++            finally:
++                try:
++                    source_sha_after = rt.sha256_file(source_ver)
++                    result["source_version"] = str(source_ver)
++                    result["source_sha256_before"] = source_sha_before
++                    result["source_sha256_after"] = source_sha_after
++                    result["source_file_unchanged"] = source_sha_after == source_sha_before
++                    if not result["source_file_unchanged"]:
++                        result["status"] = "SOURCE_VERSION_FILE_CHANGED_UNEXPECTEDLY"
++                except Exception as exc:
++                    result["source_integrity_error"] = str(exc)
++                    result["status"] = "FAILED_SOURCE_INTEGRITY_UNVERIFIED"
++                result.update(release=RELEASE, production_apply=False, trial_writes=True,
++                              load_version_called=False, run_directory=str(folder))
++                if adapter is not None:
++                    try:
++                        adapter.close()
++                    except Exception as exc:
++                        result["adapter_close_error"] = str(exc)
++                try:
++                    atomic_json(folder / "00_RESULT.json", result)
++                    (folder / "00_FINAL_STATUS.txt").write_text(str(result.get("status")) + "\n", encoding="utf-8")
++                    if control is not None:
++                        control.finish(result.get("status", "FINISHED"), accepted_count=result.get("accepted_count"))
++                finally:
++                    rt.Visum = prior_runtime_visum
++                    supply_runtime.base.Visum = prior_base_visum
++                    if have_lock:
++                        sys._r1_15a2_calibration_busy = False
++                        try:
++                            lock.unlink()
++                        except OSError:
++                            pass
++                    sys.path[:] = _ORIGINAL_SYS_PATH
++    return result
++
++
++def main():
++    try:
++        return _main_impl()
++    finally:
++        sys.path[:] = _ORIGINAL_SYS_PATH
++
++
++if __name__ == "__main__" or globals().get("Visum") is not None or globals().get("COM") is not None:
++    main()
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md	2026-10-16 15:17:35.651525390 +0000
+@@ -0,0 +1,43 @@
++# R1 15A2 V2.4.8.1 LIVE RUN HOTFIX
++
++Tato patch verze navazuje na V2.4.8 persistent path cache a opravuje dva problémy odhalené prvním skutečným V2.4.7 během dne 2026-10-16.
++
++## Opravené problémy
++
++1. Kladná intrazonální OD relace (v živém běhu `NATIVE_CW:7:7`) už není považována za chybějící síťovou cestu. Diagonální OD nemá network-link geometrii a je z path-support gate i path incidence vyloučena. Kladná chybějící OFF-DIAGONÁLNÍ relace nadále vynutí novou enumeraci.
++2. Windows `PermissionError / WinError 32` při odstraňování již nahrazeného lokálního SQLite store po úspěšné nové enumeraci už není fatální kalibrační chyba. Cleanup se označí jako odložený. Modelové acceptance gate se tím nemění.
++
++## Reuse V2.4.7 cache
++
++V2.4.8.1 zachovává persistentní cache manager V2.4.8. Při startu prohledá také `R1_15A2_V247_RUNS`. Dokončený V2.4.7 `TWO_MODE_PATH_STORE.sqlite` smí být importován pouze pokud:
++
++- metadata mají přesně stejný origin state hash,
++- store je strukturálně kompletní a incidence-ready,
++- SQLite quick check a FK kontrola projdou,
++- všech 498 profilů projde live path-flow parity gate,
++- importer vytvoří novou immutable kopii ve V2.4.8 persistent cache.
++
++Legacy store se nikdy nepřepisuje.
++
++## Doporučené spuštění po tomto konkrétním V2.4.7 běhu
++
++Nejbezpečnější je otevřít poslední accepted checkpoint z neúspěšného runu:
++
++`R1_15A2_V247_RUNS/RUN_20261016_162053_068586/CALIBRATION/CHECKPOINTS/ACCEPTED_B_0000_61129884aaf7.ver`
++
++Potom spustit:
++
++`R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py`
++
++přes `Scripts -> Execute script file`.
++
++Pokud exact-state a parity gate projdou, očekáváme `matched_by = LEGACY_EXACT_STATE_IMPORT` a nulovou novou počáteční COM enumeraci. Pokud neprojdou, skript fail-closed provede normální novou enumeraci.
++
++## Ověření
++
++- focused regression: 30/30 PASS
++- complete suite: 584/584 PASS
++- compileall: PASS
++- actual Windows/Visum COM rerun: ještě neproveden
++
++Viz `V247_REAL_RUN_POSTMORTEM.json` a `V247_REAL_RUN_POSTMORTEM.md`.
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/SOURCE_PATCH_V248_TO_V2481.diff /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/SOURCE_PATCH_V248_TO_V2481.diff
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/SOURCE_PATCH_V248_TO_V2481.diff	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/SOURCE_PATCH_V248_TO_V2481.diff	2026-10-16 15:17:46.097203421 +0000
+@@ -0,0 +1,1058 @@
++diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md
++--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md	1970-01-01 00:00:00.000000000 +0000
+++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/LIVE_VISUM_ACCEPTANCE_V2_4_8_1_CZ.md	2026-10-16 15:17:35.652428862 +0000
++@@ -0,0 +1,14 @@
+++# LIVE VISUM ACCEPTANCE - V2.4.8.1
+++
+++Pro první bounded rerun po V2.4.7:
+++
+++1. Neodstraňovat složku `R1_15A2_V247_RUNS/RUN_20261016_162053_068586`.
+++2. Otevřít `ACCEPTED_B_0000_61129884aaf7.ver` z tohoto runu.
+++3. Spustit `R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py`.
+++4. V novém runu zkontrolovat `PERSISTENT_PATH_CACHE_RESTORE.json`.
+++5. Preferovaný výsledek: `matched_by=LEGACY_EXACT_STATE_IMPORT` a žádný nový úvodní path export.
+++6. Potvrdit, že `NATIVE_CW:7:7` nevyvolá `PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION`.
+++7. Nechat doběhnout alespoň Generation design + první kandidát/rollback a vstup do FineCDF.
+++8. Pokud se později objeví skutečná nová kladná OFF-DIAGONÁLNÍ relace bez supportu, nová enumerace je správná a povinná.
+++9. Pokud Windows zamkne starý superseded SQLite při cleanupu, run nesmí spadnout; audit musí uvést `DELETE_DEFERRED_WINDOWS_FILE_LOCK`.
+++10. Production-ready až po úspěšném real Visum gate; offline testy samy nestačí.
++diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_CONFIG_V2_4_8.json /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_CONFIG_V2_4_8.json
++--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_CONFIG_V2_4_8.json	2026-10-16 14:43:10.000000000 +0000
+++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_CONFIG_V2_4_8.json	2026-10-16 15:16:26.719055962 +0000
++@@ -634,7 +634,9 @@
++       "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
++       "persistent_epoch_checkpoint_after_every_successful_enumeration": true,
++       "legacy_import_policy": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
++-      "persistent_cache_read_only_during_calibration": true
+++      "persistent_cache_read_only_during_calibration": true,
+++      "intrazonal_positive_od_policy": "NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_SUPPORT_GAP",
+++      "obsolete_store_windows_lock_policy": "DEFER_CLEANUP_AFTER_VERIFIED_REFRESH_NOT_FATAL"
++     },
++     "persistent_path_cache": {
++       "enabled": true,
++diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_CONFIG_V2_4_8_1.json /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_CONFIG_V2_4_8_1.json
++--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_CONFIG_V2_4_8_1.json	1970-01-01 00:00:00.000000000 +0000
+++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_CONFIG_V2_4_8_1.json	2026-10-16 15:16:19.881913704 +0000
++@@ -0,0 +1,672 @@
+++{
+++  "version": "2.4.7-path-epoch-calibration-tg-td-supply",
+++  "apply": false,
+++  "run_procseq": true,
+++  "max_cycles": 2,
+++  "max_accepted_blocks": 1,
+++  "block_schedule": [
+++    "GENERATION",
+++    "TD_FINECDF_V17",
+++    "SUPPLY_ADDVAL1"
+++  ],
+++  "backtracking_scales": [
+++    1.0,
+++    0.5,
+++    0.25
+++  ],
+++  "calibration_role": "CALIBRATION",
+++  "guidance_mode": "POSITIVE_ONLY",
+++  "mutable_dsegs": [
+++    "NATIVE_CW",
+++    "NATIVE_CW_noT",
+++    "NATIVE_CS",
+++    "NATIVE_CS_noT"
+++  ],
+++  "path_export_dsegs": [
+++    "NATIVE_CW",
+++    "NATIVE_CW_noT",
+++    "NATIVE_CS",
+++    "NATIVE_CS_noT"
+++  ],
+++  "include_exog_ee_paths": false,
+++  "mutable_relation_policy": "BOTH_ENDPOINTS_ACTUATABLE",
+++  "explicit_excluded_zone_nos": [],
+++  "require_active_tg_td": true,
+++  "require_active_assignment": true,
+++  "require_parameter_persistence_after_procseq": true,
+++  "require_mutable_matrix_change_for_generation_apply": true,
+++  "require_rollback_verification": true,
+++  "expected_12d_rows": 498,
+++  "expected_calibration_rows": 462,
+++  "expected_validation_rows": 36,
+++  "require_path_parity_for_apply": true,
+++  "min_path_link_coverage": 0.98,
+++  "min_path_link_volume_coverage": 0.995,
+++  "require_dseg_path_volume_parity_for_apply": true,
+++  "dseg_path_volume_relative_tolerance": 0.01,
+++  "parity_min_model": 100.0,
+++  "parity_p95_relative_tolerance": 0.02,
+++  "parity_p99_relative_tolerance": 0.05,
+++  "min_driver_geh": 10.0,
+++  "min_driver_abs_residual": 300.0,
+++  "min_mutable_share": 0.3,
+++  "protected_geh": 5.0,
+++  "protected_warn_geh": 10.0,
+++  "protected_hard_geh": 30.0,
+++  "overroute_penalty_geh": 5.0,
+++  "observed_weight_floor": 100.0,
+++  "driver_weight_multiplier": 1.0,
+++  "overroute_weight_multiplier": 1.5,
+++  "protected_weight_multiplier": 3.0,
+++  "neutral_weight_multiplier": 0.35,
+++  "min_od_volume": 5.0,
+++  "max_solver_variables": 50000,
+++  "max_od_relative_up": 0.08,
+++  "max_od_relative_down": 0.04,
+++  "ridge_lambda": 0.15,
+++  "l1_lambda": 0.002,
+++  "tiny_od_penalty_power": 0.5,
+++  "solver_max_iter": 1200,
+++  "solver_tolerance": 1e-07,
+++  "solver_check_every": 10,
+++  "power_iterations": 35,
+++  "projection_method": "MARGINALS",
+++  "projection_gain": 1.0,
+++  "projection_ridge_volume": 250.0,
+++  "projection_ridge_lambda": 0.3,
+++  "projection_max_iter": 1200,
+++  "projection_tolerance": 1e-08,
+++  "projection_min_volume_weight": 1.0,
+++  "min_od_guidance_for_projection": 1e-05,
+++  "max_add_log_up": 0.04,
+++  "max_add_log_down": 0.02,
+++  "min_add_log_step": 5e-05,
+++  "preserve_zero_add": true,
+++  "add_min": 0.0,
+++  "add_max": 3.0,
+++  "salary": {
+++    "enabled": true,
+++    "income_attr": "AV_INCOME",
+++    "salary_attr": "ADD_SALARY",
+++    "work_attraction_attr": "ADD_ATT_W",
+++    "formula_offset": 1000.0,
+++    "formula_denominator": 2700.0,
+++    "factor_floor": 0.05,
+++    "salary_min": 0.0,
+++    "salary_max": 3.0,
+++    "max_abs_delta_per_block": 0.04,
+++    "min_eligible_zones": 8,
+++    "zone_add_ridge_lambda": 1.0,
+++    "basis_ridge_lambda": 0.2,
+++    "include_intercept": false
+++  },
+++  "zahr": {
+++    "enabled": true,
+++    "domestic_mask_attr": "NOT_ZAHR",
+++    "domestic_threshold": 0.5,
+++    "neighbour_attr": "ZAHR_SUSED",
+++    "population_attr": "POP_ZP",
+++    "min": 0.0,
+++    "max": 10.0,
+++    "preserve_zero": true,
+++    "seed_floor": 0.0,
+++    "explicit_excluded_zone_nos": []
+++  },
+++  "td": {
+++    "enabled": true,
+++    "component_policy": {
+++      "WORK": "AUTO",
+++      "SERVICE": "AUTO",
+++      "SCHOOL": "AUTO",
+++      "LONG": "AUTO"
+++    },
+++    "min_conditioned_volume": 1000.0,
+++    "school_min_conditioned_volume": 500.0,
+++    "long_min_conditioned_volume": 80.0,
+++    "min_l1_for_mutation": 0.06,
+++    "mean_relative_deadband": 0.01,
+++    "max_components_per_block": 2,
+++    "b_shape_gain": 0.4,
+++    "c_mean_gain": 0.18,
+++    "c_tail_gain": 0.12,
+++    "c_b_compensation": 0.35,
+++    "max_abs_b_delta": 0.08,
+++    "max_abs_c_delta": 0.04,
+++    "long_b_gain_multiplier": 0.25,
+++    "long_c_gain_multiplier": 0.5,
+++    "long_max_abs_b_delta": 0.02,
+++    "long_max_abs_c_delta": 0.018,
+++    "b_min": 0.0,
+++    "b_max": 5.0,
+++    "c_min": -3.0,
+++    "c_max": 0.0,
+++    "td_objective_l1_weight": 1.0,
+++    "td_objective_mean_weight": 0.5,
+++    "td_objective_rmse_weight": 0.25,
+++    "min_selected_component_relative_improvement": 0.002,
+++    "max_selected_component_relative_degradation": 0.0,
+++    "max_nonselected_component_objective_degradation": 0.01,
+++    "max_cal_geh2_relative_degradation": 0.005,
+++    "max_global_idp_mean_degradation": 0.002,
+++    "max_global_idp_component_degradation": 0.01,
+++    "long_authority_file": "authorities/R1_LONG_AUTHORITY_CONTRACT_V2_1.json"
+++  },
+++  "matrix_scope_by_block": {
+++    "GENERATION": {
+++      "dseg_codes": [
+++        "NATIVE_CW",
+++        "NATIVE_CW_noT",
+++        "NATIVE_CS",
+++        "NATIVE_CS_noT"
+++      ],
+++      "matrix_nos": [
+++        9101,
+++        9102,
+++        9103,
+++        9104,
+++        9105,
+++        9106,
+++        9107,
+++        9108,
+++        9109,
+++        9110
+++      ]
+++    },
+++    "TD_COMPONENT_WORK": {
+++      "dseg_codes": [
+++        "NATIVE_CW",
+++        "NATIVE_CW_noT"
+++      ],
+++      "matrix_nos": [
+++        9101,
+++        9102,
+++        9103,
+++        9104,
+++        9105
+++      ]
+++    },
+++    "TD_COMPONENT_SERVICE": {
+++      "dseg_codes": [
+++        "NATIVE_CS",
+++        "NATIVE_CS_noT"
+++      ],
+++      "matrix_nos": [
+++        9106,
+++        9107,
+++        9108,
+++        9109,
+++        9110
+++      ]
+++    },
+++    "TD_COMPONENT_SCHOOL": {
+++      "dseg_codes": [
+++        "NATIVE_CW",
+++        "NATIVE_CW_noT"
+++      ],
+++      "matrix_nos": [
+++        9117
+++      ]
+++    },
+++    "TD_COMPONENT_LONG": {
+++      "dseg_codes": [
+++        "NATIVE_CL"
+++      ],
+++      "matrix_nos": [
+++        9111,
+++        9112,
+++        9113,
+++        9114,
+++        9115
+++      ]
+++    },
+++    "TD_FINECDF_V17": {
+++      "matrix_nos": [
+++        9101,
+++        9102,
+++        9103,
+++        9104,
+++        9105,
+++        9106,
+++        9107,
+++        9108,
+++        9109,
+++        9110,
+++        9111,
+++        9112,
+++        9113,
+++        9114,
+++        9115,
+++        9117
+++      ],
+++      "dseg_codes": []
+++    }
+++  },
+++  "min_changed_matrices_by_block": {
+++    "GENERATION": 1,
+++    "TD_COMPONENT_WORK": 1,
+++    "TD_COMPONENT_SERVICE": 1,
+++    "TD_COMPONENT_SCHOOL": 1,
+++    "TD_COMPONENT_LONG": 1,
+++    "TD_FINECDF_V17": 1
+++  },
+++  "min_cal_objective_relative_improvement": 0.001,
+++  "max_new_geh20": 0,
+++  "max_new_geh30": 0,
+++  "max_protected_to_warn": 3,
+++  "max_protected_to_hard": 0,
+++  "idp_max_mean_degradation": 0.005,
+++  "idp_max_component_degradation": 0.02,
+++  "max_generation_effect_log_error": 0.01,
+++  "max_generation_pa_relative_gap": 0.02,
+++  "require_solver_convergence_for_apply": true,
+++  "require_projection_convergence_for_apply": true,
+++  "tg_dependency_contract_file": "authorities/R1_TG_PARAMETER_DEPENDENCY_CONTRACT_V2_3_6.json",
+++  "require_tg_dependency_contract_for_apply": true,
+++  "enable_kordon_pairs": false,
+++  "kordon_pair_role": "DIAGNOSTIC",
+++  "kordon_category": "OA",
+++  "skip_wiggly_pair_paths": true,
+++  "expected_zones": 681,
+++  "supply": {
+++    "enabled": true,
+++    "lattice": 1.0,
+++    "max_step": 4.0,
+++    "max_cumulative": 4.0,
+++    "absolute_min": -50.0,
+++    "absolute_max": 50.0,
+++    "minimum_cost_seconds": 0.001,
+++    "max_bundle_equivalent_seconds": 120.0,
+++    "max_edges": 12,
+++    "max_candidates": 10,
+++    "max_driver_profiles": 24,
+++    "min_geh": 10.0,
+++    "min_residual": 300.0,
+++    "min_attribution_coverage": 0.995,
+++    "min_path_coverage": 0.98,
+++    "min_path_volume_coverage": 0.995,
+++    "parity_relative_tolerance": 0.02,
+++    "parity_absolute_tolerance": 1.0,
+++    "prior_lambda": 0.0001,
+++    "prior_sigma": 2.0,
+++    "passenger_dsegs": [
+++      "NATIVE_CW",
+++      "NATIVE_CW_noT",
+++      "NATIVE_CS",
+++      "NATIVE_CS_noT",
+++      "NATIVE_CL",
+++      "NATIVE_CF",
+++      "EXOG_EE_CW",
+++      "EXOG_EE_CW_noT",
+++      "EXOG_EE_CS",
+++      "EXOG_EE_CS_noT",
+++      "EXOG_EE_CL",
+++      "EXOG_EE_CF"
+++    ],
+++    "freight_dsegs": [
+++      "LNV",
+++      "NV"
+++    ],
+++    "component_matrix_nos": [
+++      9101,
+++      9102,
+++      9103,
+++      9104,
+++      9105,
+++      9106,
+++      9107,
+++      9108,
+++      9109,
+++      9110,
+++      9111,
+++      9112,
+++      9113,
+++      9114,
+++      9115,
+++      9116,
+++      9117
+++    ],
+++    "excluded_link_keys": [],
+++    "editable_link_types": null,
+++    "assignment_operations": [
+++      {
+++        "no": 20,
+++        "operation_type": 101,
+++        "dseg_object_path": [
+++          "PrTAssignmentParameters"
+++        ],
+++        "dseg_attribute": "DSEGSET",
+++        "expected_dsegs": [
+++          "EXOG_EE_CF",
+++          "EXOG_EE_CL",
+++          "EXOG_EE_CS",
+++          "EXOG_EE_CS_NOT",
+++          "EXOG_EE_CW",
+++          "EXOG_EE_CW_NOT",
+++          "LNV",
+++          "NATIVE_CF",
+++          "NATIVE_CL",
+++          "NATIVE_CS",
+++          "NATIVE_CS_NOT",
+++          "NATIVE_CW",
+++          "NATIVE_CW_NOT",
+++          "NV"
+++        ]
+++      }
+++    ],
+++    "operation_number_attribute": "POSITION",
+++    "gap_readback": {
+++      "source": "PRT_ASS_QUALITY_LIST",
+++      "operation_no": 20,
+++      "maximum_gap": 0.005
+++    },
+++    "link_attributes": {},
+++    "impedance_authority_csv": "authorities/IMPEDANCE_FUNCTIONS.csv",
+++    "impedance_authority_basis": "USER_SUPPLIED_CURRENT_EXPORTED_SNAPSHOT",
+++    "equivalent_seconds_per_addval1": 10.0,
+++    "fixed_input_hashes": {
+++      "authorities/VDF_REGISTRY.csv": "958a5c0492f4cc297ff1b7ef2a48f7bda1fac1968869481e0a1fb274423e5287",
+++      "authorities/VDF_TYPE_MAPPING.csv": "cc74278f0f9058f437b24577eadff0a4e273f7652872b6874f4422b4f82b7f07"
+++    },
+++    "impedance_file_sha256": "b539489236539893363b0b3479cf75e0a763610148a99634d09eab8d3d72a4ef",
+++    "sequence": {
+++      "enabled": true,
+++      "source": "OFFICIAL_VISUM_SAVED_PRT_ORDERED_PATH_LINKS",
+++      "design_mode": "DIVERGE_REJOIN_VOLUME_WEIGHTED_CONTIGUOUS_BRANCHES",
+++      "sequence_cap_schedule": [
+++        8,
+++        4,
+++        2,
+++        1
+++      ],
+++      "max_unique_sequences": 100000,
+++      "max_pairs_per_market": 64,
+++      "max_collateral_volume_to_driver_ratio": null,
+++      "all_path_impact_required": true,
+++      "validation_target_input_allowed": false,
+++      "design_only_duplicate_scope_policy": "DIAGNOSTIC_EXCLUDE_CONFLICTED_DRIVERS",
+++      "step_units_schedule": [
+++        4,
+++        2,
+++        1
+++      ]
+++    },
+++    "assignment_scope_authority": "R1_15A2_ASSIGNMENT_SCOPE_AUTHORITY_V239_OP20_ONLY"
+++  },
+++  "shared_objective": {
+++    "cal_weight": 1.0,
+++    "idp_weight": 1.0,
+++    "minimum_improvement": 1e-08,
+++    "reference_policy": "FIXED_INITIAL_CAL_SCALE_AND_COMPONENT_WEIGHTS"
+++  },
+++  "require_all_path_export_dsegs": true,
+++  "12d_helper_name": "R1_12D_CSD408_CITY90_RPDI_498_APPROVED.py",
+++  "12d_detail_name": "01_DETAIL_498_FORENSIC.csv",
+++  "12d_authority_csv": "authorities/R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv",
+++  "12d_authority_sha256": "7d455781f3b6ed10d4c7f7f5177c4d101222d72c07ce2292f9536207ed74aeb1",
+++  "csd408_mapping_review_acknowledged": false,
+++  "12d_city_authority_csv": "authorities/R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv",
+++  "12d_city_authority_sha256": "85ddedcaa2599666653393a1c1f7e437af64ba0be9b55dcc4403c7fd08d3e0f1",
+++  "city90_bidirectional_qa_acknowledged": false,
+++  "observation_value_policy": "SEALED_R1_OBS_RPDI_NO_ADDITIONAL_VEHICLE_CONVERSION",
+++  "api_audit_only": false,
+++  "run_full_com_api_audit": true,
+++  "require_verified_bounded_pathlink_com": true,
+++  "pathlink_page_size": 256,
+++  "pathlink_max_pages": 500000,
+++  "path_export_fail_fast": true,
+++  "dseg_path_volume_parity_basis": "OFFDIAGONAL_INTERZONAL",
+++  "two_mode": {
+++    "enabled": true,
+++    "design_only": true,
+++    "representatives": {
+++      "C": "NATIVE_CW",
+++      "C_NOT": "NATIVE_CW_noT"
+++    },
+++    "page_size": 2048,
+++    "max_runtime_seconds": 36000.0,
+++    "max_parent_rows_per_dseg": 1500000,
+++    "max_geometry_rows_per_mode": 100000000,
+++    "max_links_per_path": 100000,
+++    "commit_routes": 5000,
+++    "max_store_gib": 12.0,
+++    "min_free_disk_gib": 1.0,
+++    "sample_windows": [
+++      [
+++        1,
+++        256
+++      ],
+++      [
+++        8193,
+++        8448
+++      ],
+++      [
+++        65537,
+++        65792
+++      ]
+++    ],
+++    "progress_interval_seconds": 2.0,
+++    "zero_link_policy": "EXPLICIT_COMPLETE_PARENT_PRESERVE_VOLUME_NO_LINK_ATTRIBUTION",
+++    "page_size_fallbacks": [
+++      1024,
+++      512,
+++      256,
+++      80
+++    ],
+++    "path_epoch_volume_comparison_decimals": 6
+++  },
+++  "safety_gate_release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+++  "production_apply": false,
+++  "trial_calibration": {
+++    "enabled": true,
+++    "mode": "ISOLATED_WORKING_COPY_REAL_ASSIGNMENT_ACCEPT_REJECT",
+++    "max_runtime_seconds": 36000.0,
+++    "progress_interval_seconds": 2.0,
+++    "max_cycles": 100,
+++    "max_accepted_states": 100,
+++    "max_trials_per_block": {
+++      "SUPPLY_ADDVAL1": 6,
+++      "GENERATION": 3,
+++      "TD_COMPONENT_WORK": 3,
+++      "TD_COMPONENT_SERVICE": 3,
+++      "TD_COMPONENT_SCHOOL": 3,
+++      "TD_COMPONENT_LONG": 3
+++    },
+++    "require_reproducible_reapply": true,
+++    "rollback_method": "RESTORE_CALIBRATED_PARAMETERS_THEN_REAL_RECOMPUTE_NO_LOADVERSION",
+++    "geometry_policy": "PROVISIONAL_TWO_MODE_FOR_PROPOSAL_ONLY_REAL_ASSIGNMENT_DECIDES",
+++    "full_network_link_eligibility": true,
+++    "global_link_count_cap": null,
+++    "phase_order_authority": "COUPLED_DEMAND_GENERATION_THEN_FINECDF_TD_REPEAT__THEN_SUPPLY_ADDVAL1",
+++    "supply_start_requires_converged_phases": [
+++      "COUPLED_DEMAND"
+++    ],
+++    "demand_parameters_frozen_during_supply": true,
+++    "phase_transition_checkpoint": true,
+++    "phase_blocking_error_policy": "FAIL_CLOSED_DO_NOT_ADVANCE_TO_NEXT_PHASE",
+++    "methodology_note": "TG_AND_TD_ARE_ONE_COUPLED_DEMAND_PHASE; ADDVAL1_ONLY_AFTER_JOINT_FIXED_POINT",
+++    "finecdf_v17_inner_replaces_legacy_td_component_blocks": true,
+++    "v243_hotfix": "CREATE_RECOMPUTE_OUTPUT_DIRECTORY_BEFORE_PROCSEQ_AND_REQUIRE_VERIFIED_FINAL_STATE_BEFORE_FINAL_SAVE",
+++    "v244_native_multi_guard": "NATIVE_VISUM_MULTI_OUTPUT_IS_AUTHORITY__MARGINALS_DIAGNOSTIC_ONLY__NO_EXTERNAL_STRICT_IPF_REJECT",
+++    "technical_error_policy": "FAIL_CLOSED_NOT_STATIONARITY",
+++    "final_artifact_policy": "EXPLICIT_VERIFIED_STATE_COMPLETE_OR_PARTIAL_DISTINCT_NAMES",
+++    "recovery_policy": "DEFER_COOPERATIVE_STOP_UNTIL_MUTATED_STATE_RESTORED_OR_VERIFIED",
+++    "finecdf_v18_adaptive_inner_replaces_v17": true,
+++    "cp03_path_length_hotfix_retained": true,
+++    "cp02_performance_design_implemented": true,
+++    "path_epoch_calibration": true,
+++    "path_enumeration_policy": "ENUMERATE_ON_PLATEAU_ONLY_AFTER_INITIAL_BUILD",
+++    "v247_path_epoch_policy": "FREEZE_PROPOSAL_PATH_BASIS_ACROSS_ACCEPTED_STATES_REFRESH_ONLY_AT_PLATEAU",
+++    "v248_persistent_path_cache_policy": "HASHED_SQLITE_PLUS_STATE_BINDINGS_FAIL_CLOSED",
+++    "v2481_live_hotfix": "INTRAZONAL_NO_PATH_SUPPORT_GAP_PLUS_NONFATAL_WINDOWS_SQLITE_RETIRE_LOCK"
+++  },
+++  "calibration_phases": [
+++    {
+++      "name": "COUPLED_DEMAND",
+++      "blocks": [
+++        "GENERATION",
+++        "TD_FINECDF_V17"
+++      ],
+++      "max_cycles": 12,
+++      "convergence_rule": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
+++      "must_converge_before_next_phase": true
+++    },
+++    {
+++      "name": "SUPPLY_ROUTE_CHOICE",
+++      "blocks": [
+++        "SUPPLY_ADDVAL1"
+++      ],
+++      "max_cycles": 100,
+++      "convergence_rule": "FULL_SUPPLY_CYCLE_WITH_ZERO_ACCEPTED",
+++      "must_converge_before_next_phase": true
+++    }
+++  ],
+++  "release": "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016",
+++  "coupled_demand": {
+++    "enabled": true,
+++    "methodology": "GENERATION_COUNTS_UPDATE_THEN_FINECDF_TD_WITHIN_SAME_OUTER_CYCLE_REPEAT_TO_JOINT_FIXED_POINT",
+++    "max_outer_cycles": 12,
+++    "convergence_rule": "TWO_CONSECUTIVE_COMPLETE_SUCCESSFUL_CONFIGURED_TG_TD_SEARCHES_WITH_NO_CHANGE",
+++    "generation_objective": "CAL_GEH2_COUNTS_ONLY; IDP_DEFERRED_TO_IMMEDIATE_TD_SUBSTEP",
+++    "generation_validation_role": "REPORT_ONLY",
+++    "finecdf_td": {
+++      "reference_script": "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
+++      "reference_sha256": "abeb746ff49ac1f0e548e6b7945ec476e5c5e80897e6be1da6e2d42ae442d7d5",
+++      "primary_objective": "512_POINT_ORIGINAL_IDP_CDF_PLUS_MEAN_DISTANCE",
+++      "max_iterations": 35,
+++      "max_td_evaluations": 180,
+++      "max_stagnant_iterations": 6,
+++      "max_runtime_seconds": 14400.0,
+++      "foreign_fixed": true,
+++      "generation_frozen": true,
+++      "addval1_frozen": true,
+++      "direct_od_matrix_writes": false,
+++      "rollback_method": "RESTORE_BC_THEN_RERUN_NATIVE_TD",
+++      "native_multi_guard_policy": "DIAGNOSTIC_ONLY_NATIVE_OUTPUT_AUTHORITY",
+++      "strict_fixed_marginal_reject": false,
+++      "methodological_note": "Do not impose external strict-IPF style marginal equality on native Visum Multi/Lohse-Schnabel balancing; freeze P/A inputs, evaluate the actual native TD output, and retain marginal deviations as diagnostics.",
+++      "reference_script_id": "R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_V1_8_20261016",
+++      "integration_id": "15A2_V2_4_8_PERSISTENT_PATH_EPOCH_PROGRESSIVE_ADAPTIVE_FINECDF_V18",
+++      "progressive_schedule": [
+++        {
+++          "name": "EXPLORE",
+++          "through_outer_cycle": 2,
+++          "max_iterations": 4,
+++          "max_td_evaluations": 28,
+++          "allow_progress_continue": true
+++        },
+++        {
+++          "name": "REFINE",
+++          "through_outer_cycle": 4,
+++          "max_iterations": 10,
+++          "max_td_evaluations": 60,
+++          "allow_progress_continue": true
+++        },
+++        {
+++          "name": "FULL_VERIFY",
+++          "through_outer_cycle": 12,
+++          "max_iterations": 35,
+++          "max_td_evaluations": 180,
+++          "allow_progress_continue": false
+++        }
+++      ]
+++    },
+++    "supply_start_gate": "COUPLED_DEMAND_JOINT_FIXED_POINT_REQUIRED",
+++    "supply_max_cycles": 100,
+++    "min_stationary_cycles": 2
+++  },
+++  "performance": {
+++    "release": "V2.4.8",
+++    "search_semantics": "PERSISTENT_PATH_EPOCH_ADAPTIVE_EXPLICIT_NOT_BITWISE_IDENTICAL",
+++    "telemetry": {
+++      "enabled": true,
+++      "schema": "R1_15A2_V246_PERFORMANCE_TELEMETRY_V1"
+++    },
+++    "bulk_link_read": {
+++      "enabled": true,
+++      "fallback_to_scalar": true,
+++      "verify_object_no": true
+++    },
+++    "lazy_supply_sequence_evidence": {
+++      "enabled": true,
+++      "policy": "BUILD_INCIDENCE_FOR_TG_DEFER_BRANCH_PAIRS_UNTIL_SUPPLY"
+++    },
+++    "first_sufficient": {
+++      "enabled": true,
+++      "generation_min_relative_improvement": 0.001,
+++      "supply_min_relative_improvement": 0.001,
+++      "gate": "EXISTING_ACCEPTANCE_MUST_PASS_BEFORE_EARLY_STOP"
+++    },
+++    "native_call_accounting": "INCLUDES_ASSIGNMENT_TD_TG_ROLLBACK_DIAGNOSTICS_SAVEVERSION_PATH_EXPORT",
+++    "generation_step_schedule": [
+++      {
+++        "name": "EXPLORE",
+++        "through_outer_cycle": 2,
+++        "max_od_relative_up": 0.12,
+++        "max_add_log_up": 0.08,
+++        "salary_max_abs_delta_per_block": 0.08
+++      },
+++      {
+++        "name": "FULL_VERIFY",
+++        "through_outer_cycle": 12,
+++        "max_od_relative_up": 0.08,
+++        "max_add_log_up": 0.04,
+++        "salary_max_abs_delta_per_block": 0.04
+++      }
+++    ],
+++    "path_epochs": {
+++      "enabled": true,
+++      "policy": "INITIAL_ENUMERATION_REUSED_UNTIL_LOCAL_PLATEAU_THEN_FRESH_REENUMERATION",
+++      "live_od_reweighting": true,
+++      "live_profile_rebind": true,
+++      "new_positive_od_policy": "MANDATORY_REENUMERATION_NO_INVENTED_PATH_SHARE",
+++      "stationarity_requires_fresh_identical_basis": true,
+++      "max_demand_reenumerations": 4,
+++      "max_supply_reenumerations": 8,
+++      "basis_hash": "GEOMETRY_PARENT_KEYS_AND_SAVED_PATH_VOLUMES",
+++      "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+++      "initial_enumeration_required": true,
+++      "refresh_trigger": "COMPLETE_LOCAL_PLATEAU_ON_CURRENT_PATH_BASIS",
+++      "fresh_assignment_acceptance_authority": true,
+++      "new_positive_od_without_epoch_support_forces_reenumeration": true,
+++      "comparison_basis": "GEOMETRY_PARENT_KEYS_AND_PATH_VOLUMES_ROUNDED_6_DECIMALS",
+++      "cleanup_obsolete_sqlite_after_verified_refresh": true,
+++      "retain_sqlite_stores": 1,
+++      "initial_epoch_source": "AUTHORIZED_PERSISTENT_CACHE_OR_FRESH_ENUMERATION",
+++      "cross_run_reuse": "EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY",
+++      "persistent_epoch_checkpoint_after_every_successful_enumeration": true,
+++      "legacy_import_policy": "EXACT_ORIGIN_STATE_PLUS_ALL_PROFILE_FLOW_PARITY",
+++      "persistent_cache_read_only_during_calibration": true,
+++      "intrazonal_positive_od_policy": "NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_SUPPORT_GAP",
+++      "obsolete_store_windows_lock_policy": "DEFER_CLEANUP_AFTER_VERIFIED_REFRESH_NOT_FATAL"
+++    },
+++    "persistent_path_cache": {
+++      "enabled": true,
+++      "publication_required": true,
+++      "root_policy": "LOCALAPPDATA_UNSYNCED_WITH_PROJECT_FALLBACK",
+++      "verify_sha256_on_restore": true,
+++      "sqlite_quick_check_on_restore": true,
+++      "sqlite_full_integrity_check_on_publish": true,
+++      "accepted_state_binding_required_for_descendant_reuse": true,
+++      "allow_legacy_v247_import": true,
+++      "legacy_import_requires_exact_origin_state": true,
+++      "legacy_import_requires_all_profile_flow_parity": true,
+++      "retain_epoch_checkpoints": 3,
+++      "persistent_store_mode": "IMMUTABLE_READ_ONLY_AFTER_PUBLICATION",
+++      "latest_pointer_publish_order": "STORE_THEN_MANIFEST_THEN_BINDING_THEN_INDEX",
+++      "max_total_cache_gib": 24.0
+++    }
+++  },
+++  "path_epoch_method": {
+++    "initial_export": "FIRST_GENERATION_DESIGN_AFTER_BASELINE",
+++    "reuse_scope": "GENERATION_AND_SUPPLY_PROPOSAL_ONLY",
+++    "demand_reweighting": "CURRENT_OD_TOTALS_ON_FROZEN_PATH_SHARES",
+++    "supply_rebinding": "CURRENT_LIVE_PROFILE_RESIDUALS_ON_FROZEN_ROUTE_GEOMETRY",
+++    "refresh_trigger": "COMPLETE_NO_ACCEPTED_IMPROVEMENT_CYCLE",
+++    "final_stationarity": "FRESH_REENUMERATION_RETURNS_IDENTICAL_PATH_BASIS",
+++    "network_acceptance": "EVERY_CANDIDATE_REQUIRES_FRESH_VISUM_ASSIGNMENT_AND_LIVE_DIAGNOSTICS",
+++    "cross_run_startup": "RESTORE_HASHED_PATH_EPOCH_IF_ORIGIN_OR_ACCEPTED_STATE_BINDING_MATCHES",
+++    "checkpoint_after_enumeration": "IMMUTABLE_SQLITE_PLUS_MANIFEST_PLUS_SHA256",
+++    "accepted_state_lineage": "STATE_HASH_TO_PATH_CACHE_BINDING",
+++    "legacy_v247_reuse": "EXACT_STATE_AND_ALL_PROFILE_FLOW_PARITY_ONLY"
+++  }
+++}
++diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py
++--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py	1970-01-01 00:00:00.000000000 +0000
+++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py	2026-10-16 15:16:19.882232765 +0000
++@@ -0,0 +1,299 @@
+++# -*- coding: utf-8 -*-
+++"""R1 15A2 V2.4.8.1 live-run hotfix: persistent path-epoch calibration.
+++
+++Extends V2.4.7 with immutable cross-run path-epoch checkpoints and accepted-state bindings.
+++Adaptive search can follow a different accepted path than V2.4.5, while every
+++candidate still requires the unchanged live assignment and acceptance gates.
+++
+++Run manually from Visum Scripts > Execute script file, never from Procedure Sequence.
+++The source .ver is preserved. The script first saves an isolated working copy,
+++then performs real candidate writes, real Visum recomputations, live acceptance,
+++and no-LoadVersion in-place rollback for rejected candidates.
+++"""
+++from __future__ import annotations
+++
+++from datetime import datetime
+++from pathlib import Path
+++import contextlib
+++import csv
+++import json
+++import os
+++import sys
+++import traceback
+++
+++HERE = Path(__file__).resolve().parent
+++if globals().get("Visum") is not None or globals().get("COM") is not None:
+++    if getattr(sys, "_r1_15a2_calibration_busy", False):
+++        raise RuntimeError("ANOTHER_15A2_RUN_IS_ACTIVE")
+++    for name in list(sys.modules):
+++        if name.startswith("r1_15a2_"):
+++            del sys.modules[name]
+++_ORIGINAL_SYS_PATH = list(sys.path)
+++# A previous Visum run may have left another release ahead of this directory.
+++# Give this complete release first priority even when HERE is already present.
+++sys.path[:] = [str(HERE)] + [p for p in sys.path if p != str(HERE)]
+++
+++import r1_15a2_com_compat as com
+++import r1_15a2_live_api_audit as api_audit
+++import r1_15a2_runtime_v1 as rt
+++import r1_15a2_supply_visum as supply_runtime
+++import r1_15a2_visum_parameters as vp
+++from r1_15a2_supply import canonical_hash
+++from r1_15a2_safety_v248 import validate_v248_config, final_artifact_name
+++from r1_15a2_trial_adapter_v243 import VisumAdapter
+++from r1_15a2_overnight_controller_v240 import OvernightControl, atomic_json
+++from r1_15a2_overnight_controller_v242 import run_overnight_calibration_coupled
+++
+++RELEASE = "R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016"
+++
+++
+++def load_config():
+++    path = HERE / "R1_15A2_CONFIG_V2_4_8_1.json"
+++    cfg = rt.read_json(path)
+++    # Hard locks: working-copy calibration is not production release/apply.
+++    cfg["apply"] = False
+++    cfg["production_apply"] = False
+++    cfg["trial_calibration"]["enabled"] = True
+++    cfg["config_path"] = str(path)
+++    cfg["config_sha256"] = rt.sha256_file(path)
+++    implementation = [
+++        "R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py",
+++        "r1_15a2_trial_adapter_v243.py", "r1_15a2_trial_adapter_v240.py", "r1_15a2_overnight_controller_v240.py",
+++        "r1_15a2_overnight_controller_v242.py", "r1_15a2_finecdf_bridge_v242.py",
+++        "reference_v18/R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_v1_8.py",
+++        "r1_15a2_inplace_transaction_v239.py", "r1_15a2_assignment_authority_v239.py",
+++        "r1_15a2_two_mode_v238.py", "r1_15a2_com_compat.py", "r1_15a2_live_api_audit.py",
+++        "r1_15a2_controller_v22.py", "r1_15a2_sequence_v23.py", "r1_15a2_supply.py",
+++        "r1_15a2_supply_visum.py", "r1_15a2_runtime_v1.py", "r1_15a2_core.py",
+++        "r1_15a2_multiblock.py", "r1_15a2_visum_parameters.py", "r1_15a2_safety_v246.py", "r1_15a2_safety_v247.py", "r1_15a2_safety_v248.py", "r1_15a2_persistent_path_cache_v248.py", "r1_15a2_perf_v246.py",
+++        "R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1.py",
+++    ]
+++    # Include every local runtime module and diagnostic helper, not just the
+++    # manually enumerated immediate imports. Old aliases cannot pass as V245.
+++    implementation = sorted(set(implementation) |
+++                            {str(p.relative_to(HERE)) for p in HERE.glob("r1_15a2_*.py")} |
+++                            {str(p.relative_to(HERE)) for p in (HERE / "helpers").glob("*.py")})
+++    cfg["implementation_files"] = {name: rt.sha256_file(HERE / name) for name in implementation}
+++    cfg["implementation_hash"] = canonical_hash(cfg["implementation_files"])
+++    cfg["cp03_live_hotfixes"] = ["SHORT_RUN_ROOT", "SHORT_OS_TEMP_11D_12D_HELPER_WORKSPACES", "ROLLBACK_STATE_EVIDENCE_BEFORE_DIAGNOSTICS"]
+++    cfg["cp02_performance_features"] = [
+++        "PER_OPERATION_TELEMETRY", "BULK_LINK_COM_READ_WITH_VERIFIED_FALLBACK",
+++        "ADAPTIVE_BOUNDED_PATH_PAGING", "LAZY_SUPPLY_SEQUENCE_EVIDENCE",
+++        "FIRST_SUFFICIENT_LIVE_CANDIDATE", "ADAPTIVE_GENERATION_STEP_SCHEDULE",
+++        "PROGRESSIVE_FINECDF_V18", "ADAPTIVE_FINECDF_TRUST_REGION",
+++        "ADDVAL1_STEP_UNITS_4_2_1",
+++    ]
+++    cfg["v248_persistent_path_cache_features"] = [
+++        "INITIAL_PATH_ENUMERATION_ONCE",
+++        "FROZEN_PATH_BASIS_REUSED_ACROSS_ACCEPTED_STATES",
+++        "LIVE_OD_TOTAL_REWEIGHT_ON_FROZEN_PATH_SHARES",
+++        "LIVE_PROFILE_RESIDUAL_REBIND_WITHOUT_COM_REENUMERATION",
+++        "REENUMERATE_ONLY_AFTER_COMPLETE_LOCAL_PLATEAU",
+++        "FRESH_IDENTICAL_PATH_BASIS_REQUIRED_FOR_STATIONARITY",
+++        "NEW_POSITIVE_OD_FORCES_REENUMERATION_NO_INVENTED_SHARE",
+++        "IMMUTABLE_SQLITE_CHECKPOINT_AFTER_EVERY_SUCCESSFUL_ENUMERATION",
+++        "SHA256_AND_SQLITE_INTEGRITY_VERIFIED_CROSS_RUN_RESTORE",
+++        "EXPLICIT_ACCEPTED_STATE_TO_PATH_EPOCH_BINDINGS",
+++        "LEGACY_V247_EXACT_STATE_IMPORT_WITH_ALL_PROFILE_FLOW_PARITY",
+++        "READ_ONLY_PERSISTENT_STORE_DURING_CALIBRATION",
+++        "INTRAZONAL_POSITIVE_OD_NEVER_REQUIRES_NETWORK_PATH_SUPPORT",
+++        "WINDOWS_OBSOLETE_SQLITE_DELETE_LOCK_IS_NONFATAL_AFTER_VERIFIED_REFRESH",
+++    ]
+++    for module in (com, api_audit, rt, vp, supply_runtime):
+++        if Path(module.__file__).resolve().parent != HERE.resolve():
+++            raise RuntimeError("V248_MIXED_RELEASE_MODULE:" + module.__name__)
+++    for rel, target in ((cfg["tg_dependency_contract_file"], "tg_dependency_contract"),
+++                        (cfg["td"]["long_authority_file"], "long_authority")):
+++        p = HERE / rel
+++        cfg[target] = rt.read_json(p)
+++        cfg[target + "_path"] = str(p)
+++        cfg[target + "_sha256"] = rt.sha256_file(p)
+++    cfg["api_approved_observations"] = []
+++    for fn in ("R1_CSD2022_COUNTLOCATION_AUTHORITY_408.csv", "R1_CITY_RPDI_COUNTLOCATION_AUTHORITY_90.csv"):
+++        with (HERE / "authorities" / fn).open(encoding="utf-8-sig", newline="") as h:
+++            for r in csv.DictReader(h):
+++                cfg["api_approved_observations"].append({
+++                    "no": int(r["countlocation_no"]),
+++                    "observed": float(r["observed_passenger_cars_O"]),
+++                    "role": r["role"], "weight": float(r["live_weight"]),
+++                    "edge_key": [int(r[k]) for k in ("current_link_no", "current_from_node_no", "current_to_node_no")],
+++                    "direction": r.get("observation_direction", "DIRECTIONAL"),
+++                    "countlocation_code": r["countlocation_code"], "profile_id": r["profile_id"],
+++                    "period_basis": r["period_basis"],
+++                    "observed_scope": r.get("vehicle_scope_original", r.get("vehicle_scope")),
+++                })
+++    validate_v248_config(cfg, HERE)
+++    return cfg
+++
+++
+++def _main_impl():
+++    visum, _ = com.bind_injected(globals())
+++    source_ver = Path(str(visum.IO.CurrentVersionFile))
+++    if not source_ver.is_file():
+++        raise RuntimeError("CURRENT_VERSION_FILE_NOT_FOUND")
+++    source_sha_before = rt.sha256_file(source_ver)
+++    # Resolve output location before SaveVersion changes CurrentVersionFile.
+++    root, _ = api_audit.project_output_root(visum)
+++    runs = root.parent / "R1_15A2_V2481_RUNS"
+++    runs.mkdir(parents=True, exist_ok=True)
+++    folder = runs / ("RUN_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
+++    folder.mkdir()
+++    (runs / "LATEST_RUN.txt").write_text(str(folder), encoding="utf-8")
+++    (folder / "00_RELEASE.txt").write_text(RELEASE + "\n", encoding="utf-8")
+++    lock = source_ver.parent / ".R1_15A2_FULL_CALIBRATION.lock"
+++    have_lock = False
+++    adapter = None
+++    control = None
+++    prior_runtime_visum = getattr(rt, "Visum", None)
+++    prior_base_visum = getattr(supply_runtime.base, "Visum", None)
+++    result = {"status": "STARTING", "release": RELEASE, "production_apply": False, "trial_writes": True}
+++    with (folder / "CONSOLE_CAPTURE.log").open("w", encoding="utf-8") as console:
+++        with contextlib.redirect_stdout(console), contextlib.redirect_stderr(console):
+++            try:
+++                fd = os.open(str(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+++                have_lock = True
+++                with os.fdopen(fd, "w", encoding="utf-8") as h:
+++                    json.dump({"pid": os.getpid(), "run": str(folder)}, h)
+++                have_lock = True
+++                sys._r1_15a2_calibration_busy = True
+++                cfg = load_config()
+++                local_appdata = os.environ.get("LOCALAPPDATA")
+++                cache_root = (Path(local_appdata) / "R1_15A2_PATH_CACHE_V248"
+++                              if local_appdata else
+++                              root.parent / "R1_15A2_PATH_CACHE_V248")
+++                legacy_roots = [
+++                    root.parent / "R1_15A2_V247_RUNS",
+++                    root.parent / "R1_15A2_V246_RUNS",
+++                    root.parent / "R1_15A2_V245_RUNS",
+++                    root.parent / "R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS",
+++                    source_ver.parent / "R1_15A2_V2_4_5_FULL_CALIBRATION_REPAIR_RUNS",
+++                ]
+++                cfg["runtime_persistent_path_cache_root"] = str(cache_root)
+++                cfg["runtime_legacy_path_cache_roots"] = [str(x) for x in legacy_roots]
+++                cfg["runtime_source_version_sha256"] = source_sha_before
+++                cfg["runtime_source_version_path"] = str(source_ver)
+++                atomic_json(folder / "PERSISTENT_PATH_CACHE_LOCATION.json", {
+++                    "root": str(cache_root),
+++                    "root_policy": cfg["performance"]["persistent_path_cache"]["root_policy"],
+++                    "legacy_roots": [str(x) for x in legacy_roots],
+++                    "source_version": str(source_ver),
+++                    "source_sha256": source_sha_before,
+++                })
+++                methodology = {
+++                    "production_release": False,
+++                    "working_copy_trial_calibration": True,
+++                    "csd408_mapping_review_acknowledged": bool(cfg.get("csd408_mapping_review_acknowledged", False)),
+++                    "city90_bidirectional_qa_acknowledged": bool(cfg.get("city90_bidirectional_qa_acknowledged", False)),
+++                    "two_mode_full_geometry_identity_proven": False,
+++                    "two_mode_geometry_role": "CANDIDATE_PROPOSAL_ONLY",
+++                    "candidate_acceptance_role": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
+++                    "duplicate_policy": cfg.get("supply", {}).get("sequence", {}).get("design_only_duplicate_scope_policy"),
+++                    "observation_contract": "498_INDEPENDENT_ROWS_PRESERVED_CAL_VALID_ROLES_UNCHANGED",
+++                    "calibration_order": ["COUPLED_DEMAND:GENERATION_THEN_FINECDF_TD_REPEAT", "SUPPLY_ROUTE_CHOICE"],
+++                    "supply_addval1_role": "FINAL_ROUTE_CHOICE_LINK_TUNING_AFTER_COUPLED_DEMAND_FIXED_POINT_ONLY",
+++                    "trip_generation_and_distribution_relationship": "ONE_COUPLED_DEMAND_PHASE_NOT_INDEPENDENT_PHASES",
+++                    "td_authority": "HASH_LOCKED_R1_BC_AUTO_DIST_ONLY_FINECDF_ADAPTIVE_V1_8_512_POINT_IDP",
+++                    "native_multi_guard_policy": "DIAGNOSTIC_ONLY_NATIVE_OUTPUT_AUTHORITY",
+++                    "performance_search_semantics": "PERSISTENT_PATH_EPOCH_ADAPTIVE_EXPLICIT_NOT_BITWISE_IDENTICAL",
+++                    "path_enumeration_policy": "AUTHORIZED_PERSISTENT_CACHE_OR_FRESH_ENUMERATION_THEN_ONLY_AT_LOCAL_PLATEAU",
+++                    "path_epoch_acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_DIAGNOSTICS",
+++                    "persistent_path_cache_policy": "HASHED_SQLITE_PLUS_ACCEPTED_STATE_BINDINGS_FAIL_CLOSED",
+++                    "cp03_live_path_hotfix_retained": True,
+++                }
+++                atomic_json(folder / "METHODOLOGY_STATUS.json", methodology)
+++                result["methodology_status"] = methodology
+++                atomic_json(folder / "SOURCE_VERSION_AUTHORITY.json", {
+++                    "source_version": str(source_ver), "source_sha256_before": source_sha_before,
+++                    "policy": "SOURCE_FILE_MUST_REMAIN_UNTOUCHED_WORK_ONLY_ON_SAVED_COPY",
+++                })
+++                # Isolate all subsequent writes from the user's source .ver.
+++                working = folder / "WORKING_START.ver"
+++                working_cp = rt.save_version(visum, working)
+++                atomic_json(folder / "WORKING_COPY.json", working_cp)
+++                control = OvernightControl(folder, cfg)
+++                rt.Visum = visum
+++
+++                # Full API audit remains read-only and catches COM/schema drift before writes.
+++                def td_check():
+++                    state = vp.read_td_parameter_state(visum)
+++                    return {"passes": all(r["status"] == "OK" for r in state["rows"]),
+++                            "rows": state["rows"], "operation_rows": state["operation_rows"]}
+++                control.checkpoint("LIVE_API_PREFLIGHT", force=True)
+++                report = api_audit.collect_live_api(visum, cfg, folder / "API_PREFLIGHT", extra_checks=(
+++                    ("TG_FORMULA_PARAMETER_BINDINGS", lambda: vp.audit_trip_generation_contract(visum, cfg)),
+++                    ("TD_COMPONENT_PARAMETER_BINDINGS", td_check),
+++                    ("PROCSEQ_TYPE_ORDER", lambda: rt.audit_procseq(visum, folder / "API_PREFLIGHT", cfg)),
+++                ))
+++                if report["required_failures"]:
+++                    result = {"status": "LIVE_API_PREFLIGHT_FAILED", "required_failures": report["required_failures"]}
+++                else:
+++                    adapter = VisumAdapter(visum, cfg, control)
+++                    result = run_overnight_calibration_coupled(adapter, cfg, folder / "CALIBRATION", control, HERE)
+++
+++                # Save a final deliverable only when the controller exposes a verified live state.
+++                final_name = final_artifact_name(result)
+++                if adapter is not None and final_name is not None:
+++                    try:
+++                        live = adapter.snapshot()
+++                        if live["state_hash"] != result["final_state_hash"]:
+++                            raise RuntimeError("FINAL_LIVE_STATE_DIFFERS_FROM_CONTROLLER_ACCEPTED_STATE")
+++                        if rt.sha256_file(source_ver) != source_sha_before:
+++                            raise RuntimeError("SOURCE_FILE_CHANGED_BEFORE_FINAL_SAVE")
+++                        final_cp = rt.save_version(visum, folder / final_name)
+++                        if adapter.snapshot() != live:
+++                            raise RuntimeError("SAVEVERSION_CHANGED_VERIFIED_MODEL_STATE")
+++                        result["final_accepted_version"] = final_cp
+++                    except Exception as exc:
+++                        result["final_save_error"] = str(exc)
+++                        result["status"] = "FINAL_SAVE_FAILED_USE_LATEST_ACCEPTED_CHECKPOINT"
+++                elif adapter is not None:
+++                    result["final_accepted_version_not_written"] = "NO_VERIFIED_FINAL_STATE_OR_FAILED_RUN"
+++            except BaseException as exc:
+++                result = {"status": "FULL_OVERNIGHT_FAILED", "error": str(exc), "traceback": traceback.format_exc(),
+++                          "production_apply": False, "trial_writes": True}
+++            finally:
+++                try:
+++                    source_sha_after = rt.sha256_file(source_ver)
+++                    result["source_version"] = str(source_ver)
+++                    result["source_sha256_before"] = source_sha_before
+++                    result["source_sha256_after"] = source_sha_after
+++                    result["source_file_unchanged"] = source_sha_after == source_sha_before
+++                    if not result["source_file_unchanged"]:
+++                        result["status"] = "SOURCE_VERSION_FILE_CHANGED_UNEXPECTEDLY"
+++                except Exception as exc:
+++                    result["source_integrity_error"] = str(exc)
+++                    result["status"] = "FAILED_SOURCE_INTEGRITY_UNVERIFIED"
+++                result.update(release=RELEASE, production_apply=False, trial_writes=True,
+++                              load_version_called=False, run_directory=str(folder))
+++                if adapter is not None:
+++                    try:
+++                        adapter.close()
+++                    except Exception as exc:
+++                        result["adapter_close_error"] = str(exc)
+++                try:
+++                    atomic_json(folder / "00_RESULT.json", result)
+++                    (folder / "00_FINAL_STATUS.txt").write_text(str(result.get("status")) + "\n", encoding="utf-8")
+++                    if control is not None:
+++                        control.finish(result.get("status", "FINISHED"), accepted_count=result.get("accepted_count"))
+++                finally:
+++                    rt.Visum = prior_runtime_visum
+++                    supply_runtime.base.Visum = prior_base_visum
+++                    if have_lock:
+++                        sys._r1_15a2_calibration_busy = False
+++                        try:
+++                            lock.unlink()
+++                        except OSError:
+++                            pass
+++                    sys.path[:] = _ORIGINAL_SYS_PATH
+++    return result
+++
+++
+++def main():
+++    try:
+++        return _main_impl()
+++    finally:
+++        sys.path[:] = _ORIGINAL_SYS_PATH
+++
+++
+++if __name__ == "__main__" or globals().get("Visum") is not None or globals().get("COM") is not None:
+++    main()
++diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md
++--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md	1970-01-01 00:00:00.000000000 +0000
+++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/README_R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_CZ.md	2026-10-16 15:17:35.651525390 +0000
++@@ -0,0 +1,43 @@
+++# R1 15A2 V2.4.8.1 LIVE RUN HOTFIX
+++
+++Tato patch verze navazuje na V2.4.8 persistent path cache a opravuje dva problémy odhalené prvním skutečným V2.4.7 během dne 2026-10-16.
+++
+++## Opravené problémy
+++
+++1. Kladná intrazonální OD relace (v živém běhu `NATIVE_CW:7:7`) už není považována za chybějící síťovou cestu. Diagonální OD nemá network-link geometrii a je z path-support gate i path incidence vyloučena. Kladná chybějící OFF-DIAGONÁLNÍ relace nadále vynutí novou enumeraci.
+++2. Windows `PermissionError / WinError 32` při odstraňování již nahrazeného lokálního SQLite store po úspěšné nové enumeraci už není fatální kalibrační chyba. Cleanup se označí jako odložený. Modelové acceptance gate se tím nemění.
+++
+++## Reuse V2.4.7 cache
+++
+++V2.4.8.1 zachovává persistentní cache manager V2.4.8. Při startu prohledá také `R1_15A2_V247_RUNS`. Dokončený V2.4.7 `TWO_MODE_PATH_STORE.sqlite` smí být importován pouze pokud:
+++
+++- metadata mají přesně stejný origin state hash,
+++- store je strukturálně kompletní a incidence-ready,
+++- SQLite quick check a FK kontrola projdou,
+++- všech 498 profilů projde live path-flow parity gate,
+++- importer vytvoří novou immutable kopii ve V2.4.8 persistent cache.
+++
+++Legacy store se nikdy nepřepisuje.
+++
+++## Doporučené spuštění po tomto konkrétním V2.4.7 běhu
+++
+++Nejbezpečnější je otevřít poslední accepted checkpoint z neúspěšného runu:
+++
+++`R1_15A2_V247_RUNS/RUN_20261016_162053_068586/CALIBRATION/CHECKPOINTS/ACCEPTED_B_0000_61129884aaf7.ver`
+++
+++Potom spustit:
+++
+++`R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py`
+++
+++přes `Scripts -> Execute script file`.
+++
+++Pokud exact-state a parity gate projdou, očekáváme `matched_by = LEGACY_EXACT_STATE_IMPORT` a nulovou novou počáteční COM enumeraci. Pokud neprojdou, skript fail-closed provede normální novou enumeraci.
+++
+++## Ověření
+++
+++- focused regression: 30/30 PASS
+++- complete suite: 584/584 PASS
+++- compileall: PASS
+++- actual Windows/Visum COM rerun: ještě neproveden
+++
+++Viz `V247_REAL_RUN_POSTMORTEM.json` a `V247_REAL_RUN_POSTMORTEM.md`.
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V247_REAL_RUN_POSTMORTEM.json /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/V247_REAL_RUN_POSTMORTEM.json
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V247_REAL_RUN_POSTMORTEM.json	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/V247_REAL_RUN_POSTMORTEM.json	2026-10-16 15:16:42.049728244 +0000
+@@ -0,0 +1,67 @@
++{
++  "schema": "R1_15A2_V247_REAL_RUN_POSTMORTEM_V1",
++  "release": "R1_15A2_V2_4_7_PATH_EPOCH_CALIBRATION_20261016",
++  "run_status": "FAILED",
++  "elapsed_seconds": 1951.235,
++  "accepted_count": 0,
++  "completed_demand_cycles": 0,
++  "supply_started": false,
++  "live_matches_last_accepted": true,
++  "source_file_unchanged": true,
++  "primary_trigger": "PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:NATIVE_CW:7:7",
++  "primary_trigger_interpretation": "Positive intrazonal OD 7->7 has no network path geometry and must not require path support.",
++  "terminal_error": "PATH_EPOCH_OBSOLETE_STORE_DELETE_FAILED:[WinError 32] Proces nemá přístup k souboru, neboť jej právě využívá jiný proces: 'C:\\\\Users\\\\vilem_knap\\\\Documents\\\\VISUM\\\\v45\\\\2022\\\\R1_15A2_V247_RUNS\\\\RUN_20261016_162053_068586\\\\CALIBRATION\\\\DEMAND_CYCLE_01_GENERATION\\\\DESIGN\\\\GENERATION_CACHE\\\\TWO_MODE_PATH_STORE.sqlite'",
++  "terminal_error_interpretation": "Windows file lock while retiring superseded local SQLite; cleanup must not be a calibration correctness gate after a verified refresh.",
++  "path_export": {
++    "export_complete": true,
++    "incidence_ready": true,
++    "all_selected_dsegs_complete": true,
++    "dseg_path_volume_parity_passes": true,
++    "dseg_count": 12,
++    "path_rows": 5203020,
++    "pathlink_rows": 53470275,
++    "geometry_route_count": 863565,
++    "full_geometry_read_count": 2,
++    "path_structure_hash": "2373d3eb3353ba2f29748a5739f2e5fe90c80f1da743173400fe9d6106baada8",
++    "path_basis_hash": "9fe5bda96c078fb36866677be11627c4d0930b3b826a85683643132ece50a1a1",
++    "parent_hash": "514904de1856614eee2b1800f3a2d36edf9dd554200d1bde1dc5f27d7ce1893d"
++  },
++  "path_epoch": {
++    "schema": "R1_15A2_PATH_EPOCH_V247",
++    "epoch": 1,
++    "origin_state_hash": "514904de1856614eee2b1800f3a2d36edf9dd554200d1bde1dc5f27d7ce1893d",
++    "basis_hash": "9fe5bda96c078fb36866677be11627c4d0930b3b826a85683643132ece50a1a1",
++    "comparison_basis_hash": "28a237ed075ecba19a1dd9033145ef26dc5e943bab1ff57f79fad962dfe72b1a",
++    "structure_hash": "2373d3eb3353ba2f29748a5739f2e5fe90c80f1da743173400fe9d6106baada8",
++    "sequence_evidence_ready": false,
++    "policy": "FREEZE_ENUMERATED_PATH_BASIS_UNTIL_LOCAL_PLATEAU",
++    "obsolete_store_retention": {
++      "retired": false,
++      "reason": "NO_PREVIOUS_STORE"
++    }
++  },
++  "latest_accepted_checkpoint": {
++    "accepted_count": 0,
++    "slot": "B",
++    "checkpoint": {
++      "path": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V247_RUNS\\RUN_20261016_162053_068586\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0000_61129884aaf7.ver",
++      "sha256": "4723d05c9bf38d4c4deea6f580161af29a2829c0499797b68053bc5afce8765c",
++      "size": 580858352
++    }
++  },
++  "v2481_required_fixes": [
++    "EXCLUDE_INTRAZONAL_POSITIVE_OD_FROM_NETWORK_PATH_SUPPORT_GAP",
++    "KEEP_OFFDIAGONAL_POSITIVE_OD_SUPPORT_GAP_FAIL_CLOSED",
++    "DEFER_WINDOWS_LOCKED_OBSOLETE_SQLITE_CLEANUP_AFTER_VERIFIED_REFRESH",
++    "REUSE_COMPLETE_V247_PATH_STORE_VIA_V248_PERSISTENT_LEGACY_IMPORT_WHEN_EXACT_STATE_AND_PROFILE_FLOW_PARITY_PASS"
++  ],
++  "source_evidence_sha256": {
++    "result": "67b3b87ffdefa49a0474bb34665e5466a3cef3224dc70c7542eb7ff137f01226",
++    "run_status": "55a441886d0c7e73193da5c61cfa8cf6f9f673e7f9d66479dcbf0032e50334ab",
++    "progress": "16cec607a80d789a4e705c9a7f932fc3dba25d3d6076028ebc326044c00d7579",
++    "path_epoch": "5741836d2391331bab31a15ec95ea3c9af708c604d9511d8c9e849dbd1573929",
++    "cache_audit": "9035352e2adc847f10eb95af4ad6dffe1cc0a98c97fe319c6086f01820b65943",
++    "export_summary": "9035352e2adc847f10eb95af4ad6dffe1cc0a98c97fe319c6086f01820b65943",
++    "latest_checkpoint": "ba9dd15da0fd7e7924c7a501e4dcda4ce6ba954b7f35bbae97caf3aa0b516b7e"
++  }
++}
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V247_REAL_RUN_POSTMORTEM.md /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/V247_REAL_RUN_POSTMORTEM.md
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/V247_REAL_RUN_POSTMORTEM.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/V247_REAL_RUN_POSTMORTEM.md	2026-10-16 15:16:42.049849717 +0000
+@@ -0,0 +1,11 @@
++# V2.4.7 real-run postmortem
++
++Status: **FAILED** after 1951.235 s (32.52 min).
++
++The expensive path export itself completed: 12/12 DSegs, 5,203,020 path rows, 53,470,275 path-link rows, and DSeg path-volume parity PASS.
++
++The first model-side blocker was `PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:NATIVE_CW:7:7`. OD 7->7 is intrazonal, so it has no network path geometry and must not force re-enumeration. The subsequent forced refresh then reached cleanup of the previous SQLite and failed on Windows with a file lock.
++
++No calibration candidate was accepted (`accepted_count=0`). The live model still matched the last accepted state and the source version remained unchanged.
++
++V2.4.8.1 fixes both runtime defects and retains the V2.4.8 exact-state legacy-import path so this completed V2.4.7 cache can be reused if its exact-state and all-profile parity checks pass.
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/VERIFY_PACKAGE_V2_4_8_1.py /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/VERIFY_PACKAGE_V2_4_8_1.py
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/VERIFY_PACKAGE_V2_4_8_1.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/VERIFY_PACKAGE_V2_4_8_1.py	2026-10-16 15:16:19.882357754 +0000
+@@ -0,0 +1,103 @@
++# -*- coding: utf-8 -*-
++"""Independent verifier for R1 15A2 V2.4.8.1 live-run hotfix delivery."""
++from __future__ import annotations
++import argparse, compileall, hashlib, importlib.util, json, os, subprocess, sys, time
++from pathlib import Path
++
++RELEASE="R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016"
++
++
++def sha256(path):
++    h=hashlib.sha256()
++    with Path(path).open('rb') as f:
++        for chunk in iter(lambda:f.read(1024*1024),b''): h.update(chunk)
++    return h.hexdigest()
++
++
++def atomic_json(path,value):
++    path=Path(path); tmp=path.with_name(path.name+'.tmp')
++    tmp.write_text(json.dumps(value,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8')
++    os.replace(tmp,path)
++
++
++def verify(root,run_tests=False):
++    root=Path(root).resolve(); started=time.monotonic(); errors=[]
++    manifest_path=root/'MANIFEST_V2481.json'
++    if not manifest_path.is_file():
++        return {'status':'FAILED','errors':['MANIFEST_V2481.json missing']}
++    manifest=json.loads(manifest_path.read_text(encoding='utf-8'))
++    if manifest.get('release')!=RELEASE:
++        errors.append('MANIFEST_RELEASE_IDENTITY')
++    for row in manifest.get('files',[]):
++        path=root/row['path']
++        if not path.is_file(): errors.append('MISSING:'+row['path']); continue
++        if path.stat().st_size!=int(row['bytes']): errors.append('SIZE:'+row['path']); continue
++        if sha256(path)!=row['sha256']: errors.append('SHA256:'+row['path'])
++    config_result=launcher_result=benchmark=None
++    try:
++        sys.path.insert(0,str(root))
++        from r1_15a2_safety_v248 import validate_v248_config
++        raw=json.loads((root/'R1_15A2_CONFIG_V2_4_8_1.json').read_text(encoding='utf-8'))
++        # Static config validation needs implementation hashes; the launcher adds
++        # the authoritative current hashes, so use its loaded config for the hard gate.
++        spec=importlib.util.spec_from_file_location(
++            'verify_v248_launcher',root/'R1_15A2_FULL_OVERNIGHT_PERSISTENT_PATH_CACHE_V2_4_8_1.py')
++        module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++        loaded=module.load_config()
++        config_result=validate_v248_config(loaded,root)
++        perf=loaded.get('performance',{})
++        persistent=perf.get('persistent_path_cache',{})
++        epochs=perf.get('path_epochs',{})
++        if loaded.get('release')!=module.RELEASE: errors.append('LAUNCHER_RELEASE_MISMATCH')
++        if persistent.get('enabled') is not True: errors.append('PERSISTENT_CACHE_DISABLED')
++        if epochs.get('cross_run_reuse')!='EXACT_ORIGIN_STATE_OR_EXPLICIT_ACCEPTED_STATE_BINDING_ONLY':
++            errors.append('CROSS_RUN_POLICY_CHANGED')
++        launcher_result={'release':loaded.get('release'),
++                         'implementation_hash':loaded.get('implementation_hash'),
++                         'implementation_file_count':len(loaded.get('implementation_files',{})),
++                         'persistent_cache_policy':persistent,
++                         'path_epoch_policy':epochs.get('policy')}
++    except Exception as exc:
++        errors.append('CONFIG_OR_LAUNCHER:%s:%s'%(type(exc).__name__,exc))
++    try:
++        benchmark=json.loads((root/'V248_PERSISTENT_CACHE_SYNTHETIC_BENCHMARK.json').read_text(encoding='utf-8'))
++        if benchmark.get('status')!='PASS' or benchmark.get('enumeration_calls_total')!=1 or benchmark.get('restart_enumeration_calls')!=0:
++            errors.append('PERSISTENT_CACHE_BENCHMARK_FAILED')
++    except Exception as exc:
++        errors.append('BENCHMARK:%s:%s'%(type(exc).__name__,exc))
++    pycache=Path(os.environ.get('PYTHONPYCACHEPREFIX',root/'.verify_pycache'))
++    old_env=os.environ.get('PYTHONPYCACHEPREFIX')
++    old_prefix=sys.pycache_prefix
++    os.environ['PYTHONPYCACHEPREFIX']=str(pycache)
++    sys.pycache_prefix=str(pycache)
++    try:
++        compile_pass=compileall.compile_dir(str(root),quiet=1,force=True)
++    finally:
++        sys.pycache_prefix=old_prefix
++        if old_env is None: os.environ.pop('PYTHONPYCACHEPREFIX',None)
++        else: os.environ['PYTHONPYCACHEPREFIX']=old_env
++    if not compile_pass: errors.append('COMPILEALL_FAILED')
++    test_result=None
++    if run_tests:
++        proc=subprocess.run([sys.executable,'-B','-m','pytest','-q','-p','no:cacheprovider','tests'],
++            cwd=str(root),text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
++            env=dict(os.environ,PYTHONPYCACHEPREFIX=str(pycache)))
++        test_result={'returncode':proc.returncode,'stdout':proc.stdout,'stderr':proc.stderr}
++        if proc.returncode: errors.append('PYTEST_FAILED')
++    return {'schema':'R1_15A2_V2481_PACKAGE_VERIFICATION_V1',
++            'status':'PASS' if not errors else 'FAILED','release':RELEASE,
++            'root':str(root),'manifest_sha256':sha256(manifest_path),
++            'file_count':len(manifest.get('files',[])),'errors':errors,
++            'config_validation':config_result,'launcher':launcher_result,
++            'benchmark':benchmark,'compileall_pass':compile_pass,'tests':test_result,
++            'real_visum_tested':False,'production_ready':False,
++            'elapsed_seconds':round(time.monotonic()-started,3)}
++
++
++if __name__=='__main__':
++    ap=argparse.ArgumentParser(); ap.add_argument('--root',default=str(Path(__file__).resolve().parent))
++    ap.add_argument('--run-tests',action='store_true'); ap.add_argument('--out',default='V2481_VERIFICATION_RESULT.json')
++    args=ap.parse_args(); result=verify(args.root,args.run_tests)
++    out=Path(args.out); out=out if out.is_absolute() else Path(args.root)/out
++    atomic_json(out,result); print(json.dumps(result,indent=2,ensure_ascii=False))
++    raise SystemExit(0 if result['status']=='PASS' else 1)
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/r1_15a2_safety_v248.py /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/r1_15a2_safety_v248.py
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/r1_15a2_safety_v248.py	2026-10-16 14:43:10.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/r1_15a2_safety_v248.py	2026-10-16 15:16:19.882015818 +0000
+@@ -57,6 +57,12 @@
+         raise SupplyContractError("V248_LEGACY_IMPORT_POLICY_CHANGED")
+     if epochs.get("persistent_cache_read_only_during_calibration") is not True:
+         raise SupplyContractError("V248_PERSISTENT_CACHE_MUST_BE_READ_ONLY")
++    if epochs.get("intrazonal_positive_od_policy") != \
++            "NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_SUPPORT_GAP":
++        raise SupplyContractError("V2481_INTRAZONAL_PATH_POLICY_MISSING")
++    if epochs.get("obsolete_store_windows_lock_policy") != \
++            "DEFER_CLEANUP_AFTER_VERIFIED_REFRESH_NOT_FATAL":
++        raise SupplyContractError("V2481_WINDOWS_SQLITE_RETIRE_POLICY_MISSING")
+     if cfg.get("trial_calibration", {}).get("v248_persistent_path_cache_policy") != \
+             "HASHED_SQLITE_PLUS_STATE_BINDINGS_FAIL_CLOSED":
+         raise SupplyContractError("V248_TRIAL_PERSISTENT_POLICY_MISSING")
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/r1_15a2_trial_adapter_v240.py /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/r1_15a2_trial_adapter_v240.py
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/r1_15a2_trial_adapter_v240.py	2026-10-16 14:35:10.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/r1_15a2_trial_adapter_v240.py	2026-10-16 15:15:11.032453424 +0000
+@@ -214,6 +214,19 @@
+                 if candidate.exists():
+                     candidate.unlink()
+                     removed.append(str(candidate))
++            except PermissionError as exc:
++                # Cleanup is not a model-correctness gate.  Windows can keep a
++                # just-closed SQLite handle alive briefly while an exception
++                # stack/cursor is being unwound.  The newly verified epoch must
++                # remain usable; defer physical cleanup instead of converting
++                # a successful refresh into a calibration failure.
++                record = {"retired": False, "store": str(path),
++                          "removed": removed,
++                          "reason": "DELETE_DEFERRED_WINDOWS_FILE_LOCK",
++                          "delete_error": str(exc),
++                          "policy": "NONFATAL_CLEANUP_AFTER_NEW_EPOCH_VERIFIED"}
++                atomic_json(Path(audit_folder) / "PATH_EPOCH_STORE_RETENTION.json", record)
++                return record
+             except OSError as exc:
+                 raise SupplyContractError("PATH_EPOCH_OBSOLETE_STORE_DELETE_FAILED:" + str(exc))
+         record = {"retired": True, "store": str(path), "removed": removed,
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/r1_15a2_two_mode_v238.py /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/r1_15a2_two_mode_v238.py
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/r1_15a2_two_mode_v238.py	2026-10-16 14:33:46.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/r1_15a2_two_mode_v238.py	2026-10-16 15:15:11.032007902 +0000
+@@ -1199,7 +1199,16 @@
+                 for so,sd in self.db.execute('''SELECT DISTINCT g.orig,g.dest FROM volumes v
+                     JOIN geometry g ON g.gid=v.gid WHERE v.dseg=?''',(code,)):
+                     support[int(so)-1,int(sd)-1] = True
+-                missing = np.argwhere((live_matrix > core.EPS) & ~support)
++                # Intrazonal (diagonal) OD has no network path geometry by
++                # definition and is excluded from the path-based link-incidence
++                # authority.  V2.4.7 treated a positive diagonal cell as a
++                # missing path and forced an endless re-enumeration attempt.
++                # Only positive OFF-DIAGONAL relations require frozen path
++                # support.  This matches the existing OFFDIAGONAL_INTERZONAL
++                # parity contract used for path export/application gates.
++                positive_offdiag = (live_matrix > core.EPS).copy()
++                np.fill_diagonal(positive_offdiag, False)
++                missing = np.argwhere(positive_offdiag & ~support)
+                 if len(missing):
+                     mo,md = missing[0]
+                     raise SupplyContractError(
+@@ -1211,8 +1220,12 @@
+                 stored_zero=float(stored_zero or 0.0)
+                 vol=(float(live_matrix[o-1,d-1]) if live_matrix is not None else stored_vol)
+                 if stored_vol <= core.EPS and vol > core.EPS:
+-                    support_gap_rows.append({'dseg':code,'origin':o,'destination':d,
+-                                             'live_volume':vol,'epoch_volume':stored_vol})
++                    if int(o) != int(d):
++                        support_gap_rows.append({'dseg':code,'origin':o,'destination':d,
++                                                 'live_volume':vol,'epoch_volume':stored_vol})
++                    # Diagonal demand has no network-link attribution.  A
++                    # diagonal parent row, if present, contributes zero path
++                    # incidence rather than requiring a route split.
+                     scale=0.0
+                 else:
+                     scale=vol/stored_vol if stored_vol>core.EPS else 0.0
+@@ -1276,7 +1289,8 @@
+                 'col_idx':np.zeros(0,dtype=np.int64),'values':np.zeros(0), 'full_model':np.zeros(0),
+                 'mutable_model':np.zeros(0),'wiggly_skipped_paths':0},
+             'geometry_identity':PROVISIONAL,'provisional':True,'apply_permitted':False,
+-            'path_epoch_live_od_reweighted':live_od_matrices is not None}
++            'path_epoch_live_od_reweighted':live_od_matrices is not None,
++            'intrazonal_path_support_policy':'NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_INCIDENCE'}
+         summary=dict(self.summary,dsegs=codes,
+             source=('FROZEN_PATH_EPOCH_LIVE_OD_REWEIGHT_NO_COM_REEXPORT'
+                     if live_od_matrices is not None else 'SAME_RUN_TWO_MODE_SQLITE_CACHE_NO_COM_REEXPORT'))
+diff -ruN '--exclude=__pycache__' '--exclude=.pytest_cache' /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/tests/test_v2481_live_run_hotfix.py /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/tests/test_v2481_live_run_hotfix.py
+--- /mnt/data/v248_hotfix_work/R1_15A2_V2_4_8_PERSISTENT_PATH_CACHE_20261016/tests/test_v2481_live_run_hotfix.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/r1_v2481_work/R1_15A2_V2_4_8_1_LIVE_RUN_HOTFIX_20261016/tests/test_v2481_live_run_hotfix.py	2026-10-16 15:15:41.317354160 +0000
+@@ -0,0 +1,81 @@
++"""Regressions from the first real V2.4.7 path-epoch run on 2026-10-16."""
++from pathlib import Path
++
++import numpy as np
++import pytest
++
++from r1_15a2_trial_adapter_v240 import VisumAdapter as PathEpochAdapter
++from test_supply_v22 import profile
++from test_two_mode_v238 import authority, hierarchy, store
++from test_v247_path_epochs import bare_epoch_adapter
++
++
++def test_real_v247_failure_positive_intrazonal_7_7_does_not_force_reenumeration(tmp_path):
++    """A positive diagonal OD has no network path and must not trigger refresh."""
++    c = store(tmp_path, profiles=[profile(model=0)])
++    try:
++        # Frozen path support exists only for the interzonal 1->2 relation.
++        c.add_parents("NATIVE_CW", "C", [[1, 2, 1, 6.0], [1, 2, 2, 4.0]], authority([6.0, 4.0]))
++        c.add_geometry("C", hierarchy())
++        c.prepare_incidence_evidence()
++        live = np.zeros((7, 7), dtype=float)
++        live[0, 1] = 10.0
++        live[6, 6] = 25.0  # exact shape of the live V2.4.7 blocker: 7 -> 7
++        result, summary = c.incidence({
++            "expected_zones": 7,
++            "path_export_dsegs": ["NATIVE_CW"],
++            "mutable_dsegs": ["NATIVE_CW"],
++            "mutable_relation_policy": "ALL_MUTABLE_RELATIONS",
++        }, None, live_od_matrices={"NATIVE_CW": live})
++        assert result["q_current"].tolist() == [10.0]
++        assert result["intrazonal_path_support_policy"] == \
++            "NO_NETWORK_PATH_REQUIRED_EXCLUDED_FROM_PATH_INCIDENCE"
++        assert summary["source"] == "FROZEN_PATH_EPOCH_LIVE_OD_REWEIGHT_NO_COM_REEXPORT"
++    finally:
++        c.close()
++
++
++def test_positive_offdiagonal_without_support_still_forces_reenumeration(tmp_path):
++    c = store(tmp_path, profiles=[profile(model=0)])
++    try:
++        c.add_parents("NATIVE_CW", "C", [[1, 2, 1, 6.0], [1, 2, 2, 4.0]], authority([6.0, 4.0]))
++        c.add_geometry("C", hierarchy())
++        c.prepare_incidence_evidence()
++        live = np.zeros((3, 3), dtype=float)
++        live[0, 1] = 10.0
++        live[1, 2] = 5.0  # genuine new interzonal support gap
++        with pytest.raises(Exception, match="PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:NATIVE_CW:2:3"):
++            c.incidence({
++                "expected_zones": 3,
++                "path_export_dsegs": ["NATIVE_CW"],
++                "mutable_dsegs": ["NATIVE_CW"],
++                "mutable_relation_policy": "ALL_MUTABLE_RELATIONS",
++            }, None, live_od_matrices={"NATIVE_CW": live})
++    finally:
++        c.close()
++
++
++def test_windows_locked_obsolete_store_cleanup_is_deferred_not_fatal(tmp_path, monkeypatch):
++    a = bare_epoch_adapter()
++    a.cfg["performance"]["path_epochs"].update({
++        "cleanup_obsolete_sqlite_after_verified_refresh": True,
++        "retain_sqlite_stores": 1,
++    })
++    old_dir = tmp_path / "epoch-old"
++    old_dir.mkdir()
++    store_path = old_dir / "TWO_MODE_PATH_STORE.sqlite"
++    store_path.write_bytes(b"old-store")
++    original_unlink = Path.unlink
++
++    def locked_unlink(self, *args, **kwargs):
++        if self == store_path:
++            raise PermissionError(32, "file is in use", str(self))
++        return original_unlink(self, *args, **kwargs)
++
++    monkeypatch.setattr(Path, "unlink", locked_unlink)
++    record = PathEpochAdapter._retire_obsolete_epoch_store(
++        a, store_path, tmp_path / "audit")
++    assert record["retired"] is False
++    assert record["reason"] == "DELETE_DEFERRED_WINDOWS_FILE_LOCK"
++    assert store_path.exists()
++    assert (tmp_path / "audit" / "PATH_EPOCH_STORE_RETENTION.json").is_file()
