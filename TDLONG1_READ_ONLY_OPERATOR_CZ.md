@@ -1,6 +1,8 @@
 # TDLONG1: read-only kontrola ve Visum
 
-Na počítači s PTV Visum otevřete poslední ověřenou přijatou `.ver` a v nabídce **Scripts → Run script file** spusťte `R1_TDLONG1_READ_ONLY_PROBE.py` z této kandidátní složky. Skript pouze čte seznam operací, typ 46, stav ACTIVE a známé `DSTRATSET`. Výsledek vypíše jako JSON; uložte celý výstup pro posouzení. Nespouští proceduru, nepřipojuje se k jiné instanci, nemění parametry ani matice a neukládá verzi.
+Na počítači s PTV Visum otevřete poslední ověřenou přijatou `.ver` a v nabídce **Scripts → Run script file** spusťte samostatný `R1_TDLONG1_STANDALONE_READ_ONLY.py`. Tento jeden soubor nepotřebuje zbytek projektu. Nejprve použije objekt `Visum` nebo `COM` předaný skriptovacím prostředím; pokud jej prostředí nepředá, zkusí `GetActiveObject` pro již běžící Visum. Při použití této zálohy mějte otevřenou jen jednu instanci Visumu a ve výstupu zkontrolujte `binding_source`. Skript nevytváří novou instanci a nenačítá jinou `.ver`.
+
+Sonda pouze čte seznam operací, typ 46, stav ACTIVE a známé `DSTRATSET`. Výsledek uloží do `R1_TDLONG1_READ_ONLY_*.json` v dočasné složce Windows; cestu vypíše a zobrazí v okně. JSON předejte celý, včetně případného `PROBE_ERROR`. Skript nespouští proceduru, nemění parametry ani matice a neukládá verzi. Starší `R1_TDLONG1_READ_ONLY_PROBE.py` zůstává součástí zapečetěného runtime balíku, ale pro tento samostatný test není potřeba.
 
 Ve výstupu ověřte jednu jednoznačnou aktivní operaci 46 a všech pět kódů `3_LONG_E_C`, `3_LONG_E_noC`, `3_LONG_noE_C`, `3_LONG_noE_noC`, `3_LONG_stud`. Zapište úplné `dstratset_codes` (model může mít 16 nebo 17 nativních strat), verzi Visum a pozici operace. Samotná přítomnost kódů v `DSTRATSET` **neprokazuje** filtr povolených OD párů. Stav proto zůstává `UNVERIFIED_NATIVE_FILTER`.
 
