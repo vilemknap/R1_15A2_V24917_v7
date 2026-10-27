@@ -1,0 +1,162 @@
+{
+  "commands": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_mobilityalloc1_solver.py tests/test_v24917_mobilityzone1.py tests/test_v24917_targeted_catchup.py tests/test_v24917_tdlong1_mask.py tests/test_v24917_runtime_install.py",
+      "exit_code": 0,
+      "failed": 0,
+      "id": "targeted_final",
+      "log": "/workspace/checkpoints/MOBILITYALLOC1_FINAL_TARGETED.log",
+      "passed": 134,
+      "skipped": 0
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_runtime_install.py tests/test_v24917_tdlong1_mask.py",
+      "exit_code": 0,
+      "failed": 0,
+      "id": "probe_import_after_final_reseal",
+      "log": "/workspace/checkpoints/TDLONG1_FINAL_PROBE_IMPORT.log",
+      "passed": 25,
+      "skipped": 0
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/checkpoints/MOBILITYALLOC1_TDLONG1_FINAL_TESTS_20261027",
+      "exit_code": 1,
+      "id": "full_regression_runner",
+      "log": "/workspace/checkpoints/MOBILITYALLOC1_TDLONG1_FINAL_TESTS_20261027/CHECKS.json",
+      "suites": [
+        {
+          "command": [
+            "/workspace/.venvs/r1/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "/workspace/R1_15A2_V24917_v7/tests"
+          ],
+          "exit_code": 1,
+          "failed": 2,
+          "log": "/workspace/checkpoints/MOBILITYALLOC1_TDLONG1_FINAL_TESTS_20261027/main.log",
+          "name": "main",
+          "passed": 1616,
+          "skipped": 4
+        },
+        {
+          "command": [
+            "/workspace/.venvs/r1/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "/workspace/R1_15A2_V24917_v7/diagfast_tests"
+          ],
+          "exit_code": 0,
+          "failed": 0,
+          "log": "/workspace/checkpoints/MOBILITYALLOC1_TDLONG1_FINAL_TESTS_20261027/diagfast.log",
+          "name": "diagfast",
+          "passed": 138,
+          "skipped": 0
+        },
+        {
+          "command": [
+            "/workspace/.venvs/r1/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "/workspace/R1_15A2_V24917_v7/genfix2_audit_tests"
+          ],
+          "exit_code": 0,
+          "failed": 0,
+          "log": "/workspace/checkpoints/MOBILITYALLOC1_TDLONG1_FINAL_TESTS_20261027/audit_genfix2.log",
+          "name": "audit_genfix2",
+          "passed": 18,
+          "skipped": 0
+        }
+      ]
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider /tmp/MOBILITYALLOC1_BASELINE_CHECK/drive-version/tests",
+      "evidence": "observed tool output; exact same two failures as current full suite",
+      "exit_code": 1,
+      "failed": 2,
+      "id": "baseline_full_reproduction",
+      "log": null,
+      "passed": 1592,
+      "skipped": 4
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider /tmp/MOBILITYALLOC1_BASELINE_CHECK/drive-version/tests/test_v24917_tdrollbackfix1.py",
+      "exit_code": 0,
+      "failed": 0,
+      "id": "baseline_rollback_isolated",
+      "log": null,
+      "passed": 39,
+      "skipped": 0
+    },
+    {
+      "command": "PYTHONPYCACHEPREFIX=/workspace/checkpoints/MOBILITYALLOC1_PYCACHE /workspace/.venvs/r1/bin/python -m py_compile R1_TDLONG1_READ_ONLY_PROBE.py r1_15a2_long_od_mask_v24917.py r1_15a2_tdlong1_probe_v24917.py r1_15a2_long_school_generation_v24917.py r1_15a2_mobility_zone_v24917.py r1_15a2_trial_adapter_v24917.py r1_15a2_runtime_delta_v24917.py r1_15a2_v24917_runtime.py r1_15a2_zonal_count_fit_v24917.py tools/refresh_v24917_manifests.py tests/test_v24917_mobilityzone1.py tests/test_v24917_runtime_install.py tests/test_v24917_targeted_catchup.py tests/test_v24917_tdlong1_mask.py tests/test_v24917_mobilityalloc1_solver.py",
+      "compiled_files": 15,
+      "exit_code": 0,
+      "id": "compile_edited_python",
+      "log": "/workspace/checkpoints/MOBILITYALLOC1_COMPILE.log"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "id": "git_diff_check",
+      "log": "/workspace/checkpoints/MOBILITYALLOC1_DIFF_CHECK.log"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_runtime_install.py",
+      "cwd": "/tmp/MOBILITYALLOC1_FINAL_ZIP_TEST/R1_MOBILITYALLOC1_TDLONG1_LIVE_PENDING",
+      "exit_code": 0,
+      "failed": 0,
+      "id": "clean_zip_runtime_install",
+      "log": "/workspace/checkpoints/MOBILITYALLOC1_CLEAN_ZIP_RUNTIME.log",
+      "passed": 6,
+      "skipped": 0
+    }
+  ],
+  "cwd": "/workspace/R1_15A2_V24917_v7",
+  "interpretation": "Full main suite fails on the same two test-order-dependent rollback tests on the untouched baseline. No live Visum test was run.",
+  "known_full_suite_failures": [
+    "tests/test_v24917_tdrollbackfix1.py::test_failed_full_proof_overrides_legacy_pass_and_preserves_details",
+    "tests/test_v24917_tdrollbackfix1.py::test_cached_equal_snapshot_does_not_waive_fresh_live_read"
+  ],
+  "live_visum": "NOT_RUN",
+  "manifests": {
+    "diagfast_source_reseal": {
+      "original_files_verified": 1059,
+      "release_sources_sealed": 110,
+      "status": "PASS"
+    },
+    "v24916_parent": {
+      "checked": 50,
+      "failures": [],
+      "status": "PASS"
+    },
+    "v24917_runtime": {
+      "file_count": 64,
+      "sha256": "463b34d1eeed4f7ce7c5c720753e1b7c315ed48fa5a41dfd8d37107a6ebb9ba2",
+      "status": "PASS"
+    }
+  },
+  "native_od_pair_filter": "UNVERIFIED",
+  "package_gate": {
+    "archive": "/workspace/checkpoints/MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027.zip",
+    "archive_members": 1591,
+    "clean_extract": "PASS",
+    "crc": "PASS",
+    "live_visum": "NOT_RUN",
+    "module_imports": "PASS",
+    "status": "PASS",
+    "v24916_parent_manifest": "PASS",
+    "v24917_runtime_manifest_files": 64
+  },
+  "recorded_at_utc": "2026-10-27T22:29:11+00:00",
+  "release": "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027",
+  "schema": "R1_15A2_MOBILITYALLOC1_TDLONG1_OFFLINE_TEST_RESULTS_V1"
+}

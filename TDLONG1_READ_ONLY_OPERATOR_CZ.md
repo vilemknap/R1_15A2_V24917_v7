@@ -1,0 +1,9 @@
+# TDLONG1: read-only kontrola ve Visum
+
+Na počítači s PTV Visum otevřete poslední ověřenou přijatou `.ver` a v nabídce **Scripts → Run script file** spusťte `R1_TDLONG1_READ_ONLY_PROBE.py` z této kandidátní složky. Skript pouze čte seznam operací, typ 46, stav ACTIVE a známé `DSTRATSET`. Výsledek vypíše jako JSON; uložte celý výstup pro posouzení. Nespouští proceduru, nepřipojuje se k jiné instanci, nemění parametry ani matice a neukládá verzi.
+
+Ve výstupu ověřte jednu jednoznačnou aktivní operaci 46 a všech pět kódů `3_LONG_E_C`, `3_LONG_E_noC`, `3_LONG_noE_C`, `3_LONG_noE_noC`, `3_LONG_stud`. Zapište úplné `dstratset_codes` (model může mít 16 nebo 17 nativních strat), verzi Visum a pozici operace. Samotná přítomnost kódů v `DSTRATSET` **neprokazuje** filtr povolených OD párů. Stav proto zůstává `UNVERIFIED_NATIVE_FILTER`.
+
+Pro další implementaci je potřeba dodat přesnou dokumentovanou COM vlastnost či metodu, která přímo v nativní trip distribution omezuje aktivní OD páry pro jednotlivá LONG strata, včetně jejího typu, osy zón, životního cyklu a možnosti číst původní/nastavenou hodnotu. Neodvozujte tento filtr z nulové impedance ani z následného nulování OD.
+
+Po potvrzení API bude následný mutační smoke test samostatný krok na kopii přijaté `.ver`: zaznamená původní TG/TD a ACTIVE stav, skutečná P/A všech matic 9111–9115, zmrazené 9116/EXOG, assignment a skim epoch, nativní nastavení filtru před/po zápisu a jeho readback. Po TD a po symetrizaci musí všech pět LONG matic mít nulu na zakázaných párech, zachovat platné objemy nad 200 km a P/A v nativní toleranci; 9116/EXOG musí zůstat přesně stejné. Zamítnutý kandidát vyžaduje obnovení všech nastavení v paměti, úplný přepočet a ověření ekvivalence rodiče. Pokud ekvivalence selže, provoz se zastaví a ručně se znovu otevře poslední ověřený checkpoint. Tato kandidátní verze mutační smoke test nespouští.

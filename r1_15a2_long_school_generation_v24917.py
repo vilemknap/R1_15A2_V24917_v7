@@ -13,15 +13,13 @@ Design (after the WORK/SERVICE zonal fit, on its residual):
           so its exposure is the WORK FlowBundle incidence times the SCHOOL share of the
           vehicle OD cell:  a_p,v * s_od,  s_od = M9225[o,d] / M9226[o,d].  Doubly-constrained
           normalisation g = (sum P u / P + sum A v / A) / 2 as in the W/S fit.
-  LONG    one global production step (all zones, ADD_PROD_L).  LONG has its own segment
-          NATIVE_CL, so the exposure of a profile is its live NATIVE_CL volume times the
-          share of LONG production that the coefficient scales (FP_3_LONG / matrix totals;
-          boundary productions P09F4 are not scaled).  ADD_ATT_L stays (attractions only
-          redistribute because TG balances to productions).
+  LONG    deferred in this source candidate. The previous global NATIVE_CL volume
+          approximation cannot identify zone or component response. No LONG step
+          is emitted until real zone-level incidence and native support are proven.
 
 Bounds (LSSENS1, more cautious than W/S, run options ls_*): step per cycle +-10 %,
-SCHOOL absolute envelope [0.67, 1.5], LONG x[0.5, 2] of its reference (0.1-0.4 for
-k_long = 0.2), ridge 0.05 (W/S 0.01).
+SCHOOL absolute envelope [0.67, 1.5], ridge 0.05 (W/S 0.01). The inherited LONG
+option remains unchanged while MOBILITYZONE1 enforces the fixed 0.2 reference.
 Rows are written together with the W/S rows of the same trial (one assignment) and
 are part of the snapshot / rollback state (mb.GENERATION_ATTRS is extended).
 """
@@ -40,7 +38,7 @@ LS_DEFAULTS = {
     "ls_max_step_up": 0.10,              # +10 % per zone and cycle   (W/S +25 %)
     "ls_max_step_down": 0.10,            # -10 % per zone and cycle   (W/S -20 %)
     "ls_school_envelope": [0.67, 1.5],   # absolute ADD_*_SCH         (W/S 0.25-5)
-    "ls_long_envelope_ref": [0.75, 1.25], # x reference ADD_PROD_L=0.2, i.e. [0.15, 0.25]
+    "ls_long_envelope_ref": [0.5, 2.0],  # inherited option; LONG is frozen until native proof
     "ls_ridge_relative": 0.05,           # 5x the W/S ridge: LS only explain what W/S cannot
 }
 

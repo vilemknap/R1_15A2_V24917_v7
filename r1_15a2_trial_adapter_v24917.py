@@ -224,11 +224,13 @@ class VisumAdapter(_V24916ActiveAdapter):
         original_projection = context["projection"]
         problem = solution = bd = ls = summary = None
         bounds = {}
+        mobility_fit_bounds = None
         fallback = None
         if policy is not None:
             try:
                 with self._v24917_overlay(phase) as cfg:
                     bounds = tg.zone_bounds(mb, zone_rows, cfg, self.generation_reference_values)
+                    bounds, mobility_fit_bounds = zguard.constrain_fit_bounds(bounds, mz)
                     rows, summary, problem, solution, bd = self._fit_with_boundary(context["incidence"], bounds, cfg, policy)
                     if not rows:
                         raise RuntimeError("V24917_FIT_PRODUCED_NO_ROWS")
@@ -297,15 +299,16 @@ class VisumAdapter(_V24916ActiveAdapter):
         tdlong1_deferred = bool((getattr(self, "v24917_ls", None) or {}).get("active") and
                                 not self._tdlong1_native_filter_verified)
         self.v24917_status["ls_incomplete_current_cycle"] = bool(
-            ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or not mz["target_satisfied"])
+            ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or fallback or not mz["target_satisfied"])
         context["v24917"] = {"release": RELEASE, "phase": phase, "overlay_phase": phase if not fallback else None,
                              "model_obs_ratio": ratio, "raw_fit_summary": summary, "fit_summary": summary,
                              "flowbundle_mask": mask["audit"], "bounds_count": len(bounds),
+                             "mobility_fit_bounds": mobility_fit_bounds,
                              "long_school": ((ls or {}).get("summary") or
                                              ({"status": "DEFERRED_READ_UNAVAILABLE",
                                                "activation": dict(ls_activation), "search_complete": False}
                                               if ls_deferred else {"status": "INACTIVE", "activation": dict(ls_activation)})),
-                             "long_school_search_incomplete": bool(ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or not mz["target_satisfied"]),
+                             "long_school_search_incomplete": bool(ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or fallback or not mz["target_satisfied"]),
                              "longguard1_parent": self._longguard1_parent,
                              "longguard1_long_step_deferred": longguard_deferred,
                              "tdlong1": {"source_status": self._tdlong1_mask.get("status"),
@@ -330,7 +333,7 @@ class VisumAdapter(_V24916ActiveAdapter):
 
     def _fit_with_boundary(self, incidence, bounds, cfg, policy):
         """W/S zonal fit, jointly with the border-crossing P/A lever when BNDGEN1 is active."""
-        fit_cfg = policy.get("fit", {})
+        fit_cfg = dict(policy.get("fit", {}), nonlinear_pa_repair=True)
         if not bdgen.active():
             rows, summary, problem, solution = zf.fit(incidence, self.zones, bounds, cfg, fit_cfg)
             return rows, summary, problem, solution, None

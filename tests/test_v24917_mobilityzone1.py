@@ -74,6 +74,29 @@ def test_work_projection_clips_each_zone_without_modifying_attractions():
     assert all(abs(g['log_step'])<=abs(p['log_step'])+1e-12 for g,p in zip(guarded[:2],out[:2]))
 
 
+def test_fit_bounds_include_fixed_reference_before_solver():
+    a=authority(zones((1.24,1.30)))
+    bounds={('WORK','PROD',1):(-.5,.5),('SERVICE','PROD',2):(-.5,.5),
+            ('WORK','ATT',1):(-.5,.5)}
+    out,report=z.constrain_fit_bounds(bounds,a)
+    assert out[('WORK','PROD',1)][1]==pytest.approx(math.log(1.25/1.24))
+    assert out[('SERVICE','PROD',2)][1]==pytest.approx(0.0)
+    assert out[('SERVICE','PROD',2)][0]<0.0
+    assert out[('WORK','ATT',1)]==bounds[('WORK','ATT',1)]
+    assert report['changed']==2
+
+
+def test_fit_bounds_freeze_zero_reference_without_changing_other_zone():
+    rows=zones();rows[0]['ADD_PROD_W']=0.
+    for name in z.SPECS['WORK'][2]:rows[0][name]=0.
+    a=authority(rows)
+    bounds={('WORK','PROD',1):(-.1,.1),('WORK','PROD',2):(-.1,.1)}
+    out,report=z.constrain_fit_bounds(bounds,a)
+    assert ('WORK','PROD',1) not in out
+    assert out[('WORK','PROD',2)]==bounds[('WORK','PROD',2)]
+    assert report['frozen']==1
+
+
 def test_long_reference_point_two_not_one_or_last_calibrated_value():
     a=authority();e=a['entries']['LONG|1']
     assert e['reference_coefficient']==.2

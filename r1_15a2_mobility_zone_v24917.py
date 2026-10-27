@@ -166,6 +166,53 @@ def bounded_step(entry, step, authority):
     return min(math.log(hi/r), max(math.log(lo/r),step))
 
 
+def constrain_fit_bounds(bounds, authority):
+    """Intersect W/S production solver bounds with immutable zonal mobility.
+
+    Domestic structural zeros and unverifiable references are removed from the
+    actuator set.  Existing foreign and attraction bounds retain their own
+    authority.  The last-line candidate/live guards still verify realization.
+    """
+    out = dict(bounds)
+    if not authority["enabled"]:
+        return out, {"status": "DISABLED", "changed": 0, "frozen": 0}
+    zones = zone_map(authority["parent_zone_rows"])
+    changed, frozen = [], []
+    for key in list(out):
+        fam, role, z = key
+        z = int(z)
+        if fam not in ("WORK", "SERVICE") or role != "PROD":
+            continue
+        if z not in zones:
+            raise ValueError("MOBILITYZONE1_FIT_UNKNOWN_ZONE:%s" % z)
+        if finite(zones[z].get("NOT_ZAHR"), "NOT_ZAHR") < .5:
+            continue
+        entry = authority["entries"].get(fam + "|" + str(z))
+        if entry is None or entry.get("reference_fp") is None:
+            out.pop(key)
+            frozen.append({"family": fam, "zone_no": z, "reason": "UNVERIFIED_OR_ZERO_REFERENCE"})
+            continue
+        lo_ratio, hi_ratio = interval(entry, authority)
+        current_ratio = entry["current"] / entry["reference_coefficient"]
+        original_lo, original_hi = out[key]
+        lower = max(float(original_lo), math.log(lo_ratio / current_ratio))
+        upper = min(float(original_hi), math.log(hi_ratio / current_ratio))
+        if lower > 0.0 + EPS or upper < 0.0 - EPS:
+            raise ValueError("MOBILITYZONE1_FIT_NO_FEASIBLE_DIRECTION:%s:%s" % (fam, z))
+        if upper - lower <= EPS:
+            out.pop(key)
+            frozen.append({"family": fam, "zone_no": z, "reason": "ZERO_FEASIBLE_INTERVAL"})
+        else:
+            out[key] = (lower, upper)
+            if abs(lower-original_lo) > EPS or abs(upper-original_hi) > EPS:
+                changed.append({"family": fam, "zone_no": z,
+                                "lower_log": lower, "upper_log": upper})
+    return out, {"release": RELEASE, "status": "CONSTRAINED",
+                 "changed": len(changed), "frozen": len(frozen),
+                 "changed_rows": changed, "frozen_rows": frozen,
+                 "reference_role": authority["reference_role"]}
+
+
 def guard_projection(rows, authority):
     """Clip W/S production proposals independently, BEFORE aggregate guard/P-A."""
     import r1_15a2_mobility_guard_v24917 as mg

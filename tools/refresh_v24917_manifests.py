@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = [
+    "R1_TDLONG1_READ_ONLY_PROBE.py",
     "01_SPUSTIT_V24917_TDJOINT1.py",
     "02_SPUSTIT_V24917_TDJOINT1_60_40.py",
     "r1_15a2_td_joint_v24917.py",

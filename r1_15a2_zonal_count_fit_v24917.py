@@ -271,6 +271,71 @@ def project_box_hyperplanes(z: np.ndarray, lo: np.ndarray, hi: np.ndarray,
     return x
 
 
+def repair_nonlinear_pa(problem: FitProblem, raw_x: np.ndarray,
+                        tolerance: float = 1.0e-10) -> tuple[np.ndarray, dict]:
+    """Enforce exact exp(log-step) P/A change inside the existing box.
+
+    The linear hard plane is the solver's local approximation. A monotone
+    one-dimensional correction per family moves productions down and
+    attractions up by the same scalar (or the reverse), clipping each zonal
+    step to its own bounds. Zero is in every box, so a root exists.
+    """
+    x = np.array(raw_x, dtype=float, copy=True)
+    report = {}
+    if not math.isfinite(float(tolerance)) or tolerance <= 0:
+        raise ValueError("V24917_NONLINEAR_PA_INVALID_TOLERANCE")
+    for family, (_vec, margin_total) in problem.balance_vectors.items():
+        prod = np.array([i for i,key in enumerate(problem.var_keys)
+                         if key[0] == family and key[1] == "PROD"], dtype=int)
+        att = np.array([i for i,key in enumerate(problem.var_keys)
+                        if key[0] == family and key[1] == "ATT"], dtype=int)
+        if not len(prod) and not len(att):
+            continue
+        before = x.copy()
+
+        def candidate(lam):
+            trial = before.copy()
+            trial[prod] = np.clip(before[prod] - lam, problem.lower[prod], problem.upper[prod])
+            trial[att] = np.clip(before[att] + lam, problem.lower[att], problem.upper[att])
+            return trial
+
+        def gap(trial):
+            value = (float(problem.base[prod] @ np.expm1(trial[prod]))
+                     - float(problem.base[att] @ np.expm1(trial[att])))
+            if not math.isfinite(value):
+                raise ValueError("V24917_NONLINEAR_PA_NONFINITE:" + family)
+            return value
+
+        limit = max(1.0, float(np.max(np.abs(before - problem.lower))),
+                    float(np.max(np.abs(problem.upper - before))))
+        left, right = -limit, limit
+        gl, gr = gap(candidate(left)), gap(candidate(right))
+        if gl < 0.0 or gr > 0.0:
+            raise ValueError("V24917_NONLINEAR_PA_NO_FEASIBLE_DIRECTION:" + family)
+        allowed_gap = float(tolerance) * max(1.0, float(margin_total))
+        if abs(gap(before)) <= allowed_gap:
+            chosen = before
+        else:
+            for _ in range(100):
+                middle = 0.5 * (left + right)
+                gm = gap(candidate(middle))
+                if gm > 0.0:
+                    left = middle
+                else:
+                    right = middle
+            chosen = candidate(0.5 * (left + right))
+        remaining = gap(chosen)
+        if abs(remaining) > allowed_gap:
+            raise ValueError("V24917_NONLINEAR_PA_REPAIR_INCOMPLETE:" + family)
+        x[prod] = chosen[prod]
+        x[att] = chosen[att]
+        report[family] = {"nonlinear_pa_gap": remaining,
+                          "allowed_gap": allowed_gap,
+                          "max_abs_log_step_repair": float(np.max(np.abs(chosen-before))),
+                          "within_bounds": True}
+    return x, report
+
+
 def solve(problem: FitProblem, cfg: Mapping[str, Any]) -> Dict[str, Any]:
     """Bounded least squares by FISTA with an exact power-iteration step size.
 
@@ -349,6 +414,10 @@ def solve(problem: FitProblem, cfg: Mapping[str, Any]) -> Dict[str, Any]:
                 prev = obj
                 break
             prev = obj
+    nonlinear_pa = {}
+    if cfg.get("nonlinear_pa_repair", False):
+        x, nonlinear_pa = repair_nonlinear_pa(problem, x,
+            tolerance=float(cfg.get("nonlinear_pa_tolerance", 1.0e-10)))
     pred = G @ x
     balance = {}
     for fam, (vec, tot) in problem.balance_vectors.items():
@@ -357,7 +426,8 @@ def solve(problem: FitProblem, cfg: Mapping[str, Any]) -> Dict[str, Any]:
     return {"x": x, "predicted_change": pred, "objective_initial": obj0,
             "objective_final": objective(x), "iterations": it, "converged": converged,
             "ridge": ridge, "balance_weight": mu, "lipschitz": lip,
-            "balance_mode": "HARD" if hard else "SOFT", "balance": balance}
+            "balance_mode": "HARD" if hard else "SOFT", "balance": balance,
+            "nonlinear_pa_repair": nonlinear_pa}
 
 
 def projection_rows(problem: FitProblem, solution: Mapping[str, Any],
@@ -441,4 +511,5 @@ def fit(incidence: Mapping[str, Any], zones: Sequence[int],
     return rows, summary(problem, solution, rows), problem, solution
 
 
-__all__ = ["RELEASE", "METHOD", "build_problem", "solve", "projection_rows", "summary", "fit", "geh"]
+__all__ = ["RELEASE", "METHOD", "build_problem", "solve", "repair_nonlinear_pa",
+           "projection_rows", "summary", "fit", "geh"]

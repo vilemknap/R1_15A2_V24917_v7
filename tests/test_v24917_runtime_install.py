@@ -72,6 +72,7 @@ def test_v24917_manifest_covers_all_new_runtime_files():
     manifest = json.loads((ROOT / "V24917_RUNTIME_MANIFEST.json").read_text(encoding="utf-8"))
     names = set(manifest["required_files"])
     for name in ["01_SPUSTIT_V24917_TARGETED_CATCHUP.py", "r1_15a2_zonal_count_fit_v24917.py",
+                 "R1_TDLONG1_READ_ONLY_PROBE.py",
                  "r1_15a2_targeted_generation_v24917.py", "r1_15a2_trial_adapter_v24917.py",
                  "r1_15a2_active_demand_evidence_v24917.py", "r1_15a2_runtime_delta_v24917.py",
                  "r1_15a2_v24917_runtime.py", "r1_15a2_generation_gate_nonfatal_v1.py",
