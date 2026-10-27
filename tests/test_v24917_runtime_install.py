@@ -78,6 +78,8 @@ def test_v24917_manifest_covers_all_new_runtime_files():
                  "r1_15a2_demand_policy_v1.py", "r1_15a2_diagfast_v1.py", "r1_15a2_diagfast_v2.py",
                  "r1_15a2_diagfast_numpy_v2.py", "r1_15a2_diagfast_runtime_v1.py",
                  "r1_15a2_diagfast_parity_v1.py", "r1_15a2_diagfast_direct_v2.py",
+                 "r1_15a2_long_od_mask_v24917.py", "r1_15a2_tdlong1_probe_v24917.py",
+                 "r1_15a2_long_distance_guard_v24917.py", "r1_15a2_mobility_zone_v24917.py",
                  "helpers/R1_12D_DIAGFAST_V1.py", "helpers/R1_11D_DIAGFAST_V1.py",
                  "V24916_PERF2C_RUNTIME_MANIFEST.json", "DIAGFAST_V1_RELEASE_MANIFEST.json"]:
         assert name in names, name

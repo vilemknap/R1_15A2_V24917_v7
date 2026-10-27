@@ -86,19 +86,27 @@ def ls_payload():
                      'ADD_PROD_SCH':{1:math.log(1.5),2:-math.log(2)},
                      'ADD_ATT_SCH':{1:.1}},
             'current':{'ADD_PROD_L':{1:.2,2:.2},'ADD_PROD_SCH':{1:1.,2:1.},'ADD_ATT_SCH':{1:1.}},
-            'effect_operator':{'keys':[['LONG','PROD',0],['SCHOOL','PROD',1],['SCHOOL','PROD',2],['SCHOOL','ATT',1]],
-                               'G':[[100.,200.,300.,400.]]},'predicted_change':[999.], 'summary':{}}
+            'effect_operator':{'keys':[['LONG','PROD',1],['LONG','PROD',2],['SCHOOL','PROD',1],['SCHOOL','PROD',2],['SCHOOL','ATT',1]],
+                               'G':[[100.,200.,300.,400.,500.]]},'predicted_change':[999.], 'summary':{}}
 
 
-def test_ls_projection_preserves_global_long_and_recomputes_actual_prediction():
+def test_ls_projection_clips_long_zones_independently_and_recomputes_prediction():
     ls=ls_payload();out=z.guard_ls(ls,authority())
     assert out['steps']['ADD_PROD_L'][1]==out['steps']['ADD_PROD_L'][2]==pytest.approx(math.log(1.25))
     assert out['steps']['ADD_PROD_SCH'][1]==pytest.approx(math.log(1.25))
     assert out['steps']['ADD_PROD_SCH'][2]==pytest.approx(math.log(.75))
     assert out['steps']['ADD_ATT_SCH'][1]==.1
-    want=300*math.log(1.25)+300*math.log(.75)+40
+    want=600*math.log(1.25)+400*math.log(.75)+50
     assert out['predicted_change']==pytest.approx([want])
     assert ls['predicted_change']==[999.]
+
+
+def test_independent_long_zone_steps_keep_distinct_values():
+    ls=ls_payload();ls['steps']['ADD_PROD_L']={1:math.log(1.1),2:math.log(.9)}
+    out=z.guard_ls(ls,authority())
+    assert out['steps']['ADD_PROD_L'][1] == pytest.approx(math.log(1.1))
+    assert out['steps']['ADD_PROD_L'][2] == pytest.approx(math.log(.9))
+    assert out['steps']['ADD_PROD_L'][1] != out['steps']['ADD_PROD_L'][2]
 
 
 def test_missing_ls_prediction_is_explicit_not_stale():
@@ -107,11 +115,12 @@ def test_missing_ls_prediction_is_explicit_not_stale():
     assert out['predicted_change'] is None and out['prediction_unavailable_after_guard']
 
 
-def test_long_one_zone_at_cap_holds_global_step_but_school_can_continue():
+def test_long_zone_at_cap_does_not_hold_other_zones_or_school():
     rows=zones();rows[0]['ADD_PROD_L']=.25
     for a in z.SPECS['LONG'][2]:rows[0][a]=12.5
     out=z.guard_ls(ls_payload(),authority(rows))
-    assert set(out['steps']['ADD_PROD_L'].values())=={0.}
+    assert out['steps']['ADD_PROD_L'][1]==0.0
+    assert out['steps']['ADD_PROD_L'][2]>0.0
     assert out['steps']['ADD_PROD_SCH'][1]>0
 
 
@@ -187,7 +196,8 @@ def test_unknown_zero_long_base_is_frozen_not_divided_by_epsilon():
     rows=zones();rows[0]['ADD_PROD_L']=0.
     for attr in z.SPECS['LONG'][2]:rows[0][attr]=0.
     a=authority(rows);out=z.guard_ls(ls_payload(),a)
-    assert set(out['steps']['ADD_PROD_L'].values())=={0.}
+    assert out['steps']['ADD_PROD_L'][1]==0.0
+    assert out['steps']['ADD_PROD_L'][2]>0.0
 
 
 @pytest.mark.parametrize('change',['duplicate','mask','missing_zone','stale_coefficient'])
@@ -266,10 +276,10 @@ def test_live_existing_violation_may_recover_but_never_worsen(ratio,newratio,pas
 
 
 def test_raw_solver_summary_never_masquerades_as_guarded_forecast():
-    ls=ls_payload();ls['summary']={'long_global_log_step':.4,'linear_ratio_after_ws_and_ls':1.2}
+    ls=ls_payload();ls['summary']={'long_zone_steps':2,'linear_ratio_after_ws_and_ls':1.2}
     out=z.guard_ls(ls,authority())
-    assert out['summary']['raw_solver_long_global_log_step']==.4
-    assert out['summary']['long_global_log_step']==pytest.approx(math.log(1.25))
+    assert out['summary']['raw_solver_long_zone_steps']==ls['steps']['ADD_PROD_L']
+    assert out['summary']['long_zone_steps']==2
     assert out['summary']['linear_ratio_after_ws_and_ls'] is None
 
 

@@ -199,7 +199,7 @@ def guard_projection(rows, authority):
 
 
 def guard_ls(ls, authority):
-    """Keep LONG as ONE global step. SCHOOL can be clipped zone by zone."""
+    """Project every LONG and SCHOOL production step against its own zone anchor."""
     if not ls or not authority["enabled"]:
         return ls
     out = copy.deepcopy(ls)
@@ -218,18 +218,6 @@ def guard_ls(ls, authority):
             # LSGEN writes a global LONG coefficient to every zone. Freeze
             # unsupported/external zones instead of inventing resident demand.
             clipped[raw_z] = bounded_step(e,s,authority) if e is not None else 0.0
-        if fam == "LONG":
-            vals = [finite(s,"long_step") for s in items.values()]
-            if max(vals)-min(vals)>EPS:
-                raise ValueError("MOBILITYZONE1_LONG_STEP_NOT_GLOBAL")
-            s = vals[0]
-            domestic = [clipped[z] for z in items if int(z) in zones and
-                        finite(zones[int(z)].get("NOT_ZAHR"),"NOT_ZAHR")>=.5]
-            alpha = min([1.0]+[abs(t/s) for t in domestic]) if abs(s)>EPS else 0.0
-            for z in clipped:
-                # Preserve the existing global lever, including zero-production
-                # zones by freezing the full lever if any is not certifiable.
-                clipped[z] = s*alpha
         for z,t in clipped.items():
             if abs(t-float(items[z]))>EPS:
                 edits.append({"attr":attr,"zone_no":int(z),"before":items[z],"after":t})
@@ -250,8 +238,6 @@ def guard_ls(ls, authority):
                 fam=ATTR_FAMILY.get(attr) or ATT_FAMILY.get(attr)
                 role="PROD" if attr in ATTR_FAMILY else "ATT"
                 for z,s in by_zone.items(): by[(fam,role,int(z))]=float(s)
-            long_vals=list(steps.get("ADD_PROD_L",{}).values())
-            by[("LONG","PROD",0)]=float(long_vals[0]) if long_vals else 0.0
             x=np.array([by.get(tuple(k),0.0) for k in model["keys"]])
             delta=np.asarray(model["G"],dtype=float)@x
             if not np.isfinite(delta).all(): raise ValueError("MOBILITYZONE1_INVALID_LS_PREDICTION")
@@ -261,12 +247,14 @@ def guard_ls(ls, authority):
             out["prediction_unavailable_after_guard"]=True
     summary = out.setdefault("summary", {})
     if changed:
-        summary["raw_solver_long_global_log_step"] = summary.get("long_global_log_step")
+        summary["raw_solver_long_zone_steps"] = copy.deepcopy(ls.get("steps", {}).get("ADD_PROD_L", {}))
         summary["raw_solver_linear_ratio_after_ws_and_ls"] = summary.get("linear_ratio_after_ws_and_ls")
         # A solver's ratio cannot be presented as the guarded forecast.
         summary["linear_ratio_after_ws_and_ls"] = None
-    vals = list(steps.get("ADD_PROD_L", {}).values())
-    summary["long_global_log_step"] = float(vals[0]) if vals else 0.0
+    summary.pop("long_global_log_step", None)
+    summary["long_zone_steps"] = sum(abs(float(v)) > EPS for v in steps.get("ADD_PROD_L", {}).values())
+    summary["long_generation_permitted"] = False
+    summary["long_search_status"] = "LONG_SEARCH_INCOMPLETE" if summary["long_zone_steps"] == 0 else "PENDING_NATIVE_VERIFICATION"
     summary["school_zones_changed"] = sum(abs(float(v)) > EPS for attr in
         ("ADD_PROD_SCH", "ADD_ATT_SCH") for v in steps.get(attr, {}).values())
     summary["mobilityzone1"] = {"changes": edits, "deferred": authority["unavailable"],

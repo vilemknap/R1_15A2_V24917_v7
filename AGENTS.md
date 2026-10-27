@@ -1,0 +1,93 @@
+# R1_15A2 - persistent instructions for Codex
+
+## Purpose, roles, and scope
+
+This repository implements R1_15A2, a Python calibration system for a PTV Visum road-transport demand model. It combines trip generation (TG), native trip distribution (TD), route/assignment feedback, traffic-count fitting, survey-distance/FineCDF diagnostics, and verified acceptance/rollback.
+
+- The user is the system/methodology architect and authorizes changes to scope and calibration policy.
+- Codex is the implementation and offline-verification engineer. Work directly on the actual project files, not on text reconstructed from chat transcripts.
+- ChatGPT may independently review your diff, tests, numerical behavior, and safety implications.
+- PTV Visum runs separately on the user's work computer. The Codex development environment must not assume Visum, Windows COM, a loaded `.ver`, or access to the live model.
+- For each request, implement the *one approved bounded task*. Do not automatically proceed to the next roadmap item.
+
+## Establish the authoritative baseline before editing
+
+1. Locate the active code root containing the launchers, `r1_15a2_*.py`, `tests/`, `tools/`, and `V24917_RUNTIME_MANIFEST.json`. In the 2026-10-27 delivery archive, this directory is `R1_MOBILITYZONE1/`. Keep this `AGENTS.md` at that root.
+2. Inspect Git state (`git status --short`, branch, uncommitted changes) if Git exists. Preserve other people's work; never discard, reset, overwrite, or commit changes not owned by the current task. Do not initialize Git without approval.
+3. Identify the *actual* checked-out/installed release from its files, manifest and launch chain. The reference baseline for these instructions is the `SAFETYFIX2 + LONGGUARD1 + MOBILITYZONE1` V24917 package dated 2026-10-27, not a claim about future versions. The historical `CURRENT_RELEASE.txt` inside that package may refer to V24915; it does not override `V24917_RUNTIME_MANIFEST.json` or the active code.
+4. Inspect only files needed for the task, their callers, existing tests and relevant manifests. Do not read the entire historical archive for every small edit. Historical release notes, old scripts, and stored test outputs are evidence, not proof that the currently selected code is executable.
+5. If only `R1_15A2_COMPLETE_SOURCE_BUNDLE.txt` is available, treat it as a concatenated reference snapshot, *not* a writable/reconstructable working tree. Ask for/extract the actual matching source package before implementing or claim only a proposed patch. Never silently repair encoding or regenerate missing source from the transcript.
+6. Confirm which files are in scope and the invariants at risk. If task assumptions conflict with current source, report the conflict and favor the verified existing contract until the user authorizes a methodological change.
+
+## Architecture: locate the real owners
+
+Read these when relevant, not all by default:
+
+| Area | Primary entry points / contracts |
+| --- | --- |
+| Launch and runtime | `01_SPUSTIT_V24917_TDJOINT1.py`, `02_SPUSTIT_V24917_TDJOINT1_60_40.py`, `01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py`, `r1_15a2_v24917_runtime.py` |
+| Targeted TG / zonal count fitting | `r1_15a2_zonal_count_fit_v24917.py`, `r1_15a2_targeted_generation_v24917.py`, `r1_15a2_trial_adapter_v24917.py` |
+| Zonal mobility and aggregate safeguards | `r1_15a2_mobility_zone_v24917.py`, `r1_15a2_mobility_guard_v24917.py`, `r1_15a2_step_search_v24917.py` |
+| LONG/SCHOOL generation | `r1_15a2_long_school_generation_v24917.py`, `r1_15a2_long_distance_guard_v24917.py` |
+| Assignment-coupled skim identity | `r1_15a2_dynamic_skim_v24916p2c.py`, `r1_15a2_skim_v24916p2c.py` |
+| TD, FineCDF, recovery | `r1_15a2_finecdf_bridge_v24916.py`, `r1_15a2_td_joint_v24917.py`, `r1_15a2_td_joint_runtime_v24917.py`, `r1_15a2_parent_equivalence_v24917.py` |
+| Tests, release | `tests/`, `diagfast_tests/`, `genfix2_audit_tests/`, `tools/run_genfix2_checks.py`, `tools/refresh_v24917_manifests.py`, `V24917_RUNTIME_MANIFEST.json` |
+
+Check names against the working tree. Do not invent missing modules or interfaces. The V24917 package contains many historical revisions; the most recent filename alone is not sufficient to establish runtime ownership.
+
+## Scientific and data invariants (never change implicitly)
+
+- Maintain P/A marginal balance, total mass, dimensional integrity and zone identity. Distinguish persons/trips, vehicle OD, profile flow, and occupancy; the AMDY formula divisor `2.8` is **not** evidence of average vehicle occupancy.
+- Respect calibrated count-location roster, actual role/weights and source units. Never silently substitute older 488/498-profile rosters or new survey targets for the active one. The active V24917 roster in this baseline contains 248 CAL profiles; confirm live/current authority for a different release.
+- The mobility reference is immutable within a run. For domestic WORK/SERVICE/SCHOOL the canonical ADD_PROD coefficient is `1.0`; for LONG `ADD_PROD_L` it is `0.2`. The baseline `MOBILITYZONE1` band is `[0.75, 1.25]` relative to these fixed references, subject to actual runtime options. Existing out-of-band parent states must not drift further away; structural zeros stay zero. Do not turn per-cycle growth limits into new reference points.
+- LONG matrices are **9111-9115**. FOREIGN **9116**, EXOG and other frozen strata stay frozen unless explicitly authorized. Do not invent components or derive vehicle conversions from a demand divisor.
+- LONG admissibility uses **fresh NATIVE_CL / DIS / km** distance from the same assignment/skim epoch: `distance >= MIN_KM` (currently 100 km). `distance > MAX_CDF_KM` (currently 200 km) remains **allowed**. The 512-point `LONG_COMPOSITE` FineCDF is *conditional on 100-200 km* and cannot prove absence of trips below 100 km.
+- Reuse `MIN_KM` and `MAX_CDF_KM` from `r1_15a2_long_distance_guard_v24917.py`. Reuse `ordered_zone_hash()` and `matrix_values_hash()` from `r1_15a2_skim_v24916p2c.py`; never invent a parallel identity/hash representation. Confirm source skim values against `epoch.matrix_meta_by_dseg['NATIVE_CL']['values_sha256']`, zone order against `epoch.zone_order_sha256`, and live freshness via `DynamicSkimManager.require_current()` plus diagnostic/assignment epoch binding. A caller-supplied `verified=True` is not evidence.
+- A LONG structural support mask must be enforced by the **actual native TD mechanism**, not by zeroing impedance or filtering OD volumes *after* balancing. Check doubly-constrained P/A feasibility on the restricted OD graph first. Verify forbidden support after TD, symmetrization and downstream transformation; symmetry must not reintroduce forbidden pairs.
+- The existing `LONGGUARD1` is a non-mutating acceptance proof, **not** an implemented native TD support mask. Treat `LONG_OD_MASK1` / `LONG_OD_NATIVE1` as proposed or under development unless the current working tree proves otherwise. Do not claim hard-zero LONG support merely because LONGGUARD1 passes.
+- Preserve the active acceptance objective, protected profile constraints, survey metrics, count/IDP blending, convergence definition, freezes and safety thresholds unless the task explicitly authorizes a methodological change. Do not loosen guards or hide failed cases to obtain a green run.
+
+## Visum, transactions, and operational safety
+
+- No launching or attaching to Visum, `LoadVersion()`, `.ver` mutation, COM writes, remote deployment, or long-running live calibration without explicit user authorization and the appropriate Windows environment.
+- Never use `LoadVersion()` to repair a rejected candidate inside an active calibration. Preserve the one live Visum instance and implement in-memory transaction snapshot / apply / readback / full recomputation / verify-parent rollback. If exact or policy-approved equivalence cannot be demonstrated, fail closed and require manual reopening of the last verified accepted checkpoint.
+- Do not add direct `SetValues()` writes to demand OD matrices as a shortcut. Native TD operator modifications, support filters and temporary matrices require separately reviewed transaction/rollback/readback plans.
+- Respect live assignment/skims epoch invalidation after changes. Never reuse stale paths, skims, FlowBundle incidence or diagnostics as current. Do not bypass the freshness checks or import historic cache evidence as a live authority.
+- Checkpoints are accepted only after verified native calculation and established acceptance gates. Never save or label an unverified candidate as ACCEPTED, BEST or production-ready. Prevent partial checkpoint publication and protect previous accepted checkpoints.
+
+## Implementation workflow for each bounded task
+
+1. **Preflight:** inspect relevant code paths, dependencies, tests, version/manifest coverage, and pre-existing changes. State any material contradiction or missing contract.
+2. **Plan briefly:** define proposed files, behavior, unchanged invariants, test cases and expected effect. For normal small tasks, implement without writing a lengthy plan file. For large cross-cutting tasks, propose a phase plan before changing runtime code.
+3. **Implement narrowly:** prefer pure, testable computation at the boundary; separate it from Visum/COM adapters. Follow existing naming/error conventions, use the project's established numeric/hash mechanisms, validate shapes, identities and units strictly, and avoid silent defaults for authoritative inputs.
+4. **Test:** start with syntax/import checks and focused regression tests against the actual production module; then run relevant suites. Use separate processes for suites whose `conftest.py` clash. `tools/run_genfix2_checks.py` can run `tests`, `diagfast_tests`, and `genfix2_audit_tests` separately; examine its behavior before invoking it. Do not automatically install dependencies or run live scripts.
+5. **Assess release integrity:** application-file changes can invalidate `V24917_RUNTIME_MANIFEST.json` and other sealed hashes. Never disable verification or simply rewrite hashes to disguise changed authorities. Identify required, approved manifest/release work (including `tools/refresh_v24917_manifests.py`) and verify exact before/after file identities.
+6. **Audit changed files:** inspect `git diff --check`, `git status --short` (if Git is present), module compilation, test logs and unrelated-file modifications. Store logs outside the source root where possible. Do not silently reformat or change unrelated historical/authority files.
+7. **Stop at task boundary:** do not merge changes into a live release, commit/push, run Visum or start the next milestone without an explicit request.
+
+Suggested offline commands from the actual source root, when dependencies are available:
+
+```text
+python -m py_compile path/to/changed_module.py
+python -m pytest -q -p no:cacheprovider tests/test_relevant.py
+python tools/run_genfix2_checks.py --output <OUTSIDE_SOURCE_TREE_DIRECTORY>
+```
+
+Prefer Python's `PYTHONPYCACHEPREFIX` or `PYTHONDONTWRITEBYTECODE=1` to avoid untracked bytecode in source. Full suite is not a substitute for a targeted regression test that proves the changed behavior. Report tests as `PASS`, `FAIL`, `SKIPPED` or `NOT_RUN` only from observed execution; offline mocks do not prove Windows COM/Visum functionality.
+
+## Handoff format to the user / ChatGPT reviewer
+
+Respond in Czech, preserving exact English code symbols, filenames and error identifiers. Provide:
+
+1. **Baseline / task:** actual release, task ID, branch/working tree state, scope and assumptions.
+2. **Implementation:** each changed/added file and why, key design decisions, compatibility/API changes and a complete unified diff (or a patch file; include all new files).
+3. **Evidence:** exact commands executed, exit codes, passed/failed/skipped totals, paths to logs, relevant numerical checks and untouched authority/manifest proof.
+4. **Safety:** impact on Visum/COM, TD, OD matrices, assignment epoch, native acceptance and rollback; clearly distinguish offline tests from `LIVE_VISUM_NOT_RUN`.
+5. **Outstanding blockers:** anything unverified, environment-specific, methodologically ambiguous or requiring live validation.
+6. **Next step:** one clearly bounded follow-up; do not implement it automatically.
+
+Never report `PASS` or "fully validated" based on generated code, prior evidence, or hypothetical commands. A concise honest partial deliverable is better than invented assurance.
+
+## Immediate project status (context, not authorization)
+
+At this baseline, `LONGGUARD1` and `MOBILITYZONE1` exist; the hard native LONG OD support and a per-zone LONG generation actuator are not yet proven implemented. The planned next development unit is `LONG_OD_MASK1` (pure, hash-bound mask and tests), followed only after review by native `LONG_OD_NATIVE1`, feasible restricted TD, composite FineCDF calibration and the later per-zone mobility changes. Confirm the task with the user prompt and actual tree, not with this historical note alone.

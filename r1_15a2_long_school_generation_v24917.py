@@ -32,7 +32,7 @@ from typing import Any, Dict, List, Mapping, Sequence
 
 import numpy as np
 
-RELEASE = "R1_15A2_V24917_LONG_SCHOOL_GENERATION_V1_20261025"
+RELEASE = "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_LONG_SCHOOL_20261027"
 ATTRS = ("ADD_PROD_L", "ADD_ATT_L", "ADD_PROD_SCH", "ADD_ATT_SCH")
 EPS = 1.0e-12
 # LSSENS1: LONG/SCHOOL are calibrated more cautiously than WORK/SERVICE.
@@ -40,7 +40,7 @@ LS_DEFAULTS = {
     "ls_max_step_up": 0.10,              # +10 % per zone and cycle   (W/S +25 %)
     "ls_max_step_down": 0.10,            # -10 % per zone and cycle   (W/S -20 %)
     "ls_school_envelope": [0.67, 1.5],   # absolute ADD_*_SCH         (W/S 0.25-5)
-    "ls_long_envelope_ref": [0.5, 2.0],  # x reference ADD_PROD_L, i.e. 0.1-0.4 for 0.2
+    "ls_long_envelope_ref": [0.75, 1.25], # x reference ADD_PROD_L=0.2, i.e. [0.15, 0.25]
     "ls_ridge_relative": 0.05,           # 5x the W/S ridge: LS only explain what W/S cannot
 }
 
@@ -115,18 +115,6 @@ def _zone_values(visum, attr, zones) -> np.ndarray:
     return np.array([vals.get(int(z), 0.0) for z in zones], dtype=float)
 
 
-def _cl_volume(visum, edge, both) -> float:
-    def vol(fr, to):
-        try:
-            return float(visum.Net.Links.ItemByKey(int(fr), int(to)).AttValue("VOLVEH_DSEG(NATIVE_CL,AP)"))
-        except Exception:
-            return 0.0
-    v = vol(edge[1], edge[2])
-    if both:
-        v += vol(edge[2], edge[1])
-    return v
-
-
 def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mapping[str, Any],
            ws_problem, ws_solution, reference_values: Mapping[str, Mapping[str, Any]] = None,
            fit_cfg: Mapping[str, Any] = None) -> Dict[str, Any]:
@@ -193,28 +181,23 @@ def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mappi
         entries.append((i, col(("SCHOOL", "PROD", zones[o])), s))
         entries.append((i, col(("SCHOOL", "ATT", zones[d])), s))
 
-    # ---- LONG exposure from live NATIVE_CL volumes ----------------------------------
-    # The original unrestricted LSGEN1 design was able to increase every
-    # ADD_PROD_L even when native LONG OD contained <100 km trips.  For an
-    # invalid/unverified parent, omit this variable without weakening SCHOOL.
+    # ---- LONG is deliberately fail-closed until actual evidence is available --------
+    # The former aggregate CL-volume * LONG-share approximation did not identify
+    # home zones or the five native LONG components.  It cannot support zonal
+    # production calibration.  This baseline has no verified per-zone LONG
+    # OD-to-profile incidence and no native OD-pair filter readback, so SCHOOL
+    # remains usable while every ADD_PROD_L step is frozen.
     longguard1_allow_long = bool(fit_cfg.get("longguard1_allow_long", False))
-    from r1_15a2_td_count_blend_v24917 import cl_key
-    obs_by_no = {cl_key(r["no"]): r for r in cfg.get("api_approved_observations", []) or []}
-    long_scaled_share = 0.0
-    cl = np.zeros(P)
-    if longguard1_allow_long:
-        fp_long = sum(float(_zone_values(visum, a, zones).sum()) for a in
-                      ("FP_3_LONG_E_C", "FP_3_LONG_E_noC", "FP_3_LONG_noE_C", "FP_3_LONG_noE_noC", "FP_3_LONG_stud"))
-        mat_long = sum(float(_matrix(visum, no).sum()) for no in range(9111, 9116))
-        long_scaled_share = min(1.0, fp_long / mat_long) if mat_long > EPS else 0.0
-        for i, r in enumerate(rows):
-            ob = obs_by_no.get(cl_key(r.get("countlocation_no")))
-            if ob:
-                cl[i] = _cl_volume(visum, ob["edge_key"], str(ob.get("direction", "")).upper() == "BOTH")
-    if cl.sum() > EPS and long_scaled_share > 0.0:
-        k_long = col(("LONG", "PROD", 0))
-        for i in np.flatnonzero(cl > 0):
-            entries.append((int(i), k_long, float(cl[i] * long_scaled_share)))
+    long_zone_incidence = incidence.get("long_zone_profile_incidence")
+    has_long_zone_incidence = isinstance(long_zone_incidence, Mapping) and bool(long_zone_incidence)
+    if not longguard1_allow_long:
+        long_deferred_reason = "PARENT_SUPPORT_OR_FINECDF_UNVERIFIED"
+    elif not has_long_zone_incidence:
+        long_deferred_reason = "LONG_ZONE_PROFILE_INCIDENCE_UNIDENTIFIED"
+    else:
+        # The adapter has no source-verified native OD-pair operation or
+        # post-TD filter proof. Presence of caller data is not such proof.
+        long_deferred_reason = "UNVERIFIED_NATIVE_FILTER"
 
     nv = len(var_keys)
     if nv == 0:
@@ -251,14 +234,10 @@ def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mappi
             hi[k] = min(max_up, math.log(SCHOOL_HARD[1] / c))
             base[k] = max(EPS, margins[role][zidx[z]])
         else:
-            c = cur["ADD_PROD_L"]
-            r = np.array([float((ref.get("ADD_PROD_L") or {}).get(str(z), c[i]) or c[i])
-                          for i, z in enumerate(zones)])
-            ok = c > EPS
-            if not ok.any():
-                continue
-            lo[k] = max(-max_dn_long, float(np.max(np.log(LONG_REF_MULT[0] * r[ok] / c[ok]))))
-            hi[k] = min(max_up_long, float(np.min(np.log(LONG_REF_MULT[1] * r[ok] / c[ok]))))
+            # No synthetic/global LONG variable is created. If a future
+            # source-verified zonal incidence is introduced, each zone gets
+            # its own variable and is bounded against its immutable 0.2 anchor.
+            lo[k] = hi[k] = 0.0
         lo[k], hi[k] = min(0.0, lo[k]), max(0.0, hi[k])
     exposed = np.abs(G).sum(axis=0) > EPS
     lo[~exposed] = 0.0
@@ -277,8 +256,7 @@ def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mappi
         if fam == "SCHOOL":
             steps["ADD_PROD_SCH" if role == "PROD" else "ADD_ATT_SCH"][int(z)] = float(x[k])
         else:
-            for zz in zones:
-                steps["ADD_PROD_L"][zz] = float(x[k])
+            steps["ADD_PROD_L"][int(z)] = float(x[k])
     obs = np.array([float(r["observed"]) for r in rows])
     model = np.array([float(r["model"]) for r in rows])
     after = model + np.asarray(ws_solution["predicted_change"]) + sol["predicted_change"]
@@ -287,10 +265,14 @@ def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mappi
                "longguard1_max_log_up": max_up_long, "longguard1_max_log_down": max_dn_long,
                "longguard1_long_step_hard_ceiling": 0.10,
                "school_zone_vars": sum(1 for k in var_keys if k[0] == "SCHOOL"),
-               "longguard1_long_generation_permitted": longguard1_allow_long,
-               "longguard1_status": "ACTIVE" if longguard1_allow_long else "DEFERRED_PARENT_SUPPORT_UNVERIFIED_OR_INVALID",
-               "long_global_log_step": float(next((x[k] for k, v in enumerate(var_keys) if v[0] == "LONG"), 0.0)),
-               "long_scaled_share": long_scaled_share, "long_profile_volume": float(cl.sum()),
+               "longguard1_long_generation_permitted": False,
+               "longguard1_status": "PARENT_GATE_PASS_NATIVE_SUPPORT_STILL_UNVERIFIED" if longguard1_allow_long else "DEFERRED_PARENT_SUPPORT_UNVERIFIED_OR_INVALID",
+               "long_generation_permitted": False,
+               "long_search_status": "LONG_SEARCH_INCOMPLETE",
+               "long_deferred_reason": long_deferred_reason,
+               "long_native_filter_verified": False,
+               "long_zone_profile_incidence_status": "UNIDENTIFIED" if not has_long_zone_incidence else "UNVERIFIED_SOURCE",
+               "long_zone_steps": 0,
                "school_zones_changed": len(steps["ADD_PROD_SCH"]) + len(steps["ADD_ATT_SCH"]),
                "objective_initial": sol["objective_initial"], "objective_final": sol["objective_final"],
                "converged": bool(sol["converged"]),
@@ -320,4 +302,40 @@ def rows_at_scale(ls: Mapping[str, Any], scale: float) -> List[Dict[str, Any]]:
     return out
 
 
-__all__ = ["RELEASE", "ATTRS", "available", "availability", "activate", "design", "rows_at_scale"]
+def defer_long(ls: Mapping[str, Any], reason: str) -> Dict[str, Any]:
+    """Freeze LONG while retaining SCHOOL and recompute the final prediction."""
+    import copy
+    out = copy.deepcopy(dict(ls or {}))
+    steps = out.setdefault("steps", {})
+    for attr in ("ADD_PROD_L", "ADD_ATT_L"):
+        for zone in list((steps.get(attr) or {}).keys()):
+            steps[attr][zone] = 0.0
+    model = out.get("effect_operator") or {}
+    if model.get("keys") is not None and model.get("G") is not None:
+        by_key = {}
+        for attr, family, role in (("ADD_PROD_L", "LONG", "PROD"),
+                                   ("ADD_ATT_L", "LONG", "ATT"),
+                                   ("ADD_PROD_SCH", "SCHOOL", "PROD"),
+                                   ("ADD_ATT_SCH", "SCHOOL", "ATT")):
+            for zone, step in (steps.get(attr) or {}).items():
+                by_key[(family, role, int(zone))] = float(step)
+        x = np.asarray([by_key.get(tuple(key), 0.0) for key in model["keys"]], dtype=float)
+        delta = np.asarray(model["G"], dtype=float) @ x
+        if not np.isfinite(delta).all():
+            raise ValueError("TDLONG1_NONFINITE_DEFERRED_PREDICTION")
+        out["predicted_change"] = delta.tolist()
+        out.pop("prediction_unavailable_after_guard", None)
+    else:
+        out["predicted_change"] = None
+        out["prediction_unavailable_after_guard"] = True
+    summary = out.setdefault("summary", {})
+    summary.update(long_zone_steps=0, long_generation_permitted=False,
+                   long_search_status="LONG_SEARCH_INCOMPLETE",
+                   long_deferred_reason=str(reason),
+                   long_native_filter_verified=False,
+                   long_prediction_role="EXCLUDED_AND_OPERATOR_RECOMPUTED")
+    return out
+
+
+__all__ = ["RELEASE", "ATTRS", "available", "availability", "activate", "design",
+           "rows_at_scale", "defer_long"]

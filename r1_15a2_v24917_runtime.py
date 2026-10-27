@@ -17,7 +17,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Dict
 
-RELEASE = "R1_15A2_V24917_GENFIX2_TDJOINT1_RUNTIME_20261027"
+RELEASE = "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_RUNTIME_20261027"
 _STATE: Dict[str, Any] = {}
 
 

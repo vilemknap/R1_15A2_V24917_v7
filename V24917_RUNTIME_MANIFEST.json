@@ -1,6 +1,6 @@
 {
   "schema": "R1_15A2_V24917_RUNTIME_MANIFEST_V1",
-  "release": "R1_15A2_V24917_MOBILITYZONE1_OVER_LONGGUARD1_20261027",
+  "release": "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027",
   "parent_release_manifest": "V24916_PERF2C_RUNTIME_MANIFEST.json",
   "required_files": {
     "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
@@ -13,16 +13,18 @@
     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
     "r1_15a2_zonal_count_fit_v24917.py": "bdc08f3203430adf3b43bcdf7ce919582d7b215fcfd4b7bb7882de890fe3522b",
     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
-    "r1_15a2_trial_adapter_v24917.py": "54e401cd1fa754fb013b652122cf15e0d484f22be3f137a8807e2df55526614f",
+    "r1_15a2_trial_adapter_v24917.py": "78c0c09a58fd67cc00390713007db997244d81d039f0f176d295bb1ad86c6d81",
     "r1_15a2_active_demand_evidence_v24917.py": "cfb0a81c09203fcd4f24a6da80dada520aeecff7683f6ab161c38196e604234b",
-    "r1_15a2_runtime_delta_v24917.py": "56c1b614e082afe5341c1365fe144fa6230050e4365e2d6b5063f50be57b3313",
-    "r1_15a2_v24917_runtime.py": "36efc95e815fd1f92be8bdb7a4a3fd7726dbaad58be4fc4b0098cc59ddb287a6",
+    "r1_15a2_runtime_delta_v24917.py": "34519f5d72ba1998ce115fd1e5b5345a780fae4bf64462f985136af0436c8700",
+    "r1_15a2_v24917_runtime.py": "e53b97d0bc9a21111bf332311ac148d5c14a3dce8e2d20f1d810ce71221d8688",
     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
     "r1_15a2_dynamic_11d_files_v24917.py": "04671df2ce0c3502eb0997ead6e4ec87db5634afeaf84a30279c518dbee9ba4b",
     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
     "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
-    "r1_15a2_long_school_generation_v24917.py": "58d179d5de866f7d009296ad17bae0714f7bd1afa373156feb529356b895f9a8",
+    "r1_15a2_long_school_generation_v24917.py": "20ddc287bd49a5d6b1bf40c6d30207b57d82e771f8462cb524308f713efd1970",
+    "r1_15a2_long_od_mask_v24917.py": "8d711c24582109852612e3af73afd2b576907fb7a45719c962dbdc5f78841ef4",
+    "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
     "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
     "r1_15a2_step_search_v24917.py": "de7be9cc5c45e7de9be83652c09626e306e2244d6290f6f04309bd0f484bd057",
@@ -56,13 +58,13 @@
     "r1_15a2_diagfast_runtime_v1.py": "b71b2356a26985da742ea4c929585c911801415b4987f743a9ad47e7504e938d",
     "r1_15a2_diagfast_parity_v1.py": "1c9c314416f8961ec393cc6f1f24077fd07b953d612b263ba5c57149c56b3c6f",
     "r1_15a2_diagfast_direct_v2.py": "9be48df75480eb44b54691d165b889a572bf43e72c0667c455fb80fe32ed1e5d",
+    "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
+    "r1_15a2_mobility_zone_v24917.py": "b56ab2982ae9127bdb9337b09c13615ac0395a5de01e2aa4e37c385dbfd139e1",
+    "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "d649df2ad51e9c4c2bad51f35ca40effc3908a465ac4ef66cc8b792e131e2a0b",
-    "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
-    "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
-    "r1_15a2_mobility_zone_v24917.py": "60a5cd1a7447eebe80f3fa7ac1cbc1d4f4bb6ee590b8bb3c75efc29e20327ee2"
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "62a688791f56a0a540e0714da4f3af496b6cdc8ef135131b7e80231eee5b6f8b"
   }
 }

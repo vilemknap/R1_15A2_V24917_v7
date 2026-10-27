@@ -888,19 +888,16 @@ def test_long_school_design_and_rows(mb):
     out = ls.design(visum, cfg, zones, inc, problem, sol, {"ADD_PROD_L": {str(z): 0.2 for z in zones}},
                     fit_cfg={"longguard1_allow_long": True})
     s = out["summary"]
-    assert s["status"] == "OK" and s["long_scaled_share"] == pytest.approx(50.0 / 60.0)
-    import r1_15a2_long_school_generation_v24917 as _ls
-    cap = min(cfg["max_add_log_up"], math.log1p(float(_ls.ls_options()["ls_max_step_up"])))
-    assert 0.0 < s["long_global_log_step"] <= cap + 1e-9      # LSSENS1: per-cycle cap from run options
-    assert s["long_global_log_step"] <= math.log1p(0.10) + 1e-9  # LONGGUARD1 overrides loose LS policy
+    assert s["status"] == "OK"
+    assert "long_scaled_share" not in s
+    assert s["long_generation_permitted"] is False
+    assert s["long_search_status"] == "LONG_SEARCH_INCOMPLETE"
+    assert s["long_deferred_reason"] == "LONG_ZONE_PROFILE_INCIDENCE_UNIDENTIFIED"
     assert s["school_zones_changed"] > 0
     rs = ls.rows_at_scale(out, 0.5)
     longs = [r for r in rs if r["attr"] == "ADD_PROD_L"]
-    assert len(longs) == n and all(r["proposed"] == pytest.approx(0.2 * math.exp(0.5 * s["long_global_log_step"]))
-                                   for r in longs)
+    assert longs == []
     assert all(0.67 - 1e-9 <= r["proposed"] <= 1.5 + 1e-9 for r in rs if r["attr"].endswith("_SCH"))
-    cap_dn = -math.log1p(-float(_ls.ls_options()["ls_max_step_down"]))
-    assert all(abs(r["log_step"]) <= 0.5 * max(cap, cap_dn) + 1e-9 for r in rs)
     assert s["sensitivity"]["ls_ridge_relative"] == 0.05
     assert not ls.available(_LSVisum(n, {}, mats, links))
 
@@ -929,11 +926,11 @@ def test_adapter_writes_long_school_rows_with_the_trial(monkeypatch, tmp_path, m
            "_genfix2_mobility": {"zone_rows": zr, "zone_attributes": [],
                                   "options": {"enabled": True, "lo": .75, "hi": 1.25}}}
     rows = ad.apply_generation(ctx, 0.5, tmp_path)
-    assert len(rows) == 3 and len(written) == 3
-    assert {r["attr"] for r in written} == {"ADD_PROD_L", "ADD_PROD_SCH"}
+    assert len(rows) == 1 and len(written) == 1
+    assert {r["attr"] for r in written} == {"ADD_PROD_SCH"}
     assert (tmp_path / "V24917_LONG_SCHOOL_ROWS.json").is_file()
     prev = ad.generation_preview(ctx, 1.0)
-    assert prev["v24917_long_school_rows"] == 3
+    assert prev["v24917_long_school_rows"] == 1
 
 
 def test_ls_options_validation(tmp_path):
