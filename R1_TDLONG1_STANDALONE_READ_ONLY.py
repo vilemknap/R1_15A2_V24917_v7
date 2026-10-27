@@ -3,7 +3,8 @@
 
 Spustit v otevrenem modelu pres Scripts -> Run script file. Nepotrebuje zadny
 dalsi soubor z projektu. Pouze cte COM; nespousti vypocet ani neuklada .ver.
-Vysledek ulozi do JSON v docasne slozce Windows a zobrazi jeho cestu.
+Vysledek ulozi vedle skriptu, na plochu a do docasne slozky, pokud jsou
+prislusna umisteni zapisovatelna. Ulozene cesty zobrazi v okne.
 """
 from __future__ import annotations
 
@@ -18,7 +19,7 @@ import tempfile
 import traceback
 
 
-RELEASE = "R1_TDLONG1_STANDALONE_READ_ONLY_20261027"
+RELEASE = "R1_TDLONG1_STANDALONE_READ_ONLY_V2_20261027"
 LONG_CODES = (
     "3_LONG_E_C", "3_LONG_E_noC", "3_LONG_noE_C",
     "3_LONG_noE_noC", "3_LONG_stud",
@@ -174,16 +175,38 @@ def inspect_read_only(visum, source):
 def _notice(message):
     try:
         import ctypes
-        ctypes.windll.user32.MessageBoxW(0, message, "TDLONG1 read-only sonda", 0)
+        ctypes.windll.user32.MessageBoxW(0, message, "TDLONG1 read-only sonda", 0x40000)
     except Exception:
         pass
 
 
+def _output_directories():
+    explicit = globals().get("R1_TDLONG1_OUTPUT_DIR")
+    if explicit:
+        return [Path(explicit)]
+    candidates = []
+    script_file = globals().get("__file__")
+    if script_file:
+        candidates.append(Path(script_file).resolve().parent)
+    for base in (os.environ.get("OneDrive"), os.environ.get("USERPROFILE")):
+        if base:
+            candidates.append(Path(base) / "Desktop")
+    candidates.append(Path.home() / "Desktop")
+    candidates.append(Path(tempfile.gettempdir()))
+    seen = set()
+    result = []
+    for candidate in candidates:
+        try:
+            key = os.path.normcase(str(candidate.resolve()))
+        except Exception:
+            key = os.path.normcase(str(candidate))
+        if key not in seen:
+            seen.add(key)
+            result.append(candidate)
+    return result
+
+
 def _run():
-    output_dir = Path(globals().get("R1_TDLONG1_OUTPUT_DIR") or tempfile.gettempdir())
-    output_dir.mkdir(parents=True, exist_ok=True)
-    path = output_dir / ("R1_TDLONG1_READ_ONLY_%s_%s.json" %
-                         (datetime.now().strftime("%Y%m%d_%H%M%S_%f"), os.getpid()))
     try:
         visum, source = _visum_object()
         report = inspect_read_only(visum, source)
@@ -200,11 +223,34 @@ def _run():
             "mutating_calls_made": [],
         }
     report["timestamp_local"] = datetime.now().astimezone().isoformat()
-    path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print("TDLONG1 read-only sonda: " + report["status"])
-    print("JSON: " + str(path))
-    _notice("Stav: %s\nVystup: %s" % (report["status"], path))
-    return str(path)
+    filename = "R1_TDLONG1_READ_ONLY_%s_%s.json" % (
+        datetime.now().strftime("%Y%m%d_%H%M%S_%f"), os.getpid())
+    payload = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
+    saved, errors = [], []
+    try:
+        directories = _output_directories()
+    except Exception as exc:
+        directories = []
+        errors.append("OUTPUT_LOCATIONS:" + repr(exc))
+    for directory in directories:
+        try:
+            if directory.exists() and directory.is_dir():
+                path = directory / filename
+                path.write_text(payload, encoding="utf-8")
+                saved.append(str(path))
+            else:
+                errors.append(str(directory) + ":NOT_A_DIRECTORY")
+        except Exception as exc:
+            errors.append(str(directory) + ":" + repr(exc))
+    if saved:
+        message = "Stav: %s\nJSON ulozen do:\n%s" % (report["status"], "\n".join(saved))
+        print(message)
+        _notice(message)
+        return saved[0]
+    message = "TDLONG1: JSON se nepodarilo ulozit.\n" + "\n".join(errors)
+    print(message)
+    _notice(message)
+    return None
 
 
 # Visum may execute the file with a nonstandard __name__; run unconditionally.
