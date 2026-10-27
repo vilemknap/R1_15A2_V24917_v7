@@ -1,0 +1,367 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index c791471304817929c32db00c4a01a9b4e0b9ac05..ff15923966cb769073933ac2ef84522781debd1b 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -52,6 +52,7 @@
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
+     "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
++    "r1_15a2_long_profile_incidence_v24917.py": "c337b5bfd37112238a430c33dbad387363f2ce1974b632b7cb64354aa24840b0",
+     "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
+     "r1_15a2_mobility_guard_v24917.py": "84b9fa383a2d88699b960e7ffe92ef3e46fe384d2aa07dd499680fc8d5e0f3c8",
+     "r1_15a2_mobility_zone_v24917.py": "797920eac4ccfdf2e45141a6bce0d87ea45d430810beba99bcc7054fb20e1b5d",
+@@ -89,6 +90,7 @@
+     "tests/test_v24917_genfix2.py": "a7ed2b8ec90ffdd0d444cda9e361d403264570a8155422716198574e2e277be1",
+     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
++    "tests/test_v24917_long_profile_incidence.py": "94270b0c59831fb9c2cef2294e24e50f93102d6b4a967cbd59ce003500b8c3ce",
+     "tests/test_v24917_longguard1.py": "7457bc39c0826704d37f1dfbe7970b95460aae4a92f946c8f908445674581478",
+     "tests/test_v24917_mobility_guard.py": "197ced345d06b0d859ec91f2efc7235acf6e5f14810b6c7e2c220f8ae09bf744",
+     "tests/test_v24917_mobilityalloc1_solver.py": "9421fe7d9a1a07d9ecf7e6dc6b73f391af87a86aa2e5a666d1fb98fa15578265",
+@@ -111,7 +113,7 @@
+     "tests/test_v24917_tdrollbackfix1.py": "933942b93d7cc8f6472bc473c5223cc60d07b7cb458a5afbe5d390d1d3a7a03f",
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "eb1501eb94d0072874ac8eadeac18c82813f28763f795f9940fca38d5b5b25cc",
++    "tools/refresh_v24917_manifests.py": "58c612eeb3a4b69860e86f54b18533122106bf68019d49833cf6a2668cb7b757",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+   }
+ }
+diff --git a/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md b/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..fc16587dec1282ae03918e84bc9f4ec684f2c083
+--- /dev/null
++++ b/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
+@@ -0,0 +1,23 @@
++# LONG OD→profil incidence — čtecí offline kandidát
++
++**Stav:** `OBSERVED_LONG_OD_PROFILE_ONLY`, `LIVE_VISUM_NOT_RUN`. Modul `r1_15a2_long_profile_incidence_v24917.py` tvoří z předaných uložených tras `NATIVE_CL` a jejich průchodů linkami OD→profil expozici podle stejného pravidla, které WORK/SERVICE používají pro PrT path/path-link seznamy. Předané řádky musí být ze skutečného oficiálního exportu; zde je k dispozici jen syntetický test, nikoli aktuální `NATIVE_CL` trasy. Modul nepřipravuje návrh `ADD_PROD_L` ani `ADD_ATT_L` a nezasahuje do kalibrace.
++
++## Skutečný zdroj a výpočet
++
++- Aktivní WORK/SERVICE základ `r1_15a2_core.build_actual_path_incidence()` počítá pro každou uloženou trasu průchod profilem včetně násobnosti. Nativní `NATIVE_CL` je v seznamu možných osobních segmentů, ale v současné konfiguraci `R1_15A2_CONFIG_V2_4_9_6.json` není v `path_export_dsegs` ani `mutable_dsegs`. Pro reálný LONG audit je proto potřeba samostatný **read-only** export této vrstvy; nepřidávat ji automaticky do měnitelných segmentů.
++- Nový čistý modul přijímá pouze `NATIVE_CL` path/path-link řádky, schválené profily, osu zón, výslednou vozidlovou OD M9305 a pět vozidlových komponent M9291–M9295 po 20B. Vyžaduje shodu součtu komponent s M9305 po každé buňce a shodu součtu uložených tras s M9305 pro každý mezizónový pár. Kladné mezizónové trasy bez linků, osiřelé linky, chybné směry profilů, záporné/neúplné matice a nesprávný segment odmítá. Diagonální objem vykazuje zvlášť, protože nemusí mít síťovou trasu.
++- Pro profil `p` a OD `o,d` je současná expozice `A[p,o,d] = Σ_trasa objem_trasy × počet průchodů profilem`. Komponentový průchod se získá z pozorovaného podílu `M929k[o,d]/M9305[o,d]`; pět komponent se musí na každém profilu sečíst na celkový LONG průchod. Výstup nese existující `ordered_zone_hash()` a `matrix_values_hash()`. Všechny hash hodnoty jsou diagnostické pro předaná data; bez živého načtení a shody assignment/path epochy nejsou autoritou aktuálního Visum stavu.
++
++## Hranice interpretace
++
++Výstup je **pozorované přiřazení vozidel k profilům pro jeden konzistentní vstupní snapshot**. Dodaný 19B V5 je pouze čtecí audit kandidáta κ: mapuje R1 zóny na rodičovské AMDY zóny a váží OD převod pomocí R1 osobních matic a pásem M9001. Dodaný 20A V2 popisuje realizační krok: v každé z pěti LONG komponent násobí OD buňky M9111–M9115 komponentově a pásmově specifickou κ podle **M9001**, s auditovaným komponentovým fallbackem při malé chybějící podpoře kontraktu, a zapisuje M9191–M9195. Samostatný 20B V7 pak z M9191–M9195 tvoří M9291–M9295 pomocí `BOUNDED_IPF`; finální M9305 musí odpovídat součtu pěti složek. κ není globální násobitel CL ani `2.8` z generační formule. Předané skripty ukazují zamýšlenou metodiku, ale samy nedokládají právě načtenou proceduru ve Visumu.
++
++Citlivost produkčního koeficientu v zóně vyžaduje ještě průchod přes nativní TG/TD, právě popsaný převod `9111–9115 → 9191–9195`, směrově omezený návratový 20B `9191–9195 → 9291–9295` a finální `9305`. Samotný podíl komponent v M929x neprokazuje derivaci této sekvence. Živě se musí ověřit také skutečné vzorce 20B/9305 a totožná epocha tras a matic; dodaný TG export tyto trasy ani matice neobsahuje. Proto výstup nikdy neplní klíč `long_zone_profile_incidence` aktivního LSGEN a `long_generation_permitted` je vždy `False`. Navíc zůstává neověřený nativní filtr LONG OD párů `distance >= 100 km`.
++
++Export TG z momentálního modelu obsahuje `ADD_PROD_L = 4.38341115316211` ve všech 681 zónách; projektová pevná reference je `0.2`. Případný návrat na základní hodnoty se nesmí předpokládat, dokud nebude doložen aktuální snapshot po rollbacku.
++
++## Ověření
++
++`PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_profile_incidence.py tests/test_v24917_tdlong1_mask.py tests/test_core_deep.py tests/test_v24917_runtime_install.py` — **44 PASS, 0 FAIL**. Syntetické testy zahrnují opakovaný průchod linkou, obousměrný profil, rozklad pěti komponent, intrazonální objem a odmítnutí chybných zdrojů. Kompilace změněných souborů a `git diff --check` prošly. Projektový nástroj zapečetil 65/65 runtime souborů a ověřil 1 059 neměnných zdrojů. Testy neprokazují běh ve Visumu.
++
++Další ohraničený krok: na cílovém PC čtecím exportem získat `NATIVE_CL` path/path-link seznam a ve stejné assignment/path epoše M9291–M9295 a M9305; po kontrole parity lze změřit skutečnou OD→profil expozici. Teprve poté lze vyvíjet zonální TG citlivost a nezávisle doložit nativní LONG filtr.
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index b89e501aa7bb9b0b0cc2ef5ffbb92cf99bf7469b..9e6ed1cfd509749b15e9f383fb646a7da93541dc 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -25,6 +25,7 @@
+     "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
+     "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
+     "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
++    "r1_15a2_long_profile_incidence_v24917.py": "c337b5bfd37112238a430c33dbad387363f2ce1974b632b7cb64354aa24840b0",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
+@@ -66,6 +67,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "96a3a06d3f49b53411c1f4ee3c27ee4b4c62720901f37eb0296cd67276dc1fe2"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "2a65ca41bdb4508e72ad2435ac17c5725030c8f619b4f7a40a6b666eef7c5317"
+   }
+ }
+diff --git a/r1_15a2_long_profile_incidence_v24917.py b/r1_15a2_long_profile_incidence_v24917.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..ae428a7dc6cf69771fe2bd90e90fe5c0b59bf005
+--- /dev/null
++++ b/r1_15a2_long_profile_incidence_v24917.py
+@@ -0,0 +1,178 @@
++# -*- coding: utf-8 -*-
++"""Read-only NATIVE_CL OD-to-profile incidence from official saved Visum routes.
++
++This is current *vehicle-flow attribution*, not a derivative of LONG trip
++generation. It cannot enable ADD_PROD_L/ADD_ATT_L: native TD, component- and
++M9001-band-specific 20A kappa realization (9111..9115 to 9191..9195), and
++20B bounded-IPF return (9191..9195 to 9291..9295) sit between TG and these
++matrices. M929x shares already include both transformations; no global CL
++vehicle-per-person multiplier is inferred.
++The caller must establish that paths, M9291..M9295 and M9305 belong to the
++same assignment/path epoch. No COM operations or matrix writes occur here.
++"""
++from __future__ import annotations
++
++from collections import defaultdict
++from typing import Any, Mapping, Sequence
++
++import numpy as np
++
++import r1_15a2_core as core
++from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
++
++RELEASE = "R1_15A2_V24917_LONG_OBSERVED_PATH_INCIDENCE_V1"
++COMPONENT_MATRICES = (9291, 9292, 9293, 9294, 9295)
++FINAL_MATRIX = 9305
++
++
++def _matrix(values: Any, n: int, label: str) -> np.ndarray:
++    a = np.asarray(values, dtype=np.float64)
++    if a.shape != (n, n):
++        raise ValueError("LONG_INCIDENCE_MATRIX_SHAPE:" + label)
++    if not np.isfinite(a).all() or np.any(a < 0.0):
++        raise ValueError("LONG_INCIDENCE_MATRIX_INVALID:" + label)
++    return np.array(a, copy=True)
++
++
++def build_observed_long_incidence(
++    path_rows: Sequence[Mapping[str, Any]],
++    pathlink_rows: Sequence[Mapping[str, Any]],
++    profiles: Sequence[Mapping[str, Any]],
++    zone_nos: Sequence[int],
++    final_vehicle_od: Any,
++    component_vehicle_od: Mapping[int, Any],
++    *,
++    absolute_tolerance: float = 1.0e-6,
++    relative_tolerance: float = 1.0e-8,
++) -> dict[str, Any]:
++    """Build exact current CL path exposure, with OD and component parity gates.
++
++    ``path_rows`` and ``pathlink_rows`` must be the official saved NATIVE_CL
++    route lists. Positive interzonal OD mass must have complete path links.
++    The five 929x matrices must sum cellwise to 9305. Intrazonal matrix mass
++    is recorded separately because it need not have a network route.
++    """
++    if any(isinstance(z, (bool, np.bool_)) or not isinstance(z, (int, np.integer))
++           for z in zone_nos):
++        raise ValueError("LONG_INCIDENCE_ZONE_AXIS_INVALID")
++    zones = tuple(int(z) for z in zone_nos)
++    if not zones or any(z <= 0 for z in zones) or len(set(zones)) != len(zones):
++        raise ValueError("LONG_INCIDENCE_ZONE_AXIS_INVALID")
++    if not profiles:
++        raise ValueError("LONG_INCIDENCE_NO_PROFILES")
++    n = len(zones)
++    zone_pos = {z: i for i, z in enumerate(zones)}
++    atol, rtol = float(absolute_tolerance), float(relative_tolerance)
++    if not np.isfinite([atol, rtol]).all() or atol < 0.0 or rtol < 0.0:
++        raise ValueError("LONG_INCIDENCE_TOLERANCE_INVALID")
++    final = _matrix(final_vehicle_od, n, "M9305")
++    if {int(k) for k in component_vehicle_od} != set(COMPONENT_MATRICES):
++        raise ValueError("LONG_INCIDENCE_COMPONENT_SET_INVALID")
++    components = {no: _matrix(component_vehicle_od[no], n, "M%d" % no)
++                  for no in COMPONENT_MATRICES}
++    component_sum = np.zeros_like(final)
++    for no in COMPONENT_MATRICES:
++        component_sum += components[no]
++    if not np.allclose(component_sum, final, rtol=rtol, atol=atol):
++        raise ValueError("LONG_INCIDENCE_COMPONENT_TO_FINAL_OD_MISMATCH")
++    if not np.any(final[~np.eye(n, dtype=bool)] > atol):
++        raise ValueError("LONG_INCIDENCE_NO_INTERZONAL_FLOW")
++
++    paths, path_summary = core.parse_official_path_rows(path_rows)
++    if path_summary["invalid_rows"] or path_summary["negative_volume_rows"]:
++        raise ValueError("LONG_INCIDENCE_INVALID_PATH_ROWS")
++    if not paths or any(p["dseg_code"] != "NATIVE_CL" for p in paths):
++        raise ValueError("LONG_INCIDENCE_NOT_NATIVE_CL_PATHS")
++    path_by_key = {p["path_key"]: p for p in paths}
++    path_od = np.zeros_like(final)
++    for path in paths:
++        o, d = int(path["origin"]), int(path["destination"])
++        if o not in zone_pos or d not in zone_pos:
++            raise ValueError("LONG_INCIDENCE_PATH_ZONE_OUTSIDE_AXIS")
++        path_od[zone_pos[o], zone_pos[d]] += float(path["volume"])
++    off = ~np.eye(n, dtype=bool)
++    if not np.allclose(path_od[off], final[off], rtol=rtol, atol=atol):
++        raise ValueError("LONG_INCIDENCE_PATH_TO_FINAL_OD_MISMATCH")
++
++    link_to_profiles: dict[tuple[int, int, int], list[int]] = defaultdict(list)
++    for idx, profile in enumerate(profiles):
++        keys = core._profile_link_keys(profile)
++        if not keys:
++            raise ValueError("LONG_INCIDENCE_PROFILE_LINK_INVALID")
++        for key in keys:
++            link_to_profiles[key].append(idx)
++
++    path_profile_hits: dict[tuple[Any, int], int] = defaultdict(int)
++    path_with_links: set[Any] = set()
++    for raw in pathlink_rows:
++        key = core._path_key_from_row(raw, pathlink=True)
++        link = core._link_key_from_row(raw)
++        if key is None or link is None or key not in path_by_key:
++            raise ValueError("LONG_INCIDENCE_INVALID_OR_ORPHAN_PATHLINK")
++        path_with_links.add(key)
++        for pidx in link_to_profiles.get(link, ()):
++            path_profile_hits[(key, pidx)] += 1
++    paths_hitting_profile = {key for key, _ in path_profile_hits}
++    for path in paths:
++        if (path["origin"] != path["destination"] and path["volume"] > atol
++                and path["path_key"] not in path_with_links):
++            raise ValueError("LONG_INCIDENCE_POSITIVE_PATH_WITHOUT_LINKS")
++        if (path["origin"] == path["destination"] and path["volume"] > atol
++                and path["path_key"] in paths_hitting_profile):
++            raise ValueError("LONG_INCIDENCE_INTRAZONAL_PROFILE_PATH_UNSUPPORTED")
++
++    od_keys = sorted((int(o), int(d))
++                     for o, d in zip(*np.nonzero(final > atol)) if o != d)
++    od_index = {key: idx for idx, key in enumerate(od_keys)}
++    variables = [{"dseg_code": "NATIVE_CL", "family": "LONG", "origin": zones[o],
++                  "destination": zones[d], "q_current": float(final[o, d]),
++                  "component_vehicle_od": {str(no): float(components[no][o, d])
++                                           for no in COMPONENT_MATRICES}}
++                 for o, d in od_keys]
++    through: dict[tuple[int, int], float] = defaultdict(float)
++    for (key, pidx), multiplicity in path_profile_hits.items():
++        path = path_by_key[key]
++        o, d = zone_pos[int(path["origin"])], zone_pos[int(path["destination"])]
++        if o == d:
++            continue
++        idx = od_index.get((o, d))
++        if idx is None and path["volume"] > atol:
++            raise ValueError("LONG_INCIDENCE_PATH_WITHOUT_FINAL_OD")
++        if idx is not None:
++            through[(pidx, idx)] += float(path["volume"]) * multiplicity
++    items = sorted(through.items())
++    row = np.array([k[0] for k, _ in items], dtype=np.int64)
++    col = np.array([k[1] for k, _ in items], dtype=np.int64)
++    value = np.array([v for _, v in items], dtype=np.float64)
++    operator = core.SparseOperator(row, col, value, len(profiles), len(variables))
++    total_profile = np.bincount(row, weights=value, minlength=len(profiles)).astype(float)
++    component_profile = {}
++    for no in COMPONENT_MATRICES:
++        share = np.array([components[no][o, d] / final[o, d] for o, d in od_keys])
++        component_profile[str(no)] = np.bincount(
++            row, weights=value * share[col], minlength=len(profiles)).astype(float)
++    if not np.allclose(sum(component_profile.values(), np.zeros(len(profiles))),
++                       total_profile, rtol=rtol, atol=atol):
++        raise ValueError("LONG_INCIDENCE_COMPONENT_PROFILE_PARITY_FAILED")
++    return {
++        "release": RELEASE,
++        "status": "OBSERVED_LONG_OD_PROFILE_ONLY",
++        "source_status": "CALLER_SUPPLIED_INPUTS_LIVE_EPOCH_UNVERIFIED",
++        "tg_sensitivity_verified": False,
++        "long_generation_permitted": False,
++        "zone_order_sha256": ordered_zone_hash(zones),
++        "matrix_values_sha256": {"9305": matrix_values_hash(final),
++                                 **{str(no): matrix_values_hash(components[no])
++                                    for no in COMPONENT_MATRICES}},
++        "path_summary": path_summary,
++        "matrix_parity_max_abs": float(np.max(np.abs(component_sum - final))),
++        "path_od_parity_max_abs_offdiag": float(np.max(np.abs(path_od[off] - final[off]), initial=0.0)),
++        "unrouted_intrazonal_volume": float(np.trace(final)),
++        "variables": variables,
++        "incidence": operator,
++        "profile_long_vehicle_flow": total_profile,
++        "component_profile_vehicle_flow": component_profile,
++    }
++
++
++__all__ = ["RELEASE", "COMPONENT_MATRICES", "FINAL_MATRIX", "build_observed_long_incidence"]
+diff --git a/tests/test_v24917_long_profile_incidence.py b/tests/test_v24917_long_profile_incidence.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..8602ed04a1bb575fe45174953d5afa8296244a25
+--- /dev/null
++++ b/tests/test_v24917_long_profile_incidence.py
+@@ -0,0 +1,87 @@
++"""Current LONG vehicle OD-to-profile attribution; no TG actuator is enabled."""
++import numpy as np
++import pytest
++
++import r1_15a2_long_profile_incidence_v24917 as longinc
++
++
++def _path(o, d, index, volume, code="NATIVE_CL"):
++    return {"dseg_code": code, "OrigZoneNo": o, "DestZoneNo": d,
++            "Index": index, "Vol(AP)": volume}
++
++
++def _link(o, d, index, seq, no, fr, to):
++    return {"dseg_code": "NATIVE_CL", "OrigZoneNo": o, "DestZoneNo": d,
++            "PathIndex": index, "Index": seq, "LinkNo": no,
++            "FromNodeNo": fr, "ToNodeNo": to}
++
++
++def _fixture():
++    paths = [_path(1, 2, 1, 80), _path(1, 2, 2, 20), _path(2, 1, 1, 50)]
++    links = [_link(1, 2, 1, 1, 10, 1, 2), _link(1, 2, 1, 2, 10, 1, 2),
++             _link(1, 2, 1, 3, 20, 2, 3), _link(1, 2, 2, 1, 20, 3, 2),
++             _link(2, 1, 1, 1, 20, 3, 2)]
++    profiles = [{"link_no": 10, "from_node_no": 1, "to_node_no": 2},
++                {"link_no": 20, "from_node_no": 2, "to_node_no": 3,
++                 "observation_direction": "BOTH", "reverse_link_no": 20,
++                 "reverse_from_node_no": 3, "reverse_to_node_no": 2}]
++    final = np.array([[5., 100.], [50., 0.]])
++    comp = {no: np.zeros((2, 2)) for no in longinc.COMPONENT_MATRICES}
++    comp[9291][:] = [[5., 60.], [10., 0.]]
++    comp[9292][:] = [[0., 40.], [40., 0.]]
++    return paths, links, profiles, (1, 2), final, comp
++
++
++def test_exact_saved_path_multiplicity_bidirection_and_component_parity():
++    inputs = _fixture()
++    out = longinc.build_observed_long_incidence(*inputs)
++    assert out["status"] == "OBSERVED_LONG_OD_PROFILE_ONLY"
++    assert out["long_generation_permitted"] is False
++    assert out["tg_sensitivity_verified"] is False
++    assert out["unrouted_intrazonal_volume"] == pytest.approx(5.)
++    assert out["matrix_parity_max_abs"] == 0.
++    assert out["path_od_parity_max_abs_offdiag"] == 0.
++    assert len(out["variables"]) == 2
++    assert out["profile_long_vehicle_flow"] == pytest.approx([160., 150.])
++    assert out["component_profile_vehicle_flow"]["9291"] == pytest.approx([96., 70.])
++    assert out["component_profile_vehicle_flow"]["9292"] == pytest.approx([64., 80.])
++    assert out["incidence"].forward(np.ones(2)) == pytest.approx([160., 150.])
++
++
++def test_component_sum_and_saved_path_od_must_match_final_matrix():
++    paths, links, profiles, zones, final, comp = _fixture()
++    bad = {no: a.copy() for no, a in comp.items()}
++    bad[9291][0, 1] += 1.
++    with pytest.raises(ValueError, match="COMPONENT_TO_FINAL_OD_MISMATCH"):
++        longinc.build_observed_long_incidence(paths, links, profiles, zones, final, bad)
++    bad_paths = list(paths)
++    bad_paths[0] = dict(bad_paths[0], **{"Vol(AP)": 79.})
++    with pytest.raises(ValueError, match="PATH_TO_FINAL_OD_MISMATCH"):
++        longinc.build_observed_long_incidence(bad_paths, links, profiles, zones, final, comp)
++
++
++def test_pathlink_and_source_scope_fail_closed():
++    paths, links, profiles, zones, final, comp = _fixture()
++    with pytest.raises(ValueError, match="POSITIVE_PATH_WITHOUT_LINKS"):
++        longinc.build_observed_long_incidence(paths, links[:4], profiles, zones, final, comp)
++    with pytest.raises(ValueError, match="INVALID_OR_ORPHAN_PATHLINK"):
++        longinc.build_observed_long_incidence(paths, links + [_link(2, 1, 99, 1, 20, 3, 2)],
++                                              profiles, zones, final, comp)
++    with pytest.raises(ValueError, match="NOT_NATIVE_CL_PATHS"):
++        longinc.build_observed_long_incidence([dict(paths[0], dseg_code="NATIVE_CW")]
++                                              + paths[1:], links, profiles, zones, final, comp)
++
++
++def test_input_matrices_are_not_mutated_and_invalid_matrix_rejected():
++    paths, links, profiles, zones, final, comp = _fixture()
++    original = final.copy()
++    longinc.build_observed_long_incidence(paths, links, profiles, zones, final, comp)
++    assert np.array_equal(final, original)
++    assert comp[9291][0, 1] == 60.
++    with pytest.raises(ValueError, match="MATRIX_INVALID"):
++        longinc.build_observed_long_incidence(paths, links, profiles, zones,
++                                              np.array([[5., np.nan], [50., 0.]]), comp)
++    with pytest.raises(ValueError, match="ZONE_AXIS_INVALID"):
++        longinc.build_observed_long_incidence(paths, links, profiles, (1.0, 2), final, comp)
++    with pytest.raises(ValueError, match="NO_PROFILES"):
++        longinc.build_observed_long_incidence(paths, links, [], zones, final, comp)
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index d378b1188df609be3418128fcd0eef7ee10e883a..508042d614b96b7fd195c2505e1a87c76936fd9f 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -32,6 +32,7 @@ RUNTIME = [
+     "r1_15a2_td_count_blend_v24917.py",
+     "r1_15a2_long_school_generation_v24917.py",
+     "r1_15a2_long_od_mask_v24917.py",
++    "r1_15a2_long_profile_incidence_v24917.py",
+     "r1_15a2_tdlong1_probe_v24917.py",
+     "r1_15a2_intrazonal_penalty_v24917.py",
+     "r1_15a2_fast_trial_assignment_v24917.py",
