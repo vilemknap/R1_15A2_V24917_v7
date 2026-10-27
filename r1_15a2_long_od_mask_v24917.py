@@ -271,9 +271,13 @@ def check_restricted_pa_feasibility(support: Any,
                                    relative_tolerance: float = 1.0e-10) -> dict[str, Any]:
     """Check exact bipartite feasibility separately for LONG matrices 9111-9115.
 
-    ``symmetry_safe=True`` uses ``support & support.T`` so later symmetric
-    averaging cannot create a below-threshold reverse pair.  No demand mass is
-    added or moved by this function.
+    ``symmetry_safe=True`` uses ``support & support.T`` as a conservative
+    pre-TD restriction for the 20B V7 domestic return process. Its BOUNDED_IPF
+    seed adds reverse support, and the 1.5:1 direction cap retains both sides
+    of a positive pair. This precheck alone is not a proof of final support:
+    20B can also repair tiny IPF support, so its actual output and downstream
+    matrices must be checked against the original distance mask. No demand
+    mass is added or moved by this function.
     """
     mask = np.asarray(support, dtype=bool)
     if mask.ndim != 2 or mask.shape[0] != mask.shape[1] or not len(mask):

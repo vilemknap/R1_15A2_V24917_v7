@@ -24,7 +24,7 @@
     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
     "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
     "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
-    "r1_15a2_long_od_mask_v24917.py": "8d711c24582109852612e3af73afd2b576907fb7a45719c962dbdc5f78841ef4",
+    "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
     "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
@@ -66,6 +66,6 @@
     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "a4bcb109210f9e20b994fa2b3eb507e33f98ada0743cd7305cd488a61acbf3fd"
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "96a3a06d3f49b53411c1f4ee3c27ee4b4c62720901f37eb0296cd67276dc1fe2"
   }
 }
