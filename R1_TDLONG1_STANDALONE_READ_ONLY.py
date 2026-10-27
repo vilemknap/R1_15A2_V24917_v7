@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Samostatna cteci sonda LONG trip distribution pro PTV Visum.
 
 Spustit v otevrenem modelu pres Scripts -> Run script file. Nepotrebuje zadny
