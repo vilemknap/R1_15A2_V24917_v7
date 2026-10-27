@@ -1,0 +1,431 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index ff15923..1f3bafb 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -52,8 +52,9 @@
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
+     "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
+-    "r1_15a2_long_profile_incidence_v24917.py": "c337b5bfd37112238a430c33dbad387363f2ce1974b632b7cb64354aa24840b0",
++    "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
+     "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
++    "r1_15a2_long_zonal_fit_v24917.py": "d73ef3a6a06876c9fd55a4aa7be5078aa0ac67f6b5f6ad8c4bd2832dcdf6ebbf",
+     "r1_15a2_mobility_guard_v24917.py": "84b9fa383a2d88699b960e7ffe92ef3e46fe384d2aa07dd499680fc8d5e0f3c8",
+     "r1_15a2_mobility_zone_v24917.py": "797920eac4ccfdf2e45141a6bce0d87ea45d430810beba99bcc7054fb20e1b5d",
+     "r1_15a2_parent_equivalence_v24917.py": "34efb09b5eaae48fdeaa865aa76c7845267ac7ecc58fe2fce119de98b9926664",
+@@ -90,7 +91,8 @@
+     "tests/test_v24917_genfix2.py": "a7ed2b8ec90ffdd0d444cda9e361d403264570a8155422716198574e2e277be1",
+     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
+-    "tests/test_v24917_long_profile_incidence.py": "94270b0c59831fb9c2cef2294e24e50f93102d6b4a967cbd59ce003500b8c3ce",
++    "tests/test_v24917_long_profile_incidence.py": "6220c516d2f7c39e0b2ddf80101121714c7f22dfa6249dead14102df5e15d976",
++    "tests/test_v24917_long_zonal_fit.py": "e26878643cd4062365f6f7e3b54067ce2c7bffe0dba6e71881afa26fafcba7a1",
+     "tests/test_v24917_longguard1.py": "7457bc39c0826704d37f1dfbe7970b95460aae4a92f946c8f908445674581478",
+     "tests/test_v24917_mobility_guard.py": "197ced345d06b0d859ec91f2efc7235acf6e5f14810b6c7e2c220f8ae09bf744",
+     "tests/test_v24917_mobilityalloc1_solver.py": "9421fe7d9a1a07d9ecf7e6dc6b73f391af87a86aa2e5a666d1fb98fa15578265",
+@@ -113,7 +115,7 @@
+     "tests/test_v24917_tdrollbackfix1.py": "933942b93d7cc8f6472bc473c5223cc60d07b7cb458a5afbe5d390d1d3a7a03f",
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "58c612eeb3a4b69860e86f54b18533122106bf68019d49833cf6a2668cb7b757",
++    "tools/refresh_v24917_manifests.py": "edd39bff31b786a41b0d920d0ba16b2f15c276c289bb110574734bfda8b162d1",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+   }
+ }
+diff --git a/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md b/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
+index fc16587..66e3653 100644
+--- a/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
++++ b/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
+@@ -1,6 +1,6 @@
+ # LONG OD→profil incidence — čtecí offline kandidát
+ 
+-**Stav:** `OBSERVED_LONG_OD_PROFILE_ONLY`, `LIVE_VISUM_NOT_RUN`. Modul `r1_15a2_long_profile_incidence_v24917.py` tvoří z předaných uložených tras `NATIVE_CL` a jejich průchodů linkami OD→profil expozici podle stejného pravidla, které WORK/SERVICE používají pro PrT path/path-link seznamy. Předané řádky musí být ze skutečného oficiálního exportu; zde je k dispozici jen syntetický test, nikoli aktuální `NATIVE_CL` trasy. Modul nepřipravuje návrh `ADD_PROD_L` ani `ADD_ATT_L` a nezasahuje do kalibrace.
++**Stav:** `OBSERVED_LONG_OD_PROFILE_ONLY` + `LOCAL_LINEAR_PROPOSAL_ONLY`, `LIVE_VISUM_NOT_RUN`. Modul `r1_15a2_long_profile_incidence_v24917.py` tvoří z předaných uložených tras `NATIVE_CL` a jejich průchodů linkami OD→profil expozici podle stejného pravidla, které WORK/SERVICE používají pro PrT path/path-link seznamy. Předané řádky musí být ze skutečného oficiálního exportu; zde je k dispozici jen syntetický test, nikoli aktuální `NATIVE_CL` trasy. Navazující lokální fit je pouze diagnostický a nezasahuje do aktivní kalibrace.
+ 
+ ## Skutečný zdroj a výpočet
+ 
+@@ -14,10 +14,22 @@ Výstup je **pozorované přiřazení vozidel k profilům pro jeden konzistentn
+ 
+ Citlivost produkčního koeficientu v zóně vyžaduje ještě průchod přes nativní TG/TD, právě popsaný převod `9111–9115 → 9191–9195`, směrově omezený návratový 20B `9191–9195 → 9291–9295` a finální `9305`. Samotný podíl komponent v M929x neprokazuje derivaci této sekvence. Živě se musí ověřit také skutečné vzorce 20B/9305 a totožná epocha tras a matic; dodaný TG export tyto trasy ani matice neobsahuje. Proto výstup nikdy neplní klíč `long_zone_profile_incidence` aktivního LSGEN a `long_generation_permitted` je vždy `False`. Navíc zůstává neověřený nativní filtr LONG OD párů `distance >= 100 km`.
+ 
++## Navazující lokální zonální fit podle principu WORK/SERVICE
++
++`r1_15a2_long_zonal_fit_v24917.py` nyní nad pozorovanou LONG incidencí staví čistý diagnostický návrh. Pro zónové log kroky `u_o` (produkce) a `v_d` (atraktivita) používá stejný první řád jako aktivní W/S:
++
++`Δq_od/q_od ≈ u_o + v_d − g_LONG`, kde `g_LONG = 0.5×(Σ P_o u_o/P_total + Σ A_d v_d/A_total)`, a `ΔF_p ≈ Σ_od A[p,od]×(u_o+v_d−g_LONG)`.
++
++`P/A` základ se bere z celé aktuální M9305 včetně intrazonálních cest, které nemají profilovou trasu; normalizace proto odpovídá celému LONG objemu. Profilové řádky, identita a váhy se přebírají z W/S problému; po jeho předpovědi se fituje zbylé reziduum. Solver je tentýž ohraničený `r1_15a2_zonal_count_fit_v24917.solve()`: tvrdá lineární bilance P/A, přesná oprava změn `exp(log_step)`, ridge a nulový krok u zón bez přímé expozice. Zónové meze se musí dodat explicitně z aktuálního referenčního a mobilitního kontraktu; modul si je nevymýšlí a nevydává žádné aplikační `candidate_rows`.
++
++Je to **stejná lokální aproximace**, jakou W/S používají k výběru pokusu, nikoli analytická derivace celé TG→TD→20A→20B sekvence. Přesný účinek musí ověřit skutečný pokus ve Visumu; zejména 20B může změnu rozdělit mezi oba směry. `fit()` proto vždy vrací `LOCAL_LINEAR_PROPOSAL_ONLY`, `long_generation_permitted=False` a `native_filter_verified=False`. Aktivní LSGEN/adapter nejsou novým modulem zapojeny a nadále LONG zmrazují.
++
+ Export TG z momentálního modelu obsahuje `ADD_PROD_L = 4.38341115316211` ve všech 681 zónách; projektová pevná reference je `0.2`. Případný návrat na základní hodnoty se nesmí předpokládat, dokud nebude doložen aktuální snapshot po rollbacku.
+ 
+ ## Ověření
+ 
+ `PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_profile_incidence.py tests/test_v24917_tdlong1_mask.py tests/test_core_deep.py tests/test_v24917_runtime_install.py` — **44 PASS, 0 FAIL**. Syntetické testy zahrnují opakovaný průchod linkou, obousměrný profil, rozklad pěti komponent, intrazonální objem a odmítnutí chybných zdrojů. Kompilace změněných souborů a `git diff --check` prošly. Projektový nástroj zapečetil 65/65 runtime souborů a ověřil 1 059 neměnných zdrojů. Testy neprokazují běh ve Visumu.
+ 
+-Další ohraničený krok: na cílovém PC čtecím exportem získat `NATIVE_CL` path/path-link seznam a ve stejné assignment/path epoše M9291–M9295 a M9305; po kontrole parity lze změřit skutečnou OD→profil expozici. Teprve poté lze vyvíjet zonální TG citlivost a nezávisle doložit nativní LONG filtr.
++Po doplnění lokálního fitu: `PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_zonal_fit.py tests/test_v24917_long_profile_incidence.py tests/test_v24917_mobilityalloc1_solver.py tests/test_v24917_tdlong1_mask.py tests/test_v24917_runtime_install.py` — **36 PASS, 0 FAIL**. Testy ověřují přesný tvar normalizované matice `G`, zahrnutí intrazonálního objemu, reziduum po W/S, omezený solver, nelineární P/A, nulový krok bez expozice a odmítnutí chybné osy/profilu. Aktuální zapečetění je 66/66 runtime souborů; 1 059 původních zdrojů zůstalo beze změny.
++
++Další ohraničený krok: na cílovém PC čtecím exportem získat `NATIVE_CL` path/path-link seznam a ve stejné assignment/path epoše M9291–M9295 a M9305; po kontrole parity lze změřit skutečnou OD→profil expozici a prověřit lokální zonální predikci na malém živém pokusu. Samostatně je nutné doložit nativní LONG filtr, obnovu rodiče a případný rollback `ADD_PROD_L` na základní hodnotu.
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 9e6ed1c..4de1b50 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -25,7 +25,8 @@
+     "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
+     "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
+     "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
+-    "r1_15a2_long_profile_incidence_v24917.py": "c337b5bfd37112238a430c33dbad387363f2ce1974b632b7cb64354aa24840b0",
++    "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
++    "r1_15a2_long_zonal_fit_v24917.py": "d73ef3a6a06876c9fd55a4aa7be5078aa0ac67f6b5f6ad8c4bd2832dcdf6ebbf",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
+@@ -67,6 +68,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "2a65ca41bdb4508e72ad2435ac17c5725030c8f619b4f7a40a6b666eef7c5317"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "331034cd57d87b9f9c0e9321faefef71b39ce7febabf955fa607a8dc083bf7d7"
+   }
+ }
+diff --git a/r1_15a2_long_profile_incidence_v24917.py b/r1_15a2_long_profile_incidence_v24917.py
+index ae428a7..a4a2695 100644
+--- a/r1_15a2_long_profile_incidence_v24917.py
++++ b/r1_15a2_long_profile_incidence_v24917.py
+@@ -168,6 +168,11 @@ def build_observed_long_incidence(
+         "matrix_parity_max_abs": float(np.max(np.abs(component_sum - final))),
+         "path_od_parity_max_abs_offdiag": float(np.max(np.abs(path_od[off] - final[off]), initial=0.0)),
+         "unrouted_intrazonal_volume": float(np.trace(final)),
++        "vehicle_production": np.sum(final, axis=1),
++        "vehicle_attraction": np.sum(final, axis=0),
++        "vehicle_total": float(np.sum(final)),
++        "profile_identity": [p.get("countlocation_no", p.get("profile_id", i))
++                             for i, p in enumerate(profiles)],
+         "variables": variables,
+         "incidence": operator,
+         "profile_long_vehicle_flow": total_profile,
+diff --git a/r1_15a2_long_zonal_fit_v24917.py b/r1_15a2_long_zonal_fit_v24917.py
+new file mode 100644
+index 0000000..ac25827
+--- /dev/null
++++ b/r1_15a2_long_zonal_fit_v24917.py
+@@ -0,0 +1,171 @@
++# -*- coding: utf-8 -*-
++"""Offline LONG zonal first-order fit using the WORK/SERVICE count-fit principle.
++
++This is a local proposal model on *final vehicle* NATIVE_CL path incidence:
++    delta_od / q_od ~= u_origin + v_destination - g_LONG.
++The real TG/TD/20A/20B response can differ. No output from this module may
++enable LONG generation until native OD support and live trial gates are proven.
++"""
++from __future__ import annotations
++
++from typing import Any, Mapping, Sequence
++
++import numpy as np
++
++import r1_15a2_zonal_count_fit_v24917 as zf
++from r1_15a2_skim_v24916p2c import ordered_zone_hash
++
++RELEASE = "R1_15A2_V24917_LONG_ZONAL_LOCAL_FIT_V1"
++EPS = 1.0e-12
++
++
++def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
++                  ws_solution: Mapping[str, Any], zone_nos: Sequence[int],
++                  bounds: Mapping[tuple[str, str, int], tuple[float, float]]) -> zf.FitProblem:
++    """Use the same normalized OD/path linearization as the W/S fit.
++
++    The caller supplies explicit, independently validated coefficient-domain
++    bounds. No default LONG mobility bounds or native-filter claim is inferred.
++    """
++    if observed.get("status") != "OBSERVED_LONG_OD_PROFILE_ONLY":
++        raise ValueError("LONG_FIT_OBSERVED_INCIDENCE_REQUIRED")
++    if any(isinstance(z, (bool, np.bool_)) or not isinstance(z, (int, np.integer))
++           for z in zone_nos):
++        raise ValueError("LONG_FIT_ZONE_AXIS_INVALID")
++    zones = tuple(int(z) for z in zone_nos)
++    if not zones or len(set(zones)) != len(zones) or any(z <= 0 for z in zones):
++        raise ValueError("LONG_FIT_ZONE_AXIS_INVALID")
++    if observed.get("zone_order_sha256") != ordered_zone_hash(zones):
++        raise ValueError("LONG_FIT_ZONE_ORDER_MISMATCH")
++    zidx = {z: i for i, z in enumerate(zones)}
++    profiles = list(observed.get("profile_identity") or [])
++    variables = list(observed.get("variables") or [])
++    op = observed.get("incidence")
++    rows = list(ws_problem.profile_rows)
++    if (op is None or op.n_rows != len(profiles) or op.n_cols != len(variables)
++            or len(ws_problem.target) != len(rows) or len(ws_problem.weight) != len(rows)):
++        raise ValueError("LONG_FIT_PROFILE_OR_OPERATOR_SHAPE")
++    predicted_ws = np.asarray(ws_solution.get("predicted_change"), dtype=float)
++    if predicted_ws.shape != (len(rows),) or not np.isfinite(predicted_ws).all():
++        raise ValueError("LONG_FIT_WS_PREDICTION_INVALID")
++    row_of_profile = {}
++    for row, meta in enumerate(rows):
++        pidx = int(meta["profile_index"])
++        if pidx in row_of_profile or pidx < 0 or pidx >= len(profiles):
++            raise ValueError("LONG_FIT_PROFILE_INDEX_INVALID")
++        if str(meta.get("countlocation_no", pidx)) != str(profiles[pidx]):
++            raise ValueError("LONG_FIT_PROFILE_IDENTITY_MISMATCH")
++        row_of_profile[pidx] = row
++
++    production = np.asarray(observed.get("vehicle_production"), dtype=float)
++    attraction = np.asarray(observed.get("vehicle_attraction"), dtype=float)
++    total = float(observed.get("vehicle_total", float("nan")))
++    if (production.shape != (len(zones),) or attraction.shape != (len(zones),)
++            or not np.isfinite(production).all() or not np.isfinite(attraction).all()
++            or np.any(production < 0) or np.any(attraction < 0)
++            or not np.isfinite(total) or total <= EPS
++            or not np.isclose(float(np.sum(production)), total, rtol=1.e-12, atol=1.e-8)
++            or not np.isclose(float(np.sum(attraction)), total, rtol=1.e-12, atol=1.e-8)):
++        raise ValueError("LONG_FIT_MARGINS_INVALID")
++    listed_mass = 0.0
++    for meta in variables:
++        if meta.get("dseg_code") != "NATIVE_CL" or meta.get("family") != "LONG":
++            raise ValueError("LONG_FIT_VARIABLE_SCOPE_INVALID")
++        o, d = int(meta["origin"]), int(meta["destination"])
++        q = float(meta["q_current"])
++        if o not in zidx or d not in zidx or not np.isfinite(q) or q <= 0.0:
++            raise ValueError("LONG_FIT_VARIABLE_INVALID")
++        listed_mass += q
++    if listed_mass > total + 1.e-8:
++        raise ValueError("LONG_FIT_MARGINS_INVALID")
++
++    keys = []
++    base, lower, upper = [], [], []
++    key_index = {}
++    for role, margin in (("PROD", production), ("ATT", attraction)):
++        for z in zones:
++            key = ("LONG", role, z)
++            if key not in bounds or margin[zidx[z]] <= EPS:
++                continue
++            lo, hi = (float(v) for v in bounds[key])
++            if not np.isfinite([lo, hi]).all() or lo > 0.0 or hi < 0.0 or lo > hi:
++                raise ValueError("LONG_FIT_BOUND_INVALID")
++            if hi - lo <= EPS:
++                continue
++            key_index[key] = len(keys)
++            keys.append(key)
++            base.append(float(margin[zidx[z]]))
++            lower.append(lo)
++            upper.append(hi)
++    if not keys:
++        raise ValueError("LONG_FIT_NO_ACTUATORS")
++
++    G = np.zeros((len(rows), len(keys)))
++    through = np.zeros(len(rows))
++    r_idx = np.asarray(op.row_idx, dtype=np.int64)
++    c_idx = np.asarray(op.col_idx, dtype=np.int64)
++    val = np.asarray(op.values, dtype=float)
++    if (r_idx.shape != c_idx.shape or r_idx.shape != val.shape or
++            not np.isfinite(val).all() or np.any(val < 0) or
++            np.any(r_idx < 0) or np.any(r_idx >= op.n_rows) or
++            np.any(c_idx < 0) or np.any(c_idx >= op.n_cols)):
++        raise ValueError("LONG_FIT_OPERATOR_INVALID")
++    for pidx, cidx, amount in zip(r_idx, c_idx, val):
++        row = row_of_profile.get(int(pidx))
++        if row is None or amount <= 0.0:
++            continue
++        meta = variables[int(cidx)]
++        through[row] += amount
++        prod_key = key_index.get(("LONG", "PROD", int(meta["origin"])))
++        att_key = key_index.get(("LONG", "ATT", int(meta["destination"])))
++        if prod_key is not None:
++            G[row, prod_key] += amount
++        if att_key is not None:
++            G[row, att_key] += amount
++    direct = np.abs(G).sum(axis=0)
++    unexposed = direct <= EPS
++    gvec = np.zeros(len(keys))
++    bvec = np.zeros(len(keys))
++    for i, (_family, role, z) in enumerate(keys):
++        b = production[zidx[z]] if role == "PROD" else attraction[zidx[z]]
++        gvec[i] = 0.5 * b / total
++        bvec[i] = b if role == "PROD" else -b
++    G -= np.outer(through, gvec)
++    lo_arr, hi_arr = np.asarray(lower), np.asarray(upper)
++    lo_arr[unexposed] = 0.0
++    hi_arr[unexposed] = 0.0
++    G[:, unexposed] = 0.0
++    target = np.asarray(ws_problem.target, dtype=float) - predicted_ws
++    weight = np.asarray(ws_problem.weight, dtype=float)
++    if not np.isfinite(target).all() or not np.isfinite(weight).all() or np.any(weight <= 0):
++        raise ValueError("LONG_FIT_TARGET_INVALID")
++    problem = zf.FitProblem(zones, rows, G, target, weight, keys,
++                            np.asarray(base), lo_arr, hi_arr, {"LONG": (bvec, total)})
++    problem.unexposed_count = int(np.count_nonzero(unexposed))
++    return problem
++
++
++def fit(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
++        ws_solution: Mapping[str, Any], zone_nos: Sequence[int],
++        bounds: Mapping[tuple[str, str, int], tuple[float, float]],
++        solver_cfg: Mapping[str, Any] | None = None) -> dict[str, Any]:
++    """Produce a diagnostic proposal, never executable generation rows."""
++    problem = build_problem(observed, ws_problem, ws_solution, zone_nos, bounds)
++    cfg = {"balance_mode": "HARD", "nonlinear_pa_repair": True,
++           "ridge_relative": 0.05, **dict(solver_cfg or {})}
++    # An exploratory caller cannot silently disable the P/A contract.
++    cfg["balance_mode"] = "HARD"
++    cfg["nonlinear_pa_repair"] = True
++    solution = zf.solve(problem, cfg)
++    if solution["objective_final"] > solution["objective_initial"] + 1.0e-9:
++        raise ValueError("LONG_FIT_OBJECTIVE_WORSENED")
++    return {"release": RELEASE, "status": "LOCAL_LINEAR_PROPOSAL_ONLY",
++            "long_generation_permitted": False, "native_filter_verified": False,
++            "source_status": observed.get("source_status"),
++            "problem": problem, "solution": solution,
++            "diagnostic_steps": {str(key): float(solution["x"][i])
++                                 for i, key in enumerate(problem.var_keys)},
++            "predicted_profile_change": np.asarray(solution["predicted_change"]).copy()}
++
++
++__all__ = ["RELEASE", "build_problem", "fit"]
+diff --git a/tests/test_v24917_long_profile_incidence.py b/tests/test_v24917_long_profile_incidence.py
+index 8602ed0..33da26d 100644
+--- a/tests/test_v24917_long_profile_incidence.py
++++ b/tests/test_v24917_long_profile_incidence.py
+@@ -39,6 +39,9 @@ def test_exact_saved_path_multiplicity_bidirection_and_component_parity():
+     assert out["long_generation_permitted"] is False
+     assert out["tg_sensitivity_verified"] is False
+     assert out["unrouted_intrazonal_volume"] == pytest.approx(5.)
++    assert out["vehicle_production"] == pytest.approx([105., 50.])
++    assert out["vehicle_attraction"] == pytest.approx([55., 100.])
++    assert out["vehicle_total"] == pytest.approx(155.)
+     assert out["matrix_parity_max_abs"] == 0.
+     assert out["path_od_parity_max_abs_offdiag"] == 0.
+     assert len(out["variables"]) == 2
+diff --git a/tests/test_v24917_long_zonal_fit.py b/tests/test_v24917_long_zonal_fit.py
+new file mode 100644
+index 0000000..ae69f9b
+--- /dev/null
++++ b/tests/test_v24917_long_zonal_fit.py
+@@ -0,0 +1,114 @@
++"""LONG uses the W/S normalized OD-to-profile local response, offline only."""
++import numpy as np
++import pytest
++
++import r1_15a2_core as core
++import r1_15a2_long_zonal_fit_v24917 as longfit
++import r1_15a2_zonal_count_fit_v24917 as zf
++from r1_15a2_skim_v24916p2c import ordered_zone_hash
++
++
++def _inputs():
++    zones = (1, 2)
++    observed = {
++        "status": "OBSERVED_LONG_OD_PROFILE_ONLY",
++        "source_status": "CALLER_SUPPLIED_INPUTS_LIVE_EPOCH_UNVERIFIED",
++        "zone_order_sha256": ordered_zone_hash(zones),
++        "vehicle_production": np.array([100., 50.]),
++        "vehicle_attraction": np.array([50., 100.]),
++        "vehicle_total": 150.,
++        "profile_identity": ["P0", "P1"],
++        "variables": [
++            {"dseg_code": "NATIVE_CL", "family": "LONG", "origin": 1,
++             "destination": 2, "q_current": 100.},
++            {"dseg_code": "NATIVE_CL", "family": "LONG", "origin": 2,
++             "destination": 1, "q_current": 50.},
++        ],
++        "incidence": core.SparseOperator(np.array([0, 1]), np.array([0, 1]),
++                                         np.array([100., 50.]), 2, 2),
++    }
++    rows = [{"profile_index": 0, "countlocation_no": "P0", "observed": 120., "model": 100.},
++            {"profile_index": 1, "countlocation_no": "P1", "observed": 40., "model": 50.}]
++    ws_problem = zf.FitProblem(zones, rows, np.zeros((2, 0)), np.array([20., -10.]),
++                               np.ones(2), [], np.array([]), np.array([]), np.array([]), {})
++    ws_solution = {"predicted_change": np.array([5., 0.])}
++    bounds = {("LONG", role, z): (-0.1, 0.1)
++              for role in ("PROD", "ATT") for z in zones}
++    return observed, ws_problem, ws_solution, zones, bounds
++
++
++def test_long_G_matches_work_service_normalized_path_formula():
++    observed, ws, sol, zones, bounds = _inputs()
++    problem = longfit.build_problem(observed, ws, sol, zones, bounds)
++    assert problem.var_keys == [("LONG", "PROD", 1), ("LONG", "PROD", 2),
++                                ("LONG", "ATT", 1), ("LONG", "ATT", 2)]
++    assert problem.base == pytest.approx([100., 50., 50., 100.])
++    np.testing.assert_allclose(problem.G,
++        [[100.-100./3, -100./6, -100./6, 100.-100./3],
++         [-50./3, 50.-50./6, 50.-50./6, -50./3]])
++    assert problem.target == pytest.approx([15., -10.])
++    assert problem.balance_vectors["LONG"][0] == pytest.approx([100., 50., -50., -100.])
++
++
++def test_intrazonal_mass_enters_normalizer_without_profile_exposure():
++    observed, ws, sol, zones, bounds = _inputs()
++    observed["vehicle_production"][0] += 20.
++    observed["vehicle_attraction"][0] += 20.
++    observed["vehicle_total"] += 20.
++    problem = longfit.build_problem(observed, ws, sol, zones, bounds)
++    assert problem.base == pytest.approx([120., 50., 70., 100.])
++    assert problem.G[0, 0] == pytest.approx(100. - 100. * .5 * 120. / 170.)
++    assert problem.G[1, 0] == pytest.approx(-50. * .5 * 120. / 170.)
++
++
++def test_diagnostic_fit_improves_target_and_keeps_exact_pa_balance():
++    args = _inputs()
++    result = longfit.fit(*args, solver_cfg={"max_iter": 2000})
++    assert result["status"] == "LOCAL_LINEAR_PROPOSAL_ONLY"
++    assert result["long_generation_permitted"] is False
++    assert result["native_filter_verified"] is False
++    assert "candidate_rows" not in result
++    problem, solution = result["problem"], result["solution"]
++    assert solution["objective_final"] < solution["objective_initial"]
++    assert solution["balance_mode"] == "HARD"
++    assert np.all(solution["x"] >= problem.lower - 1.e-12)
++    assert np.all(solution["x"] <= problem.upper + 1.e-12)
++    prod = problem.base[:2] @ np.expm1(solution["x"][:2])
++    att = problem.base[2:] @ np.expm1(solution["x"][2:])
++    assert prod == pytest.approx(att, abs=2.e-8)
++    assert result["predicted_profile_change"] == pytest.approx(problem.G @ solution["x"])
++
++
++def test_unexposed_zones_and_identity_mismatch_fail_closed():
++    observed, ws, sol, zones, bounds = _inputs()
++    observed["variables"].extend([
++        {"dseg_code": "NATIVE_CL", "family": "LONG", "origin": 3,
++         "destination": 1, "q_current": 10.},
++        {"dseg_code": "NATIVE_CL", "family": "LONG", "origin": 1,
++         "destination": 3, "q_current": 10.},
++    ])
++    observed["incidence"] = core.SparseOperator(np.array([0, 1]), np.array([0, 1]),
++                                                  np.array([100., 50.]), 2, 4)
++    observed["vehicle_production"] = np.array([110., 50., 10.])
++    observed["vehicle_attraction"] = np.array([60., 100., 10.])
++    observed["vehicle_total"] = 170.
++    zones = (1, 2, 3)
++    observed["zone_order_sha256"] = ordered_zone_hash(zones)
++    bounds.update({("LONG", role, 3): (-.1, .1) for role in ("PROD", "ATT")})
++    problem = longfit.build_problem(observed, ws, sol, zones, bounds)
++    assert problem.unexposed_count == 2
++    assert problem.lower[2] == problem.upper[2] == 0.
++    assert problem.lower[5] == problem.upper[5] == 0.
++    observed["profile_identity"][0] = "WRONG"
++    with pytest.raises(ValueError, match="PROFILE_IDENTITY_MISMATCH"):
++        longfit.build_problem(observed, ws, sol, zones, bounds)
++
++
++def test_wrong_source_or_bounds_cannot_produce_long_proposal():
++    observed, ws, sol, zones, bounds = _inputs()
++    with pytest.raises(ValueError, match="BOUND_INVALID"):
++        longfit.build_problem(observed, ws, sol, zones,
++                              {**bounds, ("LONG", "PROD", 1): (0.01, 0.1)})
++    observed["status"] = "UNVERIFIED"
++    with pytest.raises(ValueError, match="OBSERVED_INCIDENCE_REQUIRED"):
++        longfit.fit(observed, ws, sol, zones, bounds)
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 508042d..59d959d 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -33,6 +33,7 @@ RUNTIME = [
+     "r1_15a2_long_school_generation_v24917.py",
+     "r1_15a2_long_od_mask_v24917.py",
+     "r1_15a2_long_profile_incidence_v24917.py",
++    "r1_15a2_long_zonal_fit_v24917.py",
+     "r1_15a2_tdlong1_probe_v24917.py",
+     "r1_15a2_intrazonal_penalty_v24917.py",
+     "r1_15a2_fast_trial_assignment_v24917.py",
