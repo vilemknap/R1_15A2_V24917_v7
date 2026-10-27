@@ -1,0 +1,280 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index 1f3bafb..e502279 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -37,7 +37,7 @@
+     "r1_15a2_boundary_generation_v24917.py": "2b9970f18590a5875941fd3501310014793373872323316662e8b6851e1c3775",
+     "r1_15a2_boundary_pa_v24917.py": "a0a037a46570e34e0ff7ac85954959b90652e90e4f1e474a2a72d111c89a0958",
+     "r1_15a2_combusy2_v24917.py": "c0833e7e8e50ade00b29196882733189fff06a426d8b9834faf80db850022204",
+-    "r1_15a2_demand_policy_v1.py": "cdb5bea0c6eeb339d7224d5b00cf8a4d12128bd304717780e61b7ddda4785957",
++    "r1_15a2_demand_policy_v1.py": "bc564a24550a70830fbb9291c5eaa27cc9038a2c3a1936922777227c063b591d",
+     "r1_15a2_diagfast_direct_v2.py": "9be48df75480eb44b54691d165b889a572bf43e72c0667c455fb80fe32ed1e5d",
+     "r1_15a2_diagfast_numpy_v2.py": "1750ab2eff6dc77048680184210fa985ca0be178880b85d5c5f66a5953b82d19",
+     "r1_15a2_diagfast_parity_v1.py": "1c9c314416f8961ec393cc6f1f24077fd07b953d612b263ba5c57149c56b3c6f",
+@@ -53,10 +53,10 @@
+     "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
+     "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
+     "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
+-    "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
++    "r1_15a2_long_school_generation_v24917.py": "61f54e62a3174f723dfeea4b547e7716b74530f906768be77861964801ecf687",
+     "r1_15a2_long_zonal_fit_v24917.py": "d73ef3a6a06876c9fd55a4aa7be5078aa0ac67f6b5f6ad8c4bd2832dcdf6ebbf",
+     "r1_15a2_mobility_guard_v24917.py": "84b9fa383a2d88699b960e7ffe92ef3e46fe384d2aa07dd499680fc8d5e0f3c8",
+-    "r1_15a2_mobility_zone_v24917.py": "797920eac4ccfdf2e45141a6bce0d87ea45d430810beba99bcc7054fb20e1b5d",
++    "r1_15a2_mobility_zone_v24917.py": "64fe3ef8d2eba4c0b1cf43be68c20eaad1e086df0ca77859eaad5be5278b58e4",
+     "r1_15a2_parent_equivalence_v24917.py": "34efb09b5eaae48fdeaa865aa76c7845267ac7ecc58fe2fce119de98b9926664",
+     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+     "r1_15a2_preflight_explain_v24917.py": "7d0ecf8b8588bf7463eee9beeaadf981d7e61d56e8a00b8240437162cbc6d4f0",
+@@ -97,7 +97,7 @@
+     "tests/test_v24917_mobility_guard.py": "197ced345d06b0d859ec91f2efc7235acf6e5f14810b6c7e2c220f8ae09bf744",
+     "tests/test_v24917_mobilityalloc1_solver.py": "9421fe7d9a1a07d9ecf7e6dc6b73f391af87a86aa2e5a666d1fb98fa15578265",
+     "tests/test_v24917_mobilityfix1.py": "77c5d0b51f2dbeb7af073b3bed05eedb794c42baef7d02965aa1e7235ebfdd37",
+-    "tests/test_v24917_mobilityzone1.py": "8f7781b518a4000b6f86d59a7acf55411dde2ee3e9449a3a61154aea39932929",
++    "tests/test_v24917_mobilityzone1.py": "81675b0fb25e145378fc421cc14ce1a3c2c82ad6db44c18fc90829ab8ac7206c",
+     "tests/test_v24917_perf3.py": "2623e752b3d819ce8f9a64ef6417e667cfc27d78b153bcddb70658f99ae72185",
+     "tests/test_v24917_preflight2.py": "8c55cd8f64b2c1188bb3211a541c8ed21ad4b65fdcc460ff5ec882b305a8b89c",
+     "tests/test_v24917_procseq_bootstrapfix1.py": "8615c765e437758a5543b0d50e5702dc5bb20c482048de2880034686bad0eb4d",
+diff --git a/LONG_PRODUCTION_BOUNDS_20261028_CZ.md b/LONG_PRODUCTION_BOUNDS_20261028_CZ.md
+new file mode 100644
+index 0000000..a3de85a
+--- /dev/null
++++ b/LONG_PRODUCTION_BOUNDS_20261028_CZ.md
+@@ -0,0 +1,31 @@
++# LONG produkce: mez kalibracniho koeficientu 0,10–0,30
++
++Rozhodnuti uzivatele ze dne 2026-10-28 stanovi odbornym odhadem absolutni
++kalibracni rozsah `ADD_PROD_L` pro kazdou domaci zonu na **[0,10; 0,30]**.
++Pevna reference AMDY zustava **0,20**. Relativni rozsah proti teto referenci je
++**[0,5; 1,5]**; nejde o rozsah relativni k posledni prijate hodnote ani o
++omezeni `ADD_ATT_L`.
++
++`MOBILITYZONE1` pouziva tento rozsah pro LONG pri posouzeni vychoziho stavu,
++projekci produkcniho kroku, kontrole finalniho kandidata i po nativnim
++prepocetu `FP_3_LONG_*`. Pro WORK, SERVICE a SCHOOL zustava stavajici pasmo
++`mg_min_ratio`–`mg_max_ratio`, momentalne [0,75; 1,25]. Referencni `FP` se
++v ramci behu neprecentruji. Zona s rodicovskou hodnotou mimo rozsah muze zustat
++beze zmeny nebo se priblizit k rozsahu, nesmi se vzdalit dale.
++
++`ls_long_envelope_ref` v `R1_RUN_OPTIONS.json` a jeho programove vychozi
++hodnoty jsou sjednoceny na [0,5; 1,5]. Samotna aktivni tvorba LONG kroku
++zustava zmrazena (`long_generation_permitted=False`), dokud neni dolozen
++nativni OD filtr a zivou zkouskou overena odezva TG/TD/20A/20B. Offline
++zonální fit prijima meze od volajiciho a nevydava aplikacni kroky. Tato zmena
++proto nezapina LONG, nespousti Visum a nemeni zadne OD matice.
++
++V dodanem exportu modelu je `ADD_PROD_L = 4,383411` ve vsech 681 zonach.
++Rozsah [0,10; 0,30] nepredpoklada, ze uz probehl rollback na 0,20; pred
++aktivni kalibraci je potreba vycist a overit skutecny aktualni stav.
++
++Offline overeni v tomto zdrojovem stavu: 179/179 cilenych testu PASS, vcetne
++kontroly obou hranic LONG, navratu z hodnoty nad pasmem, zmeny jen jedne zony,
++finalniho kandidata, `FP` readbacku, ostatnich rodin, LONG zmrazeni a runtime
++instalace. Zapeceteno 66/66 V24917 runtime souboru; 1 059 puvodnich zdroju
++overeno beze zmeny. Zivy Visum/COM test nebyl spusten.
+diff --git a/R1_RUN_OPTIONS.json b/R1_RUN_OPTIONS.json
+index 2424465..67dd1df 100644
+--- a/R1_RUN_OPTIONS.json
++++ b/R1_RUN_OPTIONS.json
+@@ -20,7 +20,7 @@
+   ],
+   "ls_long_envelope_ref": [
+     0.5,
+-    2.0
++    1.5
+   ],
+   "ls_ridge_relative": 0.05,
+   "iz_enabled": true,
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 4de1b50..60cc6c7 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -23,7 +23,7 @@
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+     "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
+-    "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
++    "r1_15a2_long_school_generation_v24917.py": "61f54e62a3174f723dfeea4b547e7716b74530f906768be77861964801ecf687",
+     "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
+     "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
+     "r1_15a2_long_zonal_fit_v24917.py": "d73ef3a6a06876c9fd55a4aa7be5078aa0ac67f6b5f6ad8c4bd2832dcdf6ebbf",
+@@ -54,7 +54,7 @@
+     "authorities/R1_PROFILE_ROSTER_V24917_CITY.csv": "36d94ddce1bb091e5410dbb498d851825a0e477a000e3edc08f750942e1d199c",
+     "authorities/R1_PROFILE_ROSTER_V24917_SOURCE.xlsx": "0a33837129a2eaf64890052c12429a7d331ef6eb76bd5e9e77727222b5891684",
+     "r1_15a2_generation_gate_nonfatal_v1.py": "2ca13966ae4cdedcfee6f5076236ea4c2db97fc04d6cb2f612ffe899cadb6244",
+-    "r1_15a2_demand_policy_v1.py": "cdb5bea0c6eeb339d7224d5b00cf8a4d12128bd304717780e61b7ddda4785957",
++    "r1_15a2_demand_policy_v1.py": "bc564a24550a70830fbb9291c5eaa27cc9038a2c3a1936922777227c063b591d",
+     "r1_15a2_diagfast_v1.py": "735e95766a17a4eefd8b4b58ab2c3360ec6d720544b7c30b58f5cc00346d895b",
+     "r1_15a2_diagfast_v2.py": "9a9f9e25cc8d6911fce4bf824b7b677c3156645fa90d8681f1bde26afae5acc2",
+     "r1_15a2_diagfast_numpy_v2.py": "1750ab2eff6dc77048680184210fa985ca0be178880b85d5c5f66a5953b82d19",
+@@ -62,12 +62,12 @@
+     "r1_15a2_diagfast_parity_v1.py": "1c9c314416f8961ec393cc6f1f24077fd07b953d612b263ba5c57149c56b3c6f",
+     "r1_15a2_diagfast_direct_v2.py": "9be48df75480eb44b54691d165b889a572bf43e72c0667c455fb80fe32ed1e5d",
+     "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
+-    "r1_15a2_mobility_zone_v24917.py": "797920eac4ccfdf2e45141a6bce0d87ea45d430810beba99bcc7054fb20e1b5d",
++    "r1_15a2_mobility_zone_v24917.py": "64fe3ef8d2eba4c0b1cf43be68c20eaad1e086df0ca77859eaad5be5278b58e4",
+     "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
+     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "331034cd57d87b9f9c0e9321faefef71b39ce7febabf955fa607a8dc083bf7d7"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "e39319e24ae8b5b86b3f235bbf83a2c8a734e2da560224dda904bd89c3eae19d"
+   }
+ }
+diff --git a/r1_15a2_demand_policy_v1.py b/r1_15a2_demand_policy_v1.py
+index 11deedb..080520d 100644
+--- a/r1_15a2_demand_policy_v1.py
++++ b/r1_15a2_demand_policy_v1.py
+@@ -77,7 +77,7 @@ DEFAULTS = {
+     'ls_max_step_up': 0.10,
+     'ls_max_step_down': 0.10,
+     'ls_school_envelope': [0.67, 1.5],
+-    'ls_long_envelope_ref': [0.5, 2.0],
++    'ls_long_envelope_ref': [0.5, 1.5],
+     'ls_ridge_relative': 0.05,
+     'iz_enabled': True,
+     'iz_matrix_no': 9002,
+diff --git a/r1_15a2_long_school_generation_v24917.py b/r1_15a2_long_school_generation_v24917.py
+index 01ee3c7..ca89536 100644
+--- a/r1_15a2_long_school_generation_v24917.py
++++ b/r1_15a2_long_school_generation_v24917.py
+@@ -38,7 +38,7 @@ LS_DEFAULTS = {
+     "ls_max_step_up": 0.10,              # +10 % per zone and cycle   (W/S +25 %)
+     "ls_max_step_down": 0.10,            # -10 % per zone and cycle   (W/S -20 %)
+     "ls_school_envelope": [0.67, 1.5],   # absolute ADD_*_SCH         (W/S 0.25-5)
+-    "ls_long_envelope_ref": [0.5, 2.0],  # inherited option; LONG is frozen until native proof
++    "ls_long_envelope_ref": [0.5, 1.5],  # expert LONG band 0.1..0.3; frozen until native proof
+     "ls_ridge_relative": 0.05,           # 5x the W/S ridge: LS only explain what W/S cannot
+ }
+ 
+diff --git a/r1_15a2_mobility_zone_v24917.py b/r1_15a2_mobility_zone_v24917.py
+index c69c025..849b13f 100644
+--- a/r1_15a2_mobility_zone_v24917.py
++++ b/r1_15a2_mobility_zone_v24917.py
+@@ -27,6 +27,7 @@ EPS = 1e-12
+ ATOL = 1e-7
+ RTOL = 1e-10
+ REFERENCE = "AMDY_DOMESTIC_FP_AT_CANONICAL_COEFFICIENT_NOT_RAW_SURVEY"
++LONG_BAND = (0.5, 1.5)  # ADD_PROD_L 0.2 x [0.5, 1.5] = [0.1, 0.3]
+ 
+ 
+ def finite(value, name):
+@@ -96,6 +97,8 @@ def enrich(adapter, rows):
+ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=None):
+     """Build a fixed reference and retain the raw parent for readback/rollback."""
+     lo, hi = limits(opts)
++    if anchor is not None and tuple(anchor.get("long_band", ())) != LONG_BAND:
++        raise ValueError("MOBILITYZONE1_LONG_BAND_CHANGED")
+     by_zone = zone_map(rows)
+     entries, errors = {}, dict(unavailable or {})
+     for fam in families:
+@@ -139,11 +142,14 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
+             entries.update(current_entries)
+         except Exception as exc:
+             errors[fam] = type(exc).__name__ + ":" + str(exc)
+-    outside = [{"zone_no": e["zone_no"], "family": e["family"], "ratio": e["ratio_current"]}
+-               for e in entries.values() if e["ratio_current"] is not None and
+-               not lo-EPS <= e["ratio_current"] <= hi+EPS]
++    outside = []
++    for e in entries.values():
++        band_lo, band_hi = LONG_BAND if e["family"] == "LONG" else (lo, hi)
++        if e["ratio_current"] is not None and not band_lo-EPS <= e["ratio_current"] <= band_hi+EPS:
++            outside.append({"zone_no": e["zone_no"], "family": e["family"],
++                            "ratio": e["ratio_current"]})
+     return {"release": RELEASE, "enabled": bool(opts.get("enabled", True)),
+-            "band": [lo, hi], "reference_role": REFERENCE,
++            "band": [lo, hi], "long_band": list(LONG_BAND), "reference_role": REFERENCE,
+             "families": list(families), "entries": entries,
+             "unavailable": errors, "out_of_band": outside,
+             "target_satisfied": not bool(errors or outside), "parent_zone_rows": copy.deepcopy(list(rows)),
+@@ -152,7 +158,7 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
+ 
+ 
+ def interval(entry, authority):
+-    lo, hi = authority["band"]
++    lo, hi = authority["long_band"] if entry["family"] == "LONG" else authority["band"]
+     r = entry["current"]/entry["reference_coefficient"]
+     return min(lo,r), max(hi,r)
+ 
+@@ -375,9 +381,10 @@ def check_live(authority, rows):
+                     bad.append("FP_ENVELOPE:"+a)
+                 elif base<=EPS and values[a]>ATOL:bad.append("ZERO_GROUP_BECAME_POSITIVE:"+a)
+         total=math.fsum(values.values());base=e["reference_production"]
++        target_lo,target_hi = authority["long_band"] if fam == "LONG" else authority["band"]
+         report["rows"].append({"zone_no":z,"family":fam,"production":total,
+             "reference_production":base,"ratio":total/base if base and base>EPS else None,
+-            "in_target_band":bool(base and base>EPS and authority["band"][0]-EPS<=total/base<=authority["band"][1]+EPS),
++            "in_target_band":bool(base and base>EPS and target_lo-EPS<=total/base<=target_hi+EPS),
+             "passes":not bad})
+         if bad:report["violations"].append({"zone_no":z,"family":fam,"reasons":bad})
+     # Deferred optional families are not "verified". Only unchanged parameters
+diff --git a/tests/test_v24917_mobilityzone1.py b/tests/test_v24917_mobilityzone1.py
+index dc1bf45..cc5a999 100644
+--- a/tests/test_v24917_mobilityzone1.py
++++ b/tests/test_v24917_mobilityzone1.py
+@@ -100,8 +100,36 @@ def test_fit_bounds_freeze_zero_reference_without_changing_other_zone():
+ def test_long_reference_point_two_not_one_or_last_calibrated_value():
+     a=authority();e=a['entries']['LONG|1']
+     assert e['reference_coefficient']==.2
+-    assert z.check_candidate([candidate('LONG',.2,.25)],a)['passes']
+-    assert not z.check_candidate([candidate('LONG',.2,.251)],a)['passes']
++    assert a['band']==[.75,1.25] and a['long_band']==[.5,1.5]
++    assert z.check_candidate([candidate('LONG',.2,.1)],a)['passes']
++    assert z.check_candidate([candidate('LONG',.2,.3)],a)['passes']
++    assert not z.check_candidate([candidate('LONG',.2,.099)],a)['passes']
++    assert not z.check_candidate([candidate('LONG',.2,.301)],a)['passes']
++    assert not z.check_candidate([candidate('WORK',1.,1.3)],a)['passes']
++
++
++def test_long_parent_outside_expert_band_may_only_hold_or_return():
++    rows=zones();rows[0]['ADD_PROD_L']=.4
++    for attr in z.SPECS['LONG'][2]:rows[0][attr]=20.
++    a=authority(rows)
++    assert {'zone_no':1,'family':'LONG','ratio':2.} in a['out_of_band']
++    assert z.check_candidate([candidate('LONG',.4,.4)],a)['passes']
++    assert z.check_candidate([candidate('LONG',.4,.3)],a)['passes']
++    assert not z.check_candidate([candidate('LONG',.4,.401)],a)['passes']
++    with pytest.raises(ValueError,match='LONG_BAND_CHANGED'):
++        z.capture(rows,OPTS,tuple(z.SPECS),anchor={**a,'long_band':[.5,2.]})
++
++
++def test_long_live_readback_uses_its_own_band_and_fp_reference():
++    parent=zones();a=authority(parent)
++    after=zones();after[0]['ADD_PROD_L']=.3
++    for attr in z.SPECS['LONG'][2]:after[0][attr]=15.
++    checked=z.check_live(a,after)
++    assert checked['passes']
++    assert next(r for r in checked['rows'] if r['family']=='LONG' and r['zone_no']==1)['in_target_band']
++    after[0]['ADD_PROD_L']=.301
++    for attr in z.SPECS['LONG'][2]:after[0][attr]=15.05
++    assert not z.check_live(a,after)['passes']
+ 
+ 
+ def ls_payload():
+@@ -115,11 +143,11 @@ def ls_payload():
+ 
+ def test_ls_projection_clips_long_zones_independently_and_recomputes_prediction():
+     ls=ls_payload();out=z.guard_ls(ls,authority())
+-    assert out['steps']['ADD_PROD_L'][1]==out['steps']['ADD_PROD_L'][2]==pytest.approx(math.log(1.25))
++    assert out['steps']['ADD_PROD_L'][1]==out['steps']['ADD_PROD_L'][2]==pytest.approx(math.log(1.5))
+     assert out['steps']['ADD_PROD_SCH'][1]==pytest.approx(math.log(1.25))
+     assert out['steps']['ADD_PROD_SCH'][2]==pytest.approx(math.log(.75))
+     assert out['steps']['ADD_ATT_SCH'][1]==.1
+-    want=600*math.log(1.25)+400*math.log(.75)+50
++    want=300*math.log(1.5)+300*math.log(1.25)+400*math.log(.75)+50
+     assert out['predicted_change']==pytest.approx([want])
+     assert ls['predicted_change']==[999.]
+ 
+@@ -139,10 +167,10 @@ def test_missing_ls_prediction_is_explicit_not_stale():
+ 
+ 
+ def test_long_zone_at_cap_does_not_hold_other_zones_or_school():
+-    rows=zones();rows[0]['ADD_PROD_L']=.25
+-    for a in z.SPECS['LONG'][2]:rows[0][a]=12.5
++    rows=zones();rows[0]['ADD_PROD_L']=.3
++    for a in z.SPECS['LONG'][2]:rows[0][a]=15.
+     out=z.guard_ls(ls_payload(),authority(rows))
+-    assert out['steps']['ADD_PROD_L'][1]==0.0
++    assert out['steps']['ADD_PROD_L'][1]==pytest.approx(0.0,abs=1e-12)
+     assert out['steps']['ADD_PROD_L'][2]>0.0
+     assert out['steps']['ADD_PROD_SCH'][1]>0
+ 
