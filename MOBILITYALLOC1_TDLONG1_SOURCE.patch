@@ -1,8 +1,8 @@
 diff --git a/.gitattributes b/.gitattributes
-index dfe0770424b2a19faf507a501ebfc23be8f54e7b..ff384953206e8552dc10b2fe11d6075ff47b484e 100644
+index dfe0770424b2a19faf507a501ebfc23be8f54e7b..523c84875c18bd4244c4aae8196c67427d279695 100644
 --- a/.gitattributes
 +++ b/.gitattributes
-@@ -1,2 +1,37 @@
+@@ -1,2 +1,38 @@
  # Auto detect text files and perform LF normalization
  * text=auto
 +
@@ -40,6 +40,7 @@ index dfe0770424b2a19faf507a501ebfc23be8f54e7b..ff384953206e8552dc10b2fe11d6075f
 +provenance/two_mode_live_evidence/15R_SAME_MODE_PATHLINK_FINGERPRINT.json -text -diff
 +provenance/two_mode_live_evidence/15S_FULL_PATHKEY_AUDIT.json -text -diff
 +tests/data/EFFECTIVE_CONFIG_RUN_20261025_175302.json -text -diff
++MOBILITYALLOC1_TDLONG1_SOURCE.patch -text -diff
 diff --git a/AGENTS.md b/AGENTS.md
 new file mode 100644
 index 0000000000000000000000000000000000000000..02030c8d4166dad095d416f136caf960cf102aee
@@ -140,7 +141,7 @@ index 0000000000000000000000000000000000000000..02030c8d4166dad095d416f136caf960
 +
 +At this baseline, `LONGGUARD1` and `MOBILITYZONE1` exist; the hard native LONG OD support and a per-zone LONG generation actuator are not yet proven implemented. The planned next development unit is `LONG_OD_MASK1` (pure, hash-bound mask and tests), followed only after review by native `LONG_OD_NATIVE1`, feasible restricted TD, composite FineCDF calibration and the later per-zone mobility changes. Confirm the task with the user prompt and actual tree, not with this historical note alone.
 diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
-index c48abc56155de4352be26b2ba4b574075b1a9bf7..5a856df4fdce40a5752ff5c86a9af81754d58b67 100644
+index c48abc56155de4352be26b2ba4b574075b1a9bf7..c791471304817929c32db00c4a01a9b4e0b9ac05 100644
 --- a/DIAGFAST_V1_RELEASE_MANIFEST.json
 +++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
 @@ -1,6 +1,6 @@
@@ -165,7 +166,7 @@ index c48abc56155de4352be26b2ba4b574075b1a9bf7..5a856df4fdce40a5752ff5c86a9af817
      "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
 -    "r1_15a2_long_school_generation_v24917.py": "58d179d5de866f7d009296ad17bae0714f7bd1afa373156feb529356b895f9a8",
 +    "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
-+    "r1_15a2_long_od_mask_v24917.py": "8d711c24582109852612e3af73afd2b576907fb7a45719c962dbdc5f78841ef4",
++    "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
 +    "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
      "r1_15a2_mobility_guard_v24917.py": "84b9fa383a2d88699b960e7ffe92ef3e46fe384d2aa07dd499680fc8d5e0f3c8",
 +    "r1_15a2_mobility_zone_v24917.py": "797920eac4ccfdf2e45141a6bce0d87ea45d430810beba99bcc7054fb20e1b5d",
@@ -233,10 +234,10 @@ index c48abc56155de4352be26b2ba4b574075b1a9bf7..5a856df4fdce40a5752ff5c86a9af817
  }
 diff --git a/IMPLEMENTATION_REPORT_MOBILITYALLOC1_TDLONG1_CZ.md b/IMPLEMENTATION_REPORT_MOBILITYALLOC1_TDLONG1_CZ.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..7a0669b6d07444d267d078b14b70945ec2e31111
+index 0000000000000000000000000000000000000000..7f236f9ed596b9d54eb7510b359b5dc707973356
 --- /dev/null
 +++ b/IMPLEMENTATION_REPORT_MOBILITYALLOC1_TDLONG1_CZ.md
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,44 @@
 +# Implementace MOBILITYALLOC1 + TDLONG1 — offline kandidát
 +
 +**Stav:** `LIVE_PENDING`. Zadání je provedeno v ověřitelné části. Zonální LONG produkce a nativní omezení OD párů nejsou aktivované, protože aktuální zdroj neobsahuje doloženou zonální LONG OD→profil incidenci ani ověřené COM rozhraní nativního filtru. Žádný offline test nemůže tuto chybějící autoritu nahradit.
@@ -255,14 +256,20 @@ index 0000000000000000000000000000000000000000..7a0669b6d07444d267d078b14b70945e
 +
 +## Provedené změny
 +
-+- `r1_15a2_long_od_mask_v24917.py`: čistá maska `distance >= MIN_KM` z přesně hashovaného NATIVE_CL/DIS/km, striktní kontrola pořadí zón, hodnot, jednotek, diagnostické a assignment epochy. Hranice 100.0 km je povolená, 99.999 km zakázaná; 200.0 km patří do podmíněného pásma a >200 km zůstává povoleno. Hash masky je výslovně jen diagnostický. Pro každou matici 9111–9115 zvlášť počítá maximální tok na omezeném bipartitním grafu, včetně deterministického svědka nedostatku P/A. Volitelný průnik masky s transpozicí modeluje bezpečnost při následné symetrizaci. Požaduje skutečné komponentové marginály; žádné v aktivním běhu nevymýšlí.
++- `r1_15a2_long_od_mask_v24917.py`: čistá maska `distance >= MIN_KM` z přesně hashovaného NATIVE_CL/DIS/km, striktní kontrola pořadí zón, hodnot, jednotek, diagnostické a assignment epochy. Hranice 100.0 km je povolená, 99.999 km zakázaná; 200.0 km patří do podmíněného pásma a >200 km zůstává povoleno. Hash masky je výslovně jen diagnostický. Pro každou matici 9111–9115 zvlášť počítá maximální tok na omezeném bipartitním grafu, včetně deterministického svědka nedostatku P/A. Volitelný průnik masky s transpozicí je konzervativní předběžná podmínka pro obousměrnou podporu návratového operátoru 20B V7, nikoli důkaz jeho výsledku. Požaduje skutečné komponentové marginály; žádné v aktivním běhu nevymýšlí.
 +- `r1_15a2_mobility_zone_v24917.py`: W/S produkční meze pevné referenční mobility se nyní protínají s mezemi solveru **před** optimalizací. Již existující stavy mimo [0.75,1.25] mají pouze směr k nápravě, nulová produkce se zmrazí. `guard_ls` už nevyžaduje jednotný LONG krok a přepočítá efekt pro odlišné zóny. Kandidátní a živá kontrola raw FP zůstávají poslední autoritou.
 +- `r1_15a2_zonal_count_fit_v24917.py`: po společném omezeném W/S řešení je v aktivním adaptéru zapnutý deterministický monotónní dorovnávací krok pro skutečné nelineární `exp(log_step)` P/A změny, uvnitř zonálních boxů. Výsledná profilová predikce se počítá až z opraveného kroku. Přímá knihovní volání bez nového přepínače zachovávají původní chování.
 +- `r1_15a2_long_school_generation_v24917.py`: odstraněn globální LONG profilový odhad `NATIVE_CL volume × global LONG share` a globální LONG krok. LONG produkce i atraktivita se při chybějící nativní autoritě zmrazí; `defer_long()` přepočítá predikci jen ze skutečně zbývajících kroků SCHOOL. Zděděné možnosti a limity SCHOOL zůstávají beze změny. Fixní referenční pásmo LONG je 0.2 × [0.75,1.25] = [0.15,0.25] a původní kandidátní strop ±10 % se neuvolňuje; LONG je v kandidátu nyní vždy vypnutý.
 +- `r1_15a2_trial_adapter_v24917.py`: aktivní generation design zapisuje `TDLONG1_SOURCE_AUTHORITY.json`, používá zonální solverové meze a nelineární P/A opravu, filtruje všechny neověřené LONG řádky při preview i apply a označuje LONG hledání jako `LONG_SEARCH_INCOMPLETE`. WORK/SERVICE/SCHOOL mohou pokračovat; chybějící LONG větev se nehlásí jako stacionarita. Původní přijetí, LONGGUARD1, rollback a fresh 12D/11D zůstávají rozhodující.
 +- `r1_15a2_tdlong1_probe_v24917.py`, `R1_TDLONG1_READ_ONLY_PROBE.py`, `TDLONG1_READ_ONLY_OPERATOR_CZ.md`: pouze čtení operace 46 a `DSTRATSET`, včetně návodu pro cílový PC. Probe vždy vrací `UNVERIFIED_NATIVE_FILTER`; z členství ve stratách nevyvozuje filtr OD.
 +- `r1_15a2_runtime_delta_v24917.py`, `r1_15a2_v24917_runtime.py`, `tools/refresh_v24917_manifests.py`, `V24917_RUNTIME_MANIFEST.json`, `DIAGFAST_V1_RELEASE_MANIFEST.json`: nová jasně označená identita `LIVE_PENDING` a reseal přes projektový nástroj. Aktuálně 64/64 runtime hashů sedí; zděděný V24916 manifest prochází.
-+- Nové testy `tests/test_v24917_tdlong1_mask.py` a `tests/test_v24917_mobilityalloc1_solver.py`; aktualizované testy mobility, aktivního adaptéru a runtime manifestu. Testy pokrývají přesné hranice, chybnou epochu/hash/osu/jednotku, strukturální nedostatek i netriviální Hallovu množinu, asymetrii/symetrizaci, všech pět komponent, nulovou hmotu, 681 zón, přepočet predikce a zachování SCHOOL.
++- Nové testy `tests/test_v24917_tdlong1_mask.py` a `tests/test_v24917_mobilityalloc1_solver.py`; aktualizované testy mobility, aktivního adaptéru a runtime manifestu. Testy pokrývají přesné hranice, chybnou epochu/hash/osu/jednotku, strukturální nedostatek i netriviální Hallovu množinu, asymetrickou vzdálenost a obousměrnou podporu, všech pět komponent, nulovou hmotu, 681 zón, přepočet predikce a zachování SCHOOL.
++
++## Upřesnění skutečné návratové symetrizace 20B V7
++
++Podle dodaného skriptu `R1_20B_V7_DIRECTIONAL_BALANCE_FIX2_RATIO15_COPY_INTO_PROCSEQ.py` se LONG vozidlové složky nejdříve tvoří z 9111–9115 jako 9191–9195; návratový operátor zapisuje 9291–9295 a jeho návrh navazujících vzorců vede přes 9223 do 9305. Výchozí domácí politika je `BOUNDED_IPF`, nikoli tvrdá symetrie `(T+Tᵀ)/2`. Skript odstraní diagonálu, cíle řádků i sloupců nastaví na polovinu součtu původních řádků a sloupců, doplní opačný směr do IPF seedu a po IPF zmenší antisymetrickou část s koeficientem `(1.5−1)/(1.5+1)=0.2`. Tím při kladném páru drží poměr směrů nejvýše 1,5:1; původní diagonálu vrátí. `AMDY_EXACT` je pouze volitelná politika, `FOREIGN` používá `LEGACY_IPF`.
++
++Z toho plyne, že jednostranně povolený pár podle asymetrického DIS může po 20B vytvořit zakázaný opačný směr. Průnik `support & support.T` před TD tuto cestu konzervativně uzavírá, ale 20B obsahuje také opravu numericky malých IPF podpor. Při budoucím živém ověření je proto nutný readback nulových zakázaných buněk v každé 9111–9115, následných 9191–9195, 9291–9295 a ve finální 9305. Současný modul 20B nevolá ani jeho výstup neověřuje; tato kontrola zůstává `LIVE_PENDING`. Přiložený text popisuje zamýšlenou verzi 20B, nikoli důkaz právě načtené procedury ve Visum.
 +
 +GitHub při původním importu normalizoval konce řádků v 33 zapečetěných CSV/JSON souborech; tím na jeho checkoutu selhávaly starší SHA a V24915/V24916 preflight. V samostatném commitu `e634c91` jsou z ověřeného Drive baseline obnoveny **bajtově totožné** soubory a `.gitattributes` vypíná normalizaci právě na těchto 33 cestách. Obsahové údaje se neměnily. Baseline ZIP zachovává původní stav.
 +
@@ -270,7 +277,7 @@ index 0000000000000000000000000000000000000000..7a0669b6d07444d267d078b14b70945e
 +
 +Poslední cílená sada: **134 PASS**. Doplňkový probe/runtime import: **25 PASS**. Tři oddělené regresní sady: hlavní **1616 PASS, 2 FAIL, 4 SKIP**, diagfast **138 PASS**, audit **18 PASS**. Obě selhání v `tests/test_v24917_tdrollbackfix1.py` se ve stejné plné sadě zopakovala na úplně původním ZIPu (**1592 PASS, 2 FAIL, 4 SKIP**); izolovaně má tento soubor **39 PASS**. Jsou to existující závislosti na pořadí testů, nikoli důkaz úspěšného native rollbacku. Přesné příkazy a cesty logů jsou v `MOBILITYALLOC1_TDLONG1_TEST_RESULTS.json`.
 +
-+Offline zdrojový ZIP `/workspace/checkpoints/MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027.zip` prošel CRC, čistým rozbalením, kontrolou 64 runtime hashů, kontrolou zděděného V24916 manifestu, importem změněných modulů a šesti launcher/runtime testy. Je určen k revizi a dalšímu vývoji, nikoli k produkční kalibraci.
++Původní offline zdrojový ZIP `/workspace/checkpoints/MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027.zip` prošel CRC, čistým rozbalením, kontrolou 64 runtime hashů, kontrolou zděděného V24916 manifestu, importem změněných modulů a šesti launcher/runtime testy. Oprava popisu 20B a znovu zapečetěný modul jsou v novém checkpointu `/workspace/checkpoints/MOBILITYALLOC1_TDLONG1_RETURN_POLICY_CORRECTED_20261027.zip`; cílené testy masky a runtime instalace po opravě prošly 25/25. Oba balíčky jsou určeny k revizi a dalšímu vývoji, nikoli k produkční kalibraci.
 +
 +**LIVE_VISUM_NOT_RUN.** Nativní filtr párů, přesné P/A z reálné TG pro pět LONG komponent, nulové zakázané buňky po TD/symetrizaci, zmrazení 9116/EXOG a úplná in-memory rollback ekvivalence pro novou podporu nejsou zatím prokázány. Žádný nový kód nevolá `LoadVersion()` ani `SetValues()` na 9111–9115. LONG zůstává vypnutý v aktivním generation návrhu; nelze tento kandidát označit jako `LIVE_VERIFIED`, `ACCEPTED` ani připravený pro produkci.
 +
@@ -477,7 +484,7 @@ index 0000000000000000000000000000000000000000..18dc19bb27f4aa21133372c9e631425e
 +                     sort_keys=True, indent=2))
 diff --git a/TDLONG1_READ_ONLY_OPERATOR_CZ.md b/TDLONG1_READ_ONLY_OPERATOR_CZ.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..8ff452d634d9d5f7f66428034cff804ae65de2ac
+index 0000000000000000000000000000000000000000..43c4d17df59e20d0e09e9fd34c76cc1d978c11c1
 --- /dev/null
 +++ b/TDLONG1_READ_ONLY_OPERATOR_CZ.md
 @@ -0,0 +1,9 @@
@@ -489,7 +496,7 @@ index 0000000000000000000000000000000000000000..8ff452d634d9d5f7f66428034cff804a
 +
 +Pro další implementaci je potřeba dodat přesnou dokumentovanou COM vlastnost či metodu, která přímo v nativní trip distribution omezuje aktivní OD páry pro jednotlivá LONG strata, včetně jejího typu, osy zón, životního cyklu a možnosti číst původní/nastavenou hodnotu. Neodvozujte tento filtr z nulové impedance ani z následného nulování OD.
 +
-+Po potvrzení API bude následný mutační smoke test samostatný krok na kopii přijaté `.ver`: zaznamená původní TG/TD a ACTIVE stav, skutečná P/A všech matic 9111–9115, zmrazené 9116/EXOG, assignment a skim epoch, nativní nastavení filtru před/po zápisu a jeho readback. Po TD a po symetrizaci musí všech pět LONG matic mít nulu na zakázaných párech, zachovat platné objemy nad 200 km a P/A v nativní toleranci; 9116/EXOG musí zůstat přesně stejné. Zamítnutý kandidát vyžaduje obnovení všech nastavení v paměti, úplný přepočet a ověření ekvivalence rodiče. Pokud ekvivalence selže, provoz se zastaví a ručně se znovu otevře poslední ověřený checkpoint. Tato kandidátní verze mutační smoke test nespouští.
++Po potvrzení API bude následný mutační smoke test samostatný krok na kopii přijaté `.ver`: zaznamená původní TG/TD a ACTIVE stav, skutečná P/A všech matic 9111–9115, zmrazené 9116/EXOG, assignment a skim epoch, nativní nastavení filtru před/po zápisu a jeho readback. Ověřte také skutečně načtenou politiku 20B: v dodaném V7 skriptu je výchozí domácí `BOUNDED_IPF` s limitem poměru směrů 1,5:1, opačným směrem v IPF seedu a možnou opravou velmi malých podpor. Nulu na zakázaných OD párech je potřeba vyčíst zvlášť po nativní TD (9111–9115), realizaci vozidel (9191–9195), návratovém operátoru (9291–9295) i ve výsledném LONG 9305; současně zachovat platné objemy nad 200 km a P/A v nativní toleranci. Pouhý průnik masky s transpozicí není důkazem výsledku 20B. 9116/EXOG musí zůstat přesně stejné. Zamítnutý kandidát vyžaduje obnovení všech nastavení v paměti, úplný přepočet a ověření ekvivalence rodiče. Pokud ekvivalence selže, provoz se zastaví a ručně se znovu otevře poslední ověřený checkpoint. Tato kandidátní verze mutační smoke test nespouští.
 diff --git a/V2487_ZONE_COEFFICIENT_AUTHORITY_AUDIT.csv b/V2487_ZONE_COEFFICIENT_AUTHORITY_AUDIT.csv
 index dac73c9ee8350095a4a9900c116d06e26341e98c..3286c6d198133b81da1faf6f543449b448436b1a 100644
 GIT binary patch
@@ -575,7 +582,7 @@ zeJ^jm=m$(a2LmK0zwy5Uq+fv9hXXso3Q~eDfN7uL8z6eKO^74dq|H-9l^G}R4BNZ8
 jJe-+vGEcPQ<~<Q?5C%&WJL6`aXd4jEX>oT9BO@08ayt3j
 
 diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
-index 681bd899a39eb8756ac90bb656ad3bf586988ab3..ab9a7be45e2c88ed08c7250fa0dbe9dbcbea49f0 100644
+index 681bd899a39eb8756ac90bb656ad3bf586988ab3..b89e501aa7bb9b0b0cc2ef5ffbb92cf99bf7469b 100644
 --- a/V24917_RUNTIME_MANIFEST.json
 +++ b/V24917_RUNTIME_MANIFEST.json
 @@ -1,8 +1,9 @@
@@ -610,7 +617,7 @@ index 681bd899a39eb8756ac90bb656ad3bf586988ab3..ab9a7be45e2c88ed08c7250fa0dbe9db
      "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
 -    "r1_15a2_long_school_generation_v24917.py": "58d179d5de866f7d009296ad17bae0714f7bd1afa373156feb529356b895f9a8",
 +    "r1_15a2_long_school_generation_v24917.py": "39b13c6dfd63c46732870f7b6e2cf4174848afea128d92e7f860475b3eee4977",
-+    "r1_15a2_long_od_mask_v24917.py": "8d711c24582109852612e3af73afd2b576907fb7a45719c962dbdc5f78841ef4",
++    "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
 +    "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
      "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
      "r1_15a2_fast_trial_assignment_v24917.py": "f513b03192cef5206b48f1f39fa64c4cc21cbc30d529e73e16daadc510638d0d",
@@ -630,7 +637,7 @@ index 681bd899a39eb8756ac90bb656ad3bf586988ab3..ab9a7be45e2c88ed08c7250fa0dbe9db
 -    "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
 -    "r1_15a2_long_distance_guard_v24917.py": "4d6c807cce6e2e8ce052f856b5ee118385e6ed2846cd56c396b05a5d1a4908f7",
 -    "r1_15a2_mobility_zone_v24917.py": "60a5cd1a7447eebe80f3fa7ac1cbc1d4f4bb6ee590b8bb3c75efc29e20327ee2"
-+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "a4bcb109210f9e20b994fa2b3eb507e33f98ada0743cd7305cd488a61acbf3fd"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "96a3a06d3f49b53411c1f4ee3c27ee4b4c62720901f37eb0296cd67276dc1fe2"
    }
  }
 diff --git a/authorities/IMPEDANCE_FUNCTIONS.csv b/authorities/IMPEDANCE_FUNCTIONS.csv
@@ -56965,10 +56972,10 @@ Kv$MhPKm7r&L&b{#
 
 diff --git a/r1_15a2_long_od_mask_v24917.py b/r1_15a2_long_od_mask_v24917.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..23f1a74ef8476678c45e68d3f12084bac59115eb
+index 0000000000000000000000000000000000000000..84c133b775be2b41fae39f054e40288428954604
 --- /dev/null
 +++ b/r1_15a2_long_od_mask_v24917.py
-@@ -0,0 +1,373 @@
+@@ -0,0 +1,377 @@
 +# -*- coding: utf-8 -*-
 +"""Pure, epoch-bound LONG OD support and restricted P/A feasibility checks.
 +
@@ -57242,9 +57249,13 @@ index 0000000000000000000000000000000000000000..23f1a74ef8476678c45e68d3f12084ba
 +                                   relative_tolerance: float = 1.0e-10) -> dict[str, Any]:
 +    """Check exact bipartite feasibility separately for LONG matrices 9111-9115.
 +
-+    ``symmetry_safe=True`` uses ``support & support.T`` so later symmetric
-+    averaging cannot create a below-threshold reverse pair.  No demand mass is
-+    added or moved by this function.
++    ``symmetry_safe=True`` uses ``support & support.T`` as a conservative
++    pre-TD restriction for the 20B V7 domestic return process. Its BOUNDED_IPF
++    seed adds reverse support, and the 1.5:1 direction cap retains both sides
++    of a positive pair. This precheck alone is not a proof of final support:
++    20B can also repair tiny IPF support, so its actual output and downstream
++    matrices must be checked against the original distance mask. No demand
++    mass is added or moved by this function.
 +    """
 +    mask = np.asarray(support, dtype=bool)
 +    if mask.ndim != 2 or mask.shape[0] != mask.shape[1] or not len(mask):
