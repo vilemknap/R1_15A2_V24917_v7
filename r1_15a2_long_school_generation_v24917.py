@@ -38,7 +38,7 @@ LS_DEFAULTS = {
     "ls_max_step_up": 0.10,              # +10 % per zone and cycle   (W/S +25 %)
     "ls_max_step_down": 0.10,            # -10 % per zone and cycle   (W/S -20 %)
     "ls_school_envelope": [0.67, 1.5],   # absolute ADD_*_SCH         (W/S 0.25-5)
-    "ls_long_envelope_ref": [0.5, 2.0],  # inherited option; LONG is frozen until native proof
+    "ls_long_envelope_ref": [0.5, 1.5],  # expert LONG band 0.1..0.3; frozen until native proof
     "ls_ridge_relative": 0.05,           # 5x the W/S ridge: LS only explain what W/S cannot
 }
 

@@ -100,8 +100,36 @@ def test_fit_bounds_freeze_zero_reference_without_changing_other_zone():
 def test_long_reference_point_two_not_one_or_last_calibrated_value():
     a=authority();e=a['entries']['LONG|1']
     assert e['reference_coefficient']==.2
-    assert z.check_candidate([candidate('LONG',.2,.25)],a)['passes']
-    assert not z.check_candidate([candidate('LONG',.2,.251)],a)['passes']
+    assert a['band']==[.75,1.25] and a['long_band']==[.5,1.5]
+    assert z.check_candidate([candidate('LONG',.2,.1)],a)['passes']
+    assert z.check_candidate([candidate('LONG',.2,.3)],a)['passes']
+    assert not z.check_candidate([candidate('LONG',.2,.099)],a)['passes']
+    assert not z.check_candidate([candidate('LONG',.2,.301)],a)['passes']
+    assert not z.check_candidate([candidate('WORK',1.,1.3)],a)['passes']
+
+
+def test_long_parent_outside_expert_band_may_only_hold_or_return():
+    rows=zones();rows[0]['ADD_PROD_L']=.4
+    for attr in z.SPECS['LONG'][2]:rows[0][attr]=20.
+    a=authority(rows)
+    assert {'zone_no':1,'family':'LONG','ratio':2.} in a['out_of_band']
+    assert z.check_candidate([candidate('LONG',.4,.4)],a)['passes']
+    assert z.check_candidate([candidate('LONG',.4,.3)],a)['passes']
+    assert not z.check_candidate([candidate('LONG',.4,.401)],a)['passes']
+    with pytest.raises(ValueError,match='LONG_BAND_CHANGED'):
+        z.capture(rows,OPTS,tuple(z.SPECS),anchor={**a,'long_band':[.5,2.]})
+
+
+def test_long_live_readback_uses_its_own_band_and_fp_reference():
+    parent=zones();a=authority(parent)
+    after=zones();after[0]['ADD_PROD_L']=.3
+    for attr in z.SPECS['LONG'][2]:after[0][attr]=15.
+    checked=z.check_live(a,after)
+    assert checked['passes']
+    assert next(r for r in checked['rows'] if r['family']=='LONG' and r['zone_no']==1)['in_target_band']
+    after[0]['ADD_PROD_L']=.301
+    for attr in z.SPECS['LONG'][2]:after[0][attr]=15.05
+    assert not z.check_live(a,after)['passes']
 
 
 def ls_payload():
@@ -115,11 +143,11 @@ def ls_payload():
 
 def test_ls_projection_clips_long_zones_independently_and_recomputes_prediction():
     ls=ls_payload();out=z.guard_ls(ls,authority())
-    assert out['steps']['ADD_PROD_L'][1]==out['steps']['ADD_PROD_L'][2]==pytest.approx(math.log(1.25))
+    assert out['steps']['ADD_PROD_L'][1]==out['steps']['ADD_PROD_L'][2]==pytest.approx(math.log(1.5))
     assert out['steps']['ADD_PROD_SCH'][1]==pytest.approx(math.log(1.25))
     assert out['steps']['ADD_PROD_SCH'][2]==pytest.approx(math.log(.75))
     assert out['steps']['ADD_ATT_SCH'][1]==.1
-    want=600*math.log(1.25)+400*math.log(.75)+50
+    want=300*math.log(1.5)+300*math.log(1.25)+400*math.log(.75)+50
     assert out['predicted_change']==pytest.approx([want])
     assert ls['predicted_change']==[999.]
 
@@ -139,10 +167,10 @@ def test_missing_ls_prediction_is_explicit_not_stale():
 
 
 def test_long_zone_at_cap_does_not_hold_other_zones_or_school():
-    rows=zones();rows[0]['ADD_PROD_L']=.25
-    for a in z.SPECS['LONG'][2]:rows[0][a]=12.5
+    rows=zones();rows[0]['ADD_PROD_L']=.3
+    for a in z.SPECS['LONG'][2]:rows[0][a]=15.
     out=z.guard_ls(ls_payload(),authority(rows))
-    assert out['steps']['ADD_PROD_L'][1]==0.0
+    assert out['steps']['ADD_PROD_L'][1]==pytest.approx(0.0,abs=1e-12)
     assert out['steps']['ADD_PROD_L'][2]>0.0
     assert out['steps']['ADD_PROD_SCH'][1]>0
 

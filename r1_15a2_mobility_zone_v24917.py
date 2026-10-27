@@ -27,6 +27,7 @@ EPS = 1e-12
 ATOL = 1e-7
 RTOL = 1e-10
 REFERENCE = "AMDY_DOMESTIC_FP_AT_CANONICAL_COEFFICIENT_NOT_RAW_SURVEY"
+LONG_BAND = (0.5, 1.5)  # ADD_PROD_L 0.2 x [0.5, 1.5] = [0.1, 0.3]
 
 
 def finite(value, name):
@@ -96,6 +97,8 @@ def enrich(adapter, rows):
 def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=None):
     """Build a fixed reference and retain the raw parent for readback/rollback."""
     lo, hi = limits(opts)
+    if anchor is not None and tuple(anchor.get("long_band", ())) != LONG_BAND:
+        raise ValueError("MOBILITYZONE1_LONG_BAND_CHANGED")
     by_zone = zone_map(rows)
     entries, errors = {}, dict(unavailable or {})
     for fam in families:
@@ -139,11 +142,14 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
             entries.update(current_entries)
         except Exception as exc:
             errors[fam] = type(exc).__name__ + ":" + str(exc)
-    outside = [{"zone_no": e["zone_no"], "family": e["family"], "ratio": e["ratio_current"]}
-               for e in entries.values() if e["ratio_current"] is not None and
-               not lo-EPS <= e["ratio_current"] <= hi+EPS]
+    outside = []
+    for e in entries.values():
+        band_lo, band_hi = LONG_BAND if e["family"] == "LONG" else (lo, hi)
+        if e["ratio_current"] is not None and not band_lo-EPS <= e["ratio_current"] <= band_hi+EPS:
+            outside.append({"zone_no": e["zone_no"], "family": e["family"],
+                            "ratio": e["ratio_current"]})
     return {"release": RELEASE, "enabled": bool(opts.get("enabled", True)),
-            "band": [lo, hi], "reference_role": REFERENCE,
+            "band": [lo, hi], "long_band": list(LONG_BAND), "reference_role": REFERENCE,
             "families": list(families), "entries": entries,
             "unavailable": errors, "out_of_band": outside,
             "target_satisfied": not bool(errors or outside), "parent_zone_rows": copy.deepcopy(list(rows)),
@@ -152,7 +158,7 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
 
 
 def interval(entry, authority):
-    lo, hi = authority["band"]
+    lo, hi = authority["long_band"] if entry["family"] == "LONG" else authority["band"]
     r = entry["current"]/entry["reference_coefficient"]
     return min(lo,r), max(hi,r)
 
@@ -375,9 +381,10 @@ def check_live(authority, rows):
                     bad.append("FP_ENVELOPE:"+a)
                 elif base<=EPS and values[a]>ATOL:bad.append("ZERO_GROUP_BECAME_POSITIVE:"+a)
         total=math.fsum(values.values());base=e["reference_production"]
+        target_lo,target_hi = authority["long_band"] if fam == "LONG" else authority["band"]
         report["rows"].append({"zone_no":z,"family":fam,"production":total,
             "reference_production":base,"ratio":total/base if base and base>EPS else None,
-            "in_target_band":bool(base and base>EPS and authority["band"][0]-EPS<=total/base<=authority["band"][1]+EPS),
+            "in_target_band":bool(base and base>EPS and target_lo-EPS<=total/base<=target_hi+EPS),
             "passes":not bad})
         if bad:report["violations"].append({"zone_no":z,"family":fam,"reasons":bad})
     # Deferred optional families are not "verified". Only unchanged parameters

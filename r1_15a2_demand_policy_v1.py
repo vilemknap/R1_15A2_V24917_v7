@@ -77,7 +77,7 @@ DEFAULTS = {
     'ls_max_step_up': 0.10,
     'ls_max_step_down': 0.10,
     'ls_school_envelope': [0.67, 1.5],
-    'ls_long_envelope_ref': [0.5, 2.0],
+    'ls_long_envelope_ref': [0.5, 1.5],
     'ls_ridge_relative': 0.05,
     'iz_enabled': True,
     'iz_matrix_no': 9002,
