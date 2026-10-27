@@ -168,6 +168,11 @@ def build_observed_long_incidence(
         "matrix_parity_max_abs": float(np.max(np.abs(component_sum - final))),
         "path_od_parity_max_abs_offdiag": float(np.max(np.abs(path_od[off] - final[off]), initial=0.0)),
         "unrouted_intrazonal_volume": float(np.trace(final)),
+        "vehicle_production": np.sum(final, axis=1),
+        "vehicle_attraction": np.sum(final, axis=0),
+        "vehicle_total": float(np.sum(final)),
+        "profile_identity": [p.get("countlocation_no", p.get("profile_id", i))
+                             for i, p in enumerate(profiles)],
         "variables": variables,
         "incidence": operator,
         "profile_long_vehicle_flow": total_profile,

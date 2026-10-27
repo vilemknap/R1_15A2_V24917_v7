@@ -39,6 +39,9 @@ def test_exact_saved_path_multiplicity_bidirection_and_component_parity():
     assert out["long_generation_permitted"] is False
     assert out["tg_sensitivity_verified"] is False
     assert out["unrouted_intrazonal_volume"] == pytest.approx(5.)
+    assert out["vehicle_production"] == pytest.approx([105., 50.])
+    assert out["vehicle_attraction"] == pytest.approx([55., 100.])
+    assert out["vehicle_total"] == pytest.approx(155.)
     assert out["matrix_parity_max_abs"] == 0.
     assert out["path_od_parity_max_abs_offdiag"] == 0.
     assert len(out["variables"]) == 2
