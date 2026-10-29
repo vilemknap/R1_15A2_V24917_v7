@@ -1,0 +1,61 @@
+"""Exercise actual DIAGFAST installation and routing; helper values are synthetic."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+
+root, out, mode = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve(), sys.argv[3]
+out.mkdir(parents=True, exist_ok=True)
+os.environ['LOCALAPPDATA'] = str(out/'localappdata')
+os.environ['R1_DIAGFAST_INLINE_PARITY'] = '1'
+os.environ.pop('R1_DIAGFAST_BACKEND', None)
+sys.path.insert(0, str(root))
+import r1_15a2_runtime_v1 as rt
+import r1_15a2_v24917_runtime as runtime
+
+calls = []
+def helper(v, folder, label, *args, **kwargs):
+    cfg = kwargs.get('cfg', args[-1] if args else {})
+    calls.append(cfg['diagnostics_backend'])
+    folder = Path(folder); folder.mkdir(parents=True, exist_ok=True)
+    (folder/'result.json').write_text(json.dumps({'values':[1.0,2.0,3.0]}))
+    return {'synthetic_helper':True}
+
+rt.run_11d = helper
+rt.run_12d = helper
+status = runtime.install_diagfast(rt, print_fn=lambda *a: None)
+guard = status['guard']
+names = runtime.LAZY_RUNTIME_MODULES
+preloaded = {name:str(Path(sys.modules[name].__file__).resolve()) for name in names}
+assert all(Path(path).parent == root for path in preloaded.values())
+if mode == 'without_preload':
+    # Negative control: reproduce the historical failure by removing the
+    # already-loaded parity module before the host removes the package path.
+    sys.modules.pop('r1_15a2_diagfast_parity_v1', None)
+else:
+    assert mode == 'with_preload'
+sys.path[:] = [p for p in sys.path if Path(p or '.').resolve() != root]
+os.chdir(out)
+assert all(Path(p or '.').resolve() != root for p in sys.path)
+result = rt.run_11d(object(), out/'11D', 'VERIFY', {'d12':True}, {})
+events = [json.loads(line) for line in guard.log_path.read_text().splitlines()]
+failure_events = [r for r in events if r['event'] == 'FAST_PATH_FAILED_RERUN_LEGACY']
+if mode == 'without_preload':
+    assert guard.mode == 'LEGACY' and guard.counts['fallbacks'] == 1
+    assert len(failure_events) == 1
+    assert 'r1_15a2_diagfast_parity_v1' in failure_events[0]['error']
+    assert 'ModuleNotFoundError' in failure_events[0]['error']
+else:
+    assert guard.mode == 'FAST_EXACT' and guard.counts['fallbacks'] == 0
+    assert guard.counts['parity_pass'] == 1 and not failure_events
+    assert calls == ['LEGACY','FAST_EXACT','FAST_EXACT']  # intentional reference call, then FAST
+    assert result['diagfast_execution']['backend'] == 'FAST_EXACT'
+record = {'status':'PASS', 'mode':mode, 'live_visum_tested':False,
+          'package_removed_from_sys_path':True, 'preloaded_modules':preloaded,
+          'guard_mode':guard.mode, 'guard_counts':guard.counts,
+          'helper_call_backends':calls, 'failure_events':failure_events,
+          'events_file':str(guard.log_path),
+          'runtime_sha256':hashlib.sha256((root/'r1_15a2_v24917_runtime.py').read_bytes()).hexdigest()}
+(out/'RESULT.json').write_text(json.dumps(record,indent=2)+'\n')
+print(json.dumps(record))

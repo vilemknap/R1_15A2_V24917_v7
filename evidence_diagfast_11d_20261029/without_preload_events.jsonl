@@ -1,0 +1,4 @@
+{"mode": "FAST_EXACT", "inline_parity": 1, "release": "R1_15A2_DIAGFAST_V2_BULK_NUMPY_20261024", "v2_release": "R1_15A2_DIAGFAST_V2_BULK_NUMPY_20261024", "event": "START", "time": "2026-10-29T14:11:49"}
+{"helper": "11D", "label": "VERIFY", "backend": "INLINE_PARITY+FAST_EXACT", "error": "ModuleNotFoundError(\"No module named 'r1_15a2_diagfast_parity_v1'\")", "event": "FAST_PATH_FAILED_RERUN_LEGACY", "time": "2026-10-29T14:11:49"}
+{"helper": "11D", "label": "VERIFY", "backend": "LEGACY", "seconds": 0.0, "event": "CALL_OK", "time": "2026-10-29T14:11:49"}
+{"helper": "11D", "label": "VERIFY", "event": "SWITCHED_TO_LEGACY_FOR_REST_OF_RUN", "time": "2026-10-29T14:11:49"}

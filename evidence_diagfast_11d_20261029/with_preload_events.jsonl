@@ -1,0 +1,6 @@
+{"mode": "FAST_EXACT", "inline_parity": 1, "release": "R1_15A2_DIAGFAST_V2_BULK_NUMPY_20261024", "v2_release": "R1_15A2_DIAGFAST_V2_BULK_NUMPY_20261024", "event": "START", "time": "2026-10-29T14:11:49"}
+{"helper": "11D", "label": "VERIFY", "backend": "LEGACY", "seconds": 0.0, "event": "CALL_OK", "time": "2026-10-29T14:11:49"}
+{"helper": "11D", "label": "VERIFY", "backend": "FAST_EXACT", "seconds": 0.0, "event": "CALL_OK", "time": "2026-10-29T14:11:49"}
+{"helper": "11D", "label": "VERIFY", "status": "PARITY_PASS", "artifacts": 1, "equal": 1, "report": "/workspace/work/diagfast_11d_verify/with_preload/localappdata/R1DF/DIRECT_PARITY_20261029_141149_2185b9_11D_fa0958.json", "scratch": "/tmp/R1DFD_jtoaxl98", "event": "INLINE_PARITY_REPORT", "time": "2026-10-29T14:11:49"}
+{"helper": "11D", "label": "VERIFY", "backend": "FAST_EXACT", "seconds": 0.0, "event": "CALL_OK", "time": "2026-10-29T14:11:49"}
+{"helper": "11D", "label": "VERIFY", "remaining": 0, "event": "INLINE_PARITY_PASS", "time": "2026-10-29T14:11:49"}

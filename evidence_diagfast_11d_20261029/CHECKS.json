@@ -1,0 +1,89 @@
+{
+  "baseline_commit": "7ccadf0f62cc64df3d83af18a44f1269bf8d93e2",
+  "runtime_code_changed": false,
+  "live_visum_tested": false,
+  "focused_tests": {
+    "passed": 3,
+    "log": "focused.txt"
+  },
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 66,
+      "mismatches": [],
+      "sha256": "dcc57086e9a1277308263d56fa86606cc56772aa588616469736e6b5436a0530"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 118,
+      "mismatches": [],
+      "sha256": "e0da940e29b6ee111e41acd381adb13fa43ffce6381c0a7daa74a1f3ce8640e1"
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": [],
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+    }
+  },
+  "with_preload": {
+    "status": "PASS",
+    "mode": "with_preload",
+    "live_visum_tested": false,
+    "package_removed_from_sys_path": true,
+    "preloaded_modules": {
+      "r1_15a2_diagfast_parity_v1": "/workspace/work/visum_startup/source/r1_15a2_diagfast_parity_v1.py",
+      "r1_15a2_diagfast_v2": "/workspace/work/visum_startup/source/r1_15a2_diagfast_v2.py",
+      "r1_15a2_diagfast_numpy_v2": "/workspace/work/visum_startup/source/r1_15a2_diagfast_numpy_v2.py"
+    },
+    "guard_mode": "FAST_EXACT",
+    "guard_counts": {
+      "calls": 1,
+      "parity_pass": 1,
+      "fast": 2,
+      "legacy": 1,
+      "fallbacks": 0
+    },
+    "helper_call_backends": [
+      "LEGACY",
+      "FAST_EXACT",
+      "FAST_EXACT"
+    ],
+    "failure_events": [],
+    "events_file": "/workspace/work/diagfast_11d_verify/with_preload/localappdata/R1DF/DIRECT_GUARD_20261029_141149_2185b9.jsonl",
+    "runtime_sha256": "66dad338a101eae7b069dfa6858d74cac73a04149c6218b92a4bfdcce11142dd"
+  },
+  "without_preload": {
+    "status": "PASS",
+    "mode": "without_preload",
+    "live_visum_tested": false,
+    "package_removed_from_sys_path": true,
+    "preloaded_modules": {
+      "r1_15a2_diagfast_parity_v1": "/workspace/work/visum_startup/source/r1_15a2_diagfast_parity_v1.py",
+      "r1_15a2_diagfast_v2": "/workspace/work/visum_startup/source/r1_15a2_diagfast_v2.py",
+      "r1_15a2_diagfast_numpy_v2": "/workspace/work/visum_startup/source/r1_15a2_diagfast_numpy_v2.py"
+    },
+    "guard_mode": "LEGACY",
+    "guard_counts": {
+      "calls": 1,
+      "parity_pass": 0,
+      "fast": 0,
+      "legacy": 1,
+      "fallbacks": 1
+    },
+    "helper_call_backends": [
+      "LEGACY"
+    ],
+    "failure_events": [
+      {
+        "helper": "11D",
+        "label": "VERIFY",
+        "backend": "INLINE_PARITY+FAST_EXACT",
+        "error": "ModuleNotFoundError(\"No module named 'r1_15a2_diagfast_parity_v1'\")",
+        "event": "FAST_PATH_FAILED_RERUN_LEGACY",
+        "time": "2026-10-29T14:11:49"
+      }
+    ],
+    "events_file": "/workspace/work/diagfast_11d_verify/without_preload/localappdata/R1DF/DIRECT_GUARD_20261029_141149_f65b9a.jsonl",
+    "runtime_sha256": "66dad338a101eae7b069dfa6858d74cac73a04149c6218b92a4bfdcce11142dd"
+  },
+  "conclusion": "The existing preload fixes the missing-parity-module LEGACY fallback. Other possible live-helper failures are outside this mock verification.",
+  "reproduction": "PYTHONDONTWRITEBYTECODE=1 python exercise.txt <package_root> <output_dir> with_preload (or without_preload, in a separate process)"
+}
