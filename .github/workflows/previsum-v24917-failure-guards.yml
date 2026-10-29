@@ -1,7 +1,9 @@
 name: Pre-Visum V24917 failure guards
 on:
   push:
-    branches: [codex/v24917-previsum-failure-guards-20261029]
+    branches:
+      - codex/v24917-previsum-failure-guards-20261029
+      - codex/fix-v240-op20-inactive-partials-20261029
   workflow_dispatch:
 permissions:
   contents: read
