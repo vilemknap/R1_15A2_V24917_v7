@@ -151,6 +151,26 @@ def _verify_support(adapter, mask, matrix_nos):
             raise SupplyContractError('LONGMASK_POST_ASSIGNMENT_SUPPORT_FAILED:%d' % no)
 
 
+
+def _verify_assignment_scope(row, expected):
+    """Fail closed on live partial/final PrT DSEGSET differences."""
+    import re
+    from r1_15a2_com_compat import object_property
+    position = int(row['no'])
+    try:
+        params = object_property(row['object'], 'PrTAssignmentParameters')
+        raw = params.AttValue('DSEGSET')
+        if not isinstance(raw, str) or not raw.strip():
+            raise ValueError('EMPTY_DSEGSET')
+        parts = [part.strip("'\\\"").upper() for part in re.split(r'[,;{}\\s]+', raw) if part.strip("'\\\"")]
+        if not parts or len(parts) != len(set(parts)):
+            raise ValueError('DUPLICATE_OR_EMPTY_DSEGSET')
+    except Exception as exc:
+        raise SupplyContractError('LONGMASK_ASSIGNMENT_DSEG_SCOPE_UNREADABLE:%d' % position) from exc
+    if set(parts) != set(expected):
+        raise SupplyContractError('LONGMASK_ASSIGNMENT_DSEG_SCOPE_MISMATCH:%d' % position)
+
+
 def execute_sequence(adapter, folder, original_execute):
     """Keep operation definitions/positions intact; scope only existing ACTIVE flags."""
     from r1_15a2_com_compat import operation_rows, TD, GROUP, ASSIGNMENT_PRT
@@ -165,9 +185,38 @@ def execute_sequence(adapter, folder, original_execute):
     leaves = [row for row in active if int(row['type']) != GROUP]
     td = [int(row['no']) for row in leaves if int(row['type']) == TD]
     assignments = [int(row['no']) for row in leaves if int(row['type']) == ASSIGNMENT_PRT]
-    approved = {int(rule['no']) for rule in (getattr(adapter, 'cfg', {}) or {}).get('supply', {}).get('assignment_operations', [])}
-    if assignments and not set(assignments) <= approved:
+    # Operation 20 alone is the approved *final* 14-DSeg count/GAP authority.
+    # Native 09C also has three earlier, independently scoped PrT assignments
+    # (17/18/19). They are execution prerequisites, NOT alternative final
+    # authorities. A strict subset check against the final authority rejects
+    # the approved live 09C sequence before its first baseline recomputation.
+    rules = (getattr(adapter, 'cfg', {}) or {}).get('supply', {}).get('assignment_operations', [])
+    approved = {int(rule['no']) for rule in rules}
+    active_assignments = set(assignments)
+    if assignments and (not approved or not approved <= active_assignments):
         raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
+    partial = active_assignments - approved
+    if partial:
+        # Audited R1 09C prerequisite scopes (V239/V240). Reject any additional
+        # assignment, reordered final authority, missing active final 20 or
+        # mutated live DSEGSET before toggling ACTIVE or writing any matrix.
+        expected_partial = {
+            17: {'LNV', 'NV'},
+            18: {'NATIVE_CF', 'NATIVE_CL'},
+            19: {'NATIVE_CS', 'NATIVE_CS_NOT', 'NATIVE_CW', 'NATIVE_CW_NOT'},
+        }
+        if approved != {20} or not partial <= set(expected_partial):
+            raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
+        by_no = {int(row['no']): row for row in leaves}
+        for position in sorted(partial):
+            if position >= 20:
+                raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
+            _verify_assignment_scope(by_no[position], expected_partial[position])
+        final_rules = [rule for rule in rules if int(rule['no']) == 20]
+        expected_final = final_rules[0].get('expected_dsegs', []) if len(final_rules) == 1 else []
+        if not expected_final:
+            raise SupplyContractError('LONGMASK_FINAL_ASSIGNMENT_SCOPE_AUTHORITY_MISSING')
+        _verify_assignment_scope(by_no[20], {str(x).upper() for x in expected_final})
     if len(td) > 1:
         raise SupplyContractError('LONGMASK_EXPECTED_ONE_UNIFIED_TD_OPERATION')
     boundary = min(assignments) if assignments else None
@@ -196,6 +245,8 @@ def execute_sequence(adapter, folder, original_execute):
                    ('ASSIGNMENT_SKIMS', [int(row['no']) for row in leaves if int(row['no']) >= boundary])]
     atomic_json(folder / 'LONG_MASK_EXECUTION_PLAN.json',
                 {'source': source, 'phases': phases, 'td_operation_position': td[0] if td else None,
+                 'final_assignment_authority': sorted(approved),
+                 'validated_partial_assignments': sorted(partial),
                  'operation_definitions_unchanged': True, 'volume_loss_accepted': True})
     result = None
     for name, positions in phases:
