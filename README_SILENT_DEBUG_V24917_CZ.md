@@ -59,6 +59,10 @@ a pro každý běh `SILENT_<timestamp>.log`,
 `SILENT_<timestamp>_STATUS.json`,
 `SILENT_<timestamp>_DEBUG.zip`.
 
+Pro další debug nahraj **jen**
+`R1_15A2_SILENT_DEBUG/SILENT_LATEST_DEBUG.zip`
+— je to kopie ZIP z posledního spuštění pod stálým názvem.
+
 ZIP obsahuje popis chyby, chvost Python logu a jen vybrané relevantní
 `RUN_STATUS`, `00_RESULT`, `LONG_MASK_RESULT`, `LONG_MASK_EXECUTION_PLAN`
 a související JSON/TXT bez obrovských matic. Poslední balíček stačí
