@@ -1,0 +1,85 @@
+"""Offline manifest compilation, project imports and lexical module-alias audit."""
+import ast
+import importlib
+import json
+from pathlib import Path
+import sys
+import types
+
+root=Path(sys.argv[1]).resolve();sys.path[:0]=[str(root),str(root/'tests')]
+manifest=json.loads((root/'V24917_RUNTIME_MANIFEST.json').read_text())
+files=[p for p in manifest['required_files'] if p.endswith('.py')]
+symbols=[];aliases=[];missing=[];skipped=[]
+
+def project(name):return name and name.startswith(('r1_15a2_','R1_15A2_'))
+
+def body_nodes(scope):
+    stack=list(reversed(scope.body))
+    while stack:
+        node=stack.pop();yield node
+        if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef,ast.Lambda)):continue
+        stack.extend(reversed(list(ast.iter_child_nodes(node))))
+
+def examine(scope,path,inherited):
+    nodes=list(body_nodes(scope));env=dict(inherited);local={}
+    shadow=set();writes=set()
+    if isinstance(scope,(ast.FunctionDef,ast.AsyncFunctionDef)):
+        args=scope.args
+        shadow.update(a.arg for a in args.posonlyargs+args.args+args.kwonlyargs)
+        if args.vararg:shadow.add(args.vararg.arg)
+        if args.kwarg:shadow.add(args.kwarg.arg)
+    for node in nodes:
+        if isinstance(node,ast.Name) and isinstance(node.ctx,ast.Store):shadow.add(node.id)
+        if isinstance(node,ast.Attribute) and isinstance(node.ctx,ast.Store) and isinstance(node.value,ast.Name):
+            writes.add((node.value.id,node.attr))
+        imports=[]
+        if isinstance(node,ast.Import):
+            imports=[(a.asname or a.name.split('.')[0],a.name,None) for a in node.names if project(a.name)]
+        elif isinstance(node,ast.ImportFrom) and project(node.module):
+            imports=[(a.asname or a.name,node.module,a.name) for a in node.names if a.name!='*']
+        for alias,name,symbol in imports:
+            try:
+                module=importlib.import_module(name)
+                if symbol:
+                    present=hasattr(module,symbol)
+                    symbols.append(dict(source=path,line=node.lineno,module=name,symbol=symbol,present=present))
+                    if not present:
+                        missing.append(symbols[-1]);continue
+                    value=getattr(module,symbol)
+                else:value=module
+                if isinstance(value,types.ModuleType):
+                    local.setdefault(alias,{})[value.__name__]=value
+            except Exception as exc:
+                missing.append(dict(source=path,line=node.lineno,module=name,error=repr(exc)))
+    for key in shadow:env.pop(key,None)
+    env.update(local)
+    for node in nodes:
+        if (isinstance(node,ast.Attribute) and isinstance(node.ctx,ast.Load)
+                and isinstance(node.value,ast.Name) and node.value.id in env):
+            alias=node.value.id;mods=env[alias]
+            if (alias,node.attr) in writes:
+                skipped.append(dict(source=path,line=node.lineno,alias=alias,attribute=node.attr,reason='assigned_in_scope'));continue
+            if len(mods)!=1:
+                skipped.append(dict(source=path,line=node.lineno,alias=alias,attribute=node.attr,reason='multiple_import_bindings'));continue
+            name,module=next(iter(mods.items()))
+            item=dict(source=path,line=node.lineno,alias=alias,module=name,attribute=node.attr,present=hasattr(module,node.attr))
+            aliases.append(item)
+            if not item['present']:missing.append(item)
+    for node in nodes:
+        if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef)):
+            examine(node,path,env)
+
+for path in files:
+    tree=ast.parse((root/path).read_text('utf-8-sig'),filename=path)
+    compile(tree,path,'exec')
+    examine(tree,path,{})
+
+from test_v24917_diagfast_td_abc_guard import project_import_audit
+graph=project_import_audit()
+result={'manifest_python_files_compiled':len(files),'project_dependency_graph':graph,
+    'imported_symbols_checked':len(symbols),'module_alias_attributes_checked':len(aliases),
+    'symbols':symbols,'aliases':aliases,'static_checks_skipped':skipped,'unresolved':missing,
+    'host_only_entrypoints_not_executed':['R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py','R1_BOUNDARY_X_PA_UPLIFT_APPLY.py','helpers/R1_12D_PROFILE_ROSTER_V24917.py'],
+    'live_visum_tested':False,'note':'Static alias resolution cannot validate arbitrary runtime-created objects, generated imports, or live COM APIs.'}
+Path(sys.argv[2]).write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({k:result[k] for k in ['manifest_python_files_compiled','project_dependency_graph','imported_symbols_checked','module_alias_attributes_checked','unresolved']}))

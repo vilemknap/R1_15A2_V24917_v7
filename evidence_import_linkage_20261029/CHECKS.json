@@ -1,0 +1,44 @@
+{
+  "baseline_commit": "7cc73977e44cd2862b773906bbe3ff8bef7c7a95",
+  "runtime_source_changed": false,
+  "manifest_python_files_compiled": 59,
+  "project_dependency_graph": {
+    "files": 130,
+    "project_imports": 531,
+    "missing": []
+  },
+  "imported_symbols_checked": 66,
+  "project_module_alias_attributes_checked": 523,
+  "ambiguous_or_assigned_attributes_not_counted": 75,
+  "unresolved": [],
+  "focused_tests": {
+    "passed": 10,
+    "returncode": 0,
+    "command": "OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider tests/test_v24917_runtime_install.py tests/test_v24917_diagfast_td_abc_guard.py::test_runtime_and_deferred_project_imports_resolve"
+  },
+  "existing_fix": "preload_modules validates the __file__ origin of preloaded DIAGFAST modules and loads missing ones by absolute package path. Regression includes a foreign sys.modules object, finder shadowing, cleanup on dependency failure and actual launcher installation.",
+  "live_visum_tested": false,
+  "host_only_entrypoints_not_executed": [
+    "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py",
+    "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py",
+    "helpers/R1_12D_PROFILE_ROSTER_V24917.py"
+  ],
+  "limits": "Static resolution cannot prove runtime-generated imports, parameter-supplied objects or live Windows COM module linkage.",
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 66,
+      "mismatches": [],
+      "sha256": "bbfea360b9b04720dee88d0e000b551af800b4b215bb8380df0c251fd69cf4f2"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 119,
+      "mismatches": [],
+      "sha256": "b11bad1cf9d38bc1df6b4d4502cb7a470276cc6cdfefb3fc53c705968df9b9c0"
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": [],
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+    }
+  }
+}
