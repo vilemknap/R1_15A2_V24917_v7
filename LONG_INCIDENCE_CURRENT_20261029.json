@@ -1,0 +1,128 @@
+{
+  "task": "LONG_CURRENT_OD_PROFILE_INCIDENCE_20261029",
+  "baseline_local_commit": "c15a7797dde71fd50833d32099573329bef0bf88",
+  "baseline_github_commit": "23d1d2f53ca980fb510f8ed13c1e58d435827d28",
+  "branch": "codex/long-incidence-current-20261029",
+  "offline_only": true,
+  "live_visum_status": "NOT_RUN",
+  "focused": {
+    "passed": 48,
+    "failed": 0,
+    "returncode": 0,
+    "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_incidence_read.py tests/test_v24917_long_profile_incidence.py tests/test_v24917_long_zonal_fit.py tests/test_v24917_long_post_td_mask.py"
+  },
+  "regression_command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/long_incidence_current/final_regression",
+  "checks": {
+    "release": "GENFIX2",
+    "offline_only": true,
+    "live_visum_tested": false,
+    "suites": [
+      {
+        "suite": "main",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/tests"
+        ],
+        "returncode": 0,
+        "seconds": 33.801
+      },
+      {
+        "suite": "diagfast",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/diagfast_tests"
+        ],
+        "returncode": 0,
+        "seconds": 20.967
+      },
+      {
+        "suite": "audit_genfix2",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/genfix2_audit_tests"
+        ],
+        "returncode": 0,
+        "seconds": 0.716
+      }
+    ],
+    "all_passed": true,
+    "output": "/workspace/work/long_incidence_current/final_regression",
+    "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+  },
+  "test_totals": {
+    "main": {
+      "passed": 1834,
+      "skipped": 4
+    },
+    "diagfast": {
+      "passed": 138
+    },
+    "audit": {
+      "passed": 18
+    }
+  },
+  "integrity": {
+    "compiled": [
+      "r1_15a2_long_incidence_read_v24917.py",
+      "r1_15a2_long_profile_incidence_v24917.py",
+      "r1_15a2_trial_adapter_v24917.py",
+      "tests/test_v24917_long_incidence_read.py",
+      "tools/refresh_v24917_manifests.py"
+    ],
+    "manifests": {
+      "V24917_RUNTIME_MANIFEST.json": {
+        "files": 70,
+        "all_sha256_match": true,
+        "manifest_sha256": "2a2c2c1afd32eae9e5705a969bb85ad3dbbcafcb2b7d94fe51a95cfebba036db"
+      },
+      "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+        "files": 129,
+        "all_sha256_match": true,
+        "manifest_sha256": "5a5bbfd6dcc9e6261b1507d6cf0a273f9638a3d063280b066556c4dc3be43d03"
+      },
+      "DIAGFAST_V1_BASE_MANIFEST.json": {
+        "files": 1059,
+        "all_sha256_match": true,
+        "manifest_sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+      }
+    },
+    "sealed_parent_files_changed": false
+  },
+  "runtime_entry": "VisumAdapter.long_profile_incidence(diag, fresh_folder)",
+  "model_writes_added": false,
+  "automatic_path_export_added": false,
+  "long_generation_permitted": false,
+  "long_td_count_response_enabled": false,
+  "support": {
+    "matrix_no": 9697,
+    "matrix_code": "R1_OSRM_DIST_KM",
+    "minimum_km": 80,
+    "maximum_km": null
+  },
+  "limits": [
+    "Observed final-vehicle attribution, not TG/TD/20A/20B sensitivity.",
+    "Requires assignment/skims completed by the current V24917 adapter.",
+    "Windows COM and actual model export/parity remain untested here."
+  ],
+  "changes": [
+    "Fresh NATIVE_CL bounded stream, six OD matrices, exact CAL scope/direction, live profile parity.",
+    "Assignment/mutation/skim/source/zone/parameter drift guards and fresh output publication.",
+    "Duplicate exported path/profile-position rejection and preservation of tiny positive OD.",
+    "Updated current methodology documentation and manifests."
+  ]
+}

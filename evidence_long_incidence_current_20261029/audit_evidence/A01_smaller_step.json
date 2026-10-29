@@ -1,0 +1,48 @@
+{
+  "report": {
+    "release": "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027",
+    "band": [
+      0.75,
+      1.25
+    ],
+    "families": {
+      "WORK": {
+        "ratio_current": 0.755,
+        "ratio_full_step": 0.755,
+        "ratio_after": 0.74999999999975,
+        "zones": 2,
+        "rows": 2,
+        "factor": 0.1847168373060722,
+        "minimum_over_scales": 0.74999999999975,
+        "maximum_over_scales": 0.755,
+        "minimum_at_scale": 1.0,
+        "status": "ATTENUATED"
+      },
+      "SERVICE": {
+        "ratio_current": 1.0,
+        "ratio_full_step": 1.0,
+        "ratio_after": 1.0,
+        "zones": 2,
+        "rows": 0,
+        "factor": 1.0,
+        "minimum_over_scales": 1.0,
+        "maximum_over_scales": 1.0,
+        "minimum_at_scale": 0.0,
+        "status": "WITHIN_BAND"
+      }
+    },
+    "passes": true,
+    "status": "OK"
+  },
+  "ratios": {
+    "0.0": 0.755,
+    "0.25": 0.7535485117735624,
+    "0.5": 0.7522307598426532,
+    "0.75": 0.7510476196193113,
+    "1.0": 0.74999999999975
+  },
+  "allowed_band": [
+    0.75,
+    1.25
+  ]
+}

@@ -39,3 +39,4 @@ MOBILITYALLOC1_TDLONG1_SOURCE.patch -text -diff
 
 # Keep complete source patches byte-exact, including blank context lines.
 artifacts_long_post_td_mask_20261029/*.patch -text -diff
+artifacts_long_incidence_current_20261029/*.patch -text -diff

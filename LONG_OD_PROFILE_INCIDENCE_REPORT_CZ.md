@@ -1,35 +1,46 @@
-# LONG OD→profil incidence — čtecí offline kandidát
+# LONG OD → profil: současná čtecí implementace
 
-**Stav:** `OBSERVED_LONG_OD_PROFILE_ONLY` + `LOCAL_LINEAR_PROPOSAL_ONLY`, `LIVE_VISUM_NOT_RUN`. Modul `r1_15a2_long_profile_incidence_v24917.py` tvoří z předaných uložených tras `NATIVE_CL` a jejich průchodů linkami OD→profil expozici podle stejného pravidla, které WORK/SERVICE používají pro PrT path/path-link seznamy. Předané řádky musí být ze skutečného oficiálního exportu; zde je k dispozici jen syntetický test, nikoli aktuální `NATIVE_CL` trasy. Navazující lokální fit je pouze diagnostický a nezasahuje do aktivní kalibrace.
+Stav k 2026-10-29: `OBSERVED_LONG_OD_PROFILE_ONLY`. Živý Visum v tomto vývojovém prostředí nebyl spuštěn. Výstup popisuje vozidlový tok přiřazený profilům; není derivací `ADD_PROD_L`.
 
-## Skutečný zdroj a výpočet
+## Výpočet a zdroje
 
-- Aktivní WORK/SERVICE základ `r1_15a2_core.build_actual_path_incidence()` počítá pro každou uloženou trasu průchod profilem včetně násobnosti. Nativní `NATIVE_CL` je v seznamu možných osobních segmentů, ale v současné konfiguraci `R1_15A2_CONFIG_V2_4_9_6.json` není v `path_export_dsegs` ani `mutable_dsegs`. Pro reálný LONG audit je proto potřeba samostatný **read-only** export této vrstvy; nepřidávat ji automaticky do měnitelných segmentů.
-- Nový čistý modul přijímá pouze `NATIVE_CL` path/path-link řádky, schválené profily, osu zón, výslednou vozidlovou OD M9305 a pět vozidlových komponent M9291–M9295 po 20B. Vyžaduje shodu součtu komponent s M9305 po každé buňce a shodu součtu uložených tras s M9305 pro každý mezizónový pár. Kladné mezizónové trasy bez linků, osiřelé linky, chybné směry profilů, záporné/neúplné matice a nesprávný segment odmítá. Diagonální objem vykazuje zvlášť, protože nemusí mít síťovou trasu.
-- Pro profil `p` a OD `o,d` je současná expozice `A[p,o,d] = Σ_trasa objem_trasy × počet průchodů profilem`. Komponentový průchod se získá z pozorovaného podílu `M929k[o,d]/M9305[o,d]`; pět komponent se musí na každém profilu sečíst na celkový LONG průchod. Výstup nese existující `ordered_zone_hash()` a `matrix_values_hash()`. Všechny hash hodnoty jsou diagnostické pro předaná data; bez živého načtení a shody assignment/path epochy nejsou autoritou aktuálního Visum stavu.
+`r1_15a2_long_profile_incidence_v24917.py` používá oficiální uložené trasy `NATIVE_CL`, jejich směrované průchody linkami, výslednou M9305 a pět vozidlových komponent M9291–M9295. Pro každý profil a OD pár sčítá objemy tras krát počet průchodů profilem. Skutečný opakovaný průchod linkou se započte opakovaně; duplicitní export stejné profilové pozice se odmítne. Profily BOTH sčítají oba autorizované fyzické směry.
 
-## Hranice interpretace
+Komponentový příspěvek vzniká podle aktuálního OD podílu M929k/M9305. Součet pěti složek musí odpovídat M9305 v každé buňce a součet uložených tras musí rekonstruovat všechny kladné mezizónové OD vztahy. Kladné vztahy pod numerickou tolerancí se nezahazují. Intrazonální objem je vykázán odděleně. Neodvozuje se žádná globální obsazenost ani převodní koeficient CL.
 
-Výstup je **pozorované přiřazení vozidel k profilům pro jeden konzistentní vstupní snapshot**. Dodaný 19B V5 je pouze čtecí audit kandidáta κ: mapuje R1 zóny na rodičovské AMDY zóny a váží OD převod pomocí R1 osobních matic a pásem M9001. Dodaný 20A V2 popisuje realizační krok: v každé z pěti LONG komponent násobí OD buňky M9111–M9115 komponentově a pásmově specifickou κ podle **M9001**, s auditovaným komponentovým fallbackem při malé chybějící podpoře kontraktu, a zapisuje M9191–M9195. Samostatný 20B V7 pak z M9191–M9195 tvoří M9291–M9295 pomocí `BOUNDED_IPF`; finální M9305 musí odpovídat součtu pěti složek. κ není globální násobitel CL ani `2.8` z generační formule. Předané skripty ukazují zamýšlenou metodiku, ale samy nedokládají právě načtenou proceduru ve Visumu.
+## Nová cesta z aktuálního adapteru
 
-Citlivost produkčního koeficientu v zóně vyžaduje ještě průchod přes nativní TG/TD, právě popsaný převod `9111–9115 → 9191–9195`, směrově omezený návratový 20B `9191–9195 → 9291–9295` a finální `9305`. Samotný podíl komponent v M929x neprokazuje derivaci této sekvence. Živě se musí ověřit také skutečné vzorce 20B/9305 a totožná epocha tras a matic; dodaný TG export tyto trasy ani matice neobsahuje. Proto výstup nikdy neplní klíč `long_zone_profile_incidence` aktivního LSGEN a `long_generation_permitted` je vždy `False`. Navíc zůstává neověřený nativní filtr LONG OD párů `distance >= 100 km`.
+`r1_15a2_long_incidence_read_v24917.py` doplňuje čtení z aktuálního modelu. V24917 adapter po svém dokončeném assignmentu a zachycení DIS zaznamená assignment/mutation epochu, token, hash skim epochy a pořadí zón. Samotný záznam neexportuje trasy ani nečte další OD matice.
 
-## Navazující lokální zonální fit podle principu WORK/SERVICE
+Explicitní diagnostické API na již používaném adapteru:
 
-`r1_15a2_long_zonal_fit_v24917.py` nyní nad pozorovanou LONG incidencí staví čistý diagnostický návrh. Pro zónové log kroky `u_o` (produkce) a `v_d` (atraktivita) používá stejný první řád jako aktivní W/S:
+```python
+# Po běžném assignmentu a diagnostice V24917; žádný nový adapter ani attach.
+observed = adapter.long_profile_incidence(diag, audit_folder)
+```
 
-`Δq_od/q_od ≈ u_o + v_d − g_LONG`, kde `g_LONG = 0.5×(Σ P_o u_o/P_total + Σ A_d v_d/A_total)`, a `ΔF_p ≈ Σ_od A[p,od]×(u_o+v_d−g_LONG)`.
+`audit_folder` musí být nový nebo prázdný. `diag['d12']['rows']` musí obsahovat právě schválenou CAL sestavu; ověřují se identity i směry vůči `api_approved_observations`. Pořadí řádků se zachová pro návazný W/S fit. Volání není automaticky přidáno do každého kalibračního kroku: čtení velkého `NATIVE_CL` exportu proběhne jen na explicitní diagnostický požadavek.
 
-`P/A` základ se bere z celé aktuální M9305 včetně intrazonálních cest, které nemají profilovou trasu; normalizace proto odpovídá celému LONG objemu. Profilové řádky, identita a váhy se přebírají z W/S problému; po jeho předpovědi se fituje zbylé reziduum. Solver je tentýž ohraničený `r1_15a2_zonal_count_fit_v24917.solve()`: tvrdá lineární bilance P/A, přesná oprava změn `exp(log_step)`, ridge a nulový krok u zón bez přímé expozice. Zónové meze se musí dodat explicitně z aktuálního referenčního a mobilitního kontraktu; modul si je nevymýšlí a nevydává žádné aplikační `candidate_rows`.
+Čtecí cesta:
 
-Je to **stejná lokální aproximace**, jakou W/S používají k výběru pokusu, nikoli analytická derivace celé TG→TD→20A→20B sekvence. Přesný účinek musí ověřit skutečný pokus ve Visumu; zejména 20B může změnu rozdělit mezi oba směry. `fit()` proto vždy vrací `LOCAL_LINEAR_PROPOSAL_ONLY`, `long_generation_permitted=False` a `native_filter_verified=False`. Aktivní LSGEN/adapter nejsou novým modulem zapojeny a nadále LONG zmrazují.
+1. Vyžádá aktuální, adapterem navázanou assignment/skim epochu. Odmítne probíhající výpočet, chybějící vazbu nebo pozdější mutaci.
+2. Načte zónovou osu, M9291–M9295 a M9305 a ověří zdroj OSRM M9697 / `R1_OSRM_DIST_KM`. Vyžaduje již aplikovanou podporu **OSRM ≥80 km bez horní meze**. Při nesplnění sama nic neořezává ani nepřepočítává.
+3. Přes stávající `export_actual_paths_and_build_incidence()` exportuje pouze `NATIVE_CL`, s ověřeným bounded COM podpisem a průběžnou redukcí path-link řádků. Nepoužívá persistentní W/S cache a nemění původní `path_export_dsegs` ani `mutable_dsegs`.
+4. Ověří OD a komponentovou paritu a porovná rekonstruovaný LONG tok s přímým `VOLVEH_DSEG(NATIVE_CL,AP)` na schválených profilových linkách. Tolerance parity: absolutně 1e-6, relativně 1e-8.
+5. Znovu načte všech šest matic a profilové toky; vyžaduje přesnou nezměněnost. Znovu ověří zdroj OSRM, parametrový snapshot, pořadí zón a epochu. Změna znamená chybu, nikoli fallback na staré podklady.
 
-Export TG z momentálního modelu obsahuje `ADD_PROD_L = 4.38341115316211` ve všech 681 zónách; projektová pevná reference je `0.2`. Případný návrat na základní hodnoty se nesmí předpokládat, dokud nebude doložen aktuální snapshot po rollbacku.
+Úspěch zapisuje `LONG_INCIDENCE.npz` bez pickle a `LONG_INCIDENCE_REPORT.json` s SHA archivu, matic a zón, identitou epochy a chybami parity. Archiv obsahuje řídké řádky/sloupce/hodnoty, OD identitu, aktuální objemy, pět komponent, zónové P/A a profilové toky. Zůstávají také CSV důkazy původního exportéru. Při selhání se úspěšný výstup odstraní a vznikne `LONG_INCIDENCE_FAILURE.json`; předchozí neprázdný adresář se nepřepisuje.
 
-## Ověření
+## Hranice použití
 
-`PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_profile_incidence.py tests/test_v24917_tdlong1_mask.py tests/test_core_deep.py tests/test_v24917_runtime_install.py` — **44 PASS, 0 FAIL**. Syntetické testy zahrnují opakovaný průchod linkou, obousměrný profil, rozklad pěti komponent, intrazonální objem a odmítnutí chybných zdrojů. Kompilace změněných souborů a `git diff --check` prošly. Projektový nástroj zapečetil 65/65 runtime souborů a ověřil 1 059 neměnných zdrojů. Testy neprokazují běh ve Visumu.
+Čtení nevolá Procedures.Execute, SetValues, LoadVersion ani aktivaci LONG. Zdrojový `source_status` rozlišuje pouze caller-supplied offline vstupy od čtení navázaného adapteru s ověřenou paritou. Testovací COM rozhraní neprokazuje běh ve skutečném Visumu.
 
-Po doplnění lokálního fitu: `PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_zonal_fit.py tests/test_v24917_long_profile_incidence.py tests/test_v24917_mobilityalloc1_solver.py tests/test_v24917_tdlong1_mask.py tests/test_v24917_runtime_install.py` — **36 PASS, 0 FAIL**. Testy ověřují přesný tvar normalizované matice `G`, zahrnutí intrazonálního objemu, reziduum po W/S, omezený solver, nelineární P/A, nulový krok bez expozice a odmítnutí chybné osy/profilu. Aktuální zapečetění je 66/66 runtime souborů; 1 059 původních zdrojů zůstalo beze změny.
+`r1_15a2_long_zonal_fit_v24917.py` může dál vytvořit čistý lokální návrh podle principu W/S: `Δq/q ≈ u_origin + v_destination − g_LONG`. Skutečná změna produkčního koeficientu však prochází TG → nativní TD → komponentově a pásmově specifický převod 20A → návratový 20B → současné maskování výsledných LONG matic → assignment. Pozorovaná M929x incidence sama tuto citlivost nedokládá. `long_generation_permitted=False`, `tg_sensitivity_verified=False` zůstávají zachovány.
 
-Další ohraničený krok: na cílovém PC čtecím exportem získat `NATIVE_CL` path/path-link seznam a ve stejné assignment/path epoše M9291–M9295 a M9305; po kontrole parity lze změřit skutečnou OD→profil expozici a prověřit lokální zonální predikci na malém živém pokusu. Samostatně je nutné doložit nativní LONG filtr, obnovu rodiče a případný rollback `ADD_PROD_L` na základní hodnotu.
+LONG Generation tedy zůstává zmrazená; kanonická reference je nyní **0,3**, nikoli historických 0,2. Společné LONG TD b/c také zůstává blokované do ověření count-response modelu. Nativní OD filtr už není požadavkem: uživatel zvolil následné násobení LONG matic maskou a přijetí úbytku objemu. FineCDF dál používá čerstvou NATIVE_CL/DIS a podmíněnou cílovou křivku 100–200 km, což není horní mez OSRM podpory.
+
+## Ověření a další hranice
+
+Přesné příkazy, návratové kódy, testové součty a manifestové důkazy jsou v `LONG_INCIDENCE_CURRENT_20261029.json` a `evidence_long_incidence_current_20261029/`. Kompletní diff je v `artifacts_long_incidence_current_20261029/`. Vše je součástí GitHub zálohy této větve.
+
+Dalším samostatným krokem je spustit toto čtení na cílovém PC bezprostředně nad platnou epochou V24917 a posoudit skutečnou paritu. Pro odmrazení zonálního LONG TG bude navíc potřeba samostatně ověřená odezva celé realizační sekvence a její rollback.

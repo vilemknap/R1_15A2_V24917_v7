@@ -13,14 +13,15 @@ same assignment/path epoch. No COM operations or matrix writes occur here.
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Any, Mapping, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 
 import numpy as np
 
 import r1_15a2_core as core
+from r1_15a2_com_compat import exact_int, finite_float
 from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
 
-RELEASE = "R1_15A2_V24917_LONG_OBSERVED_PATH_INCIDENCE_V1"
+RELEASE = "R1_15A2_V24917_LONG_OBSERVED_PATH_INCIDENCE_V2_STREAMED"
 COMPONENT_MATRICES = (9291, 9292, 9293, 9294, 9295)
 FINAL_MATRIX = 9305
 
@@ -36,7 +37,7 @@ def _matrix(values: Any, n: int, label: str) -> np.ndarray:
 
 def build_observed_long_incidence(
     path_rows: Sequence[Mapping[str, Any]],
-    pathlink_rows: Sequence[Mapping[str, Any]],
+    pathlink_rows: Iterable[Mapping[str, Any]],
     profiles: Sequence[Mapping[str, Any]],
     zone_nos: Sequence[int],
     final_vehicle_od: Any,
@@ -66,7 +67,7 @@ def build_observed_long_incidence(
     if not np.isfinite([atol, rtol]).all() or atol < 0.0 or rtol < 0.0:
         raise ValueError("LONG_INCIDENCE_TOLERANCE_INVALID")
     final = _matrix(final_vehicle_od, n, "M9305")
-    if {int(k) for k in component_vehicle_od} != set(COMPONENT_MATRICES):
+    if set(component_vehicle_od) != set(COMPONENT_MATRICES):
         raise ValueError("LONG_INCIDENCE_COMPONENT_SET_INVALID")
     components = {no: _matrix(component_vehicle_od[no], n, "M%d" % no)
                   for no in COMPONENT_MATRICES}
@@ -75,14 +76,21 @@ def build_observed_long_incidence(
         component_sum += components[no]
     if not np.allclose(component_sum, final, rtol=rtol, atol=atol):
         raise ValueError("LONG_INCIDENCE_COMPONENT_TO_FINAL_OD_MISMATCH")
-    if not np.any(final[~np.eye(n, dtype=bool)] > atol):
+    if not np.any(final[~np.eye(n, dtype=bool)] > 0.0):
         raise ValueError("LONG_INCIDENCE_NO_INTERZONAL_FLOW")
 
+    for raw in path_rows:
+        for names in (core.PATH_ORIGIN_NAMES, core.PATH_DEST_NAMES, core.PATH_INDEX_NAMES):
+            exact_int(core.first_value(raw, names), "LONG_PATH_KEY")
+        if finite_float(core.first_value(raw, core.PATH_VOLUME_NAMES), "LONG_PATH_VOLUME") < 0.0:
+            raise ValueError("LONG_INCIDENCE_INVALID_PATH_ROWS")
     paths, path_summary = core.parse_official_path_rows(path_rows)
     if path_summary["invalid_rows"] or path_summary["negative_volume_rows"]:
         raise ValueError("LONG_INCIDENCE_INVALID_PATH_ROWS")
     if not paths or any(p["dseg_code"] != "NATIVE_CL" for p in paths):
         raise ValueError("LONG_INCIDENCE_NOT_NATIVE_CL_PATHS")
+    if any(p["raw_rows"] != 1 for p in paths):
+        raise ValueError("LONG_INCIDENCE_DUPLICATE_PATH_KEY")
     path_by_key = {p["path_key"]: p for p in paths}
     path_od = np.zeros_like(final)
     for path in paths:
@@ -91,7 +99,9 @@ def build_observed_long_incidence(
             raise ValueError("LONG_INCIDENCE_PATH_ZONE_OUTSIDE_AXIS")
         path_od[zone_pos[o], zone_pos[d]] += float(path["volume"])
     off = ~np.eye(n, dtype=bool)
-    if not np.allclose(path_od[off], final[off], rtol=rtol, atol=atol):
+    if (not np.allclose(path_od[off], final[off], rtol=rtol, atol=atol)
+            or np.any(off & (final > 0.0) & (path_od <= 0.0))
+            or np.any(off & (final <= 0.0) & (path_od > 0.0))):
         raise ValueError("LONG_INCIDENCE_PATH_TO_FINAL_OD_MISMATCH")
 
     link_to_profiles: dict[tuple[int, int, int], list[int]] = defaultdict(list)
@@ -104,25 +114,35 @@ def build_observed_long_incidence(
 
     path_profile_hits: dict[tuple[Any, int], int] = defaultdict(int)
     path_with_links: set[Any] = set()
+    # Only profile hits need retention; the bounded exporter can stream millions
+    # of other link rows. A repeated physical link at a DIFFERENT position is a
+    # real traversal, whereas a duplicate exported position must not double flow.
+    hit_positions: set[Any] = set()
     for raw in pathlink_rows:
         key = core._path_key_from_row(raw, pathlink=True)
         link = core._link_key_from_row(raw)
         if key is None or link is None or key not in path_by_key:
             raise ValueError("LONG_INCIDENCE_INVALID_OR_ORPHAN_PATHLINK")
         path_with_links.add(key)
-        for pidx in link_to_profiles.get(link, ()):
+        indices = link_to_profiles.get(link, ())
+        if indices:
+            seq = exact_int(core.first_value(raw, core.PATHLINK_SEQ_NAMES), "LONG_PATHLINK_POSITION")
+            if (key, seq) in hit_positions:
+                raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_PATHLINK_POSITION")
+            hit_positions.add((key, seq))
+        for pidx in indices:
             path_profile_hits[(key, pidx)] += 1
     paths_hitting_profile = {key for key, _ in path_profile_hits}
     for path in paths:
-        if (path["origin"] != path["destination"] and path["volume"] > atol
+        if (path["origin"] != path["destination"] and path["volume"] > 0.0
                 and path["path_key"] not in path_with_links):
             raise ValueError("LONG_INCIDENCE_POSITIVE_PATH_WITHOUT_LINKS")
-        if (path["origin"] == path["destination"] and path["volume"] > atol
+        if (path["origin"] == path["destination"] and path["volume"] > 0.0
                 and path["path_key"] in paths_hitting_profile):
             raise ValueError("LONG_INCIDENCE_INTRAZONAL_PROFILE_PATH_UNSUPPORTED")
 
     od_keys = sorted((int(o), int(d))
-                     for o, d in zip(*np.nonzero(final > atol)) if o != d)
+                     for o, d in zip(*np.nonzero(final > 0.0)) if o != d)
     od_index = {key: idx for idx, key in enumerate(od_keys)}
     variables = [{"dseg_code": "NATIVE_CL", "family": "LONG", "origin": zones[o],
                   "destination": zones[d], "q_current": float(final[o, d]),
@@ -136,11 +156,11 @@ def build_observed_long_incidence(
         if o == d:
             continue
         idx = od_index.get((o, d))
-        if idx is None and path["volume"] > atol:
+        if idx is None and path["volume"] > 0.0:
             raise ValueError("LONG_INCIDENCE_PATH_WITHOUT_FINAL_OD")
         if idx is not None:
             through[(pidx, idx)] += float(path["volume"]) * multiplicity
-    items = sorted(through.items())
+    items = sorted((key, value) for key, value in through.items() if value > 0.0)
     row = np.array([k[0] for k, _ in items], dtype=np.int64)
     col = np.array([k[1] for k, _ in items], dtype=np.int64)
     value = np.array([v for _, v in items], dtype=np.float64)

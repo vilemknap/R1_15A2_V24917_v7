@@ -1,0 +1,831 @@
+diff --git a/.gitattributes b/.gitattributes
+index 1bbc25a..c096139 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -39,3 +39,4 @@ MOBILITYALLOC1_TDLONG1_SOURCE.patch -text -diff
+ 
+ # Keep complete source patches byte-exact, including blank context lines.
+ artifacts_long_post_td_mask_20261029/*.patch -text -diff
++artifacts_long_incidence_current_20261029/*.patch -text -diff
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index e4fff23..a7b2a74 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -53,9 +53,10 @@
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_long_composite_td_v24917.py": "527ed907603b1c37cb354c39e6948be592a70e0caeb7937ab2d46242a494eebe",
+     "r1_15a2_long_distance_guard_v24917.py": "94a0e368d35929756c56d913fc50ebd16e321c21ed8c37e8463636338fdad712",
++    "r1_15a2_long_incidence_read_v24917.py": "4c9e581d41088832ef676bca015444d4f6bc4df751bfb78e6197f7edd063d1b7",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+     "r1_15a2_long_post_td_mask_v24917.py": "090c152a600189a79ce783b057a9d340a8fcd9840d21949ce1ced12afc27359f",
+-    "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
++    "r1_15a2_long_profile_incidence_v24917.py": "9c05bbb8e9dfebc9342354f41e6330bef818082276584f71a8384ae7097562e1",
+     "r1_15a2_long_school_generation_v24917.py": "20837ddcaed19728ac61d747ff295060752898859003847857bc22e4ef562946",
+     "r1_15a2_long_support_distance_v24917.py": "9af975facbe939896c36ac4a777013c005bf88808365ff7e2b7578d48790888e",
+     "r1_15a2_long_zonal_fit_v24917.py": "d73ef3a6a06876c9fd55a4aa7be5078aa0ac67f6b5f6ad8c4bd2832dcdf6ebbf",
+@@ -80,7 +81,7 @@
+     "r1_15a2_td_joint_v24917.py": "9638d3d0026cef17fdb27c7b469b53c74f75690043394a2f463c174e0961c9dd",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+-    "r1_15a2_trial_adapter_v24917.py": "5ae483634a5be9e72040ee45fd0645d4d6d997e04d84927c14c242077db88303",
++    "r1_15a2_trial_adapter_v24917.py": "9633fdbb3943e9934b8bb6c7b6a69f79fecc5ea4d11615f8b1176a2d36932062",
+     "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+     "r1_15a2_zonal_count_fit_v24917.py": "f5308b821980442bf60ab3a0aef1b138d02f6decdf3fe2ab478a0b6010f6c67b",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+@@ -99,6 +100,7 @@
+     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
+     "tests/test_v24917_long_composite_td.py": "05def6e18689fd99325014781006ae80616b64859b41adcb30b93597694365a3",
++    "tests/test_v24917_long_incidence_read.py": "4d9d5be00c08776681335cee40d3d6008624748634eea6399499855f0a32a3bd",
+     "tests/test_v24917_long_osrm_support.py": "07e3a4edb35957e3d2720dea7a8a74a5c3a6a08424c10de3dcb4df6bcda353f6",
+     "tests/test_v24917_long_post_td_mask.py": "b1e31151f21741ccc7867b661f2e55b07f71bec4741c31429e7865aa3cf4ee6a",
+     "tests/test_v24917_long_profile_incidence.py": "6220c516d2f7c39e0b2ddf80101121714c7f22dfa6249dead14102df5e15d976",
+@@ -128,7 +130,7 @@
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "4e7ad567793745ea828bad1f35a6c7c4d87b3cb03205721bae292a53d7deff3e",
++    "tools/refresh_v24917_manifests.py": "e6e0c6c041c86b8e16098839ffe6967b555d955b5e8b172a49c46afea7daa88d",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+   }
+ }
+diff --git a/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md b/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
+index 66e3653..66aa19f 100644
+--- a/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
++++ b/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
+@@ -1,35 +1,46 @@
+-# LONG OD→profil incidence — čtecí offline kandidát
++# LONG OD → profil: současná čtecí implementace
+ 
+-**Stav:** `OBSERVED_LONG_OD_PROFILE_ONLY` + `LOCAL_LINEAR_PROPOSAL_ONLY`, `LIVE_VISUM_NOT_RUN`. Modul `r1_15a2_long_profile_incidence_v24917.py` tvoří z předaných uložených tras `NATIVE_CL` a jejich průchodů linkami OD→profil expozici podle stejného pravidla, které WORK/SERVICE používají pro PrT path/path-link seznamy. Předané řádky musí být ze skutečného oficiálního exportu; zde je k dispozici jen syntetický test, nikoli aktuální `NATIVE_CL` trasy. Navazující lokální fit je pouze diagnostický a nezasahuje do aktivní kalibrace.
++Stav k 2026-10-29: `OBSERVED_LONG_OD_PROFILE_ONLY`. Živý Visum v tomto vývojovém prostředí nebyl spuštěn. Výstup popisuje vozidlový tok přiřazený profilům; není derivací `ADD_PROD_L`.
+ 
+-## Skutečný zdroj a výpočet
++## Výpočet a zdroje
+ 
+-- Aktivní WORK/SERVICE základ `r1_15a2_core.build_actual_path_incidence()` počítá pro každou uloženou trasu průchod profilem včetně násobnosti. Nativní `NATIVE_CL` je v seznamu možných osobních segmentů, ale v současné konfiguraci `R1_15A2_CONFIG_V2_4_9_6.json` není v `path_export_dsegs` ani `mutable_dsegs`. Pro reálný LONG audit je proto potřeba samostatný **read-only** export této vrstvy; nepřidávat ji automaticky do měnitelných segmentů.
+-- Nový čistý modul přijímá pouze `NATIVE_CL` path/path-link řádky, schválené profily, osu zón, výslednou vozidlovou OD M9305 a pět vozidlových komponent M9291–M9295 po 20B. Vyžaduje shodu součtu komponent s M9305 po každé buňce a shodu součtu uložených tras s M9305 pro každý mezizónový pár. Kladné mezizónové trasy bez linků, osiřelé linky, chybné směry profilů, záporné/neúplné matice a nesprávný segment odmítá. Diagonální objem vykazuje zvlášť, protože nemusí mít síťovou trasu.
+-- Pro profil `p` a OD `o,d` je současná expozice `A[p,o,d] = Σ_trasa objem_trasy × počet průchodů profilem`. Komponentový průchod se získá z pozorovaného podílu `M929k[o,d]/M9305[o,d]`; pět komponent se musí na každém profilu sečíst na celkový LONG průchod. Výstup nese existující `ordered_zone_hash()` a `matrix_values_hash()`. Všechny hash hodnoty jsou diagnostické pro předaná data; bez živého načtení a shody assignment/path epochy nejsou autoritou aktuálního Visum stavu.
++`r1_15a2_long_profile_incidence_v24917.py` používá oficiální uložené trasy `NATIVE_CL`, jejich směrované průchody linkami, výslednou M9305 a pět vozidlových komponent M9291–M9295. Pro každý profil a OD pár sčítá objemy tras krát počet průchodů profilem. Skutečný opakovaný průchod linkou se započte opakovaně; duplicitní export stejné profilové pozice se odmítne. Profily BOTH sčítají oba autorizované fyzické směry.
+ 
+-## Hranice interpretace
++Komponentový příspěvek vzniká podle aktuálního OD podílu M929k/M9305. Součet pěti složek musí odpovídat M9305 v každé buňce a součet uložených tras musí rekonstruovat všechny kladné mezizónové OD vztahy. Kladné vztahy pod numerickou tolerancí se nezahazují. Intrazonální objem je vykázán odděleně. Neodvozuje se žádná globální obsazenost ani převodní koeficient CL.
+ 
+-Výstup je **pozorované přiřazení vozidel k profilům pro jeden konzistentní vstupní snapshot**. Dodaný 19B V5 je pouze čtecí audit kandidáta κ: mapuje R1 zóny na rodičovské AMDY zóny a váží OD převod pomocí R1 osobních matic a pásem M9001. Dodaný 20A V2 popisuje realizační krok: v každé z pěti LONG komponent násobí OD buňky M9111–M9115 komponentově a pásmově specifickou κ podle **M9001**, s auditovaným komponentovým fallbackem při malé chybějící podpoře kontraktu, a zapisuje M9191–M9195. Samostatný 20B V7 pak z M9191–M9195 tvoří M9291–M9295 pomocí `BOUNDED_IPF`; finální M9305 musí odpovídat součtu pěti složek. κ není globální násobitel CL ani `2.8` z generační formule. Předané skripty ukazují zamýšlenou metodiku, ale samy nedokládají právě načtenou proceduru ve Visumu.
++## Nová cesta z aktuálního adapteru
+ 
+-Citlivost produkčního koeficientu v zóně vyžaduje ještě průchod přes nativní TG/TD, právě popsaný převod `9111–9115 → 9191–9195`, směrově omezený návratový 20B `9191–9195 → 9291–9295` a finální `9305`. Samotný podíl komponent v M929x neprokazuje derivaci této sekvence. Živě se musí ověřit také skutečné vzorce 20B/9305 a totožná epocha tras a matic; dodaný TG export tyto trasy ani matice neobsahuje. Proto výstup nikdy neplní klíč `long_zone_profile_incidence` aktivního LSGEN a `long_generation_permitted` je vždy `False`. Navíc zůstává neověřený nativní filtr LONG OD párů `distance >= 100 km`.
++`r1_15a2_long_incidence_read_v24917.py` doplňuje čtení z aktuálního modelu. V24917 adapter po svém dokončeném assignmentu a zachycení DIS zaznamená assignment/mutation epochu, token, hash skim epochy a pořadí zón. Samotný záznam neexportuje trasy ani nečte další OD matice.
+ 
+-## Navazující lokální zonální fit podle principu WORK/SERVICE
++Explicitní diagnostické API na již používaném adapteru:
+ 
+-`r1_15a2_long_zonal_fit_v24917.py` nyní nad pozorovanou LONG incidencí staví čistý diagnostický návrh. Pro zónové log kroky `u_o` (produkce) a `v_d` (atraktivita) používá stejný první řád jako aktivní W/S:
++```python
++# Po běžném assignmentu a diagnostice V24917; žádný nový adapter ani attach.
++observed = adapter.long_profile_incidence(diag, audit_folder)
++```
+ 
+-`Δq_od/q_od ≈ u_o + v_d − g_LONG`, kde `g_LONG = 0.5×(Σ P_o u_o/P_total + Σ A_d v_d/A_total)`, a `ΔF_p ≈ Σ_od A[p,od]×(u_o+v_d−g_LONG)`.
++`audit_folder` musí být nový nebo prázdný. `diag['d12']['rows']` musí obsahovat právě schválenou CAL sestavu; ověřují se identity i směry vůči `api_approved_observations`. Pořadí řádků se zachová pro návazný W/S fit. Volání není automaticky přidáno do každého kalibračního kroku: čtení velkého `NATIVE_CL` exportu proběhne jen na explicitní diagnostický požadavek.
+ 
+-`P/A` základ se bere z celé aktuální M9305 včetně intrazonálních cest, které nemají profilovou trasu; normalizace proto odpovídá celému LONG objemu. Profilové řádky, identita a váhy se přebírají z W/S problému; po jeho předpovědi se fituje zbylé reziduum. Solver je tentýž ohraničený `r1_15a2_zonal_count_fit_v24917.solve()`: tvrdá lineární bilance P/A, přesná oprava změn `exp(log_step)`, ridge a nulový krok u zón bez přímé expozice. Zónové meze se musí dodat explicitně z aktuálního referenčního a mobilitního kontraktu; modul si je nevymýšlí a nevydává žádné aplikační `candidate_rows`.
++Čtecí cesta:
+ 
+-Je to **stejná lokální aproximace**, jakou W/S používají k výběru pokusu, nikoli analytická derivace celé TG→TD→20A→20B sekvence. Přesný účinek musí ověřit skutečný pokus ve Visumu; zejména 20B může změnu rozdělit mezi oba směry. `fit()` proto vždy vrací `LOCAL_LINEAR_PROPOSAL_ONLY`, `long_generation_permitted=False` a `native_filter_verified=False`. Aktivní LSGEN/adapter nejsou novým modulem zapojeny a nadále LONG zmrazují.
++1. Vyžádá aktuální, adapterem navázanou assignment/skim epochu. Odmítne probíhající výpočet, chybějící vazbu nebo pozdější mutaci.
++2. Načte zónovou osu, M9291–M9295 a M9305 a ověří zdroj OSRM M9697 / `R1_OSRM_DIST_KM`. Vyžaduje již aplikovanou podporu **OSRM ≥80 km bez horní meze**. Při nesplnění sama nic neořezává ani nepřepočítává.
++3. Přes stávající `export_actual_paths_and_build_incidence()` exportuje pouze `NATIVE_CL`, s ověřeným bounded COM podpisem a průběžnou redukcí path-link řádků. Nepoužívá persistentní W/S cache a nemění původní `path_export_dsegs` ani `mutable_dsegs`.
++4. Ověří OD a komponentovou paritu a porovná rekonstruovaný LONG tok s přímým `VOLVEH_DSEG(NATIVE_CL,AP)` na schválených profilových linkách. Tolerance parity: absolutně 1e-6, relativně 1e-8.
++5. Znovu načte všech šest matic a profilové toky; vyžaduje přesnou nezměněnost. Znovu ověří zdroj OSRM, parametrový snapshot, pořadí zón a epochu. Změna znamená chybu, nikoli fallback na staré podklady.
+ 
+-Export TG z momentálního modelu obsahuje `ADD_PROD_L = 4.38341115316211` ve všech 681 zónách; projektová pevná reference je `0.2`. Případný návrat na základní hodnoty se nesmí předpokládat, dokud nebude doložen aktuální snapshot po rollbacku.
++Úspěch zapisuje `LONG_INCIDENCE.npz` bez pickle a `LONG_INCIDENCE_REPORT.json` s SHA archivu, matic a zón, identitou epochy a chybami parity. Archiv obsahuje řídké řádky/sloupce/hodnoty, OD identitu, aktuální objemy, pět komponent, zónové P/A a profilové toky. Zůstávají také CSV důkazy původního exportéru. Při selhání se úspěšný výstup odstraní a vznikne `LONG_INCIDENCE_FAILURE.json`; předchozí neprázdný adresář se nepřepisuje.
+ 
+-## Ověření
++## Hranice použití
+ 
+-`PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_profile_incidence.py tests/test_v24917_tdlong1_mask.py tests/test_core_deep.py tests/test_v24917_runtime_install.py` — **44 PASS, 0 FAIL**. Syntetické testy zahrnují opakovaný průchod linkou, obousměrný profil, rozklad pěti komponent, intrazonální objem a odmítnutí chybných zdrojů. Kompilace změněných souborů a `git diff --check` prošly. Projektový nástroj zapečetil 65/65 runtime souborů a ověřil 1 059 neměnných zdrojů. Testy neprokazují běh ve Visumu.
++Čtení nevolá Procedures.Execute, SetValues, LoadVersion ani aktivaci LONG. Zdrojový `source_status` rozlišuje pouze caller-supplied offline vstupy od čtení navázaného adapteru s ověřenou paritou. Testovací COM rozhraní neprokazuje běh ve skutečném Visumu.
+ 
+-Po doplnění lokálního fitu: `PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_zonal_fit.py tests/test_v24917_long_profile_incidence.py tests/test_v24917_mobilityalloc1_solver.py tests/test_v24917_tdlong1_mask.py tests/test_v24917_runtime_install.py` — **36 PASS, 0 FAIL**. Testy ověřují přesný tvar normalizované matice `G`, zahrnutí intrazonálního objemu, reziduum po W/S, omezený solver, nelineární P/A, nulový krok bez expozice a odmítnutí chybné osy/profilu. Aktuální zapečetění je 66/66 runtime souborů; 1 059 původních zdrojů zůstalo beze změny.
++`r1_15a2_long_zonal_fit_v24917.py` může dál vytvořit čistý lokální návrh podle principu W/S: `Δq/q ≈ u_origin + v_destination − g_LONG`. Skutečná změna produkčního koeficientu však prochází TG → nativní TD → komponentově a pásmově specifický převod 20A → návratový 20B → současné maskování výsledných LONG matic → assignment. Pozorovaná M929x incidence sama tuto citlivost nedokládá. `long_generation_permitted=False`, `tg_sensitivity_verified=False` zůstávají zachovány.
+ 
+-Další ohraničený krok: na cílovém PC čtecím exportem získat `NATIVE_CL` path/path-link seznam a ve stejné assignment/path epoše M9291–M9295 a M9305; po kontrole parity lze změřit skutečnou OD→profil expozici a prověřit lokální zonální predikci na malém živém pokusu. Samostatně je nutné doložit nativní LONG filtr, obnovu rodiče a případný rollback `ADD_PROD_L` na základní hodnotu.
++LONG Generation tedy zůstává zmrazená; kanonická reference je nyní **0,3**, nikoli historických 0,2. Společné LONG TD b/c také zůstává blokované do ověření count-response modelu. Nativní OD filtr už není požadavkem: uživatel zvolil následné násobení LONG matic maskou a přijetí úbytku objemu. FineCDF dál používá čerstvou NATIVE_CL/DIS a podmíněnou cílovou křivku 100–200 km, což není horní mez OSRM podpory.
++
++## Ověření a další hranice
++
++Přesné příkazy, návratové kódy, testové součty a manifestové důkazy jsou v `LONG_INCIDENCE_CURRENT_20261029.json` a `evidence_long_incidence_current_20261029/`. Kompletní diff je v `artifacts_long_incidence_current_20261029/`. Vše je součástí GitHub zálohy této větve.
++
++Dalším samostatným krokem je spustit toto čtení na cílovém PC bezprostředně nad platnou epochou V24917 a posoudit skutečnou paritu. Pro odmrazení zonálního LONG TG bude navíc potřeba samostatně ověřená odezva celé realizační sekvence a její rollback.
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 177ab45..d3189fd 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -17,7 +17,7 @@
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+     "r1_15a2_zonal_count_fit_v24917.py": "f5308b821980442bf60ab3a0aef1b138d02f6decdf3fe2ab478a0b6010f6c67b",
+     "r1_15a2_targeted_generation_v24917.py": "e84d07c052df4c68517b414e747c10e9c377c063fa9cc5c7f49faa3096ce1baf",
+-    "r1_15a2_trial_adapter_v24917.py": "5ae483634a5be9e72040ee45fd0645d4d6d997e04d84927c14c242077db88303",
++    "r1_15a2_trial_adapter_v24917.py": "9633fdbb3943e9934b8bb6c7b6a69f79fecc5ea4d11615f8b1176a2d36932062",
+     "r1_15a2_active_demand_evidence_v24917.py": "3aaa457bdac3722a298a37866c18bee7d5c37cf0367424bc05a948d2253389bb",
+     "r1_15a2_runtime_delta_v24917.py": "1ea48d26a29d3644a343a6dd13b5ebc3b73d3b612900822d5ec1398a4308e65f",
+     "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+@@ -28,7 +28,8 @@
+     "r1_15a2_td_count_blend_v24917.py": "9ae12413e9bba1bc82ad3aaec4e03a21353688eb07c436d8fc413edf42997ee1",
+     "r1_15a2_long_school_generation_v24917.py": "20837ddcaed19728ac61d747ff295060752898859003847857bc22e4ef562946",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+-    "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
++    "r1_15a2_long_profile_incidence_v24917.py": "9c05bbb8e9dfebc9342354f41e6330bef818082276584f71a8384ae7097562e1",
++    "r1_15a2_long_incidence_read_v24917.py": "4c9e581d41088832ef676bca015444d4f6bc4df751bfb78e6197f7edd063d1b7",
+     "r1_15a2_long_zonal_fit_v24917.py": "d73ef3a6a06876c9fd55a4aa7be5078aa0ac67f6b5f6ad8c4bd2832dcdf6ebbf",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+@@ -71,6 +72,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "da67f1a67583e21fdf8e668e02978a207c300fa6eac557b4178bdcc58ccc6be4"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "5a5bbfd6dcc9e6261b1507d6cf0a273f9638a3d063280b066556c4dc3be43d03"
+   }
+ }
+diff --git a/r1_15a2_long_profile_incidence_v24917.py b/r1_15a2_long_profile_incidence_v24917.py
+index a4a2695..b9cddd1 100644
+--- a/r1_15a2_long_profile_incidence_v24917.py
++++ b/r1_15a2_long_profile_incidence_v24917.py
+@@ -13,14 +13,15 @@ same assignment/path epoch. No COM operations or matrix writes occur here.
+ from __future__ import annotations
+ 
+ from collections import defaultdict
+-from typing import Any, Mapping, Sequence
++from typing import Any, Iterable, Mapping, Sequence
+ 
+ import numpy as np
+ 
+ import r1_15a2_core as core
++from r1_15a2_com_compat import exact_int, finite_float
+ from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
+ 
+-RELEASE = "R1_15A2_V24917_LONG_OBSERVED_PATH_INCIDENCE_V1"
++RELEASE = "R1_15A2_V24917_LONG_OBSERVED_PATH_INCIDENCE_V2_STREAMED"
+ COMPONENT_MATRICES = (9291, 9292, 9293, 9294, 9295)
+ FINAL_MATRIX = 9305
+ 
+@@ -36,7 +37,7 @@ def _matrix(values: Any, n: int, label: str) -> np.ndarray:
+ 
+ def build_observed_long_incidence(
+     path_rows: Sequence[Mapping[str, Any]],
+-    pathlink_rows: Sequence[Mapping[str, Any]],
++    pathlink_rows: Iterable[Mapping[str, Any]],
+     profiles: Sequence[Mapping[str, Any]],
+     zone_nos: Sequence[int],
+     final_vehicle_od: Any,
+@@ -66,7 +67,7 @@ def build_observed_long_incidence(
+     if not np.isfinite([atol, rtol]).all() or atol < 0.0 or rtol < 0.0:
+         raise ValueError("LONG_INCIDENCE_TOLERANCE_INVALID")
+     final = _matrix(final_vehicle_od, n, "M9305")
+-    if {int(k) for k in component_vehicle_od} != set(COMPONENT_MATRICES):
++    if set(component_vehicle_od) != set(COMPONENT_MATRICES):
+         raise ValueError("LONG_INCIDENCE_COMPONENT_SET_INVALID")
+     components = {no: _matrix(component_vehicle_od[no], n, "M%d" % no)
+                   for no in COMPONENT_MATRICES}
+@@ -75,14 +76,21 @@ def build_observed_long_incidence(
+         component_sum += components[no]
+     if not np.allclose(component_sum, final, rtol=rtol, atol=atol):
+         raise ValueError("LONG_INCIDENCE_COMPONENT_TO_FINAL_OD_MISMATCH")
+-    if not np.any(final[~np.eye(n, dtype=bool)] > atol):
++    if not np.any(final[~np.eye(n, dtype=bool)] > 0.0):
+         raise ValueError("LONG_INCIDENCE_NO_INTERZONAL_FLOW")
+ 
++    for raw in path_rows:
++        for names in (core.PATH_ORIGIN_NAMES, core.PATH_DEST_NAMES, core.PATH_INDEX_NAMES):
++            exact_int(core.first_value(raw, names), "LONG_PATH_KEY")
++        if finite_float(core.first_value(raw, core.PATH_VOLUME_NAMES), "LONG_PATH_VOLUME") < 0.0:
++            raise ValueError("LONG_INCIDENCE_INVALID_PATH_ROWS")
+     paths, path_summary = core.parse_official_path_rows(path_rows)
+     if path_summary["invalid_rows"] or path_summary["negative_volume_rows"]:
+         raise ValueError("LONG_INCIDENCE_INVALID_PATH_ROWS")
+     if not paths or any(p["dseg_code"] != "NATIVE_CL" for p in paths):
+         raise ValueError("LONG_INCIDENCE_NOT_NATIVE_CL_PATHS")
++    if any(p["raw_rows"] != 1 for p in paths):
++        raise ValueError("LONG_INCIDENCE_DUPLICATE_PATH_KEY")
+     path_by_key = {p["path_key"]: p for p in paths}
+     path_od = np.zeros_like(final)
+     for path in paths:
+@@ -91,7 +99,9 @@ def build_observed_long_incidence(
+             raise ValueError("LONG_INCIDENCE_PATH_ZONE_OUTSIDE_AXIS")
+         path_od[zone_pos[o], zone_pos[d]] += float(path["volume"])
+     off = ~np.eye(n, dtype=bool)
+-    if not np.allclose(path_od[off], final[off], rtol=rtol, atol=atol):
++    if (not np.allclose(path_od[off], final[off], rtol=rtol, atol=atol)
++            or np.any(off & (final > 0.0) & (path_od <= 0.0))
++            or np.any(off & (final <= 0.0) & (path_od > 0.0))):
+         raise ValueError("LONG_INCIDENCE_PATH_TO_FINAL_OD_MISMATCH")
+ 
+     link_to_profiles: dict[tuple[int, int, int], list[int]] = defaultdict(list)
+@@ -104,25 +114,35 @@ def build_observed_long_incidence(
+ 
+     path_profile_hits: dict[tuple[Any, int], int] = defaultdict(int)
+     path_with_links: set[Any] = set()
++    # Only profile hits need retention; the bounded exporter can stream millions
++    # of other link rows. A repeated physical link at a DIFFERENT position is a
++    # real traversal, whereas a duplicate exported position must not double flow.
++    hit_positions: set[Any] = set()
+     for raw in pathlink_rows:
+         key = core._path_key_from_row(raw, pathlink=True)
+         link = core._link_key_from_row(raw)
+         if key is None or link is None or key not in path_by_key:
+             raise ValueError("LONG_INCIDENCE_INVALID_OR_ORPHAN_PATHLINK")
+         path_with_links.add(key)
+-        for pidx in link_to_profiles.get(link, ()):
++        indices = link_to_profiles.get(link, ())
++        if indices:
++            seq = exact_int(core.first_value(raw, core.PATHLINK_SEQ_NAMES), "LONG_PATHLINK_POSITION")
++            if (key, seq) in hit_positions:
++                raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_PATHLINK_POSITION")
++            hit_positions.add((key, seq))
++        for pidx in indices:
+             path_profile_hits[(key, pidx)] += 1
+     paths_hitting_profile = {key for key, _ in path_profile_hits}
+     for path in paths:
+-        if (path["origin"] != path["destination"] and path["volume"] > atol
++        if (path["origin"] != path["destination"] and path["volume"] > 0.0
+                 and path["path_key"] not in path_with_links):
+             raise ValueError("LONG_INCIDENCE_POSITIVE_PATH_WITHOUT_LINKS")
+-        if (path["origin"] == path["destination"] and path["volume"] > atol
++        if (path["origin"] == path["destination"] and path["volume"] > 0.0
+                 and path["path_key"] in paths_hitting_profile):
+             raise ValueError("LONG_INCIDENCE_INTRAZONAL_PROFILE_PATH_UNSUPPORTED")
+ 
+     od_keys = sorted((int(o), int(d))
+-                     for o, d in zip(*np.nonzero(final > atol)) if o != d)
++                     for o, d in zip(*np.nonzero(final > 0.0)) if o != d)
+     od_index = {key: idx for idx, key in enumerate(od_keys)}
+     variables = [{"dseg_code": "NATIVE_CL", "family": "LONG", "origin": zones[o],
+                   "destination": zones[d], "q_current": float(final[o, d]),
+@@ -136,11 +156,11 @@ def build_observed_long_incidence(
+         if o == d:
+             continue
+         idx = od_index.get((o, d))
+-        if idx is None and path["volume"] > atol:
++        if idx is None and path["volume"] > 0.0:
+             raise ValueError("LONG_INCIDENCE_PATH_WITHOUT_FINAL_OD")
+         if idx is not None:
+             through[(pidx, idx)] += float(path["volume"]) * multiplicity
+-    items = sorted(through.items())
++    items = sorted((key, value) for key, value in through.items() if value > 0.0)
+     row = np.array([k[0] for k, _ in items], dtype=np.int64)
+     col = np.array([k[1] for k, _ in items], dtype=np.int64)
+     value = np.array([v for _, v in items], dtype=np.float64)
+diff --git a/r1_15a2_trial_adapter_v24917.py b/r1_15a2_trial_adapter_v24917.py
+index ae5d31d..2273c85 100644
+--- a/r1_15a2_trial_adapter_v24917.py
++++ b/r1_15a2_trial_adapter_v24917.py
+@@ -40,6 +40,7 @@ import r1_15a2_long_school_generation_v24917 as lsgen
+ import r1_15a2_long_distance_guard_v24917 as longguard
+ import r1_15a2_long_od_mask_v24917 as longmask
+ import r1_15a2_long_post_td_mask_v24917 as post_td_mask
++import r1_15a2_long_incidence_read_v24917 as long_incidence_read
+ import r1_15a2_boundary_generation_v24917 as bdgen
+ import r1_15a2_boundary_pa_v24917 as bdpa
+ import r1_15a2_mobility_guard_v24917 as mguard
+@@ -74,9 +75,24 @@ class VisumAdapter(_V24916ActiveAdapter):
+         with post_td_mask.execution_scope(self):
+             return super().assign_for_block(folder, block)
+ 
++    def _refresh_dynamic_skims_after_assignment(self, *args, **kwargs):
++        self._long_incidence_assignment_binding = None
++        epoch = super()._refresh_dynamic_skims_after_assignment(*args, **kwargs)
++        if epoch is not None:
++            long_incidence_read.bind_after_assignment(self)
++        return epoch
++
++    def long_profile_incidence(self, diag, folder):
++        """Explicit read-only LONG audit using the same ordered 12D profile rows.
++
++        Does not alter the W/S path cache or enable LONG Generation/TD fitting.
++        The expensive NATIVE_CL export is requested only by this diagnostic API.
++        """
++        return long_incidence_read.read_current(self, diag["d12"]["rows"], folder)
++
+     @staticmethod
+     def _without_unverified_long_rows(rows):
+-        """Keep LONG coefficients out of TG until a native filter is verified."""
++        """Keep LONG coefficients out of TG until its realization response is verified."""
+         return [row for row in rows if str(row.get("family", "")).upper() != "LONG"]
+ 
+     # ------------------------------------------------------- GENFIX1 snapshot
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 07e5a64..3b186b9 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -36,6 +36,7 @@ RUNTIME = [
+     "r1_15a2_long_school_generation_v24917.py",
+     "r1_15a2_long_od_mask_v24917.py",
+     "r1_15a2_long_profile_incidence_v24917.py",
++    "r1_15a2_long_incidence_read_v24917.py",
+     "r1_15a2_long_zonal_fit_v24917.py",
+     "r1_15a2_tdlong1_probe_v24917.py",
+     "r1_15a2_intrazonal_penalty_v24917.py",
+diff --git a/r1_15a2_long_incidence_read_v24917.py b/r1_15a2_long_incidence_read_v24917.py
+new file mode 100644
+index 0000000..9d19d51
+--- /dev/null
++++ b/r1_15a2_long_incidence_read_v24917.py
+@@ -0,0 +1,239 @@
++"""Fresh, read-only LONG incidence acquisition using the existing bounded exporter.
++
++No procedure, demand write, cache restore or generation activation occurs here.
++The adapter binds completion of its own assignment/skims; caller flags cannot
++substitute for that binding. The result remains observed vehicle attribution.
++"""
++from __future__ import annotations
++
++import copy
++import hashlib
++import os
++from pathlib import Path
++
++import numpy as np
++
++import r1_15a2_com_compat as com
++import r1_15a2_core as core
++import r1_15a2_runtime_v1 as rt
++import r1_15a2_long_profile_incidence_v24917 as incidence
++import r1_15a2_long_support_distance_v24917 as support
++from r1_15a2_long_distance_guard_v24917 import MIN_KM
++from r1_15a2_skim_v24916 import zone_numbers
++from r1_15a2_skim_v24916p2c import ordered_zone_hash
++from r1_15a2_two_mode_v238 import atomic_json
++
++RELEASE = "R1_15A2_V24917_LONG_CURRENT_INCIDENCE_V1"
++MATRICES = incidence.COMPONENT_MATRICES + (incidence.FINAL_MATRIX,)
++
++
++def _epoch(adapter, *, require_completed=False):
++    manager = getattr(adapter, "readback_manager", None)
++    skims = getattr(adapter, "v24916_dynamic_skims", None)
++    if (manager is None or skims is None
++            or (require_completed and not manager.assignment_completed)
++            or manager.assignment_in_progress or manager.assignment_epoch <= 0):
++        raise ValueError("LONG_INCIDENCE_COMPLETED_ASSIGNMENT_REQUIRED")
++    epoch = skims.require_current()
++    if (int(epoch.assignment_epoch) != int(manager.assignment_epoch)
++            or epoch.zone_order_sha256 != ordered_zone_hash(adapter.zones)):
++        raise ValueError("LONG_INCIDENCE_ASSIGNMENT_ZONE_EPOCH_MISMATCH")
++    return {"assignment_epoch": int(manager.assignment_epoch),
++            "mutation_epoch": int(manager.mutation_epoch),
++            "skim_epoch_hash": str(epoch.epoch_hash),
++            "assignment_token": str(epoch.assignment_token),
++            "zone_order_sha256": epoch.zone_order_sha256}
++
++
++def bind_after_assignment(adapter):
++    """Called only after the adapter completes native assignment and DIS capture."""
++    adapter._long_incidence_assignment_binding = _epoch(adapter, require_completed=True)
++
++
++def _require_binding(adapter):
++    current = _epoch(adapter)
++    if current != getattr(adapter, "_long_incidence_assignment_binding", None):
++        raise ValueError("LONG_INCIDENCE_ASSIGNMENT_BINDING_STALE_OR_MISSING")
++    return current
++
++
++def _call(adapter, fn, label):
++    return com.com_call_with_retry(fn, label="LONG_INCIDENCE:" + label,
++                                  retry_policy=getattr(adapter, "com_retry_policy", None))
++
++
++def _matrices(adapter):
++    if zone_numbers(adapter.visum, getattr(adapter, "com_retry_policy", None)) != list(adapter.zones):
++        raise ValueError("LONG_INCIDENCE_LIVE_ZONE_ORDER_CHANGED")
++    out = {}
++    for no in MATRICES:
++        matrix = _call(adapter, lambda: adapter.visum.Net.Matrices.ItemByKey(no), "MATRIX_LOOKUP")
++        actual = com.exact_int(_call(adapter, lambda: matrix.AttValue("NO"), "MATRIX_NO"), "MATRIX_NO")
++        if actual != no:
++            raise ValueError("LONG_INCIDENCE_MATRIX_IDENTITY_MISMATCH")
++        out[no] = incidence._matrix(_call(adapter, matrix.GetValues, "M%d" % no),
++                                    len(adapter.zones), "M%d" % no)
++    return out
++
++
++def _profile_flows(adapter, profiles):
++    values = {}
++    flows = []
++    for profile in profiles:
++        keys = core._profile_link_keys(profile)
++        if not keys:
++            raise ValueError("LONG_INCIDENCE_PROFILE_LINK_INVALID")
++        for no, fr, to in keys:
++            key = (no, fr, to)
++            if key not in values:
++                link = _call(adapter, lambda: adapter.visum.Net.Links.ItemByKey(fr, to), "PROFILE_LINK")
++                actual = com.exact_int(_call(adapter, lambda: link.AttValue("NO"), "LINK_NO"), "LINK_NO")
++                if actual != no:
++                    raise ValueError("LONG_INCIDENCE_PROFILE_LINK_IDENTITY_MISMATCH")
++                value = com.finite_float(_call(adapter, lambda: link.AttValue(
++                    "VOLVEH_DSEG(NATIVE_CL,AP)"), "NATIVE_CL_PROFILE_FLOW"), "LONG_PROFILE_FLOW")
++                if value < 0.0:
++                    raise ValueError("LONG_INCIDENCE_NEGATIVE_PROFILE_FLOW")
++                values[key] = value
++        flows.append(sum(values[key] for key in keys))
++    return np.asarray(flows, dtype=float)
++
++
++def _validate_profiles(profiles, cfg):
++    authority = {}
++    for row in cfg.get("api_approved_observations", ()):
++        if str(row.get("role", "CALIBRATION")).upper() != "CALIBRATION":
++            continue
++        no = com.exact_int(row["no"], "COUNTLOCATION_NO")
++        if no in authority:
++            raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_AUTHORITY")
++        key = tuple(com.exact_int(x, "PROFILE_EDGE") for x in row["edge_key"])
++        if len(key) != 3:
++            raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
++        direction = str(row.get("direction", "DIRECTED")).upper()
++        if direction not in ("DIRECTED", "BOTH"):
++            raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
++        keys = (key, (key[0], key[2], key[1])) if direction == "BOTH" else (key,)
++        authority[no] = keys
++    ids = [com.exact_int(p["countlocation_no"], "COUNTLOCATION_NO") for p in profiles]
++    if not authority or len(set(ids)) != len(ids) or set(ids) != set(authority):
++        raise ValueError("LONG_INCIDENCE_CALIBRATION_PROFILE_SCOPE_MISMATCH")
++    for no, profile in zip(ids, profiles):
++        if core._profile_link_keys(profile) != authority[no]:
++            raise ValueError("LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH")
++    return [str(no) for no in ids]
++
++
++class _Collector:
++    def __init__(self, profiles, zones, matrices):
++        self.profiles, self.zones, self.matrices = profiles, zones, matrices
++        self.result = None
++
++    def consume(self, paths, links, dseg):
++        return self.consume_stream(paths, iter(links), dseg)
++
++    def consume_stream(self, paths, links, dseg):
++        if (self.result is not None or dseg["norm_code"] != "NATIVE_CL"
++                or int(dseg["matrix_no"]) != incidence.FINAL_MATRIX):
++            raise ValueError("LONG_INCIDENCE_DSEG_MATRIX_SCOPE_MISMATCH")
++        self.result = incidence.build_observed_long_incidence(
++            paths, links, self.profiles, self.zones, self.matrices[incidence.FINAL_MATRIX],
++            {no: self.matrices[no] for no in incidence.COMPONENT_MATRICES})
++        return {"status": self.result["status"], "streamed": True,
++                "incidence_nnz": int(self.result["incidence"].values.size)}
++
++
++def read_current(adapter, profiles, folder):
++    """Acquire a new snapshot. Explicit diagnostic call; never reuse W/S cache.
++
++    ``profiles`` uses the same ordered live 12D rows as W/S Generation. Export
++    configuration is a private copy: NATIVE_CL is NOT added to mutable_dsegs.
++    Both OD reconstruction and directly read NATIVE_CL profile flows must agree.
++    All six matrices, epochs, model parameters and source identity are rechecked
++    after export. A fresh/empty output directory prevents stale success evidence.
++    """
++    binding = _require_binding(adapter)
++    profiles = copy.deepcopy(list(profiles))
++    ids = _validate_profiles(profiles, adapter.cfg)
++    cfg = copy.deepcopy(adapter.cfg)
++    cfg.update(path_export_dsegs=["NATIVE_CL"], mutable_dsegs=[],
++               require_all_path_export_dsegs=True, require_verified_bounded_pathlink_com=True,
++               path_export_fail_fast=True, dseg_path_volume_relative_tolerance=1.0e-8,
++               expected_zones=len(adapter.zones))
++    folder = Path(folder)
++    folder.mkdir(parents=True, exist_ok=True)
++    if any(folder.iterdir()):
++        raise ValueError("LONG_INCIDENCE_FRESH_OUTPUT_DIRECTORY_REQUIRED")
++    try:
++        parent = adapter.generation_guard_snapshot()
++        distance, source = support.read_current(adapter)
++        matrices = _matrices(adapter)
++        mask = distance >= MIN_KM  # no upper limit; FineCDF uses a separate axis
++        if any(np.any(a[~mask] > 0.0) for a in matrices.values()):
++            raise ValueError("LONG_INCIDENCE_OSRM_SUPPORT_NOT_APPLIED")
++        live_flow = _profile_flows(adapter, profiles)
++        collector = _Collector(profiles, tuple(adapter.zones), matrices)
++        _, export = rt.export_actual_paths_and_build_incidence(
++            adapter.visum, folder, cfg, profiles, set(),
++            route_batch_callback=collector.consume, build_incidence=False)
++        if (collector.result is None or export.get("dsegs") != ["NATIVE_CL"]
++                or not export.get("all_selected_dsegs_complete")
++                or not export.get("dseg_path_volume_parity_passes")):
++            raise ValueError("LONG_INCIDENCE_INCOMPLETE_CURRENT_EXPORT")
++        result = collector.result
++        if not np.allclose(result["profile_long_vehicle_flow"], live_flow, rtol=1.e-8, atol=1.e-6):
++            raise ValueError("LONG_INCIDENCE_LIVE_PROFILE_FLOW_PARITY_FAILED")
++        after = _matrices(adapter)
++        if any(not np.array_equal(matrices[no], after[no]) for no in MATRICES):
++            raise ValueError("LONG_INCIDENCE_OD_CHANGED_DURING_EXPORT")
++        if not np.array_equal(live_flow, _profile_flows(adapter, profiles)):
++            raise ValueError("LONG_INCIDENCE_PROFILE_FLOW_CHANGED_DURING_EXPORT")
++        _, source_after = support.read_current(adapter)
++        if source != source_after or adapter.generation_guard_snapshot() != parent:
++            raise ValueError("LONG_INCIDENCE_MODEL_CHANGED_DURING_EXPORT")
++        if _require_binding(adapter) != binding:
++            raise ValueError("LONG_INCIDENCE_EPOCH_CHANGED_DURING_EXPORT")
++        result.update(source_status="CURRENT_ADAPTER_ASSIGNMENT_READ_AND_PARITY_CHECKED",
++                      assignment_binding=binding, osrm_support=source,
++                      profile_long_live_vehicle_flow=live_flow,
++                      profile_parity_max_abs=float(np.max(np.abs(
++                          live_flow - result["profile_long_vehicle_flow"]), initial=0.0)))
++        op = result["incidence"]
++        variables = result["variables"]
++        archive = folder / "LONG_INCIDENCE.npz"
++        with (folder / "LONG_INCIDENCE.npz.tmp").open("wb") as stream:
++            np.savez_compressed(stream, row=op.row_idx, col=op.col_idx, value=op.values,
++                shape=np.array([op.n_rows, op.n_cols]), zone_nos=np.array(adapter.zones),
++                profile_identity=np.array(ids),
++                origin=np.array([v["origin"] for v in variables], dtype=np.int64),
++                destination=np.array([v["destination"] for v in variables], dtype=np.int64),
++                q_current=np.array([v["q_current"] for v in variables]),
++                component_matrices=np.array(incidence.COMPONENT_MATRICES),
++                component_vehicle_od=np.array([[v["component_vehicle_od"][str(no)] for v in variables]
++                                              for no in incidence.COMPONENT_MATRICES]),
++                vehicle_production=result["vehicle_production"], vehicle_attraction=result["vehicle_attraction"],
++                profile_flow=live_flow,
++                component_profile_flow=np.array([result["component_profile_vehicle_flow"][str(no)]
++                                                 for no in incidence.COMPONENT_MATRICES]))
++        os.replace(folder / "LONG_INCIDENCE.npz.tmp", archive)
++        report = {key: result[key] for key in (
++            "status", "source_status", "tg_sensitivity_verified", "long_generation_permitted",
++            "zone_order_sha256", "matrix_values_sha256", "path_summary",
++            "matrix_parity_max_abs", "path_od_parity_max_abs_offdiag", "profile_parity_max_abs",
++            "unrouted_intrazonal_volume", "vehicle_total", "assignment_binding", "osrm_support")}
++        report.update(release=RELEASE, read_only=True,
++                      validation_scope="READ_ONLY_ADAPTER_EXPORT_AND_PARITY",
++                      profile_count=len(profiles), variable_count=op.n_cols, incidence_nnz=int(op.values.size),
++                      minimum_osrm_km=MIN_KM, maximum_osrm_km=None, archive=archive.name,
++                      archive_sha256=hashlib.sha256(archive.read_bytes()).hexdigest(),
++                      export=export, profile_identity=ids)
++        atomic_json(folder / "LONG_INCIDENCE_REPORT.json", report)
++        return result
++    except BaseException as exc:
++        # A partial export/archive must never masquerade as a successful snapshot.
++        for name in ("LONG_INCIDENCE_REPORT.json", "LONG_INCIDENCE.npz", "LONG_INCIDENCE.npz.tmp"):
++            (folder / name).unlink(missing_ok=True)
++        atomic_json(folder / "LONG_INCIDENCE_FAILURE.json", {
++            "release": RELEASE, "status": "FAILED_READ_ONLY", "error": str(exc),
++            "long_generation_permitted": False, "assignment_binding_at_start": binding})
++        raise
+diff --git a/tests/test_v24917_long_incidence_read.py b/tests/test_v24917_long_incidence_read.py
+new file mode 100644
+index 0000000..a27b3ae
+--- /dev/null
++++ b/tests/test_v24917_long_incidence_read.py
+@@ -0,0 +1,250 @@
++"""Real bounded-export pipeline against COM-shaped read-only fixtures."""
++import copy
++import hashlib
++import json
++from types import SimpleNamespace as NS
++
++import numpy as np
++import pytest
++
++import r1_15a2_long_incidence_read_v24917 as reader
++import r1_15a2_long_profile_incidence_v24917 as pure
++from r1_15a2_skim_v24916p2c import ordered_zone_hash
++from test_v24917_long_profile_incidence import _fixture, _link
++from test_v237_15p_bounded_offdiag_stream import BoundedHierarchical
++from test_supply_visum_v22 import OfficialList
++
++
++def harness():
++    paths, links, profiles, zones, final, components = _fixture()
++    # A real repeated traversal must include the return link between visits.
++    links = [links[0], _link(1, 2, 1, 2, 10, 2, 1),
++             dict(links[1], Index=3), dict(links[2], Index=4)] + links[3:]
++    final[0, 0] = components[9291][0, 0] = 0.
++    for i, profile in enumerate(profiles):
++        profile['countlocation_no'] = 9001 + i
++    state = NS(arrays={**components, 9305: final, 9697: np.array([[0., 80.], [250., 0.]])},
++               paths=paths, links=links, exports=0, on_export=lambda: None,
++               profile_flow={(1, 2): 160., (2, 3): 80., (3, 2): 70.},
++               link_no={(1, 2): 10, (2, 3): 20, (3, 2): 20},
++               zone_order=list(zones), parent={'state_hash': 'accepted'}, matrix_reads=[])
++    class Matrix:
++        def __init__(self, no): self.no = no
++        def GetValues(self):
++            state.matrix_reads.append(self.no)
++            return state.arrays[self.no].copy()
++        def AttValue(self, attr):
++            return {'NO': self.no, 'SUM': state.arrays[self.no].sum(),
++                    'CODE': 'R1_OSRM_DIST_KM' if self.no == 9697 else 'M%d' % self.no}[attr]
++        def SetValues(self, *args): raise AssertionError('READ_ONLY_NO_MATRIX_WRITES')
++    class Zones:
++        def GetMultiAttValues(self, attr, active):
++            assert attr == 'NO' and active is False
++            return list(enumerate(state.zone_order, 1))
++    class Link:
++        def __init__(self, key): self.key = key
++        def AttValue(self, attr):
++            if attr == 'NO': return state.link_no[self.key]
++            assert attr == 'VOLVEH_DSEG(NATIVE_CL,AP)'
++            return state.profile_flow[self.key]
++    class DS:
++        ODMatrix = Matrix(9305)
++        def AttValue(self, attr):
++            return {'CODE': 'NATIVE_CL', 'NAME': 'LONG', 'MODE': 'PrT'}[attr]
++    def make_links():
++        state.exports += 1
++        raw = [[r[k] for k in reader.rt.PATHLINK_KEY_HEADERS + reader.rt.PATHLINK_EXTRA_ATTRS]
++               for r in state.links]
++        obj = BoundedHierarchical(raw)
++        invoke = obj._oleobj_.Invoke
++        called = False
++        def changed(*args):
++            nonlocal called
++            if not called:
++                called = True
++                state.on_export()
++            return invoke(*args)
++        obj._oleobj_.Invoke = changed
++        state.last_bounded = obj
++        return obj
++    visum = NS(Net=NS(Matrices=NS(ItemByKey=Matrix), Zones=Zones(),
++                     Links=NS(ItemByKey=lambda fr, to: Link((fr, to))),
++                     DemandSegments=NS(GetAll=[DS()])),
++               Workbench=NS(Lists=NS(
++                   CreatePrTPathList=lambda: OfficialList('paths', state.paths, state.links),
++                   CreatePrTPathLinkList=make_links)))
++    adapter = NS(visum=visum, zones=list(zones), com_retry_policy={'enabled': False},
++                 cfg={'path_export_dsegs': ['NATIVE_CW'], 'mutable_dsegs': ['NATIVE_CW'],
++                      'pathlink_page_size': 2, 'com_resilience': {'enabled': False},
++                      'api_approved_observations': [
++                          {'no': 9001, 'role': 'CALIBRATION', 'edge_key': [10, 1, 2], 'direction': 'DIRECTED'},
++                          {'no': 9002, 'role': 'CALIBRATION', 'edge_key': [20, 2, 3], 'direction': 'BOTH'}]},
++                 generation_guard_snapshot=lambda: copy.deepcopy(state.parent),
++                 readback_manager=NS(assignment_completed=True, assignment_in_progress=False,
++                                     assignment_epoch=3, mutation_epoch=5))
++    state.epoch = NS(assignment_epoch=3, epoch_hash='skim3', assignment_token='assignment3',
++                     zone_order_sha256=ordered_zone_hash(zones))
++    adapter.v24916_dynamic_skims = NS(require_current=lambda: state.epoch)
++    reader.bind_after_assignment(adapter)
++    return adapter, state, profiles
++
++
++def test_actual_bounded_export_parity_archive_and_no_model_writes(tmp_path):
++    adapter, state, profiles = harness()
++    cfg = copy.deepcopy(adapter.cfg)
++    before = {no: a.copy() for no, a in state.arrays.items()}
++    result = reader.read_current(adapter, profiles, tmp_path)
++    assert state.exports == 1 and state.last_bounded.unbounded_calls == 0
++    assert state.last_bounded._oleobj_.calls == [(1, 2), (3, 4), (5, 6), (7, 8)]
++    assert result['source_status'] == 'CURRENT_ADAPTER_ASSIGNMENT_READ_AND_PARITY_CHECKED'
++    assert result['profile_long_vehicle_flow'] == pytest.approx([160., 150.])
++    assert not result['long_generation_permitted'] and not result['tg_sensitivity_verified']
++    assert result['component_profile_vehicle_flow']['9291'] == pytest.approx([96., 70.])
++    report = json.loads((tmp_path/'LONG_INCIDENCE_REPORT.json').read_text())
++    assert report['maximum_osrm_km'] is None and report['minimum_osrm_km'] == 80.
++    assert report['archive_sha256'] == hashlib.sha256((tmp_path/'LONG_INCIDENCE.npz').read_bytes()).hexdigest()
++    with np.load(tmp_path/'LONG_INCIDENCE.npz', allow_pickle=False) as archive:
++        assert archive['profile_identity'].tolist() == ['9001', '9002']
++        reconstructed = np.bincount(archive['row'], weights=archive['value'], minlength=2)
++        np.testing.assert_array_equal(reconstructed, archive['profile_flow'])
++        np.testing.assert_array_equal(archive['component_vehicle_od'].sum(axis=0), archive['q_current'])
++    for no, a in before.items(): np.testing.assert_array_equal(state.arrays[no], a)
++    assert adapter.cfg == cfg  # CL never becomes a mutable W/S path segment
++    assert not (tmp_path/'LONG_INCIDENCE_FAILURE.json').exists()
++
++
++@pytest.mark.parametrize('change,reason', [
++    (lambda a, s: setattr(a.readback_manager, 'mutation_epoch', 6), 'BINDING_STALE'),
++    (lambda a, s: setattr(a.readback_manager, 'assignment_epoch', 4), 'EPOCH_MISMATCH'),
++    (lambda a, s: setattr(a.readback_manager, 'assignment_in_progress', True), 'COMPLETED_ASSIGNMENT'),
++    (lambda a, s: setattr(a, '_long_incidence_assignment_binding', None), 'BINDING_STALE'),
++])
++def test_stale_missing_or_in_progress_binding_rejected_before_export(tmp_path, change, reason):
++    adapter, state, profiles = harness()
++    change(adapter, state)
++    with pytest.raises(ValueError, match=reason): reader.read_current(adapter, profiles, tmp_path)
++    assert state.exports == 0
++
++
++@pytest.mark.parametrize('change,reason', [
++    (lambda a, s: s.arrays[9291].__setitem__((0, 1), 61.), 'OD_CHANGED_DURING_EXPORT'),
++    (lambda a, s: s.profile_flow.__setitem__((1, 2), 161.), 'FLOW_CHANGED_DURING_EXPORT'),
++    (lambda a, s: s.parent.update(state_hash='different'), 'MODEL_CHANGED_DURING_EXPORT'),
++    (lambda a, s: s.arrays[9697].__setitem__((0, 1), 81.), 'DISTANCE_CHANGED_DURING_RUN'),
++    (lambda a, s: setattr(a.readback_manager, 'mutation_epoch', 6), 'BINDING_STALE'),
++    (lambda a, s: setattr(s.epoch, 'epoch_hash', 'newskim'), 'BINDING_STALE'),
++    (lambda a, s: s.zone_order.reverse(), 'ZONE_ORDER_CHANGED'),
++])
++def test_drift_during_stream_discards_success_evidence(tmp_path, change, reason):
++    adapter, state, profiles = harness()
++    state.on_export = lambda: change(adapter, state)
++    with pytest.raises(ValueError, match=reason): reader.read_current(adapter, profiles, tmp_path)
++    assert not (tmp_path/'LONG_INCIDENCE_REPORT.json').exists()
++    assert not (tmp_path/'LONG_INCIDENCE.npz').exists()
++    assert json.loads((tmp_path/'LONG_INCIDENCE_FAILURE.json').read_text())['status'] == 'FAILED_READ_ONLY'
++
++
++def test_component_od_path_od_profile_and_support_gates(tmp_path):
++    for case, reason in [('component', 'COMPONENT_TO_FINAL_OD_MISMATCH'),
++                         ('path', 'parity rejected'), ('profile', 'PROFILE_FLOW_PARITY_FAILED'),
++                         ('support', 'OSRM_SUPPORT_NOT_APPLIED')]:
++        adapter, state, profiles = harness()
++        if case == 'component': state.arrays[9291][0, 1] += 1.
++        if case == 'path': state.paths[0]['Vol(AP)'] -= 1.
++        if case == 'profile': state.profile_flow[(1, 2)] += 1.
++        if case == 'support': state.arrays[9697][0, 1] = 79.999
++        with pytest.raises((ValueError, RuntimeError), match=reason):
++            reader.read_current(adapter, profiles, tmp_path/case)
++        assert not (tmp_path/case/'LONG_INCIDENCE_REPORT.json').exists()
++
++
++def test_roster_scope_and_direction_cannot_be_substituted(tmp_path):
++    adapter, state, profiles = harness()
++    with pytest.raises(ValueError, match='PROFILE_SCOPE_MISMATCH'):
++        reader.read_current(adapter, profiles[:1], tmp_path)
++    profiles[1]['observation_direction'] = 'DIRECTED'
++    with pytest.raises(ValueError, match='DIRECTION_AUTHORITY_MISMATCH'):
++        reader.read_current(adapter, profiles, tmp_path)
++    assert state.exports == 0
++
++
++def test_export_is_fresh_each_call_and_previous_evidence_is_preserved(tmp_path):
++    adapter, state, profiles = harness()
++    reader.read_current(adapter, profiles, tmp_path/'first')
++    before = (tmp_path/'first'/'LONG_INCIDENCE_REPORT.json').read_bytes()
++    with pytest.raises(ValueError, match='FRESH_OUTPUT_DIRECTORY'):
++        reader.read_current(adapter, profiles, tmp_path/'first')
++    # end_candidate clears its own flag, not the recorded completed assignment.
++    adapter.readback_manager.assignment_completed = False
++    reader.read_current(adapter, profiles, tmp_path/'second')
++    assert state.exports == 2
++    assert (tmp_path/'first'/'LONG_INCIDENCE_REPORT.json').read_bytes() == before
++
++
++def test_archive_failure_cannot_publish_pass(tmp_path, monkeypatch):
++    adapter, _, profiles = harness()
++    def fail(*args, **kwargs): raise OSError('DISK_FULL')
++    monkeypatch.setattr(reader.np, 'savez_compressed', fail)
++    with pytest.raises(OSError, match='DISK_FULL'): reader.read_current(adapter, profiles, tmp_path)
++    assert not (tmp_path/'LONG_INCIDENCE_REPORT.json').exists()
++    assert not list(tmp_path.glob('*.npz*'))
++
++
++def test_real_adapter_entry_points_bind_after_skims_and_export(tmp_path, monkeypatch):
++    import r1_15a2_trial_adapter_v24917 as module
++    fixture, state, profiles = harness()
++    adapter = object.__new__(module.VisumAdapter)
++    adapter.__dict__.update(vars(fixture))
++    monkeypatch.setattr(module._V24916ActiveAdapter, '_refresh_dynamic_skims_after_assignment',
++                        lambda self, *args, **kwargs: state.epoch)
++    assert module.VisumAdapter._refresh_dynamic_skims_after_assignment(adapter, tmp_path, 'FULL') is state.epoch
++    result = module.VisumAdapter.long_profile_incidence(adapter, {'d12': {'rows': profiles}}, tmp_path/'audit')
++    assert result['assignment_binding']['assignment_epoch'] == 3
++    monkeypatch.setattr(module._V24916ActiveAdapter, '_refresh_dynamic_skims_after_assignment',
++                        lambda *args, **kwargs: None)
++    module.VisumAdapter._refresh_dynamic_skims_after_assignment(adapter, tmp_path, 'FULL')
++    assert adapter._long_incidence_assignment_binding is None
++
++
++def test_pure_duplicate_export_rows_rejected_but_repeated_link_traversal_allowed():
++    paths, links, profiles, zones, final, components = _fixture()
++    assert pure.build_observed_long_incidence(paths, iter(links), profiles, zones, final, components)[
++        'profile_long_vehicle_flow'][0] == 160.
++    with pytest.raises(ValueError, match='DUPLICATE_PATH_KEY'):
++        pure.build_observed_long_incidence(paths + [dict(paths[0], **{'Vol(AP)': 0.})],
++                                          links, profiles, zones, final, components)
++    with pytest.raises(ValueError, match='DUPLICATE_PROFILE_PATHLINK_POSITION'):
++        pure.build_observed_long_incidence(paths, links + [links[0]], profiles, zones, final, components)
++
++
++def test_positive_tiny_od_is_not_silently_dropped():
++    paths, links, profiles, zones, final, components = _fixture()
++    final[1, 0] = 1.e-7
++    components[9291][1, 0] = 1.e-7
++    components[9292][1, 0] = 0.
++    paths[2]['Vol(AP)'] = 1.e-7
++    result = pure.build_observed_long_incidence(paths, links, profiles, zones, final, components)
++    assert len(result['variables']) == 2
++    assert result['variables'][1]['q_current'] == 1.e-7
++    assert result['incidence'].forward(np.ones(2))[1] == pytest.approx(100.0000001, abs=1.e-10)
++
++
++def test_tiny_positive_od_still_requires_path_and_link_evidence():
++    paths, links, profiles, zones, final, components = _fixture()
++    final[1, 0] = components[9291][1, 0] = 1.e-7
++    components[9292][1, 0] = 0.
++    with pytest.raises(ValueError, match='PATH_TO_FINAL_OD_MISMATCH'):
++        pure.build_observed_long_incidence(paths[:2], links[:4], profiles, zones, final, components)
++    paths[2]['Vol(AP)'] = 1.e-7
++    with pytest.raises(ValueError, match='POSITIVE_PATH_WITHOUT_LINKS'):
++        pure.build_observed_long_incidence(paths, links[:4], profiles, zones, final, components)
++
++
++def test_path_keys_and_even_tiny_negative_volumes_must_be_valid():
++    paths, links, profiles, zones, final, components = _fixture()
++    bad = [dict(paths[0], OrigZoneNo=1.4)] + paths[1:]
++    with pytest.raises(RuntimeError, match='NONINTEGRAL_ID'):
++        pure.build_observed_long_incidence(bad, links, profiles, zones, final, components)
++    bad = [dict(paths[0], **{'Vol(AP)': -1.e-14})] + paths[1:]
++    with pytest.raises(ValueError, match='INVALID_PATH_ROWS'):
++        pure.build_observed_long_incidence(bad, links, profiles, zones, final, components)

@@ -40,6 +40,7 @@ import r1_15a2_long_school_generation_v24917 as lsgen
 import r1_15a2_long_distance_guard_v24917 as longguard
 import r1_15a2_long_od_mask_v24917 as longmask
 import r1_15a2_long_post_td_mask_v24917 as post_td_mask
+import r1_15a2_long_incidence_read_v24917 as long_incidence_read
 import r1_15a2_boundary_generation_v24917 as bdgen
 import r1_15a2_boundary_pa_v24917 as bdpa
 import r1_15a2_mobility_guard_v24917 as mguard
@@ -74,9 +75,24 @@ class VisumAdapter(_V24916ActiveAdapter):
         with post_td_mask.execution_scope(self):
             return super().assign_for_block(folder, block)
 
+    def _refresh_dynamic_skims_after_assignment(self, *args, **kwargs):
+        self._long_incidence_assignment_binding = None
+        epoch = super()._refresh_dynamic_skims_after_assignment(*args, **kwargs)
+        if epoch is not None:
+            long_incidence_read.bind_after_assignment(self)
+        return epoch
+
+    def long_profile_incidence(self, diag, folder):
+        """Explicit read-only LONG audit using the same ordered 12D profile rows.
+
+        Does not alter the W/S path cache or enable LONG Generation/TD fitting.
+        The expensive NATIVE_CL export is requested only by this diagnostic API.
+        """
+        return long_incidence_read.read_current(self, diag["d12"]["rows"], folder)
+
     @staticmethod
     def _without_unverified_long_rows(rows):
-        """Keep LONG coefficients out of TG until a native filter is verified."""
+        """Keep LONG coefficients out of TG until its realization response is verified."""
         return [row for row in rows if str(row.get("family", "")).upper() != "LONG"]
 
     # ------------------------------------------------------- GENFIX1 snapshot
