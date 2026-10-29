@@ -25,8 +25,20 @@ def load_parent():
     return module
 
 
+def load_silent_helper():
+    # Visum's Scripts host does not necessarily put the script directory on
+    # sys.path. Load the helper by exact sibling path, just like the parent.
+    spec = importlib.util.spec_from_file_location(
+        "_r1_v24917_silent_helper", HERE / "v24917_silent_debug.py")
+    if spec is None or spec.loader is None:
+        raise RuntimeError("V24917_SILENT_HELPER_UNAVAILABLE")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def main():
-    from v24917_silent_debug import run_silent
+    run_silent = load_silent_helper().run_silent
     visum = globals().get("Visum")
     com = globals().get("COM")
     host = visum if visum is not None else com
