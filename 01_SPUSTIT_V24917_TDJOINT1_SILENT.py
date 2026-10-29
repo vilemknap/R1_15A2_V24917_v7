@@ -42,6 +42,19 @@ def load_parent(filename=PARENT_LAUNCHER):
     return module
 
 
+
+def _failure_status(result):
+    """Legacy overnight controller returns some critical failures as a dict."""
+    if not isinstance(result, dict):
+        return None
+    status = str(result.get("status") or "").strip().upper()
+    if (status.startswith(("FAILED", "ERROR", "FINAL_SAVE_FAILED"))
+            or status.endswith("_FAILED")
+            or status == "SOURCE_VERSION_FILE_CHANGED_UNEXPECTEDLY"):
+        return status
+    return None
+
+
 def main(parent_launcher=PARENT_LAUNCHER):
     visum, com = globals().get("Visum"), globals().get("COM")
     if visum is None and com is None:
@@ -66,6 +79,13 @@ def main(parent_launcher=PARENT_LAUNCHER):
                 parent.Visum = visum
                 parent.COM = com
                 result = parent.main()
+                failure = _failure_status(result)
+                if failure is not None:
+                    # Original parent already owns cleanup and writes 00_RESULT.
+                    # Convert a returned fatal status into an explicit host error
+                    # so suppressing stdout cannot hide a failed calibration.
+                    raise RuntimeError("R1_SILENT_CALIBRATION_FAILED:%s (log: %s)" %
+                                       (failure, logfile))
                 print("SILENT_LAUNCH_RETURNED")
                 return result
             except BaseException:
