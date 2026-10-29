@@ -141,8 +141,8 @@
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
     "tools/refresh_v24917_manifests.py": "94b0163d9fa388c4f5bf7d5593a290580a1ca75970b9d5efb2e1cf85b56e4817",
     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
-    "v24917_silent_debug.py": "a496d612f8983394050ac7eca396af879c1862a9aef5e35df6e2751d856f2398",
-    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "677a6d403a7a58aa1d5a9d2fc753b35cce03f31010fc103c531c95f778303789",
-    "tests/test_v24917_silent_debug.py": "8c0cb14ed0dcdedc06087fee1e545a16d2b940b73be53f66f0d8a2991057e048"
+    "v24917_silent_debug.py": "5738bca45d977c2b8f6fdcc603d487750c3a904a9b780c3e503a5d711ad6e655",
+    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+    "tests/test_v24917_silent_debug.py": "3127746796d1df6391a4a55988fae916c1f667eb79edba87d07ad93bd7bf8bd4"
   }
 }
