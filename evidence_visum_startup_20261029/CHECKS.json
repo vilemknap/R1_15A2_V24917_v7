@@ -1,0 +1,120 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/visum_startup/source/tests"
+      ],
+      "returncode": 0,
+      "seconds": 33.153,
+      "passed": 1687,
+      "skipped": 4
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/visum_startup/source/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 20.912,
+      "passed": 138,
+      "skipped": 0
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/visum_startup/source/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 0.716,
+      "passed": 18,
+      "skipped": 0
+    }
+  ],
+  "all_passed": true,
+  "output": "/workspace/work/visum_startup/regression",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS",
+  "task": "VISUM_STARTUP_DIAGFAST_TD_GUARD_FIX_20261029",
+  "baseline_commit": "33726eb20c61722d70cecd5fd39ceb6bb984e7d4",
+  "baseline_tree": "449874006918f0e739e4542bcee65a0c104014db",
+  "implementation": {
+    "r1_15a2_diagfast_parity_v1.py": "Use existing r1_15a2_td09c_16or17_hotfix_v24916 instead of nonexistent _v1 in the deferred 17-stratum ABC state seal.",
+    "tests/test_v24917_diagfast_td_abc_guard.py": "Execute both approved source scopes, frozen FOREIGN seal and native ABC drift detection, invalid-value rejection, no-write checks, capture_state integration, and recursive lazy-import audit."
+  },
+  "before_fix": {
+    "focused_failures": 12,
+    "cause": "ModuleNotFoundError: r1_15a2_td09c_16or17_hotfix_v1",
+    "import_audit": {
+      "files": 130,
+      "project_imports": 531,
+      "missing": [
+        {
+          "source": "r1_15a2_diagfast_parity_v1.py",
+          "line": 193,
+          "module": "r1_15a2_td09c_16or17_hotfix_v1",
+          "target": "r1_15a2_td09c_16or17_hotfix_v1.py"
+        }
+      ]
+    }
+  },
+  "after_fix_import_audit": {
+    "files": 130,
+    "project_imports": 531,
+    "missing": []
+  },
+  "focused": {
+    "passed": 32,
+    "returncode": 0,
+    "command": "OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider tests/test_v24917_diagfast_td_abc_guard.py tests/test_v24916_td09c_native16_compat.py tests/test_v24917_procseq_bootstrapfix1.py"
+  },
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 66,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 118,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": []
+    }
+  },
+  "unchanged": [
+    "calibration mathematics",
+    "coefficient bounds",
+    "acceptance and rollback",
+    "LONG/FOREIGN freezes",
+    "native TD",
+    "Visum operations and OD matrices",
+    "DIAGFAST live parity and certificate checks"
+  ],
+  "limits": [
+    "LIVE_VISUM_NOT_RUN",
+    "The import audit resolves static project import statements, including those inside functions; it cannot prove arbitrary generated imports or Windows COM behavior.",
+    "Mock startup and state-seal tests do not certify error-free execution against the live model."
+  ],
+  "diff_check": "PASS"
+}

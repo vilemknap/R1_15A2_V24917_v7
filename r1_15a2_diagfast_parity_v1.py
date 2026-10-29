@@ -190,7 +190,7 @@ def _read_full_td_abc_guard(guarded):
     certified by the V242 bridge and its read-only 09C preflight. It never
     changes operation flags, parameter values or COM state.
     """
-    import r1_15a2_td09c_16or17_hotfix_v1 as td09c
+    import r1_15a2_td09c_16or17_hotfix_v24916 as td09c
     import r1_15a2_runtime_v1 as rt
     import r1_15a2_multiblock as mb
     import r1_15a2_visum_parameters as vp
