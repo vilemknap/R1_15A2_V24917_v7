@@ -25,9 +25,17 @@ def harness():
     class Matrix:
         def __init__(self, no): self.no = no
         def GetValues(self): return state.arrays[self.no].copy()
-        def SetValues(self, values):
+        def SetValues(self, values, Add=False):
+            # Real Visum 2026 COM expects ndarray rather than a nested Python
+            # list. Simulate its strict array marshaller and explicit no-add.
+            assert isinstance(values, np.ndarray), 'COM_EXPECTS_NUMPY_ARRAY'
+            assert values.dtype == np.float64 and values.flags.c_contiguous
+            assert Add is False, 'MATRIX_WRITE_MUST_REPLACE_NOT_ADD'
             state.writes.append(self.no)
-            state.arrays[self.no] = np.array(values, dtype=float)
+            if state.failure == self.no and not state.failed and getattr(state, 'nonmutating', False):
+                state.failed = True
+                raise RuntimeError('COM_REJECTED_WITHOUT_MUTATION')
+            state.arrays[self.no] = np.array(values, dtype=float, copy=True)
             if state.failure == self.no and not state.failed:
                 state.arrays[self.no][0, 0] = 999.
                 state.failed = True
@@ -120,6 +128,50 @@ def test_partial_write_restores_all_owned_matrices_and_propagates(tmp_path):
         pm.apply_group(adapter, mask, pm.MATRIX_NOS, tmp_path)
     for no in before: np.testing.assert_array_equal(state.arrays[no], before[no])
     assert state.writes == [9111, 9112, 9113, 9113, 9112, 9111]
+
+
+
+def test_visum_2026_numpy_marshalling_is_explicit_and_no_add(tmp_path):
+    adapter, state, _, mask, _ = harness()
+    report = pm.apply_group(adapter, mask, pm.MATRIX_NOS, tmp_path)
+    assert report['matrix_com_write'] == 'NUMPY_FLOAT64_C_CONTIGUOUS_ADD_FALSE'
+    assert report['status'] == 'APPLIED_VERIFIED'
+    assert state.writes == list(pm.MATRIX_NOS)
+
+
+def test_com_write_rejected_without_mutation_does_not_attempt_false_restore(tmp_path):
+    adapter, state, _, mask, _ = harness()
+    before = {no: values.copy() for no, values in state.arrays.items()}
+    state.failure = 9113
+    state.nonmutating = True
+    with pytest.raises(RuntimeError, match='COM_REJECTED_WITHOUT_MUTATION'):
+        pm.apply_group(adapter, mask, pm.MATRIX_NOS, tmp_path)
+    assert state.writes == [9111, 9112, 9113, 9112, 9111]
+    for no, values in before.items():
+        np.testing.assert_array_equal(state.arrays[no], values)
+    import json
+    record = json.loads((tmp_path / 'LONG_MASK_RESULT.json').read_text())
+    assert record['failed_matrix_no'] == 9113
+    assert record['status'] == 'PREMASK_RESTORED_CALIBRATION_PARENT_RECOMPUTE_REQUIRED'
+    assert record['restore_readbacks'][0] == {'matrix_no': 9113,
+                                              'status': 'UNCHANGED_NO_REWRITE'}
+
+
+def test_failed_vehicle_com_write_identifies_929x_without_false_manual_reopen(tmp_path):
+    adapter, state, _, mask, _ = harness()
+    before = {no: values.copy() for no, values in state.arrays.items()}
+    state.failure = pm.COMPONENT_MATRICES[0]
+    state.nonmutating = True
+    with pytest.raises(RuntimeError, match='COM_REJECTED_WITHOUT_MUTATION'):
+        pm.apply_group(adapter, mask, pm.COMPONENT_MATRICES, tmp_path,
+                       aggregate_no=pm.FINAL_MATRIX)
+    import json
+    record = json.loads((tmp_path / 'LONG_MASK_RESULT.json').read_text())
+    assert record['failed_matrix_no'] == pm.COMPONENT_MATRICES[0]
+    assert record['restore_errors'] == []
+    assert record['status'] == 'PREMASK_RESTORED_CALIBRATION_PARENT_RECOMPUTE_REQUIRED'
+    for no, values in before.items():
+        np.testing.assert_array_equal(state.arrays[no], values)
 
 
 def test_arbitrary_matrix_scope_rejected(tmp_path):
