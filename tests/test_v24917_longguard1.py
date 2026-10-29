@@ -9,7 +9,7 @@ import r1_15a2_long_distance_guard_v24917 as g
 
 
 def data(short=0., middle=8., tail=7.):
-    d = np.array([[0., 99.999], [100., 225.]])
+    d = np.array([[0., 79.999], [100., 225.]])
     m = {no: np.zeros((2, 2), dtype=float) for no in g.MATRIX_NOS}
     m[9111][0, 1] = short
     m[9112][1, 0] = middle
@@ -70,7 +70,7 @@ def test_all_five_matrices_required():
 
 def test_positive_short_mass_cannot_be_accepted_from_clean_parent():
     proof=g.decide(evidence(),evidence(short=1),changed_long=True)
-    assert not proof['passes'];assert 'LONGGUARD1_NEW_TRIPS_BELOW_100KM' in proof['reasons']
+    assert not proof['passes'];assert 'LONGGUARD1_NEW_TRIPS_BELOW_MIN_KM' in proof['reasons']
 
 
 def test_invalid_parent_freezes_long_not_success_by_conditional_cdf():
@@ -130,21 +130,18 @@ def test_100_200_composite_finecdf_extraction():
     assert g._fine_rmse(diag)==.123
 
 
-def test_capture_binds_actual_cl_skim_zone_order_and_com_matrices(monkeypatch):
+def test_capture_binds_osrm_support_and_separate_fresh_finecdf_epoch(monkeypatch):
     from r1_15a2_skim_v24916p2c import ordered_zone_hash
     d,m=data(); zones=[11,12]
-    class Matrix:
-        def __init__(self,no):self.no=no
-        def GetValues(self):return m[self.no]
-    class Matrices:
-        def ItemByKey(self,no):return Matrix(no)
+    from test_v24917_long_osrm_support import make_adapter
+    osrm_adapter, osrm_live = make_adapter(d, zones, m)
     epoch=SimpleNamespace(
         family_distance={'LONG':d}, zone_order_sha256=ordered_zone_hash(zones),
         matrix_meta_by_dseg={'NATIVE_CL':{'unit':'km','values_sha256':'hash'}},
         assignment_epoch=7,epoch=8,epoch_hash='epochHash')
     adapter=SimpleNamespace(
         v24916_dynamic_skims=SimpleNamespace(require_current=lambda:epoch),
-        zones=zones,visum=SimpleNamespace(Net=SimpleNamespace(Matrices=Matrices())),
+        zones=zones,visum=osrm_adapter.visum,
         com_retry_policy={'enabled':False})
     diag={'dynamic_skim_epoch':{'epoch_hash':'epochHash'},
           'd11':{'summary':{'component_dist_summary_rows':[
@@ -186,7 +183,7 @@ def test_generation_block_gate_rejects_fresh_short_long_candidate(monkeypatch):
     monkeypatch.setattr(mod.longguard,'capture',lambda _self,diag:evidence(short=2.))
     verdict=adapter.block_gate('GENERATION',{}, {},[{'attr':'ADD_PROD_L'}])
     assert verdict['accepted'] is False
-    assert 'LONGGUARD1_NEW_TRIPS_BELOW_100KM' in verdict['reasons']
+    assert 'LONGGUARD1_NEW_TRIPS_BELOW_MIN_KM' in verdict['reasons']
     assert adapter.v24917_status['ls_incomplete_current_cycle'] is True
 
 

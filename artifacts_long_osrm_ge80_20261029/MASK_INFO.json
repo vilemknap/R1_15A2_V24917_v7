@@ -1,0 +1,19 @@
+{
+  "input_file": "9697 R1_OSRM_DIST_KM.mtx",
+  "input_file_sha256": "16d188c3b3a260d13362f454def8ef1c32960c0ed20bc41608966eae0e7243fe",
+  "source_matrix_no": 9697,
+  "rows": 681,
+  "columns": 681,
+  "one_is_allowed": true,
+  "directed": true,
+  "symmetrized": false,
+  "export_readback_verified": true,
+  "output_sha256": "56238725e87537090101ee47c96f898631a8f75a4bc62da4ac8f7bd9ad48cc49",
+  "rule": "R1_OSRM_DIST_KM >= 80 km",
+  "minimum_km": 80.0,
+  "maximum_km": null,
+  "allowed_od": 74966,
+  "forbidden_od": 388795,
+  "source_matrix_unchanged": true,
+  "live_filter_applied": false
+}

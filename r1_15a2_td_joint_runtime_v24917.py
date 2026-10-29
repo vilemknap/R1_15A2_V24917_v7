@@ -6,6 +6,7 @@ import functools
 from pathlib import Path
 
 import r1_15a2_td_joint_v24917 as joint
+import r1_15a2_long_composite_td_v24917 as long_td
 
 
 def wrap_inner(original):
@@ -20,6 +21,7 @@ def wrap_inner(original):
         if stage is None or Path(stage["inner_root"]) != Path(folder).resolve():
             raise RuntimeError("TDJOINT1_STAGE_RESULT_MISSING_OR_STALE")
         result = dict(result)
+        result["long_composite_td"] = long_td.activation_plan()
         result.update({k: stage[k] for k in (
             "objective_start", "objective_final", "objective_improvement",
             "search_complete", "stationarity_confirmed",
@@ -60,6 +62,9 @@ def wrap_realization(original, ctrl):
         # Never silently associate an old component plan with a new inner run.
         import r1_15a2_multiblock as mb
         component_no = {str(k): int(r["matrix_no"]) for k, r in mb.COMPONENT_REGISTRY.items()}
+        groups = long_td.realization_groups(target_rows, before.get("td_values", []), component_no)
+        # Shared LONG preparation does not constitute native support evidence.
+        long_td.require_live_ready(groups)
         for row in target_rows:
             final = stage["final_abc"].get(str(component_no.get(row["component"])))
             if final is None or any(abs(float(final[p]) - float(row["candidate_" + p])) > 1e-8
@@ -68,22 +73,22 @@ def wrap_realization(original, ctrl):
         import r1_15a2_intrazonal_penalty_v24917 as iz
         pending_iz = bool(getattr(iz, "_STAGE", {}))
         result = original(adapter, cfg, folder, control, before, baseline_diag, target_rows)
-        if (result[0] or len(target_rows) < 2 or not opts["outer_isolates"] or pending_iz):
+        if (result[0] or len(groups) < 2 or not opts["outer_isolates"] or pending_iz):
             return result
         if result[4].get("status") != "SOFT_REFERENCE_PLATEAU":
             return result
         # Existing target order is deterministic.  In this first version, no
         # claim is made that an inner contribution predicts live ablation rank.
-        rows_order = sorted(target_rows, key=lambda r: str(r["component"]))[:opts["max_isolates"]]
+        rows_order = groups[:opts["max_isolates"]]
         records = [{"kind": "COMBINED_WITH_BACKTRACK", "evidence": result[4]}]
         cfg_one = copy.deepcopy(cfg)
         fine = cfg_one.setdefault("coupled_demand", {}).setdefault("finecdf_td", {})
         fine["realization_backtracking_scales"] = [1.0]
-        for ordinal, row in enumerate(rows_order, 1):
-            control.checkpoint("TDJOINT_ISOLATED_REALIZATION", component=row["component"], force=True)
-            isolated_folder = Path(folder) / ("ISOLATED_%02d_%s" % (ordinal, row["component"]))
-            one = original(adapter, cfg_one, isolated_folder, control, before, baseline_diag, [row])
-            records.append({"kind": "ISOLATED", "component": row["component"], "evidence": one[4]})
+        for ordinal, (group, rows) in enumerate(rows_order, 1):
+            control.checkpoint("TDJOINT_ISOLATED_REALIZATION", component=group, force=True)
+            isolated_folder = Path(folder) / ("ISOLATED_%02d_%s" % (ordinal, group))
+            one = original(adapter, cfg_one, isolated_folder, control, before, baseline_diag, rows)
+            records.append({"kind": "ISOLATED", "component": group, "evidence": one[4]})
             ctrl.atomic_json(Path(folder) / "TDJOINT_REALIZATION.json", {
                 "release": joint.RELEASE, "attempt_groups": records,
                 "max_extra_realization_trials": opts["max_isolates"],
@@ -110,6 +115,10 @@ def install(controller, print_fn=print):
         def loader(package_root, fine_cfg=None):
             ref, path, sha = original_loader(package_root, fine_cfg)
             if joint.options()["enabled"]:
+                ref.long_composite_td_contract = long_td.reference_contract(ref)
+                # Also cover the global-IDP fallback: it must not silently
+                # activate LONG while native support/count response is pending.
+                ref.GROUPS = [key for key in ref.GROUPS if key != long_td.GROUP]
                 ref.Runner = joint.make_runner(ref.Runner, ref)
             return ref, path, sha
         loader._tdjoint1 = True
@@ -126,7 +135,8 @@ def install(controller, print_fn=print):
     if not getattr(old, "_tdjoint1", False):
         controller._realize_finecdf_td = wrap_realization(old, controller)
     status = {"release": joint.RELEASE, "installed": True, "options": joint.options(),
-              "sealed_reference_modified": False, "outer_acceptance_modified": False}
+              "sealed_reference_modified": False, "outer_acceptance_modified": False,
+              "long_composite_td": long_td.activation_plan()}
     print_fn("R1 TDJOINT1: %s; shared score once; native isolated +/- probes; outer isolates=%s" %
              ("ENABLED" if status["options"]["enabled"] else "DISABLED", status["options"]["outer_isolates"]))
     return status

@@ -29,15 +29,16 @@ def _marginals(p, a):
 
 
 def test_mask_threshold_bands_hashes_and_input_immutability():
-    distance = np.array([[0.0, 99.999, 100.0],
+    distance = np.array([[0.0, 79.999, 100.0],
                          [100.001, 200.0, 200.001],
-                         [500.0, 99.0, 150.0]])
+                         [500.0, 79.0, 150.0]])
     original = distance.copy()
     support = _build(distance)
     assert support.mask.sum() == 6
     assert support.counts == {
-        "allowed_ge_100_km": 6,
-        "below_100_km": 3,
+        "allowed_ge_min_km": 6,
+        "below_min_km": 3,
+        "allowed_below_cdf_min_km": 0,
         "km_100_to_200_inclusive": 4,
         "above_200_km_allowed": 2,
         "total_od_pairs": 9,
@@ -92,28 +93,17 @@ def test_mask_rejects_zone_axis_and_hash_mismatches():
         tdlong.build_support_mask(d, zones, **{**kwargs, "diagnostic_assignment_epoch": 0})
 
 
-def test_capture_current_binds_assignment_skim_values_and_zone_hash():
-    zones = [11, 12]
-    distance = np.array([[0.0, 100.0], [200.001, 0.0]])
-    zone_sha = ordered_zone_hash(zones)
-    values_sha = matrix_values_hash(distance)
-    epoch_sha = _hash("bound-epoch")
-    meta = {"NATIVE_CL": {"unit": "km", "values_sha256": values_sha}}
-    epoch = SimpleNamespace(family_distance={"LONG": distance}, matrix_meta_by_dseg=meta,
-                            zone_order_sha256=zone_sha, epoch_hash=epoch_sha,
-                            assignment_epoch=8, epoch=9)
-    adapter = SimpleNamespace(zones=zones,
-                              v24916_dynamic_skims=SimpleNamespace(require_current=lambda: epoch))
-    authority = {"assignment_epoch": 8, "epoch": 9, "epoch_hash": epoch_sha,
-                 "zone_order_sha256": zone_sha,
-                 "matrix_meta_by_dseg": {"NATIVE_CL": {"values_sha256": values_sha}}}
-    result = tdlong.capture_current(adapter, {"dynamic_skim_epoch": authority})
+def test_capture_current_uses_only_fixed_osrm_source():
+    from test_v24917_long_osrm_support import make_adapter
+    adapter, live = make_adapter([[0., 80.], [200.001, 0.]])
+    result = tdlong.capture_current(adapter, {})
     assert result["status"] == "MASK_READY_NATIVE_FILTER_UNVERIFIED"
+    assert result["source"]["matrix_no"] == 9697
     assert result["source"]["counts"]["above_200_km_allowed"] == 1
     assert result["long_generation_permitted"] is False
-    stale = dict(authority, assignment_epoch=7)
-    assert tdlong.capture_current(adapter, {"dynamic_skim_epoch": stale})["status"] == "INVALID_EPOCH"
-    assert tdlong.capture_current(SimpleNamespace(zones=zones), {})["reason"] == "INVALID_EPOCH"
+    live.distance[0, 1] = 79.
+    assert tdlong.capture_current(adapter, {})["status"] == "INVALID_SOURCE"
+    assert tdlong.capture_current(SimpleNamespace(zones=adapter.zones), {})["reason"] == "INVALID_SOURCE"
 
 
 def test_restricted_pa_feasibility_and_per_component_audit():

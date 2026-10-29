@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Pure, epoch-bound LONG OD support and restricted P/A feasibility checks.
+"""LONG OD support and restricted P/A feasibility checks.
 
-This module constructs a diagnostic mask from the current assignment-coupled
-NATIVE_CL/DIS/km skim.  It never writes demand matrices and the mask alone is
+The live support mask uses fixed OSRM matrix 9697/R1_OSRM_DIST_KM.
+The older pure epoch-bound builder is retained for compatibility only.  It never writes demand matrices and the mask alone is
 not native enforcement evidence.  Native LONG generation remains disabled
 until the actual Visum TD support mechanism is verified on the live model.
 """
@@ -17,7 +17,7 @@ from typing import Any, Mapping, Sequence
 
 import numpy as np
 
-from r1_15a2_long_distance_guard_v24917 import MATRIX_NOS, MIN_KM, MAX_CDF_KM
+from r1_15a2_long_distance_guard_v24917 import MATRIX_NOS, MIN_KM, MIN_CDF_KM, MAX_CDF_KM
 
 RELEASE = "R1_15A2_V24917_TDLONG1_PURE_MASK_20261027"
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -43,7 +43,7 @@ class LongSupport:
             "release": RELEASE,
             "status": "MASK_READY_NATIVE_FILTER_UNVERIFIED",
             "minimum_km": float(MIN_KM),
-            "conditional_cdf_range_km": [float(MIN_KM), float(MAX_CDF_KM)],
+            "conditional_cdf_range_km": [float(MIN_CDF_KM), float(MAX_CDF_KM)],
             "above_200_km_permitted": True,
             "counts": dict(self.counts),
             "zone_order_sha256": self.zone_order_sha256,
@@ -79,7 +79,7 @@ def build_support_mask(distance_km: Any, zone_nos: Sequence[int], *, unit: str,
                        epoch_hash: str, assignment_epoch: int, skim_epoch: int,
                        diagnostic_epoch_hash: str,
                        diagnostic_assignment_epoch: int) -> LongSupport:
-    """Build exact ``distance >= 100 km`` support and verify both skim axes.
+    """Build exact ``distance >= MIN_KM`` support and verify both skim axes.
 
     ``expected_*`` fields must come from the existing V24916 dynamic skim
     authority.  The function also recomputes both project hashes, making stale
@@ -119,30 +119,36 @@ def build_support_mask(distance_km: Any, zone_nos: Sequence[int], *, unit: str,
     if actual_values_hash != expected_values_sha256:
         raise ValueError("TDLONG1_DISTANCE_VALUES_HASH_MISMATCH")
 
-    mask = np.greater_equal(distance, float(MIN_KM))
-    mask.setflags(write=False)
-    below = distance < float(MIN_KM)
-    conditional = (distance >= float(MIN_KM)) & (distance <= float(MAX_CDF_KM))
-    above = distance > float(MAX_CDF_KM)
-    packed = np.packbits(mask, bitorder="little")
-    diagnostic_hash = hashlib.sha256(
-        ("%dx%d|%s|" % (len(zones), len(zones), expected_zone_order_sha256)).encode("ascii")
-        + packed.tobytes()).hexdigest()
-    counts = {
-        "allowed_ge_100_km": int(np.count_nonzero(mask)),
-        "below_100_km": int(np.count_nonzero(below)),
-        "km_100_to_200_inclusive": int(np.count_nonzero(conditional)),
-        "above_200_km_allowed": int(np.count_nonzero(above)),
-        "total_od_pairs": int(distance.size),
-    }
-    if counts["allowed_ge_100_km"] + counts["below_100_km"] != counts["total_od_pairs"]:
-        raise ValueError("TDLONG1_SUPPORT_COUNT_NONCONSERVATIVE")
+    mask, diagnostic_hash, counts = _mask_geometry(distance, zones, expected_zone_order_sha256)
     return LongSupport(mask=mask, zone_nos=zones,
                        values_sha256=actual_values_hash,
                        zone_order_sha256=expected_zone_order_sha256,
                        epoch_hash=epoch_hash, assignment_epoch=assignment_epoch,
                        skim_epoch=skim_epoch,
                        mask_sha256_diagnostic_only=diagnostic_hash, counts=counts)
+
+
+def _mask_geometry(distance, zones, expected_zone_order_sha256):
+    mask = np.greater_equal(distance, float(MIN_KM))
+    mask.setflags(write=False)
+    below = distance < float(MIN_KM)
+    conditional = (distance >= float(MIN_CDF_KM)) & (distance <= float(MAX_CDF_KM))
+    above = distance > float(MAX_CDF_KM)
+    packed = np.packbits(mask, bitorder="little")
+    diagnostic_hash = hashlib.sha256(
+        ("%dx%d|%s|" % (len(zones), len(zones), expected_zone_order_sha256)).encode("ascii")
+        + packed.tobytes()).hexdigest()
+    counts = {
+        "allowed_ge_min_km": int(np.count_nonzero(mask)),
+        "below_min_km": int(np.count_nonzero(below)),
+        "allowed_below_cdf_min_km": int(np.count_nonzero((distance >= MIN_KM) & (distance < MIN_CDF_KM))),
+        "km_100_to_200_inclusive": int(np.count_nonzero(conditional)),
+        "above_200_km_allowed": int(np.count_nonzero(above)),
+        "total_od_pairs": int(distance.size),
+    }
+    if counts["allowed_ge_min_km"] + counts["below_min_km"] != counts["total_od_pairs"]:
+        raise ValueError("TDLONG1_SUPPORT_COUNT_NONCONSERVATIVE")
+    return mask, diagnostic_hash, counts
 
 
 def _marginal(values: Any, n: int, label: str) -> np.ndarray:
@@ -327,51 +333,52 @@ def check_restricted_pa_feasibility(support: Any,
             "native_filter_verified": False, "long_generation_permitted": False}
 
 
+def build_osrm_support_mask(distance_km, zone_nos, *, expected_values_sha256,
+                            expected_zone_order_sha256):
+    """Pure fixed-OSRM mask; no assignment/skim epoch is invented for this source."""
+    from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
+    from r1_15a2_long_support_distance_v24917 import MATRIX_NO, MATRIX_CODE, DISTANCE_BASIS
+    zones = _strict_zone_axis(zone_nos)
+    if ordered_zone_hash(zones) != expected_zone_order_sha256:
+        raise ValueError("TDLONG1_OSRM_ZONE_ORDER_HASH_MISMATCH")
+    distance = np.array(distance_km, dtype=np.float64, copy=True, order="C")
+    if distance.shape != (len(zones), len(zones)):
+        raise ValueError("TDLONG1_OSRM_DISTANCE_SHAPE_MISMATCH")
+    if not np.isfinite(distance).all() or np.any(distance < 0):
+        raise ValueError("TDLONG1_OSRM_DISTANCE_NOT_FINITE_NONNEGATIVE")
+    if matrix_values_hash(distance) != expected_values_sha256:
+        raise ValueError("TDLONG1_OSRM_DISTANCE_VALUES_HASH_MISMATCH")
+    mask, diagnostic_hash, counts = _mask_geometry(distance, zones, expected_zone_order_sha256)
+    summary = {"release": RELEASE, "status": "MASK_READY_NATIVE_FILTER_UNVERIFIED",
+               "distance_basis": DISTANCE_BASIS, "matrix_no": MATRIX_NO,
+               "matrix_code": MATRIX_CODE, "unit": "km", "assignment_dependent": False,
+               "minimum_km": MIN_KM, "conditional_cdf_range_km": [MIN_CDF_KM, MAX_CDF_KM],
+               "above_200_km_permitted": True, "counts": counts,
+               "values_sha256": expected_values_sha256,
+               "zone_order_sha256": expected_zone_order_sha256,
+               "mask_sha256": diagnostic_hash,
+               "mask_hash_role": "DIAGNOSTIC_ONLY_NOT_A_PROJECT_AUTHORITY",
+               "native_filter_verified": False, "long_generation_permitted": False}
+    return mask, summary
+
+
 def capture_current(adapter: Any, diagnostics: Mapping[str, Any]) -> dict[str, Any]:
-    """Capture a hash-bound mask from the manager's fresh epoch, without COM writes."""
+    """Read the selected fixed OSRM source, independently of dynamic IDP skims."""
     try:
-        manager = getattr(adapter, "v24916_dynamic_skims", None)
-        if manager is None:
-            raise ValueError("TDLONG1_DYNAMIC_SKIM_MANAGER_MISSING")
-        epoch = manager.require_current()
-        distance = epoch.family_distance.get("LONG")
-        meta = epoch.matrix_meta_by_dseg.get("NATIVE_CL")
-        if distance is None or meta is None:
-            raise ValueError("TDLONG1_NATIVE_CL_DISTANCE_MISSING")
-        diag = dict(diagnostics or {})
-        authority = diag.get("dynamic_skim_epoch")
-        if not isinstance(authority, Mapping):
-            authority = (((diag.get("d11") or {}).get("summary") or {})
-                         .get("dynamic_distance_authority"))
-        if not isinstance(authority, Mapping):
-            raise ValueError("TDLONG1_DIAGNOSTIC_AUTHORITY_MISSING")
-        if int(authority.get("assignment_epoch", -1)) != int(epoch.assignment_epoch):
-            raise ValueError("TDLONG1_DIAGNOSTIC_ASSIGNMENT_EPOCH_MISMATCH")
-        if int(authority.get("epoch", -1)) != int(epoch.epoch):
-            raise ValueError("TDLONG1_DIAGNOSTIC_SKIM_EPOCH_MISMATCH")
-        if authority.get("zone_order_sha256") != epoch.zone_order_sha256:
-            raise ValueError("TDLONG1_DIAGNOSTIC_ZONE_ORDER_MISMATCH")
-        diag_meta = authority.get("matrix_meta_by_dseg") or {}
-        diag_cl = diag_meta.get("NATIVE_CL") or {}
-        if diag_cl.get("values_sha256") != meta.get("values_sha256"):
-            raise ValueError("TDLONG1_DIAGNOSTIC_NATIVE_CL_HASH_MISMATCH")
-        support = build_support_mask(
-            distance, adapter.zones, unit=meta.get("unit", ""),
-            expected_values_sha256=meta.get("values_sha256", ""),
-            expected_zone_order_sha256=epoch.zone_order_sha256,
-            epoch_hash=epoch.epoch_hash, assignment_epoch=epoch.assignment_epoch,
-            skim_epoch=epoch.epoch,
-            diagnostic_epoch_hash=authority.get("epoch_hash", ""),
-            diagnostic_assignment_epoch=authority.get("assignment_epoch", -1))
+        from r1_15a2_long_support_distance_v24917 import read_current
+        distance, source = read_current(adapter)
+        _, summary = build_osrm_support_mask(distance, adapter.zones,
+            expected_values_sha256=source["values_sha256"],
+            expected_zone_order_sha256=source["zone_order_sha256"])
         return {"status": "MASK_READY_NATIVE_FILTER_UNVERIFIED",
-                "source": support.summary(), "native_filter_status": "UNVERIFIED_NATIVE_FILTER",
+                "source": summary, "native_filter_status": "UNVERIFIED_NATIVE_FILTER",
                 "long_generation_permitted": False}
     except Exception as exc:
-        return {"status": "INVALID_EPOCH", "reason": "INVALID_EPOCH",
+        return {"status": "INVALID_SOURCE", "reason": "INVALID_SOURCE",
                 "native_filter_status": "UNVERIFIED_NATIVE_FILTER",
                 "long_generation_permitted": False,
                 "error": "%s:%s" % (type(exc).__name__, str(exc)[:700])}
 
 
 __all__ = ["RELEASE", "LongSupport", "build_support_mask",
-           "check_restricted_pa_feasibility", "capture_current"]
+           "check_restricted_pa_feasibility", "build_osrm_support_mask", "capture_current"]

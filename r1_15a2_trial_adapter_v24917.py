@@ -225,7 +225,7 @@ class VisumAdapter(_V24916ActiveAdapter):
             self._longguard1_parent["fine_cdf_anchor_rmse"] = self._longguard1_fine_anchor
         rt.write_json(folder / "LONGGUARD1_PARENT.json", self._longguard1_parent)
         self.v24917_status["longguard1_parent_status"] = self._longguard1_parent.get("status")
-        self.v24917_status["longguard1_parent_short"] = self._longguard1_parent.get("below_100_km")
+        self.v24917_status["longguard1_parent_short"] = self._longguard1_parent.get("below_min_km")
         phase, ratio = tg.phase_for(diag["d12"]["rows"], policy) if policy else (None, None)
         self.v24917_status.update(last_phase=phase, last_ratio=ratio)
         # Acquire the guard authority independently of the numerical fit. Any

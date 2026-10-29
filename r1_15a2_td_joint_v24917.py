@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 import numpy as np
+import r1_15a2_long_composite_td_v24917 as long_td
 
 RELEASE = "R1_15A2_V24917_TDJOINT1_20261027"
 EPS = 1e-12
@@ -287,6 +288,9 @@ def optimize(runner, ref):
 def make_runner(parent, ref):
     class JointRunner(parent):
         def evaluate(self, x, label, honor_stop=True):
+            long_td.require_live_ready([(key, []) for key in ref.GROUPS])
+            if long_td.GROUP in x and np.any(np.asarray(x[long_td.GROUP]) != 0):
+                long_td.require_live_ready([(long_td.GROUP, [])])
             result = super().evaluate(x, label, honor_stop=honor_stop)
             impl = getattr(self.metrics, "impl", None)
             blend = getattr(impl, "_v24917_blend_state", None)

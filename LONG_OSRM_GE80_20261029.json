@@ -1,0 +1,73 @@
+{
+  "base_github_commit": "38fb3ddfeb320c14fbd0c542419529cfe42046cb",
+  "task": "LONG_OSRM_9697_SUPPORT_GE80",
+  "support_distance_matrix_no": 9697,
+  "support_minimum_km": 80,
+  "support_maximum_km": null,
+  "finecdf_range_unchanged": [
+    100,
+    200
+  ],
+  "mask_file_report": {
+    "release": "R1_15A2_V24917_TDLONG1_PURE_MASK_20261027",
+    "status": "MASK_READY_NATIVE_FILTER_UNVERIFIED",
+    "distance_basis": "FIXED_OSRM_DIST_KM_9697",
+    "matrix_no": 9697,
+    "matrix_code": "R1_OSRM_DIST_KM",
+    "unit": "km",
+    "assignment_dependent": false,
+    "minimum_km": 80.0,
+    "conditional_cdf_range_km": [
+      100.0,
+      200.0
+    ],
+    "above_200_km_permitted": true,
+    "counts": {
+      "allowed_ge_min_km": 74966,
+      "below_min_km": 388795,
+      "allowed_below_cdf_min_km": 34957,
+      "km_100_to_200_inclusive": 28344,
+      "above_200_km_allowed": 11665,
+      "total_od_pairs": 463761
+    },
+    "values_sha256": "02a15825d05d0859ccf48c37bcb53f59c49c5878904c7c17995f7ce722b09998",
+    "zone_order_sha256": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968",
+    "mask_sha256": "647e5f0c463c778a4ae5223a5140f46168be0cec5543cebfa18265308b1ee15c",
+    "mask_hash_role": "DIAGNOSTIC_ONLY_NOT_A_PROJECT_AUTHORITY",
+    "native_filter_verified": false,
+    "long_generation_permitted": false,
+    "input_file": "9697 R1_OSRM_DIST_KM.mtx",
+    "source_matrix_no": 9697,
+    "output_matrix_no": null,
+    "output_matrix_code": "R1_LONG_OD_MASK_GE80_KM",
+    "input_file_sha256": "16d188c3b3a260d13362f454def8ef1c32960c0ed20bc41608966eae0e7243fe",
+    "output_file": "R1_LONG_OD_MASK_GE80_KM.mtx",
+    "output_sha256": "56238725e87537090101ee47c96f898631a8f75a4bc62da4ac8f7bd9ad48cc49",
+    "rows": 681,
+    "columns": 681,
+    "one_is_allowed": true,
+    "directed": true,
+    "symmetrized": false,
+    "asymmetric_mask_cells": 5612,
+    "exact_threshold_cells": 0,
+    "diagonal_allowed": 0,
+    "minimum_distance_km": 0.0667,
+    "maximum_distance_km": 380.5298,
+    "export_readback_verified": true,
+    "live_visum_tested": false
+  },
+  "tests": {
+    "main_passed": 1795,
+    "main_skipped": 4,
+    "diagfast_passed": 138,
+    "audit_passed": 18
+  },
+  "manifests_verified": {
+    "V24917_RUNTIME_MANIFEST.json": 68,
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": 125,
+    "DIAGFAST_V1_BASE_MANIFEST.json": 1059
+  },
+  "live_filter_applied": false,
+  "live_long_td_enabled": false,
+  "patch_sha256": "7a097baaa84a3cf392cd4142d29dada850625d03463a0a3f445c081825648333"
+}
