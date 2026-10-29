@@ -19,6 +19,8 @@ jobs:
       - name: Compile changed Python modules
         run: |
           python -m py_compile r1_15a2_long_post_td_mask_v24917.py
+          python -m py_compile r1_15a2_preflight_explain_v24917.py
+          python -m py_compile tests/test_v24917_preflight_op20_partial_activation.py
           python -m py_compile tests/test_v24917_longmask_09c_live_scope_regression.py
       - name: Verify sealed runtime and DIAGFAST files (read only)
         run: |
@@ -40,8 +42,9 @@ jobs:
               if failed:
                   raise SystemExit(1)
           PY
-      - name: Exact 09C scope and LONGMASK regression
-        run: python -m pytest -q -p no:cacheprovider tests/test_v24917_longmask_09c_live_scope_regression.py tests/test_v24917_long_post_td_mask.py
+      - name: Exact 09C scope, V240 preflight and LONGMASK regression
+        run: |
+          python -m pytest -q -p no:cacheprovider tests/test_v24917_preflight_op20_partial_activation.py tests/test_v239_safety_gates.py tests/test_v240_full_overnight.py tests/test_v24917_longmask_09c_live_scope_regression.py tests/test_v24917_long_post_td_mask.py
       - name: Source/working-copy operation difference regression
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_working_copy_operation_diff.py
       - name: Full main regression in isolated process
