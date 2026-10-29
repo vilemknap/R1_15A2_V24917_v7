@@ -156,18 +156,19 @@ def _verify_assignment_scope(row, expected):
     """Fail closed on live partial/final PrT DSEGSET differences."""
     import re
     from r1_15a2_com_compat import object_property
+    from r1_15a2_core import norm_code
     position = int(row['no'])
     try:
         params = object_property(row['object'], 'PrTAssignmentParameters')
         raw = params.AttValue('DSEGSET')
         if not isinstance(raw, str) or not raw.strip():
             raise ValueError('EMPTY_DSEGSET')
-        parts = [part.strip("'\\\"").upper() for part in re.split(r'[,;{}\\s]+', raw) if part.strip("'\\\"")]
+        parts = [norm_code(p.strip("'\\\"")) for p in re.split(r'[,;{}\s]+', raw) if p.strip("'\\\"")]
         if not parts or len(parts) != len(set(parts)):
             raise ValueError('DUPLICATE_OR_EMPTY_DSEGSET')
     except Exception as exc:
         raise SupplyContractError('LONGMASK_ASSIGNMENT_DSEG_SCOPE_UNREADABLE:%d' % position) from exc
-    if set(parts) != set(expected):
+    if set(parts) != {norm_code(str(x)) for x in expected}:
         raise SupplyContractError('LONGMASK_ASSIGNMENT_DSEG_SCOPE_MISMATCH:%d' % position)
 
 
