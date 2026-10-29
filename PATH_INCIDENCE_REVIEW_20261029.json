@@ -1,0 +1,216 @@
+{
+  "task": "PATH_INCIDENCE_REVIEW_PERFORMANCE_20261029",
+  "branch": "codex/path-incidence-review-perf-20261029",
+  "baseline_local_commit": "d84f8a9ece8337087e0ac37ce48b0051edc291fa",
+  "baseline_github_commit": "2912556cd12e9eb229d4731d92701e913cc628a8",
+  "offline_only": true,
+  "live_visum_status": "NOT_RUN",
+  "checks": {
+    "release": "GENFIX2",
+    "offline_only": true,
+    "live_visum_tested": false,
+    "suites": [
+      {
+        "suite": "main",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/tests"
+        ],
+        "returncode": 0,
+        "seconds": 34.053
+      },
+      {
+        "suite": "diagfast",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/diagfast_tests"
+        ],
+        "returncode": 0,
+        "seconds": 21.468
+      },
+      {
+        "suite": "audit_genfix2",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/genfix2_audit_tests"
+        ],
+        "returncode": 0,
+        "seconds": 0.715
+      }
+    ],
+    "all_passed": true,
+    "output": "/workspace/work/path_incidence_review/regression",
+    "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+  },
+  "test_totals": {
+    "main": {
+      "passed": 1884,
+      "skipped": 4
+    },
+    "diagfast": {
+      "passed": 138
+    },
+    "audit": {
+      "passed": 18
+    },
+    "focused": {
+      "passed": 121
+    }
+  },
+  "commands": [
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider --tb=short tests/test_v24917_path_incidence_review.py tests/test_v24917_long_cache_generation.py tests/test_v24917_long_zonal_fit.py tests/test_v24917_snapshot_reads_genfix1.py tests/test_v24917_generation_perf.py",
+    "PYTHONDONTWRITEBYTECODE=1 PYTEST_ADDOPTS=--basetemp=/tmp/r1pi /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/path_incidence_review/regression",
+    "PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 /workspace/.venvs/r1/bin/python /workspace/work/path_incidence_review/benchmark.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python /workspace/work/path_incidence_review/reproduce_baseline.py"
+  ],
+  "command_returncodes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "integrity": {
+    "compiled": [
+      "r1_15a2_long_cache_generation_v24917.py",
+      "r1_15a2_long_incidence_read_v24917.py",
+      "r1_15a2_long_profile_incidence_v24917.py",
+      "r1_15a2_long_support_distance_v24917.py",
+      "r1_15a2_long_zonal_fit_v24917.py",
+      "r1_15a2_snapshot_reads_v24917.py",
+      "r1_15a2_trial_adapter_v24917.py",
+      "r1_15a2_zonal_count_fit_v24917.py",
+      "tests/test_v24917_generation_perf.py",
+      "tools/refresh_v24917_manifests.py",
+      "r1_15a2_path_incidence_v24917.py",
+      "tests/test_v24917_path_incidence_review.py"
+    ],
+    "manifests": {
+      "V24917_RUNTIME_MANIFEST.json": {
+        "files": 72,
+        "all_sha256_match": true,
+        "sha256": "f74d128bf4335d1b9e397f94c0c2e427c5ae36b732a18b83bd6afaf4442903cb"
+      },
+      "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+        "files": 133,
+        "all_sha256_match": true,
+        "sha256": "ab139f0af951d26050366c67f1fa9920ad5aa754c16ec4ff5270170a14baad9c"
+      },
+      "DIAGFAST_V1_BASE_MANIFEST.json": {
+        "files": 1059,
+        "all_sha256_match": true,
+        "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+      }
+    },
+    "protected_original_files_unchanged": 1059
+  },
+  "baseline_fault_reproductions": {
+    "baseline_accepted_mismatched_sparse_array_lengths": true,
+    "baseline_rounded_fractional_long_profile_index": true,
+    "baseline_accepted_fractional_sql_profile_index": true
+  },
+  "benchmark": {
+    "offline_synthetic_only": true,
+    "live_visum_timing": false,
+    "baseline_local_commit": "d84f8a9ece8337087e0ac37ce48b0051edc291fa",
+    "shape": {
+      "zones": 681,
+      "profiles": 248,
+      "od_pairs": 75000,
+      "sparse_entries": 300000
+    },
+    "hash": {
+      "before": {
+        "median_seconds": 0.22294758499992895,
+        "samples_seconds": [
+          0.22693033900213777,
+          0.22294758499992895,
+          0.22222675600278308
+        ]
+      },
+      "after": {
+        "median_seconds": 0.1283576269997866,
+        "samples_seconds": [
+          0.13274068500322755,
+          0.1283576269997866,
+          0.12814002800223534
+        ]
+      },
+      "speedup": 1.736925106914758,
+      "hash_identical": true
+    },
+    "long_G": {
+      "before": {
+        "median_seconds": 0.45201542200084077,
+        "samples_seconds": [
+          0.47655369299900485,
+          0.45201542200084077,
+          0.4249096419989655
+        ]
+      },
+      "after": {
+        "median_seconds": 0.17530653799985885,
+        "samples_seconds": [
+          0.17530653799985885,
+          0.17810363199896528,
+          0.15856696199989528
+        ]
+      },
+      "speedup": 2.578428774865229,
+      "G_array_equal": true
+    },
+    "sqlite_basis": {
+      "before_repeated_aggregation": {
+        "median_seconds": 0.353839508999954,
+        "samples_seconds": [
+          0.353839508999954,
+          0.3691353850008454,
+          0.34814062700024806
+        ]
+      },
+      "after_reused_basis": {
+        "median_seconds": 1.1086998711107299e-05,
+        "samples_seconds": [
+          2.6249999791616574e-05,
+          1.1086998711107299e-05,
+          1.0125997505383566e-05
+        ]
+      },
+      "cold_compile_seconds": 0.45338945299954503,
+      "reuse_speedup": 31914.814659937372,
+      "retained_bytes": 5510088,
+      "aggregate_queries_per_repeated_capture_before": 2,
+      "aggregate_queries_per_repeated_capture_after": 0
+    },
+    "scope": "Component CPU benchmarks; not end-to-end capture, Visum assignment or COM speedup."
+  },
+  "snapshot_reuse": "Owned same-phase arrays only; both live before/after sets preserved; missing arrays read normally.",
+  "cache_reuse": "One compact immutable SQL path basis per active store; db revision/profile/zone identity guarded, never live OD reuse.",
+  "hash_protocol": "EXACTLY_IDENTICAL_DIMENSION_PREFIX_AND_FLOAT_HEX_CELL_STREAM",
+  "model_writes_added": false,
+  "acceptance_thresholds_changed": false,
+  "long_td_bc_enabled": false,
+  "osrm_support": {
+    "minimum_km": 80,
+    "maximum_km": null,
+    "matrix_no": 9697
+  },
+  "limits": [
+    "CPU component benchmark is not Visum/COM or end-to-end speedup.",
+    "Real Windows COM, assignment and native acceptance/rollback were not run here."
+  ]
+}

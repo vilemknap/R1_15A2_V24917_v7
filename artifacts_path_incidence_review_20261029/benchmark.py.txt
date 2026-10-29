@@ -1,0 +1,54 @@
+import importlib.util, json, statistics, sqlite3, subprocess, sys, time
+from pathlib import Path
+from types import SimpleNamespace as NS
+import numpy as np
+root=Path.cwd(); sys.path.insert(0,str(root))
+import r1_15a2_core as core
+import r1_15a2_long_zonal_fit_v24917 as newfit
+import r1_15a2_zonal_count_fit_v24917 as zf
+import r1_15a2_long_cache_generation_v24917 as lc
+from r1_15a2_path_incidence_v24917 import matrix_values_hash as newhash
+from r1_15a2_skim_v24916p2c import matrix_values_hash as oldhash, ordered_zone_hash
+source=subprocess.check_output(['git','show','2912556cd12e9eb229d4731d92701e913cc628a8:r1_15a2_long_zonal_fit_v24917.py'],cwd=root)
+oldfit=NS(); exec(compile(source,'baseline_long_zonal_fit.py','exec'),oldfit.__dict__)
+def timed(fn,repeats=3):
+    samples=[]
+    for _ in range(repeats):
+        t=time.perf_counter(); value=fn();samples.append(time.perf_counter()-t)
+    return value,{'median_seconds':statistics.median(samples),'samples_seconds':samples}
+rng=np.random.default_rng(900)
+distance=rng.uniform(0,400,(681,681))
+a,th0=timed(lambda:oldhash(distance)); b,th1=timed(lambda:newhash(distance));assert a==b
+n=681;count=75000;nnz=300000
+flat=rng.choice(np.flatnonzero(~np.eye(n,dtype=bool)),size=count,replace=False)
+o,d=np.unravel_index(flat,(n,n));q=rng.uniform(1,100,count)
+variables=[{'dseg_code':'NATIVE_CL','family':'LONG','origin':int(a+1),'destination':int(b+1),'q_current':float(v)} for a,b,v in zip(o,d,q)]
+prod=np.bincount(o,weights=q,minlength=n);att=np.bincount(d,weights=q,minlength=n)
+prod[0]+=.01;att[0]+=.01
+op=core.SparseOperator(rng.integers(0,248,nnz),rng.integers(0,count,nnz),rng.uniform(.01,10,nnz),248,count)
+zones=list(range(1,n+1)); profiles=list(range(248))
+obs={'status':'FROZEN_LONG_OD_PROFILE_PROPOSAL','zone_order_sha256':ordered_zone_hash(zones),'profile_identity':profiles,'variables':variables,'incidence':op,'vehicle_production':prod,'vehicle_attraction':att,'vehicle_total':float(q.sum())+.01}
+rows=[{'profile_index':i,'countlocation_no':i,'observed':1000.,'model':800.} for i in profiles]
+ws=zf.FitProblem(zones,rows,np.zeros((248,0)),np.full(248,200.),np.ones(248),[],np.array([]),np.array([]),np.array([]),{})
+sol={'predicted_change':np.zeros(248)};bounds={('LONG',role,z):(-.1,.1) for role in ('PROD','ATT') for z in zones}
+old,tg0=timed(lambda:oldfit.build_problem(obs,ws,sol,zones,bounds)); new,tg1=timed(lambda:newfit.build_problem(obs,ws,sol,zones,bounds))
+np.testing.assert_array_equal(old.G,new.G);np.testing.assert_array_equal(old.base,new.base)
+db=sqlite3.connect(':memory:')
+db.executescript('CREATE TABLE geometry(gid INTEGER PRIMARY KEY,orig INTEGER,dest INTEGER,edge_count INTEGER);CREATE TABLE volumes(gid INTEGER,dseg TEXT,volume REAL,PRIMARY KEY(gid,dseg));CREATE TABLE profile_hits(gid INTEGER,profile_index INTEGER,multiplicity INTEGER,PRIMARY KEY(gid,profile_index));')
+db.executemany('INSERT INTO geometry VALUES(?,?,?,?)',((i,int(a+1),int(b+1),5) for i,(a,b) in enumerate(zip(o,d))))
+db.executemany('INSERT INTO volumes VALUES(?,?,?)',((i,'NATIVE_CL',float(v)) for i,v in enumerate(q)))
+db.executemany('INSERT INTO profile_hits VALUES(?,?,?)',((i,i%248,1+i%3) for i in range(count)))
+db.commit(); cache=NS(db=db,parent_hash='fixed',parents={'NATIVE_CL':{'passes':True,'matrix_no':9305}})
+signature=tuple((i,((i,1,2),)) for i in profiles)
+token=lc._cache_token(cache)
+def raw_queries():
+    od=list(db.execute("SELECT g.orig,g.dest,SUM(v.volume),SUM(CASE WHEN COALESCE(g.edge_count,0)<=0 THEN v.volume ELSE 0 END) FROM volumes v JOIN geometry g ON g.gid=v.gid WHERE v.dseg='NATIVE_CL' GROUP BY g.orig,g.dest"))
+    hits=list(db.execute("SELECT g.orig,g.dest,h.profile_index,SUM(v.volume*h.multiplicity) FROM volumes v JOIN geometry g ON g.gid=v.gid JOIN profile_hits h ON h.gid=g.gid WHERE v.dseg='NATIVE_CL' GROUP BY g.orig,g.dest,h.profile_index ORDER BY g.orig,g.dest,h.profile_index"))
+    return od,hits
+raw,ts0=timed(raw_queries)
+t=time.perf_counter();basis,reused=lc._basis(cache,token,tuple(zones),signature);cold=time.perf_counter()-t;assert not reused
+warm,ts1=timed(lambda:lc._basis(cache,lc._cache_token(cache),tuple(zones),signature)); assert warm[1]
+np.testing.assert_array_equal(basis['share'],[amount/basis['stored'][a-1,b-1] for a,b,p,amount in raw[1]])
+result={'offline_synthetic_only':True,'live_visum_timing':False,'baseline_github_commit':'2912556cd12e9eb229d4731d92701e913cc628a8','checkout_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root).decode().strip(),'shape':{'zones':n,'profiles':248,'od_pairs':count,'sparse_entries':nnz},'hash':{'before':th0,'after':th1,'speedup':th0['median_seconds']/th1['median_seconds'],'hash_identical':True},'long_G':{'before':tg0,'after':tg1,'speedup':tg0['median_seconds']/tg1['median_seconds'],'G_array_equal':True},'sqlite_basis':{'before_repeated_aggregation':ts0,'after_reused_basis':ts1,'cold_compile_seconds':cold,'reuse_speedup':ts0['median_seconds']/ts1['median_seconds'],'retained_bytes':sum(a.nbytes for a in basis.values()),'aggregate_queries_per_repeated_capture_before':2,'aggregate_queries_per_repeated_capture_after':0},'scope':'Component CPU benchmarks; not end-to-end capture, Visum assignment or COM speedup.'}
+Path('PATH_INCIDENCE_BENCHMARK_REPLAY.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result))

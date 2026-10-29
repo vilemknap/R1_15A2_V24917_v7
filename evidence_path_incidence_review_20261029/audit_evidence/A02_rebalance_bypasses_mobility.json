@@ -1,0 +1,57 @@
+{
+  "before_guard": {
+    "release": "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027",
+    "band": [
+      0.75,
+      1.25
+    ],
+    "families": {
+      "WORK": {
+        "ratio_current": 1.25,
+        "ratio_full_step": 1.25,
+        "ratio_after": 1.25,
+        "zones": 2,
+        "rows": 2,
+        "factor": 1.0,
+        "minimum_over_scales": 1.2360013749854077,
+        "maximum_over_scales": 1.25,
+        "minimum_at_scale": 0.5075832094418049,
+        "status": "WITHIN_BAND"
+      },
+      "SERVICE": {
+        "ratio_current": 1.0,
+        "ratio_full_step": 1.0,
+        "ratio_after": 1.0,
+        "zones": 2,
+        "rows": 0,
+        "factor": 1.0,
+        "minimum_over_scales": 1.0,
+        "maximum_over_scales": 1.0,
+        "minimum_at_scale": 0.0,
+        "status": "WITHIN_BAND"
+      }
+    },
+    "passes": true,
+    "status": "OK"
+  },
+  "balance": {
+    "WORK": {
+      "prod_before": -14.999999999999986,
+      "att_before": 10.0,
+      "steps": [
+        {
+          "role": "PROD",
+          "sign": -1.0,
+          "rows": 1,
+          "status": "BLOCKED_BY_MOBILITY",
+          "reduced": 0.0
+        }
+      ],
+      "prod_after": -14.999999999999986,
+      "att_after": 10.0,
+      "relative_gap_after": 1.6666666666666674,
+      "status": "UNRESOLVED"
+    }
+  },
+  "ratio_after_rebalance": 1.25
+}

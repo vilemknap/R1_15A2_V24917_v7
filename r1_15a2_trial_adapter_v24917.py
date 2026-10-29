@@ -274,7 +274,8 @@ class VisumAdapter(_V24916ActiveAdapter):
                     self.v24917_last_incidence = context["incidence"]
                     long_observed = long_cache.capture(self)
                 context["_long_cache_receipt"] = {k: long_observed[k] for k in (
-                    "status", "binding", "cache_parent_hash", "path_epoch", "parameter_parent_sha256")}
+                    "status", "binding", "cache_parent_hash", "path_epoch", "parameter_parent_sha256",
+                    "cache_revision", "profile_order_sha256")}
                 long_cache_error = None
                 rt.write_json(folder / "LONG_SHARED_CACHE_INCIDENCE.json", {
                     k: long_observed[k] for k in ("status", "source_status", "binding", "cache_parent_hash",

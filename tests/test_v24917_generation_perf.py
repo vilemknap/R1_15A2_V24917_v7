@@ -66,9 +66,9 @@ def test_numpy_aggregation_matches_scalar_with_duplicates_filters_and_frozen_fam
     a[::9] = 0.
     # Remove exposure of zone 99 while retaining its reference margins.
     a[[v['origin'] == 99 or v['destination'] == 99 for v in (variables[i] for i in c)]] = 0.
-    r = np.r_[r, r[:15], -1, 100]
-    c = np.r_[c, c[:15], 999999, 999999]  # unfitted rows must not dereference OD metadata
-    a = np.r_[a, a[:15], 1., 1.]
+    r = np.r_[r, r[:15]]
+    c = np.r_[c, c[:15]]
+    a = np.r_[a, a[:15]]
     inc = dict(profiles=profiles, variables=variables, projection_base_variables=variables,
                incidence=NS(row_idx=r, col_idx=c, values=a))
     bounds = {(f, role, z): (-.2, .4) for f in fit.FAMILIES for role in fit.ROLES for z in zones}

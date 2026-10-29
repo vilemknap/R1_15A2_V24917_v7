@@ -16,6 +16,8 @@ from __future__ import annotations
 import hashlib
 import inspect
 import math
+from contextlib import contextmanager
+from contextvars import ContextVar
 from typing import Any, Dict, List, Sequence, Tuple
 
 import numpy as np
@@ -31,6 +33,18 @@ from r1_15a2_supply import SupplyContractError, canonical_hash, integer, key_tex
 
 
 RELEASE = "R1_15A2_V24917_GENFIX1_STRICT_SNAPSHOT_READS_20261027"
+_MATRIX_CAPTURE = ContextVar("v24917_snapshot_matrix_capture", default=None)
+
+
+@contextmanager
+def capture_matrix_values(numbers):
+    """Expose owned arrays from one snapshot scope, never cache across calls."""
+    values = {}
+    token = _MATRIX_CAPTURE.set((frozenset(numbers), values))
+    try:
+        yield values
+    finally:
+        _MATRIX_CAPTURE.reset(token)
 
 
 def _raise_if_busy(exc: Exception) -> None:
@@ -294,6 +308,11 @@ def _matrix_fingerprint(matrix: Any) -> Tuple[Dict[str, Any], float]:
         "cols": int(contiguous.shape[1]),
         "sha256_float64_le": hashlib.sha256(contiguous.tobytes(order="C")).hexdigest(),
     }
+    capture = _MATRIX_CAPTURE.get()
+    if capture is not None and row["matrix_no"] in capture[0]:
+        owned = np.array(contiguous, copy=True)
+        owned.flags.writeable = False
+        capture[1][row["matrix_no"]] = owned
     return row, total
 
 
@@ -328,6 +347,8 @@ def _snapshot_once(adapter: Any) -> Dict[str, Any]:
     for matrix_no in sorted(numbers):
         matrix = adapter.visum.Net.Matrices.ItemByKey(matrix_no)
         row, matrix_sum = _matrix_fingerprint(matrix)
+        if row["matrix_no"] != matrix_no:
+            raise SupplyContractError("DEMAND_MATRIX_LOOKUP_IDENTITY_MISMATCH:%s" % matrix_no)
         expected_zones = adapter.cfg.get("expected_zones")
         if expected_zones is not None and (row["rows"], row["cols"]) != (
                 int(expected_zones), int(expected_zones)):
@@ -376,8 +397,12 @@ def _snapshot_once(adapter: Any) -> Dict[str, Any]:
 
 def strict_snapshot(adapter: Any) -> Dict[str, Any]:
     """Read one exact snapshot; retry a busy read, never publish its defaults."""
-    return combusy._read_retry(adapter, "V24917_STRICT_FULL_SNAPSHOT",
-                              lambda: _snapshot_once(adapter))
+    def attempt():
+        capture = _MATRIX_CAPTURE.get()
+        if capture is not None:
+            capture[1].clear()  # discard every partial failed attempt
+        return _snapshot_once(adapter)
+    return combusy._read_retry(adapter, "V24917_STRICT_FULL_SNAPSHOT", attempt)
 
 
 __all__ = ["RELEASE", "strict_snapshot"]

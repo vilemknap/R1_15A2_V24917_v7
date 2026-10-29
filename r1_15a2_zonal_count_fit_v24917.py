@@ -41,6 +41,7 @@ from collections import defaultdict
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 import numpy as np
+import r1_15a2_path_incidence_v24917 as path_incidence
 
 RELEASE = "R1_15A2_V24917_ZONAL_COUNT_FIT_V1"
 METHOD = "V24917_ZONAL_COUNT_FIT"
@@ -166,17 +167,13 @@ def build_problem(incidence: Mapping[str, Any], zones: Sequence[int],
     G = np.zeros((len(rows), nv))
     mutable_through = {f: np.zeros(len(rows)) for f in FAMILIES}
 
-    r_idx = np.asarray(op.row_idx, dtype=np.int64)
-    c_idx = np.asarray(op.col_idx, dtype=np.int64)
-    vals = np.asarray(op.values, dtype=float)
+    r_idx, c_idx, vals = path_incidence.sparse_arrays(op, len(profiles), len(variables))
     # Map sparse profile/OD entries once, then accumulate in NumPy. add.at is
     # deliberately unbuffered: repeated (profile, actuator) entries must add,
     # in their original order, rather than overwrite one another.
     row_map = np.full(len(profiles), -1, dtype=np.int64)
     for p, row in row_of_profile.items():
         row_map[p] = row
-    nnz = min(len(r_idx), len(c_idx), len(vals))  # same scope as the former zip
-    r_idx, c_idx, vals = r_idx[:nnz], c_idx[:nnz], vals[:nnz]
     valid = (r_idx >= 0) & (r_idx < len(profiles)) & (vals != 0.0)
     sparse_rows, cols, weights = r_idx[valid], c_idx[valid], vals[valid]
     fitted_rows = row_map[sparse_rows]

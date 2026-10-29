@@ -1,0 +1,30 @@
+from pathlib import Path
+from types import ModuleType
+import json,subprocess,sys
+import numpy as np
+root=Path.cwd();sys.path[:0]=[str(root),str(root/'tests')]
+def old(name):
+    m=ModuleType('baseline_'+name);sys.modules[m.__name__]=m
+    source=subprocess.check_output(['git','show','2912556cd12e9eb229d4731d92701e913cc628a8:'+name+'.py'],cwd=root)
+    exec(compile(source,'baseline_'+name+'.py','exec'),m.__dict__)
+    return m
+old_ws=old('r1_15a2_zonal_count_fit_v24917')
+old_lf=old('r1_15a2_long_zonal_fit_v24917')
+old_lc=old('r1_15a2_long_cache_generation_v24917')
+from test_v24917_targeted_catchup import synthetic_incidence,all_bounds
+from test_v24917_long_zonal_fit import _inputs
+from test_v24917_long_cache_generation import live
+proof={}
+inc,zones=synthetic_incidence(n_zones=6);inc['incidence'].values=inc['incidence'].values[:-1]
+old_ws.build_problem(inc,zones,all_bounds(zones),{});proof['baseline_accepted_mismatched_sparse_array_lengths']=True
+obs,ws,sol,zones,bounds=_inputs();obs['incidence'].row_idx=np.array([.9,1.])
+old_lf.build_problem(obs,ws,sol,zones,bounds);proof['baseline_rounded_fractional_long_profile_index']=True
+generator=live.__wrapped__();ad,state,profiles=next(generator)
+try:
+    ad.cache.db.execute('UPDATE profile_hits SET profile_index=.2 WHERE gid=1 AND profile_index=0')
+    old_lc.capture(ad);proof['baseline_accepted_fractional_sql_profile_index']=True
+finally:
+    try:next(generator)
+    except StopIteration:pass
+Path('PATH_INCIDENCE_BASELINE_REPRODUCTION_REPLAY.json').write_text(json.dumps(proof,indent=2)+'\n')
+print(json.dumps(proof))

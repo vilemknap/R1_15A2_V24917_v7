@@ -1,0 +1,5 @@
+{
+  "baseline_accepted_mismatched_sparse_array_lengths": true,
+  "baseline_rounded_fractional_long_profile_index": true,
+  "baseline_accepted_fractional_sql_profile_index": true
+}

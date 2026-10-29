@@ -10,10 +10,13 @@ native trial/acceptance/rollback when using this problem builder operationally.
 from __future__ import annotations
 
 from typing import Any, Mapping, Sequence
+import math
 
 import numpy as np
 
 import r1_15a2_zonal_count_fit_v24917 as zf
+import r1_15a2_path_incidence_v24917 as path_incidence
+from r1_15a2_com_compat import exact_int
 from r1_15a2_skim_v24916p2c import ordered_zone_hash
 
 RELEASE = "R1_15A2_V24917_LONG_ZONAL_LOCAL_FIT_V1"
@@ -51,7 +54,7 @@ def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
         raise ValueError("LONG_FIT_WS_PREDICTION_INVALID")
     row_of_profile = {}
     for row, meta in enumerate(rows):
-        pidx = int(meta["profile_index"])
+        pidx = exact_int(meta["profile_index"], "LONG_FIT_PROFILE_INDEX")
         if pidx in row_of_profile or pidx < 0 or pidx >= len(profiles):
             raise ValueError("LONG_FIT_PROFILE_INDEX_INVALID")
         if str(meta.get("countlocation_no", pidx)) != str(profiles[pidx]):
@@ -68,16 +71,26 @@ def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
             or not np.isclose(float(np.sum(production)), total, rtol=1.e-12, atol=1.e-8)
             or not np.isclose(float(np.sum(attraction)), total, rtol=1.e-12, atol=1.e-8)):
         raise ValueError("LONG_FIT_MARGINS_INVALID")
-    listed_mass = 0.0
+    quantities = []
+    seen_od = set()
+    origins, destinations = [], []
     for meta in variables:
         if meta.get("dseg_code") != "NATIVE_CL" or meta.get("family") != "LONG":
             raise ValueError("LONG_FIT_VARIABLE_SCOPE_INVALID")
-        o, d = int(meta["origin"]), int(meta["destination"])
+        o = exact_int(meta["origin"], "LONG_FIT_ORIGIN")
+        d = exact_int(meta["destination"], "LONG_FIT_DESTINATION")
         q = float(meta["q_current"])
-        if o not in zidx or d not in zidx or not np.isfinite(q) or q <= 0.0:
+        if o not in zidx or d not in zidx or o == d or not np.isfinite(q) or q <= 0.0:
             raise ValueError("LONG_FIT_VARIABLE_INVALID")
-        listed_mass += q
-    if listed_mass > total + 1.e-8:
+        if (o, d) in seen_od:
+            raise ValueError("LONG_FIT_DUPLICATE_OD")
+        seen_od.add((o, d))
+        origins.append(o); destinations.append(d)
+        quantities.append(q)
+    # Match the marginal roundoff contract; a long Python += sum can reject a
+    # valid large OD catalogue solely because of its accumulation order.
+    listed_mass = math.fsum(quantities)
+    if listed_mass > total + 1.e-8 + 1.e-12*abs(total):
         raise ValueError("LONG_FIT_MARGINS_INVALID")
 
     keys = []
@@ -103,26 +116,19 @@ def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
 
     G = np.zeros((len(rows), len(keys)))
     through = np.zeros(len(rows))
-    r_idx = np.asarray(op.row_idx, dtype=np.int64)
-    c_idx = np.asarray(op.col_idx, dtype=np.int64)
-    val = np.asarray(op.values, dtype=float)
-    if (r_idx.shape != c_idx.shape or r_idx.shape != val.shape or
-            not np.isfinite(val).all() or np.any(val < 0) or
-            np.any(r_idx < 0) or np.any(r_idx >= op.n_rows) or
-            np.any(c_idx < 0) or np.any(c_idx >= op.n_cols)):
-        raise ValueError("LONG_FIT_OPERATOR_INVALID")
-    for pidx, cidx, amount in zip(r_idx, c_idx, val):
-        row = row_of_profile.get(int(pidx))
-        if row is None or amount <= 0.0:
-            continue
-        meta = variables[int(cidx)]
-        through[row] += amount
-        prod_key = key_index.get(("LONG", "PROD", int(meta["origin"])))
-        att_key = key_index.get(("LONG", "ATT", int(meta["destination"])))
-        if prod_key is not None:
-            G[row, prod_key] += amount
-        if att_key is not None:
-            G[row, att_key] += amount
+    r_idx, c_idx, val = path_incidence.sparse_arrays(op, len(profiles), len(variables))
+    row_map = np.full(len(profiles), -1, dtype=np.int64)
+    for pidx, row in row_of_profile.items(): row_map[pidx] = row
+    mapped = row_map[r_idx]
+    selected = (mapped >= 0) & (val > 0.0)
+    rr, cc, amount = mapped[selected], c_idx[selected], val[selected]
+    # Repeated profile/OD entries add in their original order, exactly as W/S.
+    np.add.at(through, rr, amount)
+    for role, axis in (("PROD", origins), ("ATT", destinations)):
+        lookup = np.array([key_index.get(("LONG", role, z), -1) for z in axis], dtype=np.int64)
+        kk = lookup[cc]
+        present = kk >= 0
+        np.add.at(G, (rr[present], kk[present]), amount[present])
     direct = np.abs(G).sum(axis=0)
     unexposed = direct <= EPS
     gvec = np.zeros(len(keys))

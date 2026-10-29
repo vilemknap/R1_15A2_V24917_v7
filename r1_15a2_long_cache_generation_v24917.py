@@ -20,9 +20,12 @@ import r1_15a2_long_school_generation_v24917 as ls
 import r1_15a2_mobility_zone_v24917 as mz
 import r1_15a2_multiblock as mb
 import r1_15a2_runtime_v1 as rt
+import r1_15a2_snapshot_reads_v24917 as snapshot_reads
 from r1_15a2_supply import canonical_hash
 from r1_15a2_long_distance_guard_v24917 import MIN_KM
-from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
+from r1_15a2_skim_v24916p2c import ordered_zone_hash
+from r1_15a2_path_incidence_v24917 import matrix_values_hash
+from r1_15a2_com_compat import exact_int
 
 STATUS = "FROZEN_LONG_OD_PROFILE_PROPOSAL"
 PARENT_KEYS = ("generation_values", "td_values", "addval1", "fixed_link_hash", "dseg_hash", "operations_hash")
@@ -34,6 +37,74 @@ def _parameter_hash(snapshot):
     return canonical_hash({key: snapshot[key] for key in PARENT_KEYS})
 
 
+
+def _profile_signature(profiles):
+    return tuple((p.get("countlocation_no"), core._profile_link_keys(p)) for p in profiles)
+
+
+def _cache_token(cache):
+    db = cache.db
+    return (id(db), db.total_changes, db.execute("PRAGMA data_version").fetchone()[0],
+            db.execute("PRAGMA schema_version").fetchone()[0], cache.parent_hash,
+            canonical_hash(cache.parents.get("NATIVE_CL", {})))
+
+
+def _basis(cache, token, zones, signature):
+    old = getattr(cache, "_v24917_long_basis", None)
+    if old is not None:
+        if old[2] != signature:
+            raise ValueError("LONG_CACHE_PROFILE_IDENTITY_CHANGED")
+        if old[0] == token and old[1] == zones:
+            return old[3], True
+    n = len(zones)
+    pos = {z: i for i, z in enumerate(zones)}
+    stored = np.zeros((n, n))
+    for o, d, volume, missing in cache.db.execute("""
+        SELECT g.orig,g.dest,SUM(v.volume),
+               SUM(CASE WHEN COALESCE(g.edge_count,0)<=0 OR typeof(g.edge_count)!='integer'
+                        THEN v.volume ELSE 0 END)
+        FROM volumes v JOIN geometry g ON g.gid=v.gid WHERE v.dseg='NATIVE_CL'
+        GROUP BY g.orig,g.dest"""):
+        if o not in pos or d not in pos or not math.isfinite(volume) or volume < 0.0:
+            raise ValueError("LONG_CACHE_INVALID_OD_AXIS_OR_VOLUME")
+        if o != d and missing > 0.0:
+            raise ValueError("LONG_CACHE_POSITIVE_PATH_WITHOUT_GEOMETRY")
+        stored[pos[o], pos[d]] = volume
+    od, profile, shares = [], [], []
+    for o, d, p, amount, invalid in cache.db.execute("""
+        SELECT g.orig,g.dest,h.profile_index,SUM(v.volume*h.multiplicity),
+               MAX(CASE WHEN typeof(h.multiplicity)!='integer' OR h.multiplicity<=0
+                        THEN 1 ELSE 0 END)
+        FROM volumes v JOIN geometry g ON g.gid=v.gid JOIN profile_hits h ON h.gid=g.gid
+        WHERE v.dseg='NATIVE_CL' GROUP BY g.orig,g.dest,h.profile_index
+        ORDER BY g.orig,g.dest,h.profile_index"""):
+        p = exact_int(p, "LONG_CACHE_PROFILE_INDEX")
+        if o not in pos or d not in pos or not 0 <= p < len(signature) or invalid:
+            raise ValueError("LONG_CACHE_PROFILE_OR_OD_AXIS_INVALID")
+        if not math.isfinite(amount) or amount < 0.0:
+            raise ValueError("LONG_CACHE_PROFILE_AMOUNT_INVALID")
+        if o == d and amount > 0.0:
+            raise ValueError("LONG_CACHE_INTRAZONAL_PROFILE_PATH_UNSUPPORTED")
+        if amount > 0.0:
+            denom = stored[pos[o], pos[d]]
+            if denom <= 0.0: raise ValueError("LONG_CACHE_PROFILE_AMOUNT_WITHOUT_OD")
+            od.append(pos[o]*n + pos[d]); profile.append(p); shares.append(amount / denom)
+    data = {"stored": stored, "od": np.array(od, dtype=np.int64),
+            "profile": np.array(profile, dtype=np.int64), "share": np.array(shares)}
+    if not np.isfinite(data["share"]).all():
+        raise ValueError("LONG_CACHE_PROFILE_AMOUNT_INVALID")
+    if token != _cache_token(cache):
+        raise ValueError("LONG_CACHE_STATE_CHANGED_DURING_CAPTURE")
+    for array in data.values(): array.flags.writeable = False
+    cache._v24917_long_basis = (token, zones, signature, data)
+    return data, False
+
+
+def _snapshot_matrices(adapter):
+    with snapshot_reads.capture_matrix_values(reads.MATRICES) as captured:
+        snapshot = adapter.generation_guard_snapshot()
+    return snapshot, reads._matrices(adapter, reuse=captured)
+
 def capture(adapter):
     """Reweight cached CL path/profile shares by current final vehicle OD.
 
@@ -41,18 +112,18 @@ def capture(adapter):
     missing positive OD/share requests one ordinary shared-cache refresh.
     """
     binding = reads._require_binding(adapter)
-    parent = adapter.generation_guard_snapshot()
+    parent, matrices = _snapshot_matrices(adapter)
     cache = adapter.cache
     if (cache is None or not cache.incidence_ready
             or not adapter._cache_context_compatible(parent)
             or not cache.parents.get("NATIVE_CL", {}).get("passes")
             or cache.parents["NATIVE_CL"].get("matrix_no") != 9305):
         raise ValueError("LONG_CACHE_CONTEXT_OR_NATIVE_CL_MISSING")
-    profiles = cache.profiles
+    profiles = copy.deepcopy(cache.profiles)
+    profile_signature = _profile_signature(profiles)
+    cache_token = _cache_token(cache)
     reads._validate_profiles(profiles, adapter.cfg)
-    matrices = reads._matrices(adapter)
     zones = tuple(adapter.zones)
-    pos = {int(z): i for i, z in enumerate(zones)}
     final = matrices[9305]
     component_sum = sum((matrices[no] for no in longinc.COMPONENT_MATRICES), np.zeros_like(final))
     if not np.allclose(component_sum, final, rtol=1.e-8, atol=1.e-6):
@@ -60,47 +131,33 @@ def capture(adapter):
     distance, source = support.read_current(adapter)
     if any(np.any(a[distance < MIN_KM] > 0.0) for a in matrices.values()):
         raise ValueError("LONG_CACHE_OSRM_SUPPORT_NOT_APPLIED")
-    stored = np.zeros_like(final)
-    for o, d, volume, missing in cache.db.execute('''
-        SELECT g.orig,g.dest,SUM(v.volume),
-               SUM(CASE WHEN COALESCE(g.edge_count,0)<=0 THEN v.volume ELSE 0 END)
-        FROM volumes v JOIN geometry g ON g.gid=v.gid WHERE v.dseg='NATIVE_CL'
-        GROUP BY g.orig,g.dest'''):
-        if o not in pos or d not in pos or not math.isfinite(volume) or volume < 0.0:
-            raise ValueError("LONG_CACHE_INVALID_OD_AXIS_OR_VOLUME")
-        if o != d and missing > 0.0:
-            raise ValueError("LONG_CACHE_POSITIVE_PATH_WITHOUT_GEOMETRY")
-        stored[pos[o], pos[d]] = volume
+    basis, reused = _basis(cache, cache_token, zones, profile_signature)
     positive = final > 0.0
     np.fill_diagonal(positive, False)
-    if np.any(positive & (stored <= 0.0)):
+    if np.any(positive & (basis["stored"] <= 0.0)):
         raise ValueError("LONG_CACHE_REFRESH_REQUIRED:NEW_POSITIVE_OD_OR_ZERO_SHARE")
-    pairs = [tuple(map(int, pair)) for pair in np.argwhere(positive)]
-    if not pairs:
+    flat = np.flatnonzero(positive)
+    if not flat.size:
         raise ValueError("LONG_CACHE_NO_INTERZONAL_FLOW")
-    index = {pair: i for i, pair in enumerate(pairs)}
+    oi, di = np.unravel_index(flat, final.shape)
+    pairs = list(zip(oi.tolist(), di.tolist()))
+    component_od = {no: matrices[no].ravel()[flat] for no in longinc.COMPONENT_MATRICES}
+    q = final.ravel()[flat]
     variables = [{"dseg_code": "NATIVE_CL", "family": "LONG", "origin": zones[o],
-                  "destination": zones[d], "q_current": float(final[o, d]),
-                  "component_vehicle_od": {str(no): float(matrices[no][o, d])
+                  "destination": zones[d], "q_current": float(q[i]),
+                  "component_vehicle_od": {str(no): float(component_od[no][i])
                                            for no in longinc.COMPONENT_MATRICES}}
-                 for o, d in pairs]
-    rows, cols, values = [], [], []
-    for o, d, p, amount in cache.db.execute('''
-        SELECT g.orig,g.dest,h.profile_index,SUM(v.volume*h.multiplicity)
-        FROM volumes v JOIN geometry g ON g.gid=v.gid JOIN profile_hits h ON h.gid=g.gid
-        WHERE v.dseg='NATIVE_CL' GROUP BY g.orig,g.dest,h.profile_index
-        ORDER BY g.orig,g.dest,h.profile_index'''):
-        if o not in pos or d not in pos or not 0 <= p < len(profiles):
-            raise ValueError("LONG_CACHE_PROFILE_OR_OD_AXIS_INVALID")
-        if not math.isfinite(amount) or amount < 0.0:
-            raise ValueError("LONG_CACHE_PROFILE_AMOUNT_INVALID")
-        pair = (pos[o], pos[d])
-        c = index.get(pair)
-        if c is not None and amount > 0.0:
-            rows.append(p); cols.append(c)
-            values.append(amount * final[pair] / stored[pair])
-    op = core.SparseOperator(np.array(rows, dtype=np.int64), np.array(cols, dtype=np.int64),
-                             np.array(values, dtype=float), len(profiles), len(pairs))
+                 for i, (o, d) in enumerate(pairs)]
+    column = np.full(final.size, -1, dtype=np.int64)
+    column[flat] = np.arange(flat.size)
+    col = column[basis["od"]]
+    keep = col >= 0
+    col = col[keep]
+    # Divide once when the frozen basis is built, before multiplying live OD.
+    value = basis["share"][keep] * q[col]
+    if not np.isfinite(value).all():
+        raise ValueError("LONG_CACHE_PROFILE_AMOUNT_INVALID")
+    op = core.SparseOperator(basis["profile"][keep], col, value, len(profiles), len(pairs))
     flow = op.forward(np.ones(len(pairs)))
     live = reads._profile_flows(adapter, profiles)
     # Match the ordinary W/S path-profile parity policy, never loosen it here.
@@ -111,12 +168,15 @@ def capture(adapter):
     tolerances = np.maximum(atol, rtol * np.abs(live))
     if np.any(np.abs(flow - live) > tolerances):
         raise ValueError("LONG_CACHE_REFRESH_REQUIRED:LIVE_PROFILE_PARITY_FAILED")
-    after = reads._matrices(adapter)
+    parent_after, after = _snapshot_matrices(adapter)
     _, source_after = support.read_current(adapter)
+    live_after = reads._profile_flows(adapter, profiles)
     if (any(not np.array_equal(matrices[no], after[no]) for no in reads.MATRICES)
-            or source != source_after or parent != adapter.generation_guard_snapshot()
+            or source != source_after or parent != parent_after
+            or cache_token != _cache_token(cache)
+            or profile_signature != _profile_signature(cache.profiles)
             or reads._require_binding(adapter) != binding or cache is not adapter.cache
-            or not np.array_equal(live, reads._profile_flows(adapter, profiles))):
+            or not np.array_equal(live, live_after)):
         raise ValueError("LONG_CACHE_STATE_CHANGED_DURING_CAPTURE")
     return {"status": STATUS, "source_status": "SHARED_TWO_MODE_CACHE_CURRENT_OD_PROFILE_PARITY",
             "incidence": op, "variables": variables,
@@ -124,13 +184,15 @@ def capture(adapter):
             "vehicle_production": final.sum(axis=1), "vehicle_attraction": final.sum(axis=0),
             "vehicle_total": float(final.sum()), "zone_order_sha256": ordered_zone_hash(zones),
             "profile_long_vehicle_flow": flow,
-            "component_profile_vehicle_flow": {str(no): op.forward(np.array([
-                matrices[no][o, d] / final[o, d] for o, d in pairs]))
+            "component_profile_vehicle_flow": {str(no): op.forward(component_od[no] / q)
                 for no in longinc.COMPONENT_MATRICES},
             "matrix_values_sha256": {str(no): matrix_values_hash(a) for no, a in matrices.items()},
             "binding": binding, "cache_parent_hash": cache.parent_hash,
+            "cache_revision": cache_token,
+            "profile_order_sha256": canonical_hash(profile_signature),
             "parameter_parent_sha256": _parameter_hash(parent),
             "path_epoch": adapter.path_epoch_index,
+            "basis_reused": reused, "basis_bytes": sum(a.nbytes for a in basis.values()),
             "geometry_identity": "PROVISIONAL_SAME_MODE_GEOMETRY_NOT_FULLY_VERIFIED",
             "profile_parity_max_abs": float(np.max(np.abs(flow-live), initial=0.0)),
             "osrm_support": source, "tg_sensitivity_verified": False}
@@ -142,6 +204,10 @@ def require_current(adapter, receipt):
             or adapter.cache is None or not adapter.cache.incidence_ready
             or receipt.get("cache_parent_hash") != adapter.cache.parent_hash
             or receipt.get("path_epoch") != adapter.path_epoch_index):
+        raise ValueError("LONG_CACHE_GENERATION_PROPOSAL_STALE")
+    if (("cache_revision" in receipt and receipt["cache_revision"] != _cache_token(adapter.cache))
+            or ("profile_order_sha256" in receipt and receipt["profile_order_sha256"] !=
+                canonical_hash(_profile_signature(adapter.cache.profiles)))):
         raise ValueError("LONG_CACHE_GENERATION_PROPOSAL_STALE")
     current = reads._epoch(adapter)
     if current != receipt.get("binding"):

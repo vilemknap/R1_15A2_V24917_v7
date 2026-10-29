@@ -52,3 +52,5 @@ Tento port zapojuje **LONG Generation**. Společné LONG TD ladění b/c zůstá
 Původní `r1_15a2_long_profile_incidence_v24917.py` a explicitní `long_profile_incidence()` zůstávají k dispozici pro samostatnou vývojovou diagnostiku. Běžný Generation řetězec je nepotřebuje volat; používá společnou cache.
 
 Výsledky a přesné příkazy jsou v `LONG_GENERATION_SHARED_CACHE_20261029.json` a `evidence_long_generation_shared_cache_20261029/`. Kompletní patch je v `artifacts_long_generation_shared_cache_20261029/`. Vše je součástí GitHub větve. Offline testy zahrnují SQL incidenci a její přepočet, komponenty, směry/násobnosti, chyby podkladů, omezený fit, nulový W/S krok, obnovu společné cache, skutečný koeficientový setter, rollback parametrů, vlastnictví backtrackingu a controller freeze proof. Neprokazují živý COM běh ve Visumu.
+
+Následná kontrola a optimalizace: viz `PATH_INCIDENCE_REVIEW_20261029.md`. Sdílená cache nyní uchovává kompaktní neměnné podíly tras s detekcí SQL změn; živé OD/toky se stále ověřují před/po. Číselný návrhový princip a akceptace zůstávají stejné.

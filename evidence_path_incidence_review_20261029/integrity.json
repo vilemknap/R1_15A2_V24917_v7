@@ -1,0 +1,34 @@
+{
+  "compiled": [
+    "r1_15a2_long_cache_generation_v24917.py",
+    "r1_15a2_long_incidence_read_v24917.py",
+    "r1_15a2_long_profile_incidence_v24917.py",
+    "r1_15a2_long_support_distance_v24917.py",
+    "r1_15a2_long_zonal_fit_v24917.py",
+    "r1_15a2_snapshot_reads_v24917.py",
+    "r1_15a2_trial_adapter_v24917.py",
+    "r1_15a2_zonal_count_fit_v24917.py",
+    "tests/test_v24917_generation_perf.py",
+    "tools/refresh_v24917_manifests.py",
+    "r1_15a2_path_incidence_v24917.py",
+    "tests/test_v24917_path_incidence_review.py"
+  ],
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 72,
+      "all_sha256_match": true,
+      "sha256": "f74d128bf4335d1b9e397f94c0c2e427c5ae36b732a18b83bd6afaf4442903cb"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 133,
+      "all_sha256_match": true,
+      "sha256": "ab139f0af951d26050366c67f1fa9920ad5aa754c16ec4ff5270170a14baad9c"
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "all_sha256_match": true,
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+    }
+  },
+  "protected_original_files_unchanged": 1059
+}

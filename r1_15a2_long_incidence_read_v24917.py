@@ -62,11 +62,14 @@ def _call(adapter, fn, label):
                                   retry_policy=getattr(adapter, "com_retry_policy", None))
 
 
-def _matrices(adapter):
+def _matrices(adapter, *, reuse=None):
     if zone_numbers(adapter.visum, getattr(adapter, "com_retry_policy", None)) != list(adapter.zones):
         raise ValueError("LONG_INCIDENCE_LIVE_ZONE_ORDER_CHANGED")
     out = {}
     for no in MATRICES:
+        if reuse is not None and no in reuse:
+            out[no] = incidence._matrix(reuse[no], len(adapter.zones), "M%d" % no)
+            continue
         matrix = _call(adapter, lambda: adapter.visum.Net.Matrices.ItemByKey(no), "MATRIX_LOOKUP")
         actual = com.exact_int(_call(adapter, lambda: matrix.AttValue("NO"), "MATRIX_NO"), "MATRIX_NO")
         if actual != no:

@@ -5,7 +5,8 @@ import numpy as np
 
 from r1_15a2_com_compat import com_call_with_retry
 from r1_15a2_skim_v24916 import zone_numbers
-from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
+from r1_15a2_skim_v24916p2c import ordered_zone_hash
+from r1_15a2_path_incidence_v24917 import matrix_values_hash
 
 MATRIX_NO = 9697
 MATRIX_CODE = "R1_OSRM_DIST_KM"

@@ -19,7 +19,8 @@ import numpy as np
 
 import r1_15a2_core as core
 from r1_15a2_com_compat import exact_int, finite_float
-from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
+from r1_15a2_skim_v24916p2c import ordered_zone_hash
+from r1_15a2_path_incidence_v24917 import matrix_values_hash
 
 RELEASE = "R1_15A2_V24917_LONG_OBSERVED_PATH_INCIDENCE_V2_STREAMED"
 COMPONENT_MATRICES = (9291, 9292, 9293, 9294, 9295)
@@ -119,6 +120,13 @@ def build_observed_long_incidence(
     # real traversal, whereas a duplicate exported position must not double flow.
     hit_positions: set[Any] = set()
     for raw in pathlink_rows:
+        try:
+            for names in (core.PATH_ORIGIN_NAMES, core.PATH_DEST_NAMES,
+                          core.PATHLINK_PATH_INDEX_NAMES, core.LINK_NO_NAMES,
+                          core.FROM_NODE_NAMES, core.TO_NODE_NAMES):
+                exact_int(core.first_value(raw, names), "LONG_PATHLINK_KEY")
+        except RuntimeError as exc:
+            raise ValueError("LONG_INCIDENCE_INVALID_OR_ORPHAN_PATHLINK") from exc
         key = core._path_key_from_row(raw, pathlink=True)
         link = core._link_key_from_row(raw)
         if key is None or link is None or key not in path_by_key:

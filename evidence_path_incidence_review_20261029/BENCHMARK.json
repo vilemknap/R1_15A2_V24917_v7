@@ -1,0 +1,75 @@
+{
+  "offline_synthetic_only": true,
+  "live_visum_timing": false,
+  "baseline_local_commit": "d84f8a9ece8337087e0ac37ce48b0051edc291fa",
+  "shape": {
+    "zones": 681,
+    "profiles": 248,
+    "od_pairs": 75000,
+    "sparse_entries": 300000
+  },
+  "hash": {
+    "before": {
+      "median_seconds": 0.22294758499992895,
+      "samples_seconds": [
+        0.22693033900213777,
+        0.22294758499992895,
+        0.22222675600278308
+      ]
+    },
+    "after": {
+      "median_seconds": 0.1283576269997866,
+      "samples_seconds": [
+        0.13274068500322755,
+        0.1283576269997866,
+        0.12814002800223534
+      ]
+    },
+    "speedup": 1.736925106914758,
+    "hash_identical": true
+  },
+  "long_G": {
+    "before": {
+      "median_seconds": 0.45201542200084077,
+      "samples_seconds": [
+        0.47655369299900485,
+        0.45201542200084077,
+        0.4249096419989655
+      ]
+    },
+    "after": {
+      "median_seconds": 0.17530653799985885,
+      "samples_seconds": [
+        0.17530653799985885,
+        0.17810363199896528,
+        0.15856696199989528
+      ]
+    },
+    "speedup": 2.578428774865229,
+    "G_array_equal": true
+  },
+  "sqlite_basis": {
+    "before_repeated_aggregation": {
+      "median_seconds": 0.353839508999954,
+      "samples_seconds": [
+        0.353839508999954,
+        0.3691353850008454,
+        0.34814062700024806
+      ]
+    },
+    "after_reused_basis": {
+      "median_seconds": 1.1086998711107299e-05,
+      "samples_seconds": [
+        2.6249999791616574e-05,
+        1.1086998711107299e-05,
+        1.0125997505383566e-05
+      ]
+    },
+    "cold_compile_seconds": 0.45338945299954503,
+    "reuse_speedup": 31914.814659937372,
+    "retained_bytes": 5510088,
+    "aggregate_queries_per_repeated_capture_before": 2,
+    "aggregate_queries_per_repeated_capture_after": 0
+  },
+  "scope": "Component CPU benchmarks; not end-to-end capture, Visum assignment or COM speedup."
+}
