@@ -14,7 +14,8 @@ def harness():
     distance = np.array([[0., 79.999, 80.], [100., 0., 220.], [78., 250., 0.]])
     adapter, live = make_adapter(distance, zones=[11, 12, 13])
     state = NS(arrays={}, writes=[], events=[], factor=1., failure=None, failed=False,
-               assigned=None, skims=None, invalidations=[])
+               assigned=None, skims=None, invalidations=[],
+               formula_nos={pm.FINAL_MATRIX})
     seed = np.arange(1., 10.).reshape(n, n)
     for no in pm.MATRIX_NOS + pm.COMPONENT_MATRICES:
         state.arrays[no] = seed * (1 + no % 5)
@@ -24,8 +25,16 @@ def harness():
     original_matrices = adapter.visum.Net.Matrices
     class Matrix:
         def __init__(self, no): self.no = no
-        def GetValues(self): return state.arrays[self.no].copy()
+        def AttValue(self, attr):
+            if attr == 'DATASOURCETYPE':
+                return 'FORMULA' if self.no in state.formula_nos else 'DATA'
+            raise AssertionError('UNEXPECTED_MATRIX_ATTR:' + attr)
+        def GetValues(self):
+            if self.no == pm.FINAL_MATRIX and self.no in state.formula_nos:
+                state.arrays[self.no] = sum(state.arrays[no] for no in pm.COMPONENT_MATRICES)
+            return state.arrays[self.no].copy()
         def SetValues(self, values, Add=False):
+            assert self.no not in state.formula_nos, 'VISUM_FORMULA_READ_ONLY'
             # Real Visum 2026 COM expects ndarray rather than a nested Python
             # list. Simulate its strict array marshaller and explicit no-add.
             assert isinstance(values, np.ndarray), 'COM_EXPECTS_NUMPY_ARRAY'
@@ -186,6 +195,47 @@ def test_vehicle_aggregate_is_rebuilt_from_masked_components(tmp_path):
     pm.apply_group(adapter, mask, pm.COMPONENT_MATRICES, tmp_path, aggregate_no=pm.FINAL_MATRIX)
     np.testing.assert_array_equal(state.arrays[pm.FINAL_MATRIX], sum(state.arrays[no] for no in pm.COMPONENT_MATRICES))
     assert not state.arrays[pm.FINAL_MATRIX][~mask].any()
+
+
+
+def test_read_only_formula_9305_is_recalculated_not_written(tmp_path):
+    adapter, state, _, mask, _ = harness()
+    report = pm.apply_group(adapter, mask, pm.COMPONENT_MATRICES, tmp_path,
+                            aggregate_no=pm.FINAL_MATRIX)
+    assert report['matrix_source_types'][str(pm.FINAL_MATRIX)] == 'FORMULA'
+    assert report['aggregate_write_policy'] == 'FORMULA_READBACK_ONLY'
+    assert state.writes == list(pm.COMPONENT_MATRICES)
+    assert pm.FINAL_MATRIX not in state.writes
+    np.testing.assert_array_equal(state.arrays[pm.FINAL_MATRIX],
+                                  sum(state.arrays[no] for no in pm.COMPONENT_MATRICES))
+
+
+def test_formula_component_with_forbidden_flow_fails_before_any_mutation(tmp_path):
+    adapter, state, _, mask, _ = harness()
+    state.formula_nos.add(pm.COMPONENT_MATRICES[1])
+    old = {no: values.copy() for no, values in state.arrays.items()}
+    with pytest.raises(Exception, match='LONGMASK_FORMULA_COMPONENT_REQUIRES_NATIVE_FILTER:9292'):
+        pm.apply_group(adapter, mask, pm.COMPONENT_MATRICES, tmp_path,
+                       aggregate_no=pm.FINAL_MATRIX)
+    assert not state.writes
+    for no in old:
+        np.testing.assert_array_equal(state.arrays[no], old[no])
+    import json
+    result = json.loads((tmp_path / 'LONG_MASK_RESULT.json').read_text())
+    assert result['blocked_formula_matrices'] == [9292]
+    assert result['status'] == 'FORMULA_COMPONENT_REQUIRES_NATIVE_SUPPORT_NO_WRITES'
+
+
+def test_all_formula_components_already_masked_require_no_write(tmp_path):
+    adapter, state, _, mask, _ = harness()
+    state.formula_nos.update(pm.COMPONENT_MATRICES)
+    for no in pm.COMPONENT_MATRICES:
+        state.arrays[no][~mask] = 0.
+    state.arrays[pm.FINAL_MATRIX] = sum(state.arrays[no] for no in pm.COMPONENT_MATRICES)
+    report = pm.apply_group(adapter, mask, pm.COMPONENT_MATRICES, tmp_path,
+                            aggregate_no=pm.FINAL_MATRIX)
+    assert report['status'] == 'APPLIED_VERIFIED'
+    assert state.writes == []
 
 
 def test_bad_component_aggregate_parity_blocks_before_writes(tmp_path):
