@@ -65,6 +65,30 @@ def _invalidate(adapter):
         invalidate('LONG_POST_TD_MASK_MATRIX_WRITE', mutation=True)
 
 
+def _matrix_datasource(adapter, matrix, matrix_no):
+    """Read the live Visum 2026 DATA/FORMULA source before any matrix mutation.
+
+    Formula matrices are read-only by design. A failed write to one must never
+    be used as a probe, and error recovery must not attempt to write it back.
+    """
+    from r1_15a2_com_compat import com_call_with_retry
+    retry = getattr(adapter, 'com_retry_policy', None) or {}
+    try:
+        raw = com_call_with_retry(
+            lambda: matrix.AttValue('DATASOURCETYPE'),
+            label='LONGMASK_DATASOURCETYPE_%d' % int(matrix_no),
+            retry_policy=retry)
+    except Exception as exc:
+        raise SupplyContractError('LONGMASK_MATRIX_SOURCE_UNREADABLE:%d' % matrix_no) from exc
+    token = str(raw).strip().upper()
+    if token in ('DATA', 'DATASOURCETYPE_DATA'):
+        return 'DATA'
+    if token in ('FORMULA', 'DATASOURCETYPE_FORMULA'):
+        return 'FORMULA'
+    raise SupplyContractError('LONGMASK_MATRIX_SOURCE_UNSUPPORTED:%d:%s' % (
+        matrix_no, token[:60]))
+
+
 def _set_values_exact(matrix, values):
     """Visum COM Matrix.SetValues requires a two-dimensional numpy array.
 
@@ -93,6 +117,8 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
     if tuple(matrix_nos) != tuple(expected) or aggregate_no not in (None, FINAL_MATRIX):
         raise SupplyContractError('LONGMASK_WRITE_SCOPE_NOT_AUTHORIZED')
     protected_obj, protected = _read(adapter, 9116)
+    if _matrix_datasource(adapter, protected_obj, 9116) not in ('DATA', 'FORMULA'):
+        raise SupplyContractError('LONGMASK_FOREIGN_SOURCE_UNVERIFIED')
     before, targets, objects, rows = {}, {}, {}, []
     for no in matrix_nos:
         obj, values = _read(adapter, int(no))
@@ -109,19 +135,47 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
         before[aggregate_no], targets[aggregate_no], objects[aggregate_no] = values, target, obj
     if protected.shape != mask.shape:
         raise SupplyContractError('LONGMASK_FOREIGN_SHAPE')
+    source_types = {no: _matrix_datasource(adapter, obj, no)
+                    for no, obj in objects.items()}
     report = {'policy': 'POST_TD_MULTIPLICATION_ACCEPT_VOLUME_LOSS',
               'minimum_km': MIN_KM, 'maximum_km': None, 'renormalized': False,
               'units': 'PERSON_TRIPS' if aggregate_no is None else 'VEHICLES',
               'zone_nos': list(adapter.zones), 'matrices': rows,
               'aggregate_rebuilt': aggregate_no, 'status': 'PLANNED',
+              'aggregate_write_policy': ('FORMULA_READBACK_ONLY' if aggregate_no is not None
+                                         and source_types.get(aggregate_no) == 'FORMULA'
+                                         else 'DATA_MATRIX_WRITE_OR_NONE'),
+              'matrix_source_types': {str(no): source for no, source in source_types.items()},
               'matrix_com_write': 'NUMPY_FLOAT64_C_CONTIGUOUS_ADD_FALSE'}
     atomic_json(folder / 'LONG_MASK_PLAN.json', report)
+    # The 2026 live COM audit proves M9305 is FORMULA, not a writable demand
+    # matrix. M929x source types were not present in that audit, so inspect
+    # each one dynamically and abort atomically if a formula component still
+    # contains prohibited volume. Do not silently drop the required mask.
+    blocked = [no for no in matrix_nos
+               if source_types[int(no)] == 'FORMULA'
+               and not np.array_equal(before[int(no)], targets[int(no)])]
+    if blocked:
+        report.update(status='FORMULA_COMPONENT_REQUIRES_NATIVE_SUPPORT_NO_WRITES',
+                      blocked_formula_matrices=[int(no) for no in blocked],
+                      blocked_short_volume_by_matrix={
+                          str(no): float(before[int(no)][~mask].sum()) for no in blocked},
+                      written_matrix_nos=[])
+        atomic_json(folder / 'LONG_MASK_RESULT.json', report)
+        raise SupplyContractError('LONGMASK_FORMULA_COMPONENT_REQUIRES_NATIVE_FILTER:' +
+                                  ','.join(map(str, blocked)))
     owned = []
     attempted_matrix_no = None
     try:
         for no in targets:
             if np.array_equal(before[no], targets[no]):
                 continue
+            if aggregate_no is not None and no == aggregate_no and source_types[no] == 'FORMULA':
+                # The aggregate must recompute automatically from data-backed
+                # component changes. Verify it below; never SetValues(FORMULA).
+                continue
+            if source_types[no] != 'DATA':
+                raise SupplyContractError('LONGMASK_FORMULA_DIRECT_WRITE_FORBIDDEN:%d' % no)
             attempted_matrix_no = int(no)
             owned.append(no)  # the COM write may mutate before raising
             _invalidate(adapter)
@@ -129,6 +183,16 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
             _, actual = _read(adapter, no)
             if not np.array_equal(actual, targets[no]):
                 raise SupplyContractError('LONGMASK_READBACK_MISMATCH:%d' % no)
+        if aggregate_no is not None:
+            _, actual_aggregate = _read(adapter, aggregate_no)
+            if (actual_aggregate.shape != mask.shape
+                    or not np.isfinite(actual_aggregate).all()
+                    or np.any(actual_aggregate < 0)
+                    or not np.allclose(actual_aggregate, targets[aggregate_no],
+                                       rtol=1e-10, atol=1e-6)
+                    or np.any(actual_aggregate[~mask] != 0)):
+                raise SupplyContractError('LONGMASK_DERIVED_AGGREGATE_READBACK_MISMATCH:%d'
+                                          % aggregate_no)
         _, foreign = _read(adapter, 9116)
         if not np.array_equal(foreign, protected):
             raise SupplyContractError('LONGMASK_FOREIGN_CHANGED')
@@ -158,6 +222,12 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
                 restoration.append({'matrix_no': no, 'status': 'UNVERIFIED',
                                     'error': repr(restore_exc)})
                 errors.append('%d:%r' % (no, restore_exc))
+        if aggregate_no is not None and source_types.get(aggregate_no) == 'FORMULA':
+            try:
+                if not np.array_equal(_read(adapter, aggregate_no)[1], before[aggregate_no]):
+                    errors.append('FORMULA_AGGREGATE_NOT_RESTORED_AFTER_COMPONENT_ROLLBACK')
+            except BaseException as aggregate_exc:
+                errors.append('FORMULA_AGGREGATE_ROLLBACK_UNVERIFIED:' + repr(aggregate_exc))
         try:
             if not np.array_equal(_read(adapter, 9116)[1], protected):
                 errors.append('FROZEN_FOREIGN_CHANGED')
