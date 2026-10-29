@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import sys
 import traceback
 import zipfile
@@ -209,9 +210,23 @@ def run_silent(visum, package_root, parent_main):
     status_path = output_root / ("SILENT_%s_STATUS.json" % tag)
     archive = output_root / ("SILENT_%s_DEBUG.zip" % tag)
     _atomic_json(status_path, report)
-    bundle_info = _bundle(archive, report, run_folder, log)
-    report["bundle_file"] = str(archive)
-    report["bundle_info"] = bundle_info
+    try:
+        bundle_info = _bundle(archive, report, run_folder, log)
+        report["bundle_file"] = str(archive)
+        report["bundle_info"] = bundle_info
+        # Stable filename for repeatedly uploading one file after each crash.
+        latest_archive = output_root / "SILENT_LATEST_DEBUG.zip"
+        latest_tmp = output_root / (".SILENT_LATEST_" + os.urandom(5).hex() + ".tmp")
+        try:
+            shutil.copyfile(archive, latest_tmp)
+            os.replace(latest_tmp, latest_archive)
+            report["latest_debug_zip"] = str(latest_archive)
+        finally:
+            latest_tmp.unlink(missing_ok=True)
+    except Exception as bundle_exc:
+        # Evidence publication failures must be visible in the status JSON
+        # without showing an unhandled Python-host traceback.
+        report["bundle_error"] = type(bundle_exc).__name__ + ":" + str(bundle_exc)
     _atomic_json(status_path, report)
     _atomic_json(output_root / "SILENT_LATEST.json", report)
     return report
