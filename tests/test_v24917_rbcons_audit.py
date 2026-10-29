@@ -247,9 +247,9 @@ def test_longtrip_options(monkeypatch):
     import r1_15a2_demand_policy_v1 as dp
     import r1_15a2_td_count_blend_v24917 as tb
     o = dp.load_options(root=ROOT)
-    assert o["td_count_weight"] == pytest.approx(0.65) and o["td_max_survey_degradation"] == pytest.approx(1.25)
+    assert o["td_count_weight"] == pytest.approx(0.60) and o["td_max_survey_degradation"] == pytest.approx(1.25)
     assert o["bd_enabled"] is True
     t = tb.options()
-    assert t["w_cnt"] == pytest.approx(0.65) and t["w_idp"] == pytest.approx(0.35) and t["max_idp_ratio"] == 1.25
+    assert t["w_cnt"] == pytest.approx(0.60) and t["w_idp"] == pytest.approx(0.40) and t["max_idp_ratio"] == 1.25
     with pytest.raises(RuntimeError):
         dp.load_options(root=ROOT, environ={"R1_TD_MAX_SURVEY_DEGRADATION": "0.9"})

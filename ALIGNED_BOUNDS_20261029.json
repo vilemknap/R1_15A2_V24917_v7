@@ -1,0 +1,41 @@
+{
+  "task": "ALIGN_CALIBRATION_BOUNDS_20261029",
+  "branch": "codex/aligned-calibration-bounds-20261029",
+  "base_local_commit": "a8c350cdd1d4336d4249213c0949e8317dd29f2c",
+  "base_github_commit": "d8932ab820abfc1f5a41e99a05ff6e14506b8a79",
+  "domestic_ws_school_reference": 1.0,
+  "domestic_ws_school_band": [
+    0.75,
+    2.0
+  ],
+  "zahr_normalized_run_start_reference": 1.0,
+  "zahr_run_start_multiplier_band": [
+    0.5,
+    2.0
+  ],
+  "long_reference": 0.3,
+  "long_frozen": true,
+  "long_reference_band": [
+    0.15,
+    0.45
+  ],
+  "td_weights": [
+    0.6,
+    0.4
+  ],
+  "td_outer_F_max": 0.999,
+  "td_max_survey_error_ratio": 1.25,
+  "live_visum_tested": false,
+  "manifests_verified": {
+    "V24917_RUNTIME_MANIFEST.json": 66,
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": 120,
+    "DIAGFAST_V1_BASE_MANIFEST.json": 1059
+  },
+  "tests": {
+    "main_passed": 1758,
+    "main_skipped": 4,
+    "diagfast_passed": 138,
+    "audit_passed": 18
+  },
+  "patch_sha256": "4f44398e2a8d9bf8f58edf652c4c9d8cf09e27735df3fed10b5849a6b6e5c4b5"
+}

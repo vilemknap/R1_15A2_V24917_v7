@@ -1,0 +1,52 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/read_reuse_review2/source/tests"
+      ],
+      "returncode": 0,
+      "seconds": 32.645
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/read_reuse_review2/source/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 21.017
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/read_reuse_review2/source/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 0.716
+    }
+  ],
+  "all_passed": true,
+  "output": "/workspace/work/settings_audit/aligned_final",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+}

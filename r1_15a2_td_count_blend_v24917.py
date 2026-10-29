@@ -8,7 +8,7 @@ aggregated district zones satisfied the survey and never reached the network.
 Now the TD objective is a weighted blend, each part normalised to the state at the
 start of the TD stage (both parts = 1 there):
 
-    F = w_cnt * Q / Q_ref  +  w_idp * sum_c J_c / sum_c J_c,ref        w_cnt = 0.65
+    F = w_cnt * Q / Q_ref  +  w_idp * sum_c J_c / sum_c J_c,ref        w_cnt = 0.60
 
     Q   = sum_p w_p (M_p - O_p)^2 / d_p^2 / sum_p w_p,   d_p^2 = max(50, (M_ref,p + O_p)/2)
           (mean GEH^2 with the denominator frozen at the stage start: Gauss-Newton ready)
@@ -75,7 +75,7 @@ def options() -> Dict[str, Any]:
     except Exception:
         # Configuration errors must not silently replace a requested joint run.
         raise
-    w = float(o.get("td_count_weight", 0.65))
+    w = float(o.get("td_count_weight", 0.60))
     return {"w_cnt": w, "w_idp": 1.0 - w,
             "joint_enabled": bool(o.get("td_joint_enabled", False)),
             "inner_mode": str(o.get("td_inner_mode", "FROZEN_PATHS")).upper(),

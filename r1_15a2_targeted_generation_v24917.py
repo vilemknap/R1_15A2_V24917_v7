@@ -6,9 +6,9 @@
   no soft-band damping.
 * Phase REFINE afterwards: the inherited per-cycle stage caps
   (generation_step_schedule) and soft-band damping.
-* Coefficient envelope (both phases): domestic ADD_PROD/ATT [0.25, 5.0],
-  ZAHR run-start reference x [0.25, 5.0]; REFINE soft band domestic
-  [0.5, 2.5], ZAHR reference x [0.5, 2.0].  ADD_SALARY keeps [0.5, 2.0].
+* Coefficient envelope (both phases): domestic ADD_PROD/ATT [0.75, 2.0],
+  ZAHR run-start reference x [0.5, 2.0]; soft bands equal hard bands.
+  The normalized ZAHR reference is 1; native raw units are preserved.  ADD_SALARY keeps [0.5, 2.0].
 * Design mode TARGETED_ZONE_DIRECT replaces the family-global + centred
   pattern: every zone keeps its own fitted step (no uniform family term);
   the inherited bound-constrained P/A rebalance still runs afterwards.
@@ -45,10 +45,10 @@ DEFAULT_POLICY: Dict[str, Any] = {
     "refine_max_log_down": math.log(0.8),
     "refine_soft_outward_step_factor": 0.5,
     "envelope": {
-        "domestic_hard": [0.25, 5.0],
-        "zahr_reference_multiplier": [0.25, 5.0],
-        "refine_domestic_soft": [0.4, 3.0],
-        "refine_zahr_reference_soft": [0.4, 2.5],
+        "domestic_hard": [0.75, 2.0],
+        "zahr_reference_multiplier": [0.5, 2.0],
+        "refine_domestic_soft": [0.75, 2.0],
+        "refine_zahr_reference_soft": [0.5, 2.0],
     },
     "fit": {"ridge_relative": 0.01, "balance_weight_relative": 50.0,
             "max_iter": 6000, "tolerance": 1.0e-9},

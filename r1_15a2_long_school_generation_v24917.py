@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """V24917 LONG and SCHOOL trip-generation calibration (LSGEN1).
 
-Requires the zone attributes ADD_PROD_L (AMDY k_long, start 0.2), ADD_ATT_L, ADD_PROD_SCH,
+Requires the zone attributes ADD_PROD_L (AMDY k_long, reference 0.3), ADD_ATT_L, ADD_PROD_SCH,
 ADD_ATT_SCH and the generation formulas that multiply FP_3_LONG_*, FA_3_LONG, FP_5_SCHOOL,
 FA_5_SCHOOL by them.  When the attributes are missing the module stays inactive.
 
@@ -18,8 +18,8 @@ Design (after the WORK/SERVICE zonal fit, on its residual):
           is emitted until real zone-level incidence and native support are proven.
 
 Bounds (LSSENS1, more cautious than W/S, run options ls_*): step per cycle +-10 %,
-SCHOOL absolute envelope [0.67, 1.5], ridge 0.05 (W/S 0.01). The inherited LONG
-option remains unchanged while MOBILITYZONE1 enforces the fixed 0.2 reference.
+SCHOOL absolute envelope [0.75, 2.0], ridge 0.05 (W/S 0.01). The inherited LONG
+option remains unchanged while MOBILITYZONE1 enforces the fixed 0.3 reference.
 Rows are written together with the W/S rows of the same trial (one assignment) and
 are part of the snapshot / rollback state (mb.GENERATION_ATTRS is extended).
 """
@@ -37,8 +37,8 @@ EPS = 1.0e-12
 LS_DEFAULTS = {
     "ls_max_step_up": 0.10,              # +10 % per zone and cycle   (W/S +25 %)
     "ls_max_step_down": 0.10,            # -10 % per zone and cycle   (W/S -20 %)
-    "ls_school_envelope": [0.67, 1.5],   # absolute ADD_*_SCH         (W/S 0.25-5)
-    "ls_long_envelope_ref": [0.5, 1.5],  # expert LONG band 0.1..0.3; frozen until native proof
+    "ls_school_envelope": [0.75, 2.0],   # absolute ADD_*_SCH         (same as W/S)
+    "ls_long_envelope_ref": [0.5, 1.5],  # expert LONG band 0.15..0.45; frozen until native proof
     "ls_ridge_relative": 0.05,           # 5x the W/S ridge: LS only explain what W/S cannot
 }
 
@@ -234,7 +234,7 @@ def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mappi
         else:
             # No synthetic/global LONG variable is created. If a future
             # source-verified zonal incidence is introduced, each zone gets
-            # its own variable and is bounded against its immutable 0.2 anchor.
+            # its own variable and is bounded against its immutable 0.3 anchor.
             lo[k] = hi[k] = 0.0
         lo[k], hi[k] = min(0.0, lo[k]), max(0.0, hi[k])
     exposed = np.abs(G).sum(axis=0) > EPS

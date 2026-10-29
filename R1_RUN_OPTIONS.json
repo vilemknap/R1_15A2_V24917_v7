@@ -7,7 +7,7 @@
   "td_during_catchup": true,
   "td_first_cycle": true,
   "tg_catchup_enabled": true,
-  "td_count_weight": 0.65,
+  "td_count_weight": 0.6,
   "td_inner_mode": "FROZEN_PATHS",
   "tg_max_trials": 3,
   "td_realization_max_trials": 3,
@@ -15,8 +15,8 @@
   "ls_max_step_up": 0.5,
   "ls_max_step_down": 0.1,
   "ls_school_envelope": [
-    0.67,
-    1.5
+    0.75,
+    2.0
   ],
   "ls_long_envelope_ref": [
     0.5,
@@ -89,7 +89,7 @@
   "td_max_survey_degradation": 1.25,
   "mg_enabled": true,
   "mg_min_ratio": 0.75,
-  "mg_max_ratio": 1.25,
+  "mg_max_ratio": 2.0,
   "td_joint_enabled": true,
   "td_joint_outer_isolates": true,
   "td_joint_max_isolates": 2

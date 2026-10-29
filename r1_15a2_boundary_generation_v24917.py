@@ -13,7 +13,7 @@ ATT columns of the zonal fit, merged after the family normalisation).  It is sol
 JOINTLY with the domestic WORK/SERVICE variables (same weights, ridge, P/A balance).
 
 Bounds: the per-cycle step caps of the active phase (CATCH_UP / REFINE) and the ZAHR
-envelope of the targeted-generation policy (default x[0.25, 5] of the run-start value
+envelope of the targeted-generation policy (default x[0.5, 2] of the run-start value
 of the family's P total of the zone).  LONG/SCHOOL boundary layers and FOREIGN are not
 touched.  Rows are written in the same trial as the W/S rows (one assignment) and are
 snapshot/rollback state (mb.GENERATION_ATTRS is extended on activation).

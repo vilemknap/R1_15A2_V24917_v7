@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """MOBILITY2 / GENFIX2: explicit production envelope, before and after realization.
 
-The existing reference R = sum(FP)/sum(FP/ADD_PROD) and configured [0.75,1.25]
+The existing reference R = sum(FP)/sum(FP/ADD_PROD) and configured [0.75,2.0]
 band are retained. This is NOT an independent validation of survey coefficients.
 For mixed-sign log steps R(s) is convex, not monotone: test its interior minimum
 as well as both endpoints. Every final candidate is checked again after masks,
@@ -25,7 +25,7 @@ def options():
     import r1_15a2_demand_policy_v1 as dp
     o = dp.load_options()
     return {"enabled": bool(o.get("mg_enabled", True)), "lo": float(o.get("mg_min_ratio", .75)),
-            "hi": float(o.get("mg_max_ratio", 1.25))}
+            "hi": float(o.get("mg_max_ratio", 2.0))}
 
 
 def _f(value):

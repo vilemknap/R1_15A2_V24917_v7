@@ -74,4 +74,4 @@ def test_disabled_and_missing_attributes():
 def test_run_options():
     import r1_15a2_demand_policy_v1 as dp
     o = dp.load_options(root=ROOT)
-    assert (o["mg_enabled"], o["mg_min_ratio"], o["mg_max_ratio"]) == (True, 0.75, 1.25)
+    assert (o["mg_enabled"], o["mg_min_ratio"], o["mg_max_ratio"]) == (True, 0.75, 2.0)

@@ -104,11 +104,11 @@ def test_joint_options_fail_closed(raw):
 
 def test_options_feature_off_default_and_weights_independent(tmp_path):
     o=dp.load_options(tmp_path,environ={})
-    assert not o['td_joint_enabled'] and o['td_count_weight']==.65
+    assert not o['td_joint_enabled'] and o['td_count_weight']==.60
     o=dp.load_options(tmp_path,environ={'R1_TD_JOINT_ENABLED':'true','R1_TD_COUNT_WEIGHT':'.60'})
     assert o['td_joint_enabled'] and o['td_count_weight']==.60
     stored=json.loads((ROOT/'R1_RUN_OPTIONS.json').read_text())
-    assert stored['td_joint_enabled'] and stored['td_count_weight']==.65
+    assert stored['td_joint_enabled'] and stored['td_count_weight']==.60
     assert stored['td_max_survey_degradation']==1.25
 
 
@@ -270,7 +270,9 @@ def outer_harness(tmp_path,monkeypatch,accept=None,iz=False):
     import r1_15a2_intrazonal_penalty_v24917 as ip
     monkeypatch.setattr(ip,'_STAGE',{'pending':True} if iz else {})
     monkeypatch.setattr(j,'options',lambda:{'enabled':True,'outer_isolates':True,'max_isolates':2})
-    monkeypatch.setattr(tb,'options',lambda:{'w_cnt':.65,'w_idp':.35})
+    # Launch tests reload modules; patch the instance imported by realization.
+    import r1_15a2_td_count_blend_v24917 as live_tb
+    monkeypatch.setattr(live_tb,'options',lambda:{'w_cnt':.65,'w_idp':.35})
     rows=[{'component':'WORK_E_C','candidate_b':1.,'candidate_c':-1.},
           {'component':'SERV_E_C','candidate_b':2.,'candidate_c':-2.}]
     ad=NS(_tdjoint_stage={'w_cnt':.65,'w_idp':.35,
@@ -490,7 +492,9 @@ def test_real_controller_realization_and_rollback_order(tmp_path,monkeypatch,mod
     monkeypatch.setattr(ctrl,'restore_td_parameters',restore)
     monkeypatch.setattr(ctrl,'diagnostic_hash',canonical_hash)
     monkeypatch.setattr(j,'options',lambda:{'enabled':True,'outer_isolates':True,'max_isolates':2})
-    monkeypatch.setattr(tb,'options',lambda:{'w_cnt':.65,'w_idp':.35})
+    # Launch tests reload modules; patch the instance imported by realization.
+    import r1_15a2_td_count_blend_v24917 as live_tb
+    monkeypatch.setattr(live_tb,'options',lambda:{'w_cnt':.65,'w_idp':.35})
     monkeypatch.setattr(iz,'_STAGE',{})
     rows=[{'component':'WORK_E_C','candidate_b':1.2,'candidate_c':-.12},
           {'component':'SERV_E_C','candidate_b':2.2,'candidate_c':-.22}]

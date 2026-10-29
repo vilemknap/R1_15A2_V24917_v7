@@ -34,8 +34,8 @@ are patched in memory only (same pattern as the TG gate hotfix).
    TD still runs on a TG plateau.  TD only redistributes trip lengths, and in
    the dynamic-skim mode every FineCDF evaluation is a full assignment.
 
-6. TD objective blend (r1_15a2_td_count_blend_v24917): td_count_weight (0.65 =
-   65 % counts / 35 % survey), td_inner_mode FROZEN_PATHS|DYNAMIC,
+6. TD objective blend (r1_15a2_td_count_blend_v24917): td_count_weight (0.60 =
+   60 % counts / 40 % survey), td_inner_mode FROZEN_PATHS|DYNAMIC,
    tg_max_trials, td_realization_max_trials, td_inner_max_evaluations.
 5. tg_catchup_enabled = false: the V24917 Generation never enters CATCH_UP
    (no +50 %/cycle volume growth); it always runs REFINE with stage caps.
@@ -66,7 +66,7 @@ DEFAULTS = {
     'td_during_catchup': False,
     'td_first_cycle': True,
     'tg_catchup_enabled': True,
-    'td_count_weight': 0.65,
+    'td_count_weight': 0.60,
     'td_inner_mode': 'FROZEN_PATHS',
     'td_joint_enabled': False,
     'td_joint_outer_isolates': False,
@@ -76,7 +76,7 @@ DEFAULTS = {
     'td_inner_max_evaluations': 60,
     'ls_max_step_up': 0.10,
     'ls_max_step_down': 0.10,
-    'ls_school_envelope': [0.67, 1.5],
+    'ls_school_envelope': [0.75, 2.0],
     'ls_long_envelope_ref': [0.5, 1.5],
     'ls_ridge_relative': 0.05,
     'iz_enabled': True,
@@ -134,7 +134,7 @@ DEFAULTS = {
     'td_max_survey_degradation': 1.25,
     'mg_enabled': True,
     'mg_min_ratio': 0.75,
-    'mg_max_ratio': 1.25,
+    'mg_max_ratio': 2.0,
 }
 ENV = {
     'td_policy': 'R1_TD_POLICY',

@@ -181,7 +181,7 @@ def _design_fixture(monkeypatch, *, fit_raises=False, missing_fp=False):
     context={'incidence':object(),'projection':admod.core.ProjectionResult(rows=copy.deepcopy(parent_rows),
                family_summaries=[{'converged':True}],weighted_rmse=0.)}
     monkeypatch.setattr(admod._V24916ActiveAdapter,'generation_design',lambda *a:context)
-    zr=zones(1.25)
+    zr=zones(2.0)
     if missing_fp: zr[0].pop('FP_1_WORK_E_C')
     monkeypatch.setattr(admod.supply_visum.base,'zone_state_rows',lambda *a,**k:(zr,[]))
     monkeypatch.setattr(admod.tg,'zone_bounds',lambda *a,**k:{})
@@ -209,7 +209,7 @@ def test_A12_parent_fallback_must_also_enforce_mobility(monkeypatch,tmp_path):
     result=ad.generation_design(diag,tmp_path)
     r_after=mg.ratio(mg.zone_productions(zr,'WORK'),{r['zone_no']:r['log_step'] for r in result['projection'].rows})
     record('A12_fallback_bypasses_mobility',{'v24917':result['v24917'],'ratio_of_returned_proposal':r_after})
-    assert r_after <= 1.25+1e-12
+    assert r_after <= 2.0+1e-12
 
 
 def test_A13_step_prediction_must_describe_guarded_candidate(monkeypatch,tmp_path):

@@ -159,12 +159,12 @@ def real_cfg():
 
 def test_envelope_bounds(mb, real_cfg):
     cfg = tg.overlay_cfg(real_cfg, "CATCH_UP")
-    assert mb._multiplicative_coefficient_bounds("DOMESTIC", cfg, 1.9)[:2] == (0.25, 5.0)
-    assert mb._multiplicative_coefficient_bounds("DOMESTIC", cfg, 6.0)[:2] == (0.25, 6.0)
-    assert mb._multiplicative_coefficient_bounds("ZAHR", cfg, 3.0, 2.0)[:2] == (0.5, 10.0)
-    assert mb._soft_multiplier_bounds("DOMESTIC", cfg, 1.9) == (0.25, 5.0)
+    assert mb._multiplicative_coefficient_bounds("DOMESTIC", cfg, 1.9)[:2] == (0.75, 2.0)
+    assert mb._multiplicative_coefficient_bounds("DOMESTIC", cfg, 6.0)[:2] == (0.75, 6.0)
+    assert mb._multiplicative_coefficient_bounds("ZAHR", cfg, 3.0, 2.0)[:2] == (1.0, 4.0)
+    assert mb._soft_multiplier_bounds("DOMESTIC", cfg, 1.9) == (0.75, 2.0)
     refine = tg.overlay_cfg(real_cfg, "REFINE")
-    assert mb._soft_multiplier_bounds("DOMESTIC", refine, 1.9) == (0.4, 3.0)
+    assert mb._soft_multiplier_bounds("DOMESTIC", refine, 1.9) == (0.75, 2.0)
     plain = {k: v for k, v in real_cfg.items() if k != tg.POLICY_KEY}
     assert mb._multiplicative_coefficient_bounds("DOMESTIC", plain, 1.0)[:2] == (0.5, 2.0)
     assert mb._salary_coefficient_bounds(cfg, 1.0)[:2] == (0.5, 2.0)
@@ -187,13 +187,13 @@ def test_end_to_end_design_targeted_coarse_and_gate_passes(mb, real_cfg):
     cfg = tg.overlay_cfg(real_cfg, "CATCH_UP")
     zr = zone_rows(zones, value=1.9)            # near the old hard cap 2.0
     bounds = tg.zone_bounds(mb, zr, cfg)
-    assert bounds[("WORK", "PROD", 1)] == pytest.approx((DN, UP))
+    assert bounds[("WORK", "PROD", 1)] == pytest.approx((DN, math.log(2.0 / 1.9)))
     rows, summary, _, _ = zf.fit(inc, zones, bounds, cfg, tg.DEFAULT_POLICY["fit"])
     design = mb.design_generation_candidates(rows, zr, cfg, scale=1.0)
     refine = design["summary"]["signed_generation_refinement"]
     assert refine["mode"] == "V24917_TARGETED_ZONE_DIRECT"
     proposed = {(r["zone_no"], r["attr"]): r["proposed"] for r in design["candidate_rows"]}
-    assert max(proposed.values()) > 2.0 + 1e-9       # beyond the old 2.0 cap
+    assert 1.9 < max(proposed.values()) <= 2.0 + 1e-9  # new absolute cap
     effects = [r["implemented_total_log_effect"] for r in design["effect_rows"]]
     assert max(effects) <= UP + 1e-9 and min(effects) >= DN - 1e-9   # +50 % / -20 % per cycle
     gate = master.generation_apply_gate(design, cfg)
@@ -207,15 +207,15 @@ def test_end_to_end_design_targeted_coarse_and_gate_passes(mb, real_cfg):
     assert common
 
 
-def test_refine_phase_uses_stage_caps_and_soft_damping(mb, real_cfg):
+def test_refine_phase_outside_aligned_band_cannot_move_further_out(mb, real_cfg):
     inc, zones = synthetic_incidence(n_zones=8)
     cfg = dict(tg.overlay_cfg(real_cfg, "REFINE"), max_add_log_up=0.06, max_add_log_down=0.06)
-    zr = zone_rows(zones, value=3.5)             # outside the RELAX1 refine soft band 3.0
+    zr = zone_rows(zones, value=3.5)             # outside both aligned hard and soft bands
     bounds = tg.zone_bounds(mb, zr, cfg)
     rows, _, _, _ = zf.fit(inc, zones, bounds, cfg, tg.DEFAULT_POLICY["fit"])
     design = mb.design_generation_candidates(rows, zr, cfg, scale=1.0)
     steps = [math.log(r["proposed"] / 3.5) for r in design["candidate_rows"] if r["attr"] != "ADD_SALARY"]
-    assert max(steps) <= 0.06 * 0.5 + 1e-3      # RELAX1 outward damping 0.5 (+ salary coupling on ATT_W)
+    assert all(step <= 1e-9 for step in steps)  # hold or inward only; no forced clamp
 
 
 def test_inherited_mode_untouched_without_policy(mb, real_cfg):
@@ -802,7 +802,7 @@ def test_td_outer_decision_blend(monkeypatch):
 def test_run_options_td_blend_and_refine_relax(tmp_path):
     import r1_15a2_demand_policy_v1 as dp
     o = dp.load_options(tmp_path, environ={})
-    assert o["td_count_weight"] == 0.65 and o["td_inner_mode"] == "FROZEN_PATHS" and o["tg_max_trials"] == 3
+    assert o["td_count_weight"] == 0.60 and o["td_inner_mode"] == "FROZEN_PATHS" and o["tg_max_trials"] == 3
     with pytest.raises(RuntimeError):
         dp.validate({"td_count_weight": 1.5})
     with pytest.raises(RuntimeError):
@@ -897,7 +897,7 @@ def test_long_school_design_and_rows(mb):
     rs = ls.rows_at_scale(out, 0.5)
     longs = [r for r in rs if r["attr"] == "ADD_PROD_L"]
     assert longs == []
-    assert all(0.67 - 1e-9 <= r["proposed"] <= 1.5 + 1e-9 for r in rs if r["attr"].endswith("_SCH"))
+    assert all(0.75 - 1e-9 <= r["proposed"] <= 2.0 + 1e-9 for r in rs if r["attr"].endswith("_SCH"))
     assert s["sensitivity"]["ls_ridge_relative"] == 0.05
     assert not ls.available(_LSVisum(n, {}, mats, links))
 
@@ -1121,7 +1121,7 @@ def test_hard_balance_design_passes_gate_without_attenuation(mb, real_cfg):
     import R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1 as master
     inc, zones = synthetic_incidence(n_zones=12, residual_factor=3.0)
     cfg = tg.overlay_cfg(real_cfg, "CATCH_UP")
-    zr = zone_rows(zones, value=1.9)
+    zr = zone_rows(zones, value=1.0)
     rows, summary, _, sol = zf.fit(inc, zones, tg.zone_bounds(mb, zr, cfg), cfg, tg.DEFAULT_POLICY["fit"])
     mt = summary["margin_totals"]
     for fam in ("WORK", "SERVICE"):
