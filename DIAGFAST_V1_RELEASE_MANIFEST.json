@@ -8,9 +8,9 @@
     "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py": "da8953c4c4da056e092ed546a158ec13bce12590bdb230fd86122f809702f960",
     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
     "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
-    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "c0ff9065125d588379f8bba4faff17b466f8d3c3a89f07711efcbea2406b3c20",
+    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "816a80834afefc33f1b9816003e3e9af8937edb568cfe3f5d1fedac2791f771d",
     "02_SPUSTIT_V24917_TDJOINT1_60_40.py": "069805ca1366578bf51994490f78a3827fdd42a6b44ff2957e2663ed00419f94",
-    "02_SPUSTIT_V24917_TDJOINT1_60_40_SILENT.py": "74a0603cc5fe285a12fa920fe4e188b3de3990e170d2112d9477e2fc1f089696",
+    "02_SPUSTIT_V24917_TDJOINT1_60_40_SILENT.py": "e2175f4b9b3286f354ac8e8c955e5c41d7f181ccf598da8e9e0268ea823c2c08",
     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
     "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
     "R1_ADD_LONG_SCHOOL_COEFFICIENTS.py": "4e659040b390b38333330bef402b7447f2fefa73030b144501c48d8ce7ab87b6",
@@ -126,7 +126,7 @@
     "tests/test_v24917_runtime_install.py": "1424680da0f27b0ae8af2580c4354bfcf33386ec2cc44b804fee2c72702284a1",
     "tests/test_v24917_runtime_options_fail_closed.py": "e852f0b46a9bac44cd30252533c33a0770512212bde23cf0eb653746d56d296d",
     "tests/test_v24917_safetyfix1.py": "6881853827eea163f77201536dcd77536292a11a16a23d550dc97074ad661999",
-    "tests/test_v24917_silent_start.py": "72683aefc3c6030d6470aa2ec59db4c6dfd51672256db57f490ab1f07dc16906",
+    "tests/test_v24917_silent_start.py": "9bc6e73b51d8b61e9704881456ae6cad157572ca49e852f0ba6a8828277d13b5",
     "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
     "tests/test_v24917_step_search.py": "10b78a9068ffab80e67c4dbe0761898230736a6f302fe7ad059279d1aafd123f",
     "tests/test_v24917_supply_mix.py": "31803439c9c23d27b3829d66e7b9e95538f7922b111ca95a5158981f8c081cfe",
@@ -141,7 +141,7 @@
     "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
-    "tools/refresh_v24917_manifests.py": "44c20e3a961fd658479a5adb4bf476899ba0e4e993e1d26905fbf531f4f13546",
+    "tools/refresh_v24917_manifests.py": "6f3c15ff9e5be5d5f55e546f811eb5705766bc476b657e9c9f9cfebf9b942240",
     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
   }
 }
