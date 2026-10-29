@@ -39,6 +39,10 @@ def test_successful_run_creates_zip_and_preserves_source(tmp_path, capsys):
         assert any(n.endswith("/LONG_MASK_RESULT.json") for n in z.namelist())
         assert "SILENT_PYTHON_LOG_TAIL.txt" in z.namelist()
     assert (tmp_path / silent.DEBUG_NAME / "SILENT_LATEST.json").is_file()
+    latest = tmp_path / silent.DEBUG_NAME / "SILENT_LATEST_DEBUG.zip"
+    assert latest.is_file()
+    with zipfile.ZipFile(latest) as bundle:
+        assert "SILENT_STATUS.json" in bundle.namelist()
 
 
 def test_python_exception_is_silent_but_not_mislabeled_success(tmp_path, capsys):
