@@ -47,7 +47,7 @@
     "r1_15a2_rollback_consistency_v24917.py": "ff9b854be640e1e166cf5c82e84c821e0b7c05d5cbd3c0cc4ecbff18670f463d",
     "r1_15a2_boundary_pa_v24917.py": "a0a037a46570e34e0ff7ac85954959b90652e90e4f1e474a2a72d111c89a0958",
     "r1_15a2_mobility_guard_v24917.py": "7c7bf33eb61fe61a8817a61fd69e7490edcea83d4d6e0b0523be161eacef8f19",
-    "r1_15a2_snapshot_reads_v24917.py": "72be236f8d536f914c6a2f27cf86a7a48aef699ca186dc74c12f8695176f841d",
+    "r1_15a2_snapshot_reads_v24917.py": "3d94ee3aafaf1a78c831d7cbc31b98ecd096dc794dce4c4034592a46d641c6e0",
     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
     "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
     "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
@@ -75,6 +75,6 @@
     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "f4854987084f5b1a5b06298a299d005d347d8d4457f5952eb6d1143196bc7dc2"
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "d27447bceb461a3d10d875e4b06302071c069750600b7710e8f4349822b835f4"
   }
 }

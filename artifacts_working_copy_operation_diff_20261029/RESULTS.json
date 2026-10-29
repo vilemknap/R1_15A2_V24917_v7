@@ -1,0 +1,28 @@
+{
+  "scope": "WORKING_COPY_OPERATION_EVIDENCE_BEFORE_EXISTING_IDENTITY_GATE",
+  "focused_passed": 64,
+  "main_passed": 1943,
+  "main_skipped": 4,
+  "diagfast_passed": 138,
+  "audit_passed": 18,
+  "live_visum": "NOT_RUN",
+  "original_saveversion_operation_change_root_cause": "UNRESOLVED_PENDING_LIVE_OPERATION_DIFF",
+  "exact_semantic_guard_preserved": true,
+  "additional_com_reads": 0,
+  "model_writes_added": 0,
+  "protected_originals_verified": 1059,
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 73,
+      "sha256": "4e887dffc47562d0c518c30a757e757c9daf24c603a4e0e1a9d7648f55bfef16"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 136,
+      "sha256": "d27447bceb461a3d10d875e4b06302071c069750600b7710e8f4349822b835f4"
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+    }
+  }
+}

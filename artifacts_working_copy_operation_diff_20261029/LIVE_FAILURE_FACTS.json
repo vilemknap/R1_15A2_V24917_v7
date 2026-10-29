@@ -1,0 +1,39 @@
+{
+  "failure": "WORKING_COPY_SEMANTIC_IDENTITY_MISMATCH:operations_hash",
+  "status": "FULL_OVERNIGHT_FAILED",
+  "elapsed_seconds": 24.491,
+  "stage": "SOURCE_TO_WORKING_COPY_AFTER_SAVEVERSION_BEFORE_CALIBRATION",
+  "source_file_unchanged": true,
+  "load_version_called": false,
+  "successful_snapshot_counts": {
+    "matrix_count": 37,
+    "dseg_count": 24,
+    "generation_attribute_count": 33,
+    "operation_count": 43
+  },
+  "roster_count": 248,
+  "exact_changed_operation_not_present_in_uploaded_evidence": true,
+  "root_cause_of_operation_difference": "UNRESOLVED_REQUIRES_BEFORE_AFTER_INVENTORY",
+  "files_sha256": {
+    "EVENT_000009.json": "0da99cce5045968c224bc9e385c3aee8649120af3485ac3603a35cde3f56ed38",
+    "EVENT_000010.json": "b7b42a130891137b3dae8c25c0c3b276f437587c2666a6c4c467f08e85e397e8",
+    "EVENT_000011.json": "a2014f963fd6d5503c0608edf9bbd7ae8575f20fdeee808fe726fb34793849d8",
+    "EVENT_000012.json": "566b59325becf996f9c2a6bbd63420c518694cd6c95ddabd132ee0fa143c6f73",
+    "SUMMARY.json": "eb0c8b7549f6c579dbcc8969f7bb3833569052360dda6e567d72a86065d2090f",
+    "EVENT_000001.json": "641d650183fc6f98397f5c4846e165afb02c33b048b7c0a41d2744ea242020de",
+    "EVENT_000003.json": "704b26d75f8fa5b14cc8ce1880f86132376d6547ef0fe200f06019f1f6f54842",
+    "EVENT_000002.json": "9b2b53d136659e4de3dc121dd8c0ec6110a4e4b6a33e972634f98f3814fb6393",
+    "EVENT_000004.json": "551fe53bf9598a2768f550edec3a0c03c6712e05578606b08bcb5d24429cf088",
+    "EVENT_000005.json": "9a1b9b2920559a925c89a7f801ec2f44f44bbeded41540cc8736b034eb0fce75",
+    "EVENT_000007.json": "bf562ba113e78c6973ced2123e01236a661365146db3f988422c9bc0a7ee9098",
+    "EVENT_000006.json": "8c156d6ce06de53dc3ec64913a124171560b094c254b8f7b6ad776bfcf256ffa",
+    "EVENT_000008.json": "a74d937c54475ab6bb1bb53d8e0c3444ae1ca36a48a87c980cf4ebebdc92051a",
+    "CURRENT_COUNTLOCATION_CALIBRATION_AUTHORITY.json": "30d2756240cbd1727bfeb018a01aeda28f851d73c3cf2a812b0abb991f7a6686",
+    "CONSOLE_CAPTURE.log": "fa12ee4faa8c957e80c9e5cb820f552915ae70ea4e4a332bd631f9a6d80ff731",
+    "00_FINAL_STATUS.txt": "33e64e16094c6341fd6cdfc3c609a988d3e2753e1606f7a3ef30b8e409007840",
+    "00_PROGRESS.json": "a042bbc733ef072095483997624514ad880c90b4d8e76ade1ec1a135b59272a9",
+    "00_RELEASE.txt": "049486acc50d9d8a7d80ad2c8e7004c31c0cca151cacce8726c460689441e092",
+    "00_RESULT.json": "e2155c76cf7820ee6e65b4469f731fe1c77013b469e61c3e17679d46589e3201",
+    "PATH_LENGTH_PREFLIGHT.json": "8c24ac4a5dea5a79dc5b8f5139fc30e2d1409b90726fa814e8c3d9b54a0813af"
+  }
+}

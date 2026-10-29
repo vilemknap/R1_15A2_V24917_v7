@@ -18,6 +18,7 @@ import inspect
 import math
 from contextlib import contextmanager
 from contextvars import ContextVar
+from pathlib import Path
 from typing import Any, Dict, List, Sequence, Tuple
 
 import numpy as np
@@ -27,6 +28,7 @@ import r1_15a2_com_compat as com
 import r1_15a2_core as core
 import r1_15a2_multiblock as mb
 import r1_15a2_runtime_v1 as rt
+import r1_15a2_restart_v2494 as restart
 import r1_15a2_single_pass_snapshot_v24915p2c as parent
 import r1_15a2_visum_parameters as vp
 from r1_15a2_supply import SupplyContractError, canonical_hash, integer, key_text
@@ -316,6 +318,80 @@ def _matrix_fingerprint(matrix: Any) -> Tuple[Dict[str, Any], float]:
     return row, total
 
 
+def _operation_changes(before, after):
+    """Exact positional diff of the JSON inventory used by operations_hash."""
+    changes = []
+    for i in range(max(len(before), len(after))):
+        old = before[i] if i < len(before) else None
+        new = after[i] if i < len(after) else None
+        if old == new:
+            continue
+        fields = sorted(set(old or {}) | set(new or {}))
+        changes.append({
+            "position": i + 1, "before": old, "after": new,
+            "fields": {key: {"before": (old or {}).get(key),
+                              "after": (new or {}).get(key)}
+                       for key in fields if old is None or new is None
+                       or old.get(key) != new.get(key)},
+        })
+    return changes
+
+
+def _startup_operation_evidence(adapter, snapshot, operations):
+    """Publish the exact save-boundary evidence BEFORE the parent identity gate.
+
+    No new COM reads, writes, normalization or changes to the snapshot schema.
+    If evidence publication fails, keep the original model-identity outcome.
+    """
+    control = getattr(adapter, "control", None)
+    phase = (getattr(control, "progress", None) or {}).get("phase")
+    if phase not in ("SOURCE_SEMANTIC_RESTART_AUTHORITY", "WORKING_COPY_SEMANTIC_IDENTITY"):
+        return
+    root = getattr(control, "root", None)
+    if root is None:
+        return
+    inventory = [dict(row) for row in operations]
+    record = {
+        "schema": "R1_V24917_STARTUP_OPERATION_READBACK_V1", "phase": phase,
+        "diagnostic_only": True, "snapshot_state_hash": snapshot["state_hash"],
+        "semantic_hashes": {key: snapshot[key] for key in restart.SEMANTIC_FIELDS},
+        "operation_inventory": inventory,
+        "operation_inventory_hash_verified": canonical_hash(inventory) == snapshot["operations_hash"],
+    }
+    try:
+        root = Path(root)
+        if phase == "SOURCE_SEMANTIC_RESTART_AUTHORITY":
+            adapter._v24917_source_operation_readback = record
+            rt.write_json(root / "SOURCE_OPERATIONS_READBACK.json", record)
+            return
+        rt.write_json(root / "WORKING_COPY_OPERATIONS_READBACK.json", record)
+        source = getattr(adapter, "_v24917_source_operation_readback", None)
+        if source is None:
+            return
+        differences = _operation_changes(source["operation_inventory"], inventory)
+        report = {
+            "schema": "R1_V24917_WORKING_COPY_OPERATION_DIFF_V1", "diagnostic_only": True,
+            "guard_policy": "EXACT_SEMANTIC_IDENTITY_UNCHANGED",
+            "source": source, "working_copy": record,
+            "semantic_fields_changed": [key for key in restart.SEMANTIC_FIELDS
+                                        if source["semantic_hashes"][key] != record["semantic_hashes"][key]],
+            "changed_operation_count": len(differences), "operation_changes": differences,
+        }
+        path = root / "WORKING_COPY_OPERATIONS_DIFF.json"
+        rt.write_json(path, report)
+        if differences:
+            summary = "; ".join("op %s: %s" % (r["position"], ",".join(r["fields"]))
+                                for r in differences[:10])
+            print("R1 V24917: working-copy operation difference: %s; details: %s" % (summary, path))
+    except Exception as exc:
+        # A disk/UI diagnostic failure cannot manufacture a semantic mismatch
+        # or endorse a genuine mismatch; the parent still performs its exact gate.
+        try:
+            print("R1 V24917: startup operation evidence unavailable: %r" % (exc,))
+        except Exception:
+            pass
+
+
 def _snapshot_once(adapter: Any) -> Dict[str, Any]:
     context = _ReadContext(adapter)
     links = context.links()
@@ -380,6 +456,7 @@ def _snapshot_once(adapter: Any) -> Dict[str, Any]:
         "operations_hash": canonical_hash(operations),
     }
     result["state_hash"] = canonical_hash(result)
+    _startup_operation_evidence(adapter, result, operations)
     telemetry_payload = context.telemetry()
     telemetry_payload.update({
         "state_hash": result["state_hash"],
