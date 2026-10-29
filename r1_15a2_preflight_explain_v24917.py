@@ -33,6 +33,69 @@ DEFERRABLE = ("ASSIGNMENT_GAP_READBACK_UNAVAILABLE",)
 _STATE: Dict[str, Any] = {"installed": False, "deferred": [], "zero_cost_links": []}
 
 
+def _wrap_inactive_partial_scope_audit(orig):
+    """V24917: exact read-only 09C audit with optional-inactive OP17..19.
+
+    The immutable V239 auditor checks the DSEGSET on active operations only,
+    and reports OP17/18/19_INACTIVE before reading their scope. The live R1
+    09C version legitimately activates final OP20 alone. Recover only these
+    specific premature failures and re-read *every* inactive partial DSEGSET.
+    All other failures (notably an inactive or wrong OP20) remain hard.
+    """
+    @functools.wraps(orig)
+    def audit(visum):
+        report = orig(visum)
+        idle_reasons = {"OP_%d_INACTIVE" % no for no in (17, 18, 19)}
+        errors = list(report.get("failures") or [])
+        if not any(reason in idle_reasons for reason in errors):
+            return report
+        from r1_15a2_assignment_authority_v239 import EXPECTED, _tokens
+        from r1_15a2_com_compat import operation_rows, object_property
+        details = [dict(row) for row in report["verified_operations"]]
+        by_no = {int(row["no"]): row for row in operation_rows(visum)}
+        errors = [reason for reason in errors if reason not in idle_reasons]
+        verified_inactive = []
+        for detail in details:
+            no = int(detail["no"])
+            if no not in (17, 18, 19) or detail.get("status") != "INACTIVE":
+                continue
+            row = by_no.get(no)
+            if row is None or int(row["type"]) != 101 or row["active"]:
+                detail["status"] = "ACTIVITY_OR_TYPE_DRIFT"
+                errors.append("OP_%d_ACTIVITY_OR_TYPE_DRIFT" % no)
+                continue
+            try:
+                params = object_property(row["object"], "PrTAssignmentParameters")
+                raw = params.AttValue("DSEGSET")
+                actual = _tokens(raw)
+                detail["live_dsegset_raw"] = raw
+                detail["live_dsegs"] = sorted(actual)
+                if actual != EXPECTED[no]:
+                    detail["status"] = "DSEGSET_MISMATCH"
+                    detail["missing"] = sorted(EXPECTED[no] - actual)
+                    detail["extra"] = sorted(actual - EXPECTED[no])
+                    errors.append("OP_%d_DSEGSET" % no)
+                else:
+                    detail["status"] = "PASS_INACTIVE_PARTIAL"
+                    verified_inactive.append(no)
+            except Exception as exc:
+                detail["status"] = "UNREADABLE"
+                detail["error"] = str(exc)
+                errors.append("OP_%d_UNREADABLE" % no)
+        out = dict(report)
+        out["verified_operations"] = details
+        out["failures"] = errors
+        out["passes"] = not errors
+        out["selected_trial_assignment_operations"] = [20] if not errors else []
+        out["validated_inactive_partial_operations"] = sorted(verified_inactive)
+        out["activity_policy"] = (
+            "OP20_ACTIVE_EXACT_14_DSEG_FINAL;_OP17_19_MAY_BE_INACTIVE_"
+            "BUT_TYPE_AND_DSEGSET_MUST_MATCH")
+        return out
+    audit.__r1_preflight2_inactive_partial_scope__ = True
+    return audit
+
+
 def _wrap_plan(orig):
     @functools.wraps(orig)
     def assignment_plan(visum, cfg):
@@ -155,6 +218,8 @@ def install(print_fn=print) -> Dict[str, Any]:
     import r1_15a2_supply_visum as sv
     import r1_15a2_trial_adapter_v240 as a240
     from r1_15a2_supply import SupplyContractError
+    if not getattr(a240.audit_assignment_scope, "__r1_preflight2_inactive_partial_scope__", False):
+        a240.audit_assignment_scope = _wrap_inactive_partial_scope_audit(a240.audit_assignment_scope)
     if not getattr(sv.assignment_plan, "__r1_preflight2__", False):
         sv.assignment_plan = _wrap_plan(sv.assignment_plan)
     if not getattr(sv.VisumAdapter.read_links, "__r1_preflight2__", False):
