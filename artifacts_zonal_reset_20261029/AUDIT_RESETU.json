@@ -1,0 +1,249 @@
+{
+  "source_name": "ZONE-2026-10-29-20-26-54.xlsx",
+  "source_sha256": "fbbe2c7a99e1612a24c676d37dfd942a4d69a00e9eae752022e2130784fdfb15",
+  "zone_count": 681,
+  "coefficient_count": 13,
+  "checked_coefficient_cells": 8853,
+  "changed_cells": 5169,
+  "references": {
+    "ADD_PROD_W": "1",
+    "ADD_ATT_W": "1",
+    "ADD_PROD_S": "1",
+    "ADD_ATT_S": "1",
+    "ADD_PROD_SCH": "1",
+    "ADD_ATT_SCH": "1",
+    "ADD_PROD_L": "0.3",
+    "ADD_ATT_L": "1",
+    "ADD_SALARY": "1",
+    "ZAHR_PROD_WORK": "1",
+    "ZAHR_ATR_WORK": "1",
+    "ZAHR_PROD_SERV": "1",
+    "ZAHR_ATR_SERV": "1"
+  },
+  "preserve_all_existing_zero_coefficients": true,
+  "by_attribute": {
+    "ADD_PROD_W": {
+      "changed": 650,
+      "zeros_preserved": 30,
+      "after_values": {
+        "1": 651,
+        "0": 30
+      }
+    },
+    "ADD_ATT_W": {
+      "changed": 650,
+      "zeros_preserved": 30,
+      "after_values": {
+        "1": 651,
+        "0": 30
+      }
+    },
+    "ADD_PROD_S": {
+      "changed": 650,
+      "zeros_preserved": 30,
+      "after_values": {
+        "1": 651,
+        "0": 30
+      }
+    },
+    "ADD_ATT_S": {
+      "changed": 650,
+      "zeros_preserved": 30,
+      "after_values": {
+        "1": 651,
+        "0": 30
+      }
+    },
+    "ADD_PROD_SCH": {
+      "changed": 589,
+      "zeros_preserved": 0,
+      "after_values": {
+        "1": 681
+      }
+    },
+    "ADD_ATT_SCH": {
+      "changed": 589,
+      "zeros_preserved": 0,
+      "after_values": {
+        "1": 681
+      }
+    },
+    "ADD_PROD_L": {
+      "changed": 681,
+      "zeros_preserved": 0,
+      "after_values": {
+        "0.3": 681
+      }
+    },
+    "ADD_ATT_L": {
+      "changed": 0,
+      "zeros_preserved": 0,
+      "after_values": {
+        "1": 681
+      }
+    },
+    "ADD_SALARY": {
+      "changed": 650,
+      "zeros_preserved": 31,
+      "after_values": {
+        "1": 650,
+        "0": 31
+      }
+    },
+    "ZAHR_PROD_WORK": {
+      "changed": 15,
+      "zeros_preserved": 666,
+      "after_values": {
+        "0": 666,
+        "1": 15
+      }
+    },
+    "ZAHR_ATR_WORK": {
+      "changed": 15,
+      "zeros_preserved": 666,
+      "after_values": {
+        "0": 666,
+        "1": 15
+      }
+    },
+    "ZAHR_PROD_SERV": {
+      "changed": 15,
+      "zeros_preserved": 666,
+      "after_values": {
+        "0": 666,
+        "1": 15
+      }
+    },
+    "ZAHR_ATR_SERV": {
+      "changed": 15,
+      "zeros_preserved": 666,
+      "after_values": {
+        "0": 666,
+        "1": 15
+      }
+    }
+  },
+  "not_reconstructable_from_this_export": [
+    "pre-calibration boundary P09F4_PER_PRE_*/A09F4_PER_PRE_* volumes"
+  ],
+  "unchanged_attributes": [
+    "Number: 681",
+    "No",
+    "Code",
+    "Name",
+    "TypeNo",
+    "A09F4_PER_PRE_FOREIG",
+    "A09F4_PER_PRE_LONG_E",
+    "A09F4_PER_",
+    "A09F4_PER_PRE_LONG_n",
+    "A9F4P_LONG_NE_NC",
+    "A09F4_PER_PRE_LONG_s",
+    "A09F4_PER_PRE_SCHOOL",
+    "A09F4_PER_PRE_SERV_E",
+    "A9F4P_SERV_E_NC",
+    "A09F4_PER_PRE_SERV_n",
+    "A9F4P_SERV_NE_NC",
+    "A09F4_PER_PRE_SERV_s",
+    "A09F4_PER_PRE_WORK_E",
+    "A9F4P_WORK_E_NC",
+    "A09F4_PER_PRE_WORK_n",
+    "A9F4P_WORK_NE_NC",
+    "A09F4_PER_PRE_WORK_s",
+    "AMDY_EXTERNI_ZONA",
+    "AMDY_NO",
+    "AV_INCOME",
+    "COUNTRY_ADD",
+    "COUNTRY_ADD_FOREIGN_CAL",
+    "COUNTRY_ADD_FOREIGN_CLASS",
+    "COUNTRY_ADD_FOREIGN_MULT",
+    "COUNTRY_ADD_FOREIGN_NOTE",
+    "COUNTRY_ADD_FOREIGN_PARENT_N",
+    "R1_CNO",
+    "R1_CNTRY",
+    "E_C",
+    "E_NC",
+    "FA_1_WORK",
+    "FA_2_SERVICE",
+    "FA_3_LONG",
+    "FA_4_FOREIGN",
+    "FA_5_SCHOOL",
+    "R1_FBN",
+    "R1_FBNEI",
+    "FP_1_WORK_E_C",
+    "FP_1_WORK_E_noC",
+    "FP_1_WORK_noE_C",
+    "FP_1_WORK_noE_noC",
+    "FP_1_WORK_stud",
+    "FP_2_SERVICE_E_C",
+    "FP_2_SERVICE_E_noC",
+    "FP_2_SERVICE_noE_C",
+    "FP_2_SERVICE_noE_noC",
+    "FP_2_SERVICE_stud",
+    "FP_3_LONG_E_C",
+    "FP_3_LONG_E_noC",
+    "FP_3_LONG_noE_C",
+    "FP_3_LONG_noE_noC",
+    "FP_3_LONG_stud",
+    "FP_4_FOREIGN",
+    "FP_5_SCHOOL",
+    "H_E_C",
+    "H_E_NOC",
+    "H_FOREIGN",
+    "H_FOREIGN_2",
+    "H_LONG_E_C",
+    "H_LONG_E_NC",
+    "H_LONG_NE_C",
+    "H_LONG_NE_NC",
+    "H_LONG_STUD",
+    "H_NOE_C",
+    "H_NOE_NOC",
+    "H_SCHOOL_PUP",
+    "H_SCHOOL_STUD_VS",
+    "H_SCHOOL_STUD_VS_2",
+    "H_SERVICE_E_C",
+    "H_SERVICE_E_NC",
+    "H_SERVICE_NE_C",
+    "H_SERVICE_NE_NC",
+    "H_SERVICE_STUD",
+    "H_WORK_E_C",
+    "H_WORK_E_NC",
+    "H_WORK_NE_C",
+    "H_WORK_NE_NC",
+    "H_WORK_STUD",
+    "NE_C",
+    "NE_NC",
+    "NOT_ZAHR",
+    "NUM_PM",
+    "NUM_PM_SMEAR",
+    "NUM_PUP",
+    "NUM_PUP_PLACES",
+    "NUM_STUD_VS_PLACES",
+    "NUM_VS",
+    "OSRM_MATRIX_ID",
+    "P09F4_PER_PRE_FOREIG",
+    "P09F4_PER_PRE_LONG_E",
+    "P09F4_PER_",
+    "P09F4_PER_PRE_LONG_n",
+    "P9F4P_LONG_NE_NC",
+    "P09F4_PER_PRE_LONG_s",
+    "P09F4_PER_PRE_SCHOOL",
+    "P09F4_PER_PRE_SERV_E",
+    "P9F4P_SERV_E_NC",
+    "P09F4_PER_PRE_SERV_n",
+    "P9F4P_SERV_NE_NC",
+    "P09F4_PER_PRE_SERV_s",
+    "P09F4_PER_PRE_WORK_E",
+    "P9F4P_WORK_E_NC",
+    "P09F4_PER_PRE_WORK_n",
+    "P9F4P_WORK_NE_NC",
+    "P09F4_PER_PRE_WORK_s",
+    "PLOCHA_ZONY_M2",
+    "POP_CENTRALITY_TERM",
+    "POP_ZP",
+    "PRENOC_SVK",
+    "R1_XLSX_NAME",
+    "R1_ZONE_ID_TEXT",
+    "ZAHR_SUSED"
+  ],
+  "live_visum": "NOT_RUN"
+}

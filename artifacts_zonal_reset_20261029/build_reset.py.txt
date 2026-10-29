@@ -1,0 +1,133 @@
+"""Reset the 13 zonal coefficient attributes in a Visum Excel export; no COM."""
+import argparse
+import csv
+from collections import Counter
+from decimal import Decimal
+import hashlib
+import io
+import json
+from pathlib import Path
+import re
+from xml.etree import ElementTree as ET
+from zipfile import ZipFile
+
+NS = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+REFERENCES = {
+    'ADD_PROD_W': '1', 'ADD_ATT_W': '1',
+    'ADD_PROD_S': '1', 'ADD_ATT_S': '1',
+    'ADD_PROD_SCH': '1', 'ADD_ATT_SCH': '1',
+    'ADD_PROD_L': '0.3', 'ADD_ATT_L': '1', 'ADD_SALARY': '1',
+    'ZAHR_PROD_WORK': '1', 'ZAHR_ATR_WORK': '1',
+    'ZAHR_PROD_SERV': '1', 'ZAHR_ATR_SERV': '1',
+}
+
+def read_sheet(archive):
+    strings = [''.join(x.itertext()) for x in ET.fromstring(archive.read('xl/sharedStrings.xml'))]
+    root = ET.fromstring(archive.read('xl/worksheets/sheet1.xml'))
+    rows = list(root.find('s:sheetData', NS))
+    def value(cell):
+        v = cell.find('s:v', NS)
+        if v is None:
+            return None
+        return strings[int(v.text)] if cell.get('t') == 's' else v.text
+    headers = {re.sub(r'\d', '', c.attrib['r']): value(c) for c in rows[0]}
+    if len(set(headers.values())) != len(headers):
+        raise ValueError('Duplicate headings')
+    if not set(REFERENCES).issubset(headers.values()) or 'No' not in headers.values():
+        raise ValueError('Required coefficient/No heading missing')
+    result = []
+    for row in rows[1:]:
+        cells = {headers[re.sub(r'\d', '', c.attrib['r'])]: c for c in row}
+        data = {h: value(c) for h, c in cells.items()}
+        no = Decimal(data['No'])
+        if not no.is_finite() or no != no.to_integral_value():
+            raise ValueError('Invalid zone identity')
+        for attr in REFERENCES:
+            cell = cells[attr]
+            v = Decimal(data[attr])
+            if cell.find('s:f', NS) is not None or cell.get('t') not in (None, 'n') or not v.is_finite() or v < 0:
+                raise ValueError('Invalid numeric coefficient: ' + attr)
+        result.append((int(no), data, cells))
+    nos = [r[0] for r in result]
+    if len(nos) != 681 or len(set(nos)) != 681:
+        raise ValueError('Expected 681 unique zones')
+    return headers, result
+
+def text_table(headers, records, delimiter=';'):
+    buf = io.StringIO(newline='')
+    writer = csv.writer(buf, delimiter=delimiter, lineterminator='\n')
+    writer.writerow(headers)
+    writer.writerows(records)
+    return buf.getvalue()
+
+def build(source, output):
+    source, output = Path(source), Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    source_bytes = source.read_bytes()
+    attrs = list(REFERENCES)
+    target = output / 'ZONE_REFERENCNI_KOEFICIENTY_20261029.xlsx'
+    changes, before_records, after_records, replacements = [], [], [], {}
+    with ZipFile(io.BytesIO(source_bytes)) as original:
+        headers, rows = read_sheet(original)
+        for no, values, cells in rows:
+            before, after = [no], [no]
+            for attr, ref in REFERENCES.items():
+                old = values[attr]
+                new = '0' if Decimal(old) == 0 else ref
+                before.append(old)
+                after.append(new)
+                if Decimal(old) != Decimal(new):
+                    replacements[cells[attr].attrib['r']] = new
+                    changes.append([no, attr, old, new])
+            before_records.append(before)
+            after_records.append(after)
+        old_xml = original.read('xl/worksheets/sheet1.xml').decode('utf-8')
+        changed_addresses = set()
+        def change_cell(match):
+            cell = match.group(0)
+            address = re.search(r'\br="([A-Z]+[0-9]+)"', cell).group(1)
+            if address not in replacements:
+                return cell
+            changed_addresses.add(address)
+            replaced, count = re.subn(r'<v>[^<]*</v>', '<v>' + replacements[address] + '</v>', cell)
+            if count != 1:
+                raise ValueError('Unexpected value node count: ' + address)
+            return replaced
+        new_xml = re.sub(r'<c\b[^>]*>.*?</c>', change_cell, old_xml, flags=re.S)
+        if changed_addresses != set(replacements):
+            raise ValueError('Unmatched target cells')
+        with ZipFile(target, 'w') as result:
+            result.comment = original.comment
+            for member in original.infolist():
+                result.writestr(member, new_xml.encode('utf-8') if member.filename == 'xl/worksheets/sheet1.xml' else original.read(member.filename))
+    (output / 'ZONE_PUVODNI_PRED_RESETEM.xlsx').write_bytes(source_bytes)
+    # The ATT files contain ONLY zone identity and the 13 approved coefficient fields.
+    for name, records in [('RESET_ZONALNICH_KOEFICIENTU.att', after_records), ('OBNOVA_PUVODNICH_KOEFICIENTU.att', before_records)]:
+        body = '$VISION\n* Zonal coefficients only; match existing zones by NO.\n$ZONE:' + ';'.join(['NO'] + attrs) + '\n'
+        body += '\n'.join(';'.join(str(v) for v in row) for row in records) + '\n'
+        (output / name).write_bytes(body.encode('utf-8'))
+    (output / 'RESET_ZONALNICH_KOEFICIENTU.csv').write_bytes(text_table(['NO'] + attrs, after_records).encode('utf-8-sig'))
+    (output / 'ZMENY_PRED_PO.csv').write_bytes(text_table(['NO', 'ATTRIBUTE', 'BEFORE', 'AFTER'], changes).encode('utf-8-sig'))
+    report = {
+        'source_name': source.name, 'source_sha256': hashlib.sha256(source_bytes).hexdigest(),
+        'zone_count': len(rows), 'coefficient_count': len(attrs), 'checked_coefficient_cells': len(rows)*len(attrs),
+        'changed_cells': len(changes), 'references': REFERENCES,
+        'preserve_all_existing_zero_coefficients': True,
+        'by_attribute': {a: {
+            'changed': sum(r[1] == a for r in changes),
+            'zeros_preserved': sum(Decimal(d[a]) == 0 for _, d, _ in rows),
+            'after_values': dict(Counter(str(rec[1 + attrs.index(a)]) for rec in after_records)),
+        } for a in attrs},
+        'not_reconstructable_from_this_export': ['pre-calibration boundary P09F4_PER_PRE_*/A09F4_PER_PRE_* volumes'],
+        'unchanged_attributes': [h for h in headers.values() if h not in attrs],
+        'live_visum': 'NOT_RUN',
+    }
+    (output / 'AUDIT_RESETU.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+    print(json.dumps({k: report[k] for k in ('zone_count', 'checked_coefficient_cells', 'changed_cells', 'by_attribute')}, indent=2))
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('source_xlsx')
+    parser.add_argument('output_directory')
+    args = parser.parse_args()
+    build(args.source_xlsx, args.output_directory)

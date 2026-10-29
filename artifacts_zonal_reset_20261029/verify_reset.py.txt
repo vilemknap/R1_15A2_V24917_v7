@@ -1,0 +1,94 @@
+"""Independent all-cell/package and narrow ATT/CSV verification, no Visum."""
+from collections import Counter
+from decimal import Decimal
+from pathlib import Path
+from xml.etree import ElementTree as E
+from zipfile import ZipFile
+import csv
+import hashlib
+import json
+import re
+
+import sys
+root = Path(sys.argv[1])
+n = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+expected = {
+ 'ADD_PROD_W': Decimal(1), 'ADD_ATT_W': Decimal(1),
+ 'ADD_PROD_S': Decimal(1), 'ADD_ATT_S': Decimal(1),
+ 'ADD_PROD_SCH': Decimal(1), 'ADD_ATT_SCH': Decimal(1),
+ 'ADD_PROD_L': Decimal('0.3'), 'ADD_ATT_L': Decimal(1),
+ 'ADD_SALARY': Decimal(1), 'ZAHR_PROD_WORK': Decimal(1),
+ 'ZAHR_ATR_WORK': Decimal(1), 'ZAHR_PROD_SERV': Decimal(1), 'ZAHR_ATR_SERV': Decimal(1)}
+
+def load(path):
+ with ZipFile(path) as z:
+  shared = [''.join(x.itertext()) for x in E.fromstring(z.read('xl/sharedStrings.xml'))]
+  sheet = E.fromstring(z.read('xl/worksheets/sheet1.xml'))
+  cells = {c.get('r'): c for c in sheet.findall('.//s:sheetData/s:row/s:c', n)}
+  def v(c):
+   x=c.find('s:v', n)
+   return shared[int(x.text)] if c.get('t')=='s' and x is not None else x.text if x is not None else None
+  heads = {re.sub('[0-9]', '', k): v(c) for k,c in cells.items() if re.search('[0-9]+$', k).group(0)=='1'}
+  data = {}
+  for row in sheet.findall('s:sheetData/s:row',n)[1:]:
+   d = {heads[re.sub('[0-9]', '', c.get('r'))]:v(c) for c in row}
+   data[int(d['No'])]=d
+  return cells, heads, data
+
+original = root/'ZONE_PUVODNI_PRED_RESETEM.xlsx'
+reset = root/'ZONE_REFERENCNI_KOEFICIENTY_20261029.xlsx'
+old,heads,before = load(original)
+new,newheads,after = load(reset)
+assert heads==newheads and old.keys()==new.keys() and list(before)==list(after) and len(before)==681
+changed=0
+for address, cell in old.items():
+ attr=heads[re.sub('[0-9]', '', address)]
+ if address.endswith('1') and re.search('[0-9]+$',address).group(0)=='1' or attr not in expected:
+  assert E.tostring(cell)==E.tostring(new[address]), (address, attr)
+ else:
+  x=Decimal(cell.find('s:v',n).text);y=Decimal(new[address].find('s:v',n).text)
+  assert y==(Decimal(0) if x==0 else expected[attr]), (address,x,y)
+  # Everything besides the intended value node is byte-for-byte equivalent.
+  clone=E.fromstring(E.tostring(new[address]));clone.find('s:v',n).text=cell.find('s:v',n).text
+  assert E.tostring(cell)==E.tostring(clone)
+  changed += x!=y
+with ZipFile(original) as a, ZipFile(reset) as b:
+ assert a.namelist()==b.namelist() and a.comment==b.comment
+ assert a.testzip() is None and b.testzip() is None
+ for name in a.namelist():
+  if name!='xl/worksheets/sheet1.xml':assert a.read(name)==b.read(name),name
+ # Undo numeric text replacements only: the complete raw XML must be identical.
+ a_xml=a.read('xl/worksheets/sheet1.xml').decode();b_xml=b.read('xl/worksheets/sheet1.xml').decode()
+ old_values={k:c.find('s:v',n).text for k,c in old.items() if c.find('s:v',n) is not None}
+ def restore(m):
+  address=re.search(' r="([A-Z]+[0-9]+)"',m.group()).group(1)
+  return re.sub(r'<v>[^<]*</v>',lambda _: '<v>'+old_values[address]+'</v>',m.group()) if address in old_values else m.group()
+ assert re.sub(r'<c\b[^>]*>.*?</c>',restore,b_xml,flags=re.S)==a_xml
+
+for filename, reference in [('RESET_ZONALNICH_KOEFICIENTU.att',after),('OBNOVA_PUVODNICH_KOEFICIENTU.att',before)]:
+ lines=(root/filename).read_text().splitlines();assert lines[0]=='$VISION'
+ assert lines[2].startswith('$ZONE:NO;')
+ fields=lines[2].removeprefix('$ZONE:').split(';')
+ assert set(fields)=={'NO'}|set(expected) and len(fields)==14 and len(lines[3:])==681
+ for line in lines[3:]:
+  values=line.split(';');assert len(values)==14
+  no=int(values[0]);assert no in reference
+  for k,v in zip(fields[1:],values[1:]):assert Decimal(v)==Decimal(reference[no][k]),(filename,no,k)
+with (root/'RESET_ZONALNICH_KOEFICIENTU.csv').open(encoding='utf-8-sig',newline='') as f:
+ rows=list(csv.DictReader(f,delimiter=';'));assert len(rows)==681
+ for row in rows:
+  for k in expected:assert Decimal(row[k])==Decimal(after[int(row['NO'])][k])
+with (root/'ZMENY_PRED_PO.csv').open(encoding='utf-8-sig',newline='') as f:
+ rows=list(csv.DictReader(f,delimiter=';'));assert len(rows)==changed
+ for row in rows:
+  no=int(row['NO']);attr=row['ATTRIBUTE']
+  assert Decimal(row['BEFORE'])==Decimal(before[no][attr]) and Decimal(row['AFTER'])==Decimal(after[no][attr])
+report={'result':'PASS','zones':681,'total_original_cells':len(old),'coefficient_cells_checked':681*13,
+ 'changed_numeric_cells':changed,'other_columns_unchanged':len(heads)-13,
+ 'non_coefficient_cell_xml_unchanged':True,'all_other_xlsx_members_byte_identical':True,
+ 'whole_sheet_identical_after_reversing_only_value_changes':True,
+ 'reset_att_and_original_restore_att_match_workbooks':True,'csv_and_change_log_match_workbooks':True,
+ 'live_visum_import':'NOT_RUN',
+ 'files_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file()}}
+(root/'OVERENI.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps(report,indent=2))

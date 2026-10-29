@@ -1,0 +1,29 @@
+{
+  "result": "PASS",
+  "zones": 681,
+  "total_original_cells": 88660,
+  "coefficient_cells_checked": 8853,
+  "changed_numeric_cells": 5169,
+  "other_columns_unchanged": 117,
+  "non_coefficient_cell_xml_unchanged": true,
+  "all_other_xlsx_members_byte_identical": true,
+  "whole_sheet_identical_after_reversing_only_value_changes": true,
+  "reset_att_and_original_restore_att_match_workbooks": true,
+  "csv_and_change_log_match_workbooks": true,
+  "live_visum_import": "NOT_RUN",
+  "files_sha256": {
+    "AUDIT_RESETU.json": "5418f3e91d62bf4d71d7c6febe723df506942a8e0ff61d8577c76ff12eb8624a",
+    "OBNOVA_PUVODNICH_KOEFICIENTU.att": "3e11acb7a1e4d150e57231cdb4103d11c2bbf42ba0802b40e54f1eb30392d8e8",
+    "RESET_ZONALNICH_KOEFICIENTU.att": "1e791d6b6e817a11607147ffc68240829bcf76462b85ac60d4348fabd787a3d5",
+    "RESET_ZONALNICH_KOEFICIENTU.csv": "570059258aab0d8b888a658300fd7ee4a30eed96cdcec30b48df0a6492dc16ee",
+    "ZMENY_PRED_PO.csv": "b358ed19c1c5c444f6c0ab17068a60b881262c9afcd1699a88ad822593e16851",
+    "ZONE_PUVODNI_PRED_RESETEM.xlsx": "fbbe2c7a99e1612a24c676d37dfd942a4d69a00e9eae752022e2130784fdfb15",
+    "ZONE_REFERENCNI_KOEFICIENTY_20261029.xlsx": "5a34ee2106bb66d2a6c95339e38fc2777526ece6c25c6c0d33204e0addae0a19"
+  },
+  "second_reset_idempotent_byte_identical": true,
+  "runtime_files_changed": false,
+  "manifest_sha256_unchanged": {
+    "V24917_RUNTIME_MANIFEST.json": "f74d128bf4335d1b9e397f94c0c2e427c5ae36b732a18b83bd6afaf4442903cb",
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "ab139f0af951d26050366c67f1fa9920ad5aa754c16ec4ff5270170a14baad9c"
+  }
+}
