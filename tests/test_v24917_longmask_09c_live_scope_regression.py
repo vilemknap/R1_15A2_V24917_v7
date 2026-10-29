@@ -44,7 +44,7 @@ def _rows(extra=None, omit=None, scopes=None):
     rows = []
     for pos in range(1, 21):
         kind = 46 if pos == 6 else (101 if pos in assignments else (75 if pos in (2, 4, 7, 9, 13, 16) else 65))
-        rows.append({"no": pos, "active": 1, "type": kind,
+        rows.append({"no": pos, "position": pos, "active": 1, "type": kind,
                      "object": PrtOperation(scopes.get(pos, assignments.get(pos, "")))})
     return rows
 
@@ -97,18 +97,23 @@ def test_real_09c_assignments_17_to_20_execute_as_one_final_authority(monkeypatc
 
 
 
-def test_real_09c_only_final_op20_active_passes_all_three_phases(monkeypatch, tmp_path):
-    """Exact live 2026-10-29 configuration; no artificial enabling OP17-19."""
+def test_real_09c_only_final_op20_active_promotes_partials_for_execution(monkeypatch, tmp_path):
+    """Saved model has only OP20 active; execution safely runs OP17..OP20."""
     rows = _rows()
     for no in (17, 18, 19):
         rows[no - 1]["active"] = 0
     before = [row["active"] for row in rows]
     calls, phases, after = _run(monkeypatch, tmp_path, rows)
     executed = [x[1] for x in calls if x[0] == "execute"]
-    assert executed == [[1, 3, 5, 6], [8, 10, 11, 12, 14, 15], [20]]
+    assert executed == [[1, 3, 5, 6], [8, 10, 11, 12, 14, 15], [17, 18, 19, 20]]
     assert [x[0] for x in calls] == ["execute", "mask", "execute", "mask", "execute", "verify"]
     assert len(phases) == 3
     assert [row["active"] for row in after] == before
+    import json
+    report = json.loads((tmp_path / 'LONG_MASK_EXECUTION_PLAN.json').read_text())
+    assert report['temporarily_activated_partial_assignments'] == [17, 18, 19]
+    assert report['expected_final_assignment_sequence'] == [17, 18, 19, 20]
+    assert report['original_active_flags_restored_after_each_phase'] is True
 
 
 @pytest.mark.parametrize("scopes, error", [
@@ -121,6 +126,34 @@ def test_rejects_changed_live_dseg_scope_before_any_execution(monkeypatch, tmp_p
     with pytest.raises(Exception, match=error):
         _run(monkeypatch, tmp_path, rows)
     assert all(r["active"] for r in rows)
+
+
+
+def test_inactive_partial_scope_drift_blocks_before_any_execution(monkeypatch, tmp_path):
+    rows = _rows(scopes={18: 'NATIVE_CF,NATIVE_CW'})
+    for pos in (17, 18, 19): rows[pos - 1]['active'] = 0
+    with pytest.raises(Exception, match='LONGMASK_ASSIGNMENT_DSEG_SCOPE_MISMATCH:18'):
+        _run(monkeypatch, tmp_path, rows)
+    assert [row['active'] for row in rows[16:20]] == [0, 0, 0, 1]
+
+
+def test_inactive_partial_definition_missing_blocks_before_execution(monkeypatch, tmp_path):
+    rows = _rows(omit=17)
+    for pos in (18, 19): rows[pos - 1]['active'] = 0
+    with pytest.raises(Exception, match='LONGMASK_PARTIAL_ASSIGNMENT_DEFINITION_MISMATCH:17'):
+        _run(monkeypatch, tmp_path, rows)
+
+
+def test_supply_only_recomputation_runs_all_four_scopes_with_restored_flags(
+        monkeypatch, tmp_path):
+    rows = _rows()
+    for pos in (17, 18, 19): rows[pos - 1]['active'] = 0
+    rows[5]['active'] = 0   # no active TD; cold re-realization path
+    before = [row['active'] for row in rows]
+    calls, phases, after = _run(monkeypatch, tmp_path, rows)
+    executed = [x[1] for x in calls if x[0] == 'execute']
+    assert executed[-1] == [17, 18, 19, 20]
+    assert [row['active'] for row in after] == before
 
 
 def test_rejects_missing_final_20_even_when_partial_assignments_active(monkeypatch, tmp_path):
