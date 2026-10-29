@@ -118,3 +118,43 @@ def test_normalizes_visum_not_suffix():
         row = {"no": position, "object": PrtOperation(scope)}
         expected = scope.replace("_noT", "_NOT").split(",")
         maskmod._verify_assignment_scope(row, expected)
+
+
+def test_single_final_assignment_scope_is_verified_without_partials(monkeypatch, tmp_path):
+    # Supply-only config can select only final op20. Even with no partial
+    # assignments, a changed final DSEGSET is a hard error before execution.
+    rows = _rows(scopes={20: "LNV,NV"})
+    for position in (17, 18, 19):
+        rows[position - 1]["active"] = 0
+    rows[5]["active"] = 0  # supply-only: no native TD operation
+    before = [row["active"] for row in rows]
+    with pytest.raises(Exception, match="LONGMASK_ASSIGNMENT_DSEG_SCOPE_MISMATCH:20"):
+        _run(monkeypatch, tmp_path, rows)
+    assert [row["active"] for row in rows] == before
+
+
+def test_duplicate_approved_final_operation_rejected(monkeypatch, tmp_path):
+    original = _adapter
+    def duplicate_adapter():
+        adapter = original()
+        adapter.cfg["supply"]["assignment_operations"].append(
+            dict(adapter.cfg["supply"]["assignment_operations"][0]))
+        return adapter
+    # Patches a module-global lookup in the test's _run helper, not model code.
+    import sys
+    this_module = sys.modules[__name__]
+    monkeypatch.setattr(this_module, "_adapter", duplicate_adapter)
+    with pytest.raises(Exception, match="LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH"):
+        _run(monkeypatch, tmp_path, _rows())
+
+
+def test_wrong_final_assignment_type_in_config_rejected(monkeypatch, tmp_path):
+    original = _adapter
+    def wrong_adapter():
+        adapter = original()
+        adapter.cfg["supply"]["assignment_operations"][0]["operation_type"] = 65
+        return adapter
+    import sys
+    monkeypatch.setattr(sys.modules[__name__], "_adapter", wrong_adapter)
+    with pytest.raises(Exception, match="LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH"):
+        _run(monkeypatch, tmp_path, _rows())
