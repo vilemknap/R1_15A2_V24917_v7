@@ -65,6 +65,21 @@ def _invalidate(adapter):
         invalidate('LONG_POST_TD_MASK_MATRIX_WRITE', mutation=True)
 
 
+def _set_values_exact(matrix, values):
+    """Visum COM Matrix.SetValues requires a two-dimensional numpy array.
+
+    Do not marshal 681x681 matrices as nested Python lists of VARIANTs: the
+    live Visum 2026 gen_py InvokeTypes failed on the first vehicle LONG write
+    with that payload. Explicit Add=False also prevents accidental addition
+    on either application or rollback. A transient write failure is *not*
+    automatically retried, as COM may have partially applied it.
+    """
+    a = np.array(values, dtype=np.float64, copy=True, order='C')
+    if a.ndim != 2 or not a.flags.c_contiguous or not np.isfinite(a).all():
+        raise SupplyContractError('LONGMASK_WRITE_ARRAY_INVALID')
+    matrix.SetValues(a, False)
+
+
 def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
     """Validate the complete write plan, own partial writes, verify COM readback.
 
@@ -98,16 +113,19 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
               'minimum_km': MIN_KM, 'maximum_km': None, 'renormalized': False,
               'units': 'PERSON_TRIPS' if aggregate_no is None else 'VEHICLES',
               'zone_nos': list(adapter.zones), 'matrices': rows,
-              'aggregate_rebuilt': aggregate_no, 'status': 'PLANNED'}
+              'aggregate_rebuilt': aggregate_no, 'status': 'PLANNED',
+              'matrix_com_write': 'NUMPY_FLOAT64_C_CONTIGUOUS_ADD_FALSE'}
     atomic_json(folder / 'LONG_MASK_PLAN.json', report)
     owned = []
+    attempted_matrix_no = None
     try:
         for no in targets:
             if np.array_equal(before[no], targets[no]):
                 continue
+            attempted_matrix_no = int(no)
             owned.append(no)  # the COM write may mutate before raising
             _invalidate(adapter)
-            objects[no].SetValues(targets[no].tolist())
+            _set_values_exact(objects[no], targets[no])
             _, actual = _read(adapter, no)
             if not np.array_equal(actual, targets[no]):
                 raise SupplyContractError('LONGMASK_READBACK_MISMATCH:%d' % no)
@@ -119,13 +137,26 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
         return report
     except BaseException as exc:
         errors = []
+        restoration = []
         for no in reversed(owned):
             try:
+                # A rejected COM call often makes NO change. Read first: an
+                # unnecessary second write can fail and falsely turn an intact
+                # working copy into a MANUAL_REOPEN_REQUIRED emergency.
+                current = _read(adapter, no)[1]
+                if current.shape != before[no].shape:
+                    raise SupplyContractError('RESTORE_MATRIX_SHAPE:%d' % no)
+                if np.array_equal(current, before[no]):
+                    restoration.append({'matrix_no': no, 'status': 'UNCHANGED_NO_REWRITE'})
+                    continue
                 _invalidate(adapter)
-                objects[no].SetValues(before[no].tolist())
+                _set_values_exact(objects[no], before[no])
                 if not np.array_equal(_read(adapter, no)[1], before[no]):
-                    raise SupplyContractError('RESTORE_READBACK')
+                    raise SupplyContractError('RESTORE_READBACK:%d' % no)
+                restoration.append({'matrix_no': no, 'status': 'RESTORED_EXACT'})
             except BaseException as restore_exc:
+                restoration.append({'matrix_no': no, 'status': 'UNVERIFIED',
+                                    'error': repr(restore_exc)})
                 errors.append('%d:%r' % (no, restore_exc))
         try:
             if not np.array_equal(_read(adapter, 9116)[1], protected):
@@ -133,7 +164,10 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
         except BaseException as check_exc:
             errors.append('FROZEN_FOREIGN_UNVERIFIED:' + repr(check_exc))
         report.update(status='PREMASK_RESTORED_CALIBRATION_PARENT_RECOMPUTE_REQUIRED' if not errors
-                      else 'RESTORE_FAILED_MANUAL_REOPEN_REQUIRED', error=repr(exc), restore_errors=errors)
+                      else 'RESTORE_FAILED_MANUAL_REOPEN_REQUIRED', error=repr(exc),
+                      failed_matrix_no=attempted_matrix_no,
+                      matrix_com_write='NUMPY_FLOAT64_C_CONTIGUOUS_ADD_FALSE',
+                      restore_readbacks=restoration, restore_errors=errors)
         try:
             atomic_json(folder / 'LONG_MASK_RESULT.json', report)
         except Exception as io_exc:
