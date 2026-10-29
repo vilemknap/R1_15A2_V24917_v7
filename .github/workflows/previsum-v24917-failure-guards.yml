@@ -5,6 +5,7 @@ on:
       - codex/v24917-previsum-failure-guards-20261029
       - codex/fix-v240-op20-inactive-partials-20261029
       - codex/v24917-op17-20-and-matrix-com-array-fix-20261029
+      - codex/v24917-formula-longmask-silent-debug-20261029
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,6 +27,9 @@ jobs:
           python -m py_compile tests/test_v24917_preflight_op20_partial_activation.py
           python -m py_compile tests/test_v24917_longmask_09c_live_scope_regression.py
           python -m py_compile tests/test_v24917_long_post_td_mask.py
+          python -m py_compile v24917_silent_debug.py
+          python -m py_compile 01_SPUSTIT_V24917_TDJOINT1_SILENT.py
+          python -m py_compile tests/test_v24917_silent_debug.py
       - name: Verify sealed runtime and DIAGFAST files (read only)
         run: |
           python - <<'PY'
@@ -48,7 +52,7 @@ jobs:
           PY
       - name: Exact 09C scope, V240 preflight and LONGMASK regression
         run: |
-          python -m pytest -q -p no:cacheprovider tests/test_v24917_preflight_op20_partial_activation.py tests/test_v239_safety_gates.py tests/test_v240_full_overnight.py tests/test_v24917_longmask_09c_live_scope_regression.py tests/test_v24917_long_post_td_mask.py
+          python -m pytest -q -p no:cacheprovider tests/test_v24917_preflight_op20_partial_activation.py tests/test_v239_safety_gates.py tests/test_v240_full_overnight.py tests/test_v24917_longmask_09c_live_scope_regression.py tests/test_v24917_long_post_td_mask.py tests/test_v24917_silent_debug.py
       - name: Source/working-copy operation difference regression
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_working_copy_operation_diff.py
       - name: Full main regression in isolated process
