@@ -67,7 +67,7 @@
     "r1_15a2_parent_equivalence_v24917.py": "acc0f39f6bbbffc88119a75f3e5dedf2f02bda69abe719716e7a679ecf992d60",
     "r1_15a2_path_incidence_v24917.py": "3c4830a61fe3de9cb1a39a5ca8f203220a008585e1dd3f34d3dbd2dba787fb78",
     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
-    "r1_15a2_preflight_explain_v24917.py": "7d0ecf8b8588bf7463eee9beeaadf981d7e61d56e8a00b8240437162cbc6d4f0",
+    "r1_15a2_preflight_explain_v24917.py": "741ee6301f61a7ff8606dd778d484e5bad15648129c5894d841e4b3a281f3c87",
     "r1_15a2_preflight_iofix_v24917.py": "a843a89df41aaec1ff4d2e9d442cb88b18a4e8273b3e45a8c3498de3800ea6f8",
     "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
@@ -110,6 +110,7 @@
     "tests/test_v24917_long_profile_incidence.py": "6220c516d2f7c39e0b2ddf80101121714c7f22dfa6249dead14102df5e15d976",
     "tests/test_v24917_long_zonal_fit.py": "e26878643cd4062365f6f7e3b54067ce2c7bffe0dba6e71881afa26fafcba7a1",
     "tests/test_v24917_longguard1.py": "93daa1627891e8591083b8b4fc8e317135cf438ca49f17f4e71baca7e29b20e2",
+    "tests/test_v24917_longmask_09c_live_scope_regression.py": "37484964d16e0f42fa8b3a6607d9cb9009c19a26b824ed5268d92762fa1c7bfa",
     "tests/test_v24917_mobility_guard.py": "ff98e4cb4d62b5aa7f89a4b5d4f6ec5716f650eb945e33ea85110d7b524ca0cf",
     "tests/test_v24917_mobilityalloc1_solver.py": "9421fe7d9a1a07d9ecf7e6dc6b73f391af87a86aa2e5a666d1fb98fa15578265",
     "tests/test_v24917_mobilityfix1.py": "77c5d0b51f2dbeb7af073b3bed05eedb794c42baef7d02965aa1e7235ebfdd37",
@@ -117,6 +118,7 @@
     "tests/test_v24917_path_incidence_review.py": "5e469acc20f1e42ca292f48623736d05893ade67c3caeb58922ce2f215989eee",
     "tests/test_v24917_perf3.py": "2623e752b3d819ce8f9a64ef6417e667cfc27d78b153bcddb70658f99ae72185",
     "tests/test_v24917_preflight2.py": "8c55cd8f64b2c1188bb3211a541c8ed21ad4b65fdcc460ff5ec882b305a8b89c",
+    "tests/test_v24917_preflight_op20_partial_activation.py": "3695f61481e78aa3ce2b61d4a34c58affc433e8c79d39a817a98721f0c7a3bcd",
     "tests/test_v24917_procseq_bootstrapfix1.py": "8615c765e437758a5543b0d50e5702dc5bb20c482048de2880034686bad0eb4d",
     "tests/test_v24917_rbcons_audit.py": "482aee6cfd341610d271a811e76df0dfcc955015383726afbb82c4dde0385528",
     "tests/test_v24917_read_reuse.py": "672a1a7428612ef801c21de6e01c54a4e09eb602c32ba338f8cfc3e6fbe27fae",
@@ -138,7 +140,6 @@
     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
     "tools/refresh_v24917_manifests.py": "94b0163d9fa388c4f5bf7d5593a290580a1ca75970b9d5efb2e1cf85b56e4817",
-    "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
-    "tests/test_v24917_longmask_09c_live_scope_regression.py": "8a4b0374710fc61ad67749f5fdbbd65eb5f5b30a9231df18d2a0b73fcc6062b1"
+    "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
   }
 }
