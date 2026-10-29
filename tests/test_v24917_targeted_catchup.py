@@ -161,7 +161,7 @@ def test_envelope_bounds(mb, real_cfg):
     cfg = tg.overlay_cfg(real_cfg, "CATCH_UP")
     assert mb._multiplicative_coefficient_bounds("DOMESTIC", cfg, 1.9)[:2] == (0.75, 2.0)
     assert mb._multiplicative_coefficient_bounds("DOMESTIC", cfg, 6.0)[:2] == (0.75, 6.0)
-    assert mb._multiplicative_coefficient_bounds("ZAHR", cfg, 3.0, 2.0)[:2] == (1.0, 4.0)
+    assert mb._multiplicative_coefficient_bounds("ZAHR", cfg, 3.0, 2.0)[:2] == (1.0, 20.0)
     assert mb._soft_multiplier_bounds("DOMESTIC", cfg, 1.9) == (0.75, 2.0)
     refine = tg.overlay_cfg(real_cfg, "REFINE")
     assert mb._soft_multiplier_bounds("DOMESTIC", refine, 1.9) == (0.75, 2.0)
@@ -1133,3 +1133,46 @@ def test_hard_balance_design_passes_gate_without_attenuation(mb, real_cfg):
     assert master.generation_apply_gate(design, cfg)["passes"]
     reb = design["summary"]["bound_constrained_projection"]["role_rebalance"]
     assert all(v.get("scale", 1.0) > 0.8 for v in reb.values()), reb
+
+
+@pytest.mark.parametrize('phase', ['CATCH_UP', 'REFINE'])
+@pytest.mark.parametrize('reference', [1.0, 8.0])
+@pytest.mark.parametrize('current_ratio', [2.0, 9.5])
+def test_zahr_four_coefficients_reach_new_band_with_fixed_reference_and_step_caps(mb, real_cfg, phase, reference, current_ratio):
+    cfg = tg.overlay_cfg(real_cfg, phase)
+    attrs = ('ZAHR_PROD_WORK', 'ZAHR_ATR_WORK', 'ZAHR_PROD_SERV', 'ZAHR_ATR_SERV')
+    current = reference * current_ratio
+    zone = {'zone_no': 1, 'NOT_ZAHR': 0., 'ZAHR_SUSED': 1., 'POP_ZP': 1000.,
+            **{a: current for a in attrs}}
+    zeros = dict(zone, zone_no=2, **{a: 0. for a in attrs})
+    references = {a: {'1': reference, '2': 0.} for a in attrs}
+    bounds = tg.zone_bounds(mb, [zone, zeros], cfg, references)
+    expected_step = min(cfg['max_add_log_up'], math.log(10. / current_ratio))
+    assert len(bounds) == 4  # the structural-zero zone remains unavailable
+    for b in bounds.values():
+        assert b[1] == pytest.approx(expected_step)
+    projection = [{'zone_no': 1, 'family': f, 'role': role,
+                   'log_step': 1., 'base_margin_volume': 1000.}
+                  for f in ('WORK', 'SERVICE') for role in ('PROD', 'ATT')]
+    result = mb.design_generation_candidates(projection, [zone, zeros], cfg,
+                                              reference_values=references, scale=1.)
+    candidates = result['candidate_rows']
+    assert {r['attr'] for r in candidates} == set(attrs)
+    for row in candidates:
+        assert row['proposed'] == pytest.approx(current * math.exp(expected_step))
+        assert .5 * reference <= row['proposed'] <= 10. * reference + 1.e-10
+        assert math.log(row['proposed'] / current) <= cfg['max_add_log_up'] + 1.e-10
+
+
+@pytest.mark.parametrize('phase', ['CATCH_UP', 'REFINE'])
+def test_zahr_lower_bound_and_out_of_band_hold_or_recover_survive(mb, real_cfg, phase):
+    cfg = tg.overlay_cfg(real_cfg, phase)
+    for current in (.51, 12.):
+        zone = {'zone_no': 1, 'NOT_ZAHR': 0., 'ZAHR_SUSED': 1., 'POP_ZP': 1000.,
+                **{a: current for a in ('ZAHR_PROD_WORK', 'ZAHR_ATR_WORK', 'ZAHR_PROD_SERV', 'ZAHR_ATR_SERV')}}
+        refs = {a: {'1': 1.} for a in zone if a.startswith('ZAHR_') and a != 'ZAHR_SUSED'}
+        bounds = tg.zone_bounds(mb, [zone], cfg, refs)
+        for low, high in bounds.values():
+            assert low >= math.log(.5/current) - 1.e-10
+            if current > 10.:
+                assert high == pytest.approx(0.)

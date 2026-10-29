@@ -439,7 +439,8 @@ class VisumAdapter(_V24916ActiveAdapter):
             rows, summary, problem, solution = zf.fit(incidence, self.zones, bounds, cfg, fit_cfg)
             return rows, summary, problem, solution, None
         current = bdgen.current_values(self.visum, bdgen.STATE["zones"])
-        env = (policy.get("envelope") or {}).get("zahr_reference_multiplier", [0.25, 5.0])
+        # Boundary P/A volumes retain their own band when ZAHR coefficients expand.
+        env = (policy.get("envelope") or {}).get("boundary_reference_multiplier", [0.5, 2.0])
         bd_bounds = bdgen.bounds(current, self.generation_reference_values, cfg, env)
         all_bounds = dict(bounds)
         all_bounds.update(bd_bounds)

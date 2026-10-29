@@ -7,7 +7,7 @@
 * Phase REFINE afterwards: the inherited per-cycle stage caps
   (generation_step_schedule) and soft-band damping.
 * Coefficient envelope (both phases): domestic ADD_PROD/ATT [0.75, 2.0],
-  ZAHR run-start reference x [0.5, 2.0]; soft bands equal hard bands.
+  ZAHR run-start reference x [0.5, 10.0]; soft bands equal hard bands.
   The normalized ZAHR reference is 1; native raw units are preserved.  ADD_SALARY keeps [0.5, 2.0].
 * Design mode TARGETED_ZONE_DIRECT replaces the family-global + centred
   pattern: every zone keeps its own fitted step (no uniform family term);
@@ -46,9 +46,10 @@ DEFAULT_POLICY: Dict[str, Any] = {
     "refine_soft_outward_step_factor": 0.5,
     "envelope": {
         "domestic_hard": [0.75, 2.0],
-        "zahr_reference_multiplier": [0.5, 2.0],
+        "zahr_reference_multiplier": [0.5, 10.0],
+        "boundary_reference_multiplier": [0.5, 2.0],
         "refine_domestic_soft": [0.75, 2.0],
-        "refine_zahr_reference_soft": [0.5, 2.0],
+        "refine_zahr_reference_soft": [0.5, 10.0],
     },
     "fit": {"ridge_relative": 0.01, "balance_weight_relative": 50.0,
             "max_iter": 6000, "tolerance": 1.0e-9},
@@ -73,7 +74,8 @@ def validate_policy(policy: Mapping[str, Any]) -> Dict[str, Any]:
     need(math.log(0.5) - 1e-12 <= rdn < 0.0, "refine_max_log_down>=ln0.5")
     need(0.0 < float(p["refine_soft_outward_step_factor"]) <= 1.0, "refine_soft_outward_step_factor")
     env = p["envelope"]
-    for key in ("domestic_hard", "zahr_reference_multiplier", "refine_domestic_soft",
+    env.setdefault("boundary_reference_multiplier", [0.5, 2.0])
+    for key in ("domestic_hard", "zahr_reference_multiplier", "boundary_reference_multiplier", "refine_domestic_soft",
                 "refine_zahr_reference_soft"):
         lo, hi = (float(x) for x in env[key])
         need(0.0 < lo < 1.0 < hi <= 20.0, "envelope." + key)

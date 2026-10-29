@@ -22,8 +22,8 @@ def test_absolute_and_relative_bands_agree_with_fixed_mobility(phase):
     assert soft('DOMESTIC', cfg, 1.) == (.75, 2.)
     # Reference 1 is the normalized starting state; raw ZAHR units may differ.
     for ref in [1., 8.]:
-        assert hard('ZAHR', cfg, ref, ref)[:2] == (.5*ref, 2.*ref)
-        assert soft('ZAHR', cfg, ref, ref) == (.5*ref, 2.*ref)
+        assert hard('ZAHR', cfg, ref, ref)[:2] == (.5*ref, 10.*ref)
+        assert soft('ZAHR', cfg, ref, ref) == (.5*ref, 10.*ref)
     rows = [{'zone_no': 1, 'NOT_ZAHR': 1., 'ADD_PROD_W': 1.,
              **{name: 10. for name in mz.SPECS['WORK'][2]}}]
     authority = mz.capture(rows, {'lo': opts['mg_min_ratio'], 'hi': opts['mg_max_ratio']}, ['WORK'])

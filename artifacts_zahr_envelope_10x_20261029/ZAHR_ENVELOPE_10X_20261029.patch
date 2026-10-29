@@ -1,0 +1,268 @@
+diff --git a/.gitattributes b/.gitattributes
+index f90a3b4..5dbef53 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -44,3 +44,5 @@ artifacts_long_generation_shared_cache_20261029/*.patch -text -diff
+ evidence_long_generation_shared_cache_20261029/prior_attempts/*.log -text -diff
+ artifacts_path_incidence_review_20261029/*.patch -text -diff
+ artifacts_zonal_reset_20261029/*.patch -text -diff
++artifacts_zahr_envelope_10x_20261029/*.patch -text -diff
++artifacts_zahr_envelope_10x_20261029/prior_attempt/*.log -text -diff
+diff --git a/AGENTS.md b/AGENTS.md
+index dda11ea..8f019e2 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -52,6 +52,8 @@ Check names against the working tree. Do not invent missing modules or interface
+ 
+ ## Visum, transactions, and operational safety
+ 
++- User decision 2026-10-29: ZAHR_PROD_WORK, ZAHR_ATR_WORK, ZAHR_PROD_SERV and ZAHR_ATR_SERV use [0.5, 10.0] times each coefficient's immutable run-start value. The aligned REFINE soft band is also [0.5, 10.0]. Preserve structural zeros and phase step caps. Boundary P/A volume inputs retain their separate [0.5, 2.0] run-start envelope.
++
+ - No launching or attaching to Visum, `LoadVersion()`, `.ver` mutation, COM writes, remote deployment, or long-running live calibration without explicit user authorization and the appropriate Windows environment.
+ - Never use `LoadVersion()` to repair a rejected candidate inside an active calibration. Preserve the one live Visum instance and implement in-memory transaction snapshot / apply / readback / full recomputation / verify-parent rollback. If exact or policy-approved equivalence cannot be demonstrated, fail closed and require manual reopening of the last verified accepted checkpoint.
+ - Direct `SetValues()` is authorized only for the explicitly scoped LONG post-TD multiplication/rebuild and its in-memory restoration above. Other native TD operator modifications, demand OD writes and temporary matrices require explicit authorization and a transaction/rollback/readback plan.
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index 23e8537..dbc65a8 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -36,7 +36,7 @@
+     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
+     "helpers/R1_12D_PROFILE_ROSTER_V24917.py": "518b70b894dcd3156022fb60ff3933cfd04a955a9be890900a770585b741d9df",
+     "r1_15a2_active_demand_evidence_v24917.py": "3aaa457bdac3722a298a37866c18bee7d5c37cf0367424bc05a948d2253389bb",
+-    "r1_15a2_boundary_generation_v24917.py": "01b10c3613e59f7e77a923f8967dc3e22da5db70942d738cf2f018512390c394",
++    "r1_15a2_boundary_generation_v24917.py": "b437fcde80c8815a80911138665c3974e298d80e1c3ed4561a3862a931e32d5e",
+     "r1_15a2_boundary_pa_v24917.py": "a0a037a46570e34e0ff7ac85954959b90652e90e4f1e474a2a72d111c89a0958",
+     "r1_15a2_combusy2_v24917.py": "21cfa0e83e99853268e3ec4777d583537eac58a80f1efc655ea2617109ab4f0f",
+     "r1_15a2_demand_policy_v1.py": "6732aef12bbd9a37de235e12ee1c8c3c1d490075ccf1a00304b7211d2c97c805",
+@@ -78,19 +78,19 @@
+     "r1_15a2_snapshot_reads_v24917.py": "72be236f8d536f914c6a2f27cf86a7a48aef699ca186dc74c12f8695176f841d",
+     "r1_15a2_step_search_v24917.py": "0876b10c65c6b6b44e49c13418677cdeb170b0f090053b916bc8b15d8c3d9f07",
+     "r1_15a2_supply_mix_v24917.py": "7bf5f551855e9d1c3804cab20d40e518f92793a404071826dd7273054f42a3fd",
+-    "r1_15a2_targeted_generation_v24917.py": "e84d07c052df4c68517b414e747c10e9c377c063fa9cc5c7f49faa3096ce1baf",
++    "r1_15a2_targeted_generation_v24917.py": "71b53387090552a501183e998a639b27561ec854b798d2a7f4109e3e9daf9562",
+     "r1_15a2_td_count_blend_v24917.py": "9ae12413e9bba1bc82ad3aaec4e03a21353688eb07c436d8fc413edf42997ee1",
+     "r1_15a2_td_joint_runtime_v24917.py": "49e8a8b010e9dadec9bdb56399a1cfcddb075f0e3cf10570fc2ad5d843f0225c",
+     "r1_15a2_td_joint_v24917.py": "9638d3d0026cef17fdb27c7b469b53c74f75690043394a2f463c174e0961c9dd",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+-    "r1_15a2_trial_adapter_v24917.py": "6f4a4f695657d281c78c5c687dc36634c3cccfe9465e6647ed221168de3d83ab",
++    "r1_15a2_trial_adapter_v24917.py": "07d481c390b5d937fec030de51496327300f3d5e3353738bccc57dd37d70b572",
+     "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+-    "tests/test_v24917_aligned_bounds.py": "9fff6ee0dc5cb3ecb8dd1b92dd88eef46dcca791df246f74cc4922e912dffab4",
+-    "tests/test_v24917_boundary_generation.py": "2ebe5d6482be17e582e77aca5b1d2c18b7c116e941b0d60c0449a716c4ab5857",
++    "tests/test_v24917_aligned_bounds.py": "7e1b1708fbcbe1bbb7c91db47fbcc8a44bf9ff07d320cb0499a494add4bfd3b3",
++    "tests/test_v24917_boundary_generation.py": "fe3b40f966adaf88a4722064a821008a604a76971d51185dd66897ee30ecba4d",
+     "tests/test_v24917_boundary_pa.py": "45258311a1616b23ad8823deea13dcdfb5975f0ce2f692bf4ec58b269557c5ed",
+     "tests/test_v24917_combusy2.py": "91c347592c2ddce876454c38ee78c1c4770ab754c0773df7bdf08a9cb26ca2c4",
+     "tests/test_v24917_diagfast_td_abc_guard.py": "8faa8497524120589171af6ff53bfafc0c8231b0ddfd459ab184078ee2e6ad0b",
+@@ -126,7 +126,7 @@
+     "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
+     "tests/test_v24917_step_search.py": "10b78a9068ffab80e67c4dbe0761898230736a6f302fe7ad059279d1aafd123f",
+     "tests/test_v24917_supply_mix.py": "31803439c9c23d27b3829d66e7b9e95538f7922b111ca95a5158981f8c081cfe",
+-    "tests/test_v24917_targeted_catchup.py": "9906b33ef06369995cd7087548527c441adf0ffb912490110d53849285c0492b",
++    "tests/test_v24917_targeted_catchup.py": "c345a4367ea20c536edef36064ce51dcdc45ceea8e3c77bc268c4e24dd72e2ba",
+     "tests/test_v24917_td_rollback_tolerant.py": "7f03276f74e29715f7dd865688d079458184f97ab1d36b4f4eec76012e40215b",
+     "tests/test_v24917_td_stage_integration.py": "8e4d9636f3472ae5fcc88a28113209458142909467bfc3146f4b206672f86a25",
+     "tests/test_v24917_tdjoint1.py": "4c47b63f2b6323f952975d5efb9c96bc4e2ed8879b49f7149f165f4e22e987ae",
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 301189e..9a74953 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -16,8 +16,8 @@
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
+-    "r1_15a2_targeted_generation_v24917.py": "e84d07c052df4c68517b414e747c10e9c377c063fa9cc5c7f49faa3096ce1baf",
+-    "r1_15a2_trial_adapter_v24917.py": "6f4a4f695657d281c78c5c687dc36634c3cccfe9465e6647ed221168de3d83ab",
++    "r1_15a2_targeted_generation_v24917.py": "71b53387090552a501183e998a639b27561ec854b798d2a7f4109e3e9daf9562",
++    "r1_15a2_trial_adapter_v24917.py": "07d481c390b5d937fec030de51496327300f3d5e3353738bccc57dd37d70b572",
+     "r1_15a2_active_demand_evidence_v24917.py": "3aaa457bdac3722a298a37866c18bee7d5c37cf0367424bc05a948d2253389bb",
+     "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
+     "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+@@ -40,7 +40,7 @@
+     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+     "r1_15a2_combusy2_v24917.py": "21cfa0e83e99853268e3ec4777d583537eac58a80f1efc655ea2617109ab4f0f",
+     "r1_15a2_preflight_explain_v24917.py": "7d0ecf8b8588bf7463eee9beeaadf981d7e61d56e8a00b8240437162cbc6d4f0",
+-    "r1_15a2_boundary_generation_v24917.py": "01b10c3613e59f7e77a923f8967dc3e22da5db70942d738cf2f018512390c394",
++    "r1_15a2_boundary_generation_v24917.py": "b437fcde80c8815a80911138665c3974e298d80e1c3ed4561a3862a931e32d5e",
+     "r1_15a2_supply_mix_v24917.py": "7bf5f551855e9d1c3804cab20d40e518f92793a404071826dd7273054f42a3fd",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_severity_relax_v24917.py": "40624acbfc7d981b4c0286789eb2d99797fd566217a136c81a43798370617549",
+@@ -75,6 +75,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "1da8f7eb93ee09966fd27d399a981e1c8b336a7527e69feeb6280e411884e102"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "f4854987084f5b1a5b06298a299d005d347d8d4457f5952eb6d1143196bc7dc2"
+   }
+ }
+diff --git a/r1_15a2_boundary_generation_v24917.py b/r1_15a2_boundary_generation_v24917.py
+index 1e6d356..c3608e8 100644
+--- a/r1_15a2_boundary_generation_v24917.py
++++ b/r1_15a2_boundary_generation_v24917.py
+@@ -13,7 +13,7 @@ ATT columns of the zonal fit, merged after the family normalisation).  It is sol
+ JOINTLY with the domestic WORK/SERVICE variables (same weights, ridge, P/A balance).
+ 
+ Bounds: the per-cycle step caps of the active phase (CATCH_UP / REFINE) and the ZAHR
+-envelope of the targeted-generation policy (default x[0.5, 2] of the run-start value
++boundary envelope of the targeted-generation policy (default x[0.5, 2] of the run-start value
+ of the family's P total of the zone).  LONG/SCHOOL boundary layers and FOREIGN are not
+ touched.  Rows are written in the same trial as the W/S rows (one assignment) and are
+ snapshot/rollback state (mb.GENERATION_ATTRS is extended on activation).
+diff --git a/r1_15a2_targeted_generation_v24917.py b/r1_15a2_targeted_generation_v24917.py
+index bfe686b..9e8b029 100644
+--- a/r1_15a2_targeted_generation_v24917.py
++++ b/r1_15a2_targeted_generation_v24917.py
+@@ -7,7 +7,7 @@
+ * Phase REFINE afterwards: the inherited per-cycle stage caps
+   (generation_step_schedule) and soft-band damping.
+ * Coefficient envelope (both phases): domestic ADD_PROD/ATT [0.75, 2.0],
+-  ZAHR run-start reference x [0.5, 2.0]; soft bands equal hard bands.
++  ZAHR run-start reference x [0.5, 10.0]; soft bands equal hard bands.
+   The normalized ZAHR reference is 1; native raw units are preserved.  ADD_SALARY keeps [0.5, 2.0].
+ * Design mode TARGETED_ZONE_DIRECT replaces the family-global + centred
+   pattern: every zone keeps its own fitted step (no uniform family term);
+@@ -46,9 +46,10 @@ DEFAULT_POLICY: Dict[str, Any] = {
+     "refine_soft_outward_step_factor": 0.5,
+     "envelope": {
+         "domestic_hard": [0.75, 2.0],
+-        "zahr_reference_multiplier": [0.5, 2.0],
++        "zahr_reference_multiplier": [0.5, 10.0],
++        "boundary_reference_multiplier": [0.5, 2.0],
+         "refine_domestic_soft": [0.75, 2.0],
+-        "refine_zahr_reference_soft": [0.5, 2.0],
++        "refine_zahr_reference_soft": [0.5, 10.0],
+     },
+     "fit": {"ridge_relative": 0.01, "balance_weight_relative": 50.0,
+             "max_iter": 6000, "tolerance": 1.0e-9},
+@@ -73,7 +74,8 @@ def validate_policy(policy: Mapping[str, Any]) -> Dict[str, Any]:
+     need(math.log(0.5) - 1e-12 <= rdn < 0.0, "refine_max_log_down>=ln0.5")
+     need(0.0 < float(p["refine_soft_outward_step_factor"]) <= 1.0, "refine_soft_outward_step_factor")
+     env = p["envelope"]
+-    for key in ("domestic_hard", "zahr_reference_multiplier", "refine_domestic_soft",
++    env.setdefault("boundary_reference_multiplier", [0.5, 2.0])
++    for key in ("domestic_hard", "zahr_reference_multiplier", "boundary_reference_multiplier", "refine_domestic_soft",
+                 "refine_zahr_reference_soft"):
+         lo, hi = (float(x) for x in env[key])
+         need(0.0 < lo < 1.0 < hi <= 20.0, "envelope." + key)
+diff --git a/r1_15a2_trial_adapter_v24917.py b/r1_15a2_trial_adapter_v24917.py
+index 5581c93..e5d4720 100644
+--- a/r1_15a2_trial_adapter_v24917.py
++++ b/r1_15a2_trial_adapter_v24917.py
+@@ -439,7 +439,8 @@ class VisumAdapter(_V24916ActiveAdapter):
+             rows, summary, problem, solution = zf.fit(incidence, self.zones, bounds, cfg, fit_cfg)
+             return rows, summary, problem, solution, None
+         current = bdgen.current_values(self.visum, bdgen.STATE["zones"])
+-        env = (policy.get("envelope") or {}).get("zahr_reference_multiplier", [0.25, 5.0])
++        # Boundary P/A volumes retain their own band when ZAHR coefficients expand.
++        env = (policy.get("envelope") or {}).get("boundary_reference_multiplier", [0.5, 2.0])
+         bd_bounds = bdgen.bounds(current, self.generation_reference_values, cfg, env)
+         all_bounds = dict(bounds)
+         all_bounds.update(bd_bounds)
+diff --git a/tests/test_v24917_aligned_bounds.py b/tests/test_v24917_aligned_bounds.py
+index f1e8510..f0b5374 100644
+--- a/tests/test_v24917_aligned_bounds.py
++++ b/tests/test_v24917_aligned_bounds.py
+@@ -22,8 +22,8 @@ def test_absolute_and_relative_bands_agree_with_fixed_mobility(phase):
+     assert soft('DOMESTIC', cfg, 1.) == (.75, 2.)
+     # Reference 1 is the normalized starting state; raw ZAHR units may differ.
+     for ref in [1., 8.]:
+-        assert hard('ZAHR', cfg, ref, ref)[:2] == (.5*ref, 2.*ref)
+-        assert soft('ZAHR', cfg, ref, ref) == (.5*ref, 2.*ref)
++        assert hard('ZAHR', cfg, ref, ref)[:2] == (.5*ref, 10.*ref)
++        assert soft('ZAHR', cfg, ref, ref) == (.5*ref, 10.*ref)
+     rows = [{'zone_no': 1, 'NOT_ZAHR': 1., 'ADD_PROD_W': 1.,
+              **{name: 10. for name in mz.SPECS['WORK'][2]}}]
+     authority = mz.capture(rows, {'lo': opts['mg_min_ratio'], 'hi': opts['mg_max_ratio']}, ['WORK'])
+diff --git a/tests/test_v24917_boundary_generation.py b/tests/test_v24917_boundary_generation.py
+index f4987ce..3b597b0 100644
+--- a/tests/test_v24917_boundary_generation.py
++++ b/tests/test_v24917_boundary_generation.py
+@@ -261,3 +261,24 @@ def test_adapter_fit_with_boundary(monkeypatch):
+     monkeypatch.setattr(bd, "STATE", {"active": False})
+     rows2, *_rest, payload2 = ad._fit_with_boundary(inc, dom_bounds, cfg, {"fit": {}})
+     assert payload2 is None
++
++
++def test_zahr_envelope_expansion_does_not_expand_boundary_volume_band(monkeypatch):
++    import r1_15a2_trial_adapter_v24917 as adapter
++    import r1_15a2_targeted_generation_v24917 as tg
++    boundary = adapter.bdgen  # launch tests can replace the collected module instance
++    monkeypatch.setattr(boundary, 'STATE', {'active': True, 'zones': [650]})
++    monkeypatch.setattr(boundary, 'current_values', lambda *args: {})
++    seen = []
++    class Captured(Exception):
++        pass
++    def inspect_bounds(current, references, cfg, envelope):
++        seen.append(envelope)
++        raise Captured()
++    monkeypatch.setattr(boundary, 'bounds', inspect_bounds)
++    obj = SimpleNamespace(visum=object(), generation_reference_values={})
++    policy = tg.validate_policy(tg.DEFAULT_POLICY)
++    assert policy['envelope']['zahr_reference_multiplier'] == [.5, 10.]
++    with pytest.raises(Captured):
++        adapter.VisumAdapter._fit_with_boundary(obj, {}, {}, {}, policy)
++    assert seen == [[.5, 2.]]
+diff --git a/tests/test_v24917_targeted_catchup.py b/tests/test_v24917_targeted_catchup.py
+index 734d908..35b47d3 100644
+--- a/tests/test_v24917_targeted_catchup.py
++++ b/tests/test_v24917_targeted_catchup.py
+@@ -161,7 +161,7 @@ def test_envelope_bounds(mb, real_cfg):
+     cfg = tg.overlay_cfg(real_cfg, "CATCH_UP")
+     assert mb._multiplicative_coefficient_bounds("DOMESTIC", cfg, 1.9)[:2] == (0.75, 2.0)
+     assert mb._multiplicative_coefficient_bounds("DOMESTIC", cfg, 6.0)[:2] == (0.75, 6.0)
+-    assert mb._multiplicative_coefficient_bounds("ZAHR", cfg, 3.0, 2.0)[:2] == (1.0, 4.0)
++    assert mb._multiplicative_coefficient_bounds("ZAHR", cfg, 3.0, 2.0)[:2] == (1.0, 20.0)
+     assert mb._soft_multiplier_bounds("DOMESTIC", cfg, 1.9) == (0.75, 2.0)
+     refine = tg.overlay_cfg(real_cfg, "REFINE")
+     assert mb._soft_multiplier_bounds("DOMESTIC", refine, 1.9) == (0.75, 2.0)
+@@ -1133,3 +1133,46 @@ def test_hard_balance_design_passes_gate_without_attenuation(mb, real_cfg):
+     assert master.generation_apply_gate(design, cfg)["passes"]
+     reb = design["summary"]["bound_constrained_projection"]["role_rebalance"]
+     assert all(v.get("scale", 1.0) > 0.8 for v in reb.values()), reb
++
++
++@pytest.mark.parametrize('phase', ['CATCH_UP', 'REFINE'])
++@pytest.mark.parametrize('reference', [1.0, 8.0])
++@pytest.mark.parametrize('current_ratio', [2.0, 9.5])
++def test_zahr_four_coefficients_reach_new_band_with_fixed_reference_and_step_caps(mb, real_cfg, phase, reference, current_ratio):
++    cfg = tg.overlay_cfg(real_cfg, phase)
++    attrs = ('ZAHR_PROD_WORK', 'ZAHR_ATR_WORK', 'ZAHR_PROD_SERV', 'ZAHR_ATR_SERV')
++    current = reference * current_ratio
++    zone = {'zone_no': 1, 'NOT_ZAHR': 0., 'ZAHR_SUSED': 1., 'POP_ZP': 1000.,
++            **{a: current for a in attrs}}
++    zeros = dict(zone, zone_no=2, **{a: 0. for a in attrs})
++    references = {a: {'1': reference, '2': 0.} for a in attrs}
++    bounds = tg.zone_bounds(mb, [zone, zeros], cfg, references)
++    expected_step = min(cfg['max_add_log_up'], math.log(10. / current_ratio))
++    assert len(bounds) == 4  # the structural-zero zone remains unavailable
++    for b in bounds.values():
++        assert b[1] == pytest.approx(expected_step)
++    projection = [{'zone_no': 1, 'family': f, 'role': role,
++                   'log_step': 1., 'base_margin_volume': 1000.}
++                  for f in ('WORK', 'SERVICE') for role in ('PROD', 'ATT')]
++    result = mb.design_generation_candidates(projection, [zone, zeros], cfg,
++                                              reference_values=references, scale=1.)
++    candidates = result['candidate_rows']
++    assert {r['attr'] for r in candidates} == set(attrs)
++    for row in candidates:
++        assert row['proposed'] == pytest.approx(current * math.exp(expected_step))
++        assert .5 * reference <= row['proposed'] <= 10. * reference + 1.e-10
++        assert math.log(row['proposed'] / current) <= cfg['max_add_log_up'] + 1.e-10
++
++
++@pytest.mark.parametrize('phase', ['CATCH_UP', 'REFINE'])
++def test_zahr_lower_bound_and_out_of_band_hold_or_recover_survive(mb, real_cfg, phase):
++    cfg = tg.overlay_cfg(real_cfg, phase)
++    for current in (.51, 12.):
++        zone = {'zone_no': 1, 'NOT_ZAHR': 0., 'ZAHR_SUSED': 1., 'POP_ZP': 1000.,
++                **{a: current for a in ('ZAHR_PROD_WORK', 'ZAHR_ATR_WORK', 'ZAHR_PROD_SERV', 'ZAHR_ATR_SERV')}}
++        refs = {a: {'1': 1.} for a in zone if a.startswith('ZAHR_') and a != 'ZAHR_SUSED'}
++        bounds = tg.zone_bounds(mb, [zone], cfg, refs)
++        for low, high in bounds.values():
++            assert low >= math.log(.5/current) - 1.e-10
++            if current > 10.:
++                assert high == pytest.approx(0.)

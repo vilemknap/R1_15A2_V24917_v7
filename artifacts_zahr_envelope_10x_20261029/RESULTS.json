@@ -1,0 +1,15 @@
+{
+  "scope": "ZAHR_REFERENCE_ENVELOPE_0.5_TO_10",
+  "focused_passed": 72,
+  "main_passed": 1930,
+  "main_skipped": 4,
+  "diagfast_passed": 138,
+  "audit_passed": 18,
+  "live_visum": "NOT_RUN",
+  "protected_originals_verified": 1059,
+  "manifest_files": {
+    "V24917_RUNTIME_MANIFEST.json": "32f8edb9f5e0ad1ee617325a838bf064f013904ef8eb815ecff143bf2a3c94d4",
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "f4854987084f5b1a5b06298a299d005d347d8d4457f5952eb6d1143196bc7dc2",
+    "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+  }
+}

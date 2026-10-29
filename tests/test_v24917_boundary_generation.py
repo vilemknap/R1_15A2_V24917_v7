@@ -261,3 +261,24 @@ def test_adapter_fit_with_boundary(monkeypatch):
     monkeypatch.setattr(bd, "STATE", {"active": False})
     rows2, *_rest, payload2 = ad._fit_with_boundary(inc, dom_bounds, cfg, {"fit": {}})
     assert payload2 is None
+
+
+def test_zahr_envelope_expansion_does_not_expand_boundary_volume_band(monkeypatch):
+    import r1_15a2_trial_adapter_v24917 as adapter
+    import r1_15a2_targeted_generation_v24917 as tg
+    boundary = adapter.bdgen  # launch tests can replace the collected module instance
+    monkeypatch.setattr(boundary, 'STATE', {'active': True, 'zones': [650]})
+    monkeypatch.setattr(boundary, 'current_values', lambda *args: {})
+    seen = []
+    class Captured(Exception):
+        pass
+    def inspect_bounds(current, references, cfg, envelope):
+        seen.append(envelope)
+        raise Captured()
+    monkeypatch.setattr(boundary, 'bounds', inspect_bounds)
+    obj = SimpleNamespace(visum=object(), generation_reference_values={})
+    policy = tg.validate_policy(tg.DEFAULT_POLICY)
+    assert policy['envelope']['zahr_reference_multiplier'] == [.5, 10.]
+    with pytest.raises(Captured):
+        adapter.VisumAdapter._fit_with_boundary(obj, {}, {}, {}, policy)
+    assert seen == [[.5, 2.]]

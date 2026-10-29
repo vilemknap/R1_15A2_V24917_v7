@@ -1,0 +1,47 @@
+{
+  "before": {
+    "domestic_hard": [
+      0.75,
+      2.0
+    ],
+    "zahr_reference_multiplier": [
+      0.5,
+      2.0
+    ],
+    "refine_domestic_soft": [
+      0.75,
+      2.0
+    ],
+    "refine_zahr_reference_soft": [
+      0.5,
+      2.0
+    ]
+  },
+  "after": {
+    "domestic_hard": [
+      0.75,
+      2.0
+    ],
+    "zahr_reference_multiplier": [
+      0.5,
+      10.0
+    ],
+    "boundary_reference_multiplier": [
+      0.5,
+      2.0
+    ],
+    "refine_domestic_soft": [
+      0.75,
+      2.0
+    ],
+    "refine_zahr_reference_soft": [
+      0.5,
+      10.0
+    ]
+  },
+  "phase_step_caps_and_other_policy_fields_unchanged": true,
+  "boundary_volume_band_preserved": [
+    0.5,
+    2.0
+  ]
+}

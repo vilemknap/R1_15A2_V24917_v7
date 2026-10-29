@@ -44,3 +44,5 @@ artifacts_long_generation_shared_cache_20261029/*.patch -text -diff
 evidence_long_generation_shared_cache_20261029/prior_attempts/*.log -text -diff
 artifacts_path_incidence_review_20261029/*.patch -text -diff
 artifacts_zonal_reset_20261029/*.patch -text -diff
+artifacts_zahr_envelope_10x_20261029/*.patch -text -diff
+artifacts_zahr_envelope_10x_20261029/prior_attempt/*.log -text -diff

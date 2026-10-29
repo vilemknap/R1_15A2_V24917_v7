@@ -52,6 +52,8 @@ Check names against the working tree. Do not invent missing modules or interface
 
 ## Visum, transactions, and operational safety
 
+- User decision 2026-10-29: ZAHR_PROD_WORK, ZAHR_ATR_WORK, ZAHR_PROD_SERV and ZAHR_ATR_SERV use [0.5, 10.0] times each coefficient's immutable run-start value. The aligned REFINE soft band is also [0.5, 10.0]. Preserve structural zeros and phase step caps. Boundary P/A volume inputs retain their separate [0.5, 2.0] run-start envelope.
+
 - No launching or attaching to Visum, `LoadVersion()`, `.ver` mutation, COM writes, remote deployment, or long-running live calibration without explicit user authorization and the appropriate Windows environment.
 - Never use `LoadVersion()` to repair a rejected candidate inside an active calibration. Preserve the one live Visum instance and implement in-memory transaction snapshot / apply / readback / full recomputation / verify-parent rollback. If exact or policy-approved equivalence cannot be demonstrated, fail closed and require manual reopening of the last verified accepted checkpoint.
 - Direct `SetValues()` is authorized only for the explicitly scoped LONG post-TD multiplication/rebuild and its in-memory restoration above. Other native TD operator modifications, demand OD writes and temporary matrices require explicit authorization and a transaction/rollback/readback plan.

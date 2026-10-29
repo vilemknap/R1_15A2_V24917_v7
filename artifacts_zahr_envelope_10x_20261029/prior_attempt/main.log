@@ -1,0 +1,69 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 18%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+........................................................................ [ 33%]
+......................................s.s..........s................s... [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+............................F........................................... [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+..............................................................           [100%]
+=================================== FAILURES ===================================
+______ test_zahr_envelope_expansion_does_not_expand_boundary_volume_band _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3262a91f60>
+
+    def test_zahr_envelope_expansion_does_not_expand_boundary_volume_band(monkeypatch):
+        import r1_15a2_trial_adapter_v24917 as adapter
+        import r1_15a2_targeted_generation_v24917 as tg
+        monkeypatch.setattr(bd, 'STATE', {'active': True, 'zones': [650]})
+        monkeypatch.setattr(bd, 'current_values', lambda *args: {})
+        seen = []
+        class Captured(Exception):
+            pass
+        def inspect_bounds(current, references, cfg, envelope):
+            seen.append(envelope)
+            raise Captured()
+        monkeypatch.setattr(bd, 'bounds', inspect_bounds)
+        obj = SimpleNamespace(visum=object(), generation_reference_values={})
+        policy = tg.validate_policy(tg.DEFAULT_POLICY)
+        assert policy['envelope']['zahr_reference_multiplier'] == [.5, 10.]
+        with pytest.raises(Captured):
+>           adapter.VisumAdapter._fit_with_boundary(obj, {}, {}, {}, policy)
+
+tests/test_v24917_boundary_generation.py:282: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = namespace(visum=<object object at 0x7f3262abc940>, generation_reference_values={})
+incidence = {}, bounds = {}, cfg = {}
+policy = {'catchup_max_log_down': -0.2231435513142097, 'catchup_max_log_up': 0.4054651081081644, 'catchup_until_model_obs_ratio': 0.8, 'enabled': True, ...}
+
+    def _fit_with_boundary(self, incidence, bounds, cfg, policy):
+        """W/S zonal fit, jointly with the border-crossing P/A lever when BNDGEN1 is active."""
+        fit_cfg = dict(policy.get("fit", {}), nonlinear_pa_repair=True)
+        if not bdgen.active():
+>           rows, summary, problem, solution = zf.fit(incidence, self.zones, bounds, cfg, fit_cfg)
+                                                                 ^^^^^^^^^^
+E           AttributeError: 'types.SimpleNamespace' object has no attribute 'zones'
+
+r1_15a2_trial_adapter_v24917.py:439: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_boundary_generation.py::test_zahr_envelope_expansion_does_not_expand_boundary_volume_band
+1 failed, 1929 passed, 4 skipped in 35.91s
