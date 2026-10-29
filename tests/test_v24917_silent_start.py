@@ -88,6 +88,24 @@ def test_stderr_not_redirected(tmp_path, monkeypatch, capsys):
     assert "CRITICAL_VISUM_STDERR" not in log
 
 
+
+def test_returned_fatal_status_is_not_hidden(tmp_path, monkeypatch, capsys):
+    silent = _load("01_SPUSTIT_V24917_TDJOINT1_SILENT.py", "_silent_returned_failure")
+    def finished_failed():
+        print("BOOTSTRAP ERROR buffered")
+        return {"status": "FULL_OVERNIGHT_FAILED", "error": "LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH"}
+    monkeypatch.setattr(silent, "log_directory", lambda: tmp_path)
+    monkeypatch.setattr(silent, "load_parent", lambda filename: NS(main=finished_failed))
+    silent.Visum = object()
+    with pytest.raises(RuntimeError, match="R1_SILENT_CALIBRATION_FAILED:FULL_OVERNIGHT_FAILED"):
+        silent.main()
+    assert capsys.readouterr().out == ""
+    log = next(tmp_path.glob("R1_SILENT_*.log")).read_text(encoding="utf-8")
+    assert "BOOTSTRAP ERROR buffered" in log
+    assert "R1_SILENT_CALIBRATION_FAILED" in log
+
+
+
 def test_no_visum_does_not_open_log(tmp_path, monkeypatch):
     silent = _load("01_SPUSTIT_V24917_TDJOINT1_SILENT.py", "_silent_no_visum_test")
     monkeypatch.setattr(silent, "log_directory", lambda: tmp_path)
