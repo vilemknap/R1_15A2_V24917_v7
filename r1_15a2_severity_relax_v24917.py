@@ -35,11 +35,8 @@ _STATE: Dict[str, Any] = {"installed": False, "applied": 0}
 
 
 def options() -> Dict[str, float]:
-    try:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dp.load_options()
-    except Exception:
-        o = {}
+    import r1_15a2_demand_policy_v1 as dp
+    o = dp.load_options()
     return {"single": float(o.get("sev_max_single_profile_geh_increase", 0.0) or 0.0),
             "high": float(o.get("sev_max_high_geh_increase", 0.0) or 0.0),
             "extend_horizon": bool(o.get("sev_extend_early_horizon", True)),
@@ -95,13 +92,13 @@ def _wrap(orig):
 def install(print_fn=print) -> Dict[str, Any]:
     if _STATE["installed"]:
         return status()
+    o = options()
     import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
     for name in ("_generation_counts_cfg", "_td_acceptance_cfg_for_cycle"):
         fn = getattr(ctrl, name)
         if not getattr(fn, "__r1_sevrelax__", False):
             setattr(ctrl, name, _wrap(fn))
     _STATE["installed"] = True
-    o = options()
     print_fn("V24917 SEVRELAX2: single-profile GEH jump <= %.0f, high-GEH (>60) jump <= %.0f "
              "(TG, TD, ADDVAL1; sealed values only relaxed); early-exploration horizon %s"
              % (o["single"], o["high"], "extended to all cycles" if o.get("extend_horizon") else "sealed (12)"))

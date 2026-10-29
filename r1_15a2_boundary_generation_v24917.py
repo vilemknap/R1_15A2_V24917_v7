@@ -43,14 +43,11 @@ ALL_ATTRS = [a for f in ("WORK", "SERVICE") for s in ("P", "A") for a in attrs_f
 
 def options() -> Dict[str, Any]:
     out = {"bd_enabled": True, "bd_zones": list(DEFAULT_ZONES)}
-    try:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dp.load_options()
-        out["bd_enabled"] = bool(o.get("bd_enabled", True))
-        if o.get("bd_zones"):
-            out["bd_zones"] = [int(z) for z in o["bd_zones"]]
-    except Exception:
-        pass
+    import r1_15a2_demand_policy_v1 as dp
+    o = dp.load_options()
+    out["bd_enabled"] = bool(o.get("bd_enabled", True))
+    if o.get("bd_zones"):
+        out["bd_zones"] = [int(z) for z in o["bd_zones"]]
     return out
 
 
@@ -61,9 +58,9 @@ def _zone_values(visum, attr: str) -> Dict[int, float]:
 
 
 def activate(visum) -> Dict[str, Any]:
-    """Extend the snapshot/rollback catalogue with the W/S boundary layers (never raises)."""
+    """Validate policy; defer unavailable optional COM boundary layers."""
+    o = options()
     try:
-        o = options()
         if not o["bd_enabled"]:
             STATE.update(active=False, reason="bd_enabled=false")
             return dict(STATE)

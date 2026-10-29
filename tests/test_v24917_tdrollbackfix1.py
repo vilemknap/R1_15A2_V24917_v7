@@ -74,6 +74,43 @@ def test_real_producer_inactive_long_equal_to_itself():
     assert all(math.isinf(v['objective']) for v in d['signals'].values())  # no mutation
 
 
+@pytest.mark.parametrize('before,after', [(True,1), (False,0), (1,True), (0,False),
+                                       (True,1.0), (False,0.0)])
+def test_boolean_flags_cannot_be_replaced_by_numbers_in_parent_proof(before, after):
+    b=diagnostics();a=copy.deepcopy(b)
+    b['signals']['WORK']['calibratable']=before
+    a['signals']['WORK']['calibratable']=after
+    proof=eq.compare_diagnostics(b,a)
+    assert not proof['passes']
+    assert any('calibratable' in x for x in proof['component_differences'])
+
+
+def test_semantic_boolean_and_numeric_types_keep_their_own_equivalence():
+    import numpy as np
+    assert eq.semantic_differences({'flag':True}, {'flag':np.bool_(True)}) == []
+    assert eq.semantic_differences({'flag':False}, {'flag':False}) == []
+    assert eq.semantic_differences({'metric':1}, {'metric':1.0}) == []
+    assert eq.semantic_differences({'flag':np.bool_(True)}, {'flag':np.int64(1)})
+    assert eq.semantic_differences({'flags':[True]}, {'flags':[1]})
+    assert eq.semantic_differences({'flag':True}, {'flag':False})
+
+
+@pytest.mark.parametrize('place', ['classification_epoch', 'classification_assignment',
+    'component_epoch', 'gate_epoch', 'gate_assignment', 'top_epoch'])
+def test_epoch_boolean_reference_cannot_disappear_during_normalization(place):
+    b=dynamic_diag(1);a=copy.deepcopy(b)
+    summary=a['d11']['summary']
+    if place=='classification_epoch': summary['dist_classification_matrix']['skim_epoch']=True
+    elif place=='classification_assignment': summary['dist_classification_matrix']['assignment_epoch']=True
+    elif place=='component_epoch': summary['component_dist_summary_rows'][0]['dynamic_skim_epoch']=True
+    elif place=='gate_epoch': a['d11']['idp_gate']['dynamic_skim_epoch']=True
+    elif place=='gate_assignment': a['d11']['idp_gate']['dynamic_assignment_epoch']=True
+    else: a['dynamic_skim_epoch']['epoch']=True
+    proof=eq.compare_diagnostics(b,a)
+    assert not proof['passes']
+    assert any('DYNAMIC_AUTHORITY_INVALID' in e for e in proof['component_differences'])
+
+
 @pytest.mark.parametrize('value',[float('nan'),float('-inf'),0.,100.])
 def test_inactive_long_sentinel_may_not_hide_invalid_or_changed_objective(value):
     b=long_diagnostic();a=copy.deepcopy(b)

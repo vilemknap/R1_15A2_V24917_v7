@@ -19,11 +19,8 @@ _STATE: Dict[str, Any] = {"installed": False, "proof_count_rebased": 0, "proof_e
 
 
 def options() -> Dict[str, bool]:
-    try:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dp.load_options()
-    except Exception:
-        o = {}
+    import r1_15a2_demand_policy_v1 as dp
+    o = dp.load_options()
     return {"tolerant": bool(o.get("rb_tolerant_diagnostics", True)),
             "roster_proof": bool(o.get("rb_roster_reuse_proof", True))}
 
@@ -160,6 +157,7 @@ def wrap_rollback_and_verify(orig, atomic_json):
 def install(print_fn=print) -> Dict[str, Any]:
     if _STATE["installed"]:
         return status()
+    o = options()
     import r1_15a2_acceleration_v24915p1 as perf1
     import r1_15a2_overnight_controller_v24915p2 as base
     for mod, name in ((perf1, "count_profile_signature"), (base, "rollback_and_verify"),
@@ -171,7 +169,6 @@ def install(print_fn=print) -> Dict[str, Any]:
     if not getattr(base.rollback_and_verify, "__r1_rbcons1__", False):
         base.rollback_and_verify = wrap_rollback_and_verify(base.rollback_and_verify, base.atomic_json)
     _STATE["installed"] = True
-    o = options()
     print_fn("V24917 RBCONS1: rollback reuse proof on the active roster %s; noise-tolerant rollback "
              "diagnostics %s" % ("ON" if o["roster_proof"] else "OFF", "ON" if o["tolerant"] else "OFF"))
     return status()

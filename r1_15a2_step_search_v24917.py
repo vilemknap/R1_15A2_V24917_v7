@@ -43,11 +43,8 @@ _STATE: Dict[str, Any] = {"installed": False, "rho": None, "rho_history": [], "b
 
 
 def options() -> Dict[str, Any]:
-    try:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dp.load_options()
-    except Exception:
-        o = {}
+    import r1_15a2_demand_policy_v1 as dp
+    o = dp.load_options()
     return {"enabled": bool(o.get("ts_enabled", True)),
             "margin": float(o.get("ts_robust_margin", 0.15)),
             "min_scale": float(o.get("ts_min_scale", 0.05)),
@@ -621,6 +618,7 @@ def generation_block(ctrl, base, tx, adapter, cfg, folder, control, state, diag,
 def install(print_fn=print) -> Dict[str, Any]:
     if _STATE["installed"]:
         return status()
+    o = options()
     import r1_15a2_overnight_controller_v24915p2 as base
     import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
     import r1_15a2_inplace_transaction_v24915p2 as tx
@@ -640,7 +638,6 @@ def install(print_fn=print) -> Dict[str, Any]:
         _generation_update_once_impl.__r1_step1__ = True
         ctrl._generation_update_once_impl = _generation_update_once_impl
     _STATE["installed"] = True
-    o = options()
     print_fn("V24917 STEP1: %s; computed Generation step (margin %.2f), eligible trial kept in place"
              % ("ON" if o["enabled"] else "OFF", o["margin"]))
     return status()

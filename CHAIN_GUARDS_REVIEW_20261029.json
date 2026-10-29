@@ -1,0 +1,142 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/chain_guards/source/tests"
+      ],
+      "returncode": 0,
+      "seconds": 32.504,
+      "passed": 1743,
+      "skipped": 4
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/chain_guards/source/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 21.029,
+      "passed": 138,
+      "skipped": 0
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/chain_guards/source/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 0.715,
+      "passed": 18,
+      "skipped": 0
+    }
+  ],
+  "all_passed": true,
+  "output": "/workspace/work/chain_guards/verified",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS",
+  "task": "CHAIN_GUARDS_FIX_20261029",
+  "baseline_commit": "215a3630dfb4c398a4493ff3bf3e6fa6ce8f029e",
+  "baseline_tree": "9ad34a706a80b7a8f01e2a11823c8cec2a58d725",
+  "focused": {
+    "passed": 153,
+    "returncode": 0,
+    "command": "OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider tests/test_v24917_runtime_options_fail_closed.py tests/test_v24917_tdrollbackfix1.py tests/test_v24917_step_search.py tests/test_v24917_rbcons_audit.py tests/test_v24917_boundary_generation.py tests/test_v24917_combusy2.py tests/test_v24917_fast_trial_assignment.py tests/test_v24917_tdsplit_sevrelax.py"
+  },
+  "findings": [
+    {
+      "area": "parent-equivalence diagnostic comparison",
+      "defect": "Python equality accepted True==1 and False==0 in semantic flags.",
+      "fix": "Separate Python/NumPy boolean semantics from numeric metrics. Reject boolean/numeric substitutions; retain existing numeric tolerances."
+    },
+    {
+      "area": "dynamic skim references in rollback diagnostics",
+      "defect": "True could pass as numeric epoch 1 and disappear during execution-ID normalization.",
+      "fix": "Validate top-level, classification, component and gate references using equality plus the existing canonical epoch hash before normalization. Reject type changes in structural references."
+    },
+    {
+      "area": "runtime policy loading",
+      "modules": [
+        "boundary_generation",
+        "combusy2",
+        "fast_trial_assignment",
+        "rollback_consistency",
+        "severity_relax",
+        "step_search"
+      ],
+      "defect": "Configuration I/O, parse or validation failures silently selected defaults.",
+      "fix": "Propagate the original error. Validate boundary options outside optional-COM deferral and STEP1/severity/rollback options before installation mutates bindings/state."
+    }
+  ],
+  "before_fix_reproductions": [
+    {
+      "log": "before_fix.log.gz",
+      "failed": 26,
+      "selection": "configuration_failure or boolean_flags or semantic_boolean"
+    },
+    {
+      "log": "epoch_before_fix.log.gz",
+      "failed": 6,
+      "selection": "epoch_boolean_reference"
+    }
+  ],
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 66,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 119,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": []
+    }
+  },
+  "changed_python_files": [
+    "r1_15a2_boundary_generation_v24917.py",
+    "r1_15a2_combusy2_v24917.py",
+    "r1_15a2_fast_trial_assignment_v24917.py",
+    "r1_15a2_parent_equivalence_v24917.py",
+    "r1_15a2_rollback_consistency_v24917.py",
+    "r1_15a2_severity_relax_v24917.py",
+    "r1_15a2_step_search_v24917.py",
+    "tests/test_v24917_tdrollbackfix1.py",
+    "tests/test_v24917_runtime_options_fail_closed.py"
+  ],
+  "compile": "PASS",
+  "diff_check": "PASS",
+  "unchanged": [
+    "numeric matrix/signal tolerances",
+    "calibration objectives",
+    "actuator bounds",
+    "native TD/assignment/COM APIs",
+    "LONG/FOREIGN freezes",
+    "accepted-state adoption and checkpoint policy"
+  ],
+  "limitations": [
+    "LIVE_VISUM_NOT_RUN",
+    "Offline regressions cover mocked preflight/baseline, TG/TD/SupplyMix transactions, accept/adopt/reject and rollback; they do not certify live COM/model execution."
+  ]
+}

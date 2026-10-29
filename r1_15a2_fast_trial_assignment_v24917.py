@@ -55,11 +55,8 @@ class FastAdoptionRejected(Exception):
 
 
 def options() -> Dict[str, Any]:
-    try:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dp.load_options()
-    except Exception:
-        o = {}
+    import r1_15a2_demand_policy_v1 as dp
+    o = dp.load_options()
     return {"enabled": bool(o.get("fa_enabled", True)),
             "skip_positions": list(o.get("fa_skip_positions", DEFAULT_SKIP)),
             "blocks": [str(b).upper() for b in o.get("fa_blocks", ["GENERATION"])]}

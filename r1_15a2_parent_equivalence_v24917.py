@@ -220,7 +220,11 @@ def semantic_differences(before, after, path="", result=None):
         else:
             for i, (b, a) in enumerate(zip(before, after)):
                 semantic_differences(b, a, "%s[%d]" % (path, i), result)
-    elif isinstance(before, numbers.Real) and isinstance(after, numbers.Real) and not isinstance(before, bool) and not isinstance(after, bool):
+    elif isinstance(before, (bool, np.bool_)) or isinstance(after, (bool, np.bool_)):
+        if (not isinstance(before, (bool, np.bool_))
+                or not isinstance(after, (bool, np.bool_)) or bool(before) != bool(after)):
+            result.append(path + ":BOOLEAN")
+    elif isinstance(before, numbers.Real) and isinstance(after, numbers.Real):
         b, a = float(before), float(after)
         if not math.isfinite(a) or not math.isfinite(b) or abs(a - b) > SIGNAL_ATOL + SIGNAL_RTOL * abs(b):
             result.append(path + ":NUMERIC")
@@ -284,6 +288,11 @@ def _dynamic_summary(diag, errors, side):
     def require(ok, message):
         if not ok:
             raise ValueError(message)
+    def same_reference(value, expected):
+        # These are structural references, not tolerant numerical metrics.
+        # Python equality alone treats True as epoch 1. Bind their JSON types
+        # using the existing epoch hash before execution IDs are normalized.
+        return value == expected and _hash(value) == _hash(expected)
     try:
         require(isinstance(authority, Mapping), "MISSING_DYNAMIC_AUTHORITY")
         require(authority.get("schema") == SCHEMA, "UNKNOWN_DYNAMIC_AUTHORITY_SCHEMA")
@@ -326,18 +335,18 @@ def _dynamic_summary(diag, errors, side):
                    "assignment_token", "zone_order_sha256", "operation_positions", "family_hashes")}
         payload["matrix_hashes"] = {k: meta[k]["values_sha256"] for k in REQUIRED_NATIVE_DSEGS}
         require(_hash(payload) == authority.get("epoch_hash"), "EPOCH_HASH_SELF_INCONSISTENT")
-        require(diag.get("dynamic_skim_epoch") == authority, "TOP_LEVEL_EPOCH_MISMATCH")
+        require(same_reference(diag.get("dynamic_skim_epoch"), authority), "TOP_LEVEL_EPOCH_MISMATCH")
         require(classification.get("code") == "VISUM_DYNAMIC_ASSIGNMENT_DIS_KM"
                 and classification.get("classification") == "DYNAMIC_ASSIGNMENT_PATH_VOLUME_WEIGHTED_DIS",
                 "CLASSIFICATION_AUTHORITY_MISMATCH")
         for key, auth_key in (("assignment_epoch", "assignment_epoch"), ("skim_epoch", "epoch"),
                               ("skim_epoch_hash", "epoch_hash"), ("zone_order_sha256", "zone_order_sha256"),
                               ("family_hashes", "family_hashes")):
-            require(classification.get(key) == authority[auth_key], "CLASSIFICATION_REFERENCE:" + key)
+            require(same_reference(classification.get(key), authority[auth_key]), "CLASSIFICATION_REFERENCE:" + key)
         for row in rows:
             if row.get("distance_authority") == "DYNAMIC_ASSIGNMENT_DIS_KM" or "dynamic_skim_epoch" in row:
                 require(row.get("distance_authority") == "DYNAMIC_ASSIGNMENT_DIS_KM"
-                        and row.get("dynamic_skim_epoch") == authority["epoch"]
+                        and same_reference(row.get("dynamic_skim_epoch"), authority["epoch"])
                         and row.get("dynamic_skim_epoch_hash") == authority["epoch_hash"],
                         "COMPONENT_EPOCH_REFERENCE:" + str(row.get("component")))
         gate = (diag.get("d11") or {}).get("idp_gate")
@@ -345,7 +354,7 @@ def _dynamic_summary(diag, errors, side):
             require(gate.get("passes") is True, "IDP_GATE_FAILED")
             for key, auth_key in (("dynamic_assignment_epoch", "assignment_epoch"),
                                   ("dynamic_skim_epoch", "epoch"), ("dynamic_skim_epoch_hash", "epoch_hash")):
-                require(gate.get(key) == authority[auth_key], "IDP_GATE_REFERENCE:" + key)
+                require(same_reference(gate.get(key), authority[auth_key]), "IDP_GATE_REFERENCE:" + key)
     except (KeyError, TypeError, ValueError, AttributeError) as exc:
         errors.append(side + ":DYNAMIC_AUTHORITY_INVALID:" + str(exc))
         return summary

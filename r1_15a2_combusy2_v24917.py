@@ -33,11 +33,8 @@ _STATE: Dict[str, Any] = {"installed": False, "message_filter": None, "budget_fl
 
 
 def options() -> Dict[str, Any]:
-    try:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dp.load_options()
-    except Exception:
-        o = {}
+    import r1_15a2_demand_policy_v1 as dp
+    o = dp.load_options()
     return {"max_wait": float(o.get("cb_max_wait_seconds", 900.0)),
             "block_retries": int(o.get("cb_block_retries", 3))}
 
