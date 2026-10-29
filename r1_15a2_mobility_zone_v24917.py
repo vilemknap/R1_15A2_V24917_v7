@@ -306,8 +306,10 @@ def guard_ls(ls, authority):
         summary["linear_ratio_after_ws_and_ls"] = None
     summary.pop("long_global_log_step", None)
     summary["long_zone_steps"] = sum(abs(float(v)) > EPS for v in steps.get("ADD_PROD_L", {}).values())
-    summary["long_generation_permitted"] = False
-    summary["long_search_status"] = "LONG_SEARCH_INCOMPLETE" if summary["long_zone_steps"] == 0 else "PENDING_NATIVE_VERIFICATION"
+    permitted = summary.get("long_generation_permitted") is True
+    summary["long_generation_permitted"] = permitted
+    if not permitted:
+        summary["long_search_status"] = "LONG_SEARCH_INCOMPLETE" if summary["long_zone_steps"] == 0 else "PENDING_NATIVE_VERIFICATION"
     summary["school_zones_changed"] = sum(abs(float(v)) > EPS for attr in
         ("ADD_PROD_SCH", "ADD_ATT_SCH") for v in steps.get(attr, {}).values())
     summary["mobilityzone1"] = {"changes": edits, "deferred": authority["unavailable"],

@@ -41,6 +41,7 @@ import r1_15a2_long_distance_guard_v24917 as longguard
 import r1_15a2_long_od_mask_v24917 as longmask
 import r1_15a2_long_post_td_mask_v24917 as post_td_mask
 import r1_15a2_long_incidence_read_v24917 as long_incidence_read
+import r1_15a2_long_cache_generation_v24917 as long_cache
 import r1_15a2_boundary_generation_v24917 as bdgen
 import r1_15a2_boundary_pa_v24917 as bdpa
 import r1_15a2_mobility_guard_v24917 as mguard
@@ -91,8 +92,11 @@ class VisumAdapter(_V24916ActiveAdapter):
         return long_incidence_read.read_current(self, diag["d12"]["rows"], folder)
 
     @staticmethod
-    def _without_unverified_long_rows(rows):
-        """Keep LONG coefficients out of TG until its realization response is verified."""
+    def _without_unverified_long_rows(rows, context=None):
+        """Only this adapter's validated cache-backed proposal may change LONG."""
+        if ((context or {}).get("_long_cache_receipt")
+                and ((context or {}).get("v24917_ls") or {}).get("summary", {}).get("long_generation_permitted") is True):
+            return list(rows)
         return [row for row in rows if str(row.get("family", "")).upper() != "LONG"]
 
     # ------------------------------------------------------- GENFIX1 snapshot
@@ -252,6 +256,33 @@ class VisumAdapter(_V24916ActiveAdapter):
         rt.write_json(folder / "LONGGUARD1_PARENT.json", self._longguard1_parent)
         self.v24917_status["longguard1_parent_status"] = self._longguard1_parent.get("status")
         self.v24917_status["longguard1_parent_short"] = self._longguard1_parent.get("below_min_km")
+        long_observed = None
+        long_cache_error = "PARENT_SUPPORT_OR_FINECDF_UNVERIFIED"
+        if ((getattr(self, "v24917_ls", None) or {}).get("active")
+                and self._longguard1_parent.get("long_generation_permitted")):
+            try:
+                try:
+                    long_observed = long_cache.capture(self)
+                except ValueError as exc:
+                    if not str(exc).startswith("LONG_CACHE_REFRESH_REQUIRED:"):
+                        raise
+                    # Same shared-store refresh used by W/S when OD support grows.
+                    # Rebuild W/S context too, so both use the same new path basis.
+                    self._build_cache(diag, folder / "LONG_SHARED_CACHE_REFRESH", self.snapshot(),
+                                      build_sequence_evidence=False, allow_persistent_restore=False)
+                    context = super().generation_design(diag, folder / "AFTER_LONG_CACHE_REFRESH")
+                    self.v24917_last_incidence = context["incidence"]
+                    long_observed = long_cache.capture(self)
+                context["_long_cache_receipt"] = {k: long_observed[k] for k in (
+                    "status", "binding", "cache_parent_hash", "path_epoch", "parameter_parent_sha256")}
+                long_cache_error = None
+                rt.write_json(folder / "LONG_SHARED_CACHE_INCIDENCE.json", {
+                    k: long_observed[k] for k in ("status", "source_status", "binding", "cache_parent_hash",
+                        "path_epoch", "profile_parity_max_abs", "matrix_values_sha256", "geometry_identity")})
+            except Exception as exc:
+                long_cache_error = str(exc)
+                context.pop("_long_cache_receipt", None)
+                rt.write_json(folder / "LONG_SHARED_CACHE_DEFERRED.json", {"error": long_cache_error})
         phase, ratio = tg.phase_for(diag["d12"]["rows"], policy) if policy else (None, None)
         self.v24917_status.update(last_phase=phase, last_ratio=ratio)
         # Acquire the guard authority independently of the numerical fit. Any
@@ -297,7 +328,7 @@ class VisumAdapter(_V24916ActiveAdapter):
                     bounds = tg.zone_bounds(mb, zone_rows, cfg, self.generation_reference_values)
                     bounds, mobility_fit_bounds = zguard.constrain_fit_bounds(bounds, mz)
                     rows, summary, problem, solution, bd = self._fit_with_boundary(context["incidence"], bounds, cfg, policy)
-                    if not rows:
+                    if not rows and long_observed is None:
                         raise RuntimeError("V24917_FIT_PRODUCED_NO_ROWS")
                     if (getattr(self, "v24917_ls", None) or {}).get("active"):
                         try:
@@ -309,6 +340,8 @@ class VisumAdapter(_V24916ActiveAdapter):
                                 self._longguard1_parent.get("long_generation_permitted"))
                             ls_fit["tdlong1_source_status"] = self._tdlong1_mask.get("status")
                             ls_fit["tdlong1_native_filter_verified"] = False
+                            ls_fit["long_cache_incidence"] = long_observed
+                            ls_fit["long_mobility_authority"] = mz
                             ls = lsgen.design(self.visum, cfg, self.zones, context["incidence"], problem,
                                               solution, self.generation_reference_values, ls_fit)
                         except Exception as ls_exc:
@@ -331,10 +364,11 @@ class VisumAdapter(_V24916ActiveAdapter):
         try:
             zonal_rows, zonal_projection = zguard.guard_projection(mask["rows"], mz)
             ls = zguard.guard_ls(ls, mz)
-            if ls:
-                ls = lsgen.defer_long(ls, "UNVERIFIED_NATIVE_FILTER")
+            if ls and not (ls.get("summary") or {}).get("long_generation_permitted"):
+                ls = lsgen.defer_long(ls, long_cache_error or
+                                      ls.get("summary", {}).get("long_deferred_reason", "LONG_FIT_UNAVAILABLE"))
                 ls["summary"]["tdlong1_source_status"] = self._tdlong1_mask.get("status")
-                ls["summary"]["tdlong1_native_filter_status"] = "UNVERIFIED_NATIVE_FILTER"
+                ls["summary"]["tdlong1_native_filter_status"] = "NOT_REQUIRED_POST_TD_MASK"
             rows, mobility = mguard.guard(zonal_rows, zone_rows, mg_opts)
             if not mobility.get("passes", mobility.get("status") == "DISABLED"):
                 raise ValueError(mobility["status"])
@@ -362,7 +396,8 @@ class VisumAdapter(_V24916ActiveAdapter):
         longguard_deferred = bool((getattr(self, "v24917_ls", None) or {}).get("active") and
                                   not self._longguard1_parent.get("long_generation_permitted"))
         tdlong1_deferred = bool((getattr(self, "v24917_ls", None) or {}).get("active") and
-                                not self._tdlong1_native_filter_verified)
+                                (not (ls or {}).get("summary", {}).get("long_generation_permitted")
+                                 or (ls or {}).get("summary", {}).get("long_solver_converged") is False))
         self.v24917_status["ls_incomplete_current_cycle"] = bool(
             ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or fallback or not mz["target_satisfied"])
         context["v24917"] = {"release": RELEASE, "phase": phase, "overlay_phase": phase if not fallback else None,
@@ -377,8 +412,8 @@ class VisumAdapter(_V24916ActiveAdapter):
                              "longguard1_parent": self._longguard1_parent,
                              "longguard1_long_step_deferred": longguard_deferred,
                              "tdlong1": {"source_status": self._tdlong1_mask.get("status"),
-                                         "native_filter_status": "UNVERIFIED_NATIVE_FILTER",
-                                         "long_generation_permitted": False,
+                                         "native_filter_status": "NOT_REQUIRED_POST_TD_MASK",
+                                         "long_generation_permitted": not tdlong1_deferred and bool(long_observed),
                                          "search_incomplete": tdlong1_deferred},
                              "boundary": (bd or {}).get("summary"),
                              "mobilityzone1": zonal_projection, "mobility_guard": mobility, "solver_converged": converged, "proposal_usable": usable,
@@ -598,10 +633,13 @@ class VisumAdapter(_V24916ActiveAdapter):
                     self.cfg, scale=scale, reference_values=self.generation_reference_values)
                 design["zone_attributes_read"] = authority["zone_attributes"]
         extra_all = lsgen.rows_at_scale(context.get("v24917_ls"), scale) + bdgen.rows_at_scale(context.get("v24917_bd"), scale)
-        extra = self._without_unverified_long_rows(extra_all)
+        extra = self._without_unverified_long_rows(extra_all, context)
+        if longguard.changed_long(extra):
+            long_cache.require_current(self, context.get("_long_cache_receipt"))
         if isinstance(design, dict):
             design = dict(design)
             design["candidate_rows"] = list(design.get("candidate_rows") or []) + extra
+            long_cache.add_gate_summary(design, context.get("v24917_ls"))
             design["v24917_long_school_rows"] = len(extra)
             self._validate_mobility_plan(context, design)
             design["genfix2_prediction"] = self._final_step_prediction(context, design, scale)
@@ -615,7 +653,10 @@ class VisumAdapter(_V24916ActiveAdapter):
         if proof.get("passes") is not True:
             raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITY2_FINAL_ENVELOPE")
         extra_all = lsgen.rows_at_scale(context.get("v24917_ls"), scale) + bdgen.rows_at_scale(context.get("v24917_bd"), scale)
-        extra = self._without_unverified_long_rows(extra_all)
+        extra = self._without_unverified_long_rows(extra_all, context)
+        native_long_rows = longguard.changed_long(extra)
+        if native_long_rows:
+            long_cache.require_current(self, context.get("_long_cache_receipt"))
         mz = context.get("_mobilityzone1")
         if mz is not None and mz["enabled"]:
             # Includes LS values immediately before the first inherited COM write.
@@ -632,28 +673,36 @@ class VisumAdapter(_V24916ActiveAdapter):
         def checked_design(*args, **kwargs):
             design = original(*args, **kwargs)
             complete = dict(design, candidate_rows=list(design.get("candidate_rows") or []) + extra)
+            # Do not mutate the inherited summary shared with the preview builder.
+            complete["summary"] = copy.deepcopy(design.get("summary", {}))
+            long_cache.add_gate_summary(complete, context.get("v24917_ls"))
             checked = self._validate_mobility_plan(context, complete)
             if not checked["passes"]:
                 raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITY2_FINAL_ENVELOPE")
             if canonical_hash(complete["candidate_rows"]) != canonical_hash(preview["candidate_rows"]):
                 raise supply_visum.SupplyContractError("GENFIX2_GENERATION_PLAN_CHANGED_BEFORE_WRITE")
             design["genfix2_mobility"] = checked
-            return design
+            return complete if native_long_rows else design
         # The COM orchestrator is synchronous. Restore the scoped hook even on
         # KeyboardInterrupt; inherited cache invalidation and support-risk hooks remain intact.
         supply_visum.base.generation_candidate = checked_design
         try:
+            if native_long_rows:
+                long_cache.begin_apply(self, context.get("_long_cache_receipt"))
             with self._v24917_overlay(self._phase_of(context)), bdpa.scope(context.get("v24917_bd")):
                 rows = super().apply_generation(context, scale, folder)
         finally:
             supply_visum.base.generation_candidate = original
-        if extra:
+        if extra and not native_long_rows:
             audit = rt.apply_add_candidate(self.visum, extra, self.zones, zone_indices=self.zone_write_index_by_no,
                 retry_policy=self.com_retry_policy, readback_tolerance=self.zone_readback_tolerance)
             if not audit or any(x.get("status") != "OK" for x in audit):
                 raise supply_visum.SupplyContractError("V24917_LONG_SCHOOL_READBACK_FAILED")
             rt.write_json(Path(folder) / "V24917_LONG_SCHOOL_ROWS.json", {"scale": scale, "rows": extra})
             rows = list(rows) + extra
+        elif extra:
+            rt.write_json(Path(folder) / "V24917_LONG_SCHOOL_ROWS.json", {
+                "scale": scale, "rows": extra, "writer": "INHERITED_GENERATION_TRANSACTION"})
         rt.write_json(Path(folder) / "GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json",
                       {"mobility": proof, "prediction": preview.get("genfix2_prediction")})
         return rows

@@ -4,8 +4,9 @@
 Only two additive config sections are introduced:
   * v24917_targeted_generation  - targeted catch-up Generation policy
   * v24917_release_identity     - release/feature identity
-Every inherited field is proven unchanged by delegating to the V24916
-validator on the config with these two sections removed.
+The authorized Generation scope additionally includes LONG demand. Every other
+inherited field is verified by the V24916 validator after reversing that exact
+scope extension and removing the additive sections.
 """
 from __future__ import annotations
 
@@ -21,6 +22,17 @@ import r1_15a2_profile_roster_v24917 as roster
 RELEASE = "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027"
 PACKAGE_REVISION = "V24917_MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027"
 V24917_KEYS = ("v24917_targeted_generation", "v24917_release_identity")
+
+
+def long_generation_scope(scope):
+    """Allow a LONG-only TG trial to prove changed demand through its own matrices."""
+    out = copy.deepcopy(scope)
+    for key, additions in (("dseg_codes", ("NATIVE_CL",)),
+                           ("matrix_nos", tuple(range(9111, 9116)))):
+        values = out.setdefault(key, [])
+        for value in additions:
+            if value not in values: values.append(value)
+    return out
 
 
 def _hash(value: Any) -> str:
@@ -51,7 +63,8 @@ def identity() -> dict:
             "TDJOINT1_ISOLATED_REALIZATION_AFTER_VERIFIED_PLATEAU",
             "MOBILITYALLOC1_ZONE_INDEPENDENT_LONG_GUARD_PROJECTION",
             "TDLONG1_HASH_BOUND_DISTANCE_MASK_AND_COMPONENT_PA_MAX_FLOW",
-            "TDLONG1_NATIVE_FILTER_FAIL_CLOSED_LIVE_PENDING",
+            "LONG_POST_TD_OSRM_GE80_MASK_WITHOUT_UPPER_BOUND",
+            "LONG_ZONAL_GENERATION_SHARED_CACHE_LIVE_ACCEPTANCE",
         ],
         "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
         "acceptance_thresholds_changed_by_v24917": False,
@@ -66,11 +79,18 @@ def apply_active_runtime_delta(parent_cfg: Mapping[str, Any]) -> dict:
     ident["policy_hash"] = _hash(cfg["v24917_targeted_generation"])
     cfg["v24917_release_identity"] = ident
     roster.apply_cfg(cfg)
+    cfg["matrix_scope_by_block"]["GENERATION"] = long_generation_scope(
+        cfg["matrix_scope_by_block"]["GENERATION"])
     return cfg
 
 
 def validate_active_runtime_delta(child: Mapping[str, Any], parent: Mapping[str, Any]) -> dict:
     base_child = roster.strip_cfg({k: v for k, v in dict(child).items() if k not in V24917_KEYS})
+    base_child = copy.deepcopy(base_child)
+    original_scope = parent["matrix_scope_by_block"]["GENERATION"]
+    if base_child["matrix_scope_by_block"]["GENERATION"] != long_generation_scope(original_scope):
+        raise RuntimeError("V24917_LONG_GENERATION_SCOPE_MISMATCH")
+    base_child["matrix_scope_by_block"]["GENERATION"] = copy.deepcopy(original_scope)
     result = dict(parent_delta.validate_active_runtime_delta(base_child, parent))
     policy = tg.validate_policy(child.get("v24917_targeted_generation") or {})
     if policy != tg.validate_policy(tg.DEFAULT_POLICY):
@@ -80,7 +100,8 @@ def validate_active_runtime_delta(child: Mapping[str, Any], parent: Mapping[str,
         raise RuntimeError("V24917_RELEASE_IDENTITY_MISMATCH")
     result["v24917"] = {"passes": True, "release": RELEASE,
                         "policy_hash": ident["policy_hash"],
-                        "inherited_fields_unchanged": True,
+                        "inherited_fields_unchanged_except_long_generation_scope": True,
+                        "long_generation_scope": child["matrix_scope_by_block"]["GENERATION"],
                         "profile_roster": dict(child.get(roster.CFG_KEY) or {"enabled": False})}
     return result
 

@@ -271,7 +271,10 @@ def test_config_delta_only_adds_v24917_sections(real_cfg):
     meta = roster.load_meta()
     assert set(real_cfg) - set(v16) == set(delta.V24917_KEYS) | {roster.CFG_KEY}
     gate = roster.gate_of(meta)
-    assert all(real_cfg[k] == v16[k] for k in v16 if k not in gate)
+    assert all(real_cfg[k] == v16[k] for k in v16 if k not in gate and k != "matrix_scope_by_block")
+    expected_scope = copy.deepcopy(v16["matrix_scope_by_block"])
+    expected_scope["GENERATION"] = delta.long_generation_scope(expected_scope["GENERATION"])
+    assert real_cfg["matrix_scope_by_block"] == expected_scope
     assert {k: real_cfg[k] for k in gate} == gate and gate["expected_12d_rows"] == meta["rows"] != 488
     assert {k: v16[k] for k in gate} == roster.GATE488
     tampered = copy.deepcopy(real_cfg)

@@ -1,0 +1,177 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+......................................s.s..........s................s... [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+F.F..................................................................... [ 65%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+............................................................             [100%]
+=================================== FAILURES ===================================
+_ test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_contract[False-True] _
+
+live = (namespace(visum=namespace(Net=namespace(Matrices=namespace(ItemByKey=<class 'test_v24917_long_incidence_read.harness.... 'to_node_no': 2}, {'countlocation_no': 9002, 'from_node_no': 2, 'link_no': 20, 'observation_direction': 'BOTH', ...}])
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f44091c1320>
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-96/test_automatic_generation_desi1')
+refresh = True, ws_empty = False
+
+    @pytest.mark.parametrize('refresh', [False, True])
+    @pytest.mark.parametrize('ws_empty', [False, True])
+    def test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_contract(live, monkeypatch, tmp_path, refresh, ws_empty):
+        import contextlib
+        import r1_15a2_trial_adapter_v24917 as mod
+        fixture, state, profiles = live
+        adapter = object.__new__(mod.VisumAdapter)
+        adapter.__dict__.update(vars(fixture))
+        adapter.v24917_ls = {'active': True}
+        adapter.v24917_status = {'fit_fallbacks': 0, 'designs': 0}
+        adapter.generation_reference_values = {'ADD_ATT_L': {'1': 1., '2': 1.}}
+        adapter.snapshot = adapter.generation_guard_snapshot
+        adapter._v24917_overlay = lambda phase: contextlib.nullcontext(adapter.cfg)
+        adapter.zone_write_index_by_no = {1: 1, 2: 2}
+        state.arrays[9225] = np.zeros((2, 2)); state.arrays[9226] = np.ones((2, 2))
+        inc = {'profiles': profiles, 'variables': [], 'incidence': core.SparseOperator(
+            np.array([], dtype=int), np.array([], dtype=int), np.array([]), 2, 0)}
+        ws = problem(profiles)
+        sol = {'predicted_change': np.zeros(2), 'converged': True, 'iterations': 1,
+               'objective_initial': 100., 'objective_final': 90., 'x': np.array([])}
+        projection = [] if ws_empty else [{'zone_no': 1, 'family': 'WORK', 'role': 'PROD', 'log_step': .001}]
+        calls = []
+        def parent(*args):
+            calls.append('parent')
+            return {'incidence': inc, 'projection': core.ProjectionResult(projection, [], 0.)}
+        monkeypatch.setattr(mod._V24916ActiveAdapter, 'generation_design', parent)
+        monkeypatch.setattr(mod.longguard, 'capture', lambda *args: {
+            'long_generation_permitted': True, 'fine_cdf_verified': True, 'fine_100_200_rmse': .1})
+        monkeypatch.setattr(mod.longmask, 'capture_current', lambda *args: {'status': 'MASK_READY'})
+        monkeypatch.setattr(mod.tg, 'policy_of', lambda cfg: {'fit': {'max_iter': 2000}})
+        monkeypatch.setattr(mod.tg, 'phase_for', lambda *args: ('REFINE', 1.))
+        monkeypatch.setattr(mod.tg, 'zone_bounds', lambda *args: {})
+        monkeypatch.setattr(ls, 'ls_options', lambda: dict(ls.LS_DEFAULTS))
+        zone_rows = mobility_rows()
+        monkeypatch.setattr(mod.supply_visum.base, 'zone_state_rows', lambda *args, **kwargs: (zone_rows, []))
+        monkeypatch.setattr(mod.mguard, 'options', lambda: {'enabled': True, 'lo': .75, 'hi': 2.})
+        monkeypatch.setattr(mod.zguard, 'enrich', lambda *args: (zone_rows, list(mz.SPECS), {}))
+        monkeypatch.setattr(mod.zguard, 'guard_projection', lambda rows, a: (rows, {'status': 'OK'}))
+        monkeypatch.setattr(mod.mguard, 'guard', lambda rows, *args: (rows, {'passes': True}))
+        adapter._fit_with_boundary = lambda *args: (projection, {}, ws, sol, None)
+        adapter._apply_flowbundle_mask = lambda rows, *args: {'rows': rows, 'audit': {'status': 'OK'}}
+        if refresh:
+            capture = lc.capture
+            count = [0]
+            def first_stale(ad):
+                count[0] += 1
+                if count[0] == 1: raise ValueError('LONG_CACHE_REFRESH_REQUIRED:NEW_POSITIVE_OD')
+                return capture(ad)
+            monkeypatch.setattr(lc, 'capture', first_stale)
+            def rebuild(*args, **kwargs):
+                assert kwargs['allow_persistent_restore'] is False
+                calls.append('refresh'); adapter.path_epoch_index += 1
+            adapter._build_cache = rebuild
+        context = adapter.generation_design({'d12': {'rows': profiles}}, tmp_path)
+        assert context['v24917_ls']['summary']['long_generation_permitted'], context['v24917']
+        assert ls.rows_at_scale(context['v24917_ls'], 1.)
+        assert not context['v24917']['long_school_search_incomplete']
+        assert context['v24917_step_model']['available']
+        assert context['v24917']['tdlong1']['native_filter_status'] == 'NOT_REQUIRED_POST_TD_MASK'
+>       assert calls == (['parent', 'refresh', 'parent'] if refresh else ['parent'])
+E       AssertionError: assert ['parent'] == ['parent', 'r...sh', 'parent']
+E         
+E         Right contains 2 more items, first extra item: 'refresh'
+E         Use -v to get more diff
+
+tests/test_v24917_long_cache_generation.py:288: AssertionError
+_ test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_contract[True-True] _
+
+live = (namespace(visum=namespace(Net=namespace(Matrices=namespace(ItemByKey=<class 'test_v24917_long_incidence_read.harness.... 'to_node_no': 2}, {'countlocation_no': 9002, 'from_node_no': 2, 'link_no': 20, 'observation_direction': 'BOTH', ...}])
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f440966d390>
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-96/test_automatic_generation_desi3')
+refresh = True, ws_empty = True
+
+    @pytest.mark.parametrize('refresh', [False, True])
+    @pytest.mark.parametrize('ws_empty', [False, True])
+    def test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_contract(live, monkeypatch, tmp_path, refresh, ws_empty):
+        import contextlib
+        import r1_15a2_trial_adapter_v24917 as mod
+        fixture, state, profiles = live
+        adapter = object.__new__(mod.VisumAdapter)
+        adapter.__dict__.update(vars(fixture))
+        adapter.v24917_ls = {'active': True}
+        adapter.v24917_status = {'fit_fallbacks': 0, 'designs': 0}
+        adapter.generation_reference_values = {'ADD_ATT_L': {'1': 1., '2': 1.}}
+        adapter.snapshot = adapter.generation_guard_snapshot
+        adapter._v24917_overlay = lambda phase: contextlib.nullcontext(adapter.cfg)
+        adapter.zone_write_index_by_no = {1: 1, 2: 2}
+        state.arrays[9225] = np.zeros((2, 2)); state.arrays[9226] = np.ones((2, 2))
+        inc = {'profiles': profiles, 'variables': [], 'incidence': core.SparseOperator(
+            np.array([], dtype=int), np.array([], dtype=int), np.array([]), 2, 0)}
+        ws = problem(profiles)
+        sol = {'predicted_change': np.zeros(2), 'converged': True, 'iterations': 1,
+               'objective_initial': 100., 'objective_final': 90., 'x': np.array([])}
+        projection = [] if ws_empty else [{'zone_no': 1, 'family': 'WORK', 'role': 'PROD', 'log_step': .001}]
+        calls = []
+        def parent(*args):
+            calls.append('parent')
+            return {'incidence': inc, 'projection': core.ProjectionResult(projection, [], 0.)}
+        monkeypatch.setattr(mod._V24916ActiveAdapter, 'generation_design', parent)
+        monkeypatch.setattr(mod.longguard, 'capture', lambda *args: {
+            'long_generation_permitted': True, 'fine_cdf_verified': True, 'fine_100_200_rmse': .1})
+        monkeypatch.setattr(mod.longmask, 'capture_current', lambda *args: {'status': 'MASK_READY'})
+        monkeypatch.setattr(mod.tg, 'policy_of', lambda cfg: {'fit': {'max_iter': 2000}})
+        monkeypatch.setattr(mod.tg, 'phase_for', lambda *args: ('REFINE', 1.))
+        monkeypatch.setattr(mod.tg, 'zone_bounds', lambda *args: {})
+        monkeypatch.setattr(ls, 'ls_options', lambda: dict(ls.LS_DEFAULTS))
+        zone_rows = mobility_rows()
+        monkeypatch.setattr(mod.supply_visum.base, 'zone_state_rows', lambda *args, **kwargs: (zone_rows, []))
+        monkeypatch.setattr(mod.mguard, 'options', lambda: {'enabled': True, 'lo': .75, 'hi': 2.})
+        monkeypatch.setattr(mod.zguard, 'enrich', lambda *args: (zone_rows, list(mz.SPECS), {}))
+        monkeypatch.setattr(mod.zguard, 'guard_projection', lambda rows, a: (rows, {'status': 'OK'}))
+        monkeypatch.setattr(mod.mguard, 'guard', lambda rows, *args: (rows, {'passes': True}))
+        adapter._fit_with_boundary = lambda *args: (projection, {}, ws, sol, None)
+        adapter._apply_flowbundle_mask = lambda rows, *args: {'rows': rows, 'audit': {'status': 'OK'}}
+        if refresh:
+            capture = lc.capture
+            count = [0]
+            def first_stale(ad):
+                count[0] += 1
+                if count[0] == 1: raise ValueError('LONG_CACHE_REFRESH_REQUIRED:NEW_POSITIVE_OD')
+                return capture(ad)
+            monkeypatch.setattr(lc, 'capture', first_stale)
+            def rebuild(*args, **kwargs):
+                assert kwargs['allow_persistent_restore'] is False
+                calls.append('refresh'); adapter.path_epoch_index += 1
+            adapter._build_cache = rebuild
+        context = adapter.generation_design({'d12': {'rows': profiles}}, tmp_path)
+        assert context['v24917_ls']['summary']['long_generation_permitted'], context['v24917']
+        assert ls.rows_at_scale(context['v24917_ls'], 1.)
+        assert not context['v24917']['long_school_search_incomplete']
+        assert context['v24917_step_model']['available']
+        assert context['v24917']['tdlong1']['native_filter_status'] == 'NOT_REQUIRED_POST_TD_MASK'
+>       assert calls == (['parent', 'refresh', 'parent'] if refresh else ['parent'])
+E       AssertionError: assert ['parent'] == ['parent', 'r...sh', 'parent']
+E         
+E         Right contains 2 more items, first extra item: 'refresh'
+E         Use -v to get more diff
+
+tests/test_v24917_long_cache_generation.py:288: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_long_cache_generation.py::test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_contract[False-True]
+FAILED tests/test_v24917_long_cache_generation.py::test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_contract[True-True]
+2 failed, 1854 passed, 4 skipped in 33.90s

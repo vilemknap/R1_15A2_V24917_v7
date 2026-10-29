@@ -13,9 +13,10 @@ Design (after the WORK/SERVICE zonal fit, on its residual):
           so its exposure is the WORK FlowBundle incidence times the SCHOOL share of the
           vehicle OD cell:  a_p,v * s_od,  s_od = M9225[o,d] / M9226[o,d].  Doubly-constrained
           normalisation g = (sum P u / P + sum A v / A) / 2 as in the W/S fit.
-  LONG    deferred in this source candidate. The previous global NATIVE_CL volume
-          approximation cannot identify zone or component response. No LONG step
-          is emitted until real zone-level incidence and native support are proven.
+  LONG    per-zone proposal from shared NATIVE_CL cached OD/profile shares and
+          current M9291..9295/M9305, after W/S and SCHOOL residuals. Same local
+          normalized response and bounded solver as W/S; live native acceptance
+          and verified parent rollback remain authoritative. Missing evidence defers LONG.
 
 Bounds (LSSENS1, more cautious than W/S, run options ls_*): step per cycle +-10 %,
 SCHOOL absolute envelope [0.75, 2.0], ridge 0.05 (W/S 0.01). The inherited LONG
@@ -38,7 +39,7 @@ LS_DEFAULTS = {
     "ls_max_step_up": 0.10,              # +10 % per zone and cycle   (W/S +25 %)
     "ls_max_step_down": 0.10,            # -10 % per zone and cycle   (W/S -20 %)
     "ls_school_envelope": [0.75, 2.0],   # absolute ADD_*_SCH         (same as W/S)
-    "ls_long_envelope_ref": [0.5, 1.5],  # expert LONG band 0.15..0.45; frozen until native proof
+    "ls_long_envelope_ref": [0.5, 1.5],  # production 0.3 reference; attraction immutable run start
     "ls_ridge_relative": 0.05,           # 5x the W/S ridge: LS only explain what W/S cannot
 }
 
@@ -113,7 +114,7 @@ def _zone_values(visum, attr, zones) -> np.ndarray:
     return np.array([vals.get(int(z), 0.0) for z in zones], dtype=float)
 
 
-def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mapping[str, Any],
+def _school_design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mapping[str, Any],
            ws_problem, ws_solution, reference_values: Mapping[str, Mapping[str, Any]] = None,
            fit_cfg: Mapping[str, Any] = None) -> Dict[str, Any]:
     import r1_15a2_zonal_count_fit_v24917 as zf
@@ -280,6 +281,25 @@ def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mappi
             "predicted_change": [float(v) for v in np.asarray(sol["predicted_change"], dtype=float)],
             # MOBILITYZONE1 re-evaluates effects after bounding production steps.
             "effect_operator": {"keys": [list(k) for k in var_keys], "G": G.tolist()}}
+
+
+def design(visum, cfg, zones, incidence, ws_problem, ws_solution,
+           reference_values=None, fit_cfg=None):
+    """Keep SCHOOL behavior and fit cache-backed zonal LONG on its residual."""
+    fit_cfg = dict(fit_cfg or {})
+    out = _school_design(visum, cfg, zones, incidence, ws_problem, ws_solution,
+                         reference_values, fit_cfg)
+    observed = fit_cfg.get("long_cache_incidence")
+    if observed is not None and fit_cfg.get("longguard1_allow_long"):
+        from r1_15a2_long_cache_generation_v24917 import attach_fit
+        try:
+            return attach_fit(out, observed, visum, cfg, zones, ws_problem, ws_solution,
+                               reference_values, fit_cfg)
+        except Exception as exc:
+            # Optional LONG failure leaves the existing SCHOOL/W/S proposal intact.
+            out.setdefault("summary", {}).update(long_generation_permitted=False,
+                long_search_status="LONG_SEARCH_INCOMPLETE", long_deferred_reason=str(exc))
+    return out
 
 
 def rows_at_scale(ls: Mapping[str, Any], scale: float) -> List[Dict[str, Any]]:

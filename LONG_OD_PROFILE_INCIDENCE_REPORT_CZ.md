@@ -1,46 +1,54 @@
-# LONG OD → profil: současná čtecí implementace
+# LONG OD → profil a zonální Generation ve společném řetězci
 
-Stav k 2026-10-29: `OBSERVED_LONG_OD_PROFILE_ONLY`. Živý Visum v tomto vývojovém prostředí nebyl spuštěn. Výstup popisuje vozidlový tok přiřazený profilům; není derivací `ADD_PROD_L`.
+Stav k 2026-10-29: LONG Generation je zapojená jako lokální návrhový model podle principu WORK/SERVICE. Živý Visum ve vývojovém prostředí nebyl spuštěn. Nejde o analytickou derivaci TG→TD→20A→20B ani o živou certifikaci; přijetí určuje nativní přepočet a stávající ochrany.
 
-## Výpočet a zdroje
+## Běžné spuštění
 
-`r1_15a2_long_profile_incidence_v24917.py` používá oficiální uložené trasy `NATIVE_CL`, jejich směrované průchody linkami, výslednou M9305 a pět vozidlových komponent M9291–M9295. Pro každý profil a OD pár sčítá objemy tras krát počet průchodů profilem. Skutečný opakovaný průchod linkou se započte opakovaně; duplicitní export stejné profilové pozice se odmítne. Profily BOTH sčítají oba autorizované fyzické směry.
+Používá se dosavadní launcher `01_SPUSTIT_V24917_TDJOINT1.py` nebo jeho varianta 60/40 z kompletního GitHub balíčku. Není potřeba samostatný auditní launcher ani ruční zavolání nového API. Baseline a každá Generation automaticky obslouží potřebné podklady a případné odložení LONG zapíše do výsledků běhu. Načtený model musí stejně jako pro W/S poskytovat uložené assignmentové trasy; požadavek není nahrazen syntetickým routováním.
 
-Komponentový příspěvek vzniká podle aktuálního OD podílu M929k/M9305. Součet pěti složek musí odpovídat M9305 v každé buňce a součet uložených tras musí rekonstruovat všechny kladné mezizónové OD vztahy. Kladné vztahy pod numerickou tolerancí se nezahazují. Intrazonální objem je vykázán odděleně. Neodvozuje se žádná globální obsazenost ani převodní koeficient CL.
+## Společná cache a inline kontroly
 
-## Nová cesta z aktuálního adapteru
+`r1_15a2_long_cache_generation_v24917.py` čte již existující SQLite úložiště two-mode cest. Objemy bere samostatně pro `NATIVE_CL`; násobnosti průchodů profily a jejich směry přebírá ze společné geometrie po módech C/C_NOT. Zachovává její označení `PROVISIONAL_SAME_MODE_GEOMETRY_NOT_FULLY_VERIFIED`. Není to dodatečný kompletní export LONG tras.
 
-`r1_15a2_long_incidence_read_v24917.py` doplňuje čtení z aktuálního modelu. V24917 adapter po svém dokončeném assignmentu a zachycení DIS zaznamená assignment/mutation epochu, token, hash skim epochy a pořadí zón. Samotný záznam neexportuje trasy ani nečte další OD matice.
+Pro každé OD spočítá profilový podíl z uložených CL objemů a přepočte jej aktuálním finálním vozidlovým OD z M9305. Stejný princip zmrazené incidence používají W/S pro návrh změny. Zachovávají se opakované průchody linkou a schválené směry profilů BOTH. Současné M9291–M9295 se musí po buňkách sečíst na M9305; podle jejich OD podílů vznikne i komponentový rozklad LONG profilových toků. Nepoužívá se globální CL konverze ani generační dělitel 2,8.
 
-Explicitní diagnostické API na již používaném adapteru:
+Kontroly probíhají přímo při Generation:
 
-```python
-# Po běžném assignmentu a diagnostice V24917; žádný nový adapter ani attach.
-observed = adapter.long_profile_incidence(diag, audit_folder)
-```
+- aktuální assignment/skim/mutation vazba adapteru, přesná zónová osa a kompatibilní kontext sdílené cache;
+- schválená CAL sestava a směry profilů, CL zdroj M9305 a dokončená cache incidence;
+- kladné OD se skutečným nenulovým podílem tras; kladné mezizónové trasy mají geometrii;
+- rekonstruovaný CL profilový tok odpovídá přímému `VOLVEH_DSEG(NATIVE_CL,AP)` v mezích stávající W/S profilové parity; její toleranci LONG neuvolňuje;
+- neměnnost šesti LONG matic, profilových toků, parametrů, epochy a OSRM zdroje během čtení;
+- podpora OSRM M9697 / `R1_OSRM_DIST_KM` **≥80 km bez horní meze**. Při načítání incidence se žádná matice nepřepisuje.
 
-`audit_folder` musí být nový nebo prázdný. `diag['d12']['rows']` musí obsahovat právě schválenou CAL sestavu; ověřují se identity i směry vůči `api_approved_observations`. Pořadí řádků se zachová pro návazný W/S fit. Volání není automaticky přidáno do každého kalibračního kroku: čtení velkého `NATIVE_CL` exportu proběhne jen na explicitní diagnostický požadavek.
+Chybějící nový kladný OD/podíl nebo nevyhovující profilová parita vyvolá nejvýše jednu běžnou obnovu společné cache ze současného modelu. Současně se znovu sestaví W/S kontext, aby obě větve použily stejný obnovený základ. Při přetrvávající chybě se odloží LONG, W/S/SCHOOL mohou pokračovat; hledání není označeno za úplné.
 
-Čtecí cesta:
+## Návrh a meze
 
-1. Vyžádá aktuální, adapterem navázanou assignment/skim epochu. Odmítne probíhající výpočet, chybějící vazbu nebo pozdější mutaci.
-2. Načte zónovou osu, M9291–M9295 a M9305 a ověří zdroj OSRM M9697 / `R1_OSRM_DIST_KM`. Vyžaduje již aplikovanou podporu **OSRM ≥80 km bez horní meze**. Při nesplnění sama nic neořezává ani nepřepočítává.
-3. Přes stávající `export_actual_paths_and_build_incidence()` exportuje pouze `NATIVE_CL`, s ověřeným bounded COM podpisem a průběžnou redukcí path-link řádků. Nepoužívá persistentní W/S cache a nemění původní `path_export_dsegs` ani `mutable_dsegs`.
-4. Ověří OD a komponentovou paritu a porovná rekonstruovaný LONG tok s přímým `VOLVEH_DSEG(NATIVE_CL,AP)` na schválených profilových linkách. Tolerance parity: absolutně 1e-6, relativně 1e-8.
-5. Znovu načte všech šest matic a profilové toky; vyžaduje přesnou nezměněnost. Znovu ověří zdroj OSRM, parametrový snapshot, pořadí zón a epochu. Změna znamená chybu, nikoli fallback na staré podklady.
+Po W/S a SCHOOL se na zbývajícím profilovém reziduu řeší LONG zónové log kroky:
 
-Úspěch zapisuje `LONG_INCIDENCE.npz` bez pickle a `LONG_INCIDENCE_REPORT.json` s SHA archivu, matic a zón, identitou epochy a chybami parity. Archiv obsahuje řídké řádky/sloupce/hodnoty, OD identitu, aktuální objemy, pět komponent, zónové P/A a profilové toky. Zůstávají také CSV důkazy původního exportéru. Při selhání se úspěšný výstup odstraní a vznikne `LONG_INCIDENCE_FAILURE.json`; předchozí neprázdný adresář se nepřepisuje.
+`Δq_od/q_od ≈ u_origin + v_destination − g_LONG`.
 
-## Hranice použití
+Proměnné jsou `ADD_PROD_L` a `ADD_ATT_L` v jednotlivých domácích zónách. Normování, ridge a omezený solver vycházejí z W/S. LONG používá tvrdou P/A bilanci a opravu exponenciálních kroků. Zóny bez přímé expozice, strukturální nuly a nepodporované externí zóny se nemění.
 
-Čtení nevolá Procedures.Execute, SetValues, LoadVersion ani aktivaci LONG. Zdrojový `source_status` rozlišuje pouze caller-supplied offline vstupy od čtení navázaného adapteru s ověřenou paritou. Testovací COM rozhraní neprokazuje běh ve skutečném Visumu.
+- krok nejvýše **+10 % / −10 %** na kandidáta, případně méně podle aktivního LS/stage nastavení;
+- produkce: pevná reference **0,3**, pásmo **0,15–0,45**, dále mobilitní ochrany každé zóny;
+- atrakce: nakonfigurovaný násobek **0,5–1,5 neměnné počáteční hodnoty běhu**, bez posunu reference po přijatém kroku;
+- již existující hodnoty mimo pásmo mohou držet nebo se vracet dovnitř, nemohou se vzdálit více;
+- existující LS ridge 0,05; žádné nové survey cíle komponent.
 
-`r1_15a2_long_zonal_fit_v24917.py` může dál vytvořit čistý lokální návrh podle principu W/S: `Δq/q ≈ u_origin + v_destination − g_LONG`. Skutečná změna produkčního koeficientu však prochází TG → nativní TD → komponentově a pásmově specifický převod 20A → návratový 20B → současné maskování výsledných LONG matic → assignment. Pozorovaná M929x incidence sama tuto citlivost nedokládá. `long_generation_permitted=False`, `tg_sensitivity_verified=False` zůstávají zachovány.
+## Apply, accept, reject, rollback
 
-LONG Generation tedy zůstává zmrazená; kanonická reference je nyní **0,3**, nikoli historických 0,2. Společné LONG TD b/c také zůstává blokované do ověření count-response modelu. Nativní OD filtr už není požadavkem: uživatel zvolil následné násobení LONG matic maskou a přijetí úbytku objemu. FineCDF dál používá čerstvou NATIVE_CL/DIS a podmíněnou cílovou křivku 100–200 km, což není horní mez OSRM podpory.
+LONG řádky procházejí stejným zapisovacím mechanismem Generation jako W/S. Tím funguje i LONG-only kandidát při nulovém W/S kroku. Před zápisem se ověřuje úplný plán, živá mobilitní autorita a zdroj návrhu; LONG P/A odhad v právě použité škále vstupuje do stávající předaplikační brány. Rozsah kontroly změněných matic Generation je explicitně rozšířen pouze o NATIVE_CL a 9111–9115; FOREIGN ani ostatní bloky se nepovolují.
 
-## Ověření a další hranice
+Každý skutečný pokus dál proběhne přes nativní TG→jednotnou TD→20A/20B→masky LONG→assignment→čerstvé DIS→12D/11D. Zůstávají ochrany count profilů, OSRM podpory, LONG FineCDF, mobility a přijetí kandidáta. Hodnoty nad 200 km jsou podporou povolené; podmíněná FineCDF 100–200 km nadále používá čerstvou NATIVE_CL/DIS.
 
-Přesné příkazy, návratové kódy, testové součty a manifestové důkazy jsou v `LONG_INCIDENCE_CURRENT_20261029.json` a `evidence_long_incidence_current_20261029/`. Kompletní diff je v `artifacts_long_incidence_current_20261029/`. Vše je součástí GitHub zálohy této větve.
+Snapshot/restore zahrnuje oba LONG koeficienty. Backtracking může znovu použít svůj zmrazený návrh po přesném obnovení rodičovských parametrů; změněný nepříslušný rodič nebo cache je odmítnut. Ověřený rollback a nativní přepočet vlastní stávající controller. Nový kód nevolá LoadVersion, nepíše OD matice a neprovádí vlastní routing. Již schválené násobení LONG matic maskou se nemění.
 
-Dalším samostatným krokem je spustit toto čtení na cílovém PC bezprostředně nad platnou epochou V24917 a posoudit skutečnou paritu. Pro odmrazení zonálního LONG TG bude navíc potřeba samostatně ověřená odezva celé realizační sekvence a její rollback.
+## Rozsah a důkazy
+
+Tento port zapojuje **LONG Generation**. Společné LONG TD ladění b/c zůstává blokované do svého vlastního count-response modelu; nepoužívá se zde neprokázaný převod finálních vozidel na změnu person TD matice.
+
+Původní `r1_15a2_long_profile_incidence_v24917.py` a explicitní `long_profile_incidence()` zůstávají k dispozici pro samostatnou vývojovou diagnostiku. Běžný Generation řetězec je nepotřebuje volat; používá společnou cache.
+
+Výsledky a přesné příkazy jsou v `LONG_GENERATION_SHARED_CACHE_20261029.json` a `evidence_long_generation_shared_cache_20261029/`. Kompletní patch je v `artifacts_long_generation_shared_cache_20261029/`. Vše je součástí GitHub větve. Offline testy zahrnují SQL incidenci a její přepočet, komponenty, směry/násobnosti, chyby podkladů, omezený fit, nulový W/S krok, obnovu společné cache, skutečný koeficientový setter, rollback parametrů, vlastnictví backtrackingu a controller freeze proof. Neprokazují živý COM běh ve Visumu.

@@ -1,0 +1,170 @@
+{
+  "task": "LONG_GENERATION_SHARED_CACHE_20261029",
+  "branch": "codex/long-generation-cache-20261029",
+  "baseline_local_commit": "c9504cfef084f355e4624bc5146923ab9f9252af",
+  "baseline_github_commit": "9e90ef2b137a60ee6a5b534b671b7f76f51560fc",
+  "offline_only": true,
+  "live_visum_status": "NOT_RUN",
+  "entry_points": [
+    "01_SPUSTIT_V24917_TDJOINT1.py",
+    "02_SPUSTIT_V24917_TDJOINT1_60_40.py"
+  ],
+  "long_generation": "AUTOMATIC_SHARED_CACHE_ZONAL_LOCAL_PROPOSALS_WITH_LIVE_ACCEPTANCE",
+  "long_td_bc": "REMAINS_BLOCKED_COUNT_RESPONSE_NOT_IMPLEMENTED",
+  "separate_audit_launcher_required": false,
+  "automatic_additional_path_export": false,
+  "shared_cache_refresh": "AT_MOST_ONCE_ON_MISSING_POSITIVE_OD_SHARE_OR_PROFILE_PARITY_FAILURE",
+  "algorithm": "W/S normalized zonal log P/A proposal; LONG fits residual after W/S and SCHOOL",
+  "bounds": {
+    "production_reference": 0.3,
+    "production_absolute_band": [
+      0.15,
+      0.45
+    ],
+    "attraction_run_start_multiplier_band": [
+      0.5,
+      1.5
+    ],
+    "hard_candidate_increase": 0.1,
+    "hard_candidate_decrease": 0.1,
+    "zero_and_unexposed_and_external_zones": "FROZEN",
+    "out_of_band_parent": "HOLD_OR_RECOVER_ONLY"
+  },
+  "support": {
+    "matrix_no": 9697,
+    "matrix_code": "R1_OSRM_DIST_KM",
+    "minimum_km": 80,
+    "maximum_km": null
+  },
+  "generation_scope_extension": {
+    "dseg_codes": [
+      "NATIVE_CL"
+    ],
+    "matrix_nos": [
+      9111,
+      9112,
+      9113,
+      9114,
+      9115
+    ],
+    "foreign_or_other_blocks_extended": false
+  },
+  "new_od_writes": false,
+  "new_routing": false,
+  "loadversion_used": false,
+  "acceptance_thresholds_changed": false,
+  "tg_sensitivity_analytically_verified": false,
+  "checks": {
+    "release": "GENFIX2",
+    "offline_only": true,
+    "live_visum_tested": false,
+    "suites": [
+      {
+        "suite": "main",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/tests"
+        ],
+        "returncode": 0,
+        "seconds": 33.892
+      },
+      {
+        "suite": "diagfast",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/diagfast_tests"
+        ],
+        "returncode": 0,
+        "seconds": 20.967
+      },
+      {
+        "suite": "audit_genfix2",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/genfix2_audit_tests"
+        ],
+        "returncode": 0,
+        "seconds": 0.716
+      }
+    ],
+    "all_passed": true,
+    "output": "/workspace/work/long_generation_cache/verified_regression",
+    "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+  },
+  "test_totals": {
+    "main": {
+      "passed": 1857,
+      "skipped": 4
+    },
+    "diagfast": {
+      "passed": 138
+    },
+    "audit": {
+      "passed": 18
+    }
+  },
+  "focused": {
+    "passed": 176,
+    "returncode": 0,
+    "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider --tb=short tests/test_v24917_long_cache_generation.py tests/test_v24917_targeted_catchup.py tests/test_v24917_mobilityzone1.py tests/test_v24917_longguard1.py tests/test_v24917_long_post_td_mask.py",
+    "note": "Final full suite additionally verifies the final test-owner isolation adjustment."
+  },
+  "verification_command": "PYTHONDONTWRITEBYTECODE=1 PYTEST_ADDOPTS=--basetemp=/tmp/r1lg /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/long_generation_cache/verified_regression",
+  "integrity": {
+    "compilation_passed": [
+      "r1_15a2_long_cache_generation_v24917.py",
+      "r1_15a2_long_school_generation_v24917.py",
+      "r1_15a2_long_zonal_fit_v24917.py",
+      "r1_15a2_mobility_zone_v24917.py",
+      "r1_15a2_runtime_delta_v24917.py",
+      "r1_15a2_trial_adapter_v24917.py",
+      "tests/test_v24917_long_cache_generation.py",
+      "tests/test_v24917_targeted_catchup.py",
+      "tools/refresh_v24917_manifests.py"
+    ],
+    "manifests": {
+      "V24917_RUNTIME_MANIFEST.json": {
+        "files": 71,
+        "all_sha256_match": true,
+        "sha256": "0a0cdfa6c2f7e4acc84ab8d3f3477ec62334bb23469ab7bfc2bb4a4b78847ce8"
+      },
+      "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+        "files": 131,
+        "all_sha256_match": true,
+        "sha256": "105cd7a4761c3e4a336353c783e604d5928d788dbd83a726b27699cf330918c5"
+      },
+      "DIAGFAST_V1_BASE_MANIFEST.json": {
+        "files": 1059,
+        "all_sha256_match": true,
+        "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+      }
+    },
+    "protected_original_files_unchanged": 1059
+  },
+  "prior_failures": [
+    {
+      "cause": "Two refresh mocks patched a collection-time module after inherited launcher tests reloaded runtime modules.",
+      "resolution": "Tests now patch the actual adapter module owner; production policy unchanged."
+    },
+    {
+      "cause": "Inherited synthetic MAX_PATH test built an already-too-long destination under pytest-100 auto temp root.",
+      "resolution": "Unchanged test/source, fixed short --basetemp; all 8 IO tests passed and final full suite passed without new skips."
+    }
+  ],
+  "remaining_validation": "Fresh native TG/TD/20A/20B/mask/assignment/diagnostics and verified rollback on the user Windows model have not been executed here."
+}

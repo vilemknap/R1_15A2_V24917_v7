@@ -1,0 +1,1240 @@
+diff --git a/.gitattributes b/.gitattributes
+index c096139..6eac15a 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -40,3 +40,5 @@ MOBILITYALLOC1_TDLONG1_SOURCE.patch -text -diff
+ # Keep complete source patches byte-exact, including blank context lines.
+ artifacts_long_post_td_mask_20261029/*.patch -text -diff
+ artifacts_long_incidence_current_20261029/*.patch -text -diff
++artifacts_long_generation_shared_cache_20261029/*.patch -text -diff
++evidence_long_generation_shared_cache_20261029/prior_attempts/*.log -text -diff
+diff --git a/AGENTS.md b/AGENTS.md
+index a19de57..dda11ea 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -45,7 +45,8 @@ Check names against the working tree. Do not invent missing modules or interface
+ - Reuse `MIN_KM` and `MAX_CDF_KM` from `r1_15a2_long_distance_guard_v24917.py` and project `ordered_zone_hash()` / `matrix_values_hash()` from `r1_15a2_skim_v24916p2c.py`. Verify OSRM NO/CODE, dimensions and zone order; pin its content/zone hashes within a run. Never substitute another distance matrix. For FineCDF, retain `DynamicSkimManager.require_current()` and diagnostic/assignment epoch binding. A caller-supplied `verified=True` is not evidence.
+ - User decision 2026-10-29 explicitly authorizes multiplying LONG person matrices 9111-9115 by the OSRM >=80 km mask AFTER the one unified native TD operation, accepting removed volume and changed realized P/A WITHOUT redistribution or renormalization. The native OD-pair filter is no longer required for this method. Keep the native operation definition, position, strata and b/c untouched by the masking operation.
+ - After 20A/20B realization, apply the same mask to LONG vehicle components 9291-9295 and rebuild their aggregate 9305 before assignment. Audit removed totals and production/attraction by zone at each stage; preserve allowed values, FOREIGN and other strata. Restore original ACTIVE flags after execution slices and own partially completed matrix writes through verified restoration and accepted-parent recomputation. Do not claim a live-verified result from offline mocks.
+-- LONG Generation stays frozen. Shared LONG b/c calibration is still pending a valid LONG count-response model; applying the support mask alone does not enable its optimizer.
++- User decision 2026-10-29 authorizes porting W/S proposal principles to zonal LONG Generation: use the shared two-mode NATIVE_CL path cache, current M9291-9295/M9305, inline OD/profile/source checks, and the existing native trial/accept/reject/rollback chain. No separate audit launcher is required. Frozen paths are a labelled proposal basis, not a claim of a fresh export or an analytic TG derivative. Missing support/share or failed profile parity permits one normal shared-cache refresh; unresolved evidence defers LONG while W/S/SCHOOL continue.
++- LONG Generation uses per-zone ADD_PROD_L/ADD_ATT_L steps capped at +/-10%, the fixed 0.3 production reference with [0.15,0.45] admissible band, and the configured [0.5,1.5] multiplier band around immutable run-start attraction values. Existing out-of-band parents may hold or recover only. Native assignment and fresh diagnostics decide acceptance; keep all LONG OSRM/FineCDF and mobility guards. Shared LONG TD b/c calibration remains pending its own count-response model and is not enabled by this Generation port.
+ 
+ - Preserve the active acceptance objective, protected profile constraints, survey metrics, count/IDP blending, convergence definition, freezes and safety thresholds unless the task explicitly authorizes a methodological change. Do not loosen guards or hide failed cases to obtain a green run.
+ 
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index a7b2a74..19a3244 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -51,17 +51,18 @@
+     "r1_15a2_generation_gate_nonfatal_v1.py": "2ca13966ae4cdedcfee6f5076236ea4c2db97fc04d6cb2f612ffe899cadb6244",
+     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
++    "r1_15a2_long_cache_generation_v24917.py": "3bb99608e2fa060c946e285d262e7e911d1a7edf3a600e19898a271e3cf91532",
+     "r1_15a2_long_composite_td_v24917.py": "527ed907603b1c37cb354c39e6948be592a70e0caeb7937ab2d46242a494eebe",
+     "r1_15a2_long_distance_guard_v24917.py": "94a0e368d35929756c56d913fc50ebd16e321c21ed8c37e8463636338fdad712",
+     "r1_15a2_long_incidence_read_v24917.py": "4c9e581d41088832ef676bca015444d4f6bc4df751bfb78e6197f7edd063d1b7",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+     "r1_15a2_long_post_td_mask_v24917.py": "090c152a600189a79ce783b057a9d340a8fcd9840d21949ce1ced12afc27359f",
+     "r1_15a2_long_profile_incidence_v24917.py": "9c05bbb8e9dfebc9342354f41e6330bef818082276584f71a8384ae7097562e1",
+-    "r1_15a2_long_school_generation_v24917.py": "20837ddcaed19728ac61d747ff295060752898859003847857bc22e4ef562946",
++    "r1_15a2_long_school_generation_v24917.py": "3710e3aeca5ca5f39881d25b6838dcbdb44f42a3eb1dd353e0f494d054eb17b8",
+     "r1_15a2_long_support_distance_v24917.py": "9af975facbe939896c36ac4a777013c005bf88808365ff7e2b7578d48790888e",
+-    "r1_15a2_long_zonal_fit_v24917.py": "d73ef3a6a06876c9fd55a4aa7be5078aa0ac67f6b5f6ad8c4bd2832dcdf6ebbf",
++    "r1_15a2_long_zonal_fit_v24917.py": "5adffe09757993227cc16c79fe5bf5724e74a52e7e180ca5af721f7646659f46",
+     "r1_15a2_mobility_guard_v24917.py": "7c7bf33eb61fe61a8817a61fd69e7490edcea83d4d6e0b0523be161eacef8f19",
+-    "r1_15a2_mobility_zone_v24917.py": "874947abd9b5b5f5904f097db0c418da3337b9cd29e68fb7a1bb5fa12be862fd",
++    "r1_15a2_mobility_zone_v24917.py": "9e608e29951b35bd241b6827eef1d7dab548ae335dd178170dd60dae79795a55",
+     "r1_15a2_parent_equivalence_v24917.py": "acc0f39f6bbbffc88119a75f3e5dedf2f02bda69abe719716e7a679ecf992d60",
+     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+     "r1_15a2_preflight_explain_v24917.py": "7d0ecf8b8588bf7463eee9beeaadf981d7e61d56e8a00b8240437162cbc6d4f0",
+@@ -69,7 +70,7 @@
+     "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+     "r1_15a2_rollback_consistency_v24917.py": "ff9b854be640e1e166cf5c82e84c821e0b7c05d5cbd3c0cc4ecbff18670f463d",
+-    "r1_15a2_runtime_delta_v24917.py": "1ea48d26a29d3644a343a6dd13b5ebc3b73d3b612900822d5ec1398a4308e65f",
++    "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
+     "r1_15a2_severity_relax_v24917.py": "40624acbfc7d981b4c0286789eb2d99797fd566217a136c81a43798370617549",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_snapshot_reads_v24917.py": "90cd8cb09981072d908d8cb022792c6fb6352c45506140724029a0dc8842a7fe",
+@@ -81,7 +82,7 @@
+     "r1_15a2_td_joint_v24917.py": "9638d3d0026cef17fdb27c7b469b53c74f75690043394a2f463c174e0961c9dd",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+-    "r1_15a2_trial_adapter_v24917.py": "9633fdbb3943e9934b8bb6c7b6a69f79fecc5ea4d11615f8b1176a2d36932062",
++    "r1_15a2_trial_adapter_v24917.py": "416acb49be97d26248cab4850ea3e9bacc81528c9f318ca3972727adec382cef",
+     "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+     "r1_15a2_zonal_count_fit_v24917.py": "f5308b821980442bf60ab3a0aef1b138d02f6decdf3fe2ab478a0b6010f6c67b",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+@@ -99,6 +100,7 @@
+     "tests/test_v24917_genfix2.py": "a7ed2b8ec90ffdd0d444cda9e361d403264570a8155422716198574e2e277be1",
+     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
++    "tests/test_v24917_long_cache_generation.py": "b5fb38a4230b8198d1633f55581d3e8f3c169b6815decda19f015fdd08875e61",
+     "tests/test_v24917_long_composite_td.py": "05def6e18689fd99325014781006ae80616b64859b41adcb30b93597694365a3",
+     "tests/test_v24917_long_incidence_read.py": "4d9d5be00c08776681335cee40d3d6008624748634eea6399499855f0a32a3bd",
+     "tests/test_v24917_long_osrm_support.py": "07e3a4edb35957e3d2720dea7a8a74a5c3a6a08424c10de3dcb4df6bcda353f6",
+@@ -121,7 +123,7 @@
+     "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
+     "tests/test_v24917_step_search.py": "10b78a9068ffab80e67c4dbe0761898230736a6f302fe7ad059279d1aafd123f",
+     "tests/test_v24917_supply_mix.py": "31803439c9c23d27b3829d66e7b9e95538f7922b111ca95a5158981f8c081cfe",
+-    "tests/test_v24917_targeted_catchup.py": "3ae316b396bfa92775190289c47794ccc96b0ac681154e8a11c088c94b13a9c3",
++    "tests/test_v24917_targeted_catchup.py": "9906b33ef06369995cd7087548527c441adf0ffb912490110d53849285c0492b",
+     "tests/test_v24917_td_rollback_tolerant.py": "7f03276f74e29715f7dd865688d079458184f97ab1d36b4f4eec76012e40215b",
+     "tests/test_v24917_td_stage_integration.py": "8e4d9636f3472ae5fcc88a28113209458142909467bfc3146f4b206672f86a25",
+     "tests/test_v24917_tdjoint1.py": "4c47b63f2b6323f952975d5efb9c96bc4e2ed8879b49f7149f165f4e22e987ae",
+@@ -130,7 +132,7 @@
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "e6e0c6c041c86b8e16098839ffe6967b555d955b5e8b172a49c46afea7daa88d",
++    "tools/refresh_v24917_manifests.py": "01aaa533cc106ed3d26888e25a53408816b08d0c6b07ae872e9f44f16f5264b6",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+   }
+ }
+diff --git a/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md b/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
+index 66aa19f..40d74ed 100644
+--- a/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
++++ b/LONG_OD_PROFILE_INCIDENCE_REPORT_CZ.md
+@@ -1,46 +1,54 @@
+-# LONG OD → profil: současná čtecí implementace
++# LONG OD → profil a zonální Generation ve společném řetězci
+ 
+-Stav k 2026-10-29: `OBSERVED_LONG_OD_PROFILE_ONLY`. Živý Visum v tomto vývojovém prostředí nebyl spuštěn. Výstup popisuje vozidlový tok přiřazený profilům; není derivací `ADD_PROD_L`.
++Stav k 2026-10-29: LONG Generation je zapojená jako lokální návrhový model podle principu WORK/SERVICE. Živý Visum ve vývojovém prostředí nebyl spuštěn. Nejde o analytickou derivaci TG→TD→20A→20B ani o živou certifikaci; přijetí určuje nativní přepočet a stávající ochrany.
+ 
+-## Výpočet a zdroje
++## Běžné spuštění
+ 
+-`r1_15a2_long_profile_incidence_v24917.py` používá oficiální uložené trasy `NATIVE_CL`, jejich směrované průchody linkami, výslednou M9305 a pět vozidlových komponent M9291–M9295. Pro každý profil a OD pár sčítá objemy tras krát počet průchodů profilem. Skutečný opakovaný průchod linkou se započte opakovaně; duplicitní export stejné profilové pozice se odmítne. Profily BOTH sčítají oba autorizované fyzické směry.
++Používá se dosavadní launcher `01_SPUSTIT_V24917_TDJOINT1.py` nebo jeho varianta 60/40 z kompletního GitHub balíčku. Není potřeba samostatný auditní launcher ani ruční zavolání nového API. Baseline a každá Generation automaticky obslouží potřebné podklady a případné odložení LONG zapíše do výsledků běhu. Načtený model musí stejně jako pro W/S poskytovat uložené assignmentové trasy; požadavek není nahrazen syntetickým routováním.
+ 
+-Komponentový příspěvek vzniká podle aktuálního OD podílu M929k/M9305. Součet pěti složek musí odpovídat M9305 v každé buňce a součet uložených tras musí rekonstruovat všechny kladné mezizónové OD vztahy. Kladné vztahy pod numerickou tolerancí se nezahazují. Intrazonální objem je vykázán odděleně. Neodvozuje se žádná globální obsazenost ani převodní koeficient CL.
++## Společná cache a inline kontroly
+ 
+-## Nová cesta z aktuálního adapteru
++`r1_15a2_long_cache_generation_v24917.py` čte již existující SQLite úložiště two-mode cest. Objemy bere samostatně pro `NATIVE_CL`; násobnosti průchodů profily a jejich směry přebírá ze společné geometrie po módech C/C_NOT. Zachovává její označení `PROVISIONAL_SAME_MODE_GEOMETRY_NOT_FULLY_VERIFIED`. Není to dodatečný kompletní export LONG tras.
+ 
+-`r1_15a2_long_incidence_read_v24917.py` doplňuje čtení z aktuálního modelu. V24917 adapter po svém dokončeném assignmentu a zachycení DIS zaznamená assignment/mutation epochu, token, hash skim epochy a pořadí zón. Samotný záznam neexportuje trasy ani nečte další OD matice.
++Pro každé OD spočítá profilový podíl z uložených CL objemů a přepočte jej aktuálním finálním vozidlovým OD z M9305. Stejný princip zmrazené incidence používají W/S pro návrh změny. Zachovávají se opakované průchody linkou a schválené směry profilů BOTH. Současné M9291–M9295 se musí po buňkách sečíst na M9305; podle jejich OD podílů vznikne i komponentový rozklad LONG profilových toků. Nepoužívá se globální CL konverze ani generační dělitel 2,8.
+ 
+-Explicitní diagnostické API na již používaném adapteru:
++Kontroly probíhají přímo při Generation:
+ 
+-```python
+-# Po běžném assignmentu a diagnostice V24917; žádný nový adapter ani attach.
+-observed = adapter.long_profile_incidence(diag, audit_folder)
+-```
++- aktuální assignment/skim/mutation vazba adapteru, přesná zónová osa a kompatibilní kontext sdílené cache;
++- schválená CAL sestava a směry profilů, CL zdroj M9305 a dokončená cache incidence;
++- kladné OD se skutečným nenulovým podílem tras; kladné mezizónové trasy mají geometrii;
++- rekonstruovaný CL profilový tok odpovídá přímému `VOLVEH_DSEG(NATIVE_CL,AP)` v mezích stávající W/S profilové parity; její toleranci LONG neuvolňuje;
++- neměnnost šesti LONG matic, profilových toků, parametrů, epochy a OSRM zdroje během čtení;
++- podpora OSRM M9697 / `R1_OSRM_DIST_KM` **≥80 km bez horní meze**. Při načítání incidence se žádná matice nepřepisuje.
+ 
+-`audit_folder` musí být nový nebo prázdný. `diag['d12']['rows']` musí obsahovat právě schválenou CAL sestavu; ověřují se identity i směry vůči `api_approved_observations`. Pořadí řádků se zachová pro návazný W/S fit. Volání není automaticky přidáno do každého kalibračního kroku: čtení velkého `NATIVE_CL` exportu proběhne jen na explicitní diagnostický požadavek.
++Chybějící nový kladný OD/podíl nebo nevyhovující profilová parita vyvolá nejvýše jednu běžnou obnovu společné cache ze současného modelu. Současně se znovu sestaví W/S kontext, aby obě větve použily stejný obnovený základ. Při přetrvávající chybě se odloží LONG, W/S/SCHOOL mohou pokračovat; hledání není označeno za úplné.
+ 
+-Čtecí cesta:
++## Návrh a meze
+ 
+-1. Vyžádá aktuální, adapterem navázanou assignment/skim epochu. Odmítne probíhající výpočet, chybějící vazbu nebo pozdější mutaci.
+-2. Načte zónovou osu, M9291–M9295 a M9305 a ověří zdroj OSRM M9697 / `R1_OSRM_DIST_KM`. Vyžaduje již aplikovanou podporu **OSRM ≥80 km bez horní meze**. Při nesplnění sama nic neořezává ani nepřepočítává.
+-3. Přes stávající `export_actual_paths_and_build_incidence()` exportuje pouze `NATIVE_CL`, s ověřeným bounded COM podpisem a průběžnou redukcí path-link řádků. Nepoužívá persistentní W/S cache a nemění původní `path_export_dsegs` ani `mutable_dsegs`.
+-4. Ověří OD a komponentovou paritu a porovná rekonstruovaný LONG tok s přímým `VOLVEH_DSEG(NATIVE_CL,AP)` na schválených profilových linkách. Tolerance parity: absolutně 1e-6, relativně 1e-8.
+-5. Znovu načte všech šest matic a profilové toky; vyžaduje přesnou nezměněnost. Znovu ověří zdroj OSRM, parametrový snapshot, pořadí zón a epochu. Změna znamená chybu, nikoli fallback na staré podklady.
++Po W/S a SCHOOL se na zbývajícím profilovém reziduu řeší LONG zónové log kroky:
+ 
+-Úspěch zapisuje `LONG_INCIDENCE.npz` bez pickle a `LONG_INCIDENCE_REPORT.json` s SHA archivu, matic a zón, identitou epochy a chybami parity. Archiv obsahuje řídké řádky/sloupce/hodnoty, OD identitu, aktuální objemy, pět komponent, zónové P/A a profilové toky. Zůstávají také CSV důkazy původního exportéru. Při selhání se úspěšný výstup odstraní a vznikne `LONG_INCIDENCE_FAILURE.json`; předchozí neprázdný adresář se nepřepisuje.
++`Δq_od/q_od ≈ u_origin + v_destination − g_LONG`.
+ 
+-## Hranice použití
++Proměnné jsou `ADD_PROD_L` a `ADD_ATT_L` v jednotlivých domácích zónách. Normování, ridge a omezený solver vycházejí z W/S. LONG používá tvrdou P/A bilanci a opravu exponenciálních kroků. Zóny bez přímé expozice, strukturální nuly a nepodporované externí zóny se nemění.
+ 
+-Čtení nevolá Procedures.Execute, SetValues, LoadVersion ani aktivaci LONG. Zdrojový `source_status` rozlišuje pouze caller-supplied offline vstupy od čtení navázaného adapteru s ověřenou paritou. Testovací COM rozhraní neprokazuje běh ve skutečném Visumu.
++- krok nejvýše **+10 % / −10 %** na kandidáta, případně méně podle aktivního LS/stage nastavení;
++- produkce: pevná reference **0,3**, pásmo **0,15–0,45**, dále mobilitní ochrany každé zóny;
++- atrakce: nakonfigurovaný násobek **0,5–1,5 neměnné počáteční hodnoty běhu**, bez posunu reference po přijatém kroku;
++- již existující hodnoty mimo pásmo mohou držet nebo se vracet dovnitř, nemohou se vzdálit více;
++- existující LS ridge 0,05; žádné nové survey cíle komponent.
+ 
+-`r1_15a2_long_zonal_fit_v24917.py` může dál vytvořit čistý lokální návrh podle principu W/S: `Δq/q ≈ u_origin + v_destination − g_LONG`. Skutečná změna produkčního koeficientu však prochází TG → nativní TD → komponentově a pásmově specifický převod 20A → návratový 20B → současné maskování výsledných LONG matic → assignment. Pozorovaná M929x incidence sama tuto citlivost nedokládá. `long_generation_permitted=False`, `tg_sensitivity_verified=False` zůstávají zachovány.
++## Apply, accept, reject, rollback
+ 
+-LONG Generation tedy zůstává zmrazená; kanonická reference je nyní **0,3**, nikoli historických 0,2. Společné LONG TD b/c také zůstává blokované do ověření count-response modelu. Nativní OD filtr už není požadavkem: uživatel zvolil následné násobení LONG matic maskou a přijetí úbytku objemu. FineCDF dál používá čerstvou NATIVE_CL/DIS a podmíněnou cílovou křivku 100–200 km, což není horní mez OSRM podpory.
++LONG řádky procházejí stejným zapisovacím mechanismem Generation jako W/S. Tím funguje i LONG-only kandidát při nulovém W/S kroku. Před zápisem se ověřuje úplný plán, živá mobilitní autorita a zdroj návrhu; LONG P/A odhad v právě použité škále vstupuje do stávající předaplikační brány. Rozsah kontroly změněných matic Generation je explicitně rozšířen pouze o NATIVE_CL a 9111–9115; FOREIGN ani ostatní bloky se nepovolují.
+ 
+-## Ověření a další hranice
++Každý skutečný pokus dál proběhne přes nativní TG→jednotnou TD→20A/20B→masky LONG→assignment→čerstvé DIS→12D/11D. Zůstávají ochrany count profilů, OSRM podpory, LONG FineCDF, mobility a přijetí kandidáta. Hodnoty nad 200 km jsou podporou povolené; podmíněná FineCDF 100–200 km nadále používá čerstvou NATIVE_CL/DIS.
+ 
+-Přesné příkazy, návratové kódy, testové součty a manifestové důkazy jsou v `LONG_INCIDENCE_CURRENT_20261029.json` a `evidence_long_incidence_current_20261029/`. Kompletní diff je v `artifacts_long_incidence_current_20261029/`. Vše je součástí GitHub zálohy této větve.
++Snapshot/restore zahrnuje oba LONG koeficienty. Backtracking může znovu použít svůj zmrazený návrh po přesném obnovení rodičovských parametrů; změněný nepříslušný rodič nebo cache je odmítnut. Ověřený rollback a nativní přepočet vlastní stávající controller. Nový kód nevolá LoadVersion, nepíše OD matice a neprovádí vlastní routing. Již schválené násobení LONG matic maskou se nemění.
+ 
+-Dalším samostatným krokem je spustit toto čtení na cílovém PC bezprostředně nad platnou epochou V24917 a posoudit skutečnou paritu. Pro odmrazení zonálního LONG TG bude navíc potřeba samostatně ověřená odezva celé realizační sekvence a její rollback.
++## Rozsah a důkazy
++
++Tento port zapojuje **LONG Generation**. Společné LONG TD ladění b/c zůstává blokované do svého vlastního count-response modelu; nepoužívá se zde neprokázaný převod finálních vozidel na změnu person TD matice.
++
++Původní `r1_15a2_long_profile_incidence_v24917.py` a explicitní `long_profile_incidence()` zůstávají k dispozici pro samostatnou vývojovou diagnostiku. Běžný Generation řetězec je nepotřebuje volat; používá společnou cache.
++
++Výsledky a přesné příkazy jsou v `LONG_GENERATION_SHARED_CACHE_20261029.json` a `evidence_long_generation_shared_cache_20261029/`. Kompletní patch je v `artifacts_long_generation_shared_cache_20261029/`. Vše je součástí GitHub větve. Offline testy zahrnují SQL incidenci a její přepočet, komponenty, směry/násobnosti, chyby podkladů, omezený fit, nulový W/S krok, obnovu společné cache, skutečný koeficientový setter, rollback parametrů, vlastnictví backtrackingu a controller freeze proof. Neprokazují živý COM běh ve Visumu.
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index d3189fd..e0df2d0 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -17,20 +17,21 @@
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+     "r1_15a2_zonal_count_fit_v24917.py": "f5308b821980442bf60ab3a0aef1b138d02f6decdf3fe2ab478a0b6010f6c67b",
+     "r1_15a2_targeted_generation_v24917.py": "e84d07c052df4c68517b414e747c10e9c377c063fa9cc5c7f49faa3096ce1baf",
+-    "r1_15a2_trial_adapter_v24917.py": "9633fdbb3943e9934b8bb6c7b6a69f79fecc5ea4d11615f8b1176a2d36932062",
++    "r1_15a2_trial_adapter_v24917.py": "416acb49be97d26248cab4850ea3e9bacc81528c9f318ca3972727adec382cef",
+     "r1_15a2_active_demand_evidence_v24917.py": "3aaa457bdac3722a298a37866c18bee7d5c37cf0367424bc05a948d2253389bb",
+-    "r1_15a2_runtime_delta_v24917.py": "1ea48d26a29d3644a343a6dd13b5ebc3b73d3b612900822d5ec1398a4308e65f",
++    "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
+     "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_dynamic_11d_files_v24917.py": "70aa29f5fac9aa8d6004d02835a72df5f1bbeb23598140d469afb89058da41ed",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+     "r1_15a2_td_count_blend_v24917.py": "9ae12413e9bba1bc82ad3aaec4e03a21353688eb07c436d8fc413edf42997ee1",
+-    "r1_15a2_long_school_generation_v24917.py": "20837ddcaed19728ac61d747ff295060752898859003847857bc22e4ef562946",
++    "r1_15a2_long_school_generation_v24917.py": "3710e3aeca5ca5f39881d25b6838dcbdb44f42a3eb1dd353e0f494d054eb17b8",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+     "r1_15a2_long_profile_incidence_v24917.py": "9c05bbb8e9dfebc9342354f41e6330bef818082276584f71a8384ae7097562e1",
+     "r1_15a2_long_incidence_read_v24917.py": "4c9e581d41088832ef676bca015444d4f6bc4df751bfb78e6197f7edd063d1b7",
+-    "r1_15a2_long_zonal_fit_v24917.py": "d73ef3a6a06876c9fd55a4aa7be5078aa0ac67f6b5f6ad8c4bd2832dcdf6ebbf",
++    "r1_15a2_long_cache_generation_v24917.py": "3bb99608e2fa060c946e285d262e7e911d1a7edf3a600e19898a271e3cf91532",
++    "r1_15a2_long_zonal_fit_v24917.py": "5adffe09757993227cc16c79fe5bf5724e74a52e7e180ca5af721f7646659f46",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_fast_trial_assignment_v24917.py": "2f223bc58ffebb5c5594d330cca3653b29b9ff75c037693b2832617502780c8d",
+@@ -66,12 +67,12 @@
+     "r1_15a2_diagfast_parity_v1.py": "b3b118d8b1808ad17e42fe36bf0a1ecd7b49d2b263562ea9379db1baf2d47332",
+     "r1_15a2_diagfast_direct_v2.py": "9be48df75480eb44b54691d165b889a572bf43e72c0667c455fb80fe32ed1e5d",
+     "r1_15a2_long_distance_guard_v24917.py": "94a0e368d35929756c56d913fc50ebd16e321c21ed8c37e8463636338fdad712",
+-    "r1_15a2_mobility_zone_v24917.py": "874947abd9b5b5f5904f097db0c418da3337b9cd29e68fb7a1bb5fa12be862fd",
++    "r1_15a2_mobility_zone_v24917.py": "9e608e29951b35bd241b6827eef1d7dab548ae335dd178170dd60dae79795a55",
+     "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
+     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "5a5bbfd6dcc9e6261b1507d6cf0a273f9638a3d063280b066556c4dc3be43d03"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "105cd7a4761c3e4a336353c783e604d5928d788dbd83a726b27699cf330918c5"
+   }
+ }
+diff --git a/r1_15a2_long_cache_generation_v24917.py b/r1_15a2_long_cache_generation_v24917.py
+new file mode 100644
+index 0000000..defe363
+--- /dev/null
++++ b/r1_15a2_long_cache_generation_v24917.py
+@@ -0,0 +1,257 @@
++"""LONG Generation proposals from the same frozen two-mode path store as W/S.
++
++The cache is a proposal basis, not a claim about a fresh saved-path export or an
++analytic TG derivative. Native recomputation, live gates and rollback own truth.
++"""
++from __future__ import annotations
++
++import copy
++import math
++
++import numpy as np
++
++import r1_15a2_core as core
++import r1_15a2_long_incidence_read_v24917 as reads
++import r1_15a2_long_profile_incidence_v24917 as longinc
++import r1_15a2_long_support_distance_v24917 as support
++import r1_15a2_long_zonal_fit_v24917 as lf
++import r1_15a2_zonal_count_fit_v24917 as zf
++import r1_15a2_long_school_generation_v24917 as ls
++import r1_15a2_mobility_zone_v24917 as mz
++import r1_15a2_multiblock as mb
++import r1_15a2_runtime_v1 as rt
++from r1_15a2_supply import canonical_hash
++from r1_15a2_long_distance_guard_v24917 import MIN_KM
++from r1_15a2_skim_v24916p2c import matrix_values_hash, ordered_zone_hash
++
++STATUS = "FROZEN_LONG_OD_PROFILE_PROPOSAL"
++PARENT_KEYS = ("generation_values", "td_values", "addval1", "fixed_link_hash", "dseg_hash", "operations_hash")
++
++
++def _parameter_hash(snapshot):
++    if not all(key in snapshot for key in PARENT_KEYS):
++        return None
++    return canonical_hash({key: snapshot[key] for key in PARENT_KEYS})
++
++
++def capture(adapter):
++    """Reweight cached CL path/profile shares by current final vehicle OD.
++
++    Does not export paths, restore an old cache or mutate any model data. A
++    missing positive OD/share requests one ordinary shared-cache refresh.
++    """
++    binding = reads._require_binding(adapter)
++    parent = adapter.generation_guard_snapshot()
++    cache = adapter.cache
++    if (cache is None or not cache.incidence_ready
++            or not adapter._cache_context_compatible(parent)
++            or not cache.parents.get("NATIVE_CL", {}).get("passes")
++            or cache.parents["NATIVE_CL"].get("matrix_no") != 9305):
++        raise ValueError("LONG_CACHE_CONTEXT_OR_NATIVE_CL_MISSING")
++    profiles = cache.profiles
++    reads._validate_profiles(profiles, adapter.cfg)
++    matrices = reads._matrices(adapter)
++    zones = tuple(adapter.zones)
++    pos = {int(z): i for i, z in enumerate(zones)}
++    final = matrices[9305]
++    component_sum = sum((matrices[no] for no in longinc.COMPONENT_MATRICES), np.zeros_like(final))
++    if not np.allclose(component_sum, final, rtol=1.e-8, atol=1.e-6):
++        raise ValueError("LONG_CACHE_COMPONENT_TO_FINAL_OD_MISMATCH")
++    distance, source = support.read_current(adapter)
++    if any(np.any(a[distance < MIN_KM] > 0.0) for a in matrices.values()):
++        raise ValueError("LONG_CACHE_OSRM_SUPPORT_NOT_APPLIED")
++    stored = np.zeros_like(final)
++    for o, d, volume, missing in cache.db.execute('''
++        SELECT g.orig,g.dest,SUM(v.volume),
++               SUM(CASE WHEN COALESCE(g.edge_count,0)<=0 THEN v.volume ELSE 0 END)
++        FROM volumes v JOIN geometry g ON g.gid=v.gid WHERE v.dseg='NATIVE_CL'
++        GROUP BY g.orig,g.dest'''):
++        if o not in pos or d not in pos or not math.isfinite(volume) or volume < 0.0:
++            raise ValueError("LONG_CACHE_INVALID_OD_AXIS_OR_VOLUME")
++        if o != d and missing > 0.0:
++            raise ValueError("LONG_CACHE_POSITIVE_PATH_WITHOUT_GEOMETRY")
++        stored[pos[o], pos[d]] = volume
++    positive = final > 0.0
++    np.fill_diagonal(positive, False)
++    if np.any(positive & (stored <= 0.0)):
++        raise ValueError("LONG_CACHE_REFRESH_REQUIRED:NEW_POSITIVE_OD_OR_ZERO_SHARE")
++    pairs = [tuple(map(int, pair)) for pair in np.argwhere(positive)]
++    if not pairs:
++        raise ValueError("LONG_CACHE_NO_INTERZONAL_FLOW")
++    index = {pair: i for i, pair in enumerate(pairs)}
++    variables = [{"dseg_code": "NATIVE_CL", "family": "LONG", "origin": zones[o],
++                  "destination": zones[d], "q_current": float(final[o, d]),
++                  "component_vehicle_od": {str(no): float(matrices[no][o, d])
++                                           for no in longinc.COMPONENT_MATRICES}}
++                 for o, d in pairs]
++    rows, cols, values = [], [], []
++    for o, d, p, amount in cache.db.execute('''
++        SELECT g.orig,g.dest,h.profile_index,SUM(v.volume*h.multiplicity)
++        FROM volumes v JOIN geometry g ON g.gid=v.gid JOIN profile_hits h ON h.gid=g.gid
++        WHERE v.dseg='NATIVE_CL' GROUP BY g.orig,g.dest,h.profile_index
++        ORDER BY g.orig,g.dest,h.profile_index'''):
++        if o not in pos or d not in pos or not 0 <= p < len(profiles):
++            raise ValueError("LONG_CACHE_PROFILE_OR_OD_AXIS_INVALID")
++        if not math.isfinite(amount) or amount < 0.0:
++            raise ValueError("LONG_CACHE_PROFILE_AMOUNT_INVALID")
++        pair = (pos[o], pos[d])
++        c = index.get(pair)
++        if c is not None and amount > 0.0:
++            rows.append(p); cols.append(c)
++            values.append(amount * final[pair] / stored[pair])
++    op = core.SparseOperator(np.array(rows, dtype=np.int64), np.array(cols, dtype=np.int64),
++                             np.array(values, dtype=float), len(profiles), len(pairs))
++    flow = op.forward(np.ones(len(pairs)))
++    live = reads._profile_flows(adapter, profiles)
++    # Match the ordinary W/S path-profile parity policy, never loosen it here.
++    atol = float(adapter.policy.parity_absolute_tolerance)
++    rtol = float(adapter.policy.parity_relative_tolerance)
++    if not np.isfinite([atol, rtol]).all() or min(atol, rtol) < 0.0:
++        raise ValueError("LONG_CACHE_PROFILE_PARITY_POLICY_INVALID")
++    tolerances = np.maximum(atol, rtol * np.abs(live))
++    if np.any(np.abs(flow - live) > tolerances):
++        raise ValueError("LONG_CACHE_REFRESH_REQUIRED:LIVE_PROFILE_PARITY_FAILED")
++    after = reads._matrices(adapter)
++    _, source_after = support.read_current(adapter)
++    if (any(not np.array_equal(matrices[no], after[no]) for no in reads.MATRICES)
++            or source != source_after or parent != adapter.generation_guard_snapshot()
++            or reads._require_binding(adapter) != binding or cache is not adapter.cache
++            or not np.array_equal(live, reads._profile_flows(adapter, profiles))):
++        raise ValueError("LONG_CACHE_STATE_CHANGED_DURING_CAPTURE")
++    return {"status": STATUS, "source_status": "SHARED_TWO_MODE_CACHE_CURRENT_OD_PROFILE_PARITY",
++            "incidence": op, "variables": variables,
++            "profile_identity": [p["countlocation_no"] for p in profiles],
++            "vehicle_production": final.sum(axis=1), "vehicle_attraction": final.sum(axis=0),
++            "vehicle_total": float(final.sum()), "zone_order_sha256": ordered_zone_hash(zones),
++            "profile_long_vehicle_flow": flow,
++            "component_profile_vehicle_flow": {str(no): op.forward(np.array([
++                matrices[no][o, d] / final[o, d] for o, d in pairs]))
++                for no in longinc.COMPONENT_MATRICES},
++            "matrix_values_sha256": {str(no): matrix_values_hash(a) for no, a in matrices.items()},
++            "binding": binding, "cache_parent_hash": cache.parent_hash,
++            "parameter_parent_sha256": _parameter_hash(parent),
++            "path_epoch": adapter.path_epoch_index,
++            "geometry_identity": "PROVISIONAL_SAME_MODE_GEOMETRY_NOT_FULLY_VERIFIED",
++            "profile_parity_max_abs": float(np.max(np.abs(flow-live), initial=0.0)),
++            "osrm_support": source, "tg_sensitivity_verified": False}
++
++
++def require_current(adapter, receipt):
++    """Check the proposal owner before any coefficient writes, like W/S epochs."""
++    if (not receipt or receipt.get("status") != STATUS
++            or adapter.cache is None or not adapter.cache.incidence_ready
++            or receipt.get("cache_parent_hash") != adapter.cache.parent_hash
++            or receipt.get("path_epoch") != adapter.path_epoch_index):
++        raise ValueError("LONG_CACHE_GENERATION_PROPOSAL_STALE")
++    current = reads._epoch(adapter)
++    if current != receipt.get("binding"):
++        # W/S backtracking restores parameters before the next full recompute;
++        # its frozen proposal intentionally survives the previous trial's OD.
++        # Permit exactly that owner's retry, never an unrelated new parent.
++        if (getattr(adapter, "_long_generation_transaction_receipt", None) is not receipt
++                or receipt.get("parameter_parent_sha256") is None
++                or _parameter_hash(adapter.generation_guard_snapshot()) != receipt["parameter_parent_sha256"]):
++            raise ValueError("LONG_CACHE_GENERATION_PROPOSAL_STALE")
++
++
++def begin_apply(adapter, receipt):
++    fresh = reads._epoch(adapter) == receipt.get("binding")
++    require_current(adapter, receipt)
++    if (fresh and receipt.get("parameter_parent_sha256") is not None
++            and _parameter_hash(adapter.generation_guard_snapshot()) != receipt["parameter_parent_sha256"]):
++        raise ValueError("LONG_CACHE_APPLY_PARENT_PARAMETERS_CHANGED")
++    adapter._long_generation_transaction_receipt = receipt
++
++
++def attach_fit(school, observed, visum, cfg, zones, ws_problem, ws_solution, references, fit_cfg):
++    """Fit LONG on the remaining W/S + SCHOOL residual with the same zonal solver."""
++    if observed.get("status") != STATUS:
++        raise ValueError("LONG_CACHE_PROPOSAL_REQUIRED")
++    out = copy.deepcopy(school)
++    nrows = len(ws_problem.profile_rows)
++    prior = np.asarray(out.get("predicted_change", np.zeros(nrows)), dtype=float)
++    current = out.setdefault("current", {})
++    for attr in ("ADD_PROD_L", "ADD_ATT_L"):
++        values = rt.read_zone_attr_strict(visum, attr, zones, retry_policy=cfg.get("com_resilience"))
++        current[attr] = {int(z): float(v) for z, v in zip(zones, values)}
++    opts = ls.ls_options()
++    up = min(float(cfg.get("max_add_log_up", .03)), math.log1p(min(.10, opts["ls_max_step_up"])))
++    down = min(float(cfg.get("max_add_log_down", .03)), -math.log1p(-min(.10, opts["ls_max_step_down"])))
++    band = tuple(float(x) for x in opts["ls_long_envelope_ref"])
++    authority = fit_cfg["long_mobility_authority"]
++    bounds = {}
++    for role, attr in (("PROD", "ADD_PROD_L"), ("ATT", "ADD_ATT_L")):
++        for z in zones:
++            c = current[attr][int(z)]
++            entry = authority["entries"].get("LONG|" + str(int(z)))
++            if c <= 0.0 or entry is None or "LONG" in authority["unavailable"]:
++                bounds[("LONG", role, z)] = (0., 0.); continue
++            if role == "PROD":
++                reference = .3
++            else:
++                # Attraction retains the immutable run-start authority; never re-centre.
++                reference = mb._reference_coefficient(references, attr, z, float("nan"))
++                if not math.isfinite(reference) or reference <= 0.0:
++                    raise ValueError("LONG_CACHE_ATTRACTION_REFERENCE_MISSING")
++            low, high = min(c, reference*band[0]), max(c, reference*band[1])
++            lo, hi = max(-down, math.log(low/c)), min(up, math.log(high/c))
++            if role == "PROD":
++                lo, hi = mz.bounded_step(entry, lo, authority), mz.bounded_step(entry, hi, authority)
++            bounds[("LONG", role, z)] = (lo, hi)
++    residual_reference = {"predicted_change": np.asarray(ws_solution["predicted_change"]) + prior}
++    try:
++        problem = lf.build_problem(observed, ws_problem, residual_reference, zones, bounds)
++    except ValueError as exc:
++        if str(exc) != "LONG_FIT_NO_ACTUATORS": raise
++        out.setdefault("summary", {}).update(long_generation_permitted=True,
++            long_search_status="NO_LONG_ACTUATORS_WITHIN_BOUNDS", long_zone_steps=0,
++            long_zone_profile_incidence_status=STATUS)
++        return out
++    solution = zf.solve(problem, {**fit_cfg, "balance_mode": "HARD", "nonlinear_pa_repair": True,
++                                 "ridge_relative": float(opts["ls_ridge_relative"])})
++    if not np.isfinite(solution["x"]).all() or solution["objective_final"] > solution["objective_initial"] + 1.e-9:
++        raise ValueError("LONG_CACHE_FIT_INVALID_OR_WORSE")
++    steps = out.setdefault("steps", {})
++    for key, step in zip(problem.var_keys, solution["x"]):
++        family, role, z = key
++        attr = "ADD_PROD_L" if role == "PROD" else "ADD_ATT_L"
++        if abs(step) >= 1.e-6: steps.setdefault(attr, {})[int(z)] = float(step)
++    effect = out.get("effect_operator", {"keys": [], "G": np.zeros((nrows, 0)).tolist()})
++    out["effect_operator"] = {"keys": effect["keys"] + [list(k) for k in problem.var_keys],
++                              "G": np.column_stack((np.asarray(effect["G"]), problem.G)).tolist()}
++    out["predicted_change"] = (prior + solution["predicted_change"]).tolist()
++    out["long_balance_base"] = {"zones": list(zones),
++        "production": observed["vehicle_production"].tolist(),
++        "attraction": observed["vehicle_attraction"].tolist()}
++    out.setdefault("summary", {}).update(status="OK", long_generation_permitted=True,
++        long_search_status="ZONAL_LOCAL_PROPOSAL_REQUIRES_LIVE_ACCEPTANCE",
++        long_zone_profile_incidence_status=STATUS, long_deferred_reason=None,
++        long_zone_steps=sum(len(steps.get(a, {})) for a in ("ADD_PROD_L", "ADD_ATT_L")),
++        long_objective_initial=float(solution["objective_initial"]),
++        long_objective_final=float(solution["objective_final"]),
++        long_solver_converged=bool(solution["converged"]),
++        long_native_filter_required=False, long_step_ceiling=.10,
++        long_balance_mode=solution["balance_mode"], tg_sensitivity_verified=False,
++        linear_ratio_after_ws_and_ls=float(sum(float(r["model"]) for r in ws_problem.profile_rows)
++            + np.sum(ws_solution["predicted_change"]) + np.sum(out["predicted_change"])) /
++            max(1.e-12, sum(float(r["observed"]) for r in ws_problem.profile_rows)))
++    return out
++
++
++def add_gate_summary(design, ls):
++    """Expose the implemented, scaled LONG P/A proposal to the existing TG gate."""
++    if not (ls or {}).get("summary", {}).get("long_generation_permitted"):
++        return design
++    base = (ls or {}).get("long_balance_base")
++    if base is None:
++        return design  # known zero-actuator case
++    steps = {(r["role"], int(r["zone_no"])): math.log(float(r["proposed"])/float(r["current"]))
++             for r in design.get("candidate_rows", ()) if r.get("family") == "LONG"}
++    p = math.fsum(float(v)*math.expm1(steps.get(("PROD", int(z)), 0.0))
++                  for z, v in zip(base["zones"], base["production"]))
++    a = math.fsum(float(v)*math.expm1(steps.get(("ATT", int(z)), 0.0))
++                  for z, v in zip(base["zones"], base["attraction"]))
++    design.setdefault("summary", {}).setdefault("estimated_pa_delta_by_family", {})["LONG"] = {
++        "estimated_prod_delta": p, "estimated_att_delta": a, "estimated_abs_gap": abs(p-a),
++        "basis": "LOCAL_FINAL_VEHICLE_PROPOSAL_NOT_NATIVE_TG_DERIVATIVE"}
++    return design
+diff --git a/r1_15a2_long_school_generation_v24917.py b/r1_15a2_long_school_generation_v24917.py
+index aa1a5aa..45b75eb 100644
+--- a/r1_15a2_long_school_generation_v24917.py
++++ b/r1_15a2_long_school_generation_v24917.py
+@@ -13,9 +13,10 @@ Design (after the WORK/SERVICE zonal fit, on its residual):
+           so its exposure is the WORK FlowBundle incidence times the SCHOOL share of the
+           vehicle OD cell:  a_p,v * s_od,  s_od = M9225[o,d] / M9226[o,d].  Doubly-constrained
+           normalisation g = (sum P u / P + sum A v / A) / 2 as in the W/S fit.
+-  LONG    deferred in this source candidate. The previous global NATIVE_CL volume
+-          approximation cannot identify zone or component response. No LONG step
+-          is emitted until real zone-level incidence and native support are proven.
++  LONG    per-zone proposal from shared NATIVE_CL cached OD/profile shares and
++          current M9291..9295/M9305, after W/S and SCHOOL residuals. Same local
++          normalized response and bounded solver as W/S; live native acceptance
++          and verified parent rollback remain authoritative. Missing evidence defers LONG.
+ 
+ Bounds (LSSENS1, more cautious than W/S, run options ls_*): step per cycle +-10 %,
+ SCHOOL absolute envelope [0.75, 2.0], ridge 0.05 (W/S 0.01). The inherited LONG
+@@ -38,7 +39,7 @@ LS_DEFAULTS = {
+     "ls_max_step_up": 0.10,              # +10 % per zone and cycle   (W/S +25 %)
+     "ls_max_step_down": 0.10,            # -10 % per zone and cycle   (W/S -20 %)
+     "ls_school_envelope": [0.75, 2.0],   # absolute ADD_*_SCH         (same as W/S)
+-    "ls_long_envelope_ref": [0.5, 1.5],  # expert LONG band 0.15..0.45; frozen until native proof
++    "ls_long_envelope_ref": [0.5, 1.5],  # production 0.3 reference; attraction immutable run start
+     "ls_ridge_relative": 0.05,           # 5x the W/S ridge: LS only explain what W/S cannot
+ }
+ 
+@@ -113,7 +114,7 @@ def _zone_values(visum, attr, zones) -> np.ndarray:
+     return np.array([vals.get(int(z), 0.0) for z in zones], dtype=float)
+ 
+ 
+-def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mapping[str, Any],
++def _school_design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mapping[str, Any],
+            ws_problem, ws_solution, reference_values: Mapping[str, Mapping[str, Any]] = None,
+            fit_cfg: Mapping[str, Any] = None) -> Dict[str, Any]:
+     import r1_15a2_zonal_count_fit_v24917 as zf
+@@ -282,6 +283,25 @@ def design(visum, cfg: Mapping[str, Any], zones: Sequence[int], incidence: Mappi
+             "effect_operator": {"keys": [list(k) for k in var_keys], "G": G.tolist()}}
+ 
+ 
++def design(visum, cfg, zones, incidence, ws_problem, ws_solution,
++           reference_values=None, fit_cfg=None):
++    """Keep SCHOOL behavior and fit cache-backed zonal LONG on its residual."""
++    fit_cfg = dict(fit_cfg or {})
++    out = _school_design(visum, cfg, zones, incidence, ws_problem, ws_solution,
++                         reference_values, fit_cfg)
++    observed = fit_cfg.get("long_cache_incidence")
++    if observed is not None and fit_cfg.get("longguard1_allow_long"):
++        from r1_15a2_long_cache_generation_v24917 import attach_fit
++        try:
++            return attach_fit(out, observed, visum, cfg, zones, ws_problem, ws_solution,
++                               reference_values, fit_cfg)
++        except Exception as exc:
++            # Optional LONG failure leaves the existing SCHOOL/W/S proposal intact.
++            out.setdefault("summary", {}).update(long_generation_permitted=False,
++                long_search_status="LONG_SEARCH_INCOMPLETE", long_deferred_reason=str(exc))
++    return out
++
++
+ def rows_at_scale(ls: Mapping[str, Any], scale: float) -> List[Dict[str, Any]]:
+     out = []
+     if not ls or "steps" not in ls:
+diff --git a/r1_15a2_long_zonal_fit_v24917.py b/r1_15a2_long_zonal_fit_v24917.py
+index ac25827..3e2b13c 100644
+--- a/r1_15a2_long_zonal_fit_v24917.py
++++ b/r1_15a2_long_zonal_fit_v24917.py
+@@ -3,8 +3,9 @@
+ 
+ This is a local proposal model on *final vehicle* NATIVE_CL path incidence:
+     delta_od / q_od ~= u_origin + v_destination - g_LONG.
+-The real TG/TD/20A/20B response can differ. No output from this module may
+-enable LONG generation until native OD support and live trial gates are proven.
++The real TG/TD/20A/20B response can differ. The standalone fit remains diagnostic;
++the shared-cache adapter supplies source checks, bounded coefficients and live
++native trial/acceptance/rollback when using this problem builder operationally.
+ """
+ from __future__ import annotations
+ 
+@@ -27,7 +28,7 @@ def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
+     The caller supplies explicit, independently validated coefficient-domain
+     bounds. No default LONG mobility bounds or native-filter claim is inferred.
+     """
+-    if observed.get("status") != "OBSERVED_LONG_OD_PROFILE_ONLY":
++    if observed.get("status") not in ("OBSERVED_LONG_OD_PROFILE_ONLY", "FROZEN_LONG_OD_PROFILE_PROPOSAL"):
+         raise ValueError("LONG_FIT_OBSERVED_INCIDENCE_REQUIRED")
+     if any(isinstance(z, (bool, np.bool_)) or not isinstance(z, (int, np.integer))
+            for z in zone_nos):
+diff --git a/r1_15a2_mobility_zone_v24917.py b/r1_15a2_mobility_zone_v24917.py
+index a163b69..8c6c69b 100644
+--- a/r1_15a2_mobility_zone_v24917.py
++++ b/r1_15a2_mobility_zone_v24917.py
+@@ -306,8 +306,10 @@ def guard_ls(ls, authority):
+         summary["linear_ratio_after_ws_and_ls"] = None
+     summary.pop("long_global_log_step", None)
+     summary["long_zone_steps"] = sum(abs(float(v)) > EPS for v in steps.get("ADD_PROD_L", {}).values())
+-    summary["long_generation_permitted"] = False
+-    summary["long_search_status"] = "LONG_SEARCH_INCOMPLETE" if summary["long_zone_steps"] == 0 else "PENDING_NATIVE_VERIFICATION"
++    permitted = summary.get("long_generation_permitted") is True
++    summary["long_generation_permitted"] = permitted
++    if not permitted:
++        summary["long_search_status"] = "LONG_SEARCH_INCOMPLETE" if summary["long_zone_steps"] == 0 else "PENDING_NATIVE_VERIFICATION"
+     summary["school_zones_changed"] = sum(abs(float(v)) > EPS for attr in
+         ("ADD_PROD_SCH", "ADD_ATT_SCH") for v in steps.get(attr, {}).values())
+     summary["mobilityzone1"] = {"changes": edits, "deferred": authority["unavailable"],
+diff --git a/r1_15a2_runtime_delta_v24917.py b/r1_15a2_runtime_delta_v24917.py
+index fbc6fa6..87dc5eb 100644
+--- a/r1_15a2_runtime_delta_v24917.py
++++ b/r1_15a2_runtime_delta_v24917.py
+@@ -4,8 +4,9 @@
+ Only two additive config sections are introduced:
+   * v24917_targeted_generation  - targeted catch-up Generation policy
+   * v24917_release_identity     - release/feature identity
+-Every inherited field is proven unchanged by delegating to the V24916
+-validator on the config with these two sections removed.
++The authorized Generation scope additionally includes LONG demand. Every other
++inherited field is verified by the V24916 validator after reversing that exact
++scope extension and removing the additive sections.
+ """
+ from __future__ import annotations
+ 
+@@ -23,6 +24,17 @@ PACKAGE_REVISION = "V24917_MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027"
+ V24917_KEYS = ("v24917_targeted_generation", "v24917_release_identity")
+ 
+ 
++def long_generation_scope(scope):
++    """Allow a LONG-only TG trial to prove changed demand through its own matrices."""
++    out = copy.deepcopy(scope)
++    for key, additions in (("dseg_codes", ("NATIVE_CL",)),
++                           ("matrix_nos", tuple(range(9111, 9116)))):
++        values = out.setdefault(key, [])
++        for value in additions:
++            if value not in values: values.append(value)
++    return out
++
++
+ def _hash(value: Any) -> str:
+     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                      ensure_ascii=False, allow_nan=False, default=str
+@@ -51,7 +63,8 @@ def identity() -> dict:
+             "TDJOINT1_ISOLATED_REALIZATION_AFTER_VERIFIED_PLATEAU",
+             "MOBILITYALLOC1_ZONE_INDEPENDENT_LONG_GUARD_PROJECTION",
+             "TDLONG1_HASH_BOUND_DISTANCE_MASK_AND_COMPONENT_PA_MAX_FLOW",
+-            "TDLONG1_NATIVE_FILTER_FAIL_CLOSED_LIVE_PENDING",
++            "LONG_POST_TD_OSRM_GE80_MASK_WITHOUT_UPPER_BOUND",
++            "LONG_ZONAL_GENERATION_SHARED_CACHE_LIVE_ACCEPTANCE",
+         ],
+         "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
+         "acceptance_thresholds_changed_by_v24917": False,
+@@ -66,11 +79,18 @@ def apply_active_runtime_delta(parent_cfg: Mapping[str, Any]) -> dict:
+     ident["policy_hash"] = _hash(cfg["v24917_targeted_generation"])
+     cfg["v24917_release_identity"] = ident
+     roster.apply_cfg(cfg)
++    cfg["matrix_scope_by_block"]["GENERATION"] = long_generation_scope(
++        cfg["matrix_scope_by_block"]["GENERATION"])
+     return cfg
+ 
+ 
+ def validate_active_runtime_delta(child: Mapping[str, Any], parent: Mapping[str, Any]) -> dict:
+     base_child = roster.strip_cfg({k: v for k, v in dict(child).items() if k not in V24917_KEYS})
++    base_child = copy.deepcopy(base_child)
++    original_scope = parent["matrix_scope_by_block"]["GENERATION"]
++    if base_child["matrix_scope_by_block"]["GENERATION"] != long_generation_scope(original_scope):
++        raise RuntimeError("V24917_LONG_GENERATION_SCOPE_MISMATCH")
++    base_child["matrix_scope_by_block"]["GENERATION"] = copy.deepcopy(original_scope)
+     result = dict(parent_delta.validate_active_runtime_delta(base_child, parent))
+     policy = tg.validate_policy(child.get("v24917_targeted_generation") or {})
+     if policy != tg.validate_policy(tg.DEFAULT_POLICY):
+@@ -80,7 +100,8 @@ def validate_active_runtime_delta(child: Mapping[str, Any], parent: Mapping[str,
+         raise RuntimeError("V24917_RELEASE_IDENTITY_MISMATCH")
+     result["v24917"] = {"passes": True, "release": RELEASE,
+                         "policy_hash": ident["policy_hash"],
+-                        "inherited_fields_unchanged": True,
++                        "inherited_fields_unchanged_except_long_generation_scope": True,
++                        "long_generation_scope": child["matrix_scope_by_block"]["GENERATION"],
+                         "profile_roster": dict(child.get(roster.CFG_KEY) or {"enabled": False})}
+     return result
+ 
+diff --git a/r1_15a2_trial_adapter_v24917.py b/r1_15a2_trial_adapter_v24917.py
+index 2273c85..d020095 100644
+--- a/r1_15a2_trial_adapter_v24917.py
++++ b/r1_15a2_trial_adapter_v24917.py
+@@ -41,6 +41,7 @@ import r1_15a2_long_distance_guard_v24917 as longguard
+ import r1_15a2_long_od_mask_v24917 as longmask
+ import r1_15a2_long_post_td_mask_v24917 as post_td_mask
+ import r1_15a2_long_incidence_read_v24917 as long_incidence_read
++import r1_15a2_long_cache_generation_v24917 as long_cache
+ import r1_15a2_boundary_generation_v24917 as bdgen
+ import r1_15a2_boundary_pa_v24917 as bdpa
+ import r1_15a2_mobility_guard_v24917 as mguard
+@@ -91,8 +92,11 @@ class VisumAdapter(_V24916ActiveAdapter):
+         return long_incidence_read.read_current(self, diag["d12"]["rows"], folder)
+ 
+     @staticmethod
+-    def _without_unverified_long_rows(rows):
+-        """Keep LONG coefficients out of TG until its realization response is verified."""
++    def _without_unverified_long_rows(rows, context=None):
++        """Only this adapter's validated cache-backed proposal may change LONG."""
++        if ((context or {}).get("_long_cache_receipt")
++                and ((context or {}).get("v24917_ls") or {}).get("summary", {}).get("long_generation_permitted") is True):
++            return list(rows)
+         return [row for row in rows if str(row.get("family", "")).upper() != "LONG"]
+ 
+     # ------------------------------------------------------- GENFIX1 snapshot
+@@ -252,6 +256,33 @@ class VisumAdapter(_V24916ActiveAdapter):
+         rt.write_json(folder / "LONGGUARD1_PARENT.json", self._longguard1_parent)
+         self.v24917_status["longguard1_parent_status"] = self._longguard1_parent.get("status")
+         self.v24917_status["longguard1_parent_short"] = self._longguard1_parent.get("below_min_km")
++        long_observed = None
++        long_cache_error = "PARENT_SUPPORT_OR_FINECDF_UNVERIFIED"
++        if ((getattr(self, "v24917_ls", None) or {}).get("active")
++                and self._longguard1_parent.get("long_generation_permitted")):
++            try:
++                try:
++                    long_observed = long_cache.capture(self)
++                except ValueError as exc:
++                    if not str(exc).startswith("LONG_CACHE_REFRESH_REQUIRED:"):
++                        raise
++                    # Same shared-store refresh used by W/S when OD support grows.
++                    # Rebuild W/S context too, so both use the same new path basis.
++                    self._build_cache(diag, folder / "LONG_SHARED_CACHE_REFRESH", self.snapshot(),
++                                      build_sequence_evidence=False, allow_persistent_restore=False)
++                    context = super().generation_design(diag, folder / "AFTER_LONG_CACHE_REFRESH")
++                    self.v24917_last_incidence = context["incidence"]
++                    long_observed = long_cache.capture(self)
++                context["_long_cache_receipt"] = {k: long_observed[k] for k in (
++                    "status", "binding", "cache_parent_hash", "path_epoch", "parameter_parent_sha256")}
++                long_cache_error = None
++                rt.write_json(folder / "LONG_SHARED_CACHE_INCIDENCE.json", {
++                    k: long_observed[k] for k in ("status", "source_status", "binding", "cache_parent_hash",
++                        "path_epoch", "profile_parity_max_abs", "matrix_values_sha256", "geometry_identity")})
++            except Exception as exc:
++                long_cache_error = str(exc)
++                context.pop("_long_cache_receipt", None)
++                rt.write_json(folder / "LONG_SHARED_CACHE_DEFERRED.json", {"error": long_cache_error})
+         phase, ratio = tg.phase_for(diag["d12"]["rows"], policy) if policy else (None, None)
+         self.v24917_status.update(last_phase=phase, last_ratio=ratio)
+         # Acquire the guard authority independently of the numerical fit. Any
+@@ -297,7 +328,7 @@ class VisumAdapter(_V24916ActiveAdapter):
+                     bounds = tg.zone_bounds(mb, zone_rows, cfg, self.generation_reference_values)
+                     bounds, mobility_fit_bounds = zguard.constrain_fit_bounds(bounds, mz)
+                     rows, summary, problem, solution, bd = self._fit_with_boundary(context["incidence"], bounds, cfg, policy)
+-                    if not rows:
++                    if not rows and long_observed is None:
+                         raise RuntimeError("V24917_FIT_PRODUCED_NO_ROWS")
+                     if (getattr(self, "v24917_ls", None) or {}).get("active"):
+                         try:
+@@ -309,6 +340,8 @@ class VisumAdapter(_V24916ActiveAdapter):
+                                 self._longguard1_parent.get("long_generation_permitted"))
+                             ls_fit["tdlong1_source_status"] = self._tdlong1_mask.get("status")
+                             ls_fit["tdlong1_native_filter_verified"] = False
++                            ls_fit["long_cache_incidence"] = long_observed
++                            ls_fit["long_mobility_authority"] = mz
+                             ls = lsgen.design(self.visum, cfg, self.zones, context["incidence"], problem,
+                                               solution, self.generation_reference_values, ls_fit)
+                         except Exception as ls_exc:
+@@ -331,10 +364,11 @@ class VisumAdapter(_V24916ActiveAdapter):
+         try:
+             zonal_rows, zonal_projection = zguard.guard_projection(mask["rows"], mz)
+             ls = zguard.guard_ls(ls, mz)
+-            if ls:
+-                ls = lsgen.defer_long(ls, "UNVERIFIED_NATIVE_FILTER")
++            if ls and not (ls.get("summary") or {}).get("long_generation_permitted"):
++                ls = lsgen.defer_long(ls, long_cache_error or
++                                      ls.get("summary", {}).get("long_deferred_reason", "LONG_FIT_UNAVAILABLE"))
+                 ls["summary"]["tdlong1_source_status"] = self._tdlong1_mask.get("status")
+-                ls["summary"]["tdlong1_native_filter_status"] = "UNVERIFIED_NATIVE_FILTER"
++                ls["summary"]["tdlong1_native_filter_status"] = "NOT_REQUIRED_POST_TD_MASK"
+             rows, mobility = mguard.guard(zonal_rows, zone_rows, mg_opts)
+             if not mobility.get("passes", mobility.get("status") == "DISABLED"):
+                 raise ValueError(mobility["status"])
+@@ -362,7 +396,8 @@ class VisumAdapter(_V24916ActiveAdapter):
+         longguard_deferred = bool((getattr(self, "v24917_ls", None) or {}).get("active") and
+                                   not self._longguard1_parent.get("long_generation_permitted"))
+         tdlong1_deferred = bool((getattr(self, "v24917_ls", None) or {}).get("active") and
+-                                not self._tdlong1_native_filter_verified)
++                                (not (ls or {}).get("summary", {}).get("long_generation_permitted")
++                                 or (ls or {}).get("summary", {}).get("long_solver_converged") is False))
+         self.v24917_status["ls_incomplete_current_cycle"] = bool(
+             ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or fallback or not mz["target_satisfied"])
+         context["v24917"] = {"release": RELEASE, "phase": phase, "overlay_phase": phase if not fallback else None,
+@@ -377,8 +412,8 @@ class VisumAdapter(_V24916ActiveAdapter):
+                              "longguard1_parent": self._longguard1_parent,
+                              "longguard1_long_step_deferred": longguard_deferred,
+                              "tdlong1": {"source_status": self._tdlong1_mask.get("status"),
+-                                         "native_filter_status": "UNVERIFIED_NATIVE_FILTER",
+-                                         "long_generation_permitted": False,
++                                         "native_filter_status": "NOT_REQUIRED_POST_TD_MASK",
++                                         "long_generation_permitted": not tdlong1_deferred and bool(long_observed),
+                                          "search_incomplete": tdlong1_deferred},
+                              "boundary": (bd or {}).get("summary"),
+                              "mobilityzone1": zonal_projection, "mobility_guard": mobility, "solver_converged": converged, "proposal_usable": usable,
+@@ -598,10 +633,13 @@ class VisumAdapter(_V24916ActiveAdapter):
+                     self.cfg, scale=scale, reference_values=self.generation_reference_values)
+                 design["zone_attributes_read"] = authority["zone_attributes"]
+         extra_all = lsgen.rows_at_scale(context.get("v24917_ls"), scale) + bdgen.rows_at_scale(context.get("v24917_bd"), scale)
+-        extra = self._without_unverified_long_rows(extra_all)
++        extra = self._without_unverified_long_rows(extra_all, context)
++        if longguard.changed_long(extra):
++            long_cache.require_current(self, context.get("_long_cache_receipt"))
+         if isinstance(design, dict):
+             design = dict(design)
+             design["candidate_rows"] = list(design.get("candidate_rows") or []) + extra
++            long_cache.add_gate_summary(design, context.get("v24917_ls"))
+             design["v24917_long_school_rows"] = len(extra)
+             self._validate_mobility_plan(context, design)
+             design["genfix2_prediction"] = self._final_step_prediction(context, design, scale)
+@@ -615,7 +653,10 @@ class VisumAdapter(_V24916ActiveAdapter):
+         if proof.get("passes") is not True:
+             raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITY2_FINAL_ENVELOPE")
+         extra_all = lsgen.rows_at_scale(context.get("v24917_ls"), scale) + bdgen.rows_at_scale(context.get("v24917_bd"), scale)
+-        extra = self._without_unverified_long_rows(extra_all)
++        extra = self._without_unverified_long_rows(extra_all, context)
++        native_long_rows = longguard.changed_long(extra)
++        if native_long_rows:
++            long_cache.require_current(self, context.get("_long_cache_receipt"))
+         mz = context.get("_mobilityzone1")
+         if mz is not None and mz["enabled"]:
+             # Includes LS values immediately before the first inherited COM write.
+@@ -632,28 +673,36 @@ class VisumAdapter(_V24916ActiveAdapter):
+         def checked_design(*args, **kwargs):
+             design = original(*args, **kwargs)
+             complete = dict(design, candidate_rows=list(design.get("candidate_rows") or []) + extra)
++            # Do not mutate the inherited summary shared with the preview builder.
++            complete["summary"] = copy.deepcopy(design.get("summary", {}))
++            long_cache.add_gate_summary(complete, context.get("v24917_ls"))
+             checked = self._validate_mobility_plan(context, complete)
+             if not checked["passes"]:
+                 raise supply_visum.SupplyContractError("GENERATION_GATE:MOBILITY2_FINAL_ENVELOPE")
+             if canonical_hash(complete["candidate_rows"]) != canonical_hash(preview["candidate_rows"]):
+                 raise supply_visum.SupplyContractError("GENFIX2_GENERATION_PLAN_CHANGED_BEFORE_WRITE")
+             design["genfix2_mobility"] = checked
+-            return design
++            return complete if native_long_rows else design
+         # The COM orchestrator is synchronous. Restore the scoped hook even on
+         # KeyboardInterrupt; inherited cache invalidation and support-risk hooks remain intact.
+         supply_visum.base.generation_candidate = checked_design
+         try:
++            if native_long_rows:
++                long_cache.begin_apply(self, context.get("_long_cache_receipt"))
+             with self._v24917_overlay(self._phase_of(context)), bdpa.scope(context.get("v24917_bd")):
+                 rows = super().apply_generation(context, scale, folder)
+         finally:
+             supply_visum.base.generation_candidate = original
+-        if extra:
++        if extra and not native_long_rows:
+             audit = rt.apply_add_candidate(self.visum, extra, self.zones, zone_indices=self.zone_write_index_by_no,
+                 retry_policy=self.com_retry_policy, readback_tolerance=self.zone_readback_tolerance)
+             if not audit or any(x.get("status") != "OK" for x in audit):
+                 raise supply_visum.SupplyContractError("V24917_LONG_SCHOOL_READBACK_FAILED")
+             rt.write_json(Path(folder) / "V24917_LONG_SCHOOL_ROWS.json", {"scale": scale, "rows": extra})
+             rows = list(rows) + extra
++        elif extra:
++            rt.write_json(Path(folder) / "V24917_LONG_SCHOOL_ROWS.json", {
++                "scale": scale, "rows": extra, "writer": "INHERITED_GENERATION_TRANSACTION"})
+         rt.write_json(Path(folder) / "GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json",
+                       {"mobility": proof, "prediction": preview.get("genfix2_prediction")})
+         return rows
+diff --git a/tests/test_v24917_long_cache_generation.py b/tests/test_v24917_long_cache_generation.py
+new file mode 100644
+index 0000000..e105e14
+--- /dev/null
++++ b/tests/test_v24917_long_cache_generation.py
+@@ -0,0 +1,361 @@
++"""Shared-cache LONG port: production SQL, solver, preview/apply and freshness."""
++import copy
++import math
++import sqlite3
++from types import SimpleNamespace as NS
++
++import numpy as np
++import pytest
++
++import r1_15a2_core as core
++import r1_15a2_long_cache_generation_v24917 as lc
++import r1_15a2_long_school_generation_v24917 as ls
++import r1_15a2_mobility_zone_v24917 as mz
++import r1_15a2_zonal_count_fit_v24917 as zf
++from test_v24917_long_incidence_read import harness as read_harness
++from test_v24917_mobilityzone1 import authority, zones as mobility_rows
++
++
++@pytest.fixture
++def live():
++    adapter, state, profiles = read_harness()
++    db = sqlite3.connect(':memory:')
++    db.executescript('''
++        CREATE TABLE geometry(gid INTEGER, orig INTEGER, dest INTEGER, edge_count INTEGER);
++        CREATE TABLE volumes(gid INTEGER, dseg TEXT, volume REAL);
++        CREATE TABLE profile_hits(gid INTEGER, profile_index INTEGER, multiplicity INTEGER);
++        INSERT INTO geometry VALUES(1,1,2,4),(2,1,2,1),(3,2,1,1);
++        INSERT INTO volumes VALUES(1,'NATIVE_CL',80),(2,'NATIVE_CL',20),(3,'NATIVE_CL',50);
++        INSERT INTO profile_hits VALUES(1,0,2),(1,1,1),(2,1,1),(3,1,1);
++    ''')
++    adapter.cache = NS(db=db, incidence_ready=True, parents={'NATIVE_CL': {'passes': True, 'matrix_no': 9305}},
++                       profiles=profiles, parent_hash='original-cache-parent')
++    adapter.path_epoch_index = 1
++    adapter._cache_context_compatible = lambda snap: True
++    adapter.policy = NS(parity_absolute_tolerance=1.e-6, parity_relative_tolerance=1.e-8)
++    state.coeff = {'ADD_PROD_L': [.3, .3], 'ADD_ATT_L': [1., 1.],
++                   'ADD_PROD_SCH': [1., 1.], 'ADD_ATT_SCH': [1., 1.]}
++    state.writes = []
++    class Zones:
++        def GetMultiAttValues(self, attr, active=False):
++            return list(enumerate(state.zone_order if attr == 'NO' else state.coeff[attr], 1))
++        def SetMultiAttValues(self, attr, rows, active=False):
++            state.writes.append(attr)
++            for index, value in rows: state.coeff[attr][index-1] = value
++    adapter.visum.Net.Zones = Zones()
++    # Deliberately no available export API: reuse of the existing store is required.
++    adapter.visum.Workbench = None
++    try: yield adapter, state, profiles
++    finally: db.close()
++
++
++def problem(profiles):
++    rows = [{'profile_index': i, 'countlocation_no': p['countlocation_no'],
++             'model': model, 'observed': obs}
++            for i, (p, model, obs) in enumerate(zip(profiles, [220., 210.], [260., 200.]))]
++    return zf.FitProblem([1, 2], rows, np.zeros((2, 0)), np.array([40., -10.]),
++                         np.ones(2), [], np.array([]), np.array([]), np.array([]), {})
++
++
++def payload(live, monkeypatch):
++    adapter, state, profiles = live
++    observed = lc.capture(adapter)
++    ws = problem(profiles)
++    a = authority(mobility_rows())
++    monkeypatch.setattr(ls, 'ls_options', lambda: dict(ls.LS_DEFAULTS))
++    refs = {'ADD_ATT_L': {'1': 1., '2': 1.}}
++    opts = {'longguard1_allow_long': True, 'long_cache_incidence': observed,
++            'long_mobility_authority': a, 'max_iter': 2000}
++    inc = {'variables': [], 'incidence': core.SparseOperator(
++        np.array([], dtype=int), np.array([], dtype=int), np.array([]), 2, 0)}
++    state.arrays[9225] = np.zeros((2, 2))
++    state.arrays[9226] = np.ones((2, 2))
++    result = ls.design(adapter.visum, {'max_add_log_up': .5, 'max_add_log_down': .5},
++                        [1, 2], inc, ws, {'predicted_change': np.zeros(2)}, refs, opts)
++    return result, observed, ws, a
++
++
++def test_shared_store_exact_profile_multiplicity_components_and_no_export(live):
++    adapter, state, _ = live
++    out = lc.capture(adapter)
++    assert out['status'] == lc.STATUS and not out['tg_sensitivity_verified']
++    assert out['profile_long_vehicle_flow'] == pytest.approx([160., 150.])
++    assert out['component_profile_vehicle_flow']['9291'] == pytest.approx([96., 70.])
++    assert out['component_profile_vehicle_flow']['9292'] == pytest.approx([64., 80.])
++    assert out['profile_parity_max_abs'] == 0.
++    assert state.exports == 0 and state.writes == []
++
++
++def test_frozen_shares_reweighted_with_current_od_without_reexport(live):
++    adapter, state, _ = live
++    for no in lc.longinc.COMPONENT_MATRICES + (9305,): state.arrays[no] *= 2.
++    state.profile_flow = {k: v*2 for k, v in state.profile_flow.items()}
++    out = lc.capture(adapter)
++    assert out['profile_long_vehicle_flow'] == pytest.approx([320., 300.])
++    assert out['variables'][0]['q_current'] == 200.
++    assert state.exports == 0
++
++
++@pytest.mark.parametrize('fault,reason', [('share', 'REFRESH_REQUIRED'),
++    ('profile', 'REFRESH_REQUIRED'), ('component', 'COMPONENT_TO_FINAL'),
++    ('support', 'OSRM_SUPPORT'), ('geometry', 'WITHOUT_GEOMETRY'),
++    ('missing_cl', 'NATIVE_CL_MISSING'), ('epoch', 'BINDING_STALE')])
++def test_invalid_cache_or_parent_never_creates_proposal(live, fault, reason):
++    adapter, state, _ = live
++    if fault == 'share': adapter.cache.db.execute("UPDATE volumes SET volume=0 WHERE gid=3")
++    elif fault == 'profile': state.profile_flow[(1, 2)] += 10.
++    elif fault == 'component': state.arrays[9291][0, 1] += 1.
++    elif fault == 'support': state.arrays[9697][0, 1] = 79.99
++    elif fault == 'geometry': adapter.cache.db.execute('UPDATE geometry SET edge_count=0 WHERE gid=1')
++    elif fault == 'missing_cl': adapter.cache.parents = {}
++    else: adapter.readback_manager.mutation_epoch += 1
++    with pytest.raises(ValueError, match=reason): lc.capture(adapter)
++    assert not state.writes
++
++
++def test_long_fit_is_zonal_bounded_and_preserves_nonlinear_pa(live, monkeypatch):
++    result, observed, ws, a = payload(live, monkeypatch)
++    assert result['summary']['long_generation_permitted'], result['summary']
++    assert result['summary']['long_objective_final'] < result['summary']['long_objective_initial']
++    assert result['summary']['long_balance_mode'] == 'HARD'
++    assert result['steps']['ADD_PROD_L'][1] != result['steps']['ADD_PROD_L'][2]
++    rows = ls.rows_at_scale(result, 1.)
++    assert rows and {r['family'] for r in rows} == {'LONG'}
++    for row in rows:
++        assert .9-1.e-12 <= row['proposed']/row['current'] <= 1.1+1.e-12
++        if row['role'] == 'PROD': assert .15 <= row['proposed'] <= .45
++    p = sum(observed['vehicle_production'][z-1]*math.expm1(s)
++            for z, s in result['steps'].get('ADD_PROD_L', {}).items())
++    att = sum(observed['vehicle_attraction'][z-1]*math.expm1(s)
++              for z, s in result['steps'].get('ADD_ATT_L', {}).items())
++    assert p == pytest.approx(att, abs=2.e-8)
++    guarded = mz.guard_ls(result, a)
++    assert guarded['summary']['long_generation_permitted']
++    assert guarded['predicted_change'] == pytest.approx(result['predicted_change'])
++    assert mz.check_candidate(rows, a)['passes']
++
++
++def test_missing_attraction_reference_defers_long_and_retains_school(live, monkeypatch):
++    adapter, _, profiles = live
++    obs = lc.capture(adapter)
++    school = {'steps': {'ADD_PROD_SCH': {1: .01}}, 'predicted_change': [1., 2.],
++              'summary': {'status': 'OK'}}
++    monkeypatch.setattr(ls, '_school_design', lambda *a, **k: copy.deepcopy(school))
++    out = ls.design(adapter.visum, {}, [1, 2], {}, problem(profiles),
++        {'predicted_change': np.zeros(2)}, {}, {'long_cache_incidence': obs,
++        'longguard1_allow_long': True, 'long_mobility_authority': authority(mobility_rows())})
++    assert out['steps'] == school['steps'] and out['predicted_change'] == [1., 2.]
++    assert not out['summary']['long_generation_permitted']
++    assert 'REFERENCE_MISSING' in out['summary']['long_deferred_reason']
++
++
++def test_ordinary_live_mobility_and_finecdf_gates_still_reject(live, monkeypatch):
++    import r1_15a2_long_distance_guard_v24917 as guard
++    from test_v24917_longguard1 import evidence
++    result, _, _, a = payload(live, monkeypatch)
++    rows = ls.rows_at_scale(result, 1.)
++    assert guard.changed_long(rows)
++    rejected = guard.decide(evidence(fine=.1), evidence(fine=.12), changed_long=True)
++    assert not rejected['passes'] and 'LONGGUARD1_512_CDF_DEGRADED' in rejected['reasons']
++    invalid = [{'zone_no': 1, 'family': 'LONG', 'role': 'PROD', 'attr': 'ADD_PROD_L',
++                'current': .3, 'proposed': .46, 'log_step': math.log(.46/.3)}]
++    assert not mz.check_candidate(invalid, a)['passes']
++
++
++def test_receipt_invalidates_after_assignment_mutation_or_cache_refresh(live):
++    adapter, _, _ = live
++    receipt = lc.capture(adapter)
++    lc.require_current(adapter, receipt)
++    adapter.path_epoch_index += 1
++    with pytest.raises(ValueError, match='PROPOSAL_STALE'): lc.require_current(adapter, receipt)
++    adapter.path_epoch_index -= 1
++    adapter.readback_manager.mutation_epoch += 1
++    with pytest.raises(ValueError, match='PROPOSAL_STALE'): lc.require_current(adapter, receipt)
++
++
++def test_real_adapter_preview_and_apply_include_long_with_unchanged_parent_owner(live, monkeypatch, tmp_path):
++    import contextlib
++    import r1_15a2_trial_adapter_v24917 as mod
++    fixture, state, profiles = live
++    result, observed, ws, a = payload(live, monkeypatch)
++    adapter = object.__new__(mod.VisumAdapter)
++    adapter.__dict__.update(vars(fixture))
++    adapter.generation_reference_values = {'ADD_ATT_L': {'1': 1., '2': 1.}}
++    adapter._v24917_overlay = lambda phase: contextlib.nullcontext(adapter.cfg)
++    adapter._phase_of = lambda context: None
++    adapter.zone_write_index_by_no = {1: 1, 2: 2}
++    adapter.zone_readback_tolerance = 1.e-9
++    def invalidate(reason, mutation=True):
++        if mutation: adapter.readback_manager.mutation_epoch += 1
++    adapter.invalidate_candidate_readback = invalidate
++    adapter.cfg.update(require_solver_convergence_for_apply=False,
++                       require_projection_convergence_for_apply=False)
++    adapter.generation_reference_hash = 'parent-reference'
++    adapter._validate_mobility_plan = lambda context, design: design.setdefault(
++        'genfix2_mobility', {'passes': True})
++    adapter._final_step_prediction = lambda *args: {'available': True}
++    monkeypatch.setattr(mod._V24916ActiveAdapter, 'generation_preview',
++                        lambda *a, **k: {'candidate_rows': []})
++    monkeypatch.setattr(mod.supply_visum.base, 'generation_candidate',
++                        lambda *a, **k: {'candidate_rows': [], 'summary': {}})
++    monkeypatch.setattr(mod._V24916ActiveAdapter, 'apply_generation',
++                        mod.supply_visum.VisumAdapter.apply_generation)
++    context = {'v24917_ls': result, '_long_cache_receipt': {k: observed[k] for k in (
++        'status', 'binding', 'cache_parent_hash', 'path_epoch')},
++        'projection': core.ProjectionResult([], [], 0.)}
++    preview = adapter.generation_preview(context, 1.)
++    assert preview['candidate_rows'] and all(r['family'] == 'LONG' for r in preview['candidate_rows'])
++    parent = copy.deepcopy(state.coeff)
++    written = adapter.apply_generation(context, 1., tmp_path)
++    assert written == preview['candidate_rows']
++    assert set(state.writes) <= {'ADD_PROD_L', 'ADD_ATT_L'}
++    assert state.coeff['ADD_PROD_L'] != parent['ADD_PROD_L']
++    # Existing runtime setter restores the same snapshot-owned attributes;
++    # native parent recomputation/diagnostic equivalence is still controller-owned.
++    from r1_15a2_inplace_transaction_v24915p2 import restore_generation_parameters
++    snapshot = {'generation_values': {attr: {str(z+1): v for z, v in enumerate(values)}
++                                      for attr, values in parent.items()}}
++    restore_generation_parameters(adapter, snapshot, written, tmp_path/'rollback')
++    assert state.coeff == parent
++    adapter.readback_manager.mutation_epoch += 1
++    with pytest.raises(ValueError, match='PROPOSAL_STALE'): adapter.generation_preview(context, 1.)
++
++
++def test_unapproved_caller_long_rows_stay_filtered():
++    from r1_15a2_trial_adapter_v24917 import VisumAdapter
++    assert VisumAdapter._without_unverified_long_rows([{'family': 'LONG'}, {'family': 'WORK'}]) == [{'family': 'WORK'}]
++
++
++@pytest.mark.parametrize('refresh', [False, True])
++@pytest.mark.parametrize('ws_empty', [False, True])
++def test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_contract(live, monkeypatch, tmp_path, refresh, ws_empty):
++    import contextlib
++    import r1_15a2_trial_adapter_v24917 as mod
++    fixture, state, profiles = live
++    adapter = object.__new__(mod.VisumAdapter)
++    adapter.__dict__.update(vars(fixture))
++    adapter.v24917_ls = {'active': True}
++    adapter.v24917_status = {'fit_fallbacks': 0, 'designs': 0}
++    adapter.generation_reference_values = {'ADD_ATT_L': {'1': 1., '2': 1.}}
++    adapter.snapshot = adapter.generation_guard_snapshot
++    adapter._v24917_overlay = lambda phase: contextlib.nullcontext(adapter.cfg)
++    adapter.zone_write_index_by_no = {1: 1, 2: 2}
++    state.arrays[9225] = np.zeros((2, 2)); state.arrays[9226] = np.ones((2, 2))
++    inc = {'profiles': profiles, 'variables': [], 'incidence': core.SparseOperator(
++        np.array([], dtype=int), np.array([], dtype=int), np.array([]), 2, 0)}
++    ws = problem(profiles)
++    sol = {'predicted_change': np.zeros(2), 'converged': True, 'iterations': 1,
++           'objective_initial': 100., 'objective_final': 90., 'x': np.array([])}
++    projection = [] if ws_empty else [{'zone_no': 1, 'family': 'WORK', 'role': 'PROD', 'log_step': .001}]
++    calls = []
++    def parent(*args):
++        calls.append('parent')
++        return {'incidence': inc, 'projection': core.ProjectionResult(projection, [], 0.)}
++    monkeypatch.setattr(mod._V24916ActiveAdapter, 'generation_design', parent)
++    monkeypatch.setattr(mod.longguard, 'capture', lambda *args: {
++        'long_generation_permitted': True, 'fine_cdf_verified': True, 'fine_100_200_rmse': .1})
++    monkeypatch.setattr(mod.longmask, 'capture_current', lambda *args: {'status': 'MASK_READY'})
++    monkeypatch.setattr(mod.tg, 'policy_of', lambda cfg: {'fit': {'max_iter': 2000}})
++    monkeypatch.setattr(mod.tg, 'phase_for', lambda *args: ('REFINE', 1.))
++    monkeypatch.setattr(mod.tg, 'zone_bounds', lambda *args: {})
++    monkeypatch.setattr(ls, 'ls_options', lambda: dict(ls.LS_DEFAULTS))
++    zone_rows = mobility_rows()
++    monkeypatch.setattr(mod.supply_visum.base, 'zone_state_rows', lambda *args, **kwargs: (zone_rows, []))
++    monkeypatch.setattr(mod.mguard, 'options', lambda: {'enabled': True, 'lo': .75, 'hi': 2.})
++    monkeypatch.setattr(mod.zguard, 'enrich', lambda *args: (zone_rows, list(mz.SPECS), {}))
++    monkeypatch.setattr(mod.zguard, 'guard_projection', lambda rows, a: (rows, {'status': 'OK'}))
++    monkeypatch.setattr(mod.mguard, 'guard', lambda rows, *args: (rows, {'passes': True}))
++    adapter._fit_with_boundary = lambda *args: (projection, {}, ws, sol, None)
++    adapter._apply_flowbundle_mask = lambda rows, *args: {'rows': rows, 'audit': {'status': 'OK'}}
++    if refresh:
++        # Launcher tests reload runtime modules; patch the adapter's actual owner.
++        cache_module = mod.long_cache
++        capture = cache_module.capture
++        count = [0]
++        def first_stale(ad):
++            count[0] += 1
++            if count[0] == 1: raise ValueError('LONG_CACHE_REFRESH_REQUIRED:NEW_POSITIVE_OD')
++            return capture(ad)
++        monkeypatch.setattr(cache_module, 'capture', first_stale)
++        def rebuild(*args, **kwargs):
++            assert kwargs['allow_persistent_restore'] is False
++            calls.append('refresh'); adapter.path_epoch_index += 1
++        adapter._build_cache = rebuild
++    context = adapter.generation_design({'d12': {'rows': profiles}}, tmp_path)
++    assert context['v24917_ls']['summary']['long_generation_permitted'], context['v24917']
++    assert ls.rows_at_scale(context['v24917_ls'], 1.)
++    assert not context['v24917']['long_school_search_incomplete']
++    assert context['v24917_step_model']['available']
++    assert context['v24917']['tdlong1']['native_filter_status'] == 'NOT_REQUIRED_POST_TD_MASK'
++    assert calls == (['parent', 'refresh', 'parent'] if refresh else ['parent'])
++    assert state.exports == 0 and state.writes == []
++
++
++def test_existing_controller_freeze_proof_owns_long_parameters_and_rejects_unrequested_changes(live, monkeypatch):
++    import r1_15a2_multiblock as mb
++    from r1_15a2_controller_v22 import assert_freeze
++    adapter, state, _ = live
++    monkeypatch.setattr(mb, 'GENERATION_ATTRS', list(mb.GENERATION_ATTRS))
++    monkeypatch.setattr(mb, 'GENERATION_ATTR_MAP', dict(mb.GENERATION_ATTR_MAP))
++    assert ls.activate(adapter.visum)['active']
++    assert {'ADD_PROD_L', 'ADD_ATT_L'} <= set(mb.GENERATION_ATTRS)
++    base = {'fixed_link_hash': 'L', 'dseg_hash': 'D', 'operations_hash': 'O',
++            'addval1': {}, 'td_hash': 'TD', 'matrices': [{'matrix_no': 9111, 'sha256_float64_le': 'before'}],
++            'generation_values': {'ADD_PROD_L': {'1': .3, '2': .3},
++            'ADD_ATT_L': {'1': 1., '2': 1.}, 'ADD_PROD_W': {'1': 1.}}}
++    after = copy.deepcopy(base); after['generation_values']['ADD_PROD_L']['1'] = .33
++    after['matrices'][0]['sha256_float64_le'] = 'after-native-recompute'
++    cfg = {'matrix_scope_by_block': {'GENERATION': {'matrix_nos': [9111]}}}
++    rows = [{'attr': 'ADD_PROD_L', 'zone_no': 1, 'current': .3, 'proposed': .33}]
++    assert_freeze(base, after, 'GENERATION', rows=rows, cfg=cfg)
++    after['generation_values']['ADD_PROD_W']['1'] = 1.1
++    with pytest.raises(Exception, match='UNREQUESTED_GENERATION_PARAMETER_CHANGE'):
++        assert_freeze(base, after, 'GENERATION', rows=rows, cfg=cfg)
++
++
++def test_only_owned_retry_with_restored_parameters_can_reuse_frozen_proposal(live):
++    adapter, state, _ = live
++    def snapshot():
++        return dict(state.parent, generation_values=copy.deepcopy(state.coeff), td_values=[],
++                    addval1={}, fixed_link_hash='L', dseg_hash='D', operations_hash='O')
++    adapter.generation_guard_snapshot = snapshot
++    receipt = lc.capture(adapter)
++    state.coeff['ADD_ATT_L'][0] = 1.1
++    with pytest.raises(ValueError, match='PARENT_PARAMETERS_CHANGED'): lc.begin_apply(adapter, receipt)
++    state.coeff['ADD_ATT_L'][0] = 1.
++    lc.begin_apply(adapter, receipt)
++    adapter.readback_manager.mutation_epoch += 1
++    state.coeff['ADD_PROD_L'][0] = .33
++    with pytest.raises(ValueError, match='PROPOSAL_STALE'): lc.require_current(adapter, receipt)
++    state.coeff['ADD_PROD_L'][0] = .3
++    lc.require_current(adapter, receipt)  # parameter-only backtracking restore
++    copied = copy.deepcopy(receipt)
++    with pytest.raises(ValueError, match='PROPOSAL_STALE'): lc.require_current(adapter, copied)
++    adapter.path_epoch_index += 1
++    with pytest.raises(ValueError, match='PROPOSAL_STALE'): lc.require_current(adapter, receipt)
++
++
++def test_long_only_scope_is_explicit_and_foreign_scope_tampering_is_rejected():
++    import r1_15a2_fresh0_shortroot_parent_v24916 as parent
++    import r1_15a2_runtime_delta_v24917 as delta
++    cfg0 = parent.load_config('FULL')
++    cfg = delta.apply_active_runtime_delta(cfg0)
++    assert delta.validate_active_runtime_delta(cfg, cfg0)['v24917']['passes']
++    scope = cfg['matrix_scope_by_block']['GENERATION']
++    assert 'NATIVE_CL' in scope['dseg_codes'] and set(range(9111, 9116)) <= set(scope['matrix_nos'])
++    assert 9116 not in scope['matrix_nos']
++    changed = copy.deepcopy(cfg)
++    changed['matrix_scope_by_block']['GENERATION']['matrix_nos'].append(9116)
++    with pytest.raises(RuntimeError, match='SCOPE_MISMATCH'): delta.validate_active_runtime_delta(changed, cfg0)
++
++
++def test_long_fit_is_prebound_before_visum_restores_import_path(live, monkeypatch):
++    import builtins
++    original = builtins.__import__
++    def guarded(name, *args, **kwargs):
++        if name == 'r1_15a2_long_zonal_fit_v24917':
++            raise AssertionError('LONG_FIT_LATE_IMPORT_DEPENDS_ON_HOST_SYS_PATH')
++        return original(name, *args, **kwargs)
++    monkeypatch.setattr(builtins, '__import__', guarded)
++    result, *_ = payload(live, monkeypatch)
++    assert result['summary']['long_generation_permitted']
+diff --git a/tests/test_v24917_targeted_catchup.py b/tests/test_v24917_targeted_catchup.py
+index b7351d2..734d908 100644
+--- a/tests/test_v24917_targeted_catchup.py
++++ b/tests/test_v24917_targeted_catchup.py
+@@ -271,7 +271,10 @@ def test_config_delta_only_adds_v24917_sections(real_cfg):
+     meta = roster.load_meta()
+     assert set(real_cfg) - set(v16) == set(delta.V24917_KEYS) | {roster.CFG_KEY}
+     gate = roster.gate_of(meta)
+-    assert all(real_cfg[k] == v16[k] for k in v16 if k not in gate)
++    assert all(real_cfg[k] == v16[k] for k in v16 if k not in gate and k != "matrix_scope_by_block")
++    expected_scope = copy.deepcopy(v16["matrix_scope_by_block"])
++    expected_scope["GENERATION"] = delta.long_generation_scope(expected_scope["GENERATION"])
++    assert real_cfg["matrix_scope_by_block"] == expected_scope
+     assert {k: real_cfg[k] for k in gate} == gate and gate["expected_12d_rows"] == meta["rows"] != 488
+     assert {k: v16[k] for k in gate} == roster.GATE488
+     tampered = copy.deepcopy(real_cfg)
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 3b186b9..60ab01c 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -37,6 +37,7 @@ RUNTIME = [
+     "r1_15a2_long_od_mask_v24917.py",
+     "r1_15a2_long_profile_incidence_v24917.py",
+     "r1_15a2_long_incidence_read_v24917.py",
++    "r1_15a2_long_cache_generation_v24917.py",
+     "r1_15a2_long_zonal_fit_v24917.py",
+     "r1_15a2_tdlong1_probe_v24917.py",
+     "r1_15a2_intrazonal_penalty_v24917.py",

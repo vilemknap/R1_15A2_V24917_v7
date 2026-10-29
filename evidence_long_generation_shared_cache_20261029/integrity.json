@@ -1,0 +1,31 @@
+{
+  "compilation_passed": [
+    "r1_15a2_long_cache_generation_v24917.py",
+    "r1_15a2_long_school_generation_v24917.py",
+    "r1_15a2_long_zonal_fit_v24917.py",
+    "r1_15a2_mobility_zone_v24917.py",
+    "r1_15a2_runtime_delta_v24917.py",
+    "r1_15a2_trial_adapter_v24917.py",
+    "tests/test_v24917_long_cache_generation.py",
+    "tests/test_v24917_targeted_catchup.py",
+    "tools/refresh_v24917_manifests.py"
+  ],
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 71,
+      "all_sha256_match": true,
+      "sha256": "0a0cdfa6c2f7e4acc84ab8d3f3477ec62334bb23469ab7bfc2bb4a4b78847ce8"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 131,
+      "all_sha256_match": true,
+      "sha256": "105cd7a4761c3e4a336353c783e604d5928d788dbd83a726b27699cf330918c5"
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "all_sha256_match": true,
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+    }
+  },
+  "protected_original_files_unchanged": 1059
+}

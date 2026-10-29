@@ -3,8 +3,9 @@
 
 This is a local proposal model on *final vehicle* NATIVE_CL path incidence:
     delta_od / q_od ~= u_origin + v_destination - g_LONG.
-The real TG/TD/20A/20B response can differ. No output from this module may
-enable LONG generation until native OD support and live trial gates are proven.
+The real TG/TD/20A/20B response can differ. The standalone fit remains diagnostic;
+the shared-cache adapter supplies source checks, bounded coefficients and live
+native trial/acceptance/rollback when using this problem builder operationally.
 """
 from __future__ import annotations
 
@@ -27,7 +28,7 @@ def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
     The caller supplies explicit, independently validated coefficient-domain
     bounds. No default LONG mobility bounds or native-filter claim is inferred.
     """
-    if observed.get("status") != "OBSERVED_LONG_OD_PROFILE_ONLY":
+    if observed.get("status") not in ("OBSERVED_LONG_OD_PROFILE_ONLY", "FROZEN_LONG_OD_PROFILE_PROPOSAL"):
         raise ValueError("LONG_FIT_OBSERVED_INCIDENCE_REQUIRED")
     if any(isinstance(z, (bool, np.bool_)) or not isinstance(z, (int, np.integer))
            for z in zone_nos):
