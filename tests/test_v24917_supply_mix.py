@@ -178,6 +178,86 @@ def harness(monkeypatch, tmp_path):
 
 
 # ----------------------------------------------------------------- pure
+@pytest.mark.parametrize("failure", [
+    OSError("OPTIONS_IO_FAILED"),
+    json.JSONDecodeError("OPTIONS_JSON_FAILED", "{", 1),
+    RuntimeError("R1_RUN_OPTION_RANGE:sp_every_n_cycles"),
+])
+def test_options_never_replace_unreadable_or_invalid_configuration(monkeypatch, failure):
+    import r1_15a2_demand_policy_v1 as dp
+    def fail():
+        raise failure
+    monkeypatch.setattr(dp, "load_options", fail)
+    with pytest.raises(type(failure)) as caught:
+        sm.options()
+    assert caught.value is failure
+
+
+def test_options_preserve_validated_disabled_schedule(monkeypatch):
+    import r1_15a2_demand_policy_v1 as dp
+    values = dp.validate({"sp_enabled": False, "sp_every_n_cycles": 3,
+                          "sp_start_cycle": 4, "sp_step_units": [8, 2]})
+    monkeypatch.setattr(dp, "load_options", lambda: values)
+    opts = sm.options()
+    assert opts["enabled"] is False
+    assert opts["every_n"] == 3 and opts["start_cycle"] == 4
+    assert opts["step_units"] == [8, 2]
+    assert sm.due(4, opts) == (False, "DISABLED")
+
+
+@pytest.mark.parametrize("content,exception", [
+    ("{", json.JSONDecodeError),
+    ("[]", RuntimeError),
+    ('{"sp_every_n_cycles":0}', RuntimeError),
+    ('{"sp_enabled":"invalid"}', RuntimeError),
+])
+def test_options_reject_real_invalid_run_options_file(tmp_path, monkeypatch, content, exception):
+    import r1_15a2_demand_policy_v1 as dp
+    (tmp_path / "R1_RUN_OPTIONS.json").write_text(content, encoding="utf-8")
+    original = dp.load_options
+    monkeypatch.setattr(dp, "load_options", lambda: original(root=tmp_path, environ={}))
+    with pytest.raises(exception):
+        sm.options()
+
+
+def test_generation_wrapper_cannot_run_supply_with_unverified_options(monkeypatch):
+    failure = RuntimeError("UNVERIFIED_SUPPLY_OPTIONS")
+    def fail(): raise failure
+    monkeypatch.setattr(sm, "options", fail)
+    monkeypatch.setattr(sm, "supply_block", lambda *a: pytest.fail("Supply must not start"))
+    result = (False, {}, {}, {}, {})
+    wrapped = sm._wrap_generation(lambda *a, **kw: result, None, None, None)
+    with pytest.raises(RuntimeError, match="UNVERIFIED_SUPPLY_OPTIONS") as error:
+        wrapped(None, {}, None, None, {}, {}, None, None, None, outer_cycle=3)
+    assert error.value is failure
+
+
+def test_invalid_options_cannot_partially_install_and_retry_is_possible(monkeypatch):
+    import r1_15a2_demand_policy_v1 as dp
+    import r1_15a2_acceleration_v24915p1 as perf1
+    import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+    original_plan = perf1.phase_recompute_plan
+    original_generation = ctrl._generation_update_once
+    monkeypatch.setattr(perf1, "phase_recompute_plan", original_plan)
+    monkeypatch.setattr(ctrl, "_generation_update_once", original_generation)
+    state = copy.deepcopy(sm._STATE)
+    state["installed"] = False
+    monkeypatch.setattr(sm, "_STATE", state)
+    before = copy.deepcopy(state)
+    failure = RuntimeError("OPTIONS_MUST_FAIL_BEFORE_PATCHING")
+    def fail(): raise failure
+    monkeypatch.setattr(dp, "load_options", fail)
+    with pytest.raises(RuntimeError, match="OPTIONS_MUST_FAIL_BEFORE_PATCHING"):
+        sm.install(print_fn=lambda *a: None)
+    assert sm._STATE == before
+    assert perf1.phase_recompute_plan is original_plan
+    assert ctrl._generation_update_once is original_generation
+    valid = dp.validate({"sp_enabled": False})
+    monkeypatch.setattr(dp, "load_options", lambda: valid)
+    result = sm.install(print_fn=lambda *a: None)
+    assert result["installed"] and result["options"]["enabled"] is False
+
+
 def test_due_and_driver_mode():
     assert sm.due(3, OPTS) == (True, "EVERY_1")
     assert sm.due(None, OPTS)[0] is False
@@ -257,6 +337,34 @@ def test_plan_wrapper_supply_only_and_fail_closed(monkeypatch):
     monkeypatch.setattr(sm, "options", lambda: dict(OPTS, reset_position=20))
     with pytest.raises(Exception, match="COLD_PLAN_UNAVAILABLE"):     # class may be a reloaded copy
         w(None, {}, "SUPPLY_ADDVAL1")
+
+
+def test_plan_uses_one_validated_options_snapshot(monkeypatch):
+    reads = []
+    def options():
+        reads.append(1)
+        if len(reads) > 1:
+            raise RuntimeError("OPTIONS_RELOADED_DURING_ONE_PLAN")
+        return dict(OPTS)
+    monkeypatch.setattr(sm, "options", options)
+    inv = [{"no": 15, "type": 9, "active": 1}, {"no": 20, "type": 101, "active": 1}]
+    wrapped = sm._wrap_plan(lambda *args: {"inventory": inv,
+        "approved_assignment_positions": [20], "selected_operation_positions": [20]})
+    assert wrapped(None, {}, "GENERATION")["selected_operation_positions"] == [20]
+    assert reads == []
+    assert wrapped(None, {}, "SUPPLY_ADDVAL1")["selected_operation_positions"] == [15, 20]
+    assert reads == [1]
+
+
+def test_plan_propagates_invalid_options_before_cold_plan(monkeypatch):
+    failure = RuntimeError("BAD_OPTIONS_BEFORE_COLD_PLAN")
+    def fail(): raise failure
+    monkeypatch.setattr(sm, "options", fail)
+    monkeypatch.setattr(sm, "cold_supply_plan", lambda *a: pytest.fail("No unverified plan"))
+    wrapped = sm._wrap_plan(lambda *args: {})
+    with pytest.raises(RuntimeError, match="BAD_OPTIONS_BEFORE_COLD_PLAN") as error:
+        wrapped(None, {}, "SUPPLY_ADDVAL1")
+    assert error.value is failure
 
 
 # ------------------------------------------------------------- block

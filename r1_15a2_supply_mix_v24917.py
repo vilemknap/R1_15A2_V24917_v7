@@ -55,11 +55,8 @@ _STATE: Dict[str, Any] = {"installed": False, "blocks": 0, "trials": 0, "accepte
 
 # ------------------------------------------------------------------ options
 def options() -> Dict[str, Any]:
-    try:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dp.load_options()
-    except Exception:
-        o = {}
+    import r1_15a2_demand_policy_v1 as dp
+    o = dp.load_options()
     return {
         "enabled": bool(o.get("sp_enabled", True)),
         "every_n": int(o.get("sp_every_n_cycles", 1)),
@@ -460,7 +457,10 @@ def _wrap_plan(orig):
     @functools.wraps(orig)
     def phase_recompute_plan(visum, cfg, block):
         plan = orig(visum, cfg, block)
-        if str(block).upper() != BLOCK or not options()["enabled"]:
+        if str(block).upper() != BLOCK:
+            return plan
+        opts = options()
+        if not opts["enabled"]:
             return plan
         if not plan.get("inventory"):
             try:
@@ -471,7 +471,7 @@ def _wrap_plan(orig):
             except Exception as exc:
                 _event("PLAN_INVENTORY_FAILED", error=str(exc)[:200])
                 raise
-        out = cold_supply_plan(plan, cfg, options()["reset_position"])
+        out = cold_supply_plan(plan, cfg, opts["reset_position"])
         info = out.get("v24917_supplymix_plan", {})
         if info.get("applied"):
             _STATE["plans"] += 1
@@ -900,6 +900,9 @@ def _wrap_generation(orig, ctrl, base, tx):
 def install(print_fn=print) -> Dict[str, Any]:
     if _STATE["installed"]:
         return status()
+    # Validate before patching functions or publishing installed=True. A bad
+    # configuration must leave installation retryable, with no partial wiring.
+    o = options()
     import r1_15a2_acceleration_v24915p1 as perf1
     import r1_15a2_overnight_controller_v24915p2 as base
     import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
@@ -919,7 +922,6 @@ def install(print_fn=print) -> Dict[str, Any]:
     if not getattr(ctrl._generation_update_once, "__r1_supplymix__", False):
         ctrl._generation_update_once = _wrap_generation(ctrl._generation_update_once, ctrl, base, tx)
     _STATE["installed"] = True
-    o = options()
     _STATE["options"] = o
     print_fn("V24917 SUPPLYMIX_COSTFIX1: %s; ADDVAL1 route choice every %d cycle(s) after Generation, steps %s x0.5, "
              "drivers %s (GEH>=%.0f), cold op%d..assignment"

@@ -1,0 +1,116 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/supplymix/source/tests"
+      ],
+      "returncode": 0,
+      "seconds": 32.895,
+      "passed": 1699,
+      "skipped": 4
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/supplymix/source/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 21.018,
+      "passed": 138,
+      "skipped": 0
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/supplymix/source/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 0.766,
+      "passed": 18,
+      "skipped": 0
+    }
+  ],
+  "all_passed": true,
+  "output": "/workspace/work/supplymix/regression",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS",
+  "task": "SUPPLYMIX_OPTIONS_FIX_20261029",
+  "baseline_commit": "a984b02a813cd95cf8c74fe6896f5df0dbcf5b81",
+  "baseline_tree": "29d50d2233955df3cf4ce552800c1df17ecb2816",
+  "changes": {
+    "options": "Propagate load/parse/validation errors; never replace failed configuration with SupplyMix defaults.",
+    "install": "Validate options before patching functions or setting installed=True; failed validation leaves state and function bindings intact and permits retry.",
+    "cold_plan": "Read one validated options snapshot per supply plan; unrelated blocks do not load SupplyMix options."
+  },
+  "before_fix": {
+    "failed_regressions": 4,
+    "selection": "options_never or invalid_options_cannot",
+    "evidence": "before_fix.log.gz"
+  },
+  "supplymix_tests": {
+    "passed": 39,
+    "returncode": 0,
+    "command": "OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider tests/test_v24917_supply_mix.py"
+  },
+  "related_focused": {
+    "passed": 83,
+    "returncode": 0,
+    "command": "OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider tests/test_v24917_supply_mix.py tests/test_v24917_genfix2.py tests/test_v24917_boundary_pa.py",
+    "note": "Executed before adding the last five config-file/wrapper regressions; final versions covered by the 39 SupplyMix tests and full main suite."
+  },
+  "regression_contracts": [
+    "original I/O/JSON/validation exception propagated unchanged",
+    "real malformed/non-object JSON and invalid cadence/enabled values rejected",
+    "valid disabled/scheduled options retained",
+    "invalid configuration leaves install state and bindings unchanged",
+    "valid retry installs correctly",
+    "one options read per cold plan",
+    "configuration failure prevents SupplyMix block/cold-plan execution"
+  ],
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 66,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 118,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": []
+    }
+  },
+  "diff_check": "PASS",
+  "unchanged": [
+    "route-choice policy",
+    "ADDVAL1 bounds and safety checks",
+    "acceptance",
+    "rollback and parent verification",
+    "TD",
+    "LONG freeze",
+    "Visum model"
+  ],
+  "limitation": "LIVE_VISUM_NOT_RUN: live SupplyMix behavior and timing remain unverified."
+}
