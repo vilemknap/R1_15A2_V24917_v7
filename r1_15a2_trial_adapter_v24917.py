@@ -194,7 +194,9 @@ class VisumAdapter(_V24916ActiveAdapter):
         key = self._generation_read_key()
         if scope.get("key") != key:
             scope.clear()
-            matrices = super()._live_generation_matrices()
+            import numpy as np
+            matrices = {code: np.array(matrix, dtype=np.float64, copy=True, order="C")
+                        for code, matrix in super()._live_generation_matrices().items()}
             if key != self._generation_read_key():
                 raise supply_visum.SupplyContractError("V24917_GENERATION_READ_EPOCH_CHANGED")
             for matrix in matrices.values():

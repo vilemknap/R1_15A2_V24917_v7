@@ -1,0 +1,124 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/read_reuse_review2/source/tests"
+      ],
+      "returncode": 0,
+      "seconds": 32.946,
+      "passed": 1754,
+      "skipped": 4
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/read_reuse_review2/source/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 21.016,
+      "passed": 138,
+      "skipped": 0
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/read_reuse_review2/source/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 0.716,
+      "passed": 18,
+      "skipped": 0
+    }
+  ],
+  "all_passed": true,
+  "output": "/workspace/work/read_reuse_review2/regression",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS",
+  "task": "READ_REUSE_REVIEW2_20261029",
+  "baseline_commit": "4677e49809ae95c76ffdd6f42a6f3752cd88b74d",
+  "baseline_tree": "3425d16519a1fffd14da8ed526c66a4cfcaddfdf",
+  "focused": {
+    "passed": 89,
+    "returncode": 0,
+    "command": "OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider tests/test_v24917_read_reuse.py tests/test_v24917_genfix1_adapter.py tests/test_v24917_targeted_catchup.py"
+  },
+  "findings": [
+    {
+      "component": "Generation matrix cache",
+      "defect": "Readonly flags were applied to arrays returned by the parent without ensuring ownership; shared producer buffers could be frozen or subsequently alter cached data.",
+      "fix": "Cache owned C-contiguous float64 copies, verify the read epoch after copying, and make only those copies readonly."
+    },
+    {
+      "component": "FlowBundle cached read",
+      "defect": "Invalid or unusable arrays could be cached before reduction, poisoning another profile that should perform a fresh native read.",
+      "fix": "Do not retain failed conversion, wrong shape, nonfinite, negative or all-zero read results. Return original values to the sealed reducer, retaining its validation and tiny-negative clipping semantics. Full inherited-build regressions prove later profiles can recover after NaN/zero reads."
+    },
+    {
+      "component": "FlowBundle retention planning",
+      "defect": "Unsupported direction scopes, skipped by the parent builder, could falsely mark a single-use link/DSeg as shared.",
+      "fix": "Only count selected profiles with one or two directed keys, matching the parent execution scope."
+    }
+  ],
+  "before_fix": {
+    "failed": 6,
+    "selection": "owns_immutable or unsupported_profile or invalid_read_does",
+    "log": "before_fix.log.gz"
+  },
+  "reviewed_contracts": [
+    "11D verified metric reuse and byte-equal CSV output",
+    "Generation design-local reuse, epoch/config/zone invalidation and nested exception cleanup",
+    "FlowBundle direction/DSeg identity, four-entry LRU, ownership, failed-read retry and build-local cleanup",
+    "TD one read per unique directed link per live call; no volume cache across calls",
+    "NumPy/tuple reducer parity and unchanged legacy reducer errors/clipping"
+  ],
+  "flowbundle_cache_limit": 4,
+  "cache_limit_scope": "Retained cache entries; not a bound on total process memory or temporary active computation buffers.",
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 66,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 119,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": []
+    }
+  },
+  "diff_check": "PASS",
+  "compile": "PASS",
+  "unchanged": [
+    "native TG/TD/assignment authority",
+    "acceptance and rollback",
+    "numerical tolerances",
+    "calibration bounds",
+    "LONG freeze"
+  ],
+  "limitations": [
+    "LIVE_VISUM_NOT_RUN",
+    "Real COM speedup and whole-process peak memory were not measured."
+  ]
+}

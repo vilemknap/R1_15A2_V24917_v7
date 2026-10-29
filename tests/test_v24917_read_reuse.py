@@ -115,8 +115,35 @@ def test_generation_epoch_change_during_read_not_cached(monkeypatch):
     assert a._v24917_generation_reads == {}
 
 
+def test_generation_cache_owns_immutable_copies_without_freezing_producer(monkeypatch):
+    a, calls = generation_adapter(monkeypatch)
+    producer = np.array([[1., 2.], [3., 4.]])
+    monkeypatch.setattr(adapter_mod._V24916ActiveAdapter, '_live_generation_matrices',
+                        lambda self: {'NATIVE_CW':producer})
+    a._v24917_generation_reads = {}
+    cached = a._live_generation_matrices()['NATIVE_CW']
+    assert producer.flags.writeable
+    assert not cached.flags.writeable and not np.shares_memory(producer, cached)
+    producer[:] = 99.
+    np.testing.assert_array_equal(a._live_generation_matrices()['NATIVE_CW'], [[1,2],[3,4]])
+
+
+def test_generation_nested_failure_restores_outer_read_scope(monkeypatch, tmp_path):
+    a, calls = generation_adapter(monkeypatch)
+    previous = a._v24917_generation_reads = {'outer':'scope'}
+    def fail(*args):
+        assert a._v24917_generation_reads is not previous
+        a._live_generation_matrices()
+        raise RuntimeError('nested design')
+    a._generation_design_live = fail
+    with pytest.raises(RuntimeError, match='nested design'):
+        a.generation_design({}, tmp_path)
+    assert a._v24917_generation_reads is previous
+    assert previous == {'outer':'scope'}
+
+
 def flow_reads(monkeypatch, shared=()):
-    b = NS(_distance_epoch=lambda: epoch(), telemetry=defaultdict(int))
+    b = NS(_distance_epoch=lambda: epoch(), telemetry=defaultdict(int), adapter=NS(zones=[10,20]))
     reads = evidence._FlowBundleReads(b, epoch())
     reads.shared = set(shared)
     calls = []
@@ -204,6 +231,30 @@ def test_flowbundle_only_exact_shared_link_dseg_is_retained(monkeypatch):
     assert evidence._FlowBundleReads(b, epoch())._shared_links() == {(1, 10, 20, "CW")}
 
 
+def test_flowbundle_unsupported_profile_does_not_make_a_link_shared(monkeypatch):
+    audits = [dict(selected=True, _source_row={'keys':keys}, _v24916_family='WORK')
+              for keys in [[(1,10,20)], [(1,10,20), (2,20,30), (3,30,40)]]]
+    monkeypatch.setattr(evidence.base, 'driver_profile_audit', lambda *a: audits)
+    monkeypatch.setattr(evidence.base, 'profile_directed_keys', lambda row: row['keys'])
+    b = NS(cfg={}, _profile_rows=lambda:[], _distance_epoch=lambda:epoch(),
+           _native_dsegs=lambda:[dict(code='CW', family='WORK')])
+    assert evidence._FlowBundleReads(b, epoch())._shared_links() == set()
+
+
+@pytest.mark.parametrize('bad', [np.full((2,2), np.nan), np.full((2,2), np.inf),
+    np.array([[0.,-2.],[3.,0.]]), np.ones((1,1)), np.zeros((2,2)), [[1.],[2.,3.]]])
+def test_flowbundle_invalid_read_does_not_poison_later_profile(monkeypatch, bad):
+    reads, calls, _, link = flow_reads(monkeypatch, [(1,10,20,'CW')])
+    good = np.array([[0.,2.],[3.,0.]])
+    returned = iter([bad,good])
+    monkeypatch.setattr(evidence.base, '_read_flowbundle_matrix', lambda *args:next(returned))
+    reads.read(None, link(), None, 'CW')
+    assert not reads.cache
+    result = reads.read(None, link(), None, 'CW')
+    np.testing.assert_array_equal(result,good)
+    assert len(reads.cache) == 1
+
+
 @pytest.mark.parametrize("both", [False, True])
 def test_flowbundle_numpy_and_tuple_reduction_are_exactly_equal(both):
     from r1_15a2_flowbundle_v24916p2c import FlowBundleMatrixReducer
@@ -289,7 +340,8 @@ def test_dynamic_capture_nesting_and_exception_cleanup():
     assert d11._METRIC_CAPTURE.get() is None
 
 
-def test_real_inherited_flowbundle_build_reuses_and_publishes_safely(monkeypatch, tmp_path):
+@pytest.mark.parametrize('bad_first', [None, 'nan', 'zero'])
+def test_real_inherited_flowbundle_build_reuses_and_publishes_safely(monkeypatch, tmp_path, bad_first):
     base = evidence.base
     audits = [dict(selected=True, profile_id=p, observed=10., model=1., geh=15.,
                    _v24916_family="WORK", _v24916_residual=9.,
@@ -312,16 +364,22 @@ def test_real_inherited_flowbundle_build_reuses_and_publishes_safely(monkeypatch
     monkeypatch.setattr(base, "_exact_link", lambda *args: NS(AttValue=lambda a: {
         "NO": 1, "FROMNODENO": 10, "TONODENO": 20}[a]))
     reads = []
-    monkeypatch.setattr(base, "_read_flowbundle_matrix", lambda *args: reads.append(1) or [[0., 2.], [3., 0.]])
+    def read(*args):
+        reads.append(1)
+        if bad_first and len(reads)==1:
+            return [[0.,0.],[0.,0.]] if bad_first=='zero' else [[float('nan'),2.],[3.,0.]]
+        return [[0.,2.],[3.,0.]]
+    monkeypatch.setattr(base, "_read_flowbundle_matrix", read)
     monkeypatch.setattr(base, "path_parity", lambda *args: {
         "passing_profile_dseg_keys": ["P1|NATIVE_CW", "P2|NATIVE_CW"]})
     monkeypatch.setattr(base, "build_generation_targets", lambda *args: {"status": "ACTIVE"})
     monkeypatch.setattr(base, "build_td_targeting", lambda *args: {})
     for index in range(2):
         b.build({}, {"incidence": {}}, tmp_path / str(index), {})
-        assert len(reads) == index + 1  # never retained across build calls
-        assert b.telemetry["FLOWBUNDLE_MATRIX_GETVALUES_COUNT"] == index + 1
-        assert len(published[-1]["flowbundles"]) == 2
+        expected_reads = index + 1 + int(bool(bad_first))
+        assert len(reads) == expected_reads  # never retained across build calls
+        assert b.telemetry["FLOWBUNDLE_MATRIX_GETVALUES_COUNT"] == expected_reads
+        assert len(published[-1]["flowbundles"]) == (1 if bad_first and index==0 else 2)
         assert published[-1]["skim_identity"].as_dict()["epoch_hash"] == "1"
     assert not hasattr(base, "dist")
 

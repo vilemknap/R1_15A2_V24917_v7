@@ -14,8 +14,8 @@
     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
     "r1_15a2_zonal_count_fit_v24917.py": "f5308b821980442bf60ab3a0aef1b138d02f6decdf3fe2ab478a0b6010f6c67b",
     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
-    "r1_15a2_trial_adapter_v24917.py": "d9aeb65d9cde55ba0b2b2b5cd799a2125165cca6374e5747d7a35e1250ddf15d",
-    "r1_15a2_active_demand_evidence_v24917.py": "1f3725f6e043042560e430f3b43a33dce4b18cc08ff02a2000185f077b1fa356",
+    "r1_15a2_trial_adapter_v24917.py": "9139ac11a72ffc155977f25b85ed2fc9fe8d67b99faa2d69f5c51bfa082622eb",
+    "r1_15a2_active_demand_evidence_v24917.py": "3aaa457bdac3722a298a37866c18bee7d5c37cf0367424bc05a948d2253389bb",
     "r1_15a2_runtime_delta_v24917.py": "34519f5d72ba1998ce115fd1e5b5345a780fae4bf64462f985136af0436c8700",
     "r1_15a2_v24917_runtime.py": "66dad338a101eae7b069dfa6858d74cac73a04149c6218b92a4bfdcce11142dd",
     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
@@ -68,6 +68,6 @@
     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "b11bad1cf9d38bc1df6b4d4502cb7a470276cc6cdfefb3fc53c705968df9b9c0"
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "32ffbf4fe91cebfcb0c16235774848166c4131197a3b7bf6377909543b1e9d4d"
   }
 }

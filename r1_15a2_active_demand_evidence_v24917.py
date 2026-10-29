@@ -43,10 +43,16 @@ class _FlowBundleReads:
             float(cfg.get("min_profile_geh", 10.0)),
             float(cfg.get("min_profile_abs_residual", 300.0)))
         dsegs = builder._native_dsegs()
-        uses = Counter(tuple(int(x) for x in key) + (str(dseg["code"]),)
-                       for row in audits if row.get("selected")
-                       for dseg in dsegs if str(dseg.get("family")) == str(row["_v24916_family"])
-                       for key in base.profile_directed_keys(row["_source_row"]))
+        uses = Counter()
+        for row in audits:
+            if not row.get("selected"):
+                continue
+            keys = base.profile_directed_keys(row["_source_row"])
+            if not keys or len(keys) > 2:
+                continue  # the sealed builder skips this direction scope
+            for dseg in dsegs:
+                if str(dseg.get("family")) == str(row["_v24916_family"]):
+                    uses.update(tuple(int(x) for x in key) + (str(dseg["code"]),) for key in keys)
         return {key for key, count in uses.items() if count > 1}
 
     @staticmethod
@@ -88,7 +94,18 @@ class _FlowBundleReads:
         if key in self.shared:
             import numpy as np
             # FlowBundle.Clear/Execute may overwrite the COM producer's buffer.
-            raw = np.array(raw, dtype=float, copy=True)
+            try:
+                owned = np.array(raw, dtype=float, copy=True)
+            except (TypeError, ValueError):
+                return raw  # let the sealed reducer report its original error
+            n = len(self.builder.adapter.zones)
+            if (owned.shape != (n, n) or not np.isfinite(owned).all()
+                    or (owned < 0).any() or not owned.any()):
+                # Unverified input must not poison later profiles. Cache
+                # eligibility is conservative; legacy reduction/clipping stays
+                # authoritative, including its small-negative tolerance.
+                return raw
+            raw = owned
             raw.flags.writeable = False
             if len(self.cache) >= 4:
                 self.cache.popitem(last=False)
