@@ -1,0 +1,149 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/generation_perf/source/tests"
+      ],
+      "returncode": 0,
+      "seconds": 32.956,
+      "passed": 1675,
+      "skipped": 4
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/generation_perf/source/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 21.218,
+      "passed": 138,
+      "skipped": 0
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/generation_perf/source/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 0.716,
+      "passed": 18,
+      "skipped": 0
+    }
+  ],
+  "all_passed": true,
+  "output": "/workspace/work/generation_perf/regression",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS",
+  "task": "GENERATION_PERF1_20261029",
+  "baseline_commit": "68e82aac223620a33d29537fa71ef9b7217276ba",
+  "baseline_tree": "f5571ba0eb3a60f67757aab051dbd96a23f3d61d",
+  "scope": [
+    "r1_15a2_zonal_count_fit_v24917.py",
+    "tests/test_v24917_generation_perf.py",
+    "DIAGFAST_V1_RELEASE_MANIFEST.json",
+    "V24917_RUNTIME_MANIFEST.json"
+  ],
+  "focused": {
+    "passed": 70,
+    "returncode": 0,
+    "command": "OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_generation_perf.py tests/test_v24917_targeted_catchup.py tests/test_v24917_mobilityalloc1_solver.py tests/test_v24917_boundary_pa.py tests/test_v24917_long_zonal_fit.py"
+  },
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 66,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 117,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "mismatches": []
+    }
+  },
+  "compile": [
+    {
+      "path": "r1_15a2_zonal_count_fit_v24917.py",
+      "status": "PASS"
+    },
+    {
+      "path": "tests/test_v24917_generation_perf.py",
+      "status": "PASS"
+    }
+  ],
+  "numerical_evidence": [
+    "Exact NumPy/scalar equality of G and profile throughput, including duplicates, skipped profiles, removed actuators, zero exposure, and frozen LONG/FOREIGN.",
+    "Projection parity versus the original 100-bisection implementation; same 1e-12 scaled residual criterion, same box and iteration caps.",
+    "Nonlinear P/A repair respects the original configured tolerance (1e-10 default) and final residual check; fewer evaluations verified without timing assertions.",
+    "End-to-end solver prediction, objective and convergence agree with the original projection within explicit regression tolerances."
+  ],
+  "unchanged": [
+    "acceptance and rollback gates",
+    "coefficient bounds",
+    "calibration objectives",
+    "native TD",
+    "LONG freeze",
+    "COM/Visum model",
+    "DIAGFAST live parity guards"
+  ],
+  "benchmark": {
+    "scope": "SYNTHETIC_BUILD_PROBLEM_ONLY",
+    "live_visum_tested": false,
+    "baseline_sha256": "ba42bc8018c5c330731762bb3dd397e5304e465a250c6b76ff1745becfb208b4",
+    "numpy": "2.3.5",
+    "python": "3.13.5 (main, Jul 23 2025, 00:37:22) [Clang 20.1.4 ]",
+    "seed": 3,
+    "zones": 80,
+    "profiles": 79,
+    "od_variables": 12640,
+    "incidence_entries": 341280,
+    "all_problem_fields_exactly_equal": true,
+    "legacy": {
+      "seconds": [
+        0.3409648609999749,
+        0.35723435099998824,
+        0.31259838599999057
+      ],
+      "median_seconds": 0.3409648609999749
+    },
+    "optimized": {
+      "seconds": [
+        0.03366514700019252,
+        0.03334610199999588,
+        0.03377662499997314
+      ],
+      "median_seconds": 0.03366514700019252
+    },
+    "median_speedup": 10.128126308137762
+  },
+  "benchmark_command": "OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python evidence_generation_perf_20261029/benchmark.txt . <baseline_zonal_fit.py> BENCHMARK.json",
+  "baseline_for_benchmark": "git show 68e82aac223620a33d29537fa71ef9b7217276ba:r1_15a2_zonal_count_fit_v24917.py > baseline_zonal_fit.py",
+  "limitations": [
+    "LIVE_VISUM_NOT_RUN",
+    "Synthetic timings measure only build_problem, not total calibration/COM speed.",
+    "SHA-bound certificates for the previous release manifest do not certify this new source state. Existing DIRECT inline parity / certificate checks remain unchanged."
+  ],
+  "diff_check": "PASS"
+}

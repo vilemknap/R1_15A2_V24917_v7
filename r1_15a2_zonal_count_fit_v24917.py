@@ -169,22 +169,38 @@ def build_problem(incidence: Mapping[str, Any], zones: Sequence[int],
     r_idx = np.asarray(op.row_idx, dtype=np.int64)
     c_idx = np.asarray(op.col_idx, dtype=np.int64)
     vals = np.asarray(op.values, dtype=float)
-    for p, c, a in zip(r_idx.tolist(), c_idx.tolist(), vals.tolist()):
-        row = row_of_profile.get(int(p))
-        if row is None or a == 0.0:
-            continue
+    # Map sparse profile/OD entries once, then accumulate in NumPy. add.at is
+    # deliberately unbuffered: repeated (profile, actuator) entries must add,
+    # in their original order, rather than overwrite one another.
+    row_map = np.full(len(profiles), -1, dtype=np.int64)
+    for p, row in row_of_profile.items():
+        row_map[p] = row
+    nnz = min(len(r_idx), len(c_idx), len(vals))  # same scope as the former zip
+    r_idx, c_idx, vals = r_idx[:nnz], c_idx[:nnz], vals[:nnz]
+    valid = (r_idx >= 0) & (r_idx < len(profiles)) & (vals != 0.0)
+    sparse_rows, cols, weights = r_idx[valid], c_idx[valid], vals[valid]
+    fitted_rows = row_map[sparse_rows]
+    selected = fitted_rows >= 0
+    fitted_rows, cols, weights = fitted_rows[selected], cols[selected], weights[selected]
+    family_index = np.full(len(variables), -1, dtype=np.int8)
+    production_index = np.full(len(variables), -1, dtype=np.int64)
+    attraction_index = np.full(len(variables), -1, dtype=np.int64)
+    for c in np.unique(cols):
         meta = variables[int(c)]
         fam = str(meta.get("family", "")).upper()
         if fam not in FAMILIES:
             continue
         o, d = int(meta["origin"]), int(meta["destination"])
-        mutable_through[fam][row] += a
-        ko = var_index.get((fam, "PROD", o))
-        kd = var_index.get((fam, "ATT", d))
-        if ko is not None:
-            G[row, ko] += a
-        if kd is not None:
-            G[row, kd] += a
+        family_index[c] = FAMILIES.index(fam)
+        production_index[c] = var_index.get((fam, "PROD", o), -1)
+        attraction_index[c] = var_index.get((fam, "ATT", d), -1)
+    for fidx, fam in enumerate(FAMILIES):
+        included = family_index[cols] == fidx
+        np.add.at(mutable_through[fam], fitted_rows[included], weights[included])
+    for lookup in (production_index, attraction_index):
+        actuators = lookup[cols]
+        included = actuators >= 0
+        np.add.at(G, (fitted_rows[included], actuators[included]), weights[included])
 
     # A zone without any direct count exposure is not an actuator of this fit:
     # it could only act through the family normalisation term below, i.e. by
@@ -257,17 +273,25 @@ def project_box_hyperplanes(z: np.ndarray, lo: np.ndarray, hi: np.ndarray,
         step = max(1.0e-12, abs(g0) / max(EPS, float(v @ v)))
         a, b = 0.0, step if g0 > 0 else -step
         for _ in range(200):
-            if (g(b) > 0) != (g0 > 0) or g(b) == 0.0:
+            gb = g(b)
+            if (gb > 0) != (g0 > 0) or gb == 0.0:
                 break
             a, b = b, 2.0 * b
         lo_l, hi_l = (a, b) if a < b else (b, a)
+        projected = None
         for _ in range(100):
             mid = 0.5 * (lo_l + hi_l)
-            if g(mid) > 0:
+            trial = np.clip(zz - mid * v, l0, h0)
+            residual = float(v @ trial)
+            if abs(residual) <= 1.0e-12 * max(1.0, float(np.abs(v) @ np.abs(trial))):
+                projected = trial
+                break
+            if residual > 0:
                 lo_l = mid
             else:
                 hi_l = mid
-        x[idx] = np.clip(zz - 0.5 * (lo_l + hi_l) * v, l0, h0)
+        x[idx] = (projected if projected is not None else
+                  np.clip(zz - 0.5 * (lo_l + hi_l) * v, l0, h0))
     return x
 
 
@@ -316,14 +340,20 @@ def repair_nonlinear_pa(problem: FitProblem, raw_x: np.ndarray,
         if abs(gap(before)) <= allowed_gap:
             chosen = before
         else:
+            chosen = None
             for _ in range(100):
                 middle = 0.5 * (left + right)
-                gm = gap(candidate(middle))
+                trial = candidate(middle)
+                gm = gap(trial)
+                if abs(gm) <= allowed_gap:
+                    chosen = trial
+                    break
                 if gm > 0.0:
                     left = middle
                 else:
                     right = middle
-            chosen = candidate(0.5 * (left + right))
+            if chosen is None:
+                chosen = candidate(0.5 * (left + right))
         remaining = gap(chosen)
         if abs(remaining) > allowed_gap:
             raise ValueError("V24917_NONLINEAR_PA_REPAIR_INCOMPLETE:" + family)

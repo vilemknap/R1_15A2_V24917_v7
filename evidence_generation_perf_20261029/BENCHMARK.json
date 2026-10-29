@@ -1,0 +1,30 @@
+{
+  "scope": "SYNTHETIC_BUILD_PROBLEM_ONLY",
+  "live_visum_tested": false,
+  "baseline_sha256": "ba42bc8018c5c330731762bb3dd397e5304e465a250c6b76ff1745becfb208b4",
+  "numpy": "2.3.5",
+  "python": "3.13.5 (main, Jul 23 2025, 00:37:22) [Clang 20.1.4 ]",
+  "seed": 3,
+  "zones": 80,
+  "profiles": 79,
+  "od_variables": 12640,
+  "incidence_entries": 341280,
+  "all_problem_fields_exactly_equal": true,
+  "legacy": {
+    "seconds": [
+      0.3409648609999749,
+      0.35723435099998824,
+      0.31259838599999057
+    ],
+    "median_seconds": 0.3409648609999749
+  },
+  "optimized": {
+    "seconds": [
+      0.03366514700019252,
+      0.03334610199999588,
+      0.03377662499997314
+    ],
+    "median_seconds": 0.03366514700019252
+  },
+  "median_speedup": 10.128126308137762
+}

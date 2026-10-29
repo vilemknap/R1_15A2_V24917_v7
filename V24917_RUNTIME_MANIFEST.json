@@ -12,7 +12,7 @@
     "r1_15a2_parent_equivalence_v24917.py": "34efb09b5eaae48fdeaa865aa76c7845267ac7ecc58fe2fce119de98b9926664",
     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
-    "r1_15a2_zonal_count_fit_v24917.py": "ba42bc8018c5c330731762bb3dd397e5304e465a250c6b76ff1745becfb208b4",
+    "r1_15a2_zonal_count_fit_v24917.py": "f5308b821980442bf60ab3a0aef1b138d02f6decdf3fe2ab478a0b6010f6c67b",
     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
     "r1_15a2_trial_adapter_v24917.py": "d9aeb65d9cde55ba0b2b2b5cd799a2125165cca6374e5747d7a35e1250ddf15d",
     "r1_15a2_active_demand_evidence_v24917.py": "1f3725f6e043042560e430f3b43a33dce4b18cc08ff02a2000185f077b1fa356",
@@ -68,6 +68,6 @@
     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "9a097b4fcba1a2656655e4330f5686a730b152d3177acb9b1c0a8e9ed0a1cece"
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "bd8d398243ada180c11c3167db1d035a70e10e7f82b45ee207cbb3ddd9d9ff02"
   }
 }

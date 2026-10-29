@@ -1,0 +1,48 @@
+"""Reproducible synthetic microbenchmark; no Visum or COM."""
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+import statistics
+import sys
+import time
+
+import numpy as np
+
+root = Path(sys.argv[1]).resolve()
+baseline = Path(sys.argv[2]).resolve()
+sys.path[:0] = [str(root), str(root/'tests')]
+import r1_15a2_zonal_count_fit_v24917 as optimized
+from test_v24917_targeted_catchup import synthetic_incidence, all_bounds
+spec = importlib.util.spec_from_file_location('legacy_zonal_fit', baseline)
+legacy = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(legacy)
+inc, zones = synthetic_incidence(n_zones=80, seed=3)
+bounds = all_bounds(zones)
+old = legacy.build_problem(inc, zones, bounds, {})
+new = optimized.build_problem(inc, zones, bounds, {})
+for name in ('G', 'target', 'weight', 'base', 'lower', 'upper'):
+    np.testing.assert_array_equal(getattr(old, name), getattr(new, name))
+assert old.var_keys == new.var_keys and old.profile_rows == new.profile_rows
+for family in old.balance_vectors:
+    np.testing.assert_array_equal(old.balance_vectors[family][0], new.balance_vectors[family][0])
+    assert old.balance_vectors[family][1] == new.balance_vectors[family][1]
+
+def timed(function):
+    function()  # warm-up excluded
+    samples = []
+    for _ in range(3):
+        start = time.perf_counter(); function(); samples.append(time.perf_counter()-start)
+    return {'seconds': samples, 'median_seconds': statistics.median(samples)}
+
+old_times = timed(lambda: legacy.build_problem(inc, zones, bounds, {}))
+new_times = timed(lambda: optimized.build_problem(inc, zones, bounds, {}))
+result = {'scope': 'SYNTHETIC_BUILD_PROBLEM_ONLY', 'live_visum_tested': False,
+    'baseline_sha256': hashlib.sha256(baseline.read_bytes()).hexdigest(),
+    'numpy': np.__version__, 'python': sys.version, 'seed': 3, 'zones': len(zones),
+    'profiles': len(inc['profiles']), 'od_variables': len(inc['variables']),
+    'incidence_entries': len(inc['incidence'].values),
+    'all_problem_fields_exactly_equal': True, 'legacy': old_times, 'optimized': new_times,
+    'median_speedup': old_times['median_seconds']/new_times['median_seconds']}
+Path(sys.argv[3]).write_text(json.dumps(result, indent=2)+'\n')
+print(json.dumps(result))
