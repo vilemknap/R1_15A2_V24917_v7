@@ -1,0 +1,10 @@
+LONG post-TD mask multiplication (2026-10-29)
+
+Use the complete extracted repository directory (containing the launchers) and the existing 01_SPUSTIT_V24917_TDJOINT1.py launcher.
+The existing unified TD operation and its strata are preserved. The Python controller executes existing operations in scoped phases and restores ACTIVE flags.
+Person LONG 9111-9115 are multiplied by the fixed OSRM matrix-9697 >=80 km mask after TD.
+After existing 20A/20B realization, final vehicle components 9291-9295 are masked again and 9305 is rebuilt before assignment/skims.
+Removed volume is accepted without redistribution or renormalization. Read LONG_MASK_PLAN.json / LONG_MASK_RESULT.json for component totals and per-zone production/attraction losses.
+The mask has no upper distance bound. Native FineCDF targets remain unchanged.
+LONG generation and its b/c optimizer remain frozen: the FROZEN_PATHS LONG count-response model still needs implementation.
+Offline validation only; live Visum has not been run.

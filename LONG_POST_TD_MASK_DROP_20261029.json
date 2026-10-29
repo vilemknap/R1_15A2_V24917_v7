@@ -1,0 +1,107 @@
+{
+  "task": "LONG_POST_TD_MASK_DROP_20261029",
+  "base_github_commit": "86b3ed25298122169e90930e9b916bd4a382f295",
+  "base_local_commit": "906b6f47d933e327b2bfcd3f2a2ff6808bd3edf6",
+  "user_policy": "MULTIPLY_BY_OSRM_GE80_MASK_ACCEPT_VOLUME_LOSS_NO_REBALANCE",
+  "person_matrices": [
+    9111,
+    9112,
+    9113,
+    9114,
+    9115
+  ],
+  "realized_vehicle_components": [
+    9291,
+    9292,
+    9293,
+    9294,
+    9295
+  ],
+  "rebuilt_vehicle_aggregate": 9305,
+  "source_matrix_no": 9697,
+  "source_matrix_code": "R1_OSRM_DIST_KM",
+  "minimum_km": 80,
+  "maximum_km": null,
+  "single_unified_td_operation_preserved": true,
+  "operation_definitions_positions_and_strata_unchanged": true,
+  "execution_slices": [
+    "THROUGH_TD",
+    "REALIZATION",
+    "ASSIGNMENT_SKIMS"
+  ],
+  "mask_writes_readback_verified": true,
+  "partially_completed_writes_owned_and_restored": true,
+  "removed_totals_and_zone_pa_audited": true,
+  "native_od_pair_filter_required": false,
+  "long_generation_frozen": true,
+  "long_bc_optimization_frozen": true,
+  "remaining_long_bc_blocker": "LONG_COUNT_RESPONSE_UNVERIFIED_IN_FROZEN_PATHS",
+  "live_visum_tested": false,
+  "tests": {
+    "main_passed": 1813,
+    "main_skipped": 4,
+    "diagfast_passed": 138,
+    "audit_passed": 18,
+    "new_mask_tests": 18
+  },
+  "manifests_verified": {
+    "V24917_RUNTIME_MANIFEST.json": 69,
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": 127,
+    "DIAGFAST_V1_BASE_MANIFEST.json": 1059
+  },
+  "test_runs": {
+    "release": "GENFIX2",
+    "offline_only": true,
+    "live_visum_tested": false,
+    "suites": [
+      {
+        "suite": "main",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/tests"
+        ],
+        "returncode": 0,
+        "seconds": 33.851
+      },
+      {
+        "suite": "diagfast",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/diagfast_tests"
+        ],
+        "returncode": 0,
+        "seconds": 21.82
+      },
+      {
+        "suite": "audit_genfix2",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/read_reuse_review2/source/genfix2_audit_tests"
+        ],
+        "returncode": 0,
+        "seconds": 0.766
+      }
+    ],
+    "all_passed": true,
+    "output": "/workspace/work/long_post_td_mask/final_regression",
+    "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+  },
+  "patch_sha256": "45e9d1748907f054a0e5456408d0a380680f3637e6ec4e23d08b07c0fadc2fbe",
+  "github_evidence_directory": "evidence_long_post_td_mask_20261029",
+  "github_patch_path": "artifacts_long_post_td_mask_20261029/LONG_POST_TD_MASK_DROP_20261029.patch"
+}

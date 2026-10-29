@@ -39,6 +39,7 @@ import r1_15a2_dynamic_11d_files_v24917 as d11fix
 import r1_15a2_long_school_generation_v24917 as lsgen
 import r1_15a2_long_distance_guard_v24917 as longguard
 import r1_15a2_long_od_mask_v24917 as longmask
+import r1_15a2_long_post_td_mask_v24917 as post_td_mask
 import r1_15a2_boundary_generation_v24917 as bdgen
 import r1_15a2_boundary_pa_v24917 as bdpa
 import r1_15a2_mobility_guard_v24917 as mguard
@@ -54,6 +55,7 @@ class VisumAdapter(_V24916ActiveAdapter):
     runtime_backend = "VISUM_COM_V24917_TARGETED_CATCHUP_ZONAL_COUNT_FIT"
 
     def __init__(self, visum: Any, cfg: Mapping[str, Any], control: Any = None):
+        self._long_post_td_mask_enabled = True
         self.v24917_ls = lsgen.activate(visum)        # idempotent; launcher activates first
         super().__init__(visum, cfg, control)
         if self.v24916_active_evidence is not None:
@@ -63,6 +65,14 @@ class VisumAdapter(_V24916ActiveAdapter):
                               "long_school_activation": dict(self.v24917_ls),
                               "ls_incomplete_current_cycle": False,
                               "longguard1": longguard.RELEASE}
+
+    def assign(self, folder, *, supply_only):
+        with post_td_mask.execution_scope(self):
+            return super().assign(folder, supply_only=supply_only)
+
+    def assign_for_block(self, folder, block):
+        with post_td_mask.execution_scope(self):
+            return super().assign_for_block(folder, block)
 
     @staticmethod
     def _without_unverified_long_rows(rows):

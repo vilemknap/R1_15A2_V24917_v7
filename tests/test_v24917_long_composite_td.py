@@ -112,7 +112,7 @@ def test_no_caller_verified_flag_can_enable_live_long(reference, monkeypatch, tm
                                 'native_filter_verified': True})
     calls = []
     run = wire.wrap_realization(lambda *args: calls.append(args), NS())
-    with pytest.raises(RuntimeError, match='NATIVE_SUPPORT_AND_COUNT_RESPONSE_UNVERIFIED'):
+    with pytest.raises(RuntimeError, match='LONG_COUNT_RESPONSE_UNVERIFIED'):
         run(adapter, {}, tmp_path, None, {'td_values': parent}, {}, rows)
     assert not calls
     assert not long_td.activation_plan()['live_enabled']
@@ -133,7 +133,7 @@ def test_attempt_to_enable_pending_long_stops_before_native_parameter_write(grou
         def evaluate(self, *args, **kwargs):
             calls.append('native parameter write')
     runner = joint.make_runner(Parent, NS(GROUPS=groups))()
-    with pytest.raises(RuntimeError, match='NATIVE_SUPPORT_AND_COUNT_RESPONSE_UNVERIFIED'):
+    with pytest.raises(RuntimeError, match='LONG_COUNT_RESPONSE_UNVERIFIED'):
         runner.evaluate(x, 'BASELINE')
     assert not calls
 

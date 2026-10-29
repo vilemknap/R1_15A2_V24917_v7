@@ -36,3 +36,6 @@ provenance/two_mode_live_evidence/15R_SAME_MODE_PATHLINK_FINGERPRINT.json -text 
 provenance/two_mode_live_evidence/15S_FULL_PATHKEY_AUDIT.json -text -diff
 tests/data/EFFECTIVE_CONFIG_RUN_20261025_175302.json -text -diff
 MOBILITYALLOC1_TDLONG1_SOURCE.patch -text -diff
+
+# Keep complete source patches byte-exact, including blank context lines.
+artifacts_long_post_td_mask_20261029/*.patch -text -diff

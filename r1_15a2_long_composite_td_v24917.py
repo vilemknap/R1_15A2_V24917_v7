@@ -1,4 +1,4 @@
-"""Shared LONG TD contract. Preparation only: native support is still unverified.
+"""Shared LONG TD contract. Shared TD preparation; support is post-TD multiplication with accepted loss.
 
 One delta-b and one log multiplier of negative c apply to all five strata.
 The sealed 512-point aggregate target is used once, never copied to strata.
@@ -23,7 +23,8 @@ def activation_plan():
         "requested_policy": "SHARED_B_OFFSET_AND_C_MULTIPLIER",
         "a_frozen": True, "generation_frozen": True,
         "target_copies": 1, "component_targets_created": False,
-        "component_guards": ["A_AND_FOREIGN_FROZEN", "NATIVE_MARGINALS_AND_TOTALS",
+        "component_guards": ["A_AND_FOREIGN_FROZEN", "NATIVE_MARGINALS_BEFORE_MASK",
+                             "POST_MASK_VOLUME_LOSS_AUDIT",
                              "NONNEGATIVE_OD", "LONG_SUPPORT_EACH_STAGE"],
         "minimum_km": MIN_KM, "conditional_cdf_max_km": MAX_CDF_KM,
         "support_distance_basis": DISTANCE_BASIS,
@@ -31,9 +32,10 @@ def activation_plan():
         "finecdf_distance_basis": "FRESH_NATIVE_CL_DIS_KM",
         "above_200_km_permitted": True,
         "live_enabled": False, "status": "PREPARED_NOT_LIVE_ENABLED",
-        "blockers": ["NATIVE_LONG_OD_PAIR_FILTER_UNVERIFIED",
-                     "LONG_COUNT_RESPONSE_UNVERIFIED"],
-        "required_validation": ["RESTRICTED_PA_FEASIBILITY",
+        "support_method": "POST_TD_MULTIPLICATION_ACCEPT_VOLUME_LOSS",
+        "native_od_filter_required": False,
+        "blockers": ["LONG_COUNT_RESPONSE_UNVERIFIED"],
+        "required_validation": ["POST_MASK_VOLUME_LOSS_AUDIT",
                                 "SUPPORT_AFTER_TD_SYMMETRY_AND_20A_20B",
                                 "FRESH_ASSIGNMENT_AND_SKIMS",
                                 "VERIFIED_NATIVE_ROLLBACK"],
@@ -96,6 +98,6 @@ def realization_groups(rows, parent_rows, component_no):
 
 
 def require_live_ready(groups):
-    """No user-provided verified flag can bypass the missing native implementation."""
+    """The support transform does not supply a LONG count-response model."""
     if any(name == GROUP for name, _ in groups):
-        raise RuntimeError("TDLONG_COMPOSITE_NATIVE_SUPPORT_AND_COUNT_RESPONSE_UNVERIFIED")
+        raise RuntimeError("TDLONG_COMPOSITE_LONG_COUNT_RESPONSE_UNVERIFIED")

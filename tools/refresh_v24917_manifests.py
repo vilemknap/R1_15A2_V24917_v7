@@ -17,6 +17,7 @@ RUNTIME = [
     "r1_15a2_td_joint_runtime_v24917.py",
     "r1_15a2_long_composite_td_v24917.py",
     "r1_15a2_long_support_distance_v24917.py",
+    "r1_15a2_long_post_td_mask_v24917.py",
     "01_SPUSTIT_V24917_GENFIX2.py",
     "r1_15a2_parent_equivalence_v24917.py",
     "01_SPUSTIT_V24917_GENFIX1.py",

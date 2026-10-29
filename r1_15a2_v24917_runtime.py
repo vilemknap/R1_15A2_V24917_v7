@@ -168,6 +168,8 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
     status["finecdf_gapfix"] = gapfix.install()
     import r1_15a2_td_count_blend_v24917 as td_blend
     status["td_count_blend"] = td_blend.install(print_fn=print_fn)
+    import r1_15a2_long_post_td_mask_v24917 as long_post_mask
+    status["long_post_td_mask"] = long_post_mask.install(rt)
     import r1_15a2_intrazonal_penalty_v24917 as izpen
     status["intrazonal_penalty"] = izpen.install(print_fn=print_fn)
     import r1_15a2_profile_roster_v24917 as roster

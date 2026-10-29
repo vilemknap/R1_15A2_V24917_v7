@@ -1,0 +1,796 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index 4188cf0..a19de57 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -37,21 +37,23 @@ Check names against the working tree. Do not invent missing modules or interface
+ 
+ ## Scientific and data invariants (never change implicitly)
+ 
+-- Maintain P/A marginal balance, total mass, dimensional integrity and zone identity. Distinguish persons/trips, vehicle OD, profile flow, and occupancy; the AMDY formula divisor `2.8` is **not** evidence of average vehicle occupancy.
++- Maintain P/A marginal balance, total mass, dimensional integrity and zone identity, except for the explicitly authorized LONG post-TD clipping described below. Distinguish persons/trips, vehicle OD, profile flow, and occupancy; the AMDY formula divisor `2.8` is **not** evidence of average vehicle occupancy.
+ - Respect calibrated count-location roster, actual role/weights and source units. Never silently substitute older 488/498-profile rosters or new survey targets for the active one. The active V24917 roster in this baseline contains 248 CAL profiles; confirm live/current authority for a different release.
+ - The mobility reference is immutable within a run. For domestic WORK/SERVICE/SCHOOL the canonical ADD_PROD coefficient is `1.0`; for LONG `ADD_PROD_L` it is `0.3`. The active `MOBILITYZONE1` band is `[0.75, 2.0]` relative to these fixed references, subject to actual runtime options. Existing out-of-band parent states must not drift further away; structural zeros stay zero. Do not turn per-cycle growth limits into new reference points.
+ - LONG matrices are **9111-9115**. FOREIGN **9116**, EXOG and other frozen strata stay frozen unless explicitly authorized. Do not invent components or derive vehicle conversions from a demand divisor.
+ - By user decision on 2026-10-29, LONG admissibility/support uses **fixed OSRM matrix 9697 / R1_OSRM_DIST_KM**: `distance >= MIN_KM` (currently 80 km). `distance > MAX_CDF_KM` (currently 200 km) remains **allowed**. Native NATIVE_CL/DIS remains the separate assignment-coupled IDP/FineCDF distance authority. The 80-100 km tolerance band is allowed by support; the conditional 100-200 km CDF remains unchanged and cannot prove absence of forbidden OSRM support.
+ - Reuse `MIN_KM` and `MAX_CDF_KM` from `r1_15a2_long_distance_guard_v24917.py` and project `ordered_zone_hash()` / `matrix_values_hash()` from `r1_15a2_skim_v24916p2c.py`. Verify OSRM NO/CODE, dimensions and zone order; pin its content/zone hashes within a run. Never substitute another distance matrix. For FineCDF, retain `DynamicSkimManager.require_current()` and diagnostic/assignment epoch binding. A caller-supplied `verified=True` is not evidence.
+-- A LONG structural support mask must be enforced by the **actual native TD mechanism**, not by zeroing impedance or filtering OD volumes *after* balancing. Check doubly-constrained P/A feasibility on the restricted OD graph first. Verify forbidden support after TD, symmetrization and downstream transformation; symmetry must not reintroduce forbidden pairs.
+-- The existing `LONGGUARD1` is a non-mutating acceptance proof, **not** an implemented native TD support mask. Treat `LONG_OD_MASK1` / `LONG_OD_NATIVE1` as proposed or under development unless the current working tree proves otherwise. Do not claim hard-zero LONG support merely because LONGGUARD1 passes.
++- User decision 2026-10-29 explicitly authorizes multiplying LONG person matrices 9111-9115 by the OSRM >=80 km mask AFTER the one unified native TD operation, accepting removed volume and changed realized P/A WITHOUT redistribution or renormalization. The native OD-pair filter is no longer required for this method. Keep the native operation definition, position, strata and b/c untouched by the masking operation.
++- After 20A/20B realization, apply the same mask to LONG vehicle components 9291-9295 and rebuild their aggregate 9305 before assignment. Audit removed totals and production/attraction by zone at each stage; preserve allowed values, FOREIGN and other strata. Restore original ACTIVE flags after execution slices and own partially completed matrix writes through verified restoration and accepted-parent recomputation. Do not claim a live-verified result from offline mocks.
++- LONG Generation stays frozen. Shared LONG b/c calibration is still pending a valid LONG count-response model; applying the support mask alone does not enable its optimizer.
++
+ - Preserve the active acceptance objective, protected profile constraints, survey metrics, count/IDP blending, convergence definition, freezes and safety thresholds unless the task explicitly authorizes a methodological change. Do not loosen guards or hide failed cases to obtain a green run.
+ 
+ ## Visum, transactions, and operational safety
+ 
+ - No launching or attaching to Visum, `LoadVersion()`, `.ver` mutation, COM writes, remote deployment, or long-running live calibration without explicit user authorization and the appropriate Windows environment.
+ - Never use `LoadVersion()` to repair a rejected candidate inside an active calibration. Preserve the one live Visum instance and implement in-memory transaction snapshot / apply / readback / full recomputation / verify-parent rollback. If exact or policy-approved equivalence cannot be demonstrated, fail closed and require manual reopening of the last verified accepted checkpoint.
+-- Do not add direct `SetValues()` writes to demand OD matrices as a shortcut. Native TD operator modifications, support filters and temporary matrices require separately reviewed transaction/rollback/readback plans.
++- Direct `SetValues()` is authorized only for the explicitly scoped LONG post-TD multiplication/rebuild and its in-memory restoration above. Other native TD operator modifications, demand OD writes and temporary matrices require explicit authorization and a transaction/rollback/readback plan.
+ - Respect live assignment/skims epoch invalidation after changes. Never reuse stale paths, skims, FlowBundle incidence or diagnostics as current. Do not bypass the freshness checks or import historic cache evidence as a live authority.
+ - Checkpoints are accepted only after verified native calculation and established acceptance gates. Never save or label an unverified candidate as ACCEPTED, BEST or production-ready. Prevent partial checkpoint publication and protect previous accepted checkpoints.
+ 
+@@ -63,7 +65,7 @@ Check names against the working tree. Do not invent missing modules or interface
+ 4. **Test:** start with syntax/import checks and focused regression tests against the actual production module; then run relevant suites. Use separate processes for suites whose `conftest.py` clash. `tools/run_genfix2_checks.py` can run `tests`, `diagfast_tests`, and `genfix2_audit_tests` separately; examine its behavior before invoking it. Do not automatically install dependencies or run live scripts.
+ 5. **Assess release integrity:** application-file changes can invalidate `V24917_RUNTIME_MANIFEST.json` and other sealed hashes. Never disable verification or simply rewrite hashes to disguise changed authorities. Identify required, approved manifest/release work (including `tools/refresh_v24917_manifests.py`) and verify exact before/after file identities.
+ 6. **Audit changed files:** inspect `git diff --check`, `git status --short` (if Git is present), module compilation, test logs and unrelated-file modifications. Store logs outside the source root where possible. Do not silently reformat or change unrelated historical/authority files.
+-7. **Stop at task boundary:** do not merge changes into a live release, commit/push, run Visum or start the next milestone without an explicit request.
++7. **Stop at task boundary:** do not merge changes into a live release, run Visum or start the next milestone without an explicit request. The user's standing instruction below authorizes GitHub backup commits/pushes of completed task-owned changes.
+ 
+ Suggested offline commands from the actual source root, when dependencies are available:
+ 
+@@ -91,3 +93,7 @@ Never report `PASS` or "fully validated" based on generated code, prior evidence
+ ## Immediate project status (context, not authorization)
+ 
+ At this baseline, `LONGGUARD1` and `MOBILITYZONE1` exist; the hard native LONG OD support and a per-zone LONG generation actuator are not yet proven implemented. The planned next development unit is `LONG_OD_MASK1` (pure, hash-bound mask and tests), followed only after review by native `LONG_OD_NATIVE1`, feasible restricted TD, composite FineCDF calibration and the later per-zone mobility changes. Confirm the task with the user prompt and actual tree, not with this historical note alone.
++
++## Standing GitHub backup instruction (user, 2026-10-29)
++
++Upload all completed task-owned changes, patches and validation evidence to GitHub automatically. The user cannot download workspace-local links. Provide a GitHub branch/commit link and a complete downloadable GitHub ZIP archive; do not rely on local paths for handoff. Use a separate task branch, preserve previous history, verify remote/local tree equality, and do not merge or run live Visum without separate authorization.
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index f92422c..e4fff23 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -51,9 +51,10 @@
+     "r1_15a2_generation_gate_nonfatal_v1.py": "2ca13966ae4cdedcfee6f5076236ea4c2db97fc04d6cb2f612ffe899cadb6244",
+     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+-    "r1_15a2_long_composite_td_v24917.py": "515ca8f8866f2659b92836f6f56a3985fbf729e257866ee04a86e578bd95364d",
++    "r1_15a2_long_composite_td_v24917.py": "527ed907603b1c37cb354c39e6948be592a70e0caeb7937ab2d46242a494eebe",
+     "r1_15a2_long_distance_guard_v24917.py": "94a0e368d35929756c56d913fc50ebd16e321c21ed8c37e8463636338fdad712",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
++    "r1_15a2_long_post_td_mask_v24917.py": "090c152a600189a79ce783b057a9d340a8fcd9840d21949ce1ced12afc27359f",
+     "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
+     "r1_15a2_long_school_generation_v24917.py": "20837ddcaed19728ac61d747ff295060752898859003847857bc22e4ef562946",
+     "r1_15a2_long_support_distance_v24917.py": "9af975facbe939896c36ac4a777013c005bf88808365ff7e2b7578d48790888e",
+@@ -74,13 +75,13 @@
+     "r1_15a2_step_search_v24917.py": "0876b10c65c6b6b44e49c13418677cdeb170b0f090053b916bc8b15d8c3d9f07",
+     "r1_15a2_supply_mix_v24917.py": "7bf5f551855e9d1c3804cab20d40e518f92793a404071826dd7273054f42a3fd",
+     "r1_15a2_targeted_generation_v24917.py": "e84d07c052df4c68517b414e747c10e9c377c063fa9cc5c7f49faa3096ce1baf",
+-    "r1_15a2_td_count_blend_v24917.py": "cbcc380b1f0dcbf72fdad2bdb3cf1b3babb3628c93f2b4f8b9ebdbfd9b6f92d2",
++    "r1_15a2_td_count_blend_v24917.py": "9ae12413e9bba1bc82ad3aaec4e03a21353688eb07c436d8fc413edf42997ee1",
+     "r1_15a2_td_joint_runtime_v24917.py": "49e8a8b010e9dadec9bdb56399a1cfcddb075f0e3cf10570fc2ad5d843f0225c",
+     "r1_15a2_td_joint_v24917.py": "9638d3d0026cef17fdb27c7b469b53c74f75690043394a2f463c174e0961c9dd",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+-    "r1_15a2_trial_adapter_v24917.py": "09de7ee303d8b3a02e3b1f4201485e603443c4b42021ae79b0645b95dad230b3",
+-    "r1_15a2_v24917_runtime.py": "66dad338a101eae7b069dfa6858d74cac73a04149c6218b92a4bfdcce11142dd",
++    "r1_15a2_trial_adapter_v24917.py": "5ae483634a5be9e72040ee45fd0645d4d6d997e04d84927c14c242077db88303",
++    "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+     "r1_15a2_zonal_count_fit_v24917.py": "f5308b821980442bf60ab3a0aef1b138d02f6decdf3fe2ab478a0b6010f6c67b",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+@@ -97,8 +98,9 @@
+     "tests/test_v24917_genfix2.py": "a7ed2b8ec90ffdd0d444cda9e361d403264570a8155422716198574e2e277be1",
+     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
+-    "tests/test_v24917_long_composite_td.py": "6b4443c9ef696b30344796e0ad156019d441b0a376066a6cba3bafe546d45fab",
++    "tests/test_v24917_long_composite_td.py": "05def6e18689fd99325014781006ae80616b64859b41adcb30b93597694365a3",
+     "tests/test_v24917_long_osrm_support.py": "07e3a4edb35957e3d2720dea7a8a74a5c3a6a08424c10de3dcb4df6bcda353f6",
++    "tests/test_v24917_long_post_td_mask.py": "b1e31151f21741ccc7867b661f2e55b07f71bec4741c31429e7865aa3cf4ee6a",
+     "tests/test_v24917_long_profile_incidence.py": "6220c516d2f7c39e0b2ddf80101121714c7f22dfa6249dead14102df5e15d976",
+     "tests/test_v24917_long_zonal_fit.py": "e26878643cd4062365f6f7e3b54067ce2c7bffe0dba6e71881afa26fafcba7a1",
+     "tests/test_v24917_longguard1.py": "93daa1627891e8591083b8b4fc8e317135cf438ca49f17f4e71baca7e29b20e2",
+@@ -126,7 +128,7 @@
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "4864feecbf0e8aff5a9651a107c1bdbf71e60b59198a5b93bb901e0e3a6da35d",
++    "tools/refresh_v24917_manifests.py": "4e7ad567793745ea828bad1f35a6c7c4d87b3cb03205721bae292a53d7deff3e",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+   }
+ }
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 6a9685a..177ab45 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -8,23 +8,24 @@
+     "02_SPUSTIT_V24917_TDJOINT1_60_40.py": "069805ca1366578bf51994490f78a3827fdd42a6b44ff2957e2663ed00419f94",
+     "r1_15a2_td_joint_v24917.py": "9638d3d0026cef17fdb27c7b469b53c74f75690043394a2f463c174e0961c9dd",
+     "r1_15a2_td_joint_runtime_v24917.py": "49e8a8b010e9dadec9bdb56399a1cfcddb075f0e3cf10570fc2ad5d843f0225c",
+-    "r1_15a2_long_composite_td_v24917.py": "515ca8f8866f2659b92836f6f56a3985fbf729e257866ee04a86e578bd95364d",
++    "r1_15a2_long_composite_td_v24917.py": "527ed907603b1c37cb354c39e6948be592a70e0caeb7937ab2d46242a494eebe",
+     "r1_15a2_long_support_distance_v24917.py": "9af975facbe939896c36ac4a777013c005bf88808365ff7e2b7578d48790888e",
++    "r1_15a2_long_post_td_mask_v24917.py": "090c152a600189a79ce783b057a9d340a8fcd9840d21949ce1ced12afc27359f",
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+     "r1_15a2_parent_equivalence_v24917.py": "acc0f39f6bbbffc88119a75f3e5dedf2f02bda69abe719716e7a679ecf992d60",
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+     "r1_15a2_zonal_count_fit_v24917.py": "f5308b821980442bf60ab3a0aef1b138d02f6decdf3fe2ab478a0b6010f6c67b",
+     "r1_15a2_targeted_generation_v24917.py": "e84d07c052df4c68517b414e747c10e9c377c063fa9cc5c7f49faa3096ce1baf",
+-    "r1_15a2_trial_adapter_v24917.py": "09de7ee303d8b3a02e3b1f4201485e603443c4b42021ae79b0645b95dad230b3",
++    "r1_15a2_trial_adapter_v24917.py": "5ae483634a5be9e72040ee45fd0645d4d6d997e04d84927c14c242077db88303",
+     "r1_15a2_active_demand_evidence_v24917.py": "3aaa457bdac3722a298a37866c18bee7d5c37cf0367424bc05a948d2253389bb",
+     "r1_15a2_runtime_delta_v24917.py": "1ea48d26a29d3644a343a6dd13b5ebc3b73d3b612900822d5ec1398a4308e65f",
+-    "r1_15a2_v24917_runtime.py": "66dad338a101eae7b069dfa6858d74cac73a04149c6218b92a4bfdcce11142dd",
++    "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_dynamic_11d_files_v24917.py": "70aa29f5fac9aa8d6004d02835a72df5f1bbeb23598140d469afb89058da41ed",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+-    "r1_15a2_td_count_blend_v24917.py": "cbcc380b1f0dcbf72fdad2bdb3cf1b3babb3628c93f2b4f8b9ebdbfd9b6f92d2",
++    "r1_15a2_td_count_blend_v24917.py": "9ae12413e9bba1bc82ad3aaec4e03a21353688eb07c436d8fc413edf42997ee1",
+     "r1_15a2_long_school_generation_v24917.py": "20837ddcaed19728ac61d747ff295060752898859003847857bc22e4ef562946",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+     "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
+@@ -70,6 +71,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "83d25e1a4292e82b72593b7e7e7cedfadf15fa29aa2c69311c76631749157770"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "da67f1a67583e21fdf8e668e02978a207c300fa6eac557b4178bdcc58ccc6be4"
+   }
+ }
+diff --git a/r1_15a2_long_composite_td_v24917.py b/r1_15a2_long_composite_td_v24917.py
+index 6c269fc..5807dd9 100644
+--- a/r1_15a2_long_composite_td_v24917.py
++++ b/r1_15a2_long_composite_td_v24917.py
+@@ -1,4 +1,4 @@
+-"""Shared LONG TD contract. Preparation only: native support is still unverified.
++"""Shared LONG TD contract. Shared TD preparation; support is post-TD multiplication with accepted loss.
+ 
+ One delta-b and one log multiplier of negative c apply to all five strata.
+ The sealed 512-point aggregate target is used once, never copied to strata.
+@@ -23,7 +23,8 @@ def activation_plan():
+         "requested_policy": "SHARED_B_OFFSET_AND_C_MULTIPLIER",
+         "a_frozen": True, "generation_frozen": True,
+         "target_copies": 1, "component_targets_created": False,
+-        "component_guards": ["A_AND_FOREIGN_FROZEN", "NATIVE_MARGINALS_AND_TOTALS",
++        "component_guards": ["A_AND_FOREIGN_FROZEN", "NATIVE_MARGINALS_BEFORE_MASK",
++                             "POST_MASK_VOLUME_LOSS_AUDIT",
+                              "NONNEGATIVE_OD", "LONG_SUPPORT_EACH_STAGE"],
+         "minimum_km": MIN_KM, "conditional_cdf_max_km": MAX_CDF_KM,
+         "support_distance_basis": DISTANCE_BASIS,
+@@ -31,9 +32,10 @@ def activation_plan():
+         "finecdf_distance_basis": "FRESH_NATIVE_CL_DIS_KM",
+         "above_200_km_permitted": True,
+         "live_enabled": False, "status": "PREPARED_NOT_LIVE_ENABLED",
+-        "blockers": ["NATIVE_LONG_OD_PAIR_FILTER_UNVERIFIED",
+-                     "LONG_COUNT_RESPONSE_UNVERIFIED"],
+-        "required_validation": ["RESTRICTED_PA_FEASIBILITY",
++        "support_method": "POST_TD_MULTIPLICATION_ACCEPT_VOLUME_LOSS",
++        "native_od_filter_required": False,
++        "blockers": ["LONG_COUNT_RESPONSE_UNVERIFIED"],
++        "required_validation": ["POST_MASK_VOLUME_LOSS_AUDIT",
+                                 "SUPPORT_AFTER_TD_SYMMETRY_AND_20A_20B",
+                                 "FRESH_ASSIGNMENT_AND_SKIMS",
+                                 "VERIFIED_NATIVE_ROLLBACK"],
+@@ -96,6 +98,6 @@ def realization_groups(rows, parent_rows, component_no):
+ 
+ 
+ def require_live_ready(groups):
+-    """No user-provided verified flag can bypass the missing native implementation."""
++    """The support transform does not supply a LONG count-response model."""
+     if any(name == GROUP for name, _ in groups):
+-        raise RuntimeError("TDLONG_COMPOSITE_NATIVE_SUPPORT_AND_COUNT_RESPONSE_UNVERIFIED")
++        raise RuntimeError("TDLONG_COMPOSITE_LONG_COUNT_RESPONSE_UNVERIFIED")
+diff --git a/r1_15a2_td_count_blend_v24917.py b/r1_15a2_td_count_blend_v24917.py
+index 3e2e70c..e41b5fc 100644
+--- a/r1_15a2_td_count_blend_v24917.py
++++ b/r1_15a2_td_count_blend_v24917.py
+@@ -484,7 +484,12 @@ def install(print_fn=print) -> Dict[str, Any]:
+             if not self._v24917_frozen:
+                 return orig_exec(self)
+             self.assert_isolated()
+-            self.v.Procedures.Execute()
++            if getattr(self.outer_adapter, '_long_post_td_mask_enabled', False):
++                ordinal = int(getattr(self, '_long_mask_eval', 0)) + 1
++                self._long_mask_eval = ordinal
++                bridge_mod.rt.execute_procseq(self.v, Path(self.root) / 'LONG_MASK_INNER' / ('EVAL_%04d' % ordinal))
++            else:
++                self.v.Procedures.Execute()
+             arrays = self.read_outputs()
+             for no, a in arrays.items():
+                 if float(a.sum()) <= 0 or float(a.min()) < -1e-10:
+diff --git a/r1_15a2_trial_adapter_v24917.py b/r1_15a2_trial_adapter_v24917.py
+index fec1a2c..ae5d31d 100644
+--- a/r1_15a2_trial_adapter_v24917.py
++++ b/r1_15a2_trial_adapter_v24917.py
+@@ -39,6 +39,7 @@ import r1_15a2_dynamic_11d_files_v24917 as d11fix
+ import r1_15a2_long_school_generation_v24917 as lsgen
+ import r1_15a2_long_distance_guard_v24917 as longguard
+ import r1_15a2_long_od_mask_v24917 as longmask
++import r1_15a2_long_post_td_mask_v24917 as post_td_mask
+ import r1_15a2_boundary_generation_v24917 as bdgen
+ import r1_15a2_boundary_pa_v24917 as bdpa
+ import r1_15a2_mobility_guard_v24917 as mguard
+@@ -54,6 +55,7 @@ class VisumAdapter(_V24916ActiveAdapter):
+     runtime_backend = "VISUM_COM_V24917_TARGETED_CATCHUP_ZONAL_COUNT_FIT"
+ 
+     def __init__(self, visum: Any, cfg: Mapping[str, Any], control: Any = None):
++        self._long_post_td_mask_enabled = True
+         self.v24917_ls = lsgen.activate(visum)        # idempotent; launcher activates first
+         super().__init__(visum, cfg, control)
+         if self.v24916_active_evidence is not None:
+@@ -64,6 +66,14 @@ class VisumAdapter(_V24916ActiveAdapter):
+                               "ls_incomplete_current_cycle": False,
+                               "longguard1": longguard.RELEASE}
+ 
++    def assign(self, folder, *, supply_only):
++        with post_td_mask.execution_scope(self):
++            return super().assign(folder, supply_only=supply_only)
++
++    def assign_for_block(self, folder, block):
++        with post_td_mask.execution_scope(self):
++            return super().assign_for_block(folder, block)
++
+     @staticmethod
+     def _without_unverified_long_rows(rows):
+         """Keep LONG coefficients out of TG until a native filter is verified."""
+diff --git a/r1_15a2_v24917_runtime.py b/r1_15a2_v24917_runtime.py
+index 646afeb..02ee080 100644
+--- a/r1_15a2_v24917_runtime.py
++++ b/r1_15a2_v24917_runtime.py
+@@ -168,6 +168,8 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
+     status["finecdf_gapfix"] = gapfix.install()
+     import r1_15a2_td_count_blend_v24917 as td_blend
+     status["td_count_blend"] = td_blend.install(print_fn=print_fn)
++    import r1_15a2_long_post_td_mask_v24917 as long_post_mask
++    status["long_post_td_mask"] = long_post_mask.install(rt)
+     import r1_15a2_intrazonal_penalty_v24917 as izpen
+     status["intrazonal_penalty"] = izpen.install(print_fn=print_fn)
+     import r1_15a2_profile_roster_v24917 as roster
+diff --git a/tests/test_v24917_long_composite_td.py b/tests/test_v24917_long_composite_td.py
+index f8d104b..02f4ee8 100644
+--- a/tests/test_v24917_long_composite_td.py
++++ b/tests/test_v24917_long_composite_td.py
+@@ -112,7 +112,7 @@ def test_no_caller_verified_flag_can_enable_live_long(reference, monkeypatch, tm
+                                 'native_filter_verified': True})
+     calls = []
+     run = wire.wrap_realization(lambda *args: calls.append(args), NS())
+-    with pytest.raises(RuntimeError, match='NATIVE_SUPPORT_AND_COUNT_RESPONSE_UNVERIFIED'):
++    with pytest.raises(RuntimeError, match='LONG_COUNT_RESPONSE_UNVERIFIED'):
+         run(adapter, {}, tmp_path, None, {'td_values': parent}, {}, rows)
+     assert not calls
+     assert not long_td.activation_plan()['live_enabled']
+@@ -133,7 +133,7 @@ def test_attempt_to_enable_pending_long_stops_before_native_parameter_write(grou
+         def evaluate(self, *args, **kwargs):
+             calls.append('native parameter write')
+     runner = joint.make_runner(Parent, NS(GROUPS=groups))()
+-    with pytest.raises(RuntimeError, match='NATIVE_SUPPORT_AND_COUNT_RESPONSE_UNVERIFIED'):
++    with pytest.raises(RuntimeError, match='LONG_COUNT_RESPONSE_UNVERIFIED'):
+         runner.evaluate(x, 'BASELINE')
+     assert not calls
+ 
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 60352cd..07e5a64 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -17,6 +17,7 @@ RUNTIME = [
+     "r1_15a2_td_joint_runtime_v24917.py",
+     "r1_15a2_long_composite_td_v24917.py",
+     "r1_15a2_long_support_distance_v24917.py",
++    "r1_15a2_long_post_td_mask_v24917.py",
+     "01_SPUSTIT_V24917_GENFIX2.py",
+     "r1_15a2_parent_equivalence_v24917.py",
+     "01_SPUSTIT_V24917_GENFIX1.py",
+diff --git a/r1_15a2_long_post_td_mask_v24917.py b/r1_15a2_long_post_td_mask_v24917.py
+new file mode 100644
+index 0000000..872af3a
+--- /dev/null
++++ b/r1_15a2_long_post_td_mask_v24917.py
+@@ -0,0 +1,239 @@
++"""User-approved LONG matrix multiplication with explicit loss of volume.
++
++One native TD operation is retained for all its original strata. Execution is
++paused after TD to clip 9111..9115, and before assignment to clip realized LONG
++vehicle components and rebuild their aggregate. No P/A repair or normalization.
++"""
++from __future__ import annotations
++
++from contextlib import contextmanager
++from contextvars import ContextVar
++from pathlib import Path
++import functools
++
++import numpy as np
++
++from r1_15a2_long_distance_guard_v24917 import MATRIX_NOS, MIN_KM
++from r1_15a2_long_profile_incidence_v24917 import COMPONENT_MATRICES, FINAL_MATRIX
++from r1_15a2_long_support_distance_v24917 import read_current
++from r1_15a2_skim_v24916p2c import matrix_values_hash
++from r1_15a2_supply import SupplyContractError
++
++_SCOPE = ContextVar('r1_long_mask_execution', default=None)
++
++
++@contextmanager
++def execution_scope(adapter):
++    token = _SCOPE.set(adapter if getattr(adapter, '_long_post_td_mask_enabled', False) else None)
++    try:
++        yield
++    finally:
++        _SCOPE.reset(token)
++
++
++def project(values, mask):
++    """Exact elementwise multiplication; report actual marginal and total loss."""
++    a = np.array(values, dtype=np.float64, copy=True)
++    support = np.asarray(mask)
++    if a.shape != support.shape or a.ndim != 2 or support.dtype != np.bool_:
++        raise SupplyContractError('LONGMASK_SHAPE_OR_TYPE')
++    if not np.isfinite(a).all() or np.any(a < 0):
++        raise SupplyContractError('LONGMASK_INVALID_DEMAND')
++    result = np.where(support, a, 0.)
++    removed = a - result
++    total = float(a.sum())
++    return result, {'before_total': total, 'after_total': float(result.sum()),
++                    'removed_total': float(removed.sum()),
++                    'removed_share': float(removed.sum()) / total if total else 0.,
++                    'removed_production_by_zone': removed.sum(axis=1).tolist(),
++                    'removed_attraction_by_zone': removed.sum(axis=0).tolist(),
++                    'pa_preserved': not bool(removed.any()), 'renormalized': False}
++
++
++def _read(adapter, no):
++    from r1_15a2_com_compat import com_call_with_retry
++    retry = getattr(adapter, 'com_retry_policy', None) or {}
++    obj = com_call_with_retry(lambda: adapter.visum.Net.Matrices.ItemByKey(no),
++                             label='LONGMASK_MATRIX_%d' % no, retry_policy=retry)
++    values = com_call_with_retry(obj.GetValues, label='LONGMASK_READ_%d' % no, retry_policy=retry)
++    return obj, np.array(values, dtype=np.float64, copy=True)
++
++
++def _invalidate(adapter):
++    invalidate = getattr(adapter, 'invalidate_candidate_readback', None)
++    if invalidate is not None:
++        invalidate('LONG_POST_TD_MASK_MATRIX_WRITE', mutation=True)
++
++
++def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
++    """Validate the complete write plan, own partial writes, verify COM readback.
++
++    On failure restore only this transformation's pre-write arrays and rethrow.
++    The calibration transaction owner must then recompute its accepted parent.
++    A successful call does not itself adopt or checkpoint a calibration state.
++    """
++    from r1_15a2_controller_v22 import atomic_json
++    folder = Path(folder); folder.mkdir(parents=True, exist_ok=True)
++    expected = COMPONENT_MATRICES if aggregate_no is not None else MATRIX_NOS
++    if tuple(matrix_nos) != tuple(expected) or aggregate_no not in (None, FINAL_MATRIX):
++        raise SupplyContractError('LONGMASK_WRITE_SCOPE_NOT_AUTHORIZED')
++    protected_obj, protected = _read(adapter, 9116)
++    before, targets, objects, rows = {}, {}, {}, []
++    for no in matrix_nos:
++        obj, values = _read(adapter, int(no))
++        target, record = project(values, mask)
++        before[int(no)], targets[int(no)], objects[int(no)] = values, target, obj
++        rows.append(dict(record, matrix_no=int(no), before_sha256=matrix_values_hash(values),
++                         after_sha256=matrix_values_hash(target)))
++    if aggregate_no is not None:
++        obj, values = _read(adapter, aggregate_no)
++        native_sum = np.sum([before[int(no)] for no in matrix_nos], axis=0)
++        if values.shape != mask.shape or not np.allclose(values, native_sum, rtol=1e-10, atol=1e-6):
++            raise SupplyContractError('LONGMASK_NATIVE_COMPONENT_AGGREGATE_PARITY')
++        target = np.sum([targets[int(no)] for no in matrix_nos], axis=0)
++        before[aggregate_no], targets[aggregate_no], objects[aggregate_no] = values, target, obj
++    if protected.shape != mask.shape:
++        raise SupplyContractError('LONGMASK_FOREIGN_SHAPE')
++    report = {'policy': 'POST_TD_MULTIPLICATION_ACCEPT_VOLUME_LOSS',
++              'minimum_km': MIN_KM, 'maximum_km': None, 'renormalized': False,
++              'units': 'PERSON_TRIPS' if aggregate_no is None else 'VEHICLES',
++              'zone_nos': list(adapter.zones), 'matrices': rows,
++              'aggregate_rebuilt': aggregate_no, 'status': 'PLANNED'}
++    atomic_json(folder / 'LONG_MASK_PLAN.json', report)
++    owned = []
++    try:
++        for no in targets:
++            if np.array_equal(before[no], targets[no]):
++                continue
++            owned.append(no)  # the COM write may mutate before raising
++            _invalidate(adapter)
++            objects[no].SetValues(targets[no].tolist())
++            _, actual = _read(adapter, no)
++            if not np.array_equal(actual, targets[no]):
++                raise SupplyContractError('LONGMASK_READBACK_MISMATCH:%d' % no)
++        _, foreign = _read(adapter, 9116)
++        if not np.array_equal(foreign, protected):
++            raise SupplyContractError('LONGMASK_FOREIGN_CHANGED')
++        report.update(status='APPLIED_VERIFIED', written_matrix_nos=owned)
++        atomic_json(folder / 'LONG_MASK_RESULT.json', report)
++        return report
++    except BaseException as exc:
++        errors = []
++        for no in reversed(owned):
++            try:
++                _invalidate(adapter)
++                objects[no].SetValues(before[no].tolist())
++                if not np.array_equal(_read(adapter, no)[1], before[no]):
++                    raise SupplyContractError('RESTORE_READBACK')
++            except BaseException as restore_exc:
++                errors.append('%d:%r' % (no, restore_exc))
++        try:
++            if not np.array_equal(_read(adapter, 9116)[1], protected):
++                errors.append('FROZEN_FOREIGN_CHANGED')
++        except BaseException as check_exc:
++            errors.append('FROZEN_FOREIGN_UNVERIFIED:' + repr(check_exc))
++        report.update(status='PREMASK_RESTORED_CALIBRATION_PARENT_RECOMPUTE_REQUIRED' if not errors
++                      else 'RESTORE_FAILED_MANUAL_REOPEN_REQUIRED', error=repr(exc), restore_errors=errors)
++        try:
++            atomic_json(folder / 'LONG_MASK_RESULT.json', report)
++        except Exception as io_exc:
++            if hasattr(exc, 'add_note'): exc.add_note('LONGMASK_EVIDENCE_FAILED:' + repr(io_exc))
++        if errors:
++            raise SupplyContractError('LONGMASK_RESTORE_FAILED_MANUAL_REOPEN_REQUIRED') from exc
++        raise
++
++
++def _verify_support(adapter, mask, matrix_nos):
++    for no in matrix_nos:
++        _, actual = _read(adapter, no)
++        if (actual.shape != mask.shape or not np.isfinite(actual).all()
++                or np.any(actual < 0) or np.any(actual[~mask] != 0)):
++            raise SupplyContractError('LONGMASK_POST_ASSIGNMENT_SUPPORT_FAILED:%d' % no)
++
++
++def execute_sequence(adapter, folder, original_execute):
++    """Keep operation definitions/positions intact; scope only existing ACTIVE flags."""
++    from r1_15a2_com_compat import operation_rows, TD, GROUP, ASSIGNMENT_PRT
++    from r1_15a2_acceleration_v24915p1 import activate_operation_plan
++    from r1_15a2_controller_v22 import atomic_json
++    folder = Path(folder); folder.mkdir(parents=True, exist_ok=True)
++    distance, source = read_current(adapter)
++    mask = distance >= MIN_KM
++    inventory = operation_rows(adapter.visum)
++    active = [row for row in inventory if row['active']]
++    groups = {int(row['no']) for row in active if int(row['type']) == GROUP}
++    leaves = [row for row in active if int(row['type']) != GROUP]
++    td = [int(row['no']) for row in leaves if int(row['type']) == TD]
++    assignments = [int(row['no']) for row in leaves if int(row['type']) == ASSIGNMENT_PRT]
++    approved = {int(rule['no']) for rule in (getattr(adapter, 'cfg', {}) or {}).get('supply', {}).get('assignment_operations', [])}
++    if assignments and not set(assignments) <= approved:
++        raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
++    if len(td) > 1:
++        raise SupplyContractError('LONGMASK_EXPECTED_ONE_UNIFIED_TD_OPERATION')
++    boundary = min(assignments) if assignments else None
++    if not td:
++        _verify_support(adapter, mask, MATRIX_NOS + COMPONENT_MATRICES + (FINAL_MATRIX,))
++        realization = [int(row['no']) for row in leaves if boundary is not None and int(row['no']) < boundary]
++        if not realization:
++            result = original_execute(adapter.visum, folder)
++            _verify_support(adapter, mask, MATRIX_NOS + COMPONENT_MATRICES + (FINAL_MATRIX,))
++            return result
++        # SupplyMix cold recomputation can re-run 20A/20B on unchanged masked
++        # person demand. Remove any repaired reverse support before assignment.
++        phases = [('REALIZATION', realization),
++                  ('ASSIGNMENT_SKIMS', [int(row['no']) for row in leaves if int(row['no']) >= boundary])]
++    elif boundary is not None and boundary <= td[0]:
++        raise SupplyContractError('LONGMASK_ASSIGNMENT_BEFORE_TD')
++    elif boundary is None and any(int(row['no']) > td[0] for row in leaves):
++        raise SupplyContractError('LONGMASK_DOWNSTREAM_WITHOUT_ASSIGNMENT')
++    elif td:
++        phases = [('THROUGH_TD', [int(row['no']) for row in leaves if int(row['no']) <= td[0]])]
++    if td and boundary is not None:
++        realization = [int(row['no']) for row in leaves if td[0] < int(row['no']) < boundary]
++        if not realization:
++            raise SupplyContractError('LONGMASK_REALIZATION_OPERATIONS_MISSING')
++        phases += [('REALIZATION', realization),
++                   ('ASSIGNMENT_SKIMS', [int(row['no']) for row in leaves if int(row['no']) >= boundary])]
++    atomic_json(folder / 'LONG_MASK_EXECUTION_PLAN.json',
++                {'source': source, 'phases': phases, 'td_operation_position': td[0] if td else None,
++                 'operation_definitions_unchanged': True, 'volume_loss_accepted': True})
++    result = None
++    for name, positions in phases:
++        plan = {'selected_operation_positions': sorted(set(positions) | groups)}
++        with activate_operation_plan(adapter.visum, plan):
++            result = original_execute(adapter.visum, folder / name)
++        read_current(adapter)  # fixed source/zone identity may not drift
++        if name == 'THROUGH_TD':
++            apply_group(adapter, mask, MATRIX_NOS, folder / 'MASK_PERSON_LONG')
++        elif name == 'REALIZATION':
++            apply_group(adapter, mask, COMPONENT_MATRICES, folder / 'MASK_VEHICLE_LONG',
++                        aggregate_no=FINAL_MATRIX)
++        else:
++            _verify_support(adapter, mask, MATRIX_NOS + COMPONENT_MATRICES + (FINAL_MATRIX,))
++    return result
++
++
++def install(rt):
++    old = rt.execute_procseq
++    if not getattr(old, '_long_post_td_mask', False):
++        @functools.wraps(old)
++        def execute(visum, folder):
++            adapter = _SCOPE.get()
++            if adapter is None or adapter.visum is not visum:
++                return old(visum, folder)
++            return execute_sequence(adapter, folder, old)
++        execute._long_post_td_mask = True
++        rt.execute_procseq = execute
++    import r1_15a2_finecdf_bridge_v24916 as bridge
++    old_bridge = bridge.NoDirectMatrixWriteTDAdapter.execute
++    if not getattr(old_bridge, '_long_post_td_scope', False):
++        @functools.wraps(old_bridge)
++        def execute_inner(self):
++            with execution_scope(getattr(self, 'outer_adapter', None)):
++                return old_bridge(self)
++        execute_inner._long_post_td_scope = True
++        bridge.NoDirectMatrixWriteTDAdapter.execute = execute_inner
++    return {'installed': True, 'method': 'POST_TD_MULTIPLICATION_ACCEPT_VOLUME_LOSS',
++            'minimum_km': MIN_KM, 'maximum_km': None, 'native_od_filter_required': False,
++            'person_matrices': list(MATRIX_NOS), 'vehicle_matrices': list(COMPONENT_MATRICES),
++            'vehicle_aggregate': FINAL_MATRIX}
+diff --git a/tests/test_v24917_long_post_td_mask.py b/tests/test_v24917_long_post_td_mask.py
+new file mode 100644
+index 0000000..878af43
+--- /dev/null
++++ b/tests/test_v24917_long_post_td_mask.py
+@@ -0,0 +1,259 @@
++"""User-approved clipping: real executor/ACTIVE scoping with fake native COM."""
++from pathlib import Path
++from types import SimpleNamespace as NS
++
++import numpy as np
++import pytest
++
++import r1_15a2_long_post_td_mask_v24917 as pm
++from test_v24917_long_osrm_support import make_adapter
++
++
++def harness():
++    n = 3
++    distance = np.array([[0., 79.999, 80.], [100., 0., 220.], [78., 250., 0.]])
++    adapter, live = make_adapter(distance, zones=[11, 12, 13])
++    state = NS(arrays={}, writes=[], events=[], factor=1., failure=None, failed=False,
++               assigned=None, skims=None, invalidations=[])
++    seed = np.arange(1., 10.).reshape(n, n)
++    for no in pm.MATRIX_NOS + pm.COMPONENT_MATRICES:
++        state.arrays[no] = seed * (1 + no % 5)
++    state.arrays[pm.FINAL_MATRIX] = sum(state.arrays[no] for no in pm.COMPONENT_MATRICES)
++    state.arrays[9116] = np.full((n, n), 17.)
++    state.arrays[9101] = np.full((n, n), 5.)
++    original_matrices = adapter.visum.Net.Matrices
++    class Matrix:
++        def __init__(self, no): self.no = no
++        def GetValues(self): return state.arrays[self.no].copy()
++        def SetValues(self, values):
++            state.writes.append(self.no)
++            state.arrays[self.no] = np.array(values, dtype=float)
++            if state.failure == self.no and not state.failed:
++                state.arrays[self.no][0, 0] = 999.
++                state.failed = True
++                raise RuntimeError('COM_PARTIAL_MATRIX_WRITE')
++    class Matrices:
++        def ItemByKey(self, no):
++            return original_matrices.ItemByKey(no) if no == 9697 else Matrix(no)
++    adapter.visum.Net.Matrices = Matrices()
++    class Operation:
++        def __init__(self, kind, active=1):
++            self.attrs = {'OPERATIONTYPE': kind, 'ACTIVE': active, 'NAME': 'OP', 'COMMENT': ''}
++        def AttValue(self, attr): return self.attrs[attr]
++        def SetAttValue(self, attr, value):
++            assert attr == 'ACTIVE'  # no TD definition, strata or parameters changed
++            self.attrs[attr] = value
++    operations = [Operation(75), Operation(45), Operation(46), Operation(65),
++                  Operation(101), Operation(103), Operation(65, 0)]
++    adapter.visum.Procedures = NS(Operations=NS(GetAll=operations))
++    adapter.cfg = {'supply': {'assignment_operations': [{'no': 5, 'operation_type': 101}]}}
++    adapter._long_post_td_mask_enabled = True
++    adapter.invalidate_candidate_readback = lambda reason, mutation: state.invalidations.append((reason, mutation))
++    mask = distance >= 80.
++    def native(visum, folder):
++        for position, op in enumerate(operations, 1):
++            if not op.attrs['ACTIVE'] or op.attrs['OPERATIONTYPE'] == 75: continue
++            state.events.append(position)
++            if position == 3:
++                for no in pm.MATRIX_NOS:
++                    state.arrays[no] = seed * (1 + no % 5) * state.factor
++            elif position == 4:
++                assert all(not state.arrays[no][~mask].any() for no in pm.MATRIX_NOS)
++                for person, vehicle in zip(pm.MATRIX_NOS, pm.COMPONENT_MATRICES):
++                    state.arrays[vehicle] = state.arrays[person] * .5
++                    state.arrays[vehicle][2, 0] += 3.  # simulate 20B repairing reverse support
++                state.arrays[pm.FINAL_MATRIX] = sum(state.arrays[no] for no in pm.COMPONENT_MATRICES)
++            elif position == 5:
++                assert all(not state.arrays[no][~mask].any() for no in pm.MATRIX_NOS + pm.COMPONENT_MATRICES)
++                np.testing.assert_array_equal(state.arrays[pm.FINAL_MATRIX],
++                                              sum(state.arrays[no] for no in pm.COMPONENT_MATRICES))
++                state.assigned = state.arrays[pm.FINAL_MATRIX].copy()
++            elif position == 6:
++                state.skims = state.assigned.copy()
++    return adapter, state, operations, mask, native
++
++
++def flags(operations): return [op.attrs['ACTIVE'] for op in operations]
++
++
++def test_exact_multiplication_loses_volume_without_redistribution():
++    source = np.array([[1., 2.], [3., 4.]])
++    target, report = pm.project(source, np.array([[False, True], [False, True]]))
++    np.testing.assert_array_equal(target, [[0., 2.], [0., 4.]])
++    np.testing.assert_array_equal(source, [[1., 2.], [3., 4.]])
++    assert report['removed_total'] == 4. and report['after_total'] == 6.
++    assert report['removed_production_by_zone'] == [1., 3.]
++    assert report['removed_attraction_by_zone'] == [4., 0.]
++    assert not report['pa_preserved'] and not report['renormalized']
++
++
++@pytest.mark.parametrize('bad', [np.full((3, 3), np.nan), -np.ones((3, 3)), np.ones((2, 2))])
++def test_invalid_component_prevents_every_write(tmp_path, bad):
++    adapter, state, _, mask, _ = harness()
++    state.arrays[9115] = bad
++    with pytest.raises(Exception, match='LONGMASK'):
++        pm.apply_group(adapter, mask, pm.MATRIX_NOS, tmp_path)
++    assert not state.writes
++
++
++def test_person_transaction_scope_foreign_and_loss_report(tmp_path):
++    adapter, state, _, mask, _ = harness()
++    before = {no: values.copy() for no, values in state.arrays.items()}
++    report = pm.apply_group(adapter, mask, pm.MATRIX_NOS, tmp_path)
++    assert set(state.writes) == set(pm.MATRIX_NOS)
++    assert report['status'] == 'APPLIED_VERIFIED' and report['maximum_km'] is None
++    for row in report['matrices']:
++        no = row['matrix_no']
++        assert row['removed_total'] == before[no][~mask].sum()
++        np.testing.assert_array_equal(state.arrays[no][mask], before[no][mask])
++        assert not state.arrays[no][~mask].any()
++    np.testing.assert_array_equal(state.arrays[9116], before[9116])
++    np.testing.assert_array_equal(state.arrays[9101], before[9101])
++    assert state.invalidations
++
++
++def test_partial_write_restores_all_owned_matrices_and_propagates(tmp_path):
++    adapter, state, _, mask, _ = harness()
++    before = {no: values.copy() for no, values in state.arrays.items()}
++    state.failure = 9113
++    with pytest.raises(RuntimeError, match='COM_PARTIAL_MATRIX_WRITE'):
++        pm.apply_group(adapter, mask, pm.MATRIX_NOS, tmp_path)
++    for no in before: np.testing.assert_array_equal(state.arrays[no], before[no])
++    assert state.writes == [9111, 9112, 9113, 9113, 9112, 9111]
++
++
++def test_arbitrary_matrix_scope_rejected(tmp_path):
++    adapter, state, _, mask, _ = harness()
++    with pytest.raises(Exception, match='WRITE_SCOPE_NOT_AUTHORIZED'):
++        pm.apply_group(adapter, mask, [9116], tmp_path)
++    assert not state.writes
++
++
++def test_vehicle_aggregate_is_rebuilt_from_masked_components(tmp_path):
++    adapter, state, _, mask, _ = harness()
++    pm.apply_group(adapter, mask, pm.COMPONENT_MATRICES, tmp_path, aggregate_no=pm.FINAL_MATRIX)
++    np.testing.assert_array_equal(state.arrays[pm.FINAL_MATRIX], sum(state.arrays[no] for no in pm.COMPONENT_MATRICES))
++    assert not state.arrays[pm.FINAL_MATRIX][~mask].any()
++
++
++def test_bad_component_aggregate_parity_blocks_before_writes(tmp_path):
++    adapter, state, _, mask, _ = harness()
++    state.arrays[pm.FINAL_MATRIX][0, 0] += 1.
++    with pytest.raises(Exception, match='NATIVE_COMPONENT_AGGREGATE_PARITY'):
++        pm.apply_group(adapter, mask, pm.COMPONENT_MATRICES, tmp_path, aggregate_no=pm.FINAL_MATRIX)
++    assert not state.writes
++
++
++def test_one_unified_td_then_masks_before_realization_assignment_and_skims(tmp_path):
++    adapter, state, operations, mask, native = harness()
++    old_flags = flags(operations)
++    foreign, work = state.arrays[9116].copy(), state.arrays[9101].copy()
++    pm.execute_sequence(adapter, tmp_path, native)
++    assert state.events == [2, 3, 4, 5, 6]  # each original active leaf exactly once
++    assert flags(operations) == old_flags
++    assert not state.assigned[~mask].any()
++    np.testing.assert_array_equal(state.skims, state.assigned)
++    np.testing.assert_array_equal(state.arrays[9116], foreign)
++    np.testing.assert_array_equal(state.arrays[9101], work)
++
++
++def test_frozen_inner_td_masks_only_person_outputs(tmp_path):
++    adapter, state, operations, mask, native = harness()
++    for i, op in enumerate(operations): op.attrs['ACTIVE'] = int(i in (0, 2))
++    old_flags = flags(operations)
++    pm.execute_sequence(adapter, tmp_path, native)
++    assert state.events == [3]
++    assert set(state.writes) == set(pm.MATRIX_NOS)
++    assert flags(operations) == old_flags
++
++
++def test_supply_only_assignment_never_writes_demand(tmp_path):
++    adapter, state, operations, mask, native = harness()
++    pm.execute_sequence(adapter, tmp_path / 'baseline', native)
++    state.events.clear(); state.writes.clear()
++    for i, op in enumerate(operations): op.attrs['ACTIVE'] = int(i in (0, 4, 5))
++    old_flags = flags(operations)
++    pm.execute_sequence(adapter, tmp_path / 'supply', native)
++    assert state.events == [5, 6] and not state.writes
++    assert flags(operations) == old_flags
++
++
++def test_supplymix_cold_recompute_removes_repaired_support_before_assignment(tmp_path):
++    adapter, state, operations, mask, native = harness()
++    pm.execute_sequence(adapter, tmp_path / 'baseline', native)
++    parent = {no: a.copy() for no, a in state.arrays.items()}
++    state.events.clear(); state.writes.clear()
++    for i, op in enumerate(operations): op.attrs['ACTIVE'] = int(i in (0, 3, 4, 5))
++    pm.execute_sequence(adapter, tmp_path / 'supplymix', native)
++    assert state.events == [4, 5, 6]
++    assert not set(state.writes) & set(pm.MATRIX_NOS)
++    for no in parent: np.testing.assert_array_equal(state.arrays[no], parent[no])
++
++
++def test_parent_recomputation_reproduces_same_masked_state(tmp_path):
++    adapter, state, operations, mask, native = harness()
++    pm.execute_sequence(adapter, tmp_path / 'baseline', native)
++    parent = {no: a.copy() for no, a in state.arrays.items()}
++    state.factor = 1.1
++    pm.execute_sequence(adapter, tmp_path / 'candidate', native)
++    assert not np.array_equal(state.arrays[9111], parent[9111])
++    state.factor = 1.
++    pm.execute_sequence(adapter, tmp_path / 'rollback', native)
++    for no in parent: np.testing.assert_array_equal(state.arrays[no], parent[no])
++
++
++def test_execution_failure_restores_active_flags_and_stops_before_assignment(tmp_path):
++    adapter, state, operations, mask, native = harness()
++    old_flags = flags(operations)
++    def fail(visum, folder):
++        native(visum, folder)
++        if Path(folder).name == 'REALIZATION': raise RuntimeError('NATIVE_FAILED')
++    with pytest.raises(RuntimeError, match='NATIVE_FAILED'):
++        pm.execute_sequence(adapter, tmp_path, fail)
++    assert flags(operations) == old_flags
++    assert state.assigned is None
++
++
++def test_nested_scope_cleanup_and_unscoped_execution_is_unchanged(tmp_path, monkeypatch):
++    import r1_15a2_finecdf_bridge_v24916 as bridge
++    monkeypatch.setattr(bridge.NoDirectMatrixWriteTDAdapter, 'execute', bridge.NoDirectMatrixWriteTDAdapter.execute)
++    adapter, state, _, _, native = harness()
++    calls = []
++    rt = NS(execute_procseq=lambda v, p: calls.append(p))
++    pm.install(rt)
++    with pytest.raises(RuntimeError):
++        with pm.execution_scope(adapter):
++            assert pm._SCOPE.get() is adapter
++            with pm.execution_scope(NS()): assert pm._SCOPE.get() is None
++            assert pm._SCOPE.get() is adapter
++            raise RuntimeError('FAIL')
++    assert pm._SCOPE.get() is None
++    rt.execute_procseq(adapter.visum, tmp_path)
++    assert calls == [tmp_path]
++
++
++@pytest.mark.parametrize('entry', ['assign', 'assign_for_block'])
++def test_real_v24917_assignment_entry_binds_the_installed_mask_executor(tmp_path, monkeypatch, entry):
++    # Use current runtime instances: launcher tests can reload modules in-process.
++    import r1_15a2_trial_adapter_v24917 as adapter_module
++    import r1_15a2_long_post_td_mask_v24917 as current_mask
++    import r1_15a2_finecdf_bridge_v24916 as bridge
++    monkeypatch.setattr(bridge.NoDirectMatrixWriteTDAdapter, 'execute', bridge.NoDirectMatrixWriteTDAdapter.execute)
++    model, state, operations, mask, native = harness()
++    rt = NS(execute_procseq=native)
++    current_mask.install(rt)
++    def assign(self, folder, **kwargs):
++        return rt.execute_procseq(self.visum, folder)
++    def assign_for_block(self, folder, block):
++        return rt.execute_procseq(self.visum, folder)
++    monkeypatch.setattr(adapter_module._V24916ActiveAdapter, 'assign', assign)
++    monkeypatch.setattr(adapter_module._V24916ActiveAdapter, 'assign_for_block', assign_for_block)
++    adapter = adapter_module.VisumAdapter.__new__(adapter_module.VisumAdapter)
++    adapter.__dict__.update(model.__dict__)
++    before_flags = flags(operations)
++    if entry == 'assign': adapter.assign(tmp_path, supply_only=False)
++    else: adapter.assign_for_block(tmp_path, 'TD_FINECDF')
++    assert state.events == [2, 3, 4, 5, 6]
++    assert flags(operations) == before_flags
++    assert not state.assigned[~mask].any()
++    assert current_mask._SCOPE.get() is None

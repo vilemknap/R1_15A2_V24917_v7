@@ -484,7 +484,12 @@ def install(print_fn=print) -> Dict[str, Any]:
             if not self._v24917_frozen:
                 return orig_exec(self)
             self.assert_isolated()
-            self.v.Procedures.Execute()
+            if getattr(self.outer_adapter, '_long_post_td_mask_enabled', False):
+                ordinal = int(getattr(self, '_long_mask_eval', 0)) + 1
+                self._long_mask_eval = ordinal
+                bridge_mod.rt.execute_procseq(self.v, Path(self.root) / 'LONG_MASK_INNER' / ('EVAL_%04d' % ordinal))
+            else:
+                self.v.Procedures.Execute()
             arrays = self.read_outputs()
             for no, a in arrays.items():
                 if float(a.sum()) <= 0 or float(a.min()) < -1e-10:
