@@ -54,4 +54,10 @@ jobs:
       - name: DIAGFAST suite in isolated process
         run: python -m pytest -q -p no:cacheprovider diagfast_tests
       - name: GENFIX2 audit suite in isolated process
+        env:
+          PYTHONPATH: ${{ github.workspace }}/tests:${{ github.workspace }}
+          R1_AUDIT_EVIDENCE: ${{ runner.temp }}/r1_audit_evidence
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
         run: python -m pytest -q -p no:cacheprovider genfix2_audit_tests
