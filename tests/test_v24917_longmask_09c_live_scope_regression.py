@@ -53,7 +53,13 @@ def _run(monkeypatch, tmp_path, rows):
     adapter = _adapter()
     calls = []
     changed = []
-    monkeypatch.setattr(com, "operation_rows", lambda _visum: rows)
+    # Other historical tests purge/reimport r1_15a2_* modules in this process.
+    # Patch the module which execute_sequence imports NOW, not a stale reference
+    # retained when pytest first collected this test file.
+    import importlib
+    live_com = importlib.import_module("r1_15a2_com_compat")
+    live_accel = importlib.import_module("r1_15a2_acceleration_v24915p1")
+    monkeypatch.setattr(live_com, "operation_rows", lambda _visum: rows)
     monkeypatch.setattr(maskmod, "read_current", lambda _adapter: (np.array([[0., 80.], [80., 0.]]), {"status": "PASS"}))
     monkeypatch.setattr(maskmod, "apply_group", lambda *_args, **_kwargs: calls.append(("mask", tuple(_args[2]))))
     monkeypatch.setattr(maskmod, "_verify_support", lambda *_args: calls.append(("verify", None)))
@@ -71,7 +77,7 @@ def _run(monkeypatch, tmp_path, rows):
             for row, old in zip(rows, before):
                 row["active"] = old
 
-    monkeypatch.setattr(accel, "activate_operation_plan", scoped)
+    monkeypatch.setattr(live_accel, "activate_operation_plan", scoped)
 
     def native(_visum, _folder):
         calls.append(("execute", [r["no"] for r in rows if r["active"] and r["type"] != 75]))
@@ -88,6 +94,21 @@ def test_real_09c_assignments_17_to_20_execute_as_one_final_authority(monkeypatc
     assert [x[0] for x in calls] == ["execute", "mask", "execute", "mask", "execute", "verify"]
     assert len(phases) == 3
     assert all(r["active"] == 1 for r in rows)
+
+
+
+def test_real_09c_only_final_op20_active_passes_all_three_phases(monkeypatch, tmp_path):
+    """Exact live 2026-10-29 configuration; no artificial enabling OP17-19."""
+    rows = _rows()
+    for no in (17, 18, 19):
+        rows[no - 1]["active"] = 0
+    before = [row["active"] for row in rows]
+    calls, phases, after = _run(monkeypatch, tmp_path, rows)
+    executed = [x[1] for x in calls if x[0] == "execute"]
+    assert executed == [[1, 3, 5, 6], [8, 10, 11, 12, 14, 15], [20]]
+    assert [x[0] for x in calls] == ["execute", "mask", "execute", "mask", "execute", "verify"]
+    assert len(phases) == 3
+    assert [row["active"] for row in after] == before
 
 
 @pytest.mark.parametrize("scopes, error", [
