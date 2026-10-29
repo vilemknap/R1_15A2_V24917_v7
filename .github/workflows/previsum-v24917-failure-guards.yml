@@ -1,0 +1,26 @@
+name: Pre-Visum V24917 failure guards
+on:
+  push:
+    branches: [codex/v24917-previsum-failure-guards-20261029]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install declared offline verification dependencies
+        run: python -m pip install numpy pytest
+      - name: Compile changed Python modules
+        run: |
+          python -m py_compile r1_15a2_long_post_td_mask_v24917.py
+          python -m py_compile tests/test_v24917_longmask_09c_live_scope_regression.py
+      - name: Exact 09C scope and LONGMASK regression
+        run: python -m pytest -q -p no:cacheprovider tests/test_v24917_longmask_09c_live_scope_regression.py tests/test_v24917_long_post_td_mask.py
+      - name: Source/working-copy operation difference regression
+        run: python -m pytest -q -p no:cacheprovider tests/test_v24917_working_copy_operation_diff.py
