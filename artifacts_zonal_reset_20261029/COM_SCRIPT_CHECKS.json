@@ -1,0 +1,30 @@
+{
+  "scope": "STANDALONE_COM_ZONAL_REFERENCE_RESET",
+  "focused": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider --tb=short tests/test_v24917_zonal_reference_reset.py",
+    "returncode": 0,
+    "passed": 35
+  },
+  "main": {
+    "returncode": 0,
+    "passed": 1919,
+    "skipped": 4
+  },
+  "diagfast": {
+    "returncode": 0,
+    "passed": 138
+  },
+  "audit": {
+    "returncode": 0,
+    "passed": 18
+  },
+  "live_visum": "NOT_RUN",
+  "source_file": "R1_RESET_ZONAL_COEFFICIENTS.py",
+  "source_sha256": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
+  "standalone": true,
+  "dependencies": "Python standard library and host-injected Visum instance",
+  "user_authorization": "User explicitly approved public GitHub upload of original and modified zonal files on 2026-10-29.",
+  "V24917_RUNTIME_MANIFEST.json_sha256": "2188b78812bb4f69313b38b8d005329c1d0f57e48d9d599b8a1f9b032f163965",
+  "DIAGFAST_V1_RELEASE_MANIFEST.json_sha256": "1da8f7eb93ee09966fd27d399a981e1c8b336a7527e69feeb6280e411884e102",
+  "protected_base_files_verified": 1059
+}

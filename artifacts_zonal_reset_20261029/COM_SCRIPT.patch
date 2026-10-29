@@ -1,0 +1,587 @@
+diff --git a/.gitattributes b/.gitattributes
+index 162c5db..f90a3b4 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -43,3 +43,4 @@ artifacts_long_incidence_current_20261029/*.patch -text -diff
+ artifacts_long_generation_shared_cache_20261029/*.patch -text -diff
+ evidence_long_generation_shared_cache_20261029/prior_attempts/*.log -text -diff
+ artifacts_path_incidence_review_20261029/*.patch -text -diff
++artifacts_zonal_reset_20261029/*.patch -text -diff
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index 0429d43..23e8537 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -15,6 +15,7 @@
+     "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py": "ebe5a9395652c010b3b6c119e8b4f4046489613fc1c419ffd5391a3c97d5bc20",
+     "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
+     "R1_LONG_SCHOOL_FORMULA_CHECK.py": "b5109b0863dcc2f8b39a83c4ecb5931dc400b12f68db6ab8f320afd1c55d7c6c",
++    "R1_RESET_ZONAL_COEFFICIENTS.py": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
+     "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
+     "R1_TDLONG1_STANDALONE_READ_ONLY.py": "e4c46037f490c2636dc98d0f0d100fb5fee2dd3d258dd9cb538d4a137b49da8e",
+     "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
+@@ -132,9 +133,10 @@
+     "tests/test_v24917_tdlong1_mask.py": "03f56b0eddd97ba4f13596f653babe0b74c454c3347403d0200ad2412d7458e8",
+     "tests/test_v24917_tdrollbackfix1.py": "541706f01eb69808ad68c80721b73d592e01e020e9cd33923c7b9a1892cebe52",
+     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
++    "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
+     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "1291f481140c02ce14e04d651065585a7a9d4ec1b5d6f4229c3e0cf6b4d0bdba",
++    "tools/refresh_v24917_manifests.py": "94b0163d9fa388c4f5bf7d5593a290580a1ca75970b9d5efb2e1cf85b56e4817",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+   }
+ }
+diff --git a/R1_RESET_ZONAL_COEFFICIENTS.py b/R1_RESET_ZONAL_COEFFICIENTS.py
+new file mode 100644
+index 0000000..28fb067
+--- /dev/null
++++ b/R1_RESET_ZONAL_COEFFICIENTS.py
+@@ -0,0 +1,221 @@
++# -*- coding: utf-8 -*-
++"""Run inside the OPEN Visum model: Scripts -> Run script file.
++
++Reset the 13 zonal calibration coefficients to their agreed references,
++preserving every existing zero. Save a model copy before running this script.
++No Excel, NumPy, project imports, new Visum instance or native calculation needed.
++The model is not saved. Start a NEW calibration run after the reset.
++"""
++from __future__ import annotations
++
++import csv
++import datetime
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import tempfile
++
++EXPECTED_ZONES = 681
++SHOW_MESSAGE_BOX = True
++REFERENCES = {
++    "ADD_PROD_W": 1.0, "ADD_ATT_W": 1.0,
++    "ADD_PROD_S": 1.0, "ADD_ATT_S": 1.0,
++    "ADD_PROD_SCH": 1.0, "ADD_ATT_SCH": 1.0,
++    "ADD_PROD_L": 0.3, "ADD_ATT_L": 1.0, "ADD_SALARY": 1.0,
++    "ZAHR_PROD_WORK": 1.0, "ZAHR_ATR_WORK": 1.0,
++    "ZAHR_PROD_SERV": 1.0, "ZAHR_ATR_SERV": 1.0,
++}
++
++
++class ResetError(RuntimeError):
++    pass
++
++
++def _integer(value):
++    if isinstance(value, bool):
++        raise ResetError("INVALID_ZONE_OR_COM_INDEX")
++    number = float(value)
++    if not math.isfinite(number) or number < 1 or not number.is_integer():
++        raise ResetError("INVALID_ZONE_OR_COM_INDEX")
++    return int(number)
++
++
++def _number(value):
++    if isinstance(value, bool) or value is None:
++        raise ResetError("INVALID_COEFFICIENT")
++    number = float(value)
++    if not math.isfinite(number) or number < 0:
++        raise ResetError("INVALID_COEFFICIENT")
++    return number
++
++
++def _binding(zones):
++    pairs = [(_integer(i), _integer(no)) for i, no in zones.GetMultiAttValues("NO", False)]
++    if (len(pairs) != EXPECTED_ZONES or len({i for i, _ in pairs}) != EXPECTED_ZONES
++            or len({no for _, no in pairs}) != EXPECTED_ZONES):
++        raise ResetError("EXPECTED_681_UNIQUE_ZONES_AND_COM_INDICES")
++    return tuple(sorted(pairs))
++
++
++def _require_binding(zones, binding):
++    if _binding(zones) != binding:
++        raise ResetError("ZONE_BINDING_CHANGED")
++
++
++def _snapshot(zones, binding):
++    _require_binding(zones, binding)
++    by_index = dict(binding)
++    values = {}
++    for attr in REFERENCES:
++        result = {}
++        for i, value in zones.GetMultiAttValues(attr, False):
++            index = _integer(i)
++            if index not in by_index or by_index[index] in result:
++                raise ResetError("COEFFICIENT_INDEX_MISMATCH:" + attr)
++            result[by_index[index]] = _number(value)
++        if len(result) != len(binding):
++            raise ResetError("COEFFICIENT_ROWS_MISSING:" + attr)
++        values[attr] = result
++    _require_binding(zones, binding)
++    return values
++
++
++def _write_json(path, data):
++    temporary = path.with_suffix(path.suffix + ".tmp")
++    with temporary.open("w", encoding="utf-8", newline="\n") as stream:
++        json.dump(data, stream, ensure_ascii=False, indent=2, allow_nan=False)
++        stream.write("\n")
++        stream.flush()
++        os.fsync(stream.fileno())
++    os.replace(str(temporary), str(path))
++
++
++def _backup(folder, binding, before, after):
++    data = {"schema": "R1_ZONAL_COEFFICIENT_RESET_BACKUP_V1", "references": REFERENCES,
++            "zones": [no for _, no in binding], "before": before}
++    _write_json(folder / "BEFORE.json", data)
++    with (folder / "OBNOVA_KOEFICIENTU.att").open("w", encoding="utf-8", newline="\n") as stream:
++        stream.write("$VISION\n$ZONE:NO;" + ";".join(REFERENCES) + "\n")
++        for _, no in binding:
++            stream.write(str(no) + ";" + ";".join(repr(before[a][no]) for a in REFERENCES) + "\n")
++        stream.flush()
++        os.fsync(stream.fileno())
++    with (folder / "CHANGES.csv").open("w", encoding="utf-8-sig", newline="") as stream:
++        writer = csv.writer(stream, delimiter=";")
++        writer.writerow(["NO", "ATTRIBUTE", "BEFORE", "AFTER"])
++        for attr in REFERENCES:
++            for _, no in binding:
++                if before[attr][no] != after[attr][no]:
++                    writer.writerow([no, attr, repr(before[attr][no]), repr(after[attr][no])])
++        stream.flush()
++        os.fsync(stream.fileno())
++
++
++def _restore(zones, before, touched):
++    errors = []
++    for attr in reversed(touched):
++        try:
++            binding = _binding(zones)
++            if {no for _, no in binding} != set(before[attr]):
++                raise ResetError("ROLLBACK_ZONE_SET_CHANGED")
++            zones.SetMultiAttValues(attr, [(i, before[attr][no]) for i, no in binding])
++        except BaseException as error:
++            errors.append(attr + ":" + type(error).__name__ + ":" + str(error))
++    try:
++        observed = _snapshot(zones, _binding(zones))
++        verified = observed == before
++        if not verified:
++            errors.append("ROLLBACK_READBACK_MISMATCH")
++    except BaseException as error:
++        verified = False
++        errors.append("ROLLBACK_READBACK:" + type(error).__name__ + ":" + str(error))
++    return verified, errors
++
++
++def reset_coefficients(visum, output_base=None):
++    """Write only the 13 coefficient attributes; verified rollback on any failure."""
++    zones = visum.Net.Zones
++    binding = _binding(zones)
++    before = _snapshot(zones, binding)  # ALL attributes must be readable before any write.
++    after = {attr: {no: (0.0 if value == 0 else REFERENCES[attr])
++                    for no, value in entries.items()} for attr, entries in before.items()}
++    counts = {attr: sum(before[attr][no] != after[attr][no] for _, no in binding)
++              for attr in REFERENCES}
++    base = Path(output_base) if output_base is not None else Path(
++        os.environ.get("LOCALAPPDATA") or tempfile.gettempdir()) / "R1DF" / "ZONAL_RESET"
++    base.mkdir(parents=True, exist_ok=True)
++    stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_")
++    folder = Path(tempfile.mkdtemp(prefix=stamp, dir=str(base)))
++    _backup(folder, binding, before, after)  # Failure here cannot leave a partial model write.
++    report = {"status": "PREPARED", "backup_directory": str(folder), "zone_count": len(binding),
++              "references": REFERENCES, "changed_by_attribute": counts,
++              "changed_cells": sum(counts.values()),
++              "preserved_zeros": {a: sum(v == 0 for v in before[a].values()) for a in REFERENCES},
++              "before_sha256": hashlib.sha256((folder / "BEFORE.json").read_bytes()).hexdigest(),
++              "model_saved": False, "native_recomputed": False}
++    report_path = folder / "REPORT.json"
++    _write_json(report_path, report)
++    # The durable backup must still describe the exact live parent.
++    if _snapshot(zones, binding) != before:
++        report["status"] = "ABORTED_PARENT_CHANGED_BEFORE_WRITE"
++        _write_json(report_path, report)
++        raise ResetError("PARENT_CHANGED_BEFORE_WRITE; backup=" + str(folder))
++    touched = []
++    try:
++        for attr in REFERENCES:
++            if not counts[attr]:
++                continue
++            _require_binding(zones, binding)
++            touched.append(attr)  # A throwing bulk COM setter can already have changed rows.
++            zones.SetMultiAttValues(attr, [(i, after[attr][no]) for i, no in binding])
++        if _snapshot(zones, binding) != after:
++            raise ResetError("RESET_READBACK_MISMATCH")
++        report["status"] = "RESET_VERIFIED_NATIVE_RECOMPUTE_REQUIRED"
++        _write_json(report_path, report)  # An unrecorded reset is rolled back as well.
++    except BaseException as error:
++        verified, restore_errors = _restore(zones, before, touched)
++        report.update(status="ROLLBACK_VERIFIED" if verified else "ROLLBACK_UNVERIFIED_REOPEN_SAVED_MODEL",
++                      error=type(error).__name__ + ":" + str(error), rollback_errors=restore_errors)
++        try:
++            _write_json(report_path, report)
++        except BaseException as log_error:
++            restore_errors.append("REPORT_WRITE_FAILED:" + str(log_error))
++        raise ResetError(report["status"] + "; backup=" + str(folder)
++                         + "; cause=" + str(error) + "; rollback_errors=" + repr(restore_errors)) from error
++    return report
++
++
++def _run_in_visum():
++    visum = globals().get("Visum")
++    if visum is None:
++        import __main__
++        visum = getattr(__main__, "Visum", None)
++    if visum is None:
++        raise ResetError("Spustte tento soubor uvnitr otevreneho Visumu: Scripts -> Run script file.")
++    try:
++        result = reset_coefficients(visum)
++        message = ("Reset koeficientu overen. Zmeneno bunek: %d.\nZaloha a protokol: %s\n"
++                   "Model neni ulozen. Spustte NOVOU kalibraci; dosavadni vysledky vyzaduji prepocet."
++                   % (result["changed_cells"], result["backup_directory"]))
++    except BaseException as error:
++        message = "Reset nebyl dokoncen: " + str(error)
++        _notify(message)
++        raise
++    _notify(message)
++    return result
++
++
++def _notify(message):
++    print(message)
++    if SHOW_MESSAGE_BOX and os.name == "nt":
++        try:
++            import ctypes
++            ctypes.windll.user32.MessageBoxW(None, message, "R1 reset zonalnich koeficientu", 0)
++        except Exception:
++            pass  # Reporting UI cannot invalidate a completed transaction.
++
++
++if __name__ == "__main__" or globals().get("Visum") is not None:
++    _run_in_visum()
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 26b18b5..301189e 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -51,6 +51,7 @@
+     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
+     "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
++    "R1_RESET_ZONAL_COEFFICIENTS.py": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
+     "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
+     "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py": "ebe5a9395652c010b3b6c119e8b4f4046489613fc1c419ffd5391a3c97d5bc20",
+     "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
+@@ -74,6 +75,6 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "ab139f0af951d26050366c67f1fa9920ad5aa754c16ec4ff5270170a14baad9c"
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "1da8f7eb93ee09966fd27d399a981e1c8b336a7527e69feeb6280e411884e102"
+   }
+ }
+diff --git a/artifacts_zonal_reset_20261029/OVERENI.json b/artifacts_zonal_reset_20261029/OVERENI.json
+index 484ad29..9ddb506 100644
+--- a/artifacts_zonal_reset_20261029/OVERENI.json
++++ b/artifacts_zonal_reset_20261029/OVERENI.json
+@@ -21,8 +21,9 @@
+     "ZONE_REFERENCNI_KOEFICIENTY_20261029.xlsx": "5a34ee2106bb66d2a6c95339e38fc2777526ece6c25c6c0d33204e0addae0a19"
+   },
+   "second_reset_idempotent_byte_identical": true,
+-  "runtime_files_changed": false,
+-  "manifest_sha256_unchanged": {
++  "scope": "WORKBOOK_DATA_PREPARATION_BEFORE_STANDALONE_COM_SCRIPT",
++  "runtime_files_changed_by_workbook_transformation": false,
++  "data_preparation_baseline_manifest_sha256": {
+     "V24917_RUNTIME_MANIFEST.json": "f74d128bf4335d1b9e397f94c0c2e427c5ae36b732a18b83bd6afaf4442903cb",
+     "DIAGFAST_V1_RELEASE_MANIFEST.json": "ab139f0af951d26050366c67f1fa9920ad5aa754c16ec4ff5270170a14baad9c"
+   }
+diff --git a/artifacts_zonal_reset_20261029/README_CZ.md b/artifacts_zonal_reset_20261029/README_CZ.md
+index 33967d8..11d8863 100644
+--- a/artifacts_zonal_reset_20261029/README_CZ.md
++++ b/artifacts_zonal_reset_20261029/README_CZ.md
+@@ -15,7 +15,20 @@ Všechny původní nulové koeficienty zůstávají nulové: W/S po 30, ADD_SALA
+ 
+ Tento explicitní reset nastavuje původně kladné ZAHR koeficienty na novou surovou počáteční hodnotu 1. Běžná kalibrace je nadále omezuje relativně k neměnné počáteční hodnotě nového běhu; nemění se její kód ani interpretace normalizované reference.
+ 
+-## Použití ve Visumu
++## Doporučené použití: samostatný Python COM skript
++
++V kořeni GitHub ZIP archivu je `R1_RESET_ZONAL_COEFFICIENTS.py`. Stačí tento jediný soubor; nepotřebuje Excel, NumPy, celý kalibrační balík ani instalaci dalších knihoven. Krátký balíček `R1_RESET_ZONAL_COEFFICIENTS_SKRIPT.zip` ve stejné složce obsahuje skript a tento návod.
++
++1. Otevři model ve Visumu a ulož jeho kopii. Skript spouštěj před novou kalibrací, mimo běžící kalibrační pokus.
++2. Zvol **Scripts → Run script file** a vyber `R1_RESET_ZONAL_COEFFICIENTS.py`. Skript používá výhradně instanci `Visum` předanou hostitelem; nespouští ani nevyhledává jinou instanci.
++3. Zkontroluje všech 681 unikátních zón, přiřazení COM indexů k NO a dostupnost všech 13 atributů. Pracuje se současnými živými koeficienty; zachová všechny jejich nuly.
++4. Ještě před první změnou uloží zálohu a seznam plánovaných změn do `%LOCALAPPDATA%\R1DF\ZONAL_RESET\<čas_jedinečný_identifikátor>` (při chybějící LOCALAPPDATA použije systémovou dočasnou složku). Složka obsahuje `BEFORE.json`, `OBNOVA_KOEFICIENTU.att`, `CHANGES.csv` a `REPORT.json`. Záloha tak odpovídá živému modelu při spuštění, i když se od Excelu liší.
++5. Zapíše jen změněné koeficientové atributy a všechny hodnoty znovu načte. Při úspěchu ohlásí `RESET_VERIFIED_NATIVE_RECOMPUTE_REQUIRED` a cestu k protokolu. Při chybě včetně částečného COM zápisu obnoví dotčené atributy a ověří všech 13 proti záloze. `ROLLBACK_VERIFIED` znamená ověřený návrat koeficientů; `ROLLBACK_UNVERIFIED_REOPEN_SAVED_MODEL` vyžaduje ručně znovu otevřít uložený model a nepokračovat v kalibraci. Skript sám nepoužívá LoadVersion.
++6. Model sám neukládá a neprovádí TG/TD/assignment. Po úspěšném resetu spusť nový kalibrační běh podle bodu 4 níže. Původní výstupy modelu zatím neodpovídají novým koeficientům.
++
++Opakované spuštění na již resetovaném modelu neprovádí žádné COM zápisy, ale znovu ověří a zazálohuje stav. Počet 5 169 změn platí pro přiložený Excel; jiný aktuální model může mít jiný počet změn.
++
++## Alternativní použití: soubor atributů ve Visumu
+ 
+ 1. Před importem ulož kopii modelu. Reset dělej před novým během, mimo rozpracovanou kalibraci.
+ 2. Načti `RESET_ZONALNICH_KOEFICIENTU.att` jako soubor atributů zón. Aktualizuj existující zóny podle `NO`; soubor obsahuje pouze NO a 13 koeficientů. V tomto kroku se nepřepisují výstupy generování ani jiné vstupy.
+@@ -38,7 +51,7 @@ Hraniční přechody mají navíc přímo kalibrované objemové vstupy `P09F4_P
+ - Po zpětné záměně pouze změněných čísel je XML listu totožné s originálem. Ostatní součásti XLSX jsou bajtově shodné, včetně stylů, komentářů a metadat.
+ - Resetovací i obnovovací ATT a CSV souhlasí s Excelovými hodnotami. Druhé provedení resetu nic nemění.
+ - `AUDIT_RESETU.json` obsahuje počty a reference; `OVERENI.json` obsahuje výsledek kontroly a kontrolní součty; `ZMENY_PRED_PO.csv` všech 5 169 změn.
+-- Produkční Python soubory ani SHA manifesty se nemění. Celá kalibrační regrese se kvůli úpravě datového exportu nespouštěla.
++- Původní kalibrační logika se nemění. Přibyl samostatný ručně spouštěný COM reset a jeho regresní testy; SHA manifesty byly řádně aktualizovány. Výsledky offline testů jsou v `COM_SCRIPT_CHECKS.json` a přiložených protokolech.
+ - Import do živého Visumu a nativní přepočet nebyly provedeny (`LIVE_VISUM_NOT_RUN`).
+ 
+ Reprodukce standardním Pythonem bez dalších knihoven (soubory `.py.txt` jsou běžné spustitelné Python zdroje):
+diff --git a/tests/test_v24917_zonal_reference_reset.py b/tests/test_v24917_zonal_reference_reset.py
+new file mode 100644
+index 0000000..3b7eb00
+--- /dev/null
++++ b/tests/test_v24917_zonal_reference_reset.py
+@@ -0,0 +1,238 @@
++"""Standalone reset: exact COM index/zone identity, durable backup and rollback."""
++import copy
++import importlib.util
++import json
++from pathlib import Path
++import runpy
++from types import SimpleNamespace
++
++import pytest
++
++ROOT = Path(__file__).resolve().parents[1]
++SPEC = importlib.util.spec_from_file_location('zonal_reset_script', ROOT / 'R1_RESET_ZONAL_COEFFICIENTS.py')
++m = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(m)
++
++
++class Zones:
++    def __init__(self):
++        # Nonmatching indices/NO and shuffled getter order prevent index-as-zone mistakes.
++        self.binding = {i: 10000 + 682 - i for i in range(1, 682)}
++        self.values = {attr: {no: (0.0 if no % 17 == 0 else 4.3834111531621103)
++                             for no in self.binding.values()} for attr in m.REFERENCES}
++        self.values['COUNTRY_ADD'] = {no: .6 for no in self.binding.values()}
++        self.writes = []
++        self.fault = None
++        self.read_fault = None
++
++    def GetMultiAttValues(self, attr, active_only):
++        assert active_only is False
++        if self.read_fault and attr == self.read_fault[0]:
++            return self.read_fault[1](self)
++        return [(i, no if attr == 'NO' else self.values[attr][no])
++                for i, no in reversed(list(self.binding.items()))]
++
++    def SetMultiAttValues(self, attr, rows):
++        assert attr in m.REFERENCES
++        self.writes.append(attr)
++        for i, value in rows:
++            self.values[attr][self.binding[i]] = value
++            if self.fault:
++                self.fault(self, attr, i)
++
++
++def host():
++    zones = Zones()
++    return SimpleNamespace(Net=SimpleNamespace(Zones=zones)), zones
++
++
++def test_exact_reset_and_backup_and_protected_attribute(tmp_path):
++    visum, zones = host()
++    original = copy.deepcopy(zones.values)
++    result = m.reset_coefficients(visum, tmp_path)
++    assert result['status'] == 'RESET_VERIFIED_NATIVE_RECOMPUTE_REQUIRED'
++    assert result['native_recomputed'] is False and result['model_saved'] is False
++    for attr, reference in m.REFERENCES.items():
++        assert zones.values[attr] == {no: (0.0 if v == 0 else reference) for no, v in original[attr].items()}
++    assert zones.values['COUNTRY_ADD'] == original['COUNTRY_ADD']
++    folder = Path(result['backup_directory'])
++    backup = json.loads((folder / 'BEFORE.json').read_text())
++    assert backup['before'] == {a: {str(z): v for z, v in original[a].items()} for a in m.REFERENCES}
++    assert len((folder / 'OBNOVA_KOEFICIENTU.att').read_text().splitlines()) == 683
++    assert json.loads((folder / 'REPORT.json').read_text()) == result
++
++
++def test_second_reset_performs_no_writes(tmp_path):
++    visum, zones = host()
++    m.reset_coefficients(visum, tmp_path)
++    zones.writes.clear()
++    assert m.reset_coefficients(visum, tmp_path)['changed_cells'] == 0
++    assert zones.writes == []
++
++
++@pytest.mark.parametrize('attribute', list(m.REFERENCES))
++def test_partial_com_setter_failure_restores_every_original_value(tmp_path, attribute):
++    visum, zones = host()
++    original = copy.deepcopy(zones.values)
++    fired = []
++    def fail_once(z, attr, index):
++        if attr == attribute and index == 5 and not fired:
++            fired.append(True)
++            raise RuntimeError('partially written COM bulk setter')
++    zones.fault = fail_once
++    with pytest.raises(m.ResetError, match='ROLLBACK_VERIFIED;'):
++        m.reset_coefficients(visum, tmp_path)
++    assert zones.values == original
++    report = json.loads(next(tmp_path.glob('*/REPORT.json')).read_text())
++    assert report['status'] == 'ROLLBACK_VERIFIED'
++
++
++def test_silent_setter_mismatch_is_detected_and_restored(tmp_path):
++    visum, zones = host()
++    original = copy.deepcopy(zones.values)
++    fired = []
++    def miswrite(z, attr, index):
++        if attr == 'ADD_PROD_L' and index == 10 and not fired:
++            fired.append(True)
++            z.values[attr][z.binding[index]] = .9
++    zones.fault = miswrite
++    with pytest.raises(m.ResetError, match='RESET_READBACK_MISMATCH'):
++        m.reset_coefficients(visum, tmp_path)
++    assert zones.values == original
++
++
++@pytest.mark.parametrize('bad', [float('nan'), float('inf'), -.1, None, True, ''])
++def test_invalid_input_never_writes(tmp_path, bad):
++    visum, zones = host()
++    zones.values['ZAHR_ATR_SERV'][next(iter(zones.binding.values()))] = bad
++    with pytest.raises((m.ResetError, ValueError)):
++        m.reset_coefficients(visum, tmp_path)
++    assert zones.writes == []
++
++
++@pytest.mark.parametrize('fault', ['missing_attr', 'missing_row', 'duplicate_row', 'fractional_index', 'wrong_count', 'duplicate_zone'])
++def test_incomplete_preflight_never_writes(tmp_path, fault):
++    visum, zones = host()
++    if fault == 'missing_attr':
++        del zones.values['ADD_ATT_L']
++    elif fault == 'wrong_count':
++        zones.binding.pop(1)
++    elif fault == 'duplicate_zone':
++        zones.binding[1] = zones.binding[2]
++    else:
++        def read(z):
++            rows = [(i, 1.0) for i in z.binding]
++            if fault == 'missing_row':
++                rows.pop()
++            elif fault == 'duplicate_row':
++                rows[-1] = rows[0]
++            else:
++                rows[0] = (1.1, 1)
++            return rows
++        zones.read_fault = ('ADD_PROD_L', read)
++    with pytest.raises((m.ResetError, KeyError)):
++        m.reset_coefficients(visum, tmp_path)
++    assert zones.writes == []
++
++
++def test_backup_failure_prevents_any_live_write(tmp_path, monkeypatch):
++    visum, zones = host()
++    def unavailable(*args):
++        raise OSError('backup disk unavailable')
++    monkeypatch.setattr(m, '_backup', unavailable)
++    with pytest.raises(OSError):
++        m.reset_coefficients(visum, tmp_path)
++    assert zones.writes == []
++
++
++def test_parent_drift_while_backup_is_written_aborts_without_overwriting(tmp_path, monkeypatch):
++    visum, zones = host()
++    original_backup = m._backup
++    def drift(*args):
++        original_backup(*args)
++        zones.values['ADD_PROD_W'][next(iter(zones.binding.values()))] = 9
++    monkeypatch.setattr(m, '_backup', drift)
++    with pytest.raises(m.ResetError, match='PARENT_CHANGED_BEFORE_WRITE'):
++        m.reset_coefficients(visum, tmp_path)
++    assert zones.writes == []
++    assert 9 in zones.values['ADD_PROD_W'].values()
++
++
++def test_unrecorded_success_is_rolled_back(tmp_path, monkeypatch):
++    visum, zones = host()
++    original = copy.deepcopy(zones.values)
++    write_json = m._write_json
++    def fail_final(path, data):
++        if data.get('status') == 'RESET_VERIFIED_NATIVE_RECOMPUTE_REQUIRED':
++            raise OSError('final report disk error')
++        write_json(path, data)
++    monkeypatch.setattr(m, '_write_json', fail_final)
++    with pytest.raises(m.ResetError, match='ROLLBACK_VERIFIED;'):
++        m.reset_coefficients(visum, tmp_path)
++    assert zones.values == original
++
++
++def test_rollback_failure_is_explicit_and_never_called_success(tmp_path):
++    visum, zones = host()
++    def blocked(z, attr, index):
++        if (len(z.writes) == 1 and index == 2) or len(z.writes) > 1:
++            raise RuntimeError('permanent setter failure')
++    zones.fault = blocked
++    with pytest.raises(m.ResetError, match='ROLLBACK_UNVERIFIED_REOPEN_SAVED_MODEL'):
++        m.reset_coefficients(visum, tmp_path)
++    report = json.loads(next(tmp_path.glob('*/REPORT.json')).read_text())
++    assert report['status'] == 'ROLLBACK_UNVERIFIED_REOPEN_SAVED_MODEL'
++    assert report['rollback_errors']
++
++
++def test_changed_com_order_rolls_back_by_zone_no(tmp_path):
++    visum, zones = host()
++    original = copy.deepcopy(zones.values)
++    fired = []
++    def reorder(z, attr, index):
++        if attr == 'ADD_PROD_W' and index == 681 and not fired:
++            fired.append(True)
++            z.binding = {i: no for i, no in zip(z.binding, reversed(list(z.binding.values())))}
++    zones.fault = reorder
++    with pytest.raises(m.ResetError, match='ROLLBACK_VERIFIED;'):
++        m.reset_coefficients(visum, tmp_path)
++    assert zones.values == original
++
++
++def test_visum_injected_host_entrypoint_without_main_name(tmp_path, monkeypatch, capsys):
++    visum, zones = host()
++    monkeypatch.setenv('LOCALAPPDATA', str(tmp_path))
++    runpy.run_path(str(ROOT / 'R1_RESET_ZONAL_COEFFICIENTS.py'),
++                   init_globals={'Visum': visum}, run_name='visum_embedded_script')
++    assert 'Reset koeficientu overen' in capsys.readouterr().out
++    assert zones.writes
++
++
++def test_actual_uploaded_workbook_matches_standalone_script(tmp_path):
++    # Independent data preparation and live implementation must agree on all 8853 cells.
++    from xml.etree import ElementTree as E
++    from zipfile import ZipFile
++    n = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
++    folder = ROOT / 'artifacts_zonal_reset_20261029'
++    datasets = []
++    for file in ['ZONE_PUVODNI_PRED_RESETEM.xlsx', 'ZONE_REFERENCNI_KOEFICIENTY_20261029.xlsx']:
++        with ZipFile(folder / file) as z:
++            strings = [''.join(x.itertext()) for x in E.fromstring(z.read('xl/sharedStrings.xml'))]
++            rows = E.fromstring(z.read('xl/worksheets/sheet1.xml')).find('s:sheetData', n)
++            def value(c):
++                v = c.find('s:v', n)
++                return strings[int(v.text)] if c.get('t') == 's' and v is not None else (v.text if v is not None else None)
++            import re
++            heads = {re.sub('[0-9]', '', c.get('r')): value(c) for c in rows[0]}
++            data = {a: {} for a in m.REFERENCES}
++            for row in list(rows)[1:]:
++                d = {heads[re.sub('[0-9]', '', c.get('r'))]: value(c) for c in row}
++                for a in data:
++                    data[a][int(d['No'])] = float(d[a])
++            datasets.append(data)
++    visum, zones = host()
++    zones.binding = {i: i for i in range(1, 682)}
++    zones.values = copy.deepcopy(datasets[0])
++    result = m.reset_coefficients(visum, tmp_path)
++    assert zones.values == datasets[1]
++    assert result['changed_cells'] == 5169
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 939defb..8a3375f 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -58,6 +58,7 @@ RUNTIME = [
+     "r1_15a2_generation_state_v24917.py",
+     "R1_VDF_DIAGNOSTIC.py",
+     "R1_VDF_EDIT.py",
++    "R1_RESET_ZONAL_COEFFICIENTS.py",
+     "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py",
+     "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py",
+     "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py",

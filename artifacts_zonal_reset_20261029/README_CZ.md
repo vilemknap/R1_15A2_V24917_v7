@@ -15,7 +15,20 @@ Všechny původní nulové koeficienty zůstávají nulové: W/S po 30, ADD_SALA
 
 Tento explicitní reset nastavuje původně kladné ZAHR koeficienty na novou surovou počáteční hodnotu 1. Běžná kalibrace je nadále omezuje relativně k neměnné počáteční hodnotě nového běhu; nemění se její kód ani interpretace normalizované reference.
 
-## Použití ve Visumu
+## Doporučené použití: samostatný Python COM skript
+
+V kořeni GitHub ZIP archivu je `R1_RESET_ZONAL_COEFFICIENTS.py`. Stačí tento jediný soubor; nepotřebuje Excel, NumPy, celý kalibrační balík ani instalaci dalších knihoven. Krátký balíček `R1_RESET_ZONAL_COEFFICIENTS_SKRIPT.zip` ve stejné složce obsahuje skript a tento návod.
+
+1. Otevři model ve Visumu a ulož jeho kopii. Skript spouštěj před novou kalibrací, mimo běžící kalibrační pokus.
+2. Zvol **Scripts → Run script file** a vyber `R1_RESET_ZONAL_COEFFICIENTS.py`. Skript používá výhradně instanci `Visum` předanou hostitelem; nespouští ani nevyhledává jinou instanci.
+3. Zkontroluje všech 681 unikátních zón, přiřazení COM indexů k NO a dostupnost všech 13 atributů. Pracuje se současnými živými koeficienty; zachová všechny jejich nuly.
+4. Ještě před první změnou uloží zálohu a seznam plánovaných změn do `%LOCALAPPDATA%\R1DF\ZONAL_RESET\<čas_jedinečný_identifikátor>` (při chybějící LOCALAPPDATA použije systémovou dočasnou složku). Složka obsahuje `BEFORE.json`, `OBNOVA_KOEFICIENTU.att`, `CHANGES.csv` a `REPORT.json`. Záloha tak odpovídá živému modelu při spuštění, i když se od Excelu liší.
+5. Zapíše jen změněné koeficientové atributy a všechny hodnoty znovu načte. Při úspěchu ohlásí `RESET_VERIFIED_NATIVE_RECOMPUTE_REQUIRED` a cestu k protokolu. Při chybě včetně částečného COM zápisu obnoví dotčené atributy a ověří všech 13 proti záloze. `ROLLBACK_VERIFIED` znamená ověřený návrat koeficientů; `ROLLBACK_UNVERIFIED_REOPEN_SAVED_MODEL` vyžaduje ručně znovu otevřít uložený model a nepokračovat v kalibraci. Skript sám nepoužívá LoadVersion.
+6. Model sám neukládá a neprovádí TG/TD/assignment. Po úspěšném resetu spusť nový kalibrační běh podle bodu 4 níže. Původní výstupy modelu zatím neodpovídají novým koeficientům.
+
+Opakované spuštění na již resetovaném modelu neprovádí žádné COM zápisy, ale znovu ověří a zazálohuje stav. Počet 5 169 změn platí pro přiložený Excel; jiný aktuální model může mít jiný počet změn.
+
+## Alternativní použití: soubor atributů ve Visumu
 
 1. Před importem ulož kopii modelu. Reset dělej před novým během, mimo rozpracovanou kalibraci.
 2. Načti `RESET_ZONALNICH_KOEFICIENTU.att` jako soubor atributů zón. Aktualizuj existující zóny podle `NO`; soubor obsahuje pouze NO a 13 koeficientů. V tomto kroku se nepřepisují výstupy generování ani jiné vstupy.
@@ -38,7 +51,7 @@ Hraniční přechody mají navíc přímo kalibrované objemové vstupy `P09F4_P
 - Po zpětné záměně pouze změněných čísel je XML listu totožné s originálem. Ostatní součásti XLSX jsou bajtově shodné, včetně stylů, komentářů a metadat.
 - Resetovací i obnovovací ATT a CSV souhlasí s Excelovými hodnotami. Druhé provedení resetu nic nemění.
 - `AUDIT_RESETU.json` obsahuje počty a reference; `OVERENI.json` obsahuje výsledek kontroly a kontrolní součty; `ZMENY_PRED_PO.csv` všech 5 169 změn.
-- Produkční Python soubory ani SHA manifesty se nemění. Celá kalibrační regrese se kvůli úpravě datového exportu nespouštěla.
+- Původní kalibrační logika se nemění. Přibyl samostatný ručně spouštěný COM reset a jeho regresní testy; SHA manifesty byly řádně aktualizovány. Výsledky offline testů jsou v `COM_SCRIPT_CHECKS.json` a přiložených protokolech.
 - Import do živého Visumu a nativní přepočet nebyly provedeny (`LIVE_VISUM_NOT_RUN`).
 
 Reprodukce standardním Pythonem bez dalších knihoven (soubory `.py.txt` jsou běžné spustitelné Python zdroje):

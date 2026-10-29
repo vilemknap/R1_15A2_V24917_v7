@@ -15,6 +15,7 @@
     "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py": "ebe5a9395652c010b3b6c119e8b4f4046489613fc1c419ffd5391a3c97d5bc20",
     "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
     "R1_LONG_SCHOOL_FORMULA_CHECK.py": "b5109b0863dcc2f8b39a83c4ecb5931dc400b12f68db6ab8f320afd1c55d7c6c",
+    "R1_RESET_ZONAL_COEFFICIENTS.py": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
     "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
     "R1_TDLONG1_STANDALONE_READ_ONLY.py": "e4c46037f490c2636dc98d0f0d100fb5fee2dd3d258dd9cb538d4a137b49da8e",
     "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
@@ -132,9 +133,10 @@
     "tests/test_v24917_tdlong1_mask.py": "03f56b0eddd97ba4f13596f653babe0b74c454c3347403d0200ad2412d7458e8",
     "tests/test_v24917_tdrollbackfix1.py": "541706f01eb69808ad68c80721b73d592e01e020e9cd33923c7b9a1892cebe52",
     "tests/test_v24917_tdsplit_sevrelax.py": "3de6e922c6d87b5cea62c7bf0ed36e678b1c56250e242c9aa725b1960450fdd8",
+    "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
-    "tools/refresh_v24917_manifests.py": "1291f481140c02ce14e04d651065585a7a9d4ec1b5d6f4229c3e0cf6b4d0bdba",
+    "tools/refresh_v24917_manifests.py": "94b0163d9fa388c4f5bf7d5593a290580a1ca75970b9d5efb2e1cf85b56e4817",
     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
   }
 }
