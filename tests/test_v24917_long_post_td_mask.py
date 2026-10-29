@@ -240,6 +240,9 @@ def test_all_formula_components_already_masked_require_no_write(tmp_path):
 
 def test_bad_component_aggregate_parity_blocks_before_writes(tmp_path):
     adapter, state, _, mask, _ = harness()
+    # This fixture deliberately supplies an inconsistent *data* aggregate.
+    # Formula aggregate M9305 always recomputes from components.
+    state.formula_nos.discard(pm.FINAL_MATRIX)
     state.arrays[pm.FINAL_MATRIX][0, 0] += 1.
     with pytest.raises(Exception, match='NATIVE_COMPONENT_AGGREGATE_PARITY'):
         pm.apply_group(adapter, mask, pm.COMPONENT_MATRICES, tmp_path, aggregate_no=pm.FINAL_MATRIX)
