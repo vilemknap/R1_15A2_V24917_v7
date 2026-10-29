@@ -126,9 +126,10 @@ class VisumAdapter(_V24916ActiveAdapter):
         short = d11fix.new_short_folder()
         out = d11fix.dynamic_folder(short, label)
         d11fix.stage_static_files(diag["d11"]["summary_path"], out)
-        diag = super()._dynamic_11d_overlay(diag, short, label)
+        with d11fix.capture_metrics() as captured:
+            diag = super()._dynamic_11d_overlay(diag, short, label)
         diag = dict(diag)
-        report = d11fix.publish_dynamic_files(self, diag, out, self.cfg)
+        report = d11fix.publish_dynamic_files(self, diag, out, self.cfg, captured=captured)
         report["evidence_mirror"] = d11fix.mirror(out, d11fix.dynamic_folder(folder, label))
         diag["v24917_dynamic_11d_files"] = report
         return diag
@@ -166,6 +167,42 @@ class VisumAdapter(_V24916ActiveAdapter):
         return context
 
     def generation_design(self, diag, folder):
+        previous = getattr(self, "_v24917_generation_reads", None)
+        self._v24917_generation_reads = {}
+        try:
+            return self._generation_design_live(diag, folder)
+        finally:
+            if previous is None:
+                del self._v24917_generation_reads
+            else:
+                self._v24917_generation_reads = previous
+
+    def _generation_read_key(self):
+        manager = getattr(self, "readback_manager", None)
+        skims = getattr(self, "v24916_dynamic_skims", None)
+        epoch = d11fix.epoch_key(skims.require_current()) if skims is not None else None
+        return (id(manager), getattr(manager, "mutation_epoch", None),
+                getattr(manager, "assignment_epoch", None),
+                getattr(self, "path_epoch_index", None), epoch,
+                tuple(self.zones), tuple(self.cfg.get("path_export_dsegs", ())),
+                self.cfg.get("expected_zones"))
+
+    def _live_generation_matrices(self):
+        scope = getattr(self, "_v24917_generation_reads", None)
+        if scope is None:
+            return super()._live_generation_matrices()
+        key = self._generation_read_key()
+        if scope.get("key") != key:
+            scope.clear()
+            matrices = super()._live_generation_matrices()
+            if key != self._generation_read_key():
+                raise supply_visum.SupplyContractError("V24917_GENERATION_READ_EPOCH_CHANGED")
+            for matrix in matrices.values():
+                matrix.flags.writeable = False
+            scope.update(key=key, matrices=matrices)
+        return dict(scope["matrices"])
+
+    def _generation_design_live(self, diag, folder):
         context = super().generation_design(diag, folder)
         if isinstance(context, Mapping) and context.get("incidence") is not None:
             self.v24917_last_incidence = context["incidence"]

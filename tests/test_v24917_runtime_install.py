@@ -9,6 +9,46 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+
+def test_preload_rejects_module_from_another_package(monkeypatch, tmp_path):
+    import pytest
+    from types import SimpleNamespace
+    import r1_15a2_v24917_runtime as runtime
+    name = "r1_15a2_preload_origin_probe"
+    (tmp_path / (name + ".py")).write_text("VALUE = 1\n", encoding="utf-8")
+    wrong = SimpleNamespace(__file__=str(tmp_path / "other" / (name + ".py")))
+    monkeypatch.setitem(sys.modules, name, wrong)
+    with pytest.raises(RuntimeError, match="PRELOAD_WRONG_MODULE_ORIGIN"):
+        runtime.preload_modules((name,), root=tmp_path)
+    assert sys.modules[name] is wrong
+
+
+def test_preload_uses_absolute_path_even_if_finder_finds_other_package(monkeypatch, tmp_path):
+    import r1_15a2_v24917_runtime as runtime
+    name = "r1_15a2_preload_absolute_probe"
+    correct = tmp_path / "correct"
+    other = tmp_path / "other"
+    correct.mkdir(); other.mkdir()
+    (correct / (name + ".py")).write_text("VALUE = 'correct'\n", encoding="utf-8")
+    (other / (name + ".py")).write_text("raise AssertionError('wrong source executed')\n", encoding="utf-8")
+    monkeypatch.setattr(sys, "path", [str(other), str(correct)] + sys.path)
+    try:
+        runtime.preload_modules((name,), root=correct)
+        assert sys.modules[name].VALUE == "correct"
+        assert runtime.preload_modules((name,), root=correct)["modules"][name] == "ALREADY_LOADED"
+    finally:
+        sys.modules.pop(name, None)
+
+
+def test_preload_missing_dependency_cleans_partial_module(tmp_path):
+    import pytest
+    import r1_15a2_v24917_runtime as runtime
+    name = "r1_15a2_preload_broken_probe"
+    (tmp_path / (name + ".py")).write_text("import missing_r1_dependency_probe\n", encoding="utf-8")
+    with pytest.raises(ModuleNotFoundError, match="missing_r1_dependency_probe"):
+        runtime.preload_modules((name,), root=tmp_path)
+    assert name not in sys.modules
+
 SCRIPT = r'''
 import json, sys, importlib.util
 from pathlib import Path

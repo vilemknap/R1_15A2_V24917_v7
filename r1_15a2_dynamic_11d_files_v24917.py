@@ -28,6 +28,8 @@ from __future__ import annotations
 import json
 import os
 import uuid
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Dict, Mapping, Sequence
 
@@ -42,6 +44,31 @@ SUFFIXES = {
     "compare": "component_model_dist_vs_idp.csv",
     "baseline": "component_model_dist_baseline.csv",
 }
+
+_METRIC_CAPTURE = ContextVar("v24917_dynamic_metric_capture", default=None)
+
+
+def epoch_key(epoch):
+    return (epoch.assignment_epoch, epoch.epoch, epoch.epoch_hash, epoch.zone_order_sha256)
+
+
+@contextmanager
+def capture_metrics():
+    """Keep survey metrics only during one diagnostic overlay, including on error."""
+    captured = {}
+    token = _METRIC_CAPTURE.set(captured)
+    try:
+        yield captured
+    finally:
+        _METRIC_CAPTURE.reset(token)
+
+
+def record_metrics(evaluator, metrics):
+    captured = _METRIC_CAPTURE.get()
+    if captured is not None:
+        captured.update(epoch=epoch_key(evaluator.bridge.dynamic_skim_epoch),
+                        reference_path=str(Path(evaluator.ref.__file__).resolve()),
+                        metrics=metrics)
 
 
 def dynamic_folder(folder, label) -> Path:
@@ -171,7 +198,7 @@ def dynamic_baseline_rows(static_rows: Sequence[Mapping[str, Any]], metrics: Map
     return out, audit
 
 
-def publish_dynamic_files(adapter, diag: Dict[str, Any], out: Path, cfg) -> Dict[str, Any]:
+def publish_dynamic_files(adapter, diag: Dict[str, Any], out: Path, cfg, *, captured=None) -> Dict[str, Any]:
     """Rewrite summary/baseline CSVs from dynamic metrics; rebuild TD signals."""
     import r1_15a2_supply_visum as supply_visum
     from r1_15a2_finecdf_bridge_v24916 import load_reference, DynamicFamilyMetrics
@@ -179,10 +206,16 @@ def publish_dynamic_files(adapter, diag: Dict[str, Any], out: Path, cfg) -> Dict
     epoch = adapter.v24916_dynamic_skims.require_current()
     fine_cfg = (cfg.get("coupled_demand", {}) or {}).get("finecdf_td", {}) or {}
     ref, _path, _sha = load_reference(adapter._v24916_package_root, fine_cfg)
-    needed = sorted({int(no) for t in ref.TARGETS.values() for no in t["matrix_nos"]})
-    matrices = {no: np.asarray(adapter.visum.Net.Matrices.ItemByKey(int(no)).GetValues(),
-                               dtype=np.float64) for no in needed}
-    metrics = DynamicFamilyMetrics(SimpleNamespace(dynamic_skim_epoch=epoch), ref).evaluate(matrices)
+    reused = bool(captured and captured.get("epoch") == epoch_key(epoch)
+                  and captured.get("reference_path") == str(Path(_path).resolve())
+                  and diag.get("dynamic_11d_reference_sha256") == _sha)
+    if reused:
+        metrics = captured["metrics"]
+    else:
+        needed = sorted({int(no) for t in ref.TARGETS.values() for no in t["matrix_nos"]})
+        matrices = {no: np.asarray(adapter.visum.Net.Matrices.ItemByKey(int(no)).GetValues(),
+                                   dtype=np.float64) for no in needed}
+        metrics = DynamicFamilyMetrics(SimpleNamespace(dynamic_skim_epoch=epoch), ref).evaluate(matrices)
 
     d11 = diag["d11"]
     summary_rows = list((d11.get("summary") or {}).get("component_dist_summary_rows") or [])
@@ -196,6 +229,7 @@ def publish_dynamic_files(adapter, diag: Dict[str, Any], out: Path, cfg) -> Dict
     signals, _source = supply_visum.base.build_td_signals_from_11d(d11, cfg)
     diag["signals"] = signals
     report = {"release": RELEASE, "folder": str(out), "component_bins": audit,
+              "verified_metrics_reused": reused,
               "summary_rows": len(summary_rows), "baseline_rows": len(rows),
               "dynamic_skim_epoch": int(epoch.epoch), "dynamic_skim_epoch_hash": epoch.epoch_hash,
               "target_file": "UNCHANGED_TARGETS_DO_NOT_DEPEND_ON_DISTANCE"}

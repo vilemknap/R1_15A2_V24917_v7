@@ -168,10 +168,16 @@ class CountModel:
 
     def read_live(self) -> np.ndarray:
         out = np.zeros(len(self.profiles))
+        volumes = {}
+        def volume(fr, to):
+            key = (int(fr), int(to))
+            if key not in volumes:
+                volumes[key] = self._vol(self._link(*key))
+            return volumes[key]
         for i, p in enumerate(self.profiles):
-            v = self._vol(self._link(p["from"], p["to"]))
+            v = volume(p["from"], p["to"])
             if p["both"]:
-                v += self._vol(self._link(p["to"], p["from"]))
+                v += volume(p["to"], p["from"])
             out[i] = v
         return out
 
@@ -439,6 +445,8 @@ def install(print_fn=print) -> Dict[str, Any]:
             if not is_td_inner_bridge(self.bridge):
                 # 11D overlay / dynamic 11D file publishing build this class with a bare
                 # SimpleNamespace(dynamic_skim_epoch=...): diagnostics keep the pure survey metric.
+                from r1_15a2_dynamic_11d_files_v24917 import record_metrics
+                record_metrics(self, out)
                 return out
             blend = getattr(self, "_v24917_blend_state", None)
             if blend is None:

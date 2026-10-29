@@ -1,0 +1,717 @@
+{
+  "compiled": 59,
+  "imports": [
+    {
+      "path": "R1_TDLONG1_READ_ONLY_PROBE.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "01_SPUSTIT_V24917_TDJOINT1.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "02_SPUSTIT_V24917_TDJOINT1_60_40.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_td_joint_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_td_joint_runtime_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "01_SPUSTIT_V24917_GENFIX2.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "01_SPUSTIT_V24917_GENFIX1.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "01_SPUSTIT_V24917_TARGETED_CATCHUP.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_zonal_count_fit_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_targeted_generation_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_active_demand_evidence_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_runtime_delta_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_v24917_runtime.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_skim_optype_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_dynamic_11d_files_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_finecdf_gapfix_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_profile_roster_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_td_count_blend_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_long_school_generation_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_long_od_mask_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_long_profile_incidence_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_long_zonal_fit_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_tdlong1_probe_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_intrazonal_penalty_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_fast_trial_assignment_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_step_search_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_perf_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_combusy2_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_preflight_explain_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_boundary_generation_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_td_rollback_tolerant_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_severity_relax_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_rollback_consistency_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_boundary_pa_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_mobility_guard_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_snapshot_reads_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_generation_state_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "R1_VDF_DIAGNOSTIC.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "R1_VDF_EDIT.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import importlib.util,sys;sys.path.insert(0,sys.argv[1]);s=importlib.util.spec_from_file_location('audit_entry',sys.argv[2]);m=importlib.util.module_from_spec(s);sys.modules[s.name]=m;s.loader.exec_module(m)\n                                                                                                                                                                                            ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"<frozen importlib._bootstrap_external>\", line 1026, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py\", line 309, in <module>\n    main()\n    ~~~~^^\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py\", line 199, in main\n    v = v or _visum()\n             ~~~~~~^^\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py\", line 81, in _visum\n    import win32com.client  # type: ignore\n    ^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'win32com'\n"
+    },
+    {
+      "path": "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import importlib.util,sys;sys.path.insert(0,sys.argv[1]);s=importlib.util.spec_from_file_location('audit_entry',sys.argv[2]);m=importlib.util.module_from_spec(s);sys.modules[s.name]=m;s.loader.exec_module(m)\n                                                                                                                                                                                            ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"<frozen importlib._bootstrap_external>\", line 1026, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_APPLY.py\", line 309, in <module>\n    main()\n    ~~~~^^\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_APPLY.py\", line 199, in main\n    v = v or _visum()\n             ~~~~~~^^\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_APPLY.py\", line 81, in _visum\n    import win32com.client  # type: ignore\n    ^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'win32com'\n"
+    },
+    {
+      "path": "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "helpers/R1_12D_PROFILE_ROSTER_V24917.py",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import importlib.util,sys;sys.path.insert(0,sys.argv[1]);s=importlib.util.spec_from_file_location('audit_entry',sys.argv[2]);m=importlib.util.module_from_spec(s);sys.modules[s.name]=m;s.loader.exec_module(m)\n                                                                                                                                                                                            ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"<frozen importlib._bootstrap_external>\", line 1026, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/workspace/work/read_reuse/source/helpers/R1_12D_PROFILE_ROSTER_V24917.py\", line 850, in <module>\n    main()\n    ~~~~^^\n  File \"/workspace/work/read_reuse/source/helpers/R1_12D_PROFILE_ROSTER_V24917.py\", line 815, in main\n    v = get_visum()\n  File \"/workspace/work/read_reuse/source/helpers/R1_12D_PROFILE_ROSTER_V24917.py\", line 223, in get_visum\n    raise RuntimeError(\"Visum/COM global object is not available. Run inside PTV Visum.\")\nRuntimeError: Visum/COM global object is not available. Run inside PTV Visum.\n"
+    },
+    {
+      "path": "r1_15a2_generation_gate_nonfatal_v1.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_demand_policy_v1.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_diagfast_v1.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_diagfast_v2.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_diagfast_numpy_v2.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_diagfast_runtime_v1.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_diagfast_parity_v1.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_diagfast_direct_v2.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_long_distance_guard_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_mobility_zone_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "r1_15a2_procseq_bootstrap_v24917.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "helpers/R1_12D_DIAGFAST_V1.py",
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "path": "helpers/R1_11D_DIAGFAST_V1.py",
+      "returncode": 0,
+      "stderr": ""
+    }
+  ],
+  "symbols": [
+    {
+      "path": "R1_TDLONG1_READ_ONLY_PROBE.py",
+      "module": "r1_15a2_tdlong1_probe_v24917",
+      "symbol": "inspect_read_only",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_joint_runtime_v24917.py",
+      "module": "r1_15a2_controller_v22",
+      "symbol": "atomic_json",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "module": "r1_15a2_com_compat",
+      "symbol": "com_call_with_retry",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "module": "r1_15a2_com_compat",
+      "symbol": "zone_identity",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "canonical_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "module": "r1_15a2_multiblock",
+      "symbol": "COMPONENT_REGISTRY",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "module": "r1_15a2_dynamic_skim_v24916p2c",
+      "symbol": "SCHEMA",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "module": "r1_15a2_dynamic_skim_v24916p2c",
+      "symbol": "REQUIRED_NATIVE_DSEGS",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_parent_equivalence_v24917.py",
+      "module": "r1_15a2_dynamic_skim_v24916p2c",
+      "symbol": "_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24917.py",
+      "module": "r1_15a2_trial_adapter_v24916p2c_active",
+      "symbol": "VisumAdapter",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24917.py",
+      "module": "r1_15a2_active_demand_evidence_v24917",
+      "symbol": "ActiveDemandEvidenceBuilder",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24917.py",
+      "module": "r1_15a2_demand_evidence_v24916",
+      "symbol": "target_projection_rows",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24917.py",
+      "module": "r1_15a2_td_count_blend_v24917",
+      "symbol": "cl_key",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "canonical_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_trial_adapter_v24917.py",
+      "module": "r1_15a2_td_count_blend_v24917",
+      "symbol": "cl_key",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_v24917_runtime.py",
+      "module": "r1_15a2_supply",
+      "symbol": "canonical_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_dynamic_11d_files_v24917.py",
+      "module": "r1_15a2_finecdf_bridge_v24916",
+      "symbol": "load_reference",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_dynamic_11d_files_v24917.py",
+      "module": "r1_15a2_finecdf_bridge_v24916",
+      "symbol": "DynamicFamilyMetrics",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_finecdf_gapfix_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "canonical_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_count_blend_v24917.py",
+      "module": "r1_15a2_com_compat",
+      "symbol": "com_call_with_retry",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_count_blend_v24917.py",
+      "module": "r1_15a2_com_compat",
+      "symbol": "com_call_with_retry",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_count_blend_v24917.py",
+      "module": "r1_15a2_td_joint_v24917",
+      "symbol": "score_blend",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_count_blend_v24917.py",
+      "module": "r1_15a2_dynamic_11d_files_v24917",
+      "symbol": "record_metrics",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_od_mask_v24917.py",
+      "module": "r1_15a2_long_distance_guard_v24917",
+      "symbol": "MATRIX_NOS",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_od_mask_v24917.py",
+      "module": "r1_15a2_long_distance_guard_v24917",
+      "symbol": "MIN_KM",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_od_mask_v24917.py",
+      "module": "r1_15a2_long_distance_guard_v24917",
+      "symbol": "MAX_CDF_KM",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_od_mask_v24917.py",
+      "module": "r1_15a2_skim_v24916p2c",
+      "symbol": "matrix_values_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_od_mask_v24917.py",
+      "module": "r1_15a2_skim_v24916p2c",
+      "symbol": "ordered_zone_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_profile_incidence_v24917.py",
+      "module": "r1_15a2_skim_v24916p2c",
+      "symbol": "matrix_values_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_profile_incidence_v24917.py",
+      "module": "r1_15a2_skim_v24916p2c",
+      "symbol": "ordered_zone_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_zonal_fit_v24917.py",
+      "module": "r1_15a2_skim_v24916p2c",
+      "symbol": "ordered_zone_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_intrazonal_penalty_v24917.py",
+      "module": "r1_15a2_skim_v24916",
+      "symbol": "matrix_inventory",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_intrazonal_penalty_v24917.py",
+      "module": "r1_15a2_skim_v24916p2c",
+      "symbol": "matrix_values_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_fast_trial_assignment_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_step_search_v24917.py",
+      "module": "r1_15a2_td_count_blend_v24917",
+      "symbol": "cl_key",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_step_search_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_preflight_explain_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "canonical_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "canonical_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "check_addval_change",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_supply_mix_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_rollback_tolerant_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "observation_identity",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_rollback_tolerant_v24917.py",
+      "module": "r1_15a2_td_count_blend_v24917",
+      "symbol": "cl_key",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_rollback_tolerant_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_rollback_tolerant_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_td_rollback_tolerant_v24917.py",
+      "module": "r1_15a2_runtime_io_hotfix_profile488",
+      "symbol": "_native_path",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_rollback_consistency_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_snapshot_reads_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_snapshot_reads_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "canonical_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_snapshot_reads_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "integer",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_snapshot_reads_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "key_text",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_generation_state_v24917.py",
+      "module": "r1_15a2_controller_v22",
+      "symbol": "atomic_json",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_generation_state_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_diagfast_v1.py",
+      "module": "r1_15a2_diagfast_parity_v1",
+      "symbol": "parity_helper",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_diagfast_runtime_v1.py",
+      "module": "r1_15a2_diagfast_parity_v1",
+      "symbol": "capture_state",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_diagfast_parity_v1.py",
+      "module": "r1_15a2_supply_visum",
+      "symbol": "VisumAdapter",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_diagfast_parity_v1.py",
+      "module": "r1_15a2_visum_parameters",
+      "symbol": "read_td_parameter_state",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_distance_guard_v24917.py",
+      "module": "r1_15a2_skim_v24916p2c",
+      "symbol": "ordered_zone_hash",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_long_distance_guard_v24917.py",
+      "module": "r1_15a2_com_compat",
+      "symbol": "com_call_with_retry",
+      "present": true
+    },
+    {
+      "path": "r1_15a2_procseq_bootstrap_v24917.py",
+      "module": "r1_15a2_supply",
+      "symbol": "SupplyContractError",
+      "present": true
+    },
+    {
+      "path": "helpers/R1_12D_DIAGFAST_V1.py",
+      "module": "r1_15a2_diagfast_v1",
+      "symbol": "execute_helper",
+      "present": true
+    },
+    {
+      "path": "helpers/R1_11D_DIAGFAST_V1.py",
+      "module": "r1_15a2_diagfast_v1",
+      "symbol": "execute_helper",
+      "present": true
+    }
+  ],
+  "missing_symbols": [],
+  "failed_imports": [
+    {
+      "path": "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import importlib.util,sys;sys.path.insert(0,sys.argv[1]);s=importlib.util.spec_from_file_location('audit_entry',sys.argv[2]);m=importlib.util.module_from_spec(s);sys.modules[s.name]=m;s.loader.exec_module(m)\n                                                                                                                                                                                            ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"<frozen importlib._bootstrap_external>\", line 1026, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py\", line 309, in <module>\n    main()\n    ~~~~^^\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py\", line 199, in main\n    v = v or _visum()\n             ~~~~~~^^\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py\", line 81, in _visum\n    import win32com.client  # type: ignore\n    ^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'win32com'\n"
+    },
+    {
+      "path": "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import importlib.util,sys;sys.path.insert(0,sys.argv[1]);s=importlib.util.spec_from_file_location('audit_entry',sys.argv[2]);m=importlib.util.module_from_spec(s);sys.modules[s.name]=m;s.loader.exec_module(m)\n                                                                                                                                                                                            ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"<frozen importlib._bootstrap_external>\", line 1026, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_APPLY.py\", line 309, in <module>\n    main()\n    ~~~~^^\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_APPLY.py\", line 199, in main\n    v = v or _visum()\n             ~~~~~~^^\n  File \"/workspace/work/read_reuse/source/R1_BOUNDARY_X_PA_UPLIFT_APPLY.py\", line 81, in _visum\n    import win32com.client  # type: ignore\n    ^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'win32com'\n"
+    },
+    {
+      "path": "helpers/R1_12D_PROFILE_ROSTER_V24917.py",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import importlib.util,sys;sys.path.insert(0,sys.argv[1]);s=importlib.util.spec_from_file_location('audit_entry',sys.argv[2]);m=importlib.util.module_from_spec(s);sys.modules[s.name]=m;s.loader.exec_module(m)\n                                                                                                                                                                                            ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"<frozen importlib._bootstrap_external>\", line 1026, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/workspace/work/read_reuse/source/helpers/R1_12D_PROFILE_ROSTER_V24917.py\", line 850, in <module>\n    main()\n    ~~~~^^\n  File \"/workspace/work/read_reuse/source/helpers/R1_12D_PROFILE_ROSTER_V24917.py\", line 815, in main\n    v = get_visum()\n  File \"/workspace/work/read_reuse/source/helpers/R1_12D_PROFILE_ROSTER_V24917.py\", line 223, in get_visum\n    raise RuntimeError(\"Visum/COM global object is not available. Run inside PTV Visum.\")\nRuntimeError: Visum/COM global object is not available. Run inside PTV Visum.\n"
+    }
+  ],
+  "live_visum_tested": false
+}

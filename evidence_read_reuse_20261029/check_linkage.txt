@@ -1,0 +1,39 @@
+"""Offline runtime compilation and import-symbol audit, no model connection."""
+import ast
+import importlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+root = Path(sys.argv[1]).resolve()
+out = Path(sys.argv[2])
+sys.path.insert(0, str(root))
+manifest = json.loads((root / 'V24917_RUNTIME_MANIFEST.json').read_text())
+files = [p for p in manifest['required_files'] if p.endswith('.py')]
+results = []
+for path in files:
+    source = (root / path).read_text(encoding='utf-8-sig')
+    tree = ast.parse(source, filename=path)
+    compile(tree, path, 'exec')
+    # Import each entry point in a separate process; __main__ and Visum are absent.
+    child = "import importlib.util,sys;sys.path.insert(0,sys.argv[1]);s=importlib.util.spec_from_file_location('audit_entry',sys.argv[2]);m=importlib.util.module_from_spec(s);sys.modules[s.name]=m;s.loader.exec_module(m)"
+    p = subprocess.run([sys.executable, '-B', '-c', child, str(root), str(root/path)],
+                       capture_output=True, text=True, timeout=30)
+    results.append({'path': path, 'returncode': p.returncode, 'stderr': p.stderr[-2000:]})
+
+symbols = []
+for path in files:
+    tree = ast.parse((root / path).read_text(encoding='utf-8-sig'))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module and node.module.startswith('r1_'):
+            module = importlib.import_module(node.module)
+            for alias in node.names:
+                if alias.name != '*':
+                    symbols.append({'path': path, 'module': node.module, 'symbol': alias.name,
+                                    'present': hasattr(module, alias.name)})
+result = {'compiled': len(files), 'imports': results, 'symbols': symbols,
+          'missing_symbols': [r for r in symbols if not r['present']],
+          'failed_imports': [r for r in results if r['returncode']], 'live_visum_tested': False}
+out.write_text(json.dumps(result, indent=2))
+print(json.dumps({k: result[k] for k in ('compiled', 'missing_symbols', 'failed_imports')}))

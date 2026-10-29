@@ -103,31 +103,29 @@ def preload_modules(names=LAZY_RUNTIME_MODULES, root: Path = None) -> Dict[str, 
     """
     import importlib
     import importlib.util
-    root = Path(root) if root is not None else Path(__file__).resolve().parent
+    root = (Path(root) if root is not None else Path(__file__).resolve().parent).resolve()
     importlib.invalidate_caches()
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
     report = {"package_root": str(root), "modules": {}}
     for name in names:
-        if name in sys.modules:
-            report["modules"][name] = "ALREADY_LOADED"
-            continue
-        try:
-            importlib.import_module(name)
-            report["modules"][name] = "IMPORTED"
-            continue
-        except ModuleNotFoundError as exc:
-            if getattr(exc, "name", name) != name:
-                raise
         path = root / (name + ".py")
         if not path.is_file():
             raise RuntimeError("V24917_PRELOAD_MODULE_FILE_MISSING:%s" % path)
+        if name in sys.modules:
+            origin = getattr(sys.modules[name], "__file__", None)
+            if not origin or os.path.normcase(str(Path(origin).resolve())) != os.path.normcase(str(path)):
+                raise RuntimeError("V24917_PRELOAD_WRONG_MODULE_ORIGIN:%s:%s" % (name, origin))
+            report["modules"][name] = "ALREADY_LOADED"
+            continue
         spec = importlib.util.spec_from_file_location(name, str(path))
+        if spec is None or spec.loader is None:
+            raise RuntimeError("V24917_PRELOAD_SPEC_UNAVAILABLE:%s" % path)
         module = importlib.util.module_from_spec(spec)
         sys.modules[name] = module
         try:
             spec.loader.exec_module(module)
-        except Exception:
+        except BaseException:
             sys.modules.pop(name, None)
             raise
         report["modules"][name] = "LOADED_BY_ABSOLUTE_PATH"

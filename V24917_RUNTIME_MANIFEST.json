@@ -14,15 +14,15 @@
     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
     "r1_15a2_zonal_count_fit_v24917.py": "ba42bc8018c5c330731762bb3dd397e5304e465a250c6b76ff1745becfb208b4",
     "r1_15a2_targeted_generation_v24917.py": "06cc39782779361eecbe498d05ef8b03ee00c270932f05376718ebb42759d206",
-    "r1_15a2_trial_adapter_v24917.py": "c1f6f73f21486b80401b73f483a315155e5baf96b682c02c13588ef7d256a123",
-    "r1_15a2_active_demand_evidence_v24917.py": "cfb0a81c09203fcd4f24a6da80dada520aeecff7683f6ab161c38196e604234b",
+    "r1_15a2_trial_adapter_v24917.py": "d9aeb65d9cde55ba0b2b2b5cd799a2125165cca6374e5747d7a35e1250ddf15d",
+    "r1_15a2_active_demand_evidence_v24917.py": "1f3725f6e043042560e430f3b43a33dce4b18cc08ff02a2000185f077b1fa356",
     "r1_15a2_runtime_delta_v24917.py": "34519f5d72ba1998ce115fd1e5b5345a780fae4bf64462f985136af0436c8700",
-    "r1_15a2_v24917_runtime.py": "e53b97d0bc9a21111bf332311ac148d5c14a3dce8e2d20f1d810ce71221d8688",
+    "r1_15a2_v24917_runtime.py": "66dad338a101eae7b069dfa6858d74cac73a04149c6218b92a4bfdcce11142dd",
     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
-    "r1_15a2_dynamic_11d_files_v24917.py": "04671df2ce0c3502eb0997ead6e4ec87db5634afeaf84a30279c518dbee9ba4b",
+    "r1_15a2_dynamic_11d_files_v24917.py": "70aa29f5fac9aa8d6004d02835a72df5f1bbeb23598140d469afb89058da41ed",
     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
-    "r1_15a2_td_count_blend_v24917.py": "5406ad76b3dba1d8b4ac3da50324ad6cd208c23cccba60e842715c4d8e522c02",
+    "r1_15a2_td_count_blend_v24917.py": "e562880237e2feced9579f7e2af03a5c8261dc37bed46e0da8d6d60cea28823e",
     "r1_15a2_long_school_generation_v24917.py": "61f54e62a3174f723dfeea4b547e7716b74530f906768be77861964801ecf687",
     "r1_15a2_long_od_mask_v24917.py": "4187930bd5818a7f40183285189628bc28a3b24541e8992344f1895760972b35",
     "r1_15a2_long_profile_incidence_v24917.py": "cc4c98ba7a6de20e57257afc6db01297ab00c4d1772bc3cf2446739fa33cbe70",
@@ -68,6 +68,6 @@
     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "e39319e24ae8b5b86b3f235bbf83a2c8a734e2da560224dda904bd89c3eae19d"
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "9a097b4fcba1a2656655e4330f5686a730b152d3177acb9b1c0a8e9ed0a1cece"
   }
 }

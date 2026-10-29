@@ -169,6 +169,9 @@ def test_full_parent_success_is_persisted_and_returns_live_diag(tmp_path):
 
 
 def test_failed_full_proof_overrides_legacy_pass_and_preserves_details(tmp_path):
+    # Launcher tests replace modules in sys.modules; match the live exception
+    # class, not the earlier class retained during test collection.
+    from r1_15a2_supply import SupplyContractError
     ad=ArrayAdapter();before=ad.snapshot();baseline=diagnostics();ad.diag['signals']['WORK']['cdf_rmse']=2.
     ctrl=NS(_td_expected_freeze=lambda *a:None,atomic_json=atomic_json)
     def original(*args):
@@ -184,6 +187,7 @@ def test_failed_full_proof_overrides_legacy_pass_and_preserves_details(tmp_path)
 
 
 def test_cached_equal_snapshot_does_not_waive_fresh_live_read(tmp_path):
+    from r1_15a2_supply import SupplyContractError
     ad=ArrayAdapter();before=ad.snapshot();baseline=diagnostics()
     ad.generation_guard_snapshot=lambda:dict(before, generation_hash='CHANGED')
     ctrl=NS(_td_expected_freeze=lambda *a:None,atomic_json=atomic_json)

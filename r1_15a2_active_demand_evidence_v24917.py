@@ -16,10 +16,88 @@ current DynamicSkimEpoch summary.  Everything else is inherited.
 from __future__ import annotations
 
 from pathlib import Path
+from collections import Counter, OrderedDict
 import math
+from types import FunctionType
 from typing import Any, Mapping
 
 import r1_15a2_active_demand_evidence_v24916p2c as base
+
+
+class _FlowBundleReads:
+    """One build, owned NumPy buffers, shared links only, at most four retained."""
+
+    def __init__(self, builder, epoch):
+        self.builder = builder
+        self.epoch = self._epoch_key(epoch)
+        self.authority = self._authority_key()
+        self.cache = OrderedDict()
+        self.hits = self.peak = self.evictions = 0
+        self.shared = None
+
+    def _shared_links(self):
+        builder = self.builder
+        cfg = dict(getattr(builder, "cfg", {}).get("flowbundle") or {})
+        audits = base.driver_profile_audit(
+            builder._profile_rows(), int(cfg.get("max_profiles", 12)),
+            float(cfg.get("min_profile_geh", 10.0)),
+            float(cfg.get("min_profile_abs_residual", 300.0)))
+        dsegs = builder._native_dsegs()
+        uses = Counter(tuple(int(x) for x in key) + (str(dseg["code"]),)
+                       for row in audits if row.get("selected")
+                       for dseg in dsegs if str(dseg.get("family")) == str(row["_v24916_family"])
+                       for key in base.profile_directed_keys(row["_source_row"]))
+        return {key for key, count in uses.items() if count > 1}
+
+    @staticmethod
+    def _epoch_key(epoch):
+        return (getattr(epoch, "epoch_hash", None), getattr(epoch, "assignment_epoch", None),
+                getattr(epoch, "epoch", None), getattr(epoch, "zone_order_sha256", None))
+
+    def _authority_key(self):
+        adapter = getattr(self.builder, "adapter", None)
+        manager = getattr(adapter, "readback_manager", None)
+        return (id(adapter), id(manager), getattr(manager, "mutation_epoch", None),
+                getattr(manager, "assignment_epoch", None),
+                getattr(adapter, "path_epoch_index", None),
+                tuple(getattr(adapter, "zones", ())))
+
+    def check_epoch(self):
+        if (self._epoch_key(self.builder._distance_epoch()) != self.epoch
+                or self._authority_key() != self.authority):
+            self.cache.clear()
+            raise RuntimeError("V24917_FLOWBUNDLE_READ_EPOCH_CHANGED")
+
+    def read(self, adapter, link, dseg, code):
+        self.check_epoch()
+        if self.shared is None:
+            self.shared = self._shared_links()
+        directed = tuple(base._as_int(link.AttValue(a))
+                         for a in ("NO", "FROMNODENO", "TONODENO"))
+        key = directed + (str(code),)
+        if key in self.cache:
+            self.hits += 1
+            # The sealed parent increments this counter after each request.
+            # Cancel the increment for requests served without COM GetValues.
+            self.builder.telemetry["FLOWBUNDLE_MATRIX_GETVALUES_COUNT"] -= 1
+            self.builder.telemetry["V24917_FLOWBUNDLE_READ_REUSE_HITS"] = self.hits
+            self.cache.move_to_end(key)
+            return self.cache[key]
+        raw = base._read_flowbundle_matrix(adapter, link, dseg, code)
+        self.check_epoch()
+        if key in self.shared:
+            import numpy as np
+            # FlowBundle.Clear/Execute may overwrite the COM producer's buffer.
+            raw = np.array(raw, dtype=float, copy=True)
+            raw.flags.writeable = False
+            if len(self.cache) >= 4:
+                self.cache.popitem(last=False)
+                self.evictions += 1
+            self.cache[key] = raw
+            self.peak = max(self.peak, len(self.cache))
+            self.builder.telemetry["V24917_FLOWBUNDLE_CACHE_PEAK"] = self.peak
+            self.builder.telemetry["V24917_FLOWBUNDLE_CACHE_EVICTIONS"] = self.evictions
+        return raw
 
 
 class EpochSkimIdentity:
@@ -78,11 +156,14 @@ def safe_td_target_plan(plan: Mapping[str, Any]) -> dict:
 class _PublishProxy:
     """Manager proxy that substitutes the undefined ``dist`` at publish time."""
 
-    def __init__(self, manager: Any, builder: "ActiveDemandEvidenceBuilder"):
+    def __init__(self, manager: Any, builder: "ActiveDemandEvidenceBuilder", reads=None):
         self._manager = manager
         self._builder = builder
+        self._reads = reads
 
     def publish(self, **kwargs):
+        if self._reads is not None:
+            self._reads.check_epoch()
         kwargs["skim_identity"] = EpochSkimIdentity(self._builder._v24917_epoch)
         # SAFETYFIX1: sanitize the TD mask at the production publication
         # boundary, keeping the sealed V24916 evidence/math file byte-exact.
@@ -101,22 +182,30 @@ class _PublishProxy:
 class ActiveDemandEvidenceBuilder(base.ActiveDemandEvidenceBuilder):
     def build(self, diag: Mapping[str, Any], context: Mapping[str, Any], folder: Path,
               snapshot: Mapping[str, Any]):
+        previous_epoch = getattr(self, "_v24917_epoch", None)
         self._v24917_epoch = self._distance_epoch()
+        reads = _FlowBundleReads(self, self._v24917_epoch)
         real_manager = self.manager
-        proxy = _PublishProxy(real_manager, self)
-        # The inherited body references the bare global ``dist`` only as the
-        # keyword argument value; provide it as the epoch so the name resolves,
-        # and let the proxy replace it by a valid identity object.
-        base.dist = self._v24917_epoch
+        proxy = _PublishProxy(real_manager, self, reads)
+        # A private function namespace injects reads into the sealed parent
+        # without changing module globals used by another builder/call.
+        parent = base.ActiveDemandEvidenceBuilder.build
+        namespace = dict(parent.__globals__, dist=self._v24917_epoch,
+                         _read_flowbundle_matrix=reads.read)
+        run = FunctionType(parent.__code__, namespace, parent.__name__,
+                           parent.__defaults__, parent.__closure__)
         self.manager = proxy
         try:
-            return super().build(diag, context, folder, snapshot)
+            result = run(self, diag, context, folder, snapshot)
+            reads.check_epoch()
+            return result
         finally:
             self.manager = real_manager
-            try:
-                del base.dist
-            except AttributeError:
-                pass
+            reads.cache.clear()
+            if previous_epoch is None:
+                del self._v24917_epoch
+            else:
+                self._v24917_epoch = previous_epoch
 
     @classmethod
     def from_parent(cls, parent: base.ActiveDemandEvidenceBuilder) -> "ActiveDemandEvidenceBuilder":

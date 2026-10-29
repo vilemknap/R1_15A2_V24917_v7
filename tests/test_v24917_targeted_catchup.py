@@ -247,7 +247,7 @@ def test_v24916_publish_bug_is_real_and_fixed(monkeypatch, tmp_path):
             return SimpleNamespace(as_dict=lambda: {"skim": kw["skim_identity"].as_dict()})
 
     def fake_build(self, diag, context, folder, snapshot):
-        return self.manager.publish(identity="I", flowbundles={}, skim_identity=base.dist,
+        return self.manager.publish(identity="I", flowbundles={}, skim_identity=dist,
                                     target_payload={})
 
     monkeypatch.setattr(base.ActiveDemandEvidenceBuilder, "build", fake_build)
@@ -487,7 +487,7 @@ def test_adapter_dynamic_overlay_stages_then_publishes(monkeypatch, tmp_path):
         calls.append("parent")
         return dict(diag, d11=dict(diag["d11"], summary_path=str(out / "DYNAMIC_11D_SUMMARY.json")))
     monkeypatch.setattr(a17._V24916ActiveAdapter, "_dynamic_11d_overlay", parent_overlay)
-    monkeypatch.setattr(fx, "publish_dynamic_files", lambda ad, diag, out, cfg: calls.append("publish") or {"ok": 1})
+    monkeypatch.setattr(fx, "publish_dynamic_files", lambda ad, diag, out, cfg, **kw: calls.append("publish") or {"ok": 1})
     monkeypatch.setenv("R1_D11_SHORT_ROOT", str(tmp_path / "S"))
     ad = a17.VisumAdapter.__new__(a17.VisumAdapter)
     ad.v24916_dynamic_skims = object(); ad.cfg = {}
