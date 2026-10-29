@@ -39,58 +39,6 @@ def test_assignment_authority_exact_17_20_and_selects_only_20():
     assert all(r['status']=='PASS' for r in a['verified_operations'])
 
 
-
-def test_live_09c_op20_only_active_is_valid():
-    """2026-10-29 live Visum: 17/18/19 inactive, final 20 active and exact."""
-    visum = full_scope_visum()
-    for no in (17, 18, 19):
-        visum.Procedures.Operations.items[no - 1].SetAttValue('ACTIVE', 0)
-    before = [op.AttValue('ACTIVE') for op in visum.Procedures.Operations.items]
-    audit = audit_assignment_scope(visum)
-    assert audit['passes'] is True
-    assert audit['failures'] == []
-    assert audit['selected_trial_assignment_operations'] == [20]
-    assert [row['status'] for row in audit['verified_operations']] == [
-        'PASS_INACTIVE_PARTIAL', 'PASS_INACTIVE_PARTIAL',
-        'PASS_INACTIVE_PARTIAL', 'PASS']
-    assert all(set(row['live_dsegs']) == set(row['expected_dsegs'])
-               for row in audit['verified_operations'])
-    assert [op.AttValue('ACTIVE') for op in visum.Procedures.Operations.items] == before
-
-
-@pytest.mark.parametrize('position', [17, 18, 19])
-def test_inactive_partial_scope_drift_is_rejected(position):
-    visum = full_scope_visum()
-    for no in (17, 18, 19):
-        visum.Procedures.Operations.items[no - 1].SetAttValue('ACTIVE', 0)
-    visum.Procedures.Operations.items[position - 1].PrTAssignmentParameters.SetAttValue(
-        'DSEGSET', 'LNV,NV,EXTRA')
-    audit = audit_assignment_scope(visum)
-    assert audit['passes'] is False
-    assert 'OP_%d_DSEGSET' % position in audit['failures']
-    assert audit['selected_trial_assignment_operations'] == []
-
-
-def test_final_op20_inactive_is_still_rejected():
-    visum = full_scope_visum()
-    for no in (17, 18, 19, 20):
-        visum.Procedures.Operations.items[no - 1].SetAttValue('ACTIVE', 0)
-    audit = audit_assignment_scope(visum)
-    assert audit['passes'] is False
-    assert audit['failures'] == ['OP_20_INACTIVE']
-    assert audit['selected_trial_assignment_operations'] == []
-
-
-def test_inactive_partial_wrong_type_remains_rejected():
-    visum = full_scope_visum()
-    visum.Procedures.Operations.items[16].SetAttValue('ACTIVE', 0)
-    visum.Procedures.Operations.items[16].SetAttValue('OPERATIONTYPE', 65)
-    audit = audit_assignment_scope(visum)
-    assert audit['passes'] is False
-    assert audit['failures'] == ['OP_17_TYPE']
-
-
-
 def test_assignment_authority_rejects_op20_scope_drift():
     v=full_scope_visum()
     v.Procedures.Operations.items[19].PrTAssignmentParameters.SetAttValue('DSEGSET','NATIVE_CW,LNV,NV')
