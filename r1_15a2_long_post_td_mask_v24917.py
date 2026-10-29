@@ -234,22 +234,34 @@ def execute_sequence(adapter, folder, original_execute):
                                for rule in rules)):
         raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
     partial = active_assignments - approved
-    if partial:
-        # Audited R1 09C prerequisite scopes (V239/V240). Reject any additional
-        # assignment, reordered final authority, missing active final 20 or
-        # mutated live DSEGSET before toggling ACTIVE or writing any matrix.
-        expected_partial = {
-            17: {'LNV', 'NV'},
-            18: {'NATIVE_CF', 'NATIVE_CL'},
-            19: {'NATIVE_CS', 'NATIVE_CS_NOT', 'NATIVE_CW', 'NATIVE_CW_NOT'},
-        }
-        if approved != {20} or not partial <= set(expected_partial):
-            raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
-        by_no = {int(row['no']): row for row in leaves}
-        for position in sorted(partial):
-            if position >= 20:
-                raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
-            _verify_assignment_scope(by_no[position], expected_partial[position])
+    expected_partial = {
+        17: {'LNV', 'NV'},
+        18: {'NATIVE_CF', 'NATIVE_CL'},
+        19: {'NATIVE_CS', 'NATIVE_CS_NOT', 'NATIVE_CW', 'NATIVE_CW_NOT'},
+    }
+    if partial and (approved != {20} or not partial <= set(expected_partial)):
+        raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
+
+    # User-approved R1 09C execution: operations 17/18/19 AND final 20 must
+    # run in the ASSIGNMENT_SKIMS phase. A saved source version may have only
+    # 20 ACTIVE; never mutate that source or its semantic operation hash.
+    # Read and validate all three inactive/active prerequisite definitions
+    # before *temporarily* enabling them in the scoped operation plan.
+    # OP20 remains the sole final 14-DSeg GAP/COUNT authority.
+    scoped_partial = set()
+    promoted_partial = set()
+    if approved == {20} and 20 in active_assignments:
+        by_no = {int(row['no']): row for row in inventory}
+        final = by_no[20]
+        for position in sorted(expected_partial):
+            row = by_no.get(position)
+            if (row is None or int(row['type']) != ASSIGNMENT_PRT
+                    or int(row['position']) >= int(final['position'])):
+                raise SupplyContractError('LONGMASK_PARTIAL_ASSIGNMENT_DEFINITION_MISMATCH:%d' % position)
+            _verify_assignment_scope(row, expected_partial[position])
+            scoped_partial.add(position)
+            if not row['active']:
+                promoted_partial.add(position)
     if assignments:
         # An active final PrT operation must match its configured DSEGSET,
         # even in the supply-only path (where no partial 17-19 are active).
@@ -270,7 +282,15 @@ def execute_sequence(adapter, folder, original_execute):
         _verify_support(adapter, mask, MATRIX_NOS + COMPONENT_MATRICES + (FINAL_MATRIX,))
         realization = [int(row['no']) for row in leaves if boundary is not None and int(row['no']) < boundary]
         if not realization:
-            result = original_execute(adapter.visum, folder)
+            if promoted_partial:
+                # Assignment-only execution still runs the four audited 09C
+                # operations, with original ACTIVE flags restored on exit.
+                selected = {int(row['no']) for row in leaves} | groups | scoped_partial
+                with activate_operation_plan(adapter.visum,
+                                             {'selected_operation_positions': sorted(selected)}):
+                    result = original_execute(adapter.visum, folder)
+            else:
+                result = original_execute(adapter.visum, folder)
             _verify_support(adapter, mask, MATRIX_NOS + COMPONENT_MATRICES + (FINAL_MATRIX,))
             return result
         # SupplyMix cold recomputation can re-run 20A/20B on unchanged masked
@@ -289,11 +309,18 @@ def execute_sequence(adapter, folder, original_execute):
             raise SupplyContractError('LONGMASK_REALIZATION_OPERATIONS_MISSING')
         phases += [('REALIZATION', realization),
                    ('ASSIGNMENT_SKIMS', [int(row['no']) for row in leaves if int(row['no']) >= boundary])]
+    if scoped_partial:
+        phases = [(name, sorted(set(positions) | scoped_partial) if name == 'ASSIGNMENT_SKIMS'
+                   else positions) for name, positions in phases]
     atomic_json(folder / 'LONG_MASK_EXECUTION_PLAN.json',
                 {'source': source, 'phases': phases, 'td_operation_position': td[0] if td else None,
                  'final_assignment_authority': sorted(approved),
-                 'validated_partial_assignments': sorted(partial),
-                 'operation_definitions_unchanged': True, 'volume_loss_accepted': True})
+                 'validated_partial_assignments': sorted(scoped_partial or partial),
+                 'temporarily_activated_partial_assignments': sorted(promoted_partial),
+                 'expected_final_assignment_sequence': [17, 18, 19, 20] if scoped_partial else sorted(approved),
+                 'operation_definitions_unchanged': True,
+                 'original_active_flags_restored_after_each_phase': True,
+                 'volume_loss_accepted': True})
     result = None
     for name, positions in phases:
         plan = {'selected_operation_positions': sorted(set(positions) | groups)}
