@@ -56,9 +56,13 @@ def audit_assignment_scope(visum):
             failures.append("OP_%d_TYPE" % no)
             details.append(out)
             continue
-        if not row["active"]:
-            out["status"] = "INACTIVE"
-            failures.append("OP_%d_INACTIVE" % no)
+        # OP20 is the unique active 14-DSeg final GAP/assignment authority.
+        # OP17..19 are optional, *partial* prerequisites; the live 09C source
+        # legitimately leaves them inactive. Still verify their type and exact
+        # DSEGSET in either state: inactivity is NOT permission for scope drift.
+        if not row["active"] and no == 20:
+            out["status"] = "INACTIVE_FINAL"
+            failures.append("OP_20_INACTIVE")
             details.append(out)
             continue
         try:
@@ -73,7 +77,7 @@ def audit_assignment_scope(visum):
                 out["extra"] = sorted(live - EXPECTED[no])
                 failures.append("OP_%d_DSEGSET" % no)
             else:
-                out["status"] = "PASS"
+                out["status"] = "PASS" if row["active"] else "PASS_INACTIVE_PARTIAL"
         except Exception as exc:
             out["status"] = "UNREADABLE"
             out["error"] = str(exc)
