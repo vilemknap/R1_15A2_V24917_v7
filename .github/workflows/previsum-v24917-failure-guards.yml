@@ -4,6 +4,7 @@ on:
     branches:
       - codex/v24917-previsum-failure-guards-20261029
       - codex/fix-v240-op20-inactive-partials-20261029
+      - codex/v24917-op17-20-and-matrix-com-array-fix-20261029
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,6 +25,7 @@ jobs:
           python -m py_compile r1_15a2_preflight_explain_v24917.py
           python -m py_compile tests/test_v24917_preflight_op20_partial_activation.py
           python -m py_compile tests/test_v24917_longmask_09c_live_scope_regression.py
+          python -m py_compile tests/test_v24917_long_post_td_mask.py
       - name: Verify sealed runtime and DIAGFAST files (read only)
         run: |
           python - <<'PY'
