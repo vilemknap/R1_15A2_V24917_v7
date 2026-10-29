@@ -194,7 +194,10 @@ def execute_sequence(adapter, folder, original_execute):
     rules = (getattr(adapter, 'cfg', {}) or {}).get('supply', {}).get('assignment_operations', [])
     approved = {int(rule['no']) for rule in rules}
     active_assignments = set(assignments)
-    if assignments and (not approved or not approved <= active_assignments):
+    if assignments and (not approved or len(approved) != len(rules)
+                        or not approved <= active_assignments
+                        or any(int(rule.get('operation_type', -1)) != ASSIGNMENT_PRT
+                               for rule in rules)):
         raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
     partial = active_assignments - approved
     if partial:
@@ -213,11 +216,19 @@ def execute_sequence(adapter, folder, original_execute):
             if position >= 20:
                 raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
             _verify_assignment_scope(by_no[position], expected_partial[position])
-        final_rules = [rule for rule in rules if int(rule['no']) == 20]
-        expected_final = final_rules[0].get('expected_dsegs', []) if len(final_rules) == 1 else []
-        if not expected_final:
-            raise SupplyContractError('LONGMASK_FINAL_ASSIGNMENT_SCOPE_AUTHORITY_MISSING')
-        _verify_assignment_scope(by_no[20], {str(x).upper() for x in expected_final})
+    if assignments:
+        # An active final PrT operation must match its configured DSEGSET,
+        # even in the supply-only path (where no partial 17-19 are active).
+        by_no = {int(row['no']): row for row in leaves}
+        for rule in rules:
+            expected_final = rule.get('expected_dsegs', [])
+            if not expected_final:
+                if partial:
+                    raise SupplyContractError('LONGMASK_FINAL_ASSIGNMENT_SCOPE_AUTHORITY_MISSING')
+                # Legacy miniature unit-test harnesses omit DSEGSET authority;
+                # real V24917 checks it in assignment_plan() before supply.
+                continue
+            _verify_assignment_scope(by_no[int(rule['no'])], expected_final)
     if len(td) > 1:
         raise SupplyContractError('LONGMASK_EXPECTED_ONE_UNIFIED_TD_OPERATION')
     boundary = min(assignments) if assignments else None
