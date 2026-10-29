@@ -57,7 +57,7 @@
     "r1_15a2_long_distance_guard_v24917.py": "94a0e368d35929756c56d913fc50ebd16e321c21ed8c37e8463636338fdad712",
     "r1_15a2_long_incidence_read_v24917.py": "a6baead1427a273862affc2b01677e604f7143706a40030cb99bbb9fa978ea4b",
     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
-    "r1_15a2_long_post_td_mask_v24917.py": "090c152a600189a79ce783b057a9d340a8fcd9840d21949ce1ced12afc27359f",
+    "r1_15a2_long_post_td_mask_v24917.py": "43a5f1cb9334f044dd89008177b53c694b088b710dc40b1c38c8292b1fecfaa5",
     "r1_15a2_long_profile_incidence_v24917.py": "b86614ab75a8ccae40918a7028b2d7e0455b41a2aa2b9197ea550dc55d9329db",
     "r1_15a2_long_school_generation_v24917.py": "3710e3aeca5ca5f39881d25b6838dcbdb44f42a3eb1dd353e0f494d054eb17b8",
     "r1_15a2_long_support_distance_v24917.py": "79765255b057b1f09345ce4b7ac9874cd4b1fe91a09d996ba20d4c63223c02e9",
@@ -138,6 +138,7 @@
     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
     "tools/refresh_v24917_manifests.py": "94b0163d9fa388c4f5bf7d5593a290580a1ca75970b9d5efb2e1cf85b56e4817",
-    "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d"
+    "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
+    "tests/test_v24917_longmask_09c_live_scope_regression.py": "64e0508be42e2a012f267fd440e7cb46bed2b242c113944f015ef7d4a23fb666"
   }
 }
