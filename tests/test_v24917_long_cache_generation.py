@@ -322,9 +322,10 @@ def test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_cont
     context = adapter.generation_design({'d12': {'rows': profiles}}, tmp_path)
     assert context['v24917_ls']['summary']['long_generation_permitted'], context['v24917']
     assert ls.rows_at_scale(context['v24917_ls'], 1.)
-    # LONG has source-verified shared-cache evidence, but the 2026-10-30
-    # live SCHOOL FP dependency does not: do NOT report LONG+SCHOOL complete.
-    assert context['v24917']['long_school_search_incomplete']
+    # LONG has source-verified shared-cache evidence. AMDY SCHOOL TG is
+    # deliberately fixed, so it cannot falsely mark Generation incomplete;
+    # SCHOOL Trip Distribution b/c has its own independent TDJOINT status.
+    assert not context['v24917']['long_school_search_incomplete']
     assert not context['v24917']['school_fp_link_deferred']
     assert context['v24917_ls']['summary']['school_generation_search_complete'] is True
     assert context['v24917_step_model']['available']
