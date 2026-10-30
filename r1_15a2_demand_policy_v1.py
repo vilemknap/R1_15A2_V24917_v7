@@ -713,12 +713,12 @@ def patch_envelope(mb, scale):
     orig_soft = mb._soft_multiplier_bounds
 
     @functools.wraps(orig_hard)
-    def hard(branch, cfg, current=None, reference=None):
-        low, high, name = orig_hard(branch, cfg, None, reference)
+    def hard(branch, cfg, current=None, reference=None, *, role=None):
+        low, high, name = orig_hard(branch, cfg, None, reference, role=role)
         if name == 'AMDY_LIKE_DOMESTIC_ABSOLUTE_ENVELOPE':
             low, high = low * scale, high * scale
         else:
-            return orig_hard(branch, cfg, current, reference)
+            return orig_hard(branch, cfg, current, reference, role=role)
         if current is not None and math.isfinite(float(current)):
             low = min(low, float(current))
             high = max(high, float(current))
@@ -726,8 +726,8 @@ def patch_envelope(mb, scale):
     hard.__r1_envelope_scale__ = scale
 
     @functools.wraps(orig_soft)
-    def soft(branch, cfg, current, reference=None):
-        low, high = orig_soft(branch, cfg, current, reference)
+    def soft(branch, cfg, current, reference=None, *, role=None):
+        low, high = orig_soft(branch, cfg, current, reference, role=role)
         if (str(branch).upper() != 'ZAHR' and mb._signed_generation_policy(cfg)
                 and math.isfinite(low) and math.isfinite(high)):
             return low * scale, high * scale
