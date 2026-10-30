@@ -57,13 +57,13 @@ def test_bad_or_recursive_source_fails_before_any_runtime_install(tmp_path):
     nested = source(tmp_path, "BASE/R1FRESH17/a.ver")
     with pytest.raises(RuntimeError, match="SOURCE_INSIDE_OUTPUT_SANDBOX"):
         fresh.sandbox_for(nested)
-    base = tmp_path / "BASE"
+    base = tmp_path / "OTHER_BASE"
     ext = tmp_path / "OTHER"
     ext.mkdir()
     base.mkdir(exist_ok=True)
     (base/"R1FRESH17").symlink_to(ext, target_is_directory=True)
     with pytest.raises(RuntimeError, match="SYMLINKED_SANDBOX_FORBIDDEN"):
-        fresh.sandbox_for(source(tmp_path, "BASE/other.ver"))
+        fresh.sandbox_for(source(tmp_path, "OTHER_BASE/other.ver"))
 
 
 @pytest.mark.parametrize("change", [
