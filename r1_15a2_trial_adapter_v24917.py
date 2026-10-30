@@ -290,6 +290,7 @@ class VisumAdapter(_V24916ActiveAdapter):
         self.v24917_status["longguard1_parent_status"] = self._longguard1_parent.get("status")
         self.v24917_status["longguard1_parent_short"] = self._longguard1_parent.get("below_min_km")
         long_observed = None
+        self._long_generation_parent_vehicle_sha = None
         long_requested = bool(long_opts.load_options()["long_generation_enabled"])
         long_cache_error = ("PARENT_SUPPORT_OR_FINECDF_UNVERIFIED" if long_requested
                             else "LONG_ZONAL_GENERATION_EXPLICITLY_DISABLED")
@@ -313,6 +314,8 @@ class VisumAdapter(_V24916ActiveAdapter):
                     "status", "binding", "cache_parent_hash", "path_epoch", "parameter_parent_sha256",
                     "cache_revision", "profile_order_sha256")}
                 long_cache_error = None
+                self._long_generation_parent_vehicle_sha = (
+                    long_observed["matrix_values_sha256"]["9305"])
                 rt.write_json(folder / "LONG_SHARED_CACHE_INCIDENCE.json", {
                     k: long_observed[k] for k in ("status", "source_status", "binding", "cache_parent_hash",
                         "path_epoch", "profile_parity_max_abs", "matrix_values_sha256", "geometry_identity")})
@@ -576,6 +579,31 @@ class VisumAdapter(_V24916ActiveAdapter):
             proof = longguard.decide(parent, post, changed_long=longguard.changed_long(rows))
             decision = dict(decision, longguard1=proof,
                             longguard1_parent=parent, longguard1_after=post)
+            if longguard.changed_long(rows):
+                # A frozen-path incidence model is only a proposal; after the
+                # real TG->TD->20A/20B->assignment, require evidence that
+                # realized LONG vehicle OD actually responded to the zonal
+                # coefficients. The independent FP formula and live 12D/11D
+                # acceptance guards remain mandatory.
+                try:
+                    base_sha = getattr(self, "_long_generation_parent_vehicle_sha", None)
+                    if not base_sha:
+                        raise RuntimeError("LONG_TG_PARENT_9305_AUTHORITY_MISSING")
+                    actual = post_td_mask._read(self, 9305)[1]
+                    after_sha = long_cache.matrix_values_hash(actual)
+                    if after_sha == base_sha:
+                        raise RuntimeError("LONG_TG_NO_NATIVE_VEHICLE_OD_RESPONSE")
+                    decision["long_generation_native_response"] = {
+                        "status": "CHANGED_FINAL_VEHICLE_OD_MEASURED",
+                        "matrix_no": 9305, "parent_sha256": base_sha,
+                        "candidate_sha256": after_sha,
+                        "vehicle_total_after": float(actual.sum()),
+                        "method": "REALIZED_NATIVE_TG_TD_20A_20B_AFTER_80KM_MASK"}
+                except Exception as exc:
+                    decision["accepted"] = False
+                    decision["reasons"] = list(decision.get("reasons") or []) + [
+                        "LONG_TG_NATIVE_RESPONSE_UNVERIFIED:" + str(exc)]
+                    self.v24917_status["ls_incomplete_current_cycle"] = True
             self.v24917_status["longguard1_last_proof"] = proof
             if not proof["passes"]:
                 decision["accepted"] = False
