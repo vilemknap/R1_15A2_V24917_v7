@@ -180,6 +180,9 @@ def test_role_reference_reaches_byte_locked_multiblock_mapper(mb, real_cfg, attr
     ref = mb._reference_coefficient(None, attr, 1, 1.0)
     assert isinstance(ref, float) and float(ref) == 1.0
     assert getattr(ref, "v24917_generation_role") in ("PROD", "ATT")
+    cloned = copy.deepcopy(ref)
+    assert float(cloned) == float(ref)
+    assert cloned.v24917_generation_role == ref.v24917_generation_role
     hard = mb._multiplicative_coefficient_bounds(
         "DOMESTIC", cfg, current=1.0, reference=ref)
     soft = mb._soft_multiplier_bounds("DOMESTIC", cfg, 1.0, ref)
