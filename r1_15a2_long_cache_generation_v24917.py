@@ -15,6 +15,7 @@ import r1_15a2_long_incidence_read_v24917 as reads
 import r1_15a2_long_profile_incidence_v24917 as longinc
 import r1_15a2_long_support_distance_v24917 as support
 import r1_15a2_long_zonal_fit_v24917 as lf
+import r1_15a2_long_amdy_formula_v24917 as amdy
 import r1_15a2_zonal_count_fit_v24917 as zf
 import r1_15a2_long_school_generation_v24917 as ls
 import r1_15a2_mobility_zone_v24917 as mz
@@ -250,6 +251,18 @@ def attach_fit(school, observed, visum, cfg, zones, ws_problem, ws_solution, ref
     for attr in ("ADD_PROD_L", "ADD_ATT_L"):
         values = rt.read_zone_attr_strict(visum, attr, zones, retry_policy=cfg.get("com_resilience"))
         current[attr] = {int(z): float(v) for z, v in zip(zones, values)}
+    # A source-verified readback is required before deriving attraction
+    # sensitivity. The 0.2 coefficient controls only PRENOC_SVK, not the
+    # entire attractiveness of the zone. A missing Visum formula link or
+    # legacy ADD_ATT_L=1.0 fails closed before any zonal proposal is applied.
+    native_att = amdy.inspect_native(
+        visum, zones, retry_policy=cfg.get("com_resilience"))
+    att_elasticity = native_att["attraction_elasticity"]
+    for z in zones:
+        if not math.isclose(current["ADD_ATT_L"][int(z)],
+                            native_att["current_coefficient"][int(z)],
+                            rel_tol=0.0, abs_tol=1.e-10):
+            raise ValueError("LONG_ATT_CHANGED_DURING_SOURCE_READBACK")
     opts = ls.ls_options()
     up = min(float(cfg.get("max_add_log_up", .03)), math.log1p(min(.10, opts["ls_max_step_up"])))
     down = min(float(cfg.get("max_add_log_down", .03)), -math.log1p(-min(.10, opts["ls_max_step_down"])))
@@ -262,13 +275,15 @@ def attach_fit(school, observed, visum, cfg, zones, ws_problem, ws_solution, ref
             entry = authority["entries"].get("LONG|" + str(int(z)))
             if c <= 0.0 or entry is None or "LONG" in authority["unavailable"]:
                 bounds[("LONG", role, z)] = (0., 0.); continue
-            if role == "PROD":
-                reference = .3
-            else:
-                # Attraction retains the immutable run-start authority; never re-centre.
-                reference = mb._reference_coefficient(references, attr, z, float("nan"))
-                if not math.isfinite(reference) or reference <= 0.0:
-                    raise ValueError("LONG_CACHE_ATTRACTION_REFERENCE_MISSING")
+            # BOTH legacy AMDY literals are 0.2. Production is a full
+            # multiplier; attraction 0.2 is only an overnight contribution.
+            reference = (amdy.PRODUCTION_REFERENCE if role == "PROD"
+                         else amdy.OVERNIGHT_REFERENCE)
+            if role == "ATT" and att_elasticity[int(z)] <= 1.e-12:
+                # PRENOC_SVK = 0: changing this coefficient changes no
+                # attraction. Do not create fictitious count sensitivities.
+                bounds[("LONG", role, z)] = (0., 0.)
+                continue
             low, high = min(c, reference*band[0]), max(c, reference*band[1])
             lo, hi = max(-down, math.log(low/c)), min(up, math.log(high/c))
             if role == "PROD":
@@ -276,7 +291,8 @@ def attach_fit(school, observed, visum, cfg, zones, ws_problem, ws_solution, ref
             bounds[("LONG", role, z)] = (lo, hi)
     residual_reference = {"predicted_change": np.asarray(ws_solution["predicted_change"]) + prior}
     try:
-        problem = lf.build_problem(observed, ws_problem, residual_reference, zones, bounds)
+        problem = lf.build_problem(observed, ws_problem, residual_reference, zones,
+                                   bounds, attraction_elasticity=att_elasticity)
     except ValueError as exc:
         if str(exc) != "LONG_FIT_NO_ACTUATORS": raise
         out.setdefault("summary", {}).update(long_generation_permitted=True,
@@ -298,7 +314,12 @@ def attach_fit(school, observed, visum, cfg, zones, ws_problem, ws_solution, ref
     out["predicted_change"] = (prior + solution["predicted_change"]).tolist()
     out["long_balance_base"] = {"zones": list(zones),
         "production": observed["vehicle_production"].tolist(),
-        "attraction": observed["vehicle_attraction"].tolist()}
+        "attraction": observed["vehicle_attraction"].tolist(),
+        "attraction_effective": [
+            float(observed["vehicle_attraction"][i]) * att_elasticity[int(z)]
+            for i, z in enumerate(zones)],
+        "formula_authority": native_att["status"],
+        "coefficient_reference": [amdy.PRODUCTION_REFERENCE, amdy.OVERNIGHT_REFERENCE]}
     out.setdefault("summary", {}).update(status="OK", long_generation_permitted=True,
         long_search_status="ZONAL_LOCAL_PROPOSAL_REQUIRES_LIVE_ACCEPTANCE",
         long_zone_profile_incidence_status=STATUS, long_deferred_reason=None,
@@ -308,6 +329,9 @@ def attach_fit(school, observed, visum, cfg, zones, ws_problem, ws_solution, ref
         long_solver_converged=bool(solution["converged"]),
         long_native_filter_required=False, long_step_ceiling=.10,
         long_balance_mode=solution["balance_mode"], tg_sensitivity_verified=False,
+        long_overnight_active_zones=native_att["active_overnight_zones"],
+        long_overnight_zero_zones=native_att["zero_overnight_zones"],
+        long_attraction_formula_status=native_att["status"],
         linear_ratio_after_ws_and_ls=float(sum(float(r["model"]) for r in ws_problem.profile_rows)
             + np.sum(ws_solution["predicted_change"]) + np.sum(out["predicted_change"])) /
             max(1.e-12, sum(float(r["observed"]) for r in ws_problem.profile_rows)))
@@ -325,8 +349,10 @@ def add_gate_summary(design, ls):
              for r in design.get("candidate_rows", ()) if r.get("family") == "LONG"}
     p = math.fsum(float(v)*math.expm1(steps.get(("PROD", int(z)), 0.0))
                   for z, v in zip(base["zones"], base["production"]))
+    if "attraction_effective" not in base:
+        raise ValueError("LONG_AMDY_OVERNIGHT_ATTRACTION_BALANCE_MASS_MISSING")
     a = math.fsum(float(v)*math.expm1(steps.get(("ATT", int(z)), 0.0))
-                  for z, v in zip(base["zones"], base["attraction"]))
+                  for z, v in zip(base["zones"], base["attraction_effective"]))
     design.setdefault("summary", {}).setdefault("estimated_pa_delta_by_family", {})["LONG"] = {
         "estimated_prod_delta": p, "estimated_att_delta": a, "estimated_abs_gap": abs(p-a),
         "basis": "LOCAL_FINAL_VEHICLE_PROPOSAL_NOT_NATIVE_TG_DERIVATIVE"}
