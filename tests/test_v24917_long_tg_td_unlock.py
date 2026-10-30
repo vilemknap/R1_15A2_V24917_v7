@@ -220,3 +220,41 @@ def test_long_target_rejects_school_and_unsafe_modes(monkeypatch):
     with pytest.raises(RuntimeError, match="TARGET_REQUIRES_DYNAMIC"):
         wire._scope_long_target({"coupled_demand": {
             "finecdf_td": {"active_components": ["LONG_COMPOSITE"]}}})
+
+
+@pytest.mark.parametrize("native_changes", [False, True])
+def test_zonal_long_tg_acceptance_requires_real_final_9305_change(monkeypatch, native_changes):
+    """Native vehicle LONG response, not a changed ADD coefficient, is mandatory."""
+    import r1_15a2_long_cache_generation_v24917 as lc
+    monkeypatch.setattr(adapter_mod._V24916ActiveAdapter, "block_gate",
+                        lambda *a, **k: {"accepted": True, "reasons": []})
+    monkeypatch.setattr(adapter_mod.longguard, "capture",
+                        lambda *a, **k: {"status": "CURRENT_SUPPORT_VERIFIED"})
+    monkeypatch.setattr(adapter_mod.longguard, "decide",
+                        lambda *a, **k: {"passes": True, "reasons": []})
+    monkeypatch.setattr(adapter_mod.longguard, "changed_long",
+                        lambda rows: bool(rows))
+    monkeypatch.setattr(adapter_mod.mguard, "options",
+                        lambda: {"enabled": False})
+    old = np.array([[0., 10.], [0., 0.]])
+    new = old.copy()
+    if native_changes:
+        new[0, 1] = 11.
+    monkeypatch.setattr(adapter_mod.post_td_mask, "_read",
+                        lambda obj, no: (None, new.copy()))
+    instance = object.__new__(adapter_mod.VisumAdapter)
+    instance.v24917_status = {}
+    instance._longguard1_parent = {"status": "PARENT_VERIFIED"}
+    instance._long_generation_parent_vehicle_sha = lc.matrix_values_hash(old)
+    result = instance.block_gate("GENERATION", {}, {}, [
+        {"family": "LONG", "role": "ATT", "attr": "ADD_ATT_L", "zone_no": 1}])
+    if native_changes:
+        assert result["accepted"]
+        assert result["long_generation_native_response"]["status"] == (
+            "CHANGED_FINAL_VEHICLE_OD_MEASURED")
+        assert result["long_generation_native_response"]["matrix_no"] == 9305
+    else:
+        assert not result["accepted"]
+        assert any("LONG_TG_NO_NATIVE_VEHICLE_OD_RESPONSE" in reason
+                   for reason in result["reasons"])
+        assert instance.v24917_status["ls_incomplete_current_cycle"]
