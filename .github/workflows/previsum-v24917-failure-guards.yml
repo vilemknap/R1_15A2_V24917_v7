@@ -12,6 +12,7 @@ on:
       - codex/resume-a0001-td-no-enum-20261030
       - codex/resume-a0001-sibling-run-root-fix-20261030
       - codex/a0001-matrix-semantic-forensic-20261030
+      - codex/diagfast-bounded-numeric-parity-20261030
   workflow_dispatch:
 permissions:
   contents: read
@@ -50,6 +51,9 @@ jobs:
           python -m py_compile tests/test_v24917_silent_debug.py
           python -m py_compile r1_15a2_resume_a0001_v24917.py
           python -m py_compile tests/test_v24917_resume_a0001_td_no_enum.py
+          python -m py_compile r1_15a2_diagfast_parity_v1.py
+          python -m py_compile r1_15a2_diagfast_direct_v2.py
+          python -m py_compile diagfast_tests/test_tolerant_numeric_parity.py
       - name: Verify sealed runtime and DIAGFAST files (read only)
         run: |
           python - <<'PY'
@@ -79,6 +83,8 @@ jobs:
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_resume_a0001_td_no_enum.py tests/test_v24917_long_diagnostics_epoch_fix.py
       - name: Full main regression in isolated process
         run: python -m pytest -q -p no:cacheprovider tests
+      - name: Bounded numeric DIAGFAST parity regression
+        run: python -m pytest -q -p no:cacheprovider diagfast_tests/test_tolerant_numeric_parity.py diagfast_tests/test_parity.py diagfast_tests/test_direct_feature_isolation.py
       - name: DIAGFAST suite in isolated process
         run: python -m pytest -q -p no:cacheprovider diagfast_tests
       - name: GENFIX2 audit suite in isolated process
