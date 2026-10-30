@@ -71,7 +71,9 @@ class VisumAdapter(_V24916ActiveAdapter):
                               "long_generation_requested": bool(
                                   long_opts.load_options()["long_generation_enabled"]),
                               "long_composite_td_requested": bool(
-                                  long_opts.load_options()["long_composite_td_enabled"])}
+                                  long_opts.load_options()["long_composite_td_enabled"]),
+                              "school_td_requested": bool(
+                                  long_opts.load_options()["school_td_enabled"])}
 
     def assign(self, folder, *, supply_only):
         with post_td_mask.execution_scope(self):
@@ -89,31 +91,52 @@ class VisumAdapter(_V24916ActiveAdapter):
         return epoch
 
     def td_target_plan(self, diag, folder):
-        """Keep W/S targeting and add one atomic LONG_COMPOSITE group.
+        """Add SCHOOL and LONG to the native TDJOINT1 active pool independently.
 
-        In global-IDP fallback the FineCDF loader already exposes the full
-        target set, including the one LONG aggregate. In a selected W/S mask,
-        never silently starve LONG or copy its 512-point target into 5 layers.
-        The live-native readiness proof is made BEFORE parameter mutation
-        by TDJOINT1, not by fabricating a TD_TARGET_PLAN flag here.
+        SCHOOL is one atomic M9117 IDP target and changes native gravity b/c,
+        never the AMDY school TG formulas. LONG is one aggregate 5-layer
+        composite; its existing dynamic count and support proof is unchanged.
+        In GLOBAL_IDP_FALLBACK the reference loader owns the entire pool and
+        opt-in filtering is applied there, not by inventing a target mask.
         """
         plan = super().td_target_plan(diag, folder)
-        if not long_opts.load_options()["long_composite_td_enabled"]:
+        opts = long_opts.load_options()
+        school = bool(opts["school_td_enabled"])
+        long = bool(opts["long_composite_td_enabled"])
+        if not (school or long):
             return plan
         plan = dict(plan)
-        if plan.get("status") == "ACTIVE" and plan.get("active_components"):
-            selected = list(dict.fromkeys(str(x) for x in plan["active_components"]))
-            if "SCHOOL" in selected or "LONG_COMPOSITE" in selected:
-                raise supply_visum.SupplyContractError("TDLONG_COMPOSITE_TARGET_MASK_COLLISION")
-            selected.append("LONG_COMPOSITE")
+        plan["school_td_requested"] = school
+        plan["long_composite_td_requested"] = long
+        if plan.get("status") == "ACTIVE":
+            selected = list(plan.get("active_components") or ())
+            if not selected:
+                raise supply_visum.SupplyContractError("TDSCHOOL_LONG_ACTIVE_POOL_EMPTY")
+            if len(selected) != len(set(selected)):
+                raise supply_visum.SupplyContractError("TD_COMPONENT_POOL_DUPLICATE")
+            if school:
+                if "SCHOOL" in selected:
+                    raise supply_visum.SupplyContractError("TDSCHOOL_TARGET_MASK_COLLISION")
+                selected.append("SCHOOL")
+                plan["school_td_policy"] = "SCHOOL_9117_NATIVE_B_C_IDP_512"
+                plan["school_td_target_count"] = 1
+            if long:
+                if "LONG_COMPOSITE" in selected:
+                    raise supply_visum.SupplyContractError("TDLONG_COMPOSITE_TARGET_MASK_COLLISION")
+                selected.append("LONG_COMPOSITE")
+                plan["long_composite_policy"] = "SHARED_B_OFFSET_LOG_NEG_C_5_COMPONENTS"
+                plan["long_count_response"] = "LIVE_NATIVE_DYNAMIC_ASSIGNMENT_REQUIRED"
+                plan["targeted_long_component_count"] = 1
             plan["active_components"] = selected
-            plan["long_composite_policy"] = "SHARED_B_OFFSET_LOG_NEG_C_5_COMPONENTS"
-            plan["long_count_response"] = "LIVE_NATIVE_DYNAMIC_ASSIGNMENT_REQUIRED"
-            plan["targeted_long_component_count"] = 1
             rt.write_json(Path(folder) / "TD_ACTIVE_COMPONENT_MASK.json", plan)
         else:
-            plan["long_composite_policy"] = "GLOBAL_IDP_FALLBACK_INCLUDES_ONE_LONG_COMPOSITE"
-            plan["long_count_response"] = "LIVE_NATIVE_DYNAMIC_ASSIGNMENT_REQUIRED"
+            if plan.get("status") != "GLOBAL_IDP_FALLBACK":
+                raise supply_visum.SupplyContractError("TDSCHOOL_LONG_TARGET_PLAN_UNKNOWN_STATUS")
+            if school:
+                plan["school_td_policy"] = "GLOBAL_IDP_FALLBACK_INCLUDES_SCHOOL_9117"
+            if long:
+                plan["long_composite_policy"] = "GLOBAL_IDP_FALLBACK_INCLUDES_ONE_LONG_COMPOSITE"
+                plan["long_count_response"] = "LIVE_NATIVE_DYNAMIC_ASSIGNMENT_REQUIRED"
         return plan
 
     def long_profile_incidence(self, diag, folder):
