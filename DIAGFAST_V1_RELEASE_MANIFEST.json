@@ -175,6 +175,6 @@
     "tools/refresh_v24917_manifests.py": "a0923025005714f75b164deba8aa27f990a475d1dcc14f2e0632f6abc87137f6",
     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
     "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec",
-    "tests/test_v24917_fresh_universal_tdperf.py": "b4ed26b93a31eb32b77c408d53f5f3da9408ef4290c845b9540a26be2c263350"
+    "tests/test_v24917_fresh_universal_tdperf.py": "db0e4280ec93a49fb417194e1ed0d5bad412de1feff1e9cea9901ea96d43360b"
   }
 }
