@@ -19,7 +19,7 @@ The source `.ver` bytes must match SHA-256 `9f209ce288cb8693c4ef22649b229e6f404d
 
 - Resumes accepted count **1**, outer cycle **1**, substep **TD_FINECDF_V17**. It does not replay the accepted Generation step (scale 0.538158).
 - Retains the original `GENERATION_COUNTS_REFERENCE.json`, verified by canonical reference hash, not a new baseline.
-- Recovers the original epoch-1 SQLite route basis from original B0000 state, verifying its parent snapshot hash, exact path basis hash, canonical comparison hash, full link dictionary, profile order/authority, SQLite quick integrity and read-only status.
+- Recovers the original epoch-1 SQLite route basis from original B0000 state, verifying its parent snapshot hash, exact path basis hash, canonical comparison hash, full link dictionary, profile-index geometry-to-profile_hits parity, SQLite quick integrity and read-only status.
 - Fresh native baseline assignment + skims and live diagnostics remain required. Route enumeration and SQLite path export do not run at restart.
 - The intact V24917 TDJOINT dynamic evaluator and rollback/acceptance rules remain in control.
 - Any attempt to create a new path epoch (new positive OD support, local plateau or missing store) raises `A0001_RESUME_NO_PATH_ENUMERATION_ALLOWED`, without a new COM route export. This is deliberate: **formal path-epoch stationarity cannot be claimed** without its eventual fresh comparison enumeration.
