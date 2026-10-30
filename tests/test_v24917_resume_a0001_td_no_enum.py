@@ -38,7 +38,7 @@ def make_artifacts(tmp_path, recipe):
     run = {
         'status':'FAILED_MANUAL_REOPEN_LATEST_ACCEPTED_REQUIRED',
         'accepted_count':1,
-        'latest_accepted_checkpoint':{'checkpoint':{'path':str(checkpoint)}},
+        'latest_accepted_checkpoint':{'path':str(checkpoint), 'sha256':rec['expected_checkpoint_raw_sha256']},
         'demand_cycles':[{
             'cycle':1, 'generation_completed':True, 'generation_changed':True,
             'td_completed':False,
@@ -158,6 +158,7 @@ def test_read_only_store_hash_and_origin_checks(monkeypatch,tmp_path,recipe):
         def close(self):self.closed=True
     mock_twomode.TwoModeRouteCollector=Collector
     monkeypatch.setitem(sys.modules,mock_twomode.__name__,mock_twomode)
+    monkeypatch.setattr(resume, 'verify_legacy_profile_hits', lambda collector: {'passes':True})
     adapter=NS(cache=None,path_epoch_index=0,path_epoch_accepts=0,
                path_epoch_history=[],persistent_path_cache=NS(enabled=False),
                cfg={'performance':{'path_epochs':{'enabled':True}},'two_mode':{},
@@ -169,7 +170,7 @@ def test_read_only_store_hash_and_origin_checks(monkeypatch,tmp_path,recipe):
                                            snapshot,paths,auth,tmp_path/'out')
     assert rec['status']=='VERIFIED_ORIGINAL_PATH_EPOCH_RESTORED'
     assert adapter.cache is not None and adapter.path_epoch_index==1
-    assert Collector.read_only_args==(True,True)
+    assert Collector.read_only_args==(True,False)
     assert adapter.cache_links[(11,1,2)]['addval1']==3.0
     # Any basis mismatch must close the read-only store and refuse publication.
     adapter.cache=None;adapter.path_epoch_index=0
@@ -179,3 +180,44 @@ def test_read_only_store_hash_and_origin_checks(monkeypatch,tmp_path,recipe):
     with pytest.raises(RuntimeError,match='PATH_STORE_BASIS_MISMATCH'):
         resume.restore_readonly_path_epoch(adapter,{'d12':{'rows':[]}},snapshot,paths,auth,tmp_path/'out')
     assert adapter.cache is None
+
+
+def test_legacy_path_store_profile_hits_exact_geometry_reconstruction(monkeypatch):
+    """Prove profile-index meanings without metadata added only by publisher."""
+    import sqlite3
+    import struct
+    from types import SimpleNamespace as NS
+    # Pure mock matches the V238 little-endian stored uint32 geometry format.
+    mock_twomode=types.ModuleType('r1_15a2_two_mode_v238')
+    mock_twomode._unpacked=lambda b:struct.unpack('<%dI' % (len(b)//4),b)
+    monkeypatch.setitem(sys.modules,mock_twomode.__name__,mock_twomode)
+    mock_supply=types.ModuleType('r1_15a2_supply')
+    mock_supply.SupplyContractError=RuntimeError
+    monkeypatch.setitem(sys.modules,mock_supply.__name__,mock_supply)
+    db=sqlite3.connect(':memory:')
+    db.execute('CREATE TABLE geometry(gid INTEGER,edge_ids BLOB,edge_count INTEGER)')
+    db.execute('CREATE TABLE profile_hits(gid INTEGER,profile_index INTEGER,multiplicity INTEGER)')
+    # profile 0 observes link 11; profile 1 observes link 12 and link 11.
+    db.executemany('INSERT INTO geometry VALUES(?,?,?)',[
+        (1,struct.pack('<III',1,2,1),3), (2,struct.pack('<I',2),1)])
+    db.executemany('INSERT INTO profile_hits VALUES(?,?,?)',[
+        (1,0,2),(1,1,3),(2,1,1)])
+    adapter=NS(db=db,edge_keys=(None,(11,1,2),(12,2,3)),
+               profile_index_by_key={(11,1,2):[0,1],(12,2,3):[1]})
+    proof=resume.verify_legacy_profile_hits(adapter)
+    assert proof['passes'] and proof['routes_checked']==2 and proof['links_checked']==4
+    assert proof['com_path_export_calls']==0
+    db.execute('UPDATE profile_hits SET multiplicity=4 WHERE gid=1 AND profile_index=1')
+    with pytest.raises(Exception, match='PROFILE_HITS_STATIC_AUTHORITY_MISMATCH'):
+        resume.verify_legacy_profile_hits(adapter)
+    db.close()
+
+
+def test_real_run_status_latest_checkpoint_is_flat(tmp_path,recipe):
+    cp,auth,run,ref=make_artifacts(tmp_path,recipe)
+    paths=resume.check_source(cp,auth)
+    assert resume.load_continuation(paths,auth,lambda _:auth['generation_reference_hash'])['accepted_count']==1
+    run['latest_accepted_checkpoint']={'checkpoint':run['latest_accepted_checkpoint']}
+    paths['run_status'].write_text(json.dumps(run))
+    with pytest.raises(RuntimeError,match='RUN_LATEST_CHECKPOINT_MISMATCH'):
+        resume.load_continuation(paths,auth,lambda _:auth['generation_reference_hash'])
