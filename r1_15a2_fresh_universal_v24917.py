@@ -210,9 +210,13 @@ def install(v16, source, sandbox, *, options):
                 "SOURCE_LAYOUT_CHANGED")
         baseline_layout.update(project_base=sandbox,
                                mode="FRESH_UNIVERSAL_DETACHED_PROJECT_SANDBOX")
-        sandbox.mkdir(parents=True, exist_ok=True)
         runs = sandbox / RUNS_NAME
-        runs.mkdir(parents=True, exist_ok=True)
+        io = getattr(v16, "runtime_io_hotfix", None)
+        ensure = getattr(io, "_ensure_parent", None)
+        require(callable(ensure), "REQUIRED_WINDOWS_PATHFIX_NOT_INSTALLED")
+        # Preserve the sealed PATHFIX3 extended-length Windows directory
+        # creation. Ordinary Path.mkdir can fail for deep VISUM source trees.
+        ensure(runs / "LATEST_BOOTSTRAP.json")
         return baseline_layout, runs
 
     def isolated_project_layout(opened_source):
