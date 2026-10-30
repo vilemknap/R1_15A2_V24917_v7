@@ -44,7 +44,7 @@ def true_project_base(source):
 
 def compact_sandbox_name(project_base):
     """Stable, per-project short root. A different model project cannot share it."""
-    normalized = str(project_base).replace("\\\\", "/").casefold().rstrip("/")
+    normalized = str(project_base).replace("\\", "/").casefold().rstrip("/")
     project_key = hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:8]
     return COMPACT_SANDBOX_PREFIX + project_key
 
