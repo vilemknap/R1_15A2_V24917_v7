@@ -35,7 +35,9 @@ def valid_cfg():
 
 def runtime_status():
     return {"v24917": {
-        "tdjoint1": {"installed": True, "release": "TDJOINT"},
+        "tdjoint1": {"installed": True, "release": "TDJOINT",
+                     "options": {"enabled": True, "long_enabled": True,
+                                 "school_enabled": True, "inner_mode": "DYNAMIC"}},
         "td_numpy": {"installed": True, "release": "TDNUMPY"},
         "td_restore": {"installed": True, "release": "REVIEW1_NATIVE_PROOF"},
         "path_store_build": {"installed": True, "release": "PATH_BUILD"}}}
@@ -95,6 +97,11 @@ def test_runtime_must_install_reviewed_restore_not_old_wrapper():
         "tdjoint1", "td_numpy", "td_restore", "path_store_build"}
     item["v24917"]["td_restore"]["release"] = "OLD_SKIP_UNVERIFIED"
     with pytest.raises(RuntimeError, match="TD_RESTORE_SAFETY_REVIEW_MISSING"):
+        fresh.verify_runtime_status(item)
+
+    item = runtime_status()
+    item["v24917"]["tdjoint1"]["options"]["school_enabled"] = False
+    with pytest.raises(RuntimeError, match="EFFECTIVE_TD_OPTIMIZATION_DISABLED"):
         fresh.verify_runtime_status(item)
 
 
