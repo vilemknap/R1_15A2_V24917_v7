@@ -25,7 +25,12 @@ def zones(ratios=(1.,1.),families=tuple(z.SPECS)):
 
 
 def authority(rows=None,families=tuple(z.SPECS),**kwargs):
-    return z.capture(rows or zones(),OPTS,families,**kwargs)
+    a = z.capture(rows or zones(),OPTS,families,**kwargs)
+    # This synthetic fixture explicitly guarantees FP = base * coefficient,
+    # unlike the real 2026-10-30 SCHOOL live case. Production must never
+    # acquire this certification from capture() without source verification.
+    a["school_fp_link_verified"] = True
+    return a
 
 
 def candidate(fam,c,p,no=1):
@@ -360,6 +365,48 @@ def test_actual_apply_rejects_unverified_optional_read_before_first_write(monkey
     with pytest.raises(Exception,match='MOBILITYZONE1_LIVE_READ_UNAVAILABLE'):
         ad.apply_generation({'_mobilityzone1':authority(old)},1.,tmp_path)
     assert not writes
+
+
+def test_live_school_fp_nonresponse_rejected_and_school_steps_frozen():
+    # Exact failure from 2026-10-30: SCHOOL raw FP stays constant while
+    # ADD_PROD_SCH changes. The acceptance guard must keep rejecting it.
+    raw = zones()
+    a = z.capture(raw, OPTS, tuple(z.SPECS))
+    assert a["school_fp_link_verified"] is False
+    applied = copy.deepcopy(raw)
+    applied[0]["ADD_PROD_SCH"] = 1.1
+    proof = z.check_live(a, applied)
+    assert not proof["passes"]
+    assert any("FP_REFERENCE_OR_FORMULA_CHANGED:FP_5_SCHOOL" in v["reasons"]
+               for v in proof["violations"])
+    original = ls_payload()
+    projected = z.guard_ls(original, a)
+    assert projected["steps"]["ADD_PROD_SCH"] == {}
+    assert projected["steps"]["ADD_ATT_SCH"] == {}
+    assert projected["summary"]["school_generation_status"] == (
+        "FROZEN_PENDING_NATIVE_FORMULA_PROOF")
+    assert projected["summary"]["school_generation_search_complete"] is False
+    assert projected["summary"]["school_zones_changed"] == 0
+    # Existing LONG predictions remain unchanged until their separate gate
+    # freezes them, but SCHOOL has no influence or no-op rows.
+    delta = projected["effect_operator"]["G"]
+    assert projected["predicted_change"][0] == pytest.approx(
+        delta[0][0] * original["steps"]["ADD_PROD_L"][1]
+        + delta[0][1] * original["steps"]["ADD_PROD_L"][2])
+    import r1_15a2_long_school_generation_v24917 as lsgen
+    candidates = lsgen.rows_at_scale(projected, 1.)
+    assert not any(r["family"] == "SCHOOL" for r in candidates)
+    assert original["steps"]["ADD_PROD_SCH"]
+
+
+def test_source_verified_fixture_retains_school_proposals():
+    raw = zones()
+    a = authority(raw)
+    projected = z.guard_ls(ls_payload(), a)
+    assert projected["summary"]["school_fp_link_verified"] is True
+    assert projected["summary"]["school_generation_search_complete"] is True
+    assert projected["steps"]["ADD_PROD_SCH"]
+    assert projected["steps"]["ADD_ATT_SCH"]
 
 
 def test_guard_module_cannot_mutate_visum_or_reload_version():
