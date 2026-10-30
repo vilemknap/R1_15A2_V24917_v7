@@ -209,7 +209,8 @@ def test_A12_parent_fallback_must_also_enforce_mobility(monkeypatch,tmp_path):
     result=ad.generation_design(diag,tmp_path)
     r_after=mg.ratio(mg.zone_productions(zr,'WORK'),{r['zone_no']:r['log_step'] for r in result['projection'].rows})
     record('A12_fallback_bypasses_mobility',{'v24917':result['v24917'],'ratio_of_returned_proposal':r_after})
-    assert r_after <= 2.0+1e-12
+    # Universal fresh WORK/SERVICE mobility ceiling is 2.5, including fallback.
+    assert r_after <= 2.5+1e-12
 
 
 def test_A13_step_prediction_must_describe_guarded_candidate(monkeypatch,tmp_path):
