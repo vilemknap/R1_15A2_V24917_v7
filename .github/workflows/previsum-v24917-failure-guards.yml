@@ -14,6 +14,7 @@ on:
       - codex/a0001-matrix-semantic-forensic-20261030
       - codex/a0001-hard-disk-reload-20261030
       - codex/v24917-tdlong-school-epochfix-20261030
+      - codex/v24917-b0002-cycle2-native-epoch-20261030
   workflow_dispatch:
 permissions:
   contents: read
@@ -52,6 +53,9 @@ jobs:
           python -m py_compile tests/test_v24917_silent_debug.py
           python -m py_compile r1_15a2_resume_a0001_v24917.py
           python -m py_compile tests/test_v24917_epoch_td_fairness_20261030.py
+          python -m py_compile r1_15a2_resume_b0002_v24917.py
+          python -m py_compile 01_SPUSTIT_V24917_RESUME_B0002_CYCLE2_FRESH_EPOCH_SILENT.py
+          python -m py_compile tests/test_v24917_resume_b0002_cycle2.py
           python -m py_compile tests/test_v24917_resume_a0001_td_no_enum.py
       - name: Verify sealed runtime and DIAGFAST files (read only)
         run: |
@@ -80,6 +84,8 @@ jobs:
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_working_copy_operation_diff.py
       - name: A0001 TD resume fail-closed path store regression
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_resume_a0001_td_no_enum.py tests/test_v24917_long_diagnostics_epoch_fix.py tests/test_v24917_epoch_td_fairness_20261030.py
+      - name: Verified B0002 cycle 2 restart and fresh native route epoch regression
+        run: python -m pytest -q -p no:cacheprovider tests/test_v24917_resume_b0002_cycle2.py tests/test_v24917_epoch_td_fairness_20261030.py
       - name: Full main regression in isolated process
         run: python -m pytest -q -p no:cacheprovider tests
       - name: DIAGFAST suite in isolated process
