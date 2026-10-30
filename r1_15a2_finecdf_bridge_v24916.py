@@ -625,22 +625,11 @@ def run_finecdf_inner(adapter, cfg, folder, control, package_root, phase_budget=
     all_groups = list(ref.GROUPS)
     if requested_active:
         unknown = sorted(set(requested_active) - set(ref.TARGETS))
-        import r1_15a2_demand_policy_v1 as _dp
-        opts = _dp.load_options()
-        # SCHOOL remains frozen during targeted TD. LONG_COMPOSITE is now
-        # admissible only when explicitly requested with TDJOINT1 + a *full*
-        # native dynamic assignment/skim response on every candidate.
-        forbidden = set(requested_active) & {"SCHOOL"}
-        if "LONG_COMPOSITE" in requested_active and not opts["long_composite_td_enabled"]:
-            forbidden.add("LONG_COMPOSITE")
+        forbidden = sorted(set(requested_active) & {"SCHOOL", "LONG_COMPOSITE"})
         if unknown:
             raise SupplyContractError("V24916_FINECDF_UNKNOWN_ACTIVE_COMPONENTS:" + ",".join(unknown))
         if forbidden:
-            raise SupplyContractError("V24916_FINECDF_TARGETING_FORBIDS_SCHOOL_LONG:" +
-                                      ",".join(sorted(forbidden)))
-        if "LONG_COMPOSITE" in requested_active and (
-                not opts["td_joint_enabled"] or opts["td_inner_mode"] != "DYNAMIC"):
-            raise SupplyContractError("TDLONG_COMPOSITE_REQUIRES_DYNAMIC_NATIVE_COUNT_RESPONSE")
+            raise SupplyContractError("V24916_FINECDF_TARGETING_FORBIDS_SCHOOL_LONG:" + ",".join(forbidden))
         ref.GROUPS = [x for x in all_groups if x in set(requested_active)]
         if not ref.GROUPS:
             raise SupplyContractError("V24916_FINECDF_EMPTY_ACTIVE_COMPONENT_MASK")
@@ -670,10 +659,7 @@ def run_finecdf_inner(adapter, cfg, folder, control, package_root, phase_budget=
         "active_components": active_components,
         "frozen_components": frozen_components,
         "metrics_evaluate_all_components": True,
-        "school_long_frozen_during_targeted_phase": bool(requested_active)
-            and "LONG_COMPOSITE" not in active_components,
-        "school_frozen_during_targeted_phase": bool(requested_active),
-        "long_composite_td_native_dynamic_requested": "LONG_COMPOSITE" in active_components,
+        "school_long_frozen_during_targeted_phase": bool(requested_active),
         "finecdf_direction_and_magnitude_authority_preserved": True,
     }
     log.summary["native_multi_guard_method"] = "KEEP_FULL_MARGINAL_DIAGNOSTICS_BUT_DO_NOT_IMPOSE_EXTERNAL_STRICT_IPF_REJECT_ON_NATIVE_VISUM_MULTI"
