@@ -251,9 +251,10 @@ def run_silent_detached(host, package_root, main, sandbox, silent):
     the source .ver. Here output is intentionally a sibling, so we redirect the
     same diagnostic primitives without weakening that original ancestor guard.
     """
-    import time
+    import shutil
+    source_at_start = Path(str(host.IO.CurrentVersionFile)).resolve()
     sandbox = Path(sandbox).resolve()
-    require(sandbox == sandbox_for(host.IO.CurrentVersionFile),
+    require(sandbox == sandbox_for(source_at_start),
             "SILENT_ROOT_NOT_ISOLATED")
     output = sandbox / silent.DEBUG_NAME
     output.mkdir(parents=True, exist_ok=True)
@@ -266,7 +267,7 @@ def run_silent_detached(host, package_root, main, sandbox, silent):
     with log.open("w", encoding="utf-8", buffering=1) as handle:
         writer = silent._Autoflush(handle)
         with redirect_stdout(writer), redirect_stderr(writer):
-            print("UNIVERSAL_FRESH_START", RELEASE, str(host.IO.CurrentVersionFile))
+            print("UNIVERSAL_FRESH_START", RELEASE, str(source_at_start))
             try:
                 returned = main()
             except BaseException as exc:
@@ -281,7 +282,7 @@ def run_silent_detached(host, package_root, main, sandbox, silent):
         state, origin = silent._terminal_status(new_run, returned)
     report = {"schema": silent.SCHEMA, "status": state,
               "status_source": origin, "error": exception,
-              "release": RELEASE, "source_version": str(host.IO.CurrentVersionFile),
+              "release": RELEASE, "source_version": str(source_at_start),
               "sandbox": str(sandbox), "run_directory": str(new_run) if new_run else None,
               "python_log": str(log), "started_tag": tag,
               "model_changed_by_wrapper": False,
@@ -290,6 +291,7 @@ def run_silent_detached(host, package_root, main, sandbox, silent):
     archive = output / ("SILENT_%s_DEBUG.zip" % tag)
     try:
         report["debug_bundle"] = silent._bundle(archive, report, new_run, log)
+        shutil.copyfile(archive, output / "SILENT_LATEST_DEBUG.zip")
     except Exception as exc:
         report["debug_bundle_error"] = type(exc).__name__ + ":" + str(exc)
     silent._atomic_json(output / "SILENT_LATEST_STATUS.json", report)
