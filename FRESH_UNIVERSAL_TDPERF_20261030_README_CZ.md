@@ -1,4 +1,4 @@
-# R1 V24917 – univerzální nový běh, optimalizované TD (2026-10-30)
+# R1 V24917 – univerzální nový běh, optimalizované TD (PATHROOTFIX1, 2026-10-31)
 
 **Účel:** druhá nezávislá kalibrace **od počátku** ze zvoleného kompatibilního modelu .ver, bez čekání na TD cyklus 06 staršího procesu a bez pokračování z B0002/B0008. Základ kódu: `codex/td-perf-review-20261030` @ `6794184143df5516708651c1d27b5f57c04b94b8`.
 
@@ -56,16 +56,16 @@ Pokud by proměnná prostředí přepsala `mg_max_ratio` na starou hodnotu 2,0 n
 
 Zdrojový .ver zůstává na místě. Jeho skutečný projektový kořen je složka obsahující .ver, případně nadřazená složka původního *nejvnějšího* `R1_15A2_*_RUNS`.
 
-Nové soubory vznikají **odděleně od původních**:
+Nové soubory vznikají **odděleně od původních**, přímo pod uživatelským profilem Windows:
 
 ```text
-<projektový kořen>/
-  R1FRESH17/
+C:\\Users\\<uživatel>\\R1F_<8znakový hash projektového kořene>\\
     .R1_15A2_V16.lock
     R1_15A2_V16_RUNS/
       LATEST_BOOTSTRAP.json
       FRESH_UNIVERSAL_BOOTSTRAP_AUTHORITY.json
       RUN_YYYYMMDD_HHMMSS_ffffff/
+        PATH_LENGTH_PREFLIGHT.json
         CALIBRATION/
           RUN_STATUS.json
           DEMAND_CYCLE_01_GENERATION/GENERATION_CACHE/
@@ -77,9 +77,13 @@ Nové soubory vznikají **odděleně od původních**:
       SILENT_LATEST_DEBUG.zip
 ```
 
-**Pozor:** běžící stará verze má samostatný zámek v `<projektový kořen>/.R1_15A2_V16.lock` a data v `<projektový kořen>/R1_15A2_V16_RUNS`. Nová verze používá **podadresář R1FRESH17** a vlastní zámek. Potřebuje druhou instanci Visumu a dostatek prostoru na nové SQLite a checkpointy. Dva nové univerzální běhy ve *stejném* sandboxu současně neprojdou vzájemným zámkem – záměrná ochrana.
+**PATHROOTFIX1 (31. 10. 2026):** První živé spuštění v7.3 skončilo bezpečnostním preflightem `V24916_PATH_LENGTH_PREFLIGHT_FAILED:244`: projektový sandbox `...\\2022\\R1FRESH17` prodlužoval nejhlubší budoucí cestu na 244 znaků proti povoleným méně než 240. **Nepovolovali jsme delší cesty ani nevypnuli kontrolu.** Nyní má každý projekt deterministicky přidělen krátký uživatelský kořen `%USERPROFILE%\\R1F_<hash>`; pro přesnou zaznamenanou Windows cestu tak projekce klesne z **244 na přibližně 222 znaků**. Hash se počítá z původního normalizovaného projektového kořene a brání sdílení dat různými projekty. Dřívější chybový adresář `...\\2022\\R1FRESH17` se neimportuje ani automaticky nemaže.
 
-Nesnažit se vložit zdrojový .ver **dovnitř** `R1FRESH17`: spouštěč to odmítne, aby při volbě projektového kořene nevzniklo rekurzivní zanoření.
+Zabudovaný V24916 `audit_run_path_budget` se nyní volá **dvakrát**: před zahájením parent runtime nad vzorovým budoucím RUN a potom v původním kódu znovu nad skutečným RUN. Pokud je uživatelská cesta výjimečně dlouhá, spuštění bezpečně selže; limit 240 se nikdy nepřekračuje.
+
+**Pozor:** běžící stará verze má samostatný zámek v `<projektový kořen>/.R1_15A2_V16.lock` a data v `<projektový kořen>/R1_15A2_V16_RUNS`. Nová verze používá **svůj krátký kořen v uživatelském profilu** a vlastní zámek. Potřebuje druhou instanci Visumu a dostatek místa na disku (nové SQLite a checkpointy se ukládají do profilu). Dva nové univerzální běhy ze *stejného* projektového kořene se zámkem vzájemně blokují – záměrná ochrana.
+
+Nesnažit se vložit zdrojový .ver **dovnitř** `R1FRESH17` nebo `R1F_<hash>`: spouštěč to odmítne, aby nevzniklo rekurzivní zanoření.
 
 ## Zaručená metodika a omezení
 
