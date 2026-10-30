@@ -173,10 +173,15 @@ class _RoleTaggedReference(float):
     or relying on mutable global context. Ordinary float math and JSON remain
     unchanged; only the V24917 installed bounds inspect the annotation.
     """
-    def __new__(cls, value, role):
+    def __new__(cls, value, role=None):
         obj = float.__new__(cls, value)
         obj.v24917_generation_role = role
         return obj
+
+    def __reduce_ex__(self, protocol):
+        # Keep the role through copy.deepcopy/pickle. Plain float subclasses
+        # otherwise reconstruct with only the numeric positional argument.
+        return (type(self), (float(self), self.v24917_generation_role))
 
 
 def _domestic_role_envelope(env, role, *, soft=False):
@@ -298,25 +303,29 @@ def patch_multiblock(mb=None) -> Dict[str, Any]:
             raise RuntimeError("V24917_ROLE_REFERENCE_PATCH_MISSING")
         return {"patched": True, "already": True,
                 "role_reference_tagging": True}
-    if getattr(mb._reference_coefficient,
-               "__r1_v24917_role_reference__", False):
-        raise RuntimeError("V24917_ROLE_REFERENCE_PARTIAL_INSTALL")
-    previous_reference = mb._reference_coefficient
-    roles_by_attr = {
-        str(attr).upper(): role
-        for (family, role, _branch), attr in mb.GENERATION_ATTR_MAP.items()
-        if family in ("WORK", "SERVICE") and role in ("PROD", "ATT")
-    }
+    # Some test/runtime fixtures legitimately reset the three bound/refine
+    # wrappers but leave the independently installed reference wrapper in
+    # place. Reuse it; never stack duplicate reference conversions.
+    reference_tagged = getattr(mb._reference_coefficient,
+                               "__r1_v24917_role_reference__", False)
+    tagged_reference = mb._reference_coefficient
+    if not reference_tagged:
+        previous_reference = mb._reference_coefficient
+        roles_by_attr = {
+            str(attr).upper(): role
+            for (family, role, _branch), attr in mb.GENERATION_ATTR_MAP.items()
+            if family in ("WORK", "SERVICE") and role in ("PROD", "ATT")
+        }
 
-    @functools.wraps(previous_reference)
-    def tagged_reference(reference_values, attr, zone_no, fallback):
-        value = previous_reference(reference_values, attr, zone_no, fallback)
-        role = roles_by_attr.get(str(attr).upper())
-        if role is None:
-            return value
-        return _RoleTaggedReference(value, role)
+        @functools.wraps(previous_reference)
+        def tagged_reference(reference_values, attr, zone_no, fallback):
+            value = previous_reference(reference_values, attr, zone_no, fallback)
+            role = roles_by_attr.get(str(attr).upper())
+            if role is None:
+                return value
+            return _RoleTaggedReference(value, role)
 
-    tagged_reference.__r1_v24917_role_reference__ = True
+        tagged_reference.__r1_v24917_role_reference__ = True
     hard, soft = _bounds_patch(mb._multiplicative_coefficient_bounds, mb._soft_multiplier_bounds, mb)
     orig_refine = mb._signed_generation_refinement
 
