@@ -622,7 +622,7 @@ class VisumAdapter(_V24916ActiveAdapter):
                     for row in changed_att:
                         zone = int(row["zone_no"])
                         actual_c = native_att["current_coefficient"][zone]
-                        if not long_amdy.math.isclose(
+                        if not math.isclose(
                                 actual_c, float(row["proposed"]),
                                 abs_tol=1.e-9, rel_tol=1.e-10):
                             raise ValueError(
