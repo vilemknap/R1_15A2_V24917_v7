@@ -3,7 +3,7 @@
 
 Raw pre-mode-choice FP productions are compared, never profile passages, vehicle
 OD or attraction weights. Reference is the existing AMDY equation evaluated at
-ADD_PROD_W/S/SCH=1 and ADD_PROD_L=0.3, NOT raw unscaled survey trip frequency.
+ADD_PROD_W/S/SCH=1 and ADD_PROD_L=0.2, NOT raw unscaled survey trip frequency.
 Existing out-of-band parents may improve or hold, never move further away.
 No COM writes, no LoadVersion, no changes to native TD or boundary production.
 """
@@ -18,7 +18,7 @@ GROUPS = ("E_C", "E_noC", "noE_C", "noE_noC", "stud")
 SPECS = {
     "WORK": ("ADD_PROD_W", 1.0, tuple("FP_1_WORK_" + x for x in GROUPS)),
     "SERVICE": ("ADD_PROD_S", 1.0, tuple("FP_2_SERVICE_" + x for x in GROUPS)),
-    "LONG": ("ADD_PROD_L", 0.3, tuple("FP_3_LONG_" + x for x in GROUPS)),
+    "LONG": ("ADD_PROD_L", 0.2, tuple("FP_3_LONG_" + x for x in GROUPS)),
     "SCHOOL": ("ADD_PROD_SCH", 1.0, ("FP_5_SCHOOL",)),
 }
 ATTR_FAMILY = {v[0]: k for k, v in SPECS.items()}
@@ -27,7 +27,7 @@ EPS = 1e-12
 ATOL = 1e-7
 RTOL = 1e-10
 REFERENCE = "AMDY_DOMESTIC_FP_AT_CANONICAL_COEFFICIENT_NOT_RAW_SURVEY"
-LONG_BAND = (0.5, 1.5)  # ADD_PROD_L 0.3 x [0.5, 1.5] = [0.15, 0.45]
+LONG_BAND = (0.5, 1.5)  # AMDY 0.2 x [0.5, 1.5] = [0.10, 0.30]
 # The live 2026-10-30 generation trials proved that in 575 domestic zones
 # FP_5_SCHOOL stayed at exactly its run-start value when the SCHOOL candidate
 # changed ADD_PROD_SCH.  Our fixed-FP reference guard correctly rejected all
