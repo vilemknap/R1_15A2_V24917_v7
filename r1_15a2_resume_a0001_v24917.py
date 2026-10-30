@@ -440,6 +440,102 @@ def refuse_enumeration(*args, **kwargs):
 
 
 
+
+def install_verified_post_acceptance_epoch_refresh(adapter, source_sqlite, working_folder,
+                                                    baseline_verified):
+    """Resume with zero path export, then permit a NEW epoch after an accepted change.
+
+    The A0001 SQLite is immutable predecessor evidence. A new path basis is
+    mandatory for newly positive OD support or a local plateau, and must be
+    enumerated into the NEW run folder. The old read-only SQLite may never
+    be deleted by the ordinary path-epoch cleanup policy. There is no bypass
+    of the native exporter, route-support checks, or live acceptance.
+    """
+    from r1_15a2_supply import SupplyContractError
+
+    source_sqlite = Path(source_sqlite).resolve()
+    working_folder = Path(working_folder).resolve()
+    builder = getattr(adapter, "_build_cache", None)
+    retire = getattr(adapter, "_retire_obsolete_epoch_store", None)
+    require(callable(builder), "ORIGINAL_PATH_EPOCH_BUILDER_MISSING")
+    require(callable(retire), "ORIGINAL_PATH_EPOCH_RETIRE_HANDLER_MISSING")
+    require(source_sqlite.is_file(), "SOURCE_PATH_STORE_MISSING")
+
+    def protected_retire(path, folder):
+        if path is not None and Path(path).resolve() == source_sqlite:
+            return {
+                "retired": False,
+                "reason": "A0001_IMMUTABLE_ORIGINAL_SQLITE_PROTECTED",
+                "path": str(source_sqlite),
+            }
+        return retire(path, folder)
+
+    def verified_build(diag, folder, snapshot, *, build_sequence_evidence=False,
+                       allow_persistent_restore=True):
+        # The native TD baseline must first pass the exact seven-field A0001
+        # state proof and the original read-only route basis must be restored.
+        if not baseline_verified():
+            return refuse_enumeration()
+        epoch = int(getattr(adapter, "path_epoch_index", 0))
+        accepts = int(getattr(adapter, "path_epoch_accepts", 0))
+        collector = getattr(adapter, "cache", None)
+        if epoch < 1 or collector is None:
+            return refuse_enumeration()
+        if epoch == 1:
+            # One accepted STEP1 generation is already represented by the
+            # rehydrated epoch. No fresh route enumeration is permitted during
+            # its incomplete TD continuation. Only an additional accepted
+            # state transition (e.g. accepted TD) unlocks a fresh epoch.
+            if accepts <= 1:
+                return refuse_enumeration()
+            if (Path(str(getattr(collector, "route_db_path", ""))).resolve() !=
+                    source_sqlite or getattr(collector, "read_only", None) is not True):
+                raise SupplyContractError(
+                    "A0001_POST_ACCEPT_PATH_STORE_AUTHORITY_MISMATCH")
+        live = getattr(adapter, "cache_live_snapshot", None) or {}
+        if (not isinstance(snapshot, dict)
+                or not snapshot.get("state_hash")
+                or live.get("state_hash") != snapshot["state_hash"]):
+            raise SupplyContractError("A0001_POST_ACCEPT_STATE_NOT_VERIFIED")
+        stage = Path(folder).resolve()
+        try:
+            stage.relative_to(working_folder)
+        except ValueError as exc:
+            raise SupplyContractError(
+                "A0001_POST_ACCEPT_EPOCH_OUTSIDE_NEW_RUN:" + str(stage)) from exc
+        if stage == working_folder or not source_sqlite.is_file():
+            raise SupplyContractError(
+                "A0001_POST_ACCEPT_EPOCH_TARGET_OR_SOURCE_INVALID")
+        # A missing OD route is not repaired by inventing a path fraction;
+        # the original native _build_cache and collect_two_modes must run.
+        # Persistent restore is forbidden for this original PC_OFF lineage.
+        from r1_15a2_two_mode_v238 import atomic_json
+        atomic_json(stage / "A0001_EPOCH_REFRESH_AUTHORITY.json", {
+            "schema": "R1_A0001_POST_ACCEPTANCE_PATH_EPOCH_REFRESH_V1",
+            "status": "AUTHORIZED_NEW_NATIVE_PATH_ENUMERATION",
+            "original_sqlite": str(source_sqlite),
+            "original_sqlite_protected": True,
+            "new_run": str(working_folder),
+            "previous_epoch": epoch,
+            "accepted_state_changes_on_epoch": accepts,
+            "accepted_live_state_hash": snapshot["state_hash"],
+            "persistent_restore_allowed": False,
+            "requires_fresh_native_route_export": True,
+            "acceptance_authority_changed": False,
+        })
+        return builder(diag, stage, snapshot,
+                       build_sequence_evidence=build_sequence_evidence,
+                       allow_persistent_restore=False)
+
+    adapter._retire_obsolete_epoch_store = protected_retire
+    adapter._build_cache = verified_build
+    return {"source_sqlite": str(source_sqlite),
+            "working_folder": str(working_folder),
+            "initial_export_forbidden": True,
+            "post_acceptance_reenumeration_allowed": True,
+            "original_sqlite_protected": True}
+
+
 def install_sibling_run_layout_guard(v16, checkpoint, print_fn=print):
     """Allow a NEW direct RUN_* sibling under V16_RUNS; refuse actual nesting.
 
@@ -621,13 +717,17 @@ def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print,
                 return diag
 
             adapter.diagnostics = guarded_diagnostics
-            # All unexpected attempts to build/refresh any path epoch fail closed.
-            adapter._build_cache = refuse_enumeration
+            # First TD reuse has zero COM path export. Only a subsequent
+            # ACCEPTED state change authorizes an independently enumerated
+            # path epoch; the predecessor SQLite is never retired.
+            install_verified_post_acceptance_epoch_refresh(
+                adapter, paths["sqlite"], folder,
+                baseline_verified=lambda: used["baseline"])
             return old_run(adapter, cfg, folder, control, package_root)
 
         coupled._runtime_demand_continuation = parser
         parent.run_overnight_calibration_coupled = resumed_run
-        print_fn("A0001 resume installed: cycle 1 TD, read-only SQLite, zero COM path exports")
+        print_fn("A0001 resume installed: zero initial COM path exports; fresh epochs after verified acceptance")
         return result
 
     v16._run_live_preflight = checked_preflight
