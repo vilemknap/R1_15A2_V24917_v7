@@ -1,0 +1,53 @@
+{
+  "profile_drift": {
+    "profiles": 30,
+    "missing": [],
+    "violations": 5,
+    "max_abs_diff": 0.0,
+    "max_rel_diff": 0.0,
+    "worst_profile": null,
+    "abs_tol": 0.5,
+    "rel_tol": 0.0001,
+    "identity_errors": [
+      "EMPTY_OR_DUPLICATE_PROFILE:900000",
+      "EMPTY_OR_DUPLICATE_PROFILE:900001",
+      "EMPTY_OR_DUPLICATE_PROFILE:900000",
+      "EMPTY_OR_DUPLICATE_PROFILE:900001",
+      "INVALID_OBSERVATION_AUTHORITY:INVALID_OBSERVATION_IDENTITY"
+    ]
+  },
+  "combined_tolerant_comparison": {
+    "passes": false,
+    "profile_drift": {
+      "profiles": 30,
+      "missing": [],
+      "violations": 5,
+      "max_abs_diff": 0.0,
+      "max_rel_diff": 0.0,
+      "worst_profile": null,
+      "abs_tol": 0.5,
+      "rel_tol": 0.0001,
+      "identity_errors": [
+        "EMPTY_OR_DUPLICATE_PROFILE:900000",
+        "EMPTY_OR_DUPLICATE_PROFILE:900001",
+        "EMPTY_OR_DUPLICATE_PROFILE:900000",
+        "EMPTY_OR_DUPLICATE_PROFILE:900001",
+        "INVALID_OBSERVATION_AUTHORITY:INVALID_OBSERVATION_IDENTITY"
+      ]
+    },
+    "weighted_geh_before": 34.23978898532697,
+    "weighted_geh_after": 34.23978898532697,
+    "geh_tol": 0.01,
+    "component_differences": [],
+    "signal_atol": 1e-09,
+    "signal_rtol": 1e-08,
+    "comparison_contract": "TDROLLBACKFIX1_CONTENT_NOT_EXECUTION_IDENTITY",
+    "dynamic_skim_hash_policy": "MATRIX_AND_FAMILY_CONTENT_HASHES_EXACT; EPOCH_REFERENCE_SELF_CHECKED",
+    "inactive_long_objective_policy": "ONLY_DOCUMENTED_POSITIVE_INFINITY_SENTINEL"
+  },
+  "changed_duplicate_volumes": [
+    500.0,
+    500000.0
+  ],
+  "same_overall_volume_multiset": true
+}

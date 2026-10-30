@@ -124,9 +124,10 @@ def test_missing_dynamic_fine_rmse_cannot_certify_long_generation():
 
 
 def test_100_200_composite_finecdf_extraction():
+    from r1_15a2_long_composite_diagnostic_v24917 import KEY, SCHEMA
     diag={'d11':{'summary':{'component_dist_summary_rows':[
-        {'component':'WORK_stud','dynamic_fine_cdf_rmse':.09},
-        {'component':'LONG_COMPOSITE','dynamic_fine_cdf_rmse':.123}]}}}
+        {'component':'WORK_stud','dynamic_fine_cdf_rmse':.09}],
+        KEY: {'schema': SCHEMA, 'status': 'VERIFIED', 'component': 'LONG_COMPOSITE', 'fine_cdf_rmse': .123}}}}
     assert g._fine_rmse(diag)==.123
 
 
@@ -143,9 +144,8 @@ def test_capture_binds_osrm_support_and_separate_fresh_finecdf_epoch(monkeypatch
         v24916_dynamic_skims=SimpleNamespace(require_current=lambda:epoch),
         zones=zones,visum=osrm_adapter.visum,
         com_retry_policy={'enabled':False})
-    diag={'dynamic_skim_epoch':{'epoch_hash':'epochHash'},
-          'd11':{'summary':{'component_dist_summary_rows':[
-        {'component':'LONG_COMPOSITE','dynamic_fine_cdf_rmse':.03}]}}}
+    from test_v24917_long_composite_diagnostic import bind_diagnostic
+    diag = bind_diagnostic(adapter, epoch, m)
     proof=g.capture(adapter,diag)
     assert proof['status']=='MEASURED'
     assert proof['long_generation_permitted']

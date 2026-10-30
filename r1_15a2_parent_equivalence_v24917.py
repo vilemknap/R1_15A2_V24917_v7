@@ -19,6 +19,8 @@ from typing import Any, Mapping
 
 import numpy as np
 
+import r1_15a2_long_composite_diagnostic_v24917 as long_composite
+
 from r1_15a2_com_compat import com_call_with_retry, zone_identity
 from r1_15a2_supply import SupplyContractError, canonical_hash
 
@@ -266,7 +268,7 @@ def _sha256_text(value):
 def _dynamic_summary(diag, errors, side):
     """Validate each dynamic epoch, then compare its content, not execution IDs.
 
-    Only the three known producer locations are normalized. Content hashes,
+    Only documented producer locations are normalized. Content hashes,
     matrix identity/shape/units, zone order, statuses and metrics stay exact or
     subject to the existing metric roundoff check. Unknown metadata is NOT
     removed globally. This does not reuse an old epoch or skip its freshness
@@ -355,6 +357,14 @@ def _dynamic_summary(diag, errors, side):
             for key, auth_key in (("dynamic_assignment_epoch", "assignment_epoch"),
                                   ("dynamic_skim_epoch", "epoch"), ("dynamic_skim_epoch_hash", "epoch_hash")):
                 require(same_reference(gate.get(key), authority[auth_key]), "IDP_GATE_REFERENCE:" + key)
+        composite = summary.get(long_composite.KEY)
+        if composite is not None:
+            if composite.get('status') == 'VERIFIED':
+                long_composite.validate(composite, authority, reference_sha=diag.get('dynamic_11d_reference_sha256'))
+            else:
+                require(composite.get('schema') == long_composite.SCHEMA and composite.get('status') == 'UNVERIFIED'
+                        and isinstance(composite.get('reason'), str) and bool(composite['reason']),
+                        'LONG_COMPOSITE_DIAGNOSTIC_INVALID')
     except (KeyError, TypeError, ValueError, AttributeError) as exc:
         errors.append(side + ":DYNAMIC_AUTHORITY_INVALID:" + str(exc))
         return summary
@@ -368,6 +378,10 @@ def _dynamic_summary(diag, errors, side):
         if row.get("distance_authority") == "DYNAMIC_ASSIGNMENT_DIS_KM":
             row.pop("dynamic_skim_epoch", None)
             row.pop("dynamic_skim_epoch_hash", None)
+    composite = summary.get(long_composite.KEY)
+    if composite is not None and composite.get('status') == 'VERIFIED':
+        for key in long_composite.EXECUTION_KEYS:
+            composite.pop(key)
     return summary
 
 

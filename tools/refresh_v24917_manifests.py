@@ -74,6 +74,7 @@ RUNTIME = [
     "r1_15a2_diagfast_runtime_v1.py", "r1_15a2_diagfast_parity_v1.py",
     "r1_15a2_diagfast_direct_v2.py",
     "r1_15a2_long_distance_guard_v24917.py",
+    "r1_15a2_long_composite_diagnostic_v24917.py",
     "r1_15a2_mobility_zone_v24917.py",
     "r1_15a2_procseq_bootstrap_v24917.py",
     "helpers/R1_12D_DIAGFAST_V1.py", "helpers/R1_11D_DIAGFAST_V1.py",

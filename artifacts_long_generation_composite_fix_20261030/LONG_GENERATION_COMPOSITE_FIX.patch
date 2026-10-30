@@ -1,0 +1,808 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index b567526..ba26b1a 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -3,27 +3,43 @@
+   "release": "R1_15A2_DIAGFAST_V2_BULK_NUMPY_20261024",
+   "scope": "IMMUTABLE_SOURCE_IDENTITY_TEST_STATUS_IS_SEPARATE",
+   "files": {
++    "01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py": "5d6901fa0ce9bf7f3aecafede2fd8ba1cc3bd5975405b640e3a3a7500d3f7172",
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+     "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py": "da8953c4c4da056e092ed546a158ec13bce12590bdb230fd86122f809702f960",
++    "01_SPUSTIT_V24917_RESUME_A0001_TD_NO_ENUM_SILENT.py": "db10b8ca8080480497b0f31f12321d90f9a34e837b4662f21c45931f869da68c",
+     "01_SPUSTIT_V24917_RESUME_B0002_CYCLE2_FRESH_EPOCH_SILENT.py": "c3de4075165574c02a3784b74356b9cdfabd9a3fcbacbce6af7e3906abc611ef",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+-    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
++    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "02_SPUSTIT_V24917_TDJOINT1_60_40.py": "069805ca1366578bf51994490f78a3827fdd42a6b44ff2957e2663ed00419f94",
++    "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
++    "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
++    "R1_ADD_LONG_SCHOOL_COEFFICIENTS.py": "4e659040b390b38333330bef402b7447f2fefa73030b144501c48d8ce7ab87b6",
++    "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py": "ebe5a9395652c010b3b6c119e8b4f4046489613fc1c419ffd5391a3c97d5bc20",
++    "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
++    "R1_LONG_SCHOOL_FORMULA_CHECK.py": "b5109b0863dcc2f8b39a83c4ecb5931dc400b12f68db6ab8f320afd1c55d7c6c",
++    "R1_RESET_ZONAL_COEFFICIENTS.py": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
++    "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
++    "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
++    "R1_TDLONG1_STANDALONE_READ_ONLY.py": "e4c46037f490c2636dc98d0f0d100fb5fee2dd3d258dd9cb538d4a137b49da8e",
++    "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
++    "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
+     "benchmarks/run_path_store_build_benchmark.py": "e6b789aa2c3a8b9cf6842845c93fb3cb446a4c14aaf12a94e6c3c5eec749c6ce",
+     "diagfast_tests/conftest.py": "4e718a83a7134ec8c2efc6fd1e4dcaa62332a3ff5cfc1d2bf82dcf4a9a4b559d",
+     "diagfast_tests/fakes.py": "d5982cf7b3733c6fb7937efe00d944c7ada06112ec8ba2e1917a108971d2f5f2",
+     "diagfast_tests/test_decision_parity.py": "b02be669a8d4d017bff9edc5940671af18652c3634507bc0d57811cc106561ad",
+     "diagfast_tests/test_demand_policy.py": "476fd412a1ed28ac16f53c8e65a90621b1f85e06ffe878fe72c3d40532b58d11",
++    "diagfast_tests/test_direct_feature_isolation.py": "408f90ec8d7161cf5faee28800fbe82c33f2b7e5c6c01dbbfd8555480ca6e6ee",
+     "diagfast_tests/test_generation_gate_nonfatal.py": "8e2bb48647f72a8fac003b37cc9114e44b05f091162c57c39dc0e413c80ce301",
+     "diagfast_tests/test_matrix_edges.py": "c8bca4526c6abe4039d5cbcb9ff387df045c123631e5ff70a086285286731bfd",
+     "diagfast_tests/test_parity.py": "1c3ef399883d2a136eb6613baf8df81e21db991dfeb57c97785eee6dd39fb50a",
+     "diagfast_tests/test_reads.py": "48812fdddca7ab1f5bab3063b9f04a7df74e17e1c960a52eab2b50c4c9f860d0",
++    "diagfast_tests/test_relaxed_semantic_parity_v3.py": "b5d6d9a273ff3804665075f8a1394db4fbe5945852c4001941c42d3f6772c1ae",
++    "diagfast_tests/test_tolerant_numeric_parity.py": "70f1a037def3bef90890e01ff57b67b4e767885922655903c5b049c546db18a1",
+     "diagfast_tests/test_v2_bulk_numpy.py": "87a0a928a62f45018b809feca2b890e505143491011f04ce55e36bba271bb5e6",
+     "diagfast_tools/refresh_source_manifest.py": "428cc365cccfff8feca7863f985940dd2aac40d92684967791edf2290b060462",
+     "diagfast_tools/summarize_diagfast_profiles.py": "161792bf9bc4a1f93a4fe84cc99759ac648bb99e460cebd5a1e0a7d15f8e493e",
+-    "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+     "genfix2_audit_tests/test_audit_regressions.py": "cc584dd3ce155138093e14f469908f0820aaa60d136df89694001d2bb754eb4a",
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
+@@ -39,7 +55,7 @@
+     "r1_15a2_diagfast_runtime_v1.py": "b71b2356a26985da742ea4c929585c911801415b4987f743a9ad47e7504e938d",
+     "r1_15a2_diagfast_v1.py": "735e95766a17a4eefd8b4b58ab2c3360ec6d720544b7c30b58f5cc00346d895b",
+     "r1_15a2_diagfast_v2.py": "9a9f9e25cc8d6911fce4bf824b7b677c3156645fa90d8681f1bde26afae5acc2",
+-    "r1_15a2_dynamic_11d_files_v24917.py": "70aa29f5fac9aa8d6004d02835a72df5f1bbeb23598140d469afb89058da41ed",
++    "r1_15a2_dynamic_11d_files_v24917.py": "0aa0303258a0602601555fdaa47aea85473769b0ee9592311e494b4e8963ed81",
+     "r1_15a2_fast_trial_assignment_v24917.py": "2f223bc58ffebb5c5594d330cca3653b29b9ff75c037693b2832617502780c8d",
+     "r1_15a2_finecdf_bridge_v24916.py": "059a2a5b08003bb08f109911dad5dc42e3a21bcc7073f8005e686e279012141a",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+@@ -47,8 +63,9 @@
+     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_long_cache_generation_v24917.py": "b838acc3c12eda6a8c5420a42e901023a2368f049dfca78fc496372ade920637",
++    "r1_15a2_long_composite_diagnostic_v24917.py": "0378bfd4bbe245f4bc00e5c31f208b57632ce6ef5b26fd2b3fcbae57c1185ecb",
+     "r1_15a2_long_composite_td_v24917.py": "db65e11fc887d16d8f70198146597bac25bdb8fed2e8244e0f17e65f68b3408b",
+-    "r1_15a2_long_distance_guard_v24917.py": "6f960862450be3b06c8ee6194f9dd9f75ce54fec0f972c1f3a92824bb59c743a",
++    "r1_15a2_long_distance_guard_v24917.py": "c98bcf5013eaab983ed8ac52f946d008e795f9ad05d9748918acef826c15bee6",
+     "r1_15a2_long_incidence_read_v24917.py": "a6baead1427a273862affc2b01677e604f7143706a40030cb99bbb9fa978ea4b",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+     "r1_15a2_long_post_td_mask_v24917.py": "ea50a146233dbb5f0d1d554effbef5574a5c84091d4afc334f50f4f8a6b276cd",
+@@ -58,7 +75,7 @@
+     "r1_15a2_long_zonal_fit_v24917.py": "961cea7f295c8cf13ebafe17de09a3bcb6b8720479f09d2fade73409aa1aa07c",
+     "r1_15a2_mobility_guard_v24917.py": "7c7bf33eb61fe61a8817a61fd69e7490edcea83d4d6e0b0523be161eacef8f19",
+     "r1_15a2_mobility_zone_v24917.py": "21c0dc62183167552ee87c8a675f7b6da6e85540d0ca8a015f8bad492f3766bb",
+-    "r1_15a2_parent_equivalence_v24917.py": "acc0f39f6bbbffc88119a75f3e5dedf2f02bda69abe719716e7a679ecf992d60",
++    "r1_15a2_parent_equivalence_v24917.py": "9714a9390169c6dce91ea4ace6254131fd49871e8331b25f14bc7d4277491332",
+     "r1_15a2_path_incidence_v24917.py": "3c4830a61fe3de9cb1a39a5ca8f203220a008585e1dd3f34d3dbd2dba787fb78",
+     "r1_15a2_path_store_build_v24917.py": "a382ea21ab53d7f32391a271035cfc4879025627ed150e1548c0b412d4fe676a",
+     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+@@ -66,6 +83,7 @@
+     "r1_15a2_preflight_iofix_v24917.py": "a843a89df41aaec1ff4d2e9d442cb88b18a4e8273b3e45a8c3498de3800ea6f8",
+     "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
++    "r1_15a2_resume_a0001_v24917.py": "1f05fb456228321febae64d2b4d6589b38df2a975d447bedc529d6c21c853cda",
+     "r1_15a2_resume_b0002_v24917.py": "bb7788894057abec18d4e15ebd8a3cf230aff0513ec69f1f1d1fee7b5239d093",
+     "r1_15a2_rollback_consistency_v24917.py": "ff9b854be640e1e166cf5c82e84c821e0b7c05d5cbd3c0cc4ecbff18670f463d",
+     "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
+@@ -84,17 +102,6 @@
+     "r1_15a2_trial_adapter_v24917.py": "48af34367f6f9b2ffa1708ca6a028c884dfd5190dfb283d65e9f1e7a15372fb9",
+     "r1_15a2_v24917_runtime.py": "6d2ae9dc4c275abcd99e9ddc79f194ff533ae42e146053fc5d48214437d1cbe2",
+     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
+-    "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
+-    "R1_ADD_LONG_SCHOOL_COEFFICIENTS.py": "4e659040b390b38333330bef402b7447f2fefa73030b144501c48d8ce7ab87b6",
+-    "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py": "ebe5a9395652c010b3b6c119e8b4f4046489613fc1c419ffd5391a3c97d5bc20",
+-    "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
+-    "R1_LONG_SCHOOL_FORMULA_CHECK.py": "b5109b0863dcc2f8b39a83c4ecb5931dc400b12f68db6ab8f320afd1c55d7c6c",
+-    "R1_RESET_ZONAL_COEFFICIENTS.py": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
+-    "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
+-    "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
+-    "R1_TDLONG1_STANDALONE_READ_ONLY.py": "e4c46037f490c2636dc98d0f0d100fb5fee2dd3d258dd9cb538d4a137b49da8e",
+-    "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
+-    "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+     "tests/test_v24917_aligned_bounds.py": "7e1b1708fbcbe1bbb7c91db47fbcc8a44bf9ff07d320cb0499a494add4bfd3b3",
+@@ -102,6 +109,7 @@
+     "tests/test_v24917_boundary_pa.py": "45258311a1616b23ad8823deea13dcdfb5975f0ce2f692bf4ec58b269557c5ed",
+     "tests/test_v24917_combusy2.py": "91c347592c2ddce876454c38ee78c1c4770ab754c0773df7bdf08a9cb26ca2c4",
+     "tests/test_v24917_diagfast_td_abc_guard.py": "8faa8497524120589171af6ff53bfafc0c8231b0ddfd459ab184078ee2e6ad0b",
++    "tests/test_v24917_epoch_td_fairness_20261030.py": "f5fbc6f4f2ea85c2d5be9c5ab48ff2e2263b4f54484be8d113f792a1c5e3bf46",
+     "tests/test_v24917_fast_trial_assignment.py": "9338e030443bf51af70d7ef1572bc95d34622bdfcb7ebe59e72c7408ffb35c19",
+     "tests/test_v24917_generation_perf.py": "1ebe11b0edd22a4e49038e1293ab45d4cb4c56b74d03a3026d8651dd96f6318f",
+     "tests/test_v24917_generation_state_genfix1.py": "a076bba31a1956bf265ed2fb4bf5b6cc187cfc26ce739cbb28c614b938fa299d",
+@@ -112,14 +120,16 @@
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
+     "tests/test_v24917_long_cache_generation.py": "27cb0b38663cf7b7b177dbffa9bb197b7b3e6352ee6fa7f9fa7066af17c08182",
+     "tests/test_v24917_long_chain_review.py": "00cd434cea33065b60df08eab123d90a63f8261a77c049f2ce29b97533aa2dc3",
++    "tests/test_v24917_long_composite_diagnostic.py": "2047a5c40c4d359019440a0bdb1f7bb348f9da585fd8e74c7332ecccbc5f75cf",
+     "tests/test_v24917_long_composite_td.py": "371294a571280d7f57023e7acab38c85c3b945777a8dc61353f4d3dc2386abbb",
++    "tests/test_v24917_long_diagnostics_epoch_fix.py": "434ffba4e16a13c73f4f7b3c18fcdf545153eab1e2beed64a3d943fdf76249ef",
+     "tests/test_v24917_long_incidence_read.py": "4d9d5be00c08776681335cee40d3d6008624748634eea6399499855f0a32a3bd",
+-    "tests/test_v24917_long_osrm_support.py": "8a687a59876a81e30d825e0a11a79ccef9a61f0c8e0c97abc8f6e479f5690d4f",
++    "tests/test_v24917_long_osrm_support.py": "f52b15af47a756b0a1deda00fce921284a1820662e10157d67e87955832e803a",
+     "tests/test_v24917_long_post_td_mask.py": "2b1b8b0f519b54005c20e52018de490fa0bbc249ba0ad1c20947810450cbdc24",
+     "tests/test_v24917_long_profile_incidence.py": "6220c516d2f7c39e0b2ddf80101121714c7f22dfa6249dead14102df5e15d976",
+     "tests/test_v24917_long_tg_td_unlock.py": "2ec87aaecf7256ff174b822ce0c5f8f795c13829c42200ecc3011117c4403fce",
+     "tests/test_v24917_long_zonal_fit.py": "e26878643cd4062365f6f7e3b54067ce2c7bffe0dba6e71881afa26fafcba7a1",
+-    "tests/test_v24917_longguard1.py": "93daa1627891e8591083b8b4fc8e317135cf438ca49f17f4e71baca7e29b20e2",
++    "tests/test_v24917_longguard1.py": "c4d7e488b45032915e91ae96cbe01642a2c697fa479aaaf4568e83a0fbbeba90",
+     "tests/test_v24917_longmask_09c_live_scope_regression.py": "276985f43f802b8df0104d791669efca1fcf62224f9545b0c6f5df56cba7ec09",
+     "tests/test_v24917_mobility_guard.py": "ff98e4cb4d62b5aa7f89a4b5d4f6ec5716f650eb945e33ea85110d7b524ca0cf",
+     "tests/test_v24917_mobilityalloc1_solver.py": "9421fe7d9a1a07d9ecf7e6dc6b73f391af87a86aa2e5a666d1fb98fa15578265",
+@@ -128,11 +138,12 @@
+     "tests/test_v24917_path_incidence_review.py": "5e469acc20f1e42ca292f48623736d05893ade67c3caeb58922ce2f215989eee",
+     "tests/test_v24917_path_store_build.py": "be0e13e9af6682fe6cfae77e13a49f31da03ec840c73424c3ca00f422f4423b4",
+     "tests/test_v24917_perf3.py": "2623e752b3d819ce8f9a64ef6417e667cfc27d78b153bcddb70658f99ae72185",
+-    "tests/test_v24917_preflight_op20_partial_activation.py": "3695f61481e78aa3ce2b61d4a34c58affc433e8c79d39a817a98721f0c7a3bcd",
+     "tests/test_v24917_preflight2.py": "8c55cd8f64b2c1188bb3211a541c8ed21ad4b65fdcc460ff5ec882b305a8b89c",
++    "tests/test_v24917_preflight_op20_partial_activation.py": "3695f61481e78aa3ce2b61d4a34c58affc433e8c79d39a817a98721f0c7a3bcd",
+     "tests/test_v24917_procseq_bootstrapfix1.py": "8615c765e437758a5543b0d50e5702dc5bb20c482048de2880034686bad0eb4d",
+     "tests/test_v24917_rbcons_audit.py": "482aee6cfd341610d271a811e76df0dfcc955015383726afbb82c4dde0385528",
+     "tests/test_v24917_read_reuse.py": "672a1a7428612ef801c21de6e01c54a4e09eb602c32ba338f8cfc3e6fbe27fae",
++    "tests/test_v24917_resume_a0001_td_no_enum.py": "fd5bb48b15b4cb17af8ecba7f11812c10d10604e0a50c2a6c92262ce8bcdb047",
+     "tests/test_v24917_resume_b0002_cycle2.py": "0360804b0ffe22aa704848237f5bda8ffc5a6893be602b731e5fef4b902ad395",
+     "tests/test_v24917_runtime_install.py": "0f941887b4c888af74168f7ca8ce60d656c3ed36079a9efd55130efaf221147d",
+     "tests/test_v24917_runtime_options_fail_closed.py": "e852f0b46a9bac44cd30252533c33a0770512212bde23cf0eb653746d56d296d",
+@@ -143,6 +154,7 @@
+     "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
+     "tests/test_v24917_step_search.py": "10b78a9068ffab80e67c4dbe0761898230736a6f302fe7ad059279d1aafd123f",
+     "tests/test_v24917_supply_mix.py": "31803439c9c23d27b3829d66e7b9e95538f7922b111ca95a5158981f8c081cfe",
++    "tests/test_v24917_supplymix_completion_isolation.py": "b61885f792901e8371cef3181c744869b2c590603b4ce8c8ff99362cb7008b88",
+     "tests/test_v24917_targeted_catchup.py": "c345a4367ea20c536edef36064ce51dcdc45ceea8e3c77bc268c4e24dd72e2ba",
+     "tests/test_v24917_td_rollback_tolerant.py": "7f03276f74e29715f7dd865688d079458184f97ab1d36b4f4eec76012e40215b",
+     "tests/test_v24917_td_stage_integration.py": "8e4d9636f3472ae5fcc88a28113209458142909467bfc3146f4b206672f86a25",
+@@ -154,13 +166,8 @@
+     "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
+     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "9e82a720056b266b4a2033e9b14118257b3c333d12959ae145c93cac2a6b756e",
++    "tools/refresh_v24917_manifests.py": "a6d67dc398c37bf2f818fda9d6a6b1d10dcfdaf973cd3daf299971adf18e705e",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
+-    "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec",
+-    "01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py": "5d6901fa0ce9bf7f3aecafede2fd8ba1cc3bd5975405b640e3a3a7500d3f7172",
+-    "diagfast_tests/test_direct_feature_isolation.py": "408f90ec8d7161cf5faee28800fbe82c33f2b7e5c6c01dbbfd8555480ca6e6ee",
+-    "diagfast_tests/test_tolerant_numeric_parity.py": "70f1a037def3bef90890e01ff57b67b4e767885922655903c5b049c546db18a1",
+-    "diagfast_tests/test_relaxed_semantic_parity_v3.py": "b5d6d9a273ff3804665075f8a1394db4fbe5945852c4001941c42d3f6772c1ae",
+-    "tests/test_v24917_supplymix_completion_isolation.py": "b61885f792901e8371cef3181c744869b2c590603b4ce8c8ff99362cb7008b88"
++    "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec"
+   }
+ }
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index c18083f..799c0b3 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -12,7 +12,7 @@
+     "r1_15a2_long_support_distance_v24917.py": "79765255b057b1f09345ce4b7ac9874cd4b1fe91a09d996ba20d4c63223c02e9",
+     "r1_15a2_long_post_td_mask_v24917.py": "ea50a146233dbb5f0d1d554effbef5574a5c84091d4afc334f50f4f8a6b276cd",
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+-    "r1_15a2_parent_equivalence_v24917.py": "acc0f39f6bbbffc88119a75f3e5dedf2f02bda69abe719716e7a679ecf992d60",
++    "r1_15a2_parent_equivalence_v24917.py": "9714a9390169c6dce91ea4ace6254131fd49871e8331b25f14bc7d4277491332",
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
+@@ -22,7 +22,7 @@
+     "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
+     "r1_15a2_v24917_runtime.py": "6d2ae9dc4c275abcd99e9ddc79f194ff533ae42e146053fc5d48214437d1cbe2",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+-    "r1_15a2_dynamic_11d_files_v24917.py": "70aa29f5fac9aa8d6004d02835a72df5f1bbeb23598140d469afb89058da41ed",
++    "r1_15a2_dynamic_11d_files_v24917.py": "0aa0303258a0602601555fdaa47aea85473769b0ee9592311e494b4e8963ed81",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+     "r1_15a2_td_count_blend_v24917.py": "313acb356557a23941a2ce1d9f422c016674402894374238074d891a3802ae64",
+@@ -69,25 +69,26 @@
+     "r1_15a2_diagfast_runtime_v1.py": "b71b2356a26985da742ea4c929585c911801415b4987f743a9ad47e7504e938d",
+     "r1_15a2_diagfast_parity_v1.py": "190e6d0ecef7d68e7a43f4450826378695a95c31024561a1a97efd54f1252232",
+     "r1_15a2_diagfast_direct_v2.py": "e6b42d8432c5e05b9a24a7804bb8f5dae76afc6e4aa5db76e39de5c49575e5fa",
+-    "r1_15a2_long_distance_guard_v24917.py": "6f960862450be3b06c8ee6194f9dd9f75ce54fec0f972c1f3a92824bb59c743a",
++    "r1_15a2_long_distance_guard_v24917.py": "c98bcf5013eaab983ed8ac52f946d008e795f9ad05d9748918acef826c15bee6",
++    "r1_15a2_long_composite_diagnostic_v24917.py": "0378bfd4bbe245f4bc00e5c31f208b57632ce6ef5b26fd2b3fcbae57c1185ecb",
+     "r1_15a2_mobility_zone_v24917.py": "21c0dc62183167552ee87c8a675f7b6da6e85540d0ca8a015f8bad492f3766bb",
+     "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
+     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "902b1813bd7a5f95388ebb9a1e90ddabb1270018a8f3bc201e0217198346b311",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "817f7a88ce631f5347d503304bd98b7f04dbb16fd016d66913c5479295f5c653",
+     "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec",
+     "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
+     "r1_15a2_finecdf_bridge_v24916.py": "059a2a5b08003bb08f109911dad5dc42e3a21bcc7073f8005e686e279012141a",
+-    "r1_15a2_school_td_v24917.py": "7d8236327718c5f37b028db9522c7361876144a88d7e24795e76f16f47b58939",
+     "r1_15a2_resume_a0001_v24917.py": "1f05fb456228321febae64d2b4d6589b38df2a975d447bedc529d6c21c853cda",
+     "01_SPUSTIT_V24917_RESUME_A0001_TD_NO_ENUM_SILENT.py": "db10b8ca8080480497b0f31f12321d90f9a34e837b4662f21c45931f869da68c",
+     "A0001_TD_RESUME_AUTHORITY.json": "1d39e0511fcc06316dd118ca11cdba3b43c28e1d142adf9ffd3427c2a30410ed",
+     "r1_15a2_resume_b0002_v24917.py": "bb7788894057abec18d4e15ebd8a3cf230aff0513ec69f1f1d1fee7b5239d093",
+     "01_SPUSTIT_V24917_RESUME_B0002_CYCLE2_FRESH_EPOCH_SILENT.py": "c3de4075165574c02a3784b74356b9cdfabd9a3fcbacbce6af7e3906abc611ef",
++    "01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py": "5d6901fa0ce9bf7f3aecafede2fd8ba1cc3bd5975405b640e3a3a7500d3f7172",
+     "B0002_CYCLE2_RESUME_AUTHORITY.json": "bd1972918e8c5b02633852c96d5aa6a1859db4ffc97062f0fbb73afb1d1c4d39",
+-    "01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py": "5d6901fa0ce9bf7f3aecafede2fd8ba1cc3bd5975405b640e3a3a7500d3f7172"
++    "r1_15a2_school_td_v24917.py": "7d8236327718c5f37b028db9522c7361876144a88d7e24795e76f16f47b58939"
+   }
+ }
+diff --git a/r1_15a2_dynamic_11d_files_v24917.py b/r1_15a2_dynamic_11d_files_v24917.py
+index 0fa22e9..a3e6a2e 100644
+--- a/r1_15a2_dynamic_11d_files_v24917.py
++++ b/r1_15a2_dynamic_11d_files_v24917.py
+@@ -35,6 +35,7 @@ from typing import Any, Dict, Mapping, Sequence
+ 
+ import numpy as np
+ 
++import r1_15a2_long_composite_diagnostic_v24917 as long_composite
+ import r1_15a2_runtime_v1 as rt
+ import r1_15a2_runtime_io_hotfix_profile488 as io
+ 
+@@ -218,6 +219,20 @@ def publish_dynamic_files(adapter, diag: Dict[str, Any], out: Path, cfg, *, capt
+         metrics = DynamicFamilyMetrics(SimpleNamespace(dynamic_skim_epoch=epoch), ref).evaluate(matrices)
+ 
+     d11 = diag["d11"]
++    # LONG_COMPOSITE is a 5-layer target, not one of the 17 atomic 11D rows.
++    # Publish its existing pure metric separately for LONGGUARD1; never append
++    # a synthetic row or change the original CSV/observation schema.
++    if 'LONG_COMPOSITE' in ref.TARGETS:
++        try:
++            composite = long_composite.make_record(metrics['LONG_COMPOSITE'], epoch, ref, _sha)
++        except (KeyError, TypeError, ValueError) as exc:
++            composite = {'schema': long_composite.SCHEMA, 'status': 'UNVERIFIED',
++                         'reason': type(exc).__name__ + ':' + str(exc)}
++        if epoch_key(adapter.v24916_dynamic_skims.require_current()) != epoch_key(epoch):
++            raise RuntimeError('V24917_LONG_COMPOSITE_PUBLISH_EPOCH_CHANGED')
++        d11['summary'] = dict(d11.get('summary') or {}, **{long_composite.KEY: composite})
++        io.critical_atomic_json(out / 'DYNAMIC_LONG_COMPOSITE.json', composite)
++        io.critical_atomic_json(Path(d11['summary_path']), d11['summary'])
+     summary_rows = list((d11.get("summary") or {}).get("component_dist_summary_rows") or [])
+     summary_path = out / (rt.D11_PREFIX + SUFFIXES["summary"])
+     baseline_path = out / (rt.D11_PREFIX + SUFFIXES["baseline"])
+diff --git a/r1_15a2_long_composite_diagnostic_v24917.py b/r1_15a2_long_composite_diagnostic_v24917.py
+new file mode 100644
+index 0000000..68afb77
+--- /dev/null
++++ b/r1_15a2_long_composite_diagnostic_v24917.py
+@@ -0,0 +1,131 @@
++"""Separate, epoch-bound LONG FineCDF evidence; never an eighteenth 11D row.
++
++The producer reuses the existing pure DynamicFamilyMetrics result. LONGGUARD1
++verifies it against the current five arrays it already reads for support. No
++additional COM read, demand write, target change or relaxed gate is introduced.
++"""
++from __future__ import annotations
++
++import math
++from collections.abc import Mapping
++import numpy as np
++
++from r1_15a2_supply import canonical_hash
++
++KEY = 'long_composite_dynamic'
++SCHEMA = 'R1_V24917_LONG_COMPOSITE_DYNAMIC_DIAGNOSTIC_V1'
++EXECUTION_KEYS = ('assignment_epoch', 'dynamic_skim_epoch', 'dynamic_skim_epoch_hash', 'assignment_token')
++
++
++def _require(ok, code):
++    if not ok:
++        raise ValueError('LONG_COMPOSITE_DIAGNOSTIC_' + code)
++
++
++def _same(a, b):
++    return a == b and canonical_hash(a) == canonical_hash(b)
++
++
++def _sha(value):
++    return isinstance(value, str) and len(value) == 64 and all(c in '0123456789abcdef' for c in value)
++
++
++def target_contract(ref):
++    from r1_15a2_long_distance_guard_v24917 import MATRIX_NOS, MIN_CDF_KM, MAX_CDF_KM
++    target = ref.TARGETS['LONG_COMPOSITE']
++    fine = ref.FINE_AUTHORITY['targets']['LONG_COMPOSITE']
++    grid = np.asarray(ref.FINE_AUTHORITY['common_grid_%s_km' % fine['grid']], dtype=float)
++    goal = np.asarray(fine['cdf'], dtype=float)
++    _require(list(target['matrix_nos']) == list(MATRIX_NOS), 'MATRIX_SCOPE')
++    _require(grid.shape == goal.shape == (512,) and np.isfinite(grid).all()
++             and np.isfinite(goal).all() and np.all(np.diff(grid) > 0)
++             and grid[0] == MIN_CDF_KM and grid[-1] == MAX_CDF_KM
++             and target['edges'][0] == MIN_CDF_KM and target['edges'][-1] == MAX_CDF_KM,
++             'TARGET_GRID')
++    return grid, goal, canonical_hash({'grid_km': grid.tolist(), 'target_cdf': goal.tolist()})
++
++
++def _binding(authority):
++    meta = authority['matrix_meta_by_dseg']['NATIVE_CL']
++    result = {
++        'assignment_epoch': authority['assignment_epoch'], 'dynamic_skim_epoch': authority['epoch'],
++        'dynamic_skim_epoch_hash': authority['epoch_hash'], 'assignment_token': authority['assignment_token'],
++        'zone_order_sha256': authority['zone_order_sha256'], 'native_cl_matrix_no': meta['matrix_no'],
++        'native_cl_values_sha256': meta['values_sha256'], 'family_distance_sha256': authority['family_hashes']['LONG']}
++    _require(meta.get('unit') == 'km' and str(meta.get('matrix_code', '')).upper() == 'DIS', 'NATIVE_CL_UNIT_OR_CODE')
++    for name in ('assignment_epoch', 'dynamic_skim_epoch', 'native_cl_matrix_no'):
++        _require(type(result[name]) is int and result[name] > 0, 'INVALID_' + name.upper())
++    for name in ('dynamic_skim_epoch_hash', 'zone_order_sha256', 'native_cl_values_sha256', 'family_distance_sha256'):
++        _require(_sha(result[name]), 'INVALID_' + name.upper())
++    _require(isinstance(result['assignment_token'], str) and bool(result['assignment_token']), 'ASSIGNMENT_TOKEN')
++    return result
++
++
++def make_record(metric, epoch, ref, reference_sha):
++    from r1_15a2_long_distance_guard_v24917 import MATRIX_NOS, MIN_CDF_KM, MAX_CDF_KM
++    _require(_sha(reference_sha), 'REFERENCE_SHA')
++    grid, goal, target_sha = target_contract(ref)
++    model = np.asarray(metric['fine_model_cdf'], dtype=float)
++    _require(model.shape == goal.shape and np.isfinite(model).all()
++             and np.all(model >= -1e-12) and np.all(model <= 1 + 1e-12)
++             and np.all(np.diff(model) >= -1e-12) and abs(float(model[-1]) - 1.) < 1e-8, 'MODEL_CDF')
++    actual_rmse = float(np.sqrt(np.mean((model - goal) ** 2)))
++    _require(not isinstance(metric['fine_cdf_rmse'], bool)
++             and math.isclose(float(metric['fine_cdf_rmse']), actual_rmse, rel_tol=1e-12, abs_tol=1e-12), 'RMSE')
++    binding = _binding(epoch.summary())
++    _require(metric.get('distance_authority') == 'DYNAMIC_ASSIGNMENT_DIS_KM'
++             and metric.get('dynamic_distance_family') == 'LONG'
++             and _same(metric.get('dynamic_skim_epoch'), binding['dynamic_skim_epoch'])
++             and metric.get('dynamic_skim_epoch_hash') == binding['dynamic_skim_epoch_hash'], 'METRIC_EPOCH')
++    record = {'schema': SCHEMA, 'status': 'VERIFIED', 'component': 'LONG_COMPOSITE',
++        'matrix_nos': list(MATRIX_NOS), 'distance_authority': 'DYNAMIC_ASSIGNMENT_DIS_KM',
++        'dynamic_distance_family': 'LONG', 'reference_sha256': reference_sha,
++        'target_sha256': target_sha, 'fine_points': len(grid), 'conditional_km': [MIN_CDF_KM, MAX_CDF_KM],
++        'fine_cdf_rmse': actual_rmse, 'conditioned_volume': float(metric['conditioned_volume_diagnostic']),
++        'total_volume': float(metric['total_volume_diagnostic']), **binding}
++    validate(record, epoch.summary(), reference_sha=reference_sha, target_sha=target_sha)
++    return record
++
++
++def validate(record, authority, *, reference_sha=None, target_sha=None):
++    from r1_15a2_long_distance_guard_v24917 import MATRIX_NOS, MIN_CDF_KM, MAX_CDF_KM
++    _require(isinstance(record, Mapping) and record.get('schema') == SCHEMA
++             and record.get('status') == 'VERIFIED' and record.get('component') == 'LONG_COMPOSITE', 'SCHEMA_OR_STATUS')
++    _require(_same(record.get('matrix_nos'), list(MATRIX_NOS)) and record.get('fine_points') == 512
++             and _same(record.get('conditional_km'), [MIN_CDF_KM, MAX_CDF_KM])
++             and record.get('distance_authority') == 'DYNAMIC_ASSIGNMENT_DIS_KM'
++             and record.get('dynamic_distance_family') == 'LONG', 'METRIC_SCOPE')
++    for key, expected in _binding(authority).items():
++        _require(_same(record.get(key), expected), 'STALE_' + key.upper())
++    for key, expected in (('reference_sha256', reference_sha), ('target_sha256', target_sha)):
++        _require(_sha(record.get(key)) and (expected is None or record[key] == expected), key.upper())
++    for key in ('fine_cdf_rmse', 'conditioned_volume', 'total_volume'):
++        value = record.get(key)
++        _require(isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value), 'NUMERIC_' + key.upper())
++    _require(0 <= record['fine_cdf_rmse'] <= 1 and 0 < record['conditioned_volume']
++             <= record['total_volume'] * (1 + 1e-12), 'MASS_OR_RMSE_RANGE')
++    return float(record['fine_cdf_rmse'])
++
++
++def verify_current(adapter, diag, epoch, matrices):
++    """Require published evidence AND independently verify its current inputs.
++
++    Arrays were already read by LONGGUARD1. Recomputing one NumPy target avoids
++    trusting a bare verified flag or stale diagnostics under a reused epoch ID.
++    """
++    from types import SimpleNamespace
++    from r1_15a2_finecdf_bridge_v24916 import load_reference, DynamicFamilyMetrics
++    record = (((diag or {}).get('d11') or {}).get('summary') or {}).get(KEY)
++    fine = (getattr(adapter, 'cfg', {}).get('coupled_demand') or {}).get('finecdf_td') or {}
++    root = getattr(adapter, '_v24916_package_root', None)
++    _require(root is not None and fine.get('reference_sha256'), 'REFERENCE_AUTHORITY_MISSING')
++    ref, _, sha = load_reference(root, fine)
++    _, _, target_sha = target_contract(ref)
++    value = validate(record, epoch.summary(), reference_sha=sha, target_sha=target_sha)
++    evaluator = DynamicFamilyMetrics(SimpleNamespace(dynamic_skim_epoch=epoch), ref)
++    actual = evaluator._evaluate_one('LONG_COMPOSITE', epoch.family_distance['LONG'], matrices)
++    for key, field in (('fine_cdf_rmse', 'fine_cdf_rmse'), ('conditioned_volume', 'conditioned_volume_diagnostic'),
++                       ('total_volume', 'total_volume_diagnostic')):
++        _require(math.isclose(record[key], float(actual[field]), rel_tol=1e-12, abs_tol=1e-10), 'CURRENT_INPUTS_' + key.upper())
++    _require(adapter.v24916_dynamic_skims.require_current() is epoch, 'EPOCH_CHANGED_DURING_VERIFICATION')
++    return value
+diff --git a/r1_15a2_long_distance_guard_v24917.py b/r1_15a2_long_distance_guard_v24917.py
+index 0d62851..3569e8f 100644
+--- a/r1_15a2_long_distance_guard_v24917.py
++++ b/r1_15a2_long_distance_guard_v24917.py
+@@ -18,6 +18,8 @@ from typing import Any, Mapping
+ 
+ import numpy as np
+ 
++import r1_15a2_long_composite_diagnostic_v24917 as long_composite
++
+ RELEASE = "R1_15A2_V24917_LONGGUARD1_20261027"
+ MATRIX_NOS = (9111, 9112, 9113, 9114, 9115)
+ MIN_KM = 80.0
+@@ -81,18 +83,18 @@ def measure(distance: Any, matrices: Mapping[int, Any], *, epoch: Mapping[str, A
+ 
+ def _fine_rmse(diag: Mapping[str, Any]) -> float | None:
+     d11 = ((diag or {}).get("d11") or {}).get("summary") or {}
+-    rows = d11.get("component_dist_summary_rows") or []
+-    rows = [r for r in rows if r.get("component") == "LONG_COMPOSITE"]
+-    if len(rows) != 1:
++    record = d11.get(long_composite.KEY) or {}
++    if (not isinstance(record, Mapping) or record.get('schema') != long_composite.SCHEMA
++            or record.get('status') != 'VERIFIED' or record.get('component') != 'LONG_COMPOSITE'):
+         return None
+-    value = rows[0].get("dynamic_fine_cdf_rmse")
+-    if value is None:
++    value = record.get('fine_cdf_rmse')
++    if value is None or isinstance(value, bool):
+         return None
+     try:
+         x = float(value)
+     except (ValueError, TypeError, OverflowError):
+         return None
+-    return x if math.isfinite(x) and x >= 0.0 else None
++    return x if math.isfinite(x) and 0.0 <= x <= 1.0 else None
+ 
+ 
+ def capture(adapter: Any, diag: Mapping[str, Any]) -> dict:
+@@ -131,8 +133,20 @@ def capture(adapter: Any, diag: Mapping[str, Any]) -> dict:
+             "finecdf_native_cl_values_sha256": epoch.matrix_meta_by_dseg["NATIVE_CL"].get("values_sha256")})
+         proof["support_distance_source"] = support_source
+         # The 512-point curve still uses the fresh native skim; support uses OSRM.
+-        proof["fine_100_200_rmse"] = _fine_rmse(diag)
++        value = _fine_rmse(diag)
++        reason = 'LONG_COMPOSITE_DIAGNOSTIC_MISSING_OR_UNVERIFIED'
++        if value is not None:
++            try:
++                value = long_composite.verify_current(adapter, diag, epoch, matrices)
++                reason = None
++            except Exception as exc:
++                value = None
++                reason = type(exc).__name__ + ':' + str(exc)
++        proof["fine_100_200_rmse"] = value
+         proof["fine_cdf_verified"] = proof["fine_100_200_rmse"] is not None
++        proof['fine_cdf_unverified_reason'] = reason
++        if manager.require_current() is not epoch:
++            raise RuntimeError('LONGGUARD1_EPOCH_CHANGED_DURING_READ')
+         proof["long_generation_permitted"] = bool(proof["support_clean"] and
+                                                     proof["fine_cdf_verified"] and
+                                                     proof["total_volume"] > 0)
+diff --git a/r1_15a2_parent_equivalence_v24917.py b/r1_15a2_parent_equivalence_v24917.py
+index d606c27..1fa3bf1 100644
+--- a/r1_15a2_parent_equivalence_v24917.py
++++ b/r1_15a2_parent_equivalence_v24917.py
+@@ -19,6 +19,8 @@ from typing import Any, Mapping
+ 
+ import numpy as np
+ 
++import r1_15a2_long_composite_diagnostic_v24917 as long_composite
++
+ from r1_15a2_com_compat import com_call_with_retry, zone_identity
+ from r1_15a2_supply import SupplyContractError, canonical_hash
+ 
+@@ -266,7 +268,7 @@ def _sha256_text(value):
+ def _dynamic_summary(diag, errors, side):
+     """Validate each dynamic epoch, then compare its content, not execution IDs.
+ 
+-    Only the three known producer locations are normalized. Content hashes,
++    Only documented producer locations are normalized. Content hashes,
+     matrix identity/shape/units, zone order, statuses and metrics stay exact or
+     subject to the existing metric roundoff check. Unknown metadata is NOT
+     removed globally. This does not reuse an old epoch or skip its freshness
+@@ -355,6 +357,14 @@ def _dynamic_summary(diag, errors, side):
+             for key, auth_key in (("dynamic_assignment_epoch", "assignment_epoch"),
+                                   ("dynamic_skim_epoch", "epoch"), ("dynamic_skim_epoch_hash", "epoch_hash")):
+                 require(same_reference(gate.get(key), authority[auth_key]), "IDP_GATE_REFERENCE:" + key)
++        composite = summary.get(long_composite.KEY)
++        if composite is not None:
++            if composite.get('status') == 'VERIFIED':
++                long_composite.validate(composite, authority, reference_sha=diag.get('dynamic_11d_reference_sha256'))
++            else:
++                require(composite.get('schema') == long_composite.SCHEMA and composite.get('status') == 'UNVERIFIED'
++                        and isinstance(composite.get('reason'), str) and bool(composite['reason']),
++                        'LONG_COMPOSITE_DIAGNOSTIC_INVALID')
+     except (KeyError, TypeError, ValueError, AttributeError) as exc:
+         errors.append(side + ":DYNAMIC_AUTHORITY_INVALID:" + str(exc))
+         return summary
+@@ -368,6 +378,10 @@ def _dynamic_summary(diag, errors, side):
+         if row.get("distance_authority") == "DYNAMIC_ASSIGNMENT_DIS_KM":
+             row.pop("dynamic_skim_epoch", None)
+             row.pop("dynamic_skim_epoch_hash", None)
++    composite = summary.get(long_composite.KEY)
++    if composite is not None and composite.get('status') == 'VERIFIED':
++        for key in long_composite.EXECUTION_KEYS:
++            composite.pop(key)
+     return summary
+ 
+ 
+diff --git a/tests/test_v24917_long_composite_diagnostic.py b/tests/test_v24917_long_composite_diagnostic.py
+new file mode 100644
+index 0000000..44dff55
+--- /dev/null
++++ b/tests/test_v24917_long_composite_diagnostic.py
+@@ -0,0 +1,230 @@
++"""Real dynamic 11D producer -> separate composite -> guarded LONG Generation."""
++import copy
++import json
++from pathlib import Path
++from types import SimpleNamespace as NS
++
++import numpy as np
++import pytest
++
++import r1_15a2_dynamic_11d_files_v24917 as files
++import r1_15a2_finecdf_bridge_v24916 as bridge
++import r1_15a2_long_composite_diagnostic_v24917 as composite
++import r1_15a2_long_distance_guard_v24917 as guard
++import r1_15a2_parent_equivalence_v24917 as equivalence
++from r1_15a2_dynamic_skim_v24916p2c import SCHEMA, REQUIRED_NATIVE_DSEGS, _hash
++from r1_15a2_skim_v24916p2c import ordered_zone_hash
++from r1_15a2_path_incidence_v24917 import matrix_values_hash
++from test_v24917_long_osrm_support import make_adapter
++from test_v24917_long_cache_generation import live, problem
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def reference():
++    cfg = json.loads((ROOT / 'R1_15A2_CONFIG_V2_4_9_15_PERF2.json').read_text())
++    ref, _, sha = bridge.load_reference(ROOT, cfg['coupled_demand']['finecdf_td'])
++    return ref, cfg, sha
++
++
++def bind_diagnostic(adapter, epoch, matrices, rows=None):
++    """Small live-source fixture with the real sealed target and metric math."""
++    ref, cfg, sha = reference()
++    adapter.cfg = dict(getattr(adapter, 'cfg', {}), coupled_demand=cfg['coupled_demand'])
++    adapter._v24916_package_root = ROOT
++    n = len(adapter.zones)
++    native = epoch.family_distance['LONG']
++    epoch.assignment_token = 'assignment-' + str(epoch.assignment_epoch)
++    epoch.zone_order_sha256 = ordered_zone_hash(adapter.zones)
++    epoch.family_hashes = {family: matrix_values_hash(native) for family in ('WORK', 'SERVICE', 'LONG', 'FOREIGN')}
++    epoch.matrix_meta_by_dseg = {code: {'matrix_no': 700 + i, 'matrix_code': 'DIS', 'unit': 'km',
++        'dseg_code': code, 'canonical_dseg': code, 'shape': [n, n], 'values_sha256': matrix_values_hash(native)}
++        for i, code in enumerate(REQUIRED_NATIVE_DSEGS)}
++    payload = {'schema': SCHEMA, 'epoch': epoch.epoch, 'assignment_epoch': epoch.assignment_epoch,
++        'assignment_token': epoch.assignment_token, 'zone_order_sha256': epoch.zone_order_sha256,
++        'operation_positions': list(range(31, 37)),
++        'matrix_hashes': {k: v['values_sha256'] for k, v in epoch.matrix_meta_by_dseg.items()},
++        'family_hashes': epoch.family_hashes}
++    epoch.epoch_hash = _hash(payload)
++    authority = {k: v for k, v in payload.items() if k != 'matrix_hashes'}
++    authority.update(matrix_meta_by_dseg=epoch.matrix_meta_by_dseg, epoch_hash=epoch.epoch_hash,
++        role='ACTIVE_TD_CALIBRATION_DISTANCE_AUTHORITY', source='VISUM_FRESH_ASSIGNMENT_PATHS_PRT_DIS',
++        static_r1_osrm_dist_km_role='REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION')
++    epoch.summary = lambda: copy.deepcopy(authority)
++    adapter.v24916_dynamic_skims = NS(require_current=lambda: epoch)
++    metric = bridge.DynamicFamilyMetrics(NS(dynamic_skim_epoch=epoch), ref)._evaluate_one(
++        'LONG_COMPOSITE', native, matrices)
++    metric.update(distance_authority='DYNAMIC_ASSIGNMENT_DIS_KM', dynamic_distance_family='LONG',
++        dynamic_skim_epoch=epoch.epoch, dynamic_skim_epoch_hash=epoch.epoch_hash)
++    record = composite.make_record(metric, epoch, ref, sha)
++    rows = rows if rows is not None else [{'component': r['component']} for r in ref.COMPONENTS]
++    summary = {'component_dist_summary_rows': rows, 'dynamic_distance_authority': epoch.summary(),
++        composite.KEY: record,
++        'dist_classification_matrix': {'code': 'VISUM_DYNAMIC_ASSIGNMENT_DIS_KM',
++            'classification': 'DYNAMIC_ASSIGNMENT_PATH_VOLUME_WEIGHTED_DIS',
++            'assignment_epoch': epoch.assignment_epoch, 'skim_epoch': epoch.epoch,
++            'skim_epoch_hash': epoch.epoch_hash, 'zone_order_sha256': epoch.zone_order_sha256,
++            'family_hashes': dict(epoch.family_hashes)}}
++    return {'d11': {'summary': summary}, 'dynamic_skim_epoch': epoch.summary(),
++            'dynamic_11d_reference_sha256': sha}
++
++
++def harness():
++    matrices = {no: np.array([[0., 2.], [3., 0.]]) for no in guard.MATRIX_NOS}
++    adapter, live = make_adapter([[0., 85.], [220., 0.]], matrices=matrices)
++    epoch = NS(family_distance={'LONG': np.array([[0., 120.], [150., 0.]])}, assignment_epoch=7, epoch=8)
++    diag = bind_diagnostic(adapter, epoch, matrices)
++    return adapter, live, epoch, matrices, diag
++
++
++def test_17_atomic_rows_and_separate_composite_unlock_generation():
++    adapter, _, epoch, matrices, diag = harness()
++    assert len(diag['d11']['summary']['component_dist_summary_rows']) == 17
++    assert 'LONG_COMPOSITE' not in {r['component'] for r in diag['d11']['summary']['component_dist_summary_rows']}
++    proof = guard.capture(adapter, diag)
++    assert proof['support_clean'] and proof['fine_cdf_verified'] and proof['long_generation_permitted']
++    assert guard.decide(proof, proof, changed_long=True)['passes']
++
++
++def test_verified_diagnostic_reaches_real_shared_cache_zonal_solver(live, monkeypatch):
++    import r1_15a2_core as core
++    import r1_15a2_long_cache_generation_v24917 as cache
++    import r1_15a2_long_incidence_read_v24917 as reader
++    import r1_15a2_long_school_generation_v24917 as generation
++    from test_v24917_mobilityzone1 import authority, zones as mobility_rows
++    adapter, state, profiles = live
++    for no in guard.MATRIX_NOS:
++        state.arrays[no] = np.array([[0., 10.], [20., 0.]])
++    epoch = state.epoch
++    epoch.epoch = 4
++    epoch.family_distance = {'LONG': np.array([[0., 120.], [150., 0.]])}
++    diag = bind_diagnostic(adapter, epoch, {no: state.arrays[no] for no in guard.MATRIX_NOS})
++    reader.bind_after_assignment(adapter)
++    proof = guard.capture(adapter, diag)
++    assert proof['long_generation_permitted'], proof
++    observed = cache.capture(adapter)
++    monkeypatch.setattr(generation, 'ls_options', lambda: dict(generation.LS_DEFAULTS))
++    state.arrays[9225] = np.zeros((2, 2))
++    state.arrays[9226] = np.ones((2, 2))
++    inc = {'variables': [], 'incidence': core.SparseOperator(
++        np.array([], dtype=int), np.array([], dtype=int), np.array([]), 2, 0)}
++    result = generation.design(adapter.visum, {'max_add_log_up': .5, 'max_add_log_down': .5},
++        adapter.zones, inc, problem(profiles), {'predicted_change': np.zeros(2)},
++        {'ADD_ATT_L': {'1': 1., '2': 1.}},
++        {'longguard1_allow_long': proof['long_generation_permitted'], 'long_cache_incidence': observed,
++         'long_mobility_authority': authority(mobility_rows()), 'max_iter': 2000})
++    rows = generation.rows_at_scale(result, 1.)
++    assert rows and {row['attr'] for row in rows} <= {'ADD_PROD_L', 'ADD_ATT_L'}
++    assert any(row['proposed'] != row['current'] for row in rows)
++    assert state.exports == 0 and state.writes == []
++
++
++def test_real_inherited_overlay_publishes_composite_without_second_od_read(monkeypatch, tmp_path):
++    # Launcher tests intentionally replace sys.modules. Patch the same current
++    # module instances as the current adapter's real inherited method uses.
++    import importlib
++    files = importlib.import_module('r1_15a2_dynamic_11d_files_v24917')
++    bridge = importlib.import_module('r1_15a2_finecdf_bridge_v24916')
++    import r1_15a2_supply_visum as supply
++    from r1_15a2_trial_adapter_v24917 import VisumAdapter
++    ref, cfg, sha = reference()
++    n = 2
++    matrices = {int(r['matrix_no']): np.array([[0., 2.], [3., 0.]]) for r in ref.COMPONENTS}
++    adapter, live = make_adapter([[0., 85.], [220., 0.]], matrices=matrices)
++    epoch = NS(family_distance={'LONG': np.array([[0., 120.], [150., 0.]])}, assignment_epoch=7, epoch=8)
++    original = bind_diagnostic(adapter, epoch, matrices)
++    epoch.family_distance.update(WORK=np.array([[0., 20.], [30., 0.]]),
++                                SERVICE=np.array([[0., 25.], [35., 0.]]))
++    host = object.__new__(VisumAdapter)
++    host.__dict__.update(adapter.__dict__)
++    host.cfg, host._v24916_package_root = cfg, ROOT
++    static = tmp_path / 'STATIC'; static.mkdir()
++    for suffix in files.SUFFIXES.values():
++        files.rt.write_csv(static / (files.rt.D11_PREFIX + suffix),
++                           [{'component': 'WORK_E_C', 'bin_low': .1, 'bin_high': 1.}])
++    summary_path = static / 'SUMMARY.json'; summary_path.write_text('{}')
++    initial = {'d11': {'summary': {'component_dist_summary_rows': original['d11']['summary']['component_dist_summary_rows']},
++                      'summary_path': str(summary_path)}, 'd12': {}}
++    monkeypatch.setattr(files, 'new_short_folder', lambda: tmp_path / 'SHORT')
++    monkeypatch.setattr(files.rt, 'assess_11d_idp_gate', lambda *a: {'passes': True})
++    monkeypatch.setattr(supply.base, 'build_td_signals_from_11d', lambda *a: ({}, 'fixture'))
++    evaluate = bridge.DynamicFamilyMetrics.evaluate
++    def capturing(self, values):
++        out = evaluate(self, values); files.record_metrics(self, out); return out
++    monkeypatch.setattr(bridge.DynamicFamilyMetrics, 'evaluate', capturing)
++    result = host._dynamic_11d_overlay(initial, tmp_path / 'RUN', 'AFTER')
++    summary = result['d11']['summary']
++    assert len(summary['component_dist_summary_rows']) == 17
++    assert not any(r['component'] == 'LONG_COMPOSITE' for r in summary['component_dist_summary_rows'])
++    assert summary[composite.KEY]['status'] == 'VERIFIED'
++    assert result['v24917_dynamic_11d_files']['verified_metrics_reused']
++    needed = {int(no) for t in ref.TARGETS.values() for no in t['matrix_nos']}
++    assert sorted(live.lookups) == sorted(needed)
++    assert json.loads(Path(result['d11']['summary_path']).read_text())[composite.KEY] == summary[composite.KEY]
++    proof = guard.capture(host, result)
++    assert proof['long_generation_permitted'], proof
++    assert not live.writes
++
++
++@pytest.mark.parametrize('damage', ['missing', 'legacy_row', 'epoch', 'assignment', 'token', 'zone', 'cl_hash',
++    'family_hash', 'reference', 'target', 'matrix_scope', 'interval', 'points', 'nan', 'bool', 'value',
++    'source_volume', 'source_shape', 'source_status'])
++def test_missing_stale_or_forged_evidence_cannot_unlock(damage):
++    adapter, _, epoch, matrices, diag = harness()
++    record = diag['d11']['summary'][composite.KEY]
++    if damage == 'missing': del diag['d11']['summary'][composite.KEY]
++    elif damage == 'legacy_row':
++        del diag['d11']['summary'][composite.KEY]
++        diag['d11']['summary']['component_dist_summary_rows'].append(
++            {'component': 'LONG_COMPOSITE', 'dynamic_fine_cdf_rmse': .01})
++    elif damage == 'epoch': record['dynamic_skim_epoch_hash'] = '0' * 64
++    elif damage == 'assignment': record['assignment_epoch'] += 1
++    elif damage == 'token': record['assignment_token'] = 'other'
++    elif damage == 'zone': record['zone_order_sha256'] = '0' * 64
++    elif damage == 'cl_hash': record['native_cl_values_sha256'] = '0' * 64
++    elif damage == 'family_hash': record['family_distance_sha256'] = '0' * 64
++    elif damage == 'reference': record['reference_sha256'] = '0' * 64
++    elif damage == 'target': record['target_sha256'] = '0' * 64
++    elif damage == 'matrix_scope': record['matrix_nos'] = [9111]
++    elif damage == 'interval': record['conditional_km'] = [80., 200.]
++    elif damage == 'points': record['fine_points'] = 511
++    elif damage == 'nan': record['fine_cdf_rmse'] = float('nan')
++    elif damage == 'bool': record['fine_cdf_rmse'] = True
++    elif damage == 'value': record['fine_cdf_rmse'] = .0001
++    elif damage == 'source_volume': matrices[9111][0, 1] += 10.
++    elif damage == 'source_shape': matrices[9111] = np.ones((1, 1))
++    elif damage == 'source_status': record['status'] = 'UNVERIFIED'
++    proof = guard.capture(adapter, diag)
++    assert not proof['long_generation_permitted']
++    assert not proof.get('fine_cdf_verified')
++
++
++def test_valid_composite_still_rejects_short_osrm_support():
++    adapter, live, _, _, diag = harness()
++    live.distance[0, 1] = 79.
++    proof = guard.capture(adapter, diag)
++    assert proof['fine_cdf_verified'] and not proof['support_clean']
++    assert not proof['long_generation_permitted']
++
++
++def test_new_assignment_same_content_is_rollback_equivalent():
++    adapter, _, epoch, matrices, before = harness()
++    epoch.assignment_epoch += 1; epoch.epoch += 1
++    after = bind_diagnostic(adapter, epoch, matrices)
++    errors = []
++    a = equivalence._dynamic_summary(before, errors, 'before')
++    b = equivalence._dynamic_summary(after, errors, 'after')
++    assert errors == []
++    assert a == b
++
++
++@pytest.mark.parametrize('field', ['fine_cdf_rmse', 'native_cl_values_sha256', 'dynamic_skim_epoch_hash'])
++def test_rollback_composite_validation_never_hides_change(field):
++    _, _, _, _, before = harness()
++    after = copy.deepcopy(before)
++    record = after['d11']['summary'][composite.KEY]
++    record[field] = .001 if field == 'fine_cdf_rmse' else '0' * 64
++    errors = []
++    a = equivalence._dynamic_summary(before, errors, 'before')
++    b = equivalence._dynamic_summary(after, errors, 'after')
++    assert errors or a != b
+diff --git a/tests/test_v24917_long_osrm_support.py b/tests/test_v24917_long_osrm_support.py
+index 632c0b3..ead4e85 100644
+--- a/tests/test_v24917_long_osrm_support.py
++++ b/tests/test_v24917_long_osrm_support.py
+@@ -116,20 +116,20 @@ def test_live_guard_uses_osrm_not_native_distance_for_support(osrm, native, clea
+     from r1_15a2_skim_v24916p2c import ordered_zone_hash
+     matrices = {no: np.zeros((2, 2)) for no in guard.MATRIX_NOS}
+     matrices[9111][0, 1] = 10.
++    matrices[9111][1, 0] = 5.  # Positive native 100..200 mass is needed for a real CDF.
+     adapter, _ = make_adapter([[0., osrm], [201., 0.]], matrices=matrices)
+-    epoch = NS(family_distance={'LONG': np.array([[0., native], [201., 0.]])},
++    epoch = NS(family_distance={'LONG': np.array([[0., native], [150., 0.]])},
+                matrix_meta_by_dseg={'NATIVE_CL': {'unit': 'km', 'values_sha256': 'native-hash'}},
+                zone_order_sha256=ordered_zone_hash(adapter.zones), assignment_epoch=3,
+                epoch=4, epoch_hash='current')
+     adapter.v24916_dynamic_skims = NS(require_current=lambda: epoch)
+-    diag = {'dynamic_skim_epoch': {'epoch_hash': 'current'},
+-            'd11': {'summary': {'component_dist_summary_rows': [
+-                {'component': 'LONG_COMPOSITE', 'dynamic_fine_cdf_rmse': .1}]}}}
++    from test_v24917_long_composite_diagnostic import bind_diagnostic
++    diag = bind_diagnostic(adapter, epoch, matrices)
+     proof = guard.capture(adapter, diag)
+     assert proof['status'] == 'MEASURED'
+     assert proof['support_clean'] is clean
+     assert proof['support_distance_source']['matrix_no'] == 9697
+-    assert proof['epoch']['finecdf_native_cl_values_sha256'] == 'native-hash'
++    assert proof['epoch']['finecdf_native_cl_values_sha256'] == epoch.matrix_meta_by_dseg['NATIVE_CL']['values_sha256']
+     if clean:
+         assert proof['below_100_km'] == 10.  # diagnostic only, not a rejection
+         assert proof['below_min_km'] == 0.
+diff --git a/tests/test_v24917_longguard1.py b/tests/test_v24917_longguard1.py
+index b311a9c..5dec46a 100644
+--- a/tests/test_v24917_longguard1.py
++++ b/tests/test_v24917_longguard1.py
+@@ -124,9 +124,10 @@ def test_missing_dynamic_fine_rmse_cannot_certify_long_generation():
+ 
+ 
+ def test_100_200_composite_finecdf_extraction():
++    from r1_15a2_long_composite_diagnostic_v24917 import KEY, SCHEMA
+     diag={'d11':{'summary':{'component_dist_summary_rows':[
+-        {'component':'WORK_stud','dynamic_fine_cdf_rmse':.09},
+-        {'component':'LONG_COMPOSITE','dynamic_fine_cdf_rmse':.123}]}}}
++        {'component':'WORK_stud','dynamic_fine_cdf_rmse':.09}],
++        KEY: {'schema': SCHEMA, 'status': 'VERIFIED', 'component': 'LONG_COMPOSITE', 'fine_cdf_rmse': .123}}}}
+     assert g._fine_rmse(diag)==.123
+ 
+ 
+@@ -143,9 +144,8 @@ def test_capture_binds_osrm_support_and_separate_fresh_finecdf_epoch(monkeypatch
+         v24916_dynamic_skims=SimpleNamespace(require_current=lambda:epoch),
+         zones=zones,visum=osrm_adapter.visum,
+         com_retry_policy={'enabled':False})
+-    diag={'dynamic_skim_epoch':{'epoch_hash':'epochHash'},
+-          'd11':{'summary':{'component_dist_summary_rows':[
+-        {'component':'LONG_COMPOSITE','dynamic_fine_cdf_rmse':.03}]}}}
++    from test_v24917_long_composite_diagnostic import bind_diagnostic
++    diag = bind_diagnostic(adapter, epoch, m)
+     proof=g.capture(adapter,diag)
+     assert proof['status']=='MEASURED'
+     assert proof['long_generation_permitted']
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 7120711..00021f7 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -74,6 +74,7 @@ RUNTIME = [
+     "r1_15a2_diagfast_runtime_v1.py", "r1_15a2_diagfast_parity_v1.py",
+     "r1_15a2_diagfast_direct_v2.py",
+     "r1_15a2_long_distance_guard_v24917.py",
++    "r1_15a2_long_composite_diagnostic_v24917.py",
+     "r1_15a2_mobility_zone_v24917.py",
+     "r1_15a2_procseq_bootstrap_v24917.py",
+     "helpers/R1_12D_DIAGFAST_V1.py", "helpers/R1_11D_DIAGFAST_V1.py",

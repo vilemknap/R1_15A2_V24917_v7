@@ -1,0 +1,130 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........F............................................................... [ 13%]
+........................................................................ [ 16%]
+........................................................................ [ 19%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+......................................s.s..........s................s... [ 32%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+...............................................F........................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 78%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+............................                                             [100%]
+=================================== FAILURES ===================================
+______________ test_atomic_copy_uses_short_temp_and_hash_readback ______________
+
+tmp_path = PosixPath('/tmp/r1longfull/test_atomic_copy_uses_short_te0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f960bb62660>
+
+    def test_atomic_copy_uses_short_temp_and_hash_readback(tmp_path, monkeypatch):
+        source = tmp_path / "source.bin"
+        source.write_bytes((b"abcdef" * 1000) + b"tail")
+        parent = _deep_parent(tmp_path / "copy", minimum_length=205)
+        destination = parent / "VERY_LONG_DURABLE_HELPER_EVIDENCE_FILENAME.json"
+    
+        real_replace = io._REAL_REPLACE
+    
+        def max_path_replace(src, dst):
+            if max(len(os.fspath(src)), len(os.fspath(dst))) >= 260:
+                raise FileNotFoundError(2, "simulated legacy MAX_PATH", os.fspath(src))
+            return real_replace(src, dst)
+    
+        monkeypatch.setattr(io, "_REAL_REPLACE", max_path_replace)
+>       assert io.critical_copy_if_file(source, destination) == destination
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_profile488_iofix3_pathfix3.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_runtime_io_hotfix_profile488.py:201: in critical_copy_if_file
+    replace_with_retry(tmp, destination)
+r1_15a2_runtime_io_hotfix_profile488.py:115: in replace_with_retry
+    _REAL_REPLACE(_native_path(src), _native_path(dst))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = '/tmp/r1longfull/test_atomic_copy_uses_short_te0/copy/d00_abcdefghijk/d01_abcdefghijk/d02_abcdefghijk/d03_abcdefghijk/d04_abcdefghijk/d05_abcdefghijk/d06_abcdefghijk/d07_abcdefghijk/d08_abcdefghijk/d09_abcdefghijk/.r1c_8c4256dadacd8692.tmp'
+dst = '/tmp/r1longfull/test_atomic_copy_uses_short_te0/copy/d00_abcdefghijk/d01_abcdefghijk/d02_abcdefghijk/d03_abcdefghijk/...fghijk/d06_abcdefghijk/d07_abcdefghijk/d08_abcdefghijk/d09_abcdefghijk/VERY_LONG_DURABLE_HELPER_EVIDENCE_FILENAME.json'
+
+    def max_path_replace(src, dst):
+        if max(len(os.fspath(src)), len(os.fspath(dst))) >= 260:
+>           raise FileNotFoundError(2, "simulated legacy MAX_PATH", os.fspath(src))
+E           FileNotFoundError: [Errno 2] simulated legacy MAX_PATH: '/tmp/r1longfull/test_atomic_copy_uses_short_te0/copy/d00_abcdefghijk/d01_abcdefghijk/d02_abcdefghijk/d03_abcdefghijk/d04_abcdefghijk/d05_abcdefghijk/d06_abcdefghijk/d07_abcdefghijk/d08_abcdefghijk/d09_abcdefghijk/.r1c_8c4256dadacd8692.tmp'
+
+tests/test_profile488_iofix3_pathfix3.py:70: FileNotFoundError
+____ test_real_inherited_overlay_publishes_composite_without_second_od_read ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f960c955240>
+tmp_path = PosixPath('/tmp/r1longfull/test_real_inherited_overlay_pu0')
+
+    def test_real_inherited_overlay_publishes_composite_without_second_od_read(monkeypatch, tmp_path):
+        import r1_15a2_supply_visum as supply
+        from r1_15a2_trial_adapter_v24917 import VisumAdapter
+        ref, cfg, sha = reference()
+        n = 2
+        matrices = {int(r['matrix_no']): np.array([[0., 2.], [3., 0.]]) for r in ref.COMPONENTS}
+        adapter, live = make_adapter([[0., 85.], [220., 0.]], matrices=matrices)
+        epoch = NS(family_distance={'LONG': np.array([[0., 120.], [150., 0.]])}, assignment_epoch=7, epoch=8)
+        original = bind_diagnostic(adapter, epoch, matrices)
+        epoch.family_distance.update(WORK=np.array([[0., 20.], [30., 0.]]),
+                                    SERVICE=np.array([[0., 25.], [35., 0.]]))
+        host = object.__new__(VisumAdapter)
+        host.__dict__.update(adapter.__dict__)
+        host.cfg, host._v24916_package_root = cfg, ROOT
+        static = tmp_path / 'STATIC'; static.mkdir()
+        for suffix in files.SUFFIXES.values():
+            files.rt.write_csv(static / (files.rt.D11_PREFIX + suffix),
+                               [{'component': 'WORK_E_C', 'bin_low': .1, 'bin_high': 1.}])
+        summary_path = static / 'SUMMARY.json'; summary_path.write_text('{}')
+        initial = {'d11': {'summary': {'component_dist_summary_rows': original['d11']['summary']['component_dist_summary_rows']},
+                          'summary_path': str(summary_path)}, 'd12': {}}
+        monkeypatch.setattr(files, 'new_short_folder', lambda: tmp_path / 'SHORT')
+        monkeypatch.setattr(files.rt, 'assess_11d_idp_gate', lambda *a: {'passes': True})
+        monkeypatch.setattr(supply.base, 'build_td_signals_from_11d', lambda *a: ({}, 'fixture'))
+        evaluate = bridge.DynamicFamilyMetrics.evaluate
+        def capturing(self, values):
+            out = evaluate(self, values); files.record_metrics(self, out); return out
+        monkeypatch.setattr(bridge.DynamicFamilyMetrics, 'evaluate', capturing)
+>       result = host._dynamic_11d_overlay(initial, tmp_path / 'RUN', 'AFTER')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_long_composite_diagnostic.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_trial_adapter_v24917.py:242: in _dynamic_11d_overlay
+    short = d11fix.new_short_folder()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_dynamic_11d_files_v24917.py:92: in new_short_folder
+    os.makedirs(io._native_path(folder), exist_ok=True)
+<frozen os>:218: in makedirs
+    ???
+<frozen os>:218: in makedirs
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = '/home/agent/R1DF', mode = 511, exist_ok = True
+
+>   ???
+E   OSError: [Errno 30] Read-only file system: '/home/agent/R1DF'
+
+<frozen os>:228: OSError
+=========================== short test summary info ============================
+FAILED tests/test_profile488_iofix3_pathfix3.py::test_atomic_copy_uses_short_temp_and_hash_readback
+FAILED tests/test_v24917_long_composite_diagnostic.py::test_real_inherited_overlay_publishes_composite_without_second_od_read
+2 failed, 2182 passed, 4 skipped in 38.96s

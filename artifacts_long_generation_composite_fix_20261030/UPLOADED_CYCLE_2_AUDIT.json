@@ -1,0 +1,144 @@
+{
+  "scope": "UPLOADED_CYCLE_2_EVIDENCE_ONLY",
+  "checks_passed": true,
+  "inputs": {
+    "generation": {
+      "file": "GENERATION_BLOCK_RESULT.json",
+      "sha256": "31c3de7ab54b63c5f49f6dc9dc1e22f4e74bea61ae763f9a779d2e867b012025",
+      "bytes": 2132020
+    },
+    "preview": {
+      "file": "GENERATION_PREVIEW_0_334211.json",
+      "sha256": "ebb8889001220373b81d91cff2318f2f1e9f4e0a46ed87aeb5a1d255566aa105",
+      "bytes": 4124225
+    },
+    "generation_acceptance": {
+      "file": "ACCEPTANCE.json",
+      "sha256": "a12eca4885b23ae1328a1c8d83cd6521d93db91e6cfe0f47cecd69d94252bbc0",
+      "bytes": 885781
+    },
+    "supply": {
+      "file": "SUPPLYMIX_BLOCK_RESULT.json",
+      "sha256": "7c91d12c5d41411f87d90069d38a21132f56122bfccc1df7a2dea0fa659f2915",
+      "bytes": 15849
+    },
+    "supply_acceptance": {
+      "file": "ACCEPTANCE.json",
+      "sha256": "1925e21b7d39bc75add72a4a0a15d5fade009b0cee87c644490112be762ef9ec",
+      "bytes": 36899
+    },
+    "rollback": {
+      "file": "ROLLBACK_SUMMARY.json",
+      "sha256": "b7815e38025b612e51d11b9c87fc4dcd4087d276429028cee81cd120d32d4e39",
+      "bytes": 2906
+    },
+    "write_readback": {
+      "file": "SUPPLY_WRITE_READBACK.json",
+      "sha256": "53e9e13b0d3f5d1fb4aa4ca7df406d27d0afcc2a469270ff4e5996a567eb79ba",
+      "bytes": 5010
+    },
+    "candidate": {
+      "file": "SUPPLYMIX_CANDIDATE.json",
+      "sha256": "1b78aef49e9759d54f9e753a25bdc888d7f9c90299ffe2ab2ea12bd5a8e5fcbe",
+      "bytes": 6660
+    }
+  },
+  "generation": {
+    "status": "ACCEPTED",
+    "adopted_in_place": true,
+    "geh_before": 45.32641229531773,
+    "geh_after": 41.63552485193917,
+    "candidate_rows": 3454,
+    "coefficient_counts": {
+      "ADD_ATT_W": 638,
+      "ZAHR_ATR_WORK": 6,
+      "ADD_ATT_S": 638,
+      "ZAHR_ATR_SERV": 6,
+      "ADD_PROD_S": 638,
+      "ZAHR_PROD_SERV": 6,
+      "ADD_PROD_W": 638,
+      "ZAHR_PROD_WORK": 6,
+      "ADD_SALARY": 638,
+      "P09F4_PER_PRE_SERV_E_C": 12,
+      "P09F4_PER_PRE_SERV_E_noC": 12,
+      "P09F4_PER_PRE_SERV_noE_C": 12,
+      "P09F4_PER_PRE_SERV_noE_noC": 12,
+      "P09F4_PER_PRE_SERV_stud": 12,
+      "A09F4_PER_PRE_SERV_E_C": 12,
+      "A09F4_PER_PRE_SERV_E_noC": 12,
+      "A09F4_PER_PRE_SERV_noE_C": 12,
+      "A09F4_PER_PRE_SERV_noE_noC": 12,
+      "A09F4_PER_PRE_SERV_stud": 12,
+      "P09F4_PER_PRE_WORK_E_C": 12,
+      "P09F4_PER_PRE_WORK_E_noC": 12,
+      "P09F4_PER_PRE_WORK_noE_C": 12,
+      "P09F4_PER_PRE_WORK_noE_noC": 12,
+      "P09F4_PER_PRE_WORK_stud": 12,
+      "A09F4_PER_PRE_WORK_E_C": 12,
+      "A09F4_PER_PRE_WORK_E_noC": 12,
+      "A09F4_PER_PRE_WORK_noE_C": 12,
+      "A09F4_PER_PRE_WORK_noE_noC": 12,
+      "A09F4_PER_PRE_WORK_stud": 12
+    },
+    "ls_search_incomplete": true,
+    "long_guard": {
+      "support_clean": true,
+      "total_volume": 10288.415475874515,
+      "below_min_km": 0.0,
+      "fine_100_200_rmse": null,
+      "fine_cdf_verified": false,
+      "long_generation_permitted": false
+    }
+  },
+  "supplymix": {
+    "status": "NO_ACCEPTED_TRIAL",
+    "search_complete": true,
+    "stationarity_confirmed": false,
+    "elapsed_s": 924.7,
+    "geh_before": 41.63552485193917,
+    "shared_objective_before": 0.8087943788053094,
+    "attempts": [
+      {
+        "trial": 1,
+        "candidate_id": "SUPPLYMIX_0affcee2b305",
+        "status": "REJECTED",
+        "gap": 0.00121704,
+        "edges": 22,
+        "decision_reasons": [
+          "CAL_GEH_OBJECTIVE_NOT_IMPROVED",
+          "SHARED_OBJECTIVE_NOT_IMPROVED"
+        ],
+        "geh_after": 41.70741983161766,
+        "shared_objective_after": 0.8126159807608526
+      },
+      {
+        "trial": 2,
+        "candidate_id": "SUPPLYMIX_d3eeb1f8dcca",
+        "status": "REJECTED",
+        "gap": 0.00122631,
+        "edges": 21,
+        "decision_reasons": [
+          "CAL_GEH_OBJECTIVE_NOT_IMPROVED",
+          "SHARED_OBJECTIVE_NOT_IMPROVED"
+        ],
+        "geh_after": 41.78569383621272,
+        "shared_objective_after": 0.812536498999741
+      }
+    ],
+    "trial_2_candidate_write_readback_rows_verified": 21,
+    "supplied_rollback": {
+      "passes": true,
+      "snapshot_equal": true,
+      "diagnostic_equivalent": true,
+      "mode": "FULL_12D_11D_FALLBACK",
+      "geh_restored": 41.63552485193917,
+      "profiles": 248,
+      "profile_drift_violations": 0
+    },
+    "limits": [
+      "The supplied rollback summary proves the final restoration, not a separate unseen trial-1 rollback.",
+      "No uploaded evidence establishes that cycle-2 TD has started."
+    ]
+  },
+  "live_visum_run_by_codex": false
+}

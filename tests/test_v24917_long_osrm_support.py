@@ -116,20 +116,20 @@ def test_live_guard_uses_osrm_not_native_distance_for_support(osrm, native, clea
     from r1_15a2_skim_v24916p2c import ordered_zone_hash
     matrices = {no: np.zeros((2, 2)) for no in guard.MATRIX_NOS}
     matrices[9111][0, 1] = 10.
+    matrices[9111][1, 0] = 5.  # Positive native 100..200 mass is needed for a real CDF.
     adapter, _ = make_adapter([[0., osrm], [201., 0.]], matrices=matrices)
-    epoch = NS(family_distance={'LONG': np.array([[0., native], [201., 0.]])},
+    epoch = NS(family_distance={'LONG': np.array([[0., native], [150., 0.]])},
                matrix_meta_by_dseg={'NATIVE_CL': {'unit': 'km', 'values_sha256': 'native-hash'}},
                zone_order_sha256=ordered_zone_hash(adapter.zones), assignment_epoch=3,
                epoch=4, epoch_hash='current')
     adapter.v24916_dynamic_skims = NS(require_current=lambda: epoch)
-    diag = {'dynamic_skim_epoch': {'epoch_hash': 'current'},
-            'd11': {'summary': {'component_dist_summary_rows': [
-                {'component': 'LONG_COMPOSITE', 'dynamic_fine_cdf_rmse': .1}]}}}
+    from test_v24917_long_composite_diagnostic import bind_diagnostic
+    diag = bind_diagnostic(adapter, epoch, matrices)
     proof = guard.capture(adapter, diag)
     assert proof['status'] == 'MEASURED'
     assert proof['support_clean'] is clean
     assert proof['support_distance_source']['matrix_no'] == 9697
-    assert proof['epoch']['finecdf_native_cl_values_sha256'] == 'native-hash'
+    assert proof['epoch']['finecdf_native_cl_values_sha256'] == epoch.matrix_meta_by_dseg['NATIVE_CL']['values_sha256']
     if clean:
         assert proof['below_100_km'] == 10.  # diagnostic only, not a rejection
         assert proof['below_min_km'] == 0.

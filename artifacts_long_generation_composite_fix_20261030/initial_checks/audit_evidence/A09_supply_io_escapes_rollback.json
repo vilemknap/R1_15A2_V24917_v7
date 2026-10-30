@@ -1,0 +1,8 @@
+{
+  "parameters_restored": true,
+  "loads_restored": true,
+  "assignments": [
+    "/tmp/r1longfull/test_A09_supply_result_io_fail0/SM/TRY_01/ASSIGNMENT",
+    "/tmp/r1longfull/test_A09_supply_result_io_fail0/SM/ROLLBACK_AFTER_ERROR"
+  ]
+}

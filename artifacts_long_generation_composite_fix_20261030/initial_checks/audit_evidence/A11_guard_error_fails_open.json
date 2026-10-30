@@ -1,0 +1,12 @@
+{
+  "v24917": {
+    "release": "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_ADAPTER_20261027",
+    "status": "BLOCKED_MOBILITY_DATA",
+    "failure_stage": "MOBILITY_GUARD",
+    "exception_type": "KeyError",
+    "error": "KeyError:'MOBILITY2_FP_ATTRIBUTE_MISSING:WORK:1'",
+    "detail_path": "/tmp/r1longfull/test_A11_enabled_mobility_guar0/V24917_TARGETED_GENERATION/V24917_MOBILITY_BLOCKED.json",
+    "proposal_usable": false
+  },
+  "candidate_rows": []
+}

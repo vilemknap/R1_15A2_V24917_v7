@@ -1,0 +1,67 @@
+{
+  "baseline_remote_commit": "25594238f24451191bf6535fa3a4c9865f8fc979",
+  "baseline_tree": "c215ba6e98243deee9ff598d42e2fac965f84f98",
+  "manifests": {
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "all_hashes_match": true,
+      "added": [],
+      "removed": [],
+      "changed_hashes": []
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 166,
+      "all_hashes_match": true,
+      "added": [
+        "01_SPUSTIT_V24917_RESUME_A0001_TD_NO_ENUM_SILENT.py",
+        "r1_15a2_long_composite_diagnostic_v24917.py",
+        "r1_15a2_resume_a0001_v24917.py",
+        "tests/test_v24917_epoch_td_fairness_20261030.py",
+        "tests/test_v24917_long_composite_diagnostic.py",
+        "tests/test_v24917_long_diagnostics_epoch_fix.py",
+        "tests/test_v24917_resume_a0001_td_no_enum.py"
+      ],
+      "removed": [],
+      "changed_hashes": [
+        "r1_15a2_dynamic_11d_files_v24917.py",
+        "r1_15a2_long_distance_guard_v24917.py",
+        "r1_15a2_parent_equivalence_v24917.py",
+        "tests/test_v24917_long_osrm_support.py",
+        "tests/test_v24917_longguard1.py",
+        "tools/refresh_v24917_manifests.py"
+      ]
+    },
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 87,
+      "all_hashes_match": true,
+      "added": [
+        "r1_15a2_long_composite_diagnostic_v24917.py"
+      ],
+      "removed": [],
+      "changed_hashes": [
+        "DIAGFAST_V1_RELEASE_MANIFEST.json",
+        "r1_15a2_dynamic_11d_files_v24917.py",
+        "r1_15a2_long_distance_guard_v24917.py",
+        "r1_15a2_parent_equivalence_v24917.py"
+      ]
+    }
+  },
+  "sealed_finecdf_reference": {
+    "file": "reference_v19/R1_BC_AUTO_DIST_ONLY_FINECDF_SOFT_v1_9.py",
+    "sha256": "fcdfa535940296e6cc793b6416c7c0a56c18aae8d5d20beddb064a170c673ff5",
+    "matches_configured_authority": true
+  },
+  "compilation_passed": [
+    "r1_15a2_long_composite_diagnostic_v24917.py",
+    "r1_15a2_dynamic_11d_files_v24917.py",
+    "r1_15a2_long_distance_guard_v24917.py",
+    "r1_15a2_parent_equivalence_v24917.py",
+    "tests/test_v24917_long_composite_diagnostic.py",
+    "tests/test_v24917_longguard1.py",
+    "tests/test_v24917_long_osrm_support.py",
+    "tools/refresh_v24917_manifests.py"
+  ],
+  "diff_check_passed": true,
+  "unchanged_protected_originals": 1059,
+  "live_visum_tested": false
+}

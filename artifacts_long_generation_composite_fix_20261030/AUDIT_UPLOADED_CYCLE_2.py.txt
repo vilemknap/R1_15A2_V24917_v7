@@ -1,0 +1,80 @@
+"""Reproduce bounded conclusions from the user's uploaded cycle-2 files."""
+import hashlib
+import json
+import math
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path('/workspace/attachments')
+SOURCES = {
+    'generation': '4ff7cc92-0f0d-4445-be49-791132466e76/GENERATION_BLOCK_RESULT.json',
+    'preview': '36d1fd28-b005-4384-aac9-0064015b0105/GENERATION_PREVIEW_0_334211.json',
+    'generation_acceptance': '5e969ef3-3cbc-499a-9349-057f6cf6cc73/ACCEPTANCE.json',
+    'supply': '0e26cd06-a6d5-4706-8473-dd7bba8e5855/SUPPLYMIX_BLOCK_RESULT.json',
+    'supply_acceptance': 'efa0b822-cafa-488f-b130-2d010aa77893/ACCEPTANCE.json',
+    'rollback': 'e98f366b-e3c5-4b78-85c4-5c428a4129bd/ROLLBACK_SUMMARY.json',
+    'write_readback': 'f5db750e-6241-4641-b708-37bf77a4386b/SUPPLY_WRITE_READBACK.json',
+    'candidate': '095581be-4898-4fed-a9f5-b87db106948c/SUPPLYMIX_CANDIDATE.json',
+}
+d = {name: json.loads((ROOT/path).read_text()) for name, path in SOURCES.items()}
+g, ga, s, sa, rb = (d[n] for n in ('generation', 'generation_acceptance', 'supply', 'supply_acceptance', 'rollback'))
+assert g['status'] == 'ACCEPTED' and g['adopted_in_place'] and ga['accepted']
+rows = d['preview']['candidate_rows']
+counts = Counter(r['attr'] for r in rows)
+assert len(rows) == 3454 and not counts['ADD_PROD_L'] and not counts['ADD_ATT_L']
+lg = ga['longguard1_parent']
+assert lg['support_clean'] and lg['below_min_km'] == 0 and not lg['fine_cdf_verified']
+assert lg['fine_100_200_rmse'] is None and not lg['long_generation_permitted']
+assert s['status'] == 'NO_ACCEPTED_TRIAL' and s['search_complete'] and not s['stationarity_confirmed']
+assert len(s['attempts']) == 2 and not sa['accepted']
+parent = s['objective_before']
+assert parent['raw_cal'] == ga['cal_objective_after']
+for attempt in s['attempts']:
+    assert attempt['status'] == 'REJECTED'
+    assert attempt['objective_after']['raw_cal'] > parent['raw_cal']
+    assert attempt['objective_after']['total'] > parent['total']
+    assert set(attempt['decision_reasons']) == {'CAL_GEH_OBJECTIVE_NOT_IMPROVED', 'SHARED_OBJECTIVE_NOT_IMPROVED'}
+assert d['candidate']['candidate_id'] == s['attempts'][1]['candidate_id']
+assert sa['cal_objective_after'] == s['attempts'][1]['objective_after']['raw_cal']
+changes = {tuple(r['key']): r for r in d['candidate']['changes']}
+readback = {tuple(r['key']): r for r in d['write_readback']}
+assert len(changes) == len(readback) == 21 and changes.keys() == readback.keys()
+for key, change in changes.items():
+    back = readback[key]
+    assert change['expected_old'] == back['expected_old']
+    assert change['new'] == back['new'] == back['readback']
+    assert math.isclose(change['new'] - change['expected_old'], change['delta'], abs_tol=1e-12)
+assert rb['passes'] and rb['snapshot_equal'] and rb['diagnostic_equal'] and rb['diagnostic_equivalent']
+assert rb['genfix2_parent_proof']['passes']
+rd = rb['genfix2_parent_proof']['diagnostics']
+assert rd['passes'] and rd['weighted_geh_before'] == rd['weighted_geh_after'] == parent['raw_cal']
+assert rd['profile_drift']['violations'] == 0 and rd['profile_drift']['profiles'] == 248
+assert all(rb[k] is False for k in ('load_version_called', 'save_version_called', 'direct_od_matrix_writes'))
+out = {
+    'scope': 'UPLOADED_CYCLE_2_EVIDENCE_ONLY', 'checks_passed': True,
+    'inputs': {name: {'file': Path(path).name, 'sha256': hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),
+        'bytes': (ROOT/path).stat().st_size} for name, path in SOURCES.items()},
+    'generation': {'status': g['status'], 'adopted_in_place': g['adopted_in_place'],
+        'geh_before': ga['cal_objective_before'], 'geh_after': ga['cal_objective_after'],
+        'candidate_rows': len(rows), 'coefficient_counts': dict(counts),
+        'ls_search_incomplete': g['ls_search_incomplete'],
+        'long_guard': {k: lg[k] for k in ('support_clean','total_volume','below_min_km',
+            'fine_100_200_rmse','fine_cdf_verified','long_generation_permitted')}},
+    'supplymix': {'status': s['status'], 'search_complete': s['search_complete'],
+        'stationarity_confirmed': s['stationarity_confirmed'], 'elapsed_s': s['elapsed_s'],
+        'geh_before': parent['raw_cal'], 'shared_objective_before': parent['total'],
+        'attempts': [{k: a[k] for k in ('trial','candidate_id','status','gap','edges','decision_reasons')} |
+                     {'geh_after': a['objective_after']['raw_cal'], 'shared_objective_after': a['objective_after']['total']}
+                     for a in s['attempts']],
+        'trial_2_candidate_write_readback_rows_verified': len(readback),
+        'supplied_rollback': {'passes': rb['passes'], 'snapshot_equal': rb['snapshot_equal'],
+            'diagnostic_equivalent': rb['diagnostic_equivalent'], 'mode': rb['diagnostic_verification_mode'],
+            'geh_restored': rd['weighted_geh_after'], 'profiles': rd['profile_drift']['profiles'],
+            'profile_drift_violations': rd['profile_drift']['violations']},
+        'limits': ['The supplied rollback summary proves the final restoration, not a separate unseen trial-1 rollback.',
+                   'No uploaded evidence establishes that cycle-2 TD has started.']},
+    'live_visum_run_by_codex': False,
+}
+output = Path(__file__).with_name('UPLOADED_CYCLE_2_AUDIT.json')
+output.write_text(json.dumps(out, indent=2, allow_nan=False) + '\n')
+print(json.dumps({'checks_passed': True, 'output': str(output), 'supplymix_status': s['status']}))

@@ -35,6 +35,7 @@ from typing import Any, Dict, Mapping, Sequence
 
 import numpy as np
 
+import r1_15a2_long_composite_diagnostic_v24917 as long_composite
 import r1_15a2_runtime_v1 as rt
 import r1_15a2_runtime_io_hotfix_profile488 as io
 
@@ -218,6 +219,20 @@ def publish_dynamic_files(adapter, diag: Dict[str, Any], out: Path, cfg, *, capt
         metrics = DynamicFamilyMetrics(SimpleNamespace(dynamic_skim_epoch=epoch), ref).evaluate(matrices)
 
     d11 = diag["d11"]
+    # LONG_COMPOSITE is a 5-layer target, not one of the 17 atomic 11D rows.
+    # Publish its existing pure metric separately for LONGGUARD1; never append
+    # a synthetic row or change the original CSV/observation schema.
+    if 'LONG_COMPOSITE' in ref.TARGETS:
+        try:
+            composite = long_composite.make_record(metrics['LONG_COMPOSITE'], epoch, ref, _sha)
+        except (KeyError, TypeError, ValueError) as exc:
+            composite = {'schema': long_composite.SCHEMA, 'status': 'UNVERIFIED',
+                         'reason': type(exc).__name__ + ':' + str(exc)}
+        if epoch_key(adapter.v24916_dynamic_skims.require_current()) != epoch_key(epoch):
+            raise RuntimeError('V24917_LONG_COMPOSITE_PUBLISH_EPOCH_CHANGED')
+        d11['summary'] = dict(d11.get('summary') or {}, **{long_composite.KEY: composite})
+        io.critical_atomic_json(out / 'DYNAMIC_LONG_COMPOSITE.json', composite)
+        io.critical_atomic_json(Path(d11['summary_path']), d11['summary'])
     summary_rows = list((d11.get("summary") or {}).get("component_dist_summary_rows") or [])
     summary_path = out / (rt.D11_PREFIX + SUFFIXES["summary"])
     baseline_path = out / (rt.D11_PREFIX + SUFFIXES["baseline"])

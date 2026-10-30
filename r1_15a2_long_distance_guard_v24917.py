@@ -18,6 +18,8 @@ from typing import Any, Mapping
 
 import numpy as np
 
+import r1_15a2_long_composite_diagnostic_v24917 as long_composite
+
 RELEASE = "R1_15A2_V24917_LONGGUARD1_20261027"
 MATRIX_NOS = (9111, 9112, 9113, 9114, 9115)
 MIN_KM = 80.0
@@ -81,18 +83,18 @@ def measure(distance: Any, matrices: Mapping[int, Any], *, epoch: Mapping[str, A
 
 def _fine_rmse(diag: Mapping[str, Any]) -> float | None:
     d11 = ((diag or {}).get("d11") or {}).get("summary") or {}
-    rows = d11.get("component_dist_summary_rows") or []
-    rows = [r for r in rows if r.get("component") == "LONG_COMPOSITE"]
-    if len(rows) != 1:
+    record = d11.get(long_composite.KEY) or {}
+    if (not isinstance(record, Mapping) or record.get('schema') != long_composite.SCHEMA
+            or record.get('status') != 'VERIFIED' or record.get('component') != 'LONG_COMPOSITE'):
         return None
-    value = rows[0].get("dynamic_fine_cdf_rmse")
-    if value is None:
+    value = record.get('fine_cdf_rmse')
+    if value is None or isinstance(value, bool):
         return None
     try:
         x = float(value)
     except (ValueError, TypeError, OverflowError):
         return None
-    return x if math.isfinite(x) and x >= 0.0 else None
+    return x if math.isfinite(x) and 0.0 <= x <= 1.0 else None
 
 
 def capture(adapter: Any, diag: Mapping[str, Any]) -> dict:
@@ -131,8 +133,20 @@ def capture(adapter: Any, diag: Mapping[str, Any]) -> dict:
             "finecdf_native_cl_values_sha256": epoch.matrix_meta_by_dseg["NATIVE_CL"].get("values_sha256")})
         proof["support_distance_source"] = support_source
         # The 512-point curve still uses the fresh native skim; support uses OSRM.
-        proof["fine_100_200_rmse"] = _fine_rmse(diag)
+        value = _fine_rmse(diag)
+        reason = 'LONG_COMPOSITE_DIAGNOSTIC_MISSING_OR_UNVERIFIED'
+        if value is not None:
+            try:
+                value = long_composite.verify_current(adapter, diag, epoch, matrices)
+                reason = None
+            except Exception as exc:
+                value = None
+                reason = type(exc).__name__ + ':' + str(exc)
+        proof["fine_100_200_rmse"] = value
         proof["fine_cdf_verified"] = proof["fine_100_200_rmse"] is not None
+        proof['fine_cdf_unverified_reason'] = reason
+        if manager.require_current() is not epoch:
+            raise RuntimeError('LONGGUARD1_EPOCH_CHANGED_DURING_READ')
         proof["long_generation_permitted"] = bool(proof["support_clean"] and
                                                     proof["fine_cdf_verified"] and
                                                     proof["total_volume"] > 0)

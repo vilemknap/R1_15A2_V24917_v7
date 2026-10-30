@@ -1,0 +1,19 @@
+{
+  "scope": "OFFLINE_ACTUAL_BASELINE_MODULE_VS_FIXED_MODULE_SAME_INPUTS",
+  "baseline_commit": "25594238f24451191bf6535fa3a4c9865f8fc979",
+  "baseline_guard_sha256": "6f960862450be3b06c8ee6194f9dd9f75ce54fec0f972c1f3a92824bb59c743a",
+  "atomic_11d_rows": 17,
+  "baseline": {
+    "support_clean": true,
+    "fine_100_200_rmse": null,
+    "fine_cdf_verified": false,
+    "long_generation_permitted": false
+  },
+  "fixed": {
+    "support_clean": true,
+    "fine_100_200_rmse": 0.3408393011149669,
+    "fine_cdf_verified": true,
+    "long_generation_permitted": true
+  },
+  "live_visum_tested": false
+}
