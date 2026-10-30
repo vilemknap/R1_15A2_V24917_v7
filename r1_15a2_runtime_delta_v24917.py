@@ -48,10 +48,10 @@ def identity() -> dict:
         "features": [
             "V24917_ZONAL_COUNT_FIT_TARGETED_GENERATION",
             "CATCH_UP_PHASE_UNTIL_MODEL_OBS_0_80_PLUS50_MINUS20_PER_CYCLE",
-            "COEFFICIENT_ENVELOPE_0_75_TO_2_ZAHR_RELATIVE_0_5_TO_2",
+            "GEN_DOMESTIC_WS_PROD_UPPER_2_5_ATT_UPPER_4_ZAHR_UNCHANGED",
             "FLOWBUNDLE_EVIDENCE_PUBLISH_FIX",
             "GENERATION_GATE_NONFATAL",
-            "SPARSE_TD_AND_STATIONARY_EARLY_STOP",
+            "CONFIGURABLE_TD_SCHEDULING_AND_STATIONARY_EARLY_STOP",
             "DIAGFAST_V2_DIRECT_GUARD",
             "GENFIX1_TRANSIENT_SAFE_EXACT_SNAPSHOT_READS",
             "GENFIX1_LIVE_GENERATION_PARENT_DIFF",
@@ -68,7 +68,7 @@ def identity() -> dict:
         ],
         "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
         "acceptance_thresholds_changed_by_v24917": False,
-        "parent_files_modified": False,
+        "parent_files_modified": True,  # role-bearing calls in inherited multiblock/demand wrappers
     }
 
 
