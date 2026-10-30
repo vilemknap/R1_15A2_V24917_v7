@@ -2,7 +2,7 @@
 """V24917 runtime installation on top of an already loaded V24916 launcher.
 
 Installed in memory, after the V24916 runtime install and before parent.main:
-  1. r1_15a2_multiblock patch: W/S domestic P upper 2.5, A upper 4; TARGETED_ZONE_DIRECT;
+  1. r1_15a2_multiblock patch: W/S domestic P upper 3.0, A upper 5.0; TARGETED_ZONE_DIRECT;
   2. TG pre-apply gate non-fatal (GENERATION_GATE rejects the candidate);
   3. demand policy: TD scheduling from R1_RUN_OPTIONS (universal fresh ALWAYS), early stop
      (options in R1_RUN_OPTIONS.json / environment);
@@ -214,7 +214,7 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
         "global_survey_error_limit_added": False,
         "mobility_band": [o.get("mg_min_ratio"), o.get("mg_max_ratio")],
         "mobility_reference": "EXISTING_FP_DIV_ADD_REFERENCE_NOT_INDEPENDENT_SURVEY_VALIDATION",
-        "ws_attraction_coefficient_band": [0.75, 4.0],
+        "ws_attraction_coefficient_band": [0.75, 5.0],
         "ws_attraction_gate": "FINAL_GENERATION_CANDIDATE_AND_LIVE_ZONE_READBACK_ONLY",
         "attraction_changes_mobility_ratio": False,
         "early_exploration_extended": o.get("sev_extend_early_horizon"),
