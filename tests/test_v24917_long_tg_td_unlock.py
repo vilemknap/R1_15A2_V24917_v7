@@ -54,11 +54,18 @@ def _long_readback(monkeypatch, **overrides):
     outer = NS(_long_post_td_mask_enabled=True, v24916_dynamic_skims=manager)
     bridge = NS(outer_adapter=outer, dynamic_skim_enabled=True, _v24917_frozen=False)
     monkeypatch.setattr(dp, "load_options", lambda *args, **kwargs: _opts())
-    monkeypatch.setattr(support, "read_current", lambda outer: (dist, {
+    # The full V24917 suite reloads modules during snapshot/parity tests.
+    # LONGCOMPOSITE performs its live imports at evaluation time, so bind the
+    # active registry modules, never a stale collection-time module object.
+    import importlib
+    active_support = importlib.import_module("r1_15a2_long_support_distance_v24917")
+    active_postmask = importlib.import_module("r1_15a2_long_post_td_mask_v24917")
+    monkeypatch.setattr(active_support, "read_current", lambda outer: (dist, {
         "distance_basis": "FIXED_OSRM_DIST_KM_9697",
         "matrix_no": 9697, "values_sha256": "osrm-fixed",
     }))
-    monkeypatch.setattr(postmask, "_read", lambda adapter, no: (None, arr[int(no)]))
+    monkeypatch.setattr(active_postmask, "_read",
+                        lambda adapter, no: (None, arr[int(no)]))
     return outer, bridge, arr
 
 
@@ -106,13 +113,16 @@ def test_native_td_execution_owns_mask_and_preserves_scope(monkeypatch):
     monkeypatch.setattr(wire.joint, "options", lambda: {"long_enabled": True})
     outer = NS(_long_post_td_mask_enabled=True)
     calls = []
+    import importlib
+    active_postmask = importlib.import_module("r1_15a2_long_post_td_mask_v24917")
     def native(obj):
-        calls.append(postmask._SCOPE.get() is outer)
+        calls.append(active_postmask._SCOPE.get() is outer)
         return "EXECUTED_NATIVE"
     runner = wire.wrap_dynamic_realization(native)
-    assert runner(NS(outer_adapter=outer)) == "EXECUTED_NATIVE"
+    assert runner(NS(outer_adapter=outer,
+                     ref=NS(GROUPS=[long_td.GROUP]))) == "EXECUTED_NATIVE"
     assert calls == [True]
-    assert postmask._SCOPE.get() is None
+    assert active_postmask._SCOPE.get() is None
 
 
 def test_native_td_fails_without_owned_long_mask(monkeypatch):
@@ -120,7 +130,8 @@ def test_native_td_fails_without_owned_long_mask(monkeypatch):
     calls = []
     runner = wire.wrap_dynamic_realization(lambda obj: calls.append(1))
     with pytest.raises(RuntimeError, match="DYNAMIC_MASK_CONTEXT_MISSING"):
-        runner(NS(outer_adapter=NS(_long_post_td_mask_enabled=False)))
+        runner(NS(outer_adapter=NS(_long_post_td_mask_enabled=False),
+                  ref=NS(GROUPS=[long_td.GROUP])))
     assert not calls
 
 
