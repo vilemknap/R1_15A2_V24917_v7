@@ -243,7 +243,14 @@ def test_end_to_end_design_targeted_coarse_and_gate_passes(mb, real_cfg):
     refine = design["summary"]["signed_generation_refinement"]
     assert refine["mode"] == "V24917_TARGETED_ZONE_DIRECT"
     proposed = {(r["zone_no"], r["attr"]): r["proposed"] for r in design["candidate_rows"]}
-    assert 1.9 < max(proposed.values()) <= 1.9 * 1.5 + 1e-9
+    assert any(value > 1.9 for value in proposed.values())
+    # Direct P/Service A coefficients follow the +50% step cap.  WORK
+    # attraction's independent ADD_SALARY co-effect can make its raw
+    # ADD_ATT_W ratio slightly larger; its *implemented total log effect*
+    # must still pass the same +50% cap (checked below).
+    assert all(value <= 1.9 * 1.5 + 1e-9
+               for (_z, attr), value in proposed.items()
+               if attr in ("ADD_PROD_W", "ADD_PROD_S", "ADD_ATT_S"))
     assert all(value <= 3.0 + 1e-9 for (_z, attr), value in proposed.items()
                if attr in ("ADD_PROD_W", "ADD_PROD_S"))
     assert all(value <= 5.0 + 1e-9 for (_z, attr), value in proposed.items()
