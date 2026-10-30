@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """MOBILITY2 / GENFIX2: explicit production envelope, before and after realization.
 
-The existing reference R = sum(FP)/sum(FP/ADD_PROD) and configured [0.75,2.0]
-band are retained. This is NOT an independent validation of survey coefficients.
+The existing reference R = sum(FP)/sum(FP/ADD_PROD) is retained.
+The WORK/SERVICE production band is configured [0.75,2.5] in the universal fresh release. This is NOT an independent validation of survey coefficients.
 For mixed-sign log steps R(s) is convex, not monotone: test its interior minimum
 as well as both endpoints. Every final candidate is checked again after masks,
 bounds and P/A balancing. Missing data never silently disables an enabled guard.
