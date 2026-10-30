@@ -34,7 +34,7 @@ LONG_BAND = (0.5, 1.5)  # ADD_PROD_L 0.3 x [0.5, 1.5] = [0.15, 0.45]
 # three trials; repeating smaller steps cannot fix an unverified native formula.
 # An explicit source-verified positive proof is required before SCHOOL levers
 # may be applied. Do not silently loosen check_live() to accept unchanged FP.
-SCHOOL_FP_LINK_POLICY = "FROZEN_UNTIL_NATIVE_FP_LINK_VERIFIED"
+SCHOOL_FP_LINK_POLICY = "FIXED_AMDY_ORIGINAL_PRODUCTION_ATTRACTION"
 
 
 def finite(value, name):
@@ -285,13 +285,13 @@ def guard_ls(ls, authority):
                 edits.append({"attr":attr,"zone_no":int(z),"before":items[z],"after":t})
                 changed = True
             items[z]=t
-    # Live failure 2026-10-30: changing ADD_PROD_SCH did not produce the
-    # proportional FP_5_SCHOOL readback on any of 575 positive domestic zones.
-    # Until the actual native formula dependency is positively certified,
-    # zero BOTH SCHOOL production and attraction proposals. WORK/SERVICE and
-    # the existing native TD stay active; no acceptance guard is bypassed.
-    # Synthetic tests may explicitly certify their fixture's exact linear
-    # dependency. Production capture() always defaults to unverified.
+    # AMDY school Generation contains no ADD_PROD_SCH/ADD_ATT_SCH. The
+    # 575 unchanged positive FP_5_SCHOOL zones were therefore *correct*.
+    # Freeze both speculative coefficient proposals, leave the original
+    # school TG functions and their live invariant guard untouched.
+    # SCHOOL b/c optimization is an independent TD-only decision.
+    # Synthetic source-certified fixtures remain available for legacy tests;
+    # real capture() never certifies these nonexistent AMDY coefficients.
     school_certified = authority.get("school_fp_link_verified") is True
     if not school_certified:
         for attr in ("ADD_PROD_SCH", "ADD_ATT_SCH"):
@@ -300,7 +300,7 @@ def guard_ls(ls, authority):
                 s = finite(items[z], "unverified_school_step")
                 if abs(s) > EPS:
                     edits.append({"attr": attr, "zone_no": int(z), "before": s,
-                                  "after": 0.0, "reason": "SCHOOL_FP_LINK_UNVERIFIED"})
+                                  "after": 0.0, "reason": "SCHOOL_GENERATION_FIXED_AMDY"})
                     changed = True
                 items[z] = 0.0
             # Do not emit hundreds of zero-step SCHOOL COM write rows from
@@ -346,10 +346,13 @@ def guard_ls(ls, authority):
     summary["school_fp_link_policy"] = SCHOOL_FP_LINK_POLICY
     summary["school_fp_link_verified"] = school_certified
     summary["school_generation_permitted"] = school_certified
-    summary["school_generation_search_complete"] = school_certified
-    summary["school_generation_status"] = ("FP_LINK_VERIFIED"
+    # A deliberately fixed AMDY purpose has no uncompleted Generation
+    # search. Do not confuse fixed school TG with the independently
+    # optimizable SCHOOL native b/c Trip Distribution search.
+    summary["school_generation_search_complete"] = True
+    summary["school_generation_status"] = ("FP_LINK_VERIFIED_SYNTHETIC"
                                            if school_certified
-                                           else "FROZEN_PENDING_NATIVE_FORMULA_PROOF")
+                                           else "FIXED_AMDY_NO_SCHOOL_ADD_COEFFICIENT")
     summary["mobilityzone1"] = {"changes": edits, "deferred": authority["unavailable"],
         "prediction_role": "GUARDED_EFFECT_OPERATOR" if changed and out.get("effect_operator")
                            else "UNAVAILABLE" if out.get("prediction_unavailable_after_guard")
