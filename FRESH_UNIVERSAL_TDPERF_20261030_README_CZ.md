@@ -41,16 +41,16 @@ Při zachování dolní hranice **0,75** se mění horní hranice domácích zó
 
 | Účel a role | Atributy zón | Původní maximum | Nové maximum |
 |---|---|---:|---:|
-| WORK a SERVICE, produkce | `ADD_PROD_W`, `ADD_PROD_S` | 2,0 | **2,5** |
-| WORK a SERVICE, atrakce | `ADD_ATT_W`, `ADD_ATT_S` | 2,0 | **4,0** |
+| WORK a SERVICE, produkce | `ADD_PROD_W`, `ADD_PROD_S` | 2,5 | **3,0** |
+| WORK a SERVICE, atrakce | `ADD_ATT_W`, `ADD_ATT_S` | 4,0 | **5,0** |
 
-Nové hranice platí pro `CATCH_UP` i `REFINE`, shodně pro tvrdou mez a soft band; návrh, P/A projekce, zonální solver a finální kontrola realizovaného koeficientu používají stejnou hodnotu. `MOBILITY2` a `MOBILITYZONE1` měly nezávislou ochranu produkce 2,0, která by nové povolené hodnoty předčasně blokovala. Pro **WORK a SERVICE** je horní limit těchto produkčních kontrol nově **2,5** (`mg_max_ratio=2.5`), jejich dolní limit 0,75 a veškeré důkazy z nativních `FP_*` zůstávají povinné. Ochrana `SCHOOL` zůstává na [0,75; 2,0] a `LONG` na vlastní původní hranici.
+Předchozí univerzální vydání mělo 2,5 pro produkci a 4,0 pro atrakci; toto vydání je nahrazuje. Spodní mez 0,75 se nemění. Nové hranice platí pro `CATCH_UP` i `REFINE`, shodně pro tvrdou mez a soft band; návrh, P/A projekce, zonální solver a finální kontrola realizovaného koeficientu používají stejnou hodnotu. `MOBILITY2` a `MOBILITYZONE1` měly v posledním vydaném balíku ochranu produkce 2,5, která by nové povolené hodnoty předčasně blokovala. Pro **WORK a SERVICE** je horní limit těchto produkčních kontrol nově **3,0** (`mg_max_ratio=3.0`), jejich dolní limit 0,75 a veškeré důkazy z nativních `FP_*` zůstávají povinné. Ochrana `SCHOOL` zůstává na [0,75; 2,0] a `LONG` na vlastní původní hranici.
 
-**Dodatečné zajištění MOBILITY2:** produkční mobilitní poměr `R = sum(FP)/sum(FP/ADD_PROD)` zůstává pro WORK i SERVICE omezen **0,75–2,5**; nemění se na 4,0. Atrakční koeficienty `ADD_ATT_W` a `ADD_ATT_S` mají **samostatnou** zonální pojistku **0,75–4,0** při konečném sestavení kandidáta i při živém přečtení výsledku z Visumu. Nadlimitní A kandidát se odmítne, i když mobilitní P poměr vyhovuje. U původních hodnot mimo hranici se povoluje pouze stagnace nebo pohyb směrem dovnitř. `ZAHR` a nezávislé `LONG/SCHOOL` zůstávají mimo tuto domácí W/S atrakční pojistku. Chybějící hodnoty domácích `ADD_ATT_W/S` v nativním snapshotu jsou chyba, nikoli důvod pro vypnutí ochrany.
+**Dodatečné zajištění MOBILITY2:** produkční mobilitní poměr `R = sum(FP)/sum(FP/ADD_PROD)` zůstává pro WORK i SERVICE omezen **0,75–3,0**; nemění se na 5,0. Atrakční koeficienty `ADD_ATT_W` a `ADD_ATT_S` mají **samostatnou** zonální pojistku **0,75–5,0** při konečném sestavení kandidáta i při živém přečtení výsledku z Visumu. Nadlimitní A kandidát se odmítne, i když mobilitní P poměr vyhovuje. U původních hodnot mimo hranici se povoluje pouze stagnace nebo pohyb směrem dovnitř. `ZAHR` a nezávislé `LONG/SCHOOL` zůstávají mimo tuto domácí W/S atrakční pojistku. Chybějící hodnoty domácích `ADD_ATT_W/S` v nativním snapshotu jsou chyba, nikoli důvod pro vypnutí ochrany.
 
 **Beze změny:** `ADD_SALARY` [0,5; 2,0], ZAHR relativní interval [0,5×; 10×] podle startovního koeficientu, LONG/SCHOOL, zachování strukturálních nul, intervaly změny koeficientu za jeden cyklus (+50 % / −20 % v `CATCH_UP`; +25 % / −20 % v `REFINE`), přesné bilancování produkcí a atrakcí, TD, akceptační bezpečnost a rollback.
 
-Pokud by proměnná prostředí přepsala `mg_max_ratio` na starou hodnotu 2,0 nebo chyběla nová role-specific Generation policy, univerzální spouštěč odmítne zahájit kalibraci; nesmí potichu přejít na jinou interpretaci. Předchozí stažený ZIP s původními mezemi nepoužívat.
+Pokud by proměnná prostředí přepsala `mg_max_ratio` na starou hodnotu 2,5 nebo 2,0 nebo chyběla nová role-specific Generation policy, univerzální spouštěč odmítne zahájit kalibraci; nesmí potichu přejít na jinou interpretaci. Předchozí stažený ZIP s původními mezemi nepoužívat.
 
 ## Adresáře a nezávislost
 
