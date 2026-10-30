@@ -492,9 +492,9 @@ def test_actual_disk_reopen_overwrites_stale_in_memory_model(tmp_path,recipe):
             self.load_calls.append(path)
             host.memory_state='accepted_from_disk'
     class Host:
-        IO=IO()
         memory_state='post_failed_td_rollback'
     host=Host()
+    host.IO=IO()
     assert str(host.IO.CurrentVersionFile)==str(cp)
     receipt=resume.hard_reopen_checkpoint(
         host,paths,auth,load_fn=lambda h,p:h.IO.LoadVersion(str(p)))
@@ -512,7 +512,9 @@ def test_disk_reopen_fails_closed_on_loader_problems(tmp_path,recipe,failure):
     class IO:
         CurrentVersionFile=str(cp)
     class Host:
-        IO=IO()
+        pass
+    host=Host()
+    host.IO=IO()
     def loader(h,p):
         if failure=='load_exception':
             raise RuntimeError('COM rejected LoadVersion')
@@ -525,7 +527,7 @@ def test_disk_reopen_fails_closed_on_loader_problems(tmp_path,recipe,failure):
         'path_changed':'HARD_REOPEN_LOADED_OTHER_SOURCE',
         'bytes_changed':'HARD_REOPEN_SOURCE_BYTES_CHANGED_AFTER_LOAD',
     }[failure]):
-        resume.hard_reopen_checkpoint(Host(),paths,auth,load_fn=loader)
+        resume.hard_reopen_checkpoint(host,paths,auth,load_fn=loader)
 
 
 def test_matching_filename_cannot_substitute_for_disk_reload_receipt(tmp_path,recipe):
