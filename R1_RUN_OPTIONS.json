@@ -11,6 +11,7 @@
   "td_inner_mode": "DYNAMIC",
   "long_generation_enabled": true,
   "long_composite_td_enabled": true,
+  "school_td_enabled": true,
   "tg_max_trials": 3,
   "td_realization_max_trials": 3,
   "td_inner_max_evaluations": 60,
