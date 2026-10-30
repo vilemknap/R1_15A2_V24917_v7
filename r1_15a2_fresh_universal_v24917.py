@@ -83,11 +83,29 @@ def validate_fresh_config(cfg, options):
     require(options.get("school_td_enabled") is True
             and options.get("long_composite_td_enabled") is True,
             "SCHOOL_OR_LONG_TD_DISABLED")
+    gen = cfg.get("v24917_targeted_generation") or {}
+    bands = gen.get("envelope") or {}
+    hard = bands.get("domestic_hard_by_role") or {}
+    soft = bands.get("refine_domestic_soft_by_role") or {}
+    require(gen.get("enabled") is True
+            and hard.get("PROD") == [0.75, 2.5]
+            and hard.get("ATT") == [0.75, 4.0]
+            and soft.get("PROD") == [0.75, 2.5]
+            and soft.get("ATT") == [0.75, 4.0],
+            "WORK_SERVICE_PA_BOUNDS_NOT_INSTALLED")
+    require(options.get("mg_min_ratio") == 0.75
+            and options.get("mg_max_ratio") == 2.5
+            and options.get("mg_enabled") is True,
+            "WORK_SERVICE_MOBILITY2_BAND_MISMATCH")
     return {"fresh_lineage": True, "accepted_count_start": 0,
             "outer_cycle_start": 1, "fresh_native_paths": True,
             "td_optimizations_required": True,
             "td_policy": "ALWAYS", "td_skipping_allowed": False,
-            "td_catchup_included": True}
+            "td_catchup_included": True,
+            "generation_work_service_prod_bounds": [0.75, 2.5],
+            "generation_work_service_att_bounds": [0.75, 4.0],
+            "mobility2_ws_prod_max": 2.5,
+            "salary_long_school_zahr_policy_changed": False}
 
 
 def verify_runtime_status(status):
@@ -110,6 +128,10 @@ def verify_runtime_status(status):
             and effective_demand.get("td_during_catchup") is True
             and effective_demand.get("td_first_cycle") is True,
             "EFFECTIVE_TD_EVERY_CYCLE_POLICY_MISMATCH")
+    require(effective_demand.get("mg_enabled") is True
+            and effective_demand.get("mg_min_ratio") == 0.75
+            and effective_demand.get("mg_max_ratio") == 2.5,
+            "EFFECTIVE_MOBILITY2_WS_PRODUCTION_BAND_MISMATCH")
     # Runtime may apply R1_* environment overrides AFTER options JSON is read.
     # Installing the wrappers alone does not prove that joint native TD is ON.
     effective = optimized["tdjoint1"].get("options") or {}
