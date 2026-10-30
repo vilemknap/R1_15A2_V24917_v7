@@ -2,9 +2,9 @@
 """V24917 runtime installation on top of an already loaded V24916 launcher.
 
 Installed in memory, after the V24916 runtime install and before parent.main:
-  1. r1_15a2_multiblock patch: envelope [0.25, 5], TARGETED_ZONE_DIRECT design;
+  1. r1_15a2_multiblock patch: W/S domestic P upper 2.5, A upper 4; TARGETED_ZONE_DIRECT;
   2. TG pre-apply gate non-fatal (GENERATION_GATE rejects the candidate);
-  3. demand policy: TD every N-th cycle + on TG plateau, stationary early stop
+  3. demand policy: TD scheduling from R1_RUN_OPTIONS (universal fresh ALWAYS), early stop
      (options in R1_RUN_OPTIONS.json / environment);
   4. DIAGFAST V2 FAST_EXACT 12D/11D with the DIRECT guard (inline LEGACY vs
      FAST parity on the first call of each helper, automatic LEGACY fallback).
