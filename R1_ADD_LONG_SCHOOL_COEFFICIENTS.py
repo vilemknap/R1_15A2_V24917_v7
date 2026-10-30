@@ -4,19 +4,21 @@
 Visum: open the base .ver -> Scripts -> Run script file -> R1_ADD_LONG_SCHOOL_COEFFICIENTS.py
 Creates (if missing) the zone user-defined attributes
     ADD_PROD_L   = 0.2  (replaces the AMDY constant k_long = 0,2 in FP_3_LONG_*)
-    ADD_ATT_L    = 1.0
+    ADD_ATT_L    = 0.2  (replaces only AMDY 0.2 × PRENOC_SVK in FA_3_LONG)
     ADD_PROD_SCH = 1.0
     ADD_ATT_SCH  = 1.0   (double, all zones)
 Existing attributes are NOT overwritten (their values stay).  Nothing else changes,
 no procedure is run and the version is NOT saved - save it yourself after editing the
 generation formulas (see R1_LONG_SCHOOL_FORMULAS in the reply / START_HERE).
-With these start values the model results are identical to today.
+With these start values the model results are identical to AMDY only if both
+native LONG formulas are linked correctly. Existing attributes remain unchanged.
+SCHOOL coefficients are not used by the original AMDY school formulas.
 """
 from __future__ import annotations
 
 NEW_ATTRIBUTES = (
     ("ADD_PROD_L", "R1 calibration coefficient LONG production (AMDY k_long)", 0.2),
-    ("ADD_ATT_L", "R1 calibration coefficient LONG attraction", 1.0),
+    ("ADD_ATT_L", "R1 LONG overnight term coefficient (PRENOC_SVK only)", 0.2),
     ("ADD_PROD_SCH", "R1 calibration coefficient SCHOOL production", 1.0),
     ("ADD_ATT_SCH", "R1 calibration coefficient SCHOOL attraction", 1.0),
 )
