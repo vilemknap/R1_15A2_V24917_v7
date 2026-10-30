@@ -8,13 +8,15 @@ a separate project sandbox so a running V16 calibration is not disturbed.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 import traceback
 
-RELEASE = "R1_V24917_FRESH_UNIVERSAL_TDPERF_ALLTD_V2_20261030"
-SANDBOX_NAME = "R1FRESH17"
+RELEASE = "R1_V24917_FRESH_UNIVERSAL_TDPERF_ALLTD_PATHROOTFIX1_20261031"
+SANDBOX_NAME = "R1FRESH17"  # reject recursive inputs from the former, too-deep sandbox
+COMPACT_SANDBOX_PREFIX = "R1F_"  # home-level path; stable 8-digit project key
 RUNS_NAME = "R1_15A2_V16_RUNS"
 SCHEMA = "R1_V24917_FRESH_UNIVERSAL_EPOCH_AUTHORITY_V1"
 
@@ -40,11 +42,23 @@ def true_project_base(source):
     return (ancestors[-1].parent if ancestors else source.parent).resolve()
 
 
+def compact_sandbox_name(project_base):
+    """Stable, per-project short root. A different model project cannot share it."""
+    normalized = str(project_base).replace("\\\\", "/").casefold().rstrip("/")
+    project_key = hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:8]
+    return COMPACT_SANDBOX_PREFIX + project_key
+
+
 def sandbox_for(source):
     source = Path(source).resolve()
     base = true_project_base(source)
-    sandbox = base / SANDBOX_NAME
+    # Old v7.3 used <project>/R1FRESH17 and failed its 240-char PATHFIX3
+    # forecast (244). HOME/R1F_<project-hash> saves >=20 chars for the
+    # measured Windows project, while staying user-writable and on a separate
+    # project lock. Never use C:\\, subst drives, symlinks or disable PATHFIX3.
+    sandbox = Path.home().resolve() / compact_sandbox_name(base)
     require(not any(part.name.upper() == SANDBOX_NAME.upper()
+                    or part.name.upper().startswith(COMPACT_SANDBOX_PREFIX.upper())
                     for part in source.parents)
             and sandbox not in source.parents and source != sandbox,
             "SOURCE_INSIDE_OUTPUT_SANDBOX")
@@ -240,6 +254,18 @@ def install(v16, source, sandbox, *, options):
     require(not getattr(v16, "_fresh_universal_guard_installed", False),
             "ALREADY_INSTALLED")
 
+    # Native PATHFIX3 is the authority, not an ad-hoc relaxed MAX_PATH.
+    # Perform its identical deepest-file forecast before opening the run
+    # folder. The real parent repeats this check with the actual run stamp.
+    audit = getattr(getattr(v16, "runtime_io_hotfix", None),
+                    "audit_run_path_budget", None)
+    require(callable(audit), "PATH_BUDGET_AUDITOR_MISSING")
+    synthetic_run = sandbox / RUNS_NAME / "RUN_20991231_235959_123456"
+    path_budget = audit(synthetic_run)
+    require(path_budget.get("passes") is True,
+            "COMPACT_ROOT_PATH_BUDGET_FAILED:" +
+            str(path_budget.get("max_projected_logical_length")))
+
     # The parent main uses the stable project_base to choose BOTH its hardcoded
     # RUNS root and its .R1_15A2_V16.lock. Redirect it to the new sandbox,
     # not by replacing OS calls, and never nest under an old RUN_*.
@@ -295,7 +321,12 @@ def install(v16, source, sandbox, *, options):
     v16._fresh_universal_guard_installed = True
     return {"installed": True, "release": RELEASE,
             "source": str(source), "sandbox": str(sandbox),
-            "new_accepted_count": 0, "next_outer_cycle": 1}
+            "new_accepted_count": 0, "next_outer_cycle": 1,
+            "compact_project_key": compact_sandbox_name(original_base),
+            "projected_path_budget": {
+                "passes": True,
+                "safe_logical_path_budget": path_budget["safe_logical_path_budget"],
+                "max_projected_logical_length": path_budget["max_projected_logical_length"]}}
 
 
 def run_silent_detached(host, package_root, main, sandbox, silent):
@@ -352,6 +383,7 @@ def run_silent_detached(host, package_root, main, sandbox, silent):
     return report
 
 
-__all__ = ["RELEASE", "SANDBOX_NAME", "RUNS_NAME", "true_project_base",
+__all__ = ["RELEASE", "SANDBOX_NAME", "COMPACT_SANDBOX_PREFIX",
+           "compact_sandbox_name", "RUNS_NAME", "true_project_base",
            "sandbox_for", "validate_fresh_config", "verify_runtime_status",
            "install_native_epoch_guard", "install", "run_silent_detached"]
