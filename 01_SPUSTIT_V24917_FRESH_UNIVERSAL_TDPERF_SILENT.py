@@ -5,6 +5,7 @@ PTV Visum 2026 -> Scripts -> Run script file -> this exact launcher.
 No A0001/B0002 checkpoint authority or resumed cycle, no source SaveVersion or
 LoadVersion. Starts accepted_count=0, cycle 01 and freshly enumerates paths.
 A separate project sandbox protects concurrently running older calibration.
+TD runs after EVERY Generation (ALWAYS; CATCH_UP included), no policy skips.
 """
 from __future__ import annotations
 
