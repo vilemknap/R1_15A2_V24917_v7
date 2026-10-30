@@ -16,6 +16,7 @@ on:
       - codex/v24917-tdlong-school-epochfix-20261030
       - codex/v24917-b0002-cycle2-native-epoch-20261030
       - codex/v24917-b0002-diagfast-supplymix-20261030
+      - codex/v24917-universal-fresh-tdperf-20261030
   workflow_dispatch:
 permissions:
   contents: read
@@ -94,6 +95,14 @@ jobs:
       - name: Combined B0002, relaxed DIAGFAST and SupplyMix integration regression
         run: |
           python -m pytest -q -p no:cacheprovider tests/test_v24917_resume_b0002_cycle2.py tests/test_v24917_epoch_td_fairness_20261030.py tests/test_v24917_supplymix_completion_isolation.py tests/test_v24917_genfix2.py diagfast_tests/test_relaxed_semantic_parity_v3.py diagfast_tests/test_tolerant_numeric_parity.py diagfast_tests/test_direct_feature_isolation.py diagfast_tests/test_parity.py
+      - name: Fresh universal TD PERF native epoch and isolated parallel startup regression
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          python -m py_compile r1_15a2_fresh_universal_v24917.py 01_SPUSTIT_V24917_FRESH_UNIVERSAL_TDPERF_SILENT.py tests/test_v24917_fresh_universal_tdperf.py
+          python -m pytest -q -p no:cacheprovider tests/test_v24917_fresh_universal_tdperf.py tests/test_v24917_td_perf_review.py tests/test_v24917_td_restore_perf.py tests/test_v24917_td_numpy_perf.py tests/test_v24917_tdjoint1.py
       - name: Full main regression in isolated process
         run: python -m pytest -q -p no:cacheprovider tests
       - name: DIAGFAST suite in isolated process
