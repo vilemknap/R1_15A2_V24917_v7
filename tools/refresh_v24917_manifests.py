@@ -84,6 +84,9 @@ RUNTIME = [
     "01_SPUSTIT_V24917_TDJOINT1_SILENT.py",
     "R1_RUN_OPTIONS.json",
     "r1_15a2_finecdf_bridge_v24916.py",
+    "r1_15a2_resume_a0001_v24917.py",
+    "01_SPUSTIT_V24917_RESUME_A0001_TD_NO_ENUM_SILENT.py",
+    "A0001_TD_RESUME_AUTHORITY.json",
     "r1_15a2_school_td_v24917.py",
 ]
 

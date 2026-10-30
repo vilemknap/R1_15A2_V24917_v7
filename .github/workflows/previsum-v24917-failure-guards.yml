@@ -9,6 +9,7 @@ on:
       - codex/v24917-school-fp-link-guard-20261030
       - codex/v24917-unlock-long-zonal-tg-composite-td-20261030
       - codex/v24917-school-td-finecdf-active-20261030
+      - codex/resume-a0001-td-no-enum-20261030
   workflow_dispatch:
 permissions:
   contents: read
@@ -70,6 +71,8 @@ jobs:
           python -m pytest -q -p no:cacheprovider tests/test_v24917_school_td_activation.py tests/test_v24917_long_tg_td_unlock.py tests/test_v24917_long_composite_td.py tests/test_v24917_tdjoint1.py tests/test_v24917_long_cache_generation.py tests/test_v24917_mobilityzone1.py tests/test_v24917_long_cache_generation.py tests/test_v24917_preflight_op20_partial_activation.py tests/test_v239_safety_gates.py tests/test_v240_full_overnight.py tests/test_v24917_longmask_09c_live_scope_regression.py tests/test_v24917_long_post_td_mask.py tests/test_v24917_silent_debug.py
       - name: Source/working-copy operation difference regression
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_working_copy_operation_diff.py
+      - name: A0001 TD resume fail-closed path store regression
+        run: python -m pytest -q -p no:cacheprovider tests/test_v24917_resume_a0001_td_no_enum.py tests/test_v24917_long_diagnostics_epoch_fix.py
       - name: Full main regression in isolated process
         run: python -m pytest -q -p no:cacheprovider tests
       - name: DIAGFAST suite in isolated process
