@@ -70,3 +70,7 @@ nutné ověřit první SCHOOL kandidát v nativním TD: změněné b/c
 `5_SCHOOL`, přepočítaná M9117, změna školní FineCDF / GEH,
 nedotčené školní FP/FA a následný úspěšný návrat parametrů při
 odmítnutí kandidáta. Teprve pak lze deklarovat provozní připravenost.
+
+## Následná revize integrace
+
+SCHOOL vyžaduje DYNAMIC; frozen W/S aproximace nenahrazuje měřenou školní count odezvu. Čerstvé FP_5_SCHOOL/FA_5_SCHOOL readbacky potvrzují fixní Generation během inner stage. LONG maska se zachovává i při SCHOOL-only nativním TD. Podrobnosti oprav a výsledky jsou v `artifacts_school_td_review_20261030/README_CZ.md`.

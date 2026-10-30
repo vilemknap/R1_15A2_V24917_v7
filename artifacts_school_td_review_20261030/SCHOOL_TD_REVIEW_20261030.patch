@@ -1,0 +1,652 @@
+diff --git a/.gitattributes b/.gitattributes
+index 4b37533..ec0a6e1 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -47,3 +47,5 @@ artifacts_zonal_reset_20261029/*.patch -text -diff
+ artifacts_zahr_envelope_10x_20261029/*.patch -text -diff
+ artifacts_zahr_envelope_10x_20261029/prior_attempt/*.log -text -diff
+ artifacts_working_copy_operation_diff_20261029/*.patch -text -diff
++artifacts_school_td_review_20261030/*.patch -text -diff
++artifacts_school_td_review_20261030/baseline_reproduction.log -text -diff
+diff --git a/AGENTS.md b/AGENTS.md
+index 8f019e2..38e422e 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -95,6 +95,8 @@ Never report `PASS` or "fully validated" based on generated code, prior evidence
+ 
+ ## Immediate project status (context, not authorization)
+ 
++Current user-selected baseline (2026-10-30): branch `codex/v24917-school-td-finecdf-active-20261030`, commit `0f2204a3f0a4a4c74bda0f32c8ea7323320e0f70`, supersedes the historical LONG TD freeze noted above. LONG TG and shared LONG_COMPOSITE TD are opt-in enabled in its run options. SCHOOL Generation stays fixed at original AMDY FP_5_SCHOOL/FA_5_SCHOOL; unused ADD_PROD_SCH/ADD_ATT_SCH are not optimized. SCHOOL TD may optimize only native 5_SCHOOL b/c (M9117), with fixed a and the original DIRECT_PURPOSE 512-point 0.1–100 km FineCDF target. SCHOOL TD requires measured DYNAMIC assignment; no W/S frozen incidence may serve as its count response. The unified native TD must retain LONG >=80 km masking even in SCHOOL-only probes. Verify unchanged SCHOOL FP/FA throughout the inner stage. Keep original live acceptance and in-memory rollback.
++
+ At this baseline, `LONGGUARD1` and `MOBILITYZONE1` exist; the hard native LONG OD support and a per-zone LONG generation actuator are not yet proven implemented. The planned next development unit is `LONG_OD_MASK1` (pure, hash-bound mask and tests), followed only after review by native `LONG_OD_NATIVE1`, feasible restricted TD, composite FineCDF calibration and the later per-zone mobility changes. Confirm the task with the user prompt and actual tree, not with this historical note alone.
+ 
+ ## Standing GitHub backup instruction (user, 2026-10-29)
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index d758d2b..6043af5 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -7,9 +7,21 @@
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+     "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py": "da8953c4c4da056e092ed546a158ec13bce12590bdb230fd86122f809702f960",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+-    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
++    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "02_SPUSTIT_V24917_TDJOINT1_60_40.py": "069805ca1366578bf51994490f78a3827fdd42a6b44ff2957e2663ed00419f94",
++    "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
++    "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
++    "R1_ADD_LONG_SCHOOL_COEFFICIENTS.py": "4e659040b390b38333330bef402b7447f2fefa73030b144501c48d8ce7ab87b6",
++    "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py": "ebe5a9395652c010b3b6c119e8b4f4046489613fc1c419ffd5391a3c97d5bc20",
++    "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
++    "R1_LONG_SCHOOL_FORMULA_CHECK.py": "b5109b0863dcc2f8b39a83c4ecb5931dc400b12f68db6ab8f320afd1c55d7c6c",
++    "R1_RESET_ZONAL_COEFFICIENTS.py": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
++    "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
++    "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
++    "R1_TDLONG1_STANDALONE_READ_ONLY.py": "e4c46037f490c2636dc98d0f0d100fb5fee2dd3d258dd9cb538d4a137b49da8e",
++    "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
++    "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
+     "diagfast_tests/conftest.py": "4e718a83a7134ec8c2efc6fd1e4dcaa62332a3ff5cfc1d2bf82dcf4a9a4b559d",
+     "diagfast_tests/fakes.py": "d5982cf7b3733c6fb7937efe00d944c7ada06112ec8ba2e1917a108971d2f5f2",
+     "diagfast_tests/test_decision_parity.py": "b02be669a8d4d017bff9edc5940671af18652c3634507bc0d57811cc106561ad",
+@@ -19,9 +31,8 @@
+     "diagfast_tests/test_parity.py": "81efd8fe6ef6d54f3f6963ac5936b89548bae421b352d3ba1c45707622927e86",
+     "diagfast_tests/test_reads.py": "48812fdddca7ab1f5bab3063b9f04a7df74e17e1c960a52eab2b50c4c9f860d0",
+     "diagfast_tests/test_v2_bulk_numpy.py": "87a0a928a62f45018b809feca2b890e505143491011f04ce55e36bba271bb5e6",
+-    "diagfast_tools/refresh_source_manifest.py": "d24cf4471cbdca9c89931bc13f5aec361c0a773a423af5745a05ac8d49de5802",
++    "diagfast_tools/refresh_source_manifest.py": "428cc365cccfff8feca7863f985940dd2aac40d92684967791edf2290b060462",
+     "diagfast_tools/summarize_diagfast_profiles.py": "161792bf9bc4a1f93a4fe84cc99759ac648bb99e460cebd5a1e0a7d15f8e493e",
+-    "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+     "genfix2_audit_tests/test_audit_regressions.py": "cc584dd3ce155138093e14f469908f0820aaa60d136df89694001d2bb754eb4a",
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
+@@ -30,7 +41,7 @@
+     "r1_15a2_boundary_generation_v24917.py": "b437fcde80c8815a80911138665c3974e298d80e1c3ed4561a3862a931e32d5e",
+     "r1_15a2_boundary_pa_v24917.py": "a0a037a46570e34e0ff7ac85954959b90652e90e4f1e474a2a72d111c89a0958",
+     "r1_15a2_combusy2_v24917.py": "21cfa0e83e99853268e3ec4777d583537eac58a80f1efc655ea2617109ab4f0f",
+-    "r1_15a2_demand_policy_v1.py": "1356fe60edc61de85c1fedadf691f7e93bac30ef270f27ea0bd3b18f6e6deff9",
++    "r1_15a2_demand_policy_v1.py": "27d3b80da57cc92281ef74afb099523897114bbc84287c07b9e08312322a58a5",
+     "r1_15a2_diagfast_direct_v2.py": "9be48df75480eb44b54691d165b889a572bf43e72c0667c455fb80fe32ed1e5d",
+     "r1_15a2_diagfast_numpy_v2.py": "1750ab2eff6dc77048680184210fa985ca0be178880b85d5c5f66a5953b82d19",
+     "r1_15a2_diagfast_parity_v1.py": "b3b118d8b1808ad17e42fe36bf0a1ecd7b49d2b263562ea9379db1baf2d47332",
+@@ -65,31 +76,21 @@
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+     "r1_15a2_rollback_consistency_v24917.py": "ff9b854be640e1e166cf5c82e84c821e0b7c05d5cbd3c0cc4ecbff18670f463d",
+     "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
++    "r1_15a2_school_td_v24917.py": "7d8236327718c5f37b028db9522c7361876144a88d7e24795e76f16f47b58939",
+     "r1_15a2_severity_relax_v24917.py": "40624acbfc7d981b4c0286789eb2d99797fd566217a136c81a43798370617549",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_snapshot_reads_v24917.py": "3d94ee3aafaf1a78c831d7cbc31b98ecd096dc794dce4c4034592a46d641c6e0",
+     "r1_15a2_step_search_v24917.py": "0876b10c65c6b6b44e49c13418677cdeb170b0f090053b916bc8b15d8c3d9f07",
+     "r1_15a2_supply_mix_v24917.py": "7bf5f551855e9d1c3804cab20d40e518f92793a404071826dd7273054f42a3fd",
+     "r1_15a2_targeted_generation_v24917.py": "71b53387090552a501183e998a639b27561ec854b798d2a7f4109e3e9daf9562",
+-    "r1_15a2_td_count_blend_v24917.py": "9ae12413e9bba1bc82ad3aaec4e03a21353688eb07c436d8fc413edf42997ee1",
+-    "r1_15a2_td_joint_runtime_v24917.py": "17ec4037c3b4e0924e61aa4f03d5e1ba5d35d705a8c5ae4bd60a759a410002e1",
+-    "r1_15a2_td_joint_v24917.py": "51794db0fad91f94ee13993213566d9bcc1ec97f0e1e68bb82302f99d3e42e99",
++    "r1_15a2_td_count_blend_v24917.py": "313acb356557a23941a2ce1d9f422c016674402894374238074d891a3802ae64",
++    "r1_15a2_td_joint_runtime_v24917.py": "f665847565e3e19e334869bd2299448642f0042858cfaa1ddf83857a2459e571",
++    "r1_15a2_td_joint_v24917.py": "7042774bd7ee20a26a0746929995a04c65f4b9774fa232510c2e68757f916de5",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+     "r1_15a2_trial_adapter_v24917.py": "4bb307197d737f781255c0ccb6323c590dcdabc0c7a3cf33c3badbb645ab157b",
+     "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
+     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
+-    "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
+-    "R1_ADD_LONG_SCHOOL_COEFFICIENTS.py": "4e659040b390b38333330bef402b7447f2fefa73030b144501c48d8ce7ab87b6",
+-    "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py": "ebe5a9395652c010b3b6c119e8b4f4046489613fc1c419ffd5391a3c97d5bc20",
+-    "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
+-    "R1_LONG_SCHOOL_FORMULA_CHECK.py": "b5109b0863dcc2f8b39a83c4ecb5931dc400b12f68db6ab8f320afd1c55d7c6c",
+-    "R1_RESET_ZONAL_COEFFICIENTS.py": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
+-    "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
+-    "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
+-    "R1_TDLONG1_STANDALONE_READ_ONLY.py": "e4c46037f490c2636dc98d0f0d100fb5fee2dd3d258dd9cb538d4a137b49da8e",
+-    "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
+-    "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+     "tests/test_v24917_aligned_bounds.py": "7e1b1708fbcbe1bbb7c91db47fbcc8a44bf9ff07d320cb0499a494add4bfd3b3",
+@@ -121,14 +122,16 @@
+     "tests/test_v24917_mobilityzone1.py": "93213d13fa626598670e0bd88f49f8844efb9bf0eeda292504d5c6f52d39f94e",
+     "tests/test_v24917_path_incidence_review.py": "5e469acc20f1e42ca292f48623736d05893ade67c3caeb58922ce2f215989eee",
+     "tests/test_v24917_perf3.py": "2623e752b3d819ce8f9a64ef6417e667cfc27d78b153bcddb70658f99ae72185",
+-    "tests/test_v24917_preflight_op20_partial_activation.py": "3695f61481e78aa3ce2b61d4a34c58affc433e8c79d39a817a98721f0c7a3bcd",
+     "tests/test_v24917_preflight2.py": "8c55cd8f64b2c1188bb3211a541c8ed21ad4b65fdcc460ff5ec882b305a8b89c",
++    "tests/test_v24917_preflight_op20_partial_activation.py": "3695f61481e78aa3ce2b61d4a34c58affc433e8c79d39a817a98721f0c7a3bcd",
+     "tests/test_v24917_procseq_bootstrapfix1.py": "8615c765e437758a5543b0d50e5702dc5bb20c482048de2880034686bad0eb4d",
+     "tests/test_v24917_rbcons_audit.py": "482aee6cfd341610d271a811e76df0dfcc955015383726afbb82c4dde0385528",
+     "tests/test_v24917_read_reuse.py": "672a1a7428612ef801c21de6e01c54a4e09eb602c32ba338f8cfc3e6fbe27fae",
+     "tests/test_v24917_runtime_install.py": "1424680da0f27b0ae8af2580c4354bfcf33386ec2cc44b804fee2c72702284a1",
+     "tests/test_v24917_runtime_options_fail_closed.py": "e852f0b46a9bac44cd30252533c33a0770512212bde23cf0eb653746d56d296d",
+     "tests/test_v24917_safetyfix1.py": "6881853827eea163f77201536dcd77536292a11a16a23d550dc97074ad661999",
++    "tests/test_v24917_school_td_activation.py": "370c0cde2ccbf6dea472969594abe70d2ff4f2216f3af8d63cfef37d5020d418",
++    "tests/test_v24917_school_td_review.py": "3cab4405e3c5e3eec0d2e09af449378e2d010b3f4cf0b823750402d1ab56512e",
+     "tests/test_v24917_silent_debug.py": "7e50b61ab970acfccb4bed85f4c1df7110d2e8fb9e8b4e3e7341a505c95e3c8f",
+     "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
+     "tests/test_v24917_step_search.py": "10b78a9068ffab80e67c4dbe0761898230736a6f302fe7ad059279d1aafd123f",
+@@ -144,10 +147,8 @@
+     "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
+     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "94b0163d9fa388c4f5bf7d5593a290580a1ca75970b9d5efb2e1cf85b56e4817",
++    "tools/refresh_v24917_manifests.py": "553f149d546f405c555272bf4d7ade3f475fa91e9c1125082f72d93ef9fdae50",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
+-    "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0",
+-    "r1_15a2_school_td_v24917.py": "d9c1b3851eede5d58c20429c9a50266dd742a1b091f59c5e5529d070655abc98",
+-    "tests/test_v24917_school_td_activation.py": "370c0cde2ccbf6dea472969594abe70d2ff4f2216f3af8d63cfef37d5020d418"
++    "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0"
+   }
+ }
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index df54ba8..a37432c 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -6,8 +6,8 @@
+     "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
+     "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
+     "02_SPUSTIT_V24917_TDJOINT1_60_40.py": "069805ca1366578bf51994490f78a3827fdd42a6b44ff2957e2663ed00419f94",
+-    "r1_15a2_td_joint_v24917.py": "51794db0fad91f94ee13993213566d9bcc1ec97f0e1e68bb82302f99d3e42e99",
+-    "r1_15a2_td_joint_runtime_v24917.py": "17ec4037c3b4e0924e61aa4f03d5e1ba5d35d705a8c5ae4bd60a759a410002e1",
++    "r1_15a2_td_joint_v24917.py": "7042774bd7ee20a26a0746929995a04c65f4b9774fa232510c2e68757f916de5",
++    "r1_15a2_td_joint_runtime_v24917.py": "f665847565e3e19e334869bd2299448642f0042858cfaa1ddf83857a2459e571",
+     "r1_15a2_long_composite_td_v24917.py": "2933bac225dd3ba4ef0c35236e599a57f7ec80d252d89a4ba95241ada33c0e9e",
+     "r1_15a2_long_support_distance_v24917.py": "79765255b057b1f09345ce4b7ac9874cd4b1fe91a09d996ba20d4c63223c02e9",
+     "r1_15a2_long_post_td_mask_v24917.py": "f5b51e74af295b7a465f3ad338e2972e71e8f60776adaa2353c3dcae525e5e7d",
+@@ -25,7 +25,7 @@
+     "r1_15a2_dynamic_11d_files_v24917.py": "70aa29f5fac9aa8d6004d02835a72df5f1bbeb23598140d469afb89058da41ed",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
+-    "r1_15a2_td_count_blend_v24917.py": "9ae12413e9bba1bc82ad3aaec4e03a21353688eb07c436d8fc413edf42997ee1",
++    "r1_15a2_td_count_blend_v24917.py": "313acb356557a23941a2ce1d9f422c016674402894374238074d891a3802ae64",
+     "r1_15a2_long_school_generation_v24917.py": "3710e3aeca5ca5f39881d25b6838dcbdb44f42a3eb1dd353e0f494d054eb17b8",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+     "r1_15a2_long_profile_incidence_v24917.py": "b86614ab75a8ccae40918a7028b2d7e0455b41a2aa2b9197ea550dc55d9329db",
+@@ -61,7 +61,7 @@
+     "authorities/R1_PROFILE_ROSTER_V24917_CITY.csv": "36d94ddce1bb091e5410dbb498d851825a0e477a000e3edc08f750942e1d199c",
+     "authorities/R1_PROFILE_ROSTER_V24917_SOURCE.xlsx": "0a33837129a2eaf64890052c12429a7d331ef6eb76bd5e9e77727222b5891684",
+     "r1_15a2_generation_gate_nonfatal_v1.py": "2ca13966ae4cdedcfee6f5076236ea4c2db97fc04d6cb2f612ffe899cadb6244",
+-    "r1_15a2_demand_policy_v1.py": "1356fe60edc61de85c1fedadf691f7e93bac30ef270f27ea0bd3b18f6e6deff9",
++    "r1_15a2_demand_policy_v1.py": "27d3b80da57cc92281ef74afb099523897114bbc84287c07b9e08312322a58a5",
+     "r1_15a2_diagfast_v1.py": "735e95766a17a4eefd8b4b58ab2c3360ec6d720544b7c30b58f5cc00346d895b",
+     "r1_15a2_diagfast_v2.py": "9a9f9e25cc8d6911fce4bf824b7b677c3156645fa90d8681f1bde26afae5acc2",
+     "r1_15a2_diagfast_numpy_v2.py": "1750ab2eff6dc77048680184210fa985ca0be178880b85d5c5f66a5953b82d19",
+@@ -75,11 +75,11 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "cc52c8dfd0f9309221083037160e8275a34d4415aaa26659c1a637db66f6809e",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "cecf1306b2200f0b9ae31d67c17262f943149a994719a5d5664653d77cea1f4f",
+     "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0",
+     "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
+     "r1_15a2_finecdf_bridge_v24916.py": "059a2a5b08003bb08f109911dad5dc42e3a21bcc7073f8005e686e279012141a",
+-    "r1_15a2_school_td_v24917.py": "d9c1b3851eede5d58c20429c9a50266dd742a1b091f59c5e5529d070655abc98"
++    "r1_15a2_school_td_v24917.py": "7d8236327718c5f37b028db9522c7361876144a88d7e24795e76f16f47b58939"
+   }
+ }
+diff --git a/V24917_SCHOOL_TD_FINECDF_20261030_CZ.md b/V24917_SCHOOL_TD_FINECDF_20261030_CZ.md
+index 839402b..b01c27c 100644
+--- a/V24917_SCHOOL_TD_FINECDF_20261030_CZ.md
++++ b/V24917_SCHOOL_TD_FINECDF_20261030_CZ.md
+@@ -70,3 +70,7 @@ nutné ověřit první SCHOOL kandidát v nativním TD: změněné b/c
+ `5_SCHOOL`, přepočítaná M9117, změna školní FineCDF / GEH,
+ nedotčené školní FP/FA a následný úspěšný návrat parametrů při
+ odmítnutí kandidáta. Teprve pak lze deklarovat provozní připravenost.
++
++## Následná revize integrace
++
++SCHOOL vyžaduje DYNAMIC; frozen W/S aproximace nenahrazuje měřenou školní count odezvu. Čerstvé FP_5_SCHOOL/FA_5_SCHOOL readbacky potvrzují fixní Generation během inner stage. LONG maska se zachovává i při SCHOOL-only nativním TD. Podrobnosti oprav a výsledky jsou v `artifacts_school_td_review_20261030/README_CZ.md`.
+diff --git a/diagfast_tools/refresh_source_manifest.py b/diagfast_tools/refresh_source_manifest.py
+index 0350647..55725b8 100644
+--- a/diagfast_tools/refresh_source_manifest.py
++++ b/diagfast_tools/refresh_source_manifest.py
+@@ -12,7 +12,10 @@ def main():
+         p=ROOT/name
+         if not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest()!=sha:changed.append(name)
+     if changed:raise RuntimeError('ORIGINAL_FILES_CHANGED:'+','.join(changed))
+-    names=['DIAGFAST_V1_BASE_MANIFEST.json']
++    # Keep the explicitly sealed live options and protected TD bridge from the
++    # SCHOOL baseline; collecting only additive Python files would drop them.
++    names=['DIAGFAST_V1_BASE_MANIFEST.json', 'R1_RUN_OPTIONS.json',
++           'r1_15a2_finecdf_bridge_v24916.py']
+     for p in ROOT.rglob('*.py'):
+         rel=p.relative_to(ROOT).as_posix()
+         if rel not in base['files'] and '__pycache__' not in p.parts:
+diff --git a/r1_15a2_demand_policy_v1.py b/r1_15a2_demand_policy_v1.py
+index a2edd5e..7f48571 100644
+--- a/r1_15a2_demand_policy_v1.py
++++ b/r1_15a2_demand_policy_v1.py
+@@ -277,6 +277,8 @@ def validate(raw):
+             raise RuntimeError('R1_SCHOOL_TD_REQUIRES_TDJOINT1')
+         if out['td_policy'] == 'OFF':
+             raise RuntimeError('R1_SCHOOL_TD_REQUIRES_TD_POLICY')
++        if out['td_inner_mode'] != 'DYNAMIC':
++            raise RuntimeError('R1_SCHOOL_TD_REQUIRES_DYNAMIC_NATIVE_ASSIGNMENT')
+     if out['long_composite_td_enabled']:
+         if not out['td_joint_enabled']:
+             raise RuntimeError('R1_LONG_TD_REQUIRES_TDJOINT1')
+diff --git a/r1_15a2_school_td_v24917.py b/r1_15a2_school_td_v24917.py
+index 98e4dfa..81116b8 100644
+--- a/r1_15a2_school_td_v24917.py
++++ b/r1_15a2_school_td_v24917.py
+@@ -8,6 +8,8 @@ source-owned 512-point IDP direct-purpose CDF is validated, never rebuilt.
+ from __future__ import annotations
+ 
+ import numpy as np
++import r1_15a2_com_compat as com
++from r1_15a2_supply import canonical_hash
+ 
+ RELEASE = "R1_V24917_SCHOOL_TD_512_IDP_20261030"
+ GROUP = "SCHOOL"
+@@ -17,6 +19,41 @@ POINTS = 512
+ GRID_MIN_KM = 0.1
+ GRID_MAX_KM = 100.0
+ SOURCE = "DIRECT_PURPOSE"
++GENERATION_ATTRS = ("FP_5_SCHOOL", "FA_5_SCHOOL")
++
++
++def generation_snapshot(bridge):
++    """Read actual fixed AMDY P/A by zone identity, never the unused ADD_SCH."""
++    if (not getattr(bridge, "dynamic_skim_enabled", False)
++            or getattr(bridge, "_v24917_frozen", False)):
++        raise RuntimeError("TDSCHOOL_REQUIRES_NATIVE_DYNAMIC_ASSIGNMENT")
++    zones = list(bridge.zone_order)
++    snapshot = []
++    for attr in GENERATION_ATTRS:
++        values = com.indexed_zone_values(bridge.v, attr, zones)
++        if any(value < 0 for value in values):
++            raise RuntimeError("TDSCHOOL_GENERATION_NEGATIVE:" + attr)
++        snapshot.append((attr, tuple(values)))
++    snapshot = (tuple(zones), tuple(snapshot))
++    pinned = getattr(bridge, "_school_generation_reference", None)
++    if pinned is None:
++        bridge._school_generation_reference = snapshot
++    elif snapshot != pinned:
++        raise RuntimeError("TDSCHOOL_FIXED_GENERATION_CHANGED")
++    return snapshot
++
++
++def verify_generation(bridge, before):
++    after = generation_snapshot(bridge)
++    if after != before:
++        raise RuntimeError("TDSCHOOL_FIXED_GENERATION_CHANGED")
++    previous = getattr(bridge, "_school_generation_freeze_proof", {})
++    bridge._school_generation_freeze_proof = {
++        "status": "VERIFIED_FIXED_SCHOOL_PA", "attributes": list(GENERATION_ATTRS),
++        "zone_count": len(after[0]), "source_values_hash": canonical_hash(before),
++        "readback_values_hash": canonical_hash(after),
++        "verified_native_evaluations": previous.get("verified_native_evaluations", 0) + 1,
++    }
+ 
+ 
+ def reference_contract(ref):
+diff --git a/r1_15a2_td_count_blend_v24917.py b/r1_15a2_td_count_blend_v24917.py
+index e41b5fc..de8b162 100644
+--- a/r1_15a2_td_count_blend_v24917.py
++++ b/r1_15a2_td_count_blend_v24917.py
+@@ -182,9 +182,18 @@ class CountModel:
+         return out
+ 
+     # reference / linear map ----------------------------------------------
+-    def set_reference(self, M_ref: np.ndarray, matrices: Mapping[int, np.ndarray], read_matrix):
++    def set_reference(self, M_ref: np.ndarray, matrices: Mapping[int, np.ndarray], read_matrix, *, measured=False):
+         self.M_ref = np.asarray(M_ref, dtype=float)
+         self.d2 = np.maximum(50.0, 0.5 * (self.M_ref + self.O))
++        self.Q_ref = self.Q(self.M_ref)
++        if measured:
++            # Native assignment supplies the count response. No person-to-vehicle
++            # approximation, OD copies or W/S incidence belong to this path.
++            self.T_ref, self.kappa, self.band, self.V = {}, {}, {}, {}
++            self.linear = None
++            self.linear_profile_coverage = {"mapped": 0, "profiles": len(self.profiles),
++                                            "used": False, "reason": "MEASURED_NATIVE_ASSIGNMENT"}
++            return
+         self.T_ref = {int(k): np.array(v, dtype=float, copy=True) for k, v in matrices.items()}
+         sums = {}
+         def s(no):
+@@ -310,15 +319,19 @@ class Blend:
+         are not the ones the live assignment was computed from).
+         """
+         m, wc, wi = self.model, self.opts["w_cnt"], self.opts["w_idp"]
++        live = m.read_live() if self.measured else None
+         if not self.ref_set:
+-            m.set_reference(m.read_live() if M_ref is None else np.asarray(M_ref, dtype=float),
+-                            {no: matrices[no] for no in matrices}, self.bridge.read_matrix)
++            reference = (live if self.measured else m.read_live()) if M_ref is None else np.asarray(M_ref, dtype=float)
++            m.set_reference(reference, matrices, self.bridge.read_matrix, measured=self.measured)
+             self.J_ref = max(EPS, float(sum(v["objective"] for v in out.values())))
+             self.ref_set = True
+-        total = np.zeros(len(m.profiles))
+-        for key in out:
+-            total += m.delta_for(self.ref.TARGETS[key]["matrix_nos"], matrices)
+-        M = m.read_live() if self.measured else m.M_ref + total
++        if self.measured:
++            M = live
++        else:
++            total = np.zeros(len(m.profiles))
++            for key in out:
++                total += m.delta_for(self.ref.TARGETS[key]["matrix_nos"], matrices)
++            M = m.M_ref + total
+         keys = sorted(out)
+         r_idp = np.concatenate([np.asarray(out[k]["residual"], dtype=float).ravel() for k in keys]) \
+             if keys else np.zeros(0)
+diff --git a/r1_15a2_td_joint_runtime_v24917.py b/r1_15a2_td_joint_runtime_v24917.py
+index 857a5a7..aeeeaa7 100644
+--- a/r1_15a2_td_joint_runtime_v24917.py
++++ b/r1_15a2_td_joint_runtime_v24917.py
+@@ -40,6 +40,8 @@ def _scope_long_target(cfg):
+         raise RuntimeError("TDSCHOOL_TARGET_REQUEST_NOT_ENABLED")
+     if wants_long and options.get("inner_mode") != "DYNAMIC":
+         raise RuntimeError("TDLONG_COMPOSITE_TARGET_REQUIRES_DYNAMIC")
++    if wants_school and options.get("inner_mode") != "DYNAMIC":
++        raise RuntimeError("TDSCHOOL_TARGET_REQUIRES_DYNAMIC")
+     effective = copy.deepcopy(cfg)
+     effective["coupled_demand"]["finecdf_td"].pop("active_components", None)
+     token = _LONG_TARGET_CONTEXT.set(requested)
+@@ -62,6 +64,13 @@ def wrap_inner(original):
+         stage = getattr(adapter, "_tdjoint_stage", None)
+         if stage is None or Path(stage["inner_root"]) != Path(folder).resolve():
+             raise RuntimeError("TDJOINT1_STAGE_RESULT_MISSING_OR_STALE")
++        if school_td.GROUP in stage.get("component_pool", ()):
++            proof = stage.get("school_generation_freeze")
++            if (not isinstance(proof, dict) or proof.get("status") != "VERIFIED_FIXED_SCHOOL_PA"
++                    or not proof.get("source_values_hash")
++                    or proof.get("source_values_hash") != proof.get("readback_values_hash")
++                    or proof.get("verified_native_evaluations", 0) < 1):
++                raise RuntimeError("TDSCHOOL_FIXED_GENERATION_PROOF_MISSING")
+         result = dict(result)
+         if selected is not None:
+             result["targeted_component_mask_applied"] = True
+@@ -94,6 +103,7 @@ def wrap_inner(original):
+                     "dstrat_code": school_td.DSTRAT_CODE,
+                     "target_points": contract["target_points"],
+                     "school_generation_unchanged": True,
++                    "generation_freeze_readback": stage.get("school_generation_freeze"),
+                     "optimized_parameters": ["b", "c"],
+                     "sealed_reference_unchanged": True,
+                     "frozen_components": result["frozen_components"]})
+@@ -127,23 +137,26 @@ def wrap_inner(original):
+ 
+ 
+ def wrap_dynamic_realization(original):
+-    """Guarantee post-TD OSRM masking inside EVERY native LONG b/c probe."""
++    """Preserve LONG support and fixed SCHOOL generation in native TD probes."""
+     @functools.wraps(original)
+     def dynamic_with_long_mask(self):
+-        # Only native evaluations that actually optimize LONG_COMPOSITE
+-        # require the LONG post-TD execution scope. Preserve the unmodified
+-        # W/S native path when LONG is enabled globally but not selected in
+-        # this FineCDF stage (or for legacy adapter/procseq test harnesses).
+-        if (not joint.options().get("long_enabled", False)
+-                or long_td.GROUP not in getattr(getattr(self, "ref", None),
+-                                                "GROUPS", ())):
+-            return original(self)
++        groups = getattr(getattr(self, "ref", None), "GROUPS", ())
++        school_before = school_td.generation_snapshot(self) if school_td.GROUP in groups else None
++        def execute():
++            result = original(self)
++            if school_before is not None:
++                school_td.verify_generation(self, school_before)
++            return result
+         from r1_15a2_long_post_td_mask_v24917 import execution_scope
+         outer = getattr(self, "outer_adapter", None)
+         if outer is None or getattr(outer, "_long_post_td_mask_enabled", False) is not True:
+-            raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
++            if joint.options().get("long_enabled", False) and long_td.GROUP in groups:
++                raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
++            return execute()
++        # The unified TD recalculates LONG even when only SCHOOL b/c is tuned.
++        # Clipping is therefore required whenever this model owns the mask.
+         with execution_scope(outer):
+-            return original(self)
++            return execute()
+     dynamic_with_long_mask._tdlong_dynamic_scope = True
+     return dynamic_with_long_mask
+ 
+diff --git a/r1_15a2_td_joint_v24917.py b/r1_15a2_td_joint_v24917.py
+index 8847237..e345bfe 100644
+--- a/r1_15a2_td_joint_v24917.py
++++ b/r1_15a2_td_joint_v24917.py
+@@ -36,7 +36,7 @@ def options() -> dict:
+             "max_isolates": o.get("td_joint_max_isolates", 2)}
+ 
+ 
+-def validate_count_model(model, targets, active, count_weight):
++def validate_count_model(model, targets, active, count_weight, *, measured=False):
+     """Reject missing/empty attribution, not legitimate zero sensitivity.
+ 
+     Coverage is reported, not silently represented as exact component paths.
+@@ -45,6 +45,10 @@ def validate_count_model(model, targets, active, count_weight):
+     """
+     if count_weight <= 0:
+         return
++    if not math.isfinite(float(model.Q_ref)) or model.Q_ref < 0:
++        raise RuntimeError("TDJOINT1_COUNT_REFERENCE_INVALID")
++    if measured:
++        return
+     linear = getattr(model, "linear", None)
+     if not linear:
+         raise RuntimeError("TDJOINT1_COUNT_INCIDENCE_MISSING")
+@@ -71,8 +75,10 @@ def score_blend(blend, out, matrices):
+     residual, objective, parts = blend.stacked(out, matrices)
+     if long_td.GROUP in blend.ref.GROUPS and not blend.measured:
+         raise RuntimeError("TDLONG_COMPOSITE_FROZEN_PATH_COUNT_RESPONSE_FORBIDDEN")
++    if "SCHOOL" in blend.ref.GROUPS and not blend.measured:
++        raise RuntimeError("TDSCHOOL_FROZEN_PATH_COUNT_RESPONSE_FORBIDDEN")
+     validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
+-                         float(blend.opts["w_cnt"]))
++                         float(blend.opts["w_cnt"]), measured=blend.measured)
+     if not (math.isfinite(objective) and np.all(np.isfinite(residual))):
+         raise RuntimeError("TDJOINT1_NONFINITE_SCORE")
+     mode = "DYNAMIC" if blend.measured else "FROZEN_PATHS"
+@@ -83,7 +89,8 @@ def score_blend(blend, out, matrices):
+         "metric": "NORMALIZED_GEH2_PLUS_FINECDF512_SURROGATE",
+         "linear_profile_coverage": getattr(blend.model, "linear_profile_coverage", None),
+         "fresh_assignment_per_evaluation": bool(blend.measured),
+-        "component_attribution": "SCALAR_KAPPA_FROZEN_PATH_APPROXIMATION",
++        "component_attribution": ("MEASURED_NATIVE_ASSIGNMENT" if blend.measured else
++                                  "SCALAR_KAPPA_FROZEN_PATH_APPROXIMATION"),
+     }
+     return out
+ 
+@@ -280,6 +287,7 @@ def optimize(runner, ref):
+               "count_residual_copies": 1, "mode": baseline["tdjoint"]["mode"],
+               "long_composite_live_readiness": long_readiness,
+               "school_td_reference_contract": getattr(ref, "school_td_reference_contract", None),
++              "school_generation_freeze": getattr(runner.adapter, "_school_generation_freeze_proof", None),
+               "long_full_reference_groups": list(getattr(
+                   ref, "_v24917_full_long_reference_groups", ref.GROUPS)),
+               "w_cnt": baseline["tdjoint"]["w_cnt"], "w_idp": baseline["tdjoint"]["w_idp"],
+diff --git a/tests/test_v24917_school_td_review.py b/tests/test_v24917_school_td_review.py
+new file mode 100644
+index 0000000..c51f7ea
+--- /dev/null
++++ b/tests/test_v24917_school_td_review.py
+@@ -0,0 +1,173 @@
++"""SCHOOL native counts, fixed zonal P/A and unified-TD LONG support seams."""
++import copy
++from types import SimpleNamespace as NS
++
++import numpy as np
++import pytest
++
++import r1_15a2_demand_policy_v1 as dp
++import r1_15a2_td_joint_runtime_v24917 as wire
++import r1_15a2_td_joint_v24917 as joint
++import r1_15a2_school_td_v24917 as school
++import r1_15a2_td_count_blend_v24917 as tb
++from test_v24917_tdjoint1 import make_blend, metric
++
++
++def test_school_frozen_option_is_rejected_before_a_native_write():
++    with pytest.raises(RuntimeError, match='SCHOOL_TD_REQUIRES_DYNAMIC'):
++        dp.validate(dict(school_td_enabled=True, td_joint_enabled=True,
++                         long_composite_td_enabled=False, td_inner_mode='FROZEN_PATHS'))
++
++
++def test_school_target_scope_cannot_bypass_dynamic_option_guard(monkeypatch):
++    monkeypatch.setattr(wire.joint, 'options', lambda: {
++        'enabled': True, 'school_enabled': True, 'inner_mode': 'FROZEN_PATHS'})
++    with pytest.raises(RuntimeError, match='TDSCHOOL_TARGET_REQUIRES_DYNAMIC'):
++        wire._scope_long_target({'coupled_demand': {'finecdf_td': {'active_components': ['SCHOOL']}}})
++    assert wire._LONG_TARGET_CONTEXT.get() is None
++
++
++def test_dynamic_school_scores_fresh_counts_without_work_incidence_or_auxiliary_matrices(tmp_path, monkeypatch):
++    blend, mats, _ = make_blend(tmp_path, missing=True, dynamic=True)
++    blend.ref.GROUPS = ['SCHOOL']
++    blend.ref.TARGETS = {'SCHOOL': {'matrix_nos': [9117]}}
++    def forbidden(*args, **kwargs):
++        pytest.fail('measured TD attempted unused frozen-path attribution')
++    monkeypatch.setattr(blend.bridge, 'read_matrix', forbidden)
++    monkeypatch.setattr(blend.model, 'delta_for', forbidden)
++    reads = []
++    monkeypatch.setattr(blend.model, 'read_live', lambda: reads.append(1) or np.array([100.]))
++    # The fixture has one CAL profile; give it a residual so Q_ref is nonzero.
++    out = {'SCHOOL': metric()['WORK_E_C']}
++    blend.apply(out, {9117: np.array([[0., 20.], [10., 0.]])})
++    assert len(reads) == 1
++    assert blend.model.linear is None and blend.model.T_ref == {}
++    assert blend.last_joint['component_attribution'] == 'MEASURED_NATIVE_ASSIGNMENT'
++    assert blend.last_joint['objective'] == pytest.approx(1.)
++    monkeypatch.setattr(blend.model, 'read_live', lambda: reads.append(1) or np.array([120.]))
++    blend.apply(out, {9117: np.array([[0., 25.], [15., 0.]])})
++    expected = blend.opts['w_cnt'] * blend.model.Q([120.]) / blend.model.Q_ref + blend.opts['w_idp']
++    assert blend.last_joint['objective'] == pytest.approx(expected)
++    assert len(reads) == 2 and blend.last_joint['count_residual_copies'] == 1
++
++
++@pytest.mark.parametrize('weight', [0., .6, 1.])
++def test_measured_score_matches_original_formula_for_ws_and_school(tmp_path, weight):
++    blend, mats, _ = make_blend(tmp_path, wc=weight, dynamic=True)
++    out = metric()
++    # Capture the original scalar formula independently, with explicit live changes.
++    live = np.array([150.])
++    blend.model.read_live = lambda: live.copy()
++    blend.apply(copy.deepcopy(out), mats)
++    live[:] = 170.
++    changed = metric(.05, .07)
++    blend.apply(changed, mats)
++    expected = weight * blend.model.Q(live) / max(tb.EPS, blend.model.Q_ref) + (1.-weight) * .12/.1
++    assert blend.last_joint['objective'] == pytest.approx(expected)
++
++
++def test_frozen_school_cannot_borrow_work_count_response(tmp_path):
++    blend, mats, _ = make_blend(tmp_path)
++    blend.ref.GROUPS = ['SCHOOL']
++    with pytest.raises(RuntimeError, match='TDSCHOOL_FROZEN_PATH_COUNT_RESPONSE_FORBIDDEN'):
++        blend.apply(metric(), mats)
++
++
++class Zones:
++    def __init__(self):
++        # COM indices deliberately differ from NO and each read uses a different order.
++        self.indices = {9: 1, 3: 2}
++        self.values = {'FP_5_SCHOOL': {1: 10., 2: 0.}, 'FA_5_SCHOOL': {1: 3., 2: 7.}}
++    def GetMultiAttValues(self, attr, *args):
++        return [(key, no if attr == 'NO' else self.values[attr][no])
++                for key, no in reversed(list(self.indices.items()))]
++
++
++def bridge():
++    outer = NS(_long_post_td_mask_enabled=True)
++    return NS(outer_adapter=outer, ref=NS(GROUPS=['SCHOOL']),
++              v=NS(Net=NS(Zones=Zones())), zone_order=[1, 2],
++              dynamic_skim_enabled=True, _v24917_frozen=False)
++
++
++def test_school_only_native_probe_is_inside_long_mask_scope_and_checks_fixed_pa(monkeypatch):
++    import r1_15a2_long_post_td_mask_v24917 as mask
++    monkeypatch.setattr(wire.joint, 'options', lambda: {'long_enabled': False})
++    host = bridge()
++    seen = []
++    def native(obj):
++        seen.append(mask._SCOPE.get() is host.outer_adapter)
++        return 'fresh-native-result'
++    assert wire.wrap_dynamic_realization(native)(host) == 'fresh-native-result'
++    assert seen == [True] and mask._SCOPE.get() is None
++    proof = host._school_generation_freeze_proof
++    assert proof['status'] == 'VERIFIED_FIXED_SCHOOL_PA'
++    assert proof['source_values_hash'] == proof['readback_values_hash']
++
++
++@pytest.mark.parametrize('attr', ['FP_5_SCHOOL', 'FA_5_SCHOOL'])
++def test_native_school_probe_cannot_change_generation(monkeypatch, attr):
++    import r1_15a2_long_post_td_mask_v24917 as mask
++    host = bridge()
++    def native(obj):
++        obj.v.Net.Zones.values[attr][1] += .001
++    with pytest.raises(RuntimeError, match='TDSCHOOL_FIXED_GENERATION_CHANGED'):
++        wire.wrap_dynamic_realization(native)(host)
++    assert mask._SCOPE.get() is None
++    assert not hasattr(host, '_school_generation_freeze_proof')
++
++
++def test_school_pa_reference_is_not_reset_between_native_probes():
++    host = bridge()
++    run = wire.wrap_dynamic_realization(lambda obj: None)
++    run(host)
++    host.v.Net.Zones.values['FP_5_SCHOOL'][1] += 1.
++    with pytest.raises(RuntimeError, match='FIXED_GENERATION_CHANGED'):
++        run(host)
++
++
++@pytest.mark.parametrize('kind', ['duplicate_index', 'missing_row', 'nan', 'negative'])
++def test_invalid_school_generation_cannot_reach_native_execution(kind):
++    host = bridge()
++    z = host.v.Net.Zones
++    if kind == 'nan':
++        z.values['FP_5_SCHOOL'][1] = float('nan')
++    elif kind == 'negative':
++        z.values['FP_5_SCHOOL'][1] = -1.
++    else:
++        original = z.GetMultiAttValues
++        def read(attr, *args):
++            rows = original(attr, *args)
++            if attr == 'FP_5_SCHOOL':
++                return [rows[0], rows[0]] if kind == 'duplicate_index' else rows[:1]
++            return rows
++        z.GetMultiAttValues = read
++    called = []
++    with pytest.raises((RuntimeError, ValueError)):
++        wire.wrap_dynamic_realization(lambda obj: called.append(1))(host)
++    assert called == []
++
++
++def test_native_probe_error_unwinds_mask_and_is_not_swallowed():
++    import r1_15a2_long_post_td_mask_v24917 as mask
++    host = bridge()
++    def fail(obj):
++        raise ValueError('original native failure')
++    with pytest.raises(ValueError, match='original native failure'):
++        wire.wrap_dynamic_realization(fail)(host)
++    assert mask._SCOPE.get() is None
++
++
++def test_legacy_ws_without_owned_long_mask_retains_existing_native_route():
++    host = NS(outer_adapter=NS(), ref=NS(GROUPS=['WORK_E_C']))
++    assert wire.wrap_dynamic_realization(lambda obj: 'legacy')(host) == 'legacy'
++
++
++def test_school_stage_without_fixed_generation_proof_cannot_be_published(tmp_path, monkeypatch):
++    monkeypatch.setattr(wire.joint, 'options', lambda: {'enabled': True})
++    host = NS()
++    def inner(adapter, *args, **kwargs):
++        adapter._tdjoint_stage = {'inner_root': str(tmp_path.resolve()), 'component_pool': ['SCHOOL']}
++        return {}
++    with pytest.raises(RuntimeError, match='TDSCHOOL_FIXED_GENERATION_PROOF_MISSING'):
++        wire.wrap_inner(inner)(host, {}, tmp_path, None, tmp_path)
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 8a3375f..0f75bca 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -79,6 +79,11 @@ RUNTIME = [
+     "V24916_PERF2C_RUNTIME_MANIFEST.json",
+     "DIAGFAST_V1_BASE_MANIFEST.json",
+     "DIAGFAST_V1_RELEASE_MANIFEST.json",
++    "v24917_silent_debug.py",
++    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py",
++    "R1_RUN_OPTIONS.json",
++    "r1_15a2_finecdf_bridge_v24916.py",
++    "r1_15a2_school_td_v24917.py",
+ ]
+ 
+ 

@@ -12,7 +12,10 @@ def main():
         p=ROOT/name
         if not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest()!=sha:changed.append(name)
     if changed:raise RuntimeError('ORIGINAL_FILES_CHANGED:'+','.join(changed))
-    names=['DIAGFAST_V1_BASE_MANIFEST.json']
+    # Keep the explicitly sealed live options and protected TD bridge from the
+    # SCHOOL baseline; collecting only additive Python files would drop them.
+    names=['DIAGFAST_V1_BASE_MANIFEST.json', 'R1_RUN_OPTIONS.json',
+           'r1_15a2_finecdf_bridge_v24916.py']
     for p in ROOT.rglob('*.py'):
         rel=p.relative_to(ROOT).as_posix()
         if rel not in base['files'] and '__pycache__' not in p.parts:

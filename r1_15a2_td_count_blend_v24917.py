@@ -182,9 +182,18 @@ class CountModel:
         return out
 
     # reference / linear map ----------------------------------------------
-    def set_reference(self, M_ref: np.ndarray, matrices: Mapping[int, np.ndarray], read_matrix):
+    def set_reference(self, M_ref: np.ndarray, matrices: Mapping[int, np.ndarray], read_matrix, *, measured=False):
         self.M_ref = np.asarray(M_ref, dtype=float)
         self.d2 = np.maximum(50.0, 0.5 * (self.M_ref + self.O))
+        self.Q_ref = self.Q(self.M_ref)
+        if measured:
+            # Native assignment supplies the count response. No person-to-vehicle
+            # approximation, OD copies or W/S incidence belong to this path.
+            self.T_ref, self.kappa, self.band, self.V = {}, {}, {}, {}
+            self.linear = None
+            self.linear_profile_coverage = {"mapped": 0, "profiles": len(self.profiles),
+                                            "used": False, "reason": "MEASURED_NATIVE_ASSIGNMENT"}
+            return
         self.T_ref = {int(k): np.array(v, dtype=float, copy=True) for k, v in matrices.items()}
         sums = {}
         def s(no):
@@ -310,15 +319,19 @@ class Blend:
         are not the ones the live assignment was computed from).
         """
         m, wc, wi = self.model, self.opts["w_cnt"], self.opts["w_idp"]
+        live = m.read_live() if self.measured else None
         if not self.ref_set:
-            m.set_reference(m.read_live() if M_ref is None else np.asarray(M_ref, dtype=float),
-                            {no: matrices[no] for no in matrices}, self.bridge.read_matrix)
+            reference = (live if self.measured else m.read_live()) if M_ref is None else np.asarray(M_ref, dtype=float)
+            m.set_reference(reference, matrices, self.bridge.read_matrix, measured=self.measured)
             self.J_ref = max(EPS, float(sum(v["objective"] for v in out.values())))
             self.ref_set = True
-        total = np.zeros(len(m.profiles))
-        for key in out:
-            total += m.delta_for(self.ref.TARGETS[key]["matrix_nos"], matrices)
-        M = m.read_live() if self.measured else m.M_ref + total
+        if self.measured:
+            M = live
+        else:
+            total = np.zeros(len(m.profiles))
+            for key in out:
+                total += m.delta_for(self.ref.TARGETS[key]["matrix_nos"], matrices)
+            M = m.M_ref + total
         keys = sorted(out)
         r_idp = np.concatenate([np.asarray(out[k]["residual"], dtype=float).ravel() for k in keys]) \
             if keys else np.zeros(0)

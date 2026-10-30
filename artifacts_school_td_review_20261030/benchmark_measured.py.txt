@@ -1,0 +1,27 @@
+"""Offline CountModel measured-reference allocation benchmark; no COM."""
+import gc,json,subprocess,time,sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from statistics import median
+import numpy as np
+import r1_15a2_td_count_blend_v24917 as current
+namespace={}
+exec(compile(subprocess.check_output(['git','show','0f2204a3f0a4a4c74bda0f32c8ea7323320e0f70:r1_15a2_td_count_blend_v24917.py']), 'baseline_count_blend','exec'),namespace)
+old=namespace['CountModel'];array=np.ones((681,681));arrays={n:array for n in range(9101,9118)}
+volumes=np.full(248,90.)
+records={}
+for label,cls in [('before',old),('after',current.CountModel)]:
+ samples=[]
+ for _ in range(3):
+  gc.collect();model=cls.__new__(cls);model.O=np.full(248,100.);model.W=np.ones(248);model.profiles=[{}]*248;model.incidence=None
+  reads=[]
+  def read(no):reads.append(no);return array
+  start=time.perf_counter()
+  if label=='before':model.set_reference(volumes,arrays,read)
+  else:model.set_reference(volumes,arrays,read,measured=True)
+  samples.append(time.perf_counter()-start)
+  records[label]={'auxiliary_matrix_reads':len(reads),'retained_od_copy_bytes':sum(v.nbytes for v in model.T_ref.values()),'Q_ref':model.Q_ref}
+ records[label]['median_seconds']=median(samples)
+assert records['before']['Q_ref']==records['after']['Q_ref']
+records['scope']='Synthetic 681x681 matrices / 248 profiles; initialization only, not Visum or a whole-cycle speedup.'
+Path('BENCHMARK_REPLAY.json').write_text(json.dumps(records,indent=2)+'\n');print(json.dumps(records,indent=2))

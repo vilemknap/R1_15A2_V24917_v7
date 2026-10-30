@@ -1,0 +1,39 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_________ test_school_frozen_option_is_rejected_before_a_native_write __________
+tests/test_v24917_school_td_review.py:17: in test_school_frozen_option_is_rejected_before_a_native_write
+    with pytest.raises(RuntimeError, match='SCHOOL_TD_REQUIRES_DYNAMIC'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'RuntimeError'>
+_ test_dynamic_school_scores_fresh_counts_without_work_incidence_or_auxiliary_matrices _
+tests/test_v24917_school_td_review.py:42: in test_dynamic_school_scores_fresh_counts_without_work_incidence_or_auxiliary_matrices
+    blend.apply(out, {9117: np.array([[0., 20.], [10., 0.]])})
+r1_15a2_td_count_blend_v24917.py:336: in apply
+    return score_blend(self, out, matrices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_joint_v24917.py:71: in score_blend
+    residual, objective, parts = blend.stacked(out, matrices)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td_count_blend_v24917.py:314: in stacked
+    m.set_reference(m.read_live() if M_ref is None else np.asarray(M_ref, dtype=float),
+r1_15a2_td_count_blend_v24917.py:198: in set_reference
+    self.kappa[no] = s(no + 100) / tot if tot > 0 else 0.0
+                     ^^^^^^^^^^^
+r1_15a2_td_count_blend_v24917.py:192: in s
+    sums[no] = float(read_matrix(no).sum())
+                     ^^^^^^^^^^^^^^^
+tests/test_v24917_school_td_review.py:35: in forbidden
+    pytest.fail('measured TD attempted unused frozen-path attribution')
+E   Failed: measured TD attempted unused frozen-path attribution
+_ test_school_only_native_probe_is_inside_long_mask_scope_and_checks_fixed_pa __
+tests/test_v24917_school_td_review.py:102: in test_school_only_native_probe_is_inside_long_mask_scope_and_checks_fixed_pa
+    assert seen == [True] and mask._SCOPE.get() is None
+E   assert ([False] == [True]
+E     
+E     At index 0 diff: False != True
+E     Use -v to get more diff)
+=========================== short test summary info ============================
+FAILED tests/test_v24917_school_td_review.py::test_school_frozen_option_is_rejected_before_a_native_write
+FAILED tests/test_v24917_school_td_review.py::test_dynamic_school_scores_fresh_counts_without_work_incidence_or_auxiliary_matrices
+FAILED tests/test_v24917_school_td_review.py::test_school_only_native_probe_is_inside_long_mask_scope_and_checks_fixed_pa
+3 failed, 15 deselected in 0.34s

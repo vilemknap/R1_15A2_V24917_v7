@@ -36,7 +36,7 @@ def options() -> dict:
             "max_isolates": o.get("td_joint_max_isolates", 2)}
 
 
-def validate_count_model(model, targets, active, count_weight):
+def validate_count_model(model, targets, active, count_weight, *, measured=False):
     """Reject missing/empty attribution, not legitimate zero sensitivity.
 
     Coverage is reported, not silently represented as exact component paths.
@@ -44,6 +44,10 @@ def validate_count_model(model, targets, active, count_weight):
     observed count residual are retained in CountModel.q().
     """
     if count_weight <= 0:
+        return
+    if not math.isfinite(float(model.Q_ref)) or model.Q_ref < 0:
+        raise RuntimeError("TDJOINT1_COUNT_REFERENCE_INVALID")
+    if measured:
         return
     linear = getattr(model, "linear", None)
     if not linear:
@@ -71,8 +75,10 @@ def score_blend(blend, out, matrices):
     residual, objective, parts = blend.stacked(out, matrices)
     if long_td.GROUP in blend.ref.GROUPS and not blend.measured:
         raise RuntimeError("TDLONG_COMPOSITE_FROZEN_PATH_COUNT_RESPONSE_FORBIDDEN")
+    if "SCHOOL" in blend.ref.GROUPS and not blend.measured:
+        raise RuntimeError("TDSCHOOL_FROZEN_PATH_COUNT_RESPONSE_FORBIDDEN")
     validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
-                         float(blend.opts["w_cnt"]))
+                         float(blend.opts["w_cnt"]), measured=blend.measured)
     if not (math.isfinite(objective) and np.all(np.isfinite(residual))):
         raise RuntimeError("TDJOINT1_NONFINITE_SCORE")
     mode = "DYNAMIC" if blend.measured else "FROZEN_PATHS"
@@ -83,7 +89,8 @@ def score_blend(blend, out, matrices):
         "metric": "NORMALIZED_GEH2_PLUS_FINECDF512_SURROGATE",
         "linear_profile_coverage": getattr(blend.model, "linear_profile_coverage", None),
         "fresh_assignment_per_evaluation": bool(blend.measured),
-        "component_attribution": "SCALAR_KAPPA_FROZEN_PATH_APPROXIMATION",
+        "component_attribution": ("MEASURED_NATIVE_ASSIGNMENT" if blend.measured else
+                                  "SCALAR_KAPPA_FROZEN_PATH_APPROXIMATION"),
     }
     return out
 
@@ -280,6 +287,7 @@ def optimize(runner, ref):
               "count_residual_copies": 1, "mode": baseline["tdjoint"]["mode"],
               "long_composite_live_readiness": long_readiness,
               "school_td_reference_contract": getattr(ref, "school_td_reference_contract", None),
+              "school_generation_freeze": getattr(runner.adapter, "_school_generation_freeze_proof", None),
               "long_full_reference_groups": list(getattr(
                   ref, "_v24917_full_long_reference_groups", ref.GROUPS)),
               "w_cnt": baseline["tdjoint"]["w_cnt"], "w_idp": baseline["tdjoint"]["w_idp"],

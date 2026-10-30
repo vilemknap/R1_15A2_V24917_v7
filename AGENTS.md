@@ -95,6 +95,8 @@ Never report `PASS` or "fully validated" based on generated code, prior evidence
 
 ## Immediate project status (context, not authorization)
 
+Current user-selected baseline (2026-10-30): branch `codex/v24917-school-td-finecdf-active-20261030`, commit `0f2204a3f0a4a4c74bda0f32c8ea7323320e0f70`, supersedes the historical LONG TD freeze noted above. LONG TG and shared LONG_COMPOSITE TD are opt-in enabled in its run options. SCHOOL Generation stays fixed at original AMDY FP_5_SCHOOL/FA_5_SCHOOL; unused ADD_PROD_SCH/ADD_ATT_SCH are not optimized. SCHOOL TD may optimize only native 5_SCHOOL b/c (M9117), with fixed a and the original DIRECT_PURPOSE 512-point 0.1–100 km FineCDF target. SCHOOL TD requires measured DYNAMIC assignment; no W/S frozen incidence may serve as its count response. The unified native TD must retain LONG >=80 km masking even in SCHOOL-only probes. Verify unchanged SCHOOL FP/FA throughout the inner stage. Keep original live acceptance and in-memory rollback.
+
 At this baseline, `LONGGUARD1` and `MOBILITYZONE1` exist; the hard native LONG OD support and a per-zone LONG generation actuator are not yet proven implemented. The planned next development unit is `LONG_OD_MASK1` (pure, hash-bound mask and tests), followed only after review by native `LONG_OD_NATIVE1`, feasible restricted TD, composite FineCDF calibration and the later per-zone mobility changes. Confirm the task with the user prompt and actual tree, not with this historical note alone.
 
 ## Standing GitHub backup instruction (user, 2026-10-29)

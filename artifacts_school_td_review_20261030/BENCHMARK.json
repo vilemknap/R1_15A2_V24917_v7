@@ -1,0 +1,15 @@
+{
+  "before": {
+    "auxiliary_matrix_reads": 21,
+    "retained_od_copy_bytes": 63071496,
+    "Q_ref": 1.0526315789473686,
+    "median_seconds": 0.019993472999885853
+  },
+  "after": {
+    "auxiliary_matrix_reads": 0,
+    "retained_od_copy_bytes": 0,
+    "Q_ref": 1.0526315789473686,
+    "median_seconds": 2.5738000204000855e-05
+  },
+  "scope": "Synthetic 681x681 matrices / 248 profiles; initialization only, not Visum or a whole-cycle speedup."
+}

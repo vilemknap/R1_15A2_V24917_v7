@@ -8,6 +8,8 @@ source-owned 512-point IDP direct-purpose CDF is validated, never rebuilt.
 from __future__ import annotations
 
 import numpy as np
+import r1_15a2_com_compat as com
+from r1_15a2_supply import canonical_hash
 
 RELEASE = "R1_V24917_SCHOOL_TD_512_IDP_20261030"
 GROUP = "SCHOOL"
@@ -17,6 +19,41 @@ POINTS = 512
 GRID_MIN_KM = 0.1
 GRID_MAX_KM = 100.0
 SOURCE = "DIRECT_PURPOSE"
+GENERATION_ATTRS = ("FP_5_SCHOOL", "FA_5_SCHOOL")
+
+
+def generation_snapshot(bridge):
+    """Read actual fixed AMDY P/A by zone identity, never the unused ADD_SCH."""
+    if (not getattr(bridge, "dynamic_skim_enabled", False)
+            or getattr(bridge, "_v24917_frozen", False)):
+        raise RuntimeError("TDSCHOOL_REQUIRES_NATIVE_DYNAMIC_ASSIGNMENT")
+    zones = list(bridge.zone_order)
+    snapshot = []
+    for attr in GENERATION_ATTRS:
+        values = com.indexed_zone_values(bridge.v, attr, zones)
+        if any(value < 0 for value in values):
+            raise RuntimeError("TDSCHOOL_GENERATION_NEGATIVE:" + attr)
+        snapshot.append((attr, tuple(values)))
+    snapshot = (tuple(zones), tuple(snapshot))
+    pinned = getattr(bridge, "_school_generation_reference", None)
+    if pinned is None:
+        bridge._school_generation_reference = snapshot
+    elif snapshot != pinned:
+        raise RuntimeError("TDSCHOOL_FIXED_GENERATION_CHANGED")
+    return snapshot
+
+
+def verify_generation(bridge, before):
+    after = generation_snapshot(bridge)
+    if after != before:
+        raise RuntimeError("TDSCHOOL_FIXED_GENERATION_CHANGED")
+    previous = getattr(bridge, "_school_generation_freeze_proof", {})
+    bridge._school_generation_freeze_proof = {
+        "status": "VERIFIED_FIXED_SCHOOL_PA", "attributes": list(GENERATION_ATTRS),
+        "zone_count": len(after[0]), "source_values_hash": canonical_hash(before),
+        "readback_values_hash": canonical_hash(after),
+        "verified_native_evaluations": previous.get("verified_native_evaluations", 0) + 1,
+    }
 
 
 def reference_contract(ref):

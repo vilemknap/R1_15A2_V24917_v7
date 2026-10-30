@@ -40,6 +40,8 @@ def _scope_long_target(cfg):
         raise RuntimeError("TDSCHOOL_TARGET_REQUEST_NOT_ENABLED")
     if wants_long and options.get("inner_mode") != "DYNAMIC":
         raise RuntimeError("TDLONG_COMPOSITE_TARGET_REQUIRES_DYNAMIC")
+    if wants_school and options.get("inner_mode") != "DYNAMIC":
+        raise RuntimeError("TDSCHOOL_TARGET_REQUIRES_DYNAMIC")
     effective = copy.deepcopy(cfg)
     effective["coupled_demand"]["finecdf_td"].pop("active_components", None)
     token = _LONG_TARGET_CONTEXT.set(requested)
@@ -62,6 +64,13 @@ def wrap_inner(original):
         stage = getattr(adapter, "_tdjoint_stage", None)
         if stage is None or Path(stage["inner_root"]) != Path(folder).resolve():
             raise RuntimeError("TDJOINT1_STAGE_RESULT_MISSING_OR_STALE")
+        if school_td.GROUP in stage.get("component_pool", ()):
+            proof = stage.get("school_generation_freeze")
+            if (not isinstance(proof, dict) or proof.get("status") != "VERIFIED_FIXED_SCHOOL_PA"
+                    or not proof.get("source_values_hash")
+                    or proof.get("source_values_hash") != proof.get("readback_values_hash")
+                    or proof.get("verified_native_evaluations", 0) < 1):
+                raise RuntimeError("TDSCHOOL_FIXED_GENERATION_PROOF_MISSING")
         result = dict(result)
         if selected is not None:
             result["targeted_component_mask_applied"] = True
@@ -94,6 +103,7 @@ def wrap_inner(original):
                     "dstrat_code": school_td.DSTRAT_CODE,
                     "target_points": contract["target_points"],
                     "school_generation_unchanged": True,
+                    "generation_freeze_readback": stage.get("school_generation_freeze"),
                     "optimized_parameters": ["b", "c"],
                     "sealed_reference_unchanged": True,
                     "frozen_components": result["frozen_components"]})
@@ -127,23 +137,26 @@ def wrap_inner(original):
 
 
 def wrap_dynamic_realization(original):
-    """Guarantee post-TD OSRM masking inside EVERY native LONG b/c probe."""
+    """Preserve LONG support and fixed SCHOOL generation in native TD probes."""
     @functools.wraps(original)
     def dynamic_with_long_mask(self):
-        # Only native evaluations that actually optimize LONG_COMPOSITE
-        # require the LONG post-TD execution scope. Preserve the unmodified
-        # W/S native path when LONG is enabled globally but not selected in
-        # this FineCDF stage (or for legacy adapter/procseq test harnesses).
-        if (not joint.options().get("long_enabled", False)
-                or long_td.GROUP not in getattr(getattr(self, "ref", None),
-                                                "GROUPS", ())):
-            return original(self)
+        groups = getattr(getattr(self, "ref", None), "GROUPS", ())
+        school_before = school_td.generation_snapshot(self) if school_td.GROUP in groups else None
+        def execute():
+            result = original(self)
+            if school_before is not None:
+                school_td.verify_generation(self, school_before)
+            return result
         from r1_15a2_long_post_td_mask_v24917 import execution_scope
         outer = getattr(self, "outer_adapter", None)
         if outer is None or getattr(outer, "_long_post_td_mask_enabled", False) is not True:
-            raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
+            if joint.options().get("long_enabled", False) and long_td.GROUP in groups:
+                raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
+            return execute()
+        # The unified TD recalculates LONG even when only SCHOOL b/c is tuned.
+        # Clipping is therefore required whenever this model owns the mask.
         with execution_scope(outer):
-            return original(self)
+            return execute()
     dynamic_with_long_mask._tdlong_dynamic_scope = True
     return dynamic_with_long_mask
 

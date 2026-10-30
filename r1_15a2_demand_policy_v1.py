@@ -277,6 +277,8 @@ def validate(raw):
             raise RuntimeError('R1_SCHOOL_TD_REQUIRES_TDJOINT1')
         if out['td_policy'] == 'OFF':
             raise RuntimeError('R1_SCHOOL_TD_REQUIRES_TD_POLICY')
+        if out['td_inner_mode'] != 'DYNAMIC':
+            raise RuntimeError('R1_SCHOOL_TD_REQUIRES_DYNAMIC_NATIVE_ASSIGNMENT')
     if out['long_composite_td_enabled']:
         if not out['td_joint_enabled']:
             raise RuntimeError('R1_LONG_TD_REQUIRES_TDJOINT1')

@@ -79,6 +79,11 @@ RUNTIME = [
     "V24916_PERF2C_RUNTIME_MANIFEST.json",
     "DIAGFAST_V1_BASE_MANIFEST.json",
     "DIAGFAST_V1_RELEASE_MANIFEST.json",
+    "v24917_silent_debug.py",
+    "01_SPUSTIT_V24917_TDJOINT1_SILENT.py",
+    "R1_RUN_OPTIONS.json",
+    "r1_15a2_finecdf_bridge_v24916.py",
+    "r1_15a2_school_td_v24917.py",
 ]
 
 

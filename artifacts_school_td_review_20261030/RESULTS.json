@@ -1,0 +1,34 @@
+{
+  "baseline_branch": "codex/v24917-school-td-finecdf-active-20261030",
+  "baseline_commit": "0f2204a3f0a4a4c74bda0f32c8ea7323320e0f70",
+  "baseline_tree": "1693ac12ea96323d13c9a4c1f5acde0ad4dff3ee",
+  "focused": {
+    "passed": 97
+  },
+  "full": {
+    "main_passed": 2030,
+    "main_skipped": 4,
+    "diagfast_passed": 138,
+    "audit_passed": 18
+  },
+  "baseline_reproductions": "3 expected failures on original source",
+  "live_visum": "NOT_RUN",
+  "protected_originals_verified": 1059,
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 78,
+      "sha256": "e29e77e0384f278756f526723d860e0e2ce276b7e067f6f64d8e2291bea689ef",
+      "baseline_entries_preserved": true
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 147,
+      "sha256": "cecf1306b2200f0b9ae31d67c17262f943149a994719a5d5664653d77cea1f4f",
+      "baseline_entries_preserved": true
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+      "baseline_entries_preserved": true
+    }
+  }
+}
