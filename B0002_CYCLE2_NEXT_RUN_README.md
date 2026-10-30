@@ -27,14 +27,16 @@ The `.ver` should be opened **exactly** in Visum; do not Save / overwrite it. Th
 
 1. Download **the entire source branch** that contains the PR #1 fixes plus this B0002 patch. Extract the ZIP to a NEW source directory, keeping all subfolders.
 2. Open `ACCEPTED_B_0002_e9eb29d6b38d.ver` in PTV Visum 2026. Verify this file is the **current loaded** version, not a similarly named copy.
-3. Scripts -> Run script file -> `01_SPUSTIT_V24917_RESUME_B0002_CYCLE2_FRESH_EPOCH_SILENT.py`.
-4. The launcher verifies original file bytes, seven semantic hashes, source RUN_STATUS, BOTH accepted cycle-1 steps, clean non-entered cycle 2 and fixed Generation reference. The V24916 semantic preflight may defer only its matrix hash, and the V24917 post-native baseline must prove all seven fields exactly. The new run is a DIRECT sibling RUN_* under the project `R1_15A2_V16_RUNS`, never nested beneath the old CHECKPOINTS folder.
-5. The script enumerates one NEW native path epoch under the new run and immediately calls the same live-DSEG incidence validator as `VisumAdapter.generation_design`. No stored OD share is invented. If `NATIVE_CS_NOT:616:676` is still unsupported after **fresh** export, this early smoke fails before the first Generation trial.
-6. If the smoke passes, coupled demand continues at **cycle 2 Generation** and then TD; previous accepted cycle-1 changes are inherited. The 12-group TD proposal round-robin from PR #1 is retained to sample SCHOOL and LONG in the limited EXPLORE stage.
+3. **First, one-shot live path smoke:** Scripts -> Run script file -> `01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py`. It stops after a verified baseline and fresh route-support export. Expected: `B0002_NATIVE_PATH_EPOCH_SMOKE_PASSED`; it runs **zero** Generation and FineCDF candidate optimizations. Inspect `B0002_PATH_EPOCH_SMOKE_RESULT.json` and `RESUME_EVIDENCE/B0002_INITIAL_PATH_SUPPORT_SMOKE.json` before proceeding.
+4. **Reopen the exact original B0002 .ver from disk in Visum** (the smoke's working model is not the accepted source for another run). Then launch `01_SPUSTIT_V24917_RESUME_B0002_CYCLE2_FRESH_EPOCH_SILENT.py` for the real cycle-2 continuation. The full run enumerates a fresh epoch again; the smoke's temporary cache is not imported, by design.
+5. Both launchers verify original file bytes, seven semantic hashes, source RUN_STATUS, BOTH accepted cycle-1 steps, clean non-entered cycle 2 and fixed Generation reference. The V24916 semantic preflight may defer only its matrix hash, and the V24917 post-native baseline must prove all seven fields exactly. The new run is a DIRECT sibling RUN_* under the project `R1_15A2_V16_RUNS`, never nested beneath the old CHECKPOINTS folder.
+6. Each launcher enumerates one NEW native path epoch under the new run and immediately calls the same live-DSEG incidence validator as `VisumAdapter.generation_design`. No stored OD share is invented. If `NATIVE_CS_NOT:616:676` is still unsupported after **fresh** export, this early smoke fails before the first Generation trial.
+7. After a successful smoke, the separate full launcher continues at **cycle 2 Generation** and then TD; previous accepted cycle-1 changes are inherited. The 12-group TD proposal round-robin from PR #1 is retained to sample SCHOOL and LONG in the limited EXPLORE stage.
 
 ## Evidence to look at before leaving unattended
 
 ```
+NEW_RUN\CALIBRATION\B0002_PATH_EPOCH_SMOKE_RESULT.json (smoke run only)
 NEW_RUN\CALIBRATION\RESUME_EVIDENCE\B0002_POST_BASELINE_AUTHORITY.json
 NEW_RUN\CALIBRATION\RESUME_EVIDENCE\B0002_INITIAL_EPOCH\B0002_NATIVE_EPOCH_AUTHORITY.json
 NEW_RUN\CALIBRATION\RESUME_EVIDENCE\B0002_INITIAL_PATH_SUPPORT_SMOKE.json
@@ -49,7 +51,7 @@ NEW_RUN\CALIBRATION\RUN_STATUS.json
 
 - The `.ver` file is about 535 MB and was not uploaded; the new launcher **will** check the full raw SHA and local `.ver.semantic.json` at execution. An offline test is not a proof that those disk files still exist.
 - PR #1's round-robin change **guarantees fair opportunity to probe enabled components**, not that SCHOOL or LONG necessarily improve enough for acceptance. Review `polled_components`, `unpolled_components`, native TD per-component result, and outer acceptance separately. No changes to the 60% counts / 40% survey blend, parameter bounds, IPF, native OD writes, rollback, LONG masking or SCHOOL fixed Generation.
-- The first fresh native path enumeration will be time-consuming. It is intentionally paid once to avoid another stale-support run. Subsequent epochs remain controlled by existing path basis/support and plateau logic.
+- The first fresh native path enumeration will be time-consuming. A separate smoke and full run each require their own new export; this is intentionally paid twice to avoid a long full run that fails on stale support. Subsequent epochs remain controlled by existing path basis/support and plateau logic.
 - The DIAGFAST tolerance experiment and separate SupplyMix policy patch are **not automatically incorporated into this B0002 recovery branch** unless explicitly merged and reverified; do not mix package files from independent branches.
 
 ## Offline verification

@@ -66,7 +66,7 @@
     "r1_15a2_preflight_iofix_v24917.py": "a843a89df41aaec1ff4d2e9d442cb88b18a4e8273b3e45a8c3498de3800ea6f8",
     "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
     "r1_15a2_profile_roster_v24917.py": "f3a934f3ff72e9c62e8c78c66c318ec885df0c686c8a2c114f04d75b48410005",
-    "r1_15a2_resume_b0002_v24917.py": "8531eef2cd52aeb56edf4d8a465a6c807605f7c85de56b1cd926a2218516c380",
+    "r1_15a2_resume_b0002_v24917.py": "bb7788894057abec18d4e15ebd8a3cf230aff0513ec69f1f1d1fee7b5239d093",
     "r1_15a2_rollback_consistency_v24917.py": "ff9b854be640e1e166cf5c82e84c821e0b7c05d5cbd3c0cc4ecbff18670f463d",
     "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
     "r1_15a2_school_td_v24917.py": "7d8236327718c5f37b028db9522c7361876144a88d7e24795e76f16f47b58939",
@@ -133,7 +133,7 @@
     "tests/test_v24917_procseq_bootstrapfix1.py": "8615c765e437758a5543b0d50e5702dc5bb20c482048de2880034686bad0eb4d",
     "tests/test_v24917_rbcons_audit.py": "482aee6cfd341610d271a811e76df0dfcc955015383726afbb82c4dde0385528",
     "tests/test_v24917_read_reuse.py": "672a1a7428612ef801c21de6e01c54a4e09eb602c32ba338f8cfc3e6fbe27fae",
-    "tests/test_v24917_resume_b0002_cycle2.py": "f9b26b7747d817718620ad914905c6a0d5b1951b6c342c61e8371e7db05721c8",
+    "tests/test_v24917_resume_b0002_cycle2.py": "0360804b0ffe22aa704848237f5bda8ffc5a6893be602b731e5fef4b902ad395",
     "tests/test_v24917_runtime_install.py": "0f941887b4c888af74168f7ca8ce60d656c3ed36079a9efd55130efaf221147d",
     "tests/test_v24917_runtime_options_fail_closed.py": "e852f0b46a9bac44cd30252533c33a0770512212bde23cf0eb653746d56d296d",
     "tests/test_v24917_safetyfix1.py": "6881853827eea163f77201536dcd77536292a11a16a23d550dc97074ad661999",
@@ -154,8 +154,9 @@
     "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
-    "tools/refresh_v24917_manifests.py": "34bccc590b4283be525016865b5e9d5960ae367ce319a951bb4a5ed5d19f869f",
+    "tools/refresh_v24917_manifests.py": "9e82a720056b266b4a2033e9b14118257b3c333d12959ae145c93cac2a6b756e",
     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
-    "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec"
+    "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec",
+    "01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py": "5d6901fa0ce9bf7f3aecafede2fd8ba1cc3bd5975405b640e3a3a7500d3f7172"
   }
 }

@@ -284,3 +284,61 @@ def test_runtime_binds_cycle2_and_performs_first_native_path_smoke(
         assert cp.read_bytes() == b"short-test-checkpoint"
     finally:
         coupled._runtime_demand_continuation = old_parser
+
+
+def test_one_shot_native_path_support_smoke_exits_before_generation(monkeypatch, recorded, tmp_path):
+    cp, recipe, _sidecar, _run, _ref = recorded
+    paths = b.check_source(cp, recipe)
+    monkeypatch.setattr(b.a0001, "install_sibling_run_layout_guard", lambda *a, **k: {"passes":True})
+    live=dict(recipe["checkpoint_semantic_hashes"],state_hash="b0002-live")
+    report={"passes":True,"semantic_before_after":{"passes":True},
+            "current_version_file":str(cp),
+            "source_raw_ver_sha256_provenance_only":recipe["expected_checkpoint_raw_sha256"],
+            "source_semantic_hashes":dict(recipe["checkpoint_semantic_hashes"]),
+            "source_semantic_state_hash":recipe["checkpoint_semantic_state_hash"]}
+    trace=[]
+    adapter=NS(cache=None,path_epoch_index=0,path_epoch_accepts=0,
+               persistent_path_cache=NS(enabled=False),
+               cfg={"performance":{"path_epochs":{"enabled":True}}},
+               actuatable_zones=[616,676],
+               snapshot=lambda:dict(live),
+               generation_guard_snapshot=lambda:dict(live),
+               preflight=lambda *a:trace.append("native-preflight") or {},
+               assign=lambda *a,**k:trace.append("native-assignment") or None,
+               diagnostics=lambda *a,**k:trace.append("native-diagnostics") or {"d12":{"rows":[]}},
+               _retire_obsolete_epoch_store=lambda *a:None,
+               _live_generation_matrices=lambda:{"NATIVE_CS_NOT":[[1.0]]})
+    def native(diag, target, snapshot, **kw):
+        trace.append("native-route-enumeration")
+        path=Path(target)/"TWO_MODE_PATH_STORE.sqlite"
+        path.write_bytes(b"new-native-test-data")
+        adapter.path_epoch_index+=1
+        adapter.cache=NativeCollector(path)
+        return (adapter.cache,{}, {"native_export":True})
+    adapter._build_cache=native
+    parent=NS(run_overnight_calibration_coupled=lambda *a: (_ for _ in ()).throw(
+        AssertionError("Full 100-cycle controller must NOT run in smoke mode")))
+    v16=NS(parent=parent,
+            _install_runtime=lambda *a,**kw:{"installed":True},
+            _run_live_preflight=lambda *a,**kw:(report,{}))
+    coupled=importlib.import_module("r1_15a2_overnight_controller_coupled_v24915p2_force100")
+    old_parser=coupled._runtime_demand_continuation
+    b.install_resume(v16,cp,recipe,paths,print_fn=lambda *a:None,smoke_only=True)
+    v16._run_live_preflight()
+    v16._install_runtime()
+    output=tmp_path/"RUN_NEW"/"CALIBRATION"
+    output.mkdir(parents=True)
+    try:
+        result=parent.run_overnight_calibration_coupled(
+            adapter,{"coupled_demand":{"max_outer_cycles":100}},output,
+            NS(checkpoint=lambda *a,**kw:None),Path.cwd())
+        assert result["status"]=="B0002_NATIVE_PATH_EPOCH_SMOKE_PASSED"
+        assert result["source_accepted_count"]==2 and result["new_native_path_epoch"]==1
+        assert result["generation_candidates_evaluated"]==0
+        assert result["finecdf_td_candidates_evaluated"]==0
+        assert result["calibration_complete"] is False
+        assert trace==["native-preflight","native-assignment","native-diagnostics","native-route-enumeration"]
+        assert (output/"B0002_PATH_EPOCH_SMOKE_RESULT.json").is_file()
+        assert cp.read_bytes()==b"short-test-checkpoint"
+    finally:
+        coupled._runtime_demand_continuation=old_parser

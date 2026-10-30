@@ -309,7 +309,7 @@ def prove_native_support(adapter, diag, folder, snapshot):
     return audit
 
 
-def install_resume(v16, checkpoint, recipe, paths, print_fn=print):
+def install_resume(v16, checkpoint, recipe, paths, print_fn=print, *, smoke_only=False):
     """Hook installed V24917/V24916 parent without changing source `.ver`."""
     from r1_15a2_supply import canonical_hash
     a0001.install_sibling_run_layout_guard(v16, checkpoint, print_fn=print_fn)
@@ -396,6 +396,44 @@ def install_resume(v16, checkpoint, recipe, paths, print_fn=print):
 
             adapter.diagnostics = strict_baseline
             print_fn("B0002: accepted cycle 1 retained; rebuilding native path epoch in new run")
+            if smoke_only:
+                # A bounded, read-only-to-source Windows/Visum verification run.
+                # The verified baseline callback performs the single fresh
+                # native path enumeration and live positive OD support check.
+                control.checkpoint("B0002_NATIVE_PATH_SMOKE_BEGIN", force=True)
+                adapter.preflight(Path(folder) / "PREFLIGHT")
+                pre_smoke = adapter.snapshot()
+                adapter.assign(Path(folder) / "BASELINE_FULL_RECOMPUTE", supply_only=False)
+                native_state = adapter.snapshot()
+                for name in ("fixed_link_hash", "dseg_hash", "operations_hash",
+                             "addval_hash", "generation_hash", "td_hash"):
+                    require(pre_smoke[name] == native_state[name],
+                            "SMOKE_BASELINE_RECOMPUTE_CHANGED_PARAMETER:" + name)
+                adapter.diagnostics(Path(folder) / "BASELINE_DIAGNOSTICS", "BASELINE")
+                require(baseline["verified"] and adapter.snapshot() == native_state,
+                        "SMOKE_DID_NOT_PRESERVE_NATIVE_BASELINE")
+                from r1_15a2_two_mode_v238 import atomic_json
+                event = {
+                    "schema": "R1_V24917_B0002_NATIVE_PATH_EPOCH_SMOKE_V1",
+                    "status": "B0002_NATIVE_PATH_EPOCH_SMOKE_PASSED",
+                    "source_checkpoint": str(paths["checkpoint"]),
+                    "source_accepted_count": 2,
+                    "next_outer_cycle": 2,
+                    "source_semantic_hash": recipe["checkpoint_semantic_state_hash"],
+                    "new_native_path_epoch": adapter.path_epoch_index,
+                    "current_state_hash_diagnostic": native_state["state_hash"],
+                    "generation_candidates_evaluated": 0,
+                    "finecdf_td_candidates_evaluated": 0,
+                    "new_accepted_changes": 0,
+                    "source_sqlite_imported": False,
+                    "source_checkpoint_written": False,
+                    "demand_converged": False,
+                    "calibration_complete": False,
+                    "next_step": "REOPEN_ORIGINAL_B0002_THEN_FULL_CYCLE2_LAUNCHER",
+                }
+                atomic_json(Path(folder) / "RUN_STATUS.json", event)
+                atomic_json(Path(folder) / "B0002_PATH_EPOCH_SMOKE_RESULT.json", event)
+                return event
             return original_run(adapter, cfg, folder, control, package_root)
 
         coupled._runtime_demand_continuation = parser
@@ -406,4 +444,5 @@ def install_resume(v16, checkpoint, recipe, paths, print_fn=print):
     v16._install_runtime = installer
     return {"release": RELEASE, "mode": MODE, "checkpoint": str(paths["checkpoint"]),
             "first_new_cycle": 2, "prior_cycle1_skipped": True,
+            "smoke_only": bool(smoke_only),
             "fresh_native_route_enumeration": True}

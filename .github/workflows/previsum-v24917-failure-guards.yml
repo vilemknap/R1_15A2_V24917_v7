@@ -55,6 +55,7 @@ jobs:
           python -m py_compile tests/test_v24917_epoch_td_fairness_20261030.py
           python -m py_compile r1_15a2_resume_b0002_v24917.py
           python -m py_compile 01_SPUSTIT_V24917_RESUME_B0002_CYCLE2_FRESH_EPOCH_SILENT.py
+          python -m py_compile 01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py
           python -m py_compile tests/test_v24917_resume_b0002_cycle2.py
           python -m py_compile tests/test_v24917_resume_a0001_td_no_enum.py
       - name: Verify sealed runtime and DIAGFAST files (read only)
