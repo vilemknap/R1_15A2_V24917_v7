@@ -69,6 +69,8 @@ DEFAULTS = {
     'td_count_weight': 0.60,
     'td_inner_mode': 'FROZEN_PATHS',
     'td_joint_enabled': False,
+    'long_generation_enabled': False,
+    'long_composite_td_enabled': False,
     'td_joint_outer_isolates': False,
     'td_joint_max_isolates': 2,
     'tg_max_trials': 3,
@@ -148,6 +150,8 @@ ENV = {
     'td_count_weight': 'R1_TD_COUNT_WEIGHT',
     'td_inner_mode': 'R1_TD_INNER_MODE',
     'td_joint_enabled': 'R1_TD_JOINT_ENABLED',
+    'long_generation_enabled': 'R1_LONG_ZONAL_TG_ENABLED',
+    'long_composite_td_enabled': 'R1_LONG_COMPOSITE_TD_ENABLED',
     'td_joint_outer_isolates': 'R1_TD_JOINT_OUTER_ISOLATES',
     'td_joint_max_isolates': 'R1_TD_JOINT_MAX_ISOLATES',
     'tg_max_trials': 'R1_TG_MAX_TRIALS',
@@ -262,8 +266,16 @@ def validate(raw):
     if mode not in ('FROZEN_PATHS', 'DYNAMIC'):
         raise RuntimeError('R1_RUN_OPTION_INVALID:td_inner_mode=%r' % out['td_inner_mode'])
     out['td_inner_mode'] = mode
-    for key in ('td_joint_enabled', 'td_joint_outer_isolates'):
+    for key in ('td_joint_enabled', 'td_joint_outer_isolates',
+                'long_generation_enabled', 'long_composite_td_enabled'):
         out[key] = _bool(out[key], key)
+    if out['long_composite_td_enabled']:
+        if not out['td_joint_enabled']:
+            raise RuntimeError('R1_LONG_TD_REQUIRES_TDJOINT1')
+        if out['td_inner_mode'] != 'DYNAMIC':
+            raise RuntimeError('R1_LONG_TD_REQUIRES_DYNAMIC_NATIVE_ASSIGNMENT')
+        if out['td_policy'] == 'OFF':
+            raise RuntimeError('R1_LONG_TD_REQUIRES_TD_POLICY')
     value = out['td_joint_max_isolates']
     try:
         value = int(str(value).strip())
