@@ -1,0 +1,51 @@
+{
+  "baseline_commit": "25594238f24451191bf6535fa3a4c9865f8fc979",
+  "offline_only": true,
+  "live_visum": false,
+  "reference_sha256": "fcdfa535940296e6cc793b6416c7c0a56c18aae8d5d20beddb064a170c673ff5",
+  "zones": 681,
+  "cells": 463761,
+  "target_count": 12,
+  "metrics": {
+    "original_seconds": [
+      0.2554037989975768,
+      0.25089915599892265,
+      0.2543348630024411,
+      0.25401974999840604,
+      0.25453236999965156,
+      0.25433282000085455
+    ],
+    "prototype_seconds": [
+      0.08368926699768053,
+      0.08509709400095744,
+      0.08512712499941699,
+      0.08363850999739952,
+      0.08622365100018214,
+      0.08423424400098156
+    ],
+    "original_median": 0.25433384150164784,
+    "prototype_median": 0.0846656690009695,
+    "speedup": 3.0039784071007043,
+    "grid_preparations_before": 12,
+    "grid_preparations_after": 3,
+    "all_output_fields_exact": true,
+    "cache_cleared_each_epoch": true
+  },
+  "hash": {
+    "original_seconds": [
+      0.21731280899984995,
+      0.20595904600122594,
+      0.20821609400081798
+    ],
+    "existing_blocked_helper_seconds": [
+      0.1150595670005714,
+      0.11466864999965765,
+      0.11553369800094515
+    ],
+    "original_median": 0.20821609400081798,
+    "helper_median": 0.1150595670005714,
+    "speedup": 1.8096373854751595,
+    "sha_exact": true
+  },
+  "limitations": "Synthetic 681x681 arrays, one BLAS thread; no COM or assignment timing; prototype not installed in runtime."
+}

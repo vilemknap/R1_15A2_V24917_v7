@@ -1,0 +1,79 @@
+from pathlib import Path
+from types import SimpleNamespace as NS
+import hashlib, inspect, json, statistics, sys, textwrap, time
+import numpy as np
+root=Path('/workspace/work/td_optimization_audit_20261030/source')
+sys.path.insert(0,str(root));sys.path.insert(0,str(root/'tests'))
+import r1_15a2_finecdf_bridge_v24916 as bridge
+import r1_15a2_skim_v24916p2c as skim
+import r1_15a2_path_incidence_v24917 as optimized_hash
+fine=json.loads((root/'R1_15A2_CONFIG_V2_4_9_15_PERF2.json').read_text())['coupled_demand']['finecdf_td']
+ref,ref_path,ref_sha=bridge.load_reference(root,fine)
+n=681;rng=np.random.default_rng(20261030)
+distances={k:rng.uniform(.1,220.,(n,n)) for k in ('WORK','SERVICE','LONG')}
+flow=rng.uniform(0.,10.,(n,n));flow[flow<3.]=0.
+matrices={int(no):flow for t in ref.TARGETS.values() for no in t['matrix_nos']}
+epoch=NS(epoch=1,epoch_hash='E1',family_distance=distances)
+b=NS(dynamic_skim_epoch=epoch)
+class Cached(bridge.DynamicFamilyMetrics):
+ def __init__(self,*args):super().__init__(*args);self.grids={};self.bound=None
+ def prepare(self,key,distance):
+  if self.bound!=self.bridge.dynamic_skim_epoch.epoch_hash:
+   self.bound=self.bridge.dynamic_skim_epoch.epoch_hash;self.grids={}
+  t=self.ref.TARGETS[key];fine=self.ref.FINE_AUTHORITY['targets'][key]
+  grid=(self._family(key),tuple(t['edges']),fine['grid'])
+  if grid not in self.grids:
+   distance=np.asarray(distance,dtype=float)
+   if distance.ndim!=2 or distance.shape[0]!=distance.shape[1]:raise ValueError('SHAPE')
+   nz=distance.shape[0];d=distance.ravel();edges=np.asarray(t['edges']);fx=np.asarray(self.ref.FINE_AUTHORITY['common_grid_%s_km'%fine['grid']])
+   ix=np.flatnonzero((d>=edges[0])&(d<=edges[-1]));x=d[ix]
+   coarse=np.minimum(np.searchsorted(edges,x,side='right')-1,len(edges)-2)
+   fb=np.searchsorted(fx,x,side='left')
+   if len(fb) and int(np.max(fb))>=len(fx):raise ValueError('GRID')
+   self.grids[grid]=(ix,x,coarse,fb,ix//nz==ix%nz)
+  return self.grids[grid]
+source=textwrap.dedent(inspect.getsource(bridge.DynamicFamilyMetrics._evaluate_one))
+start=source.index('    distance = np.asarray(');end=source.index('    weights = np.zeros(')
+replacement='''    fine = ref.FINE_AUTHORITY['targets'][key]
+    fine_x = np.asarray(ref.FINE_AUTHORITY['common_grid_%s_km' % fine['grid']], dtype=float)
+    goal = np.asarray(fine['cdf'], dtype=float)
+    edges = np.asarray(t['edges'], dtype=float)
+    idx, x, coarse_bins, fine_bins, is_diag = self.prepare(key, distance_matrix)
+'''
+namespace=dict(bridge.__dict__)
+exec(compile(source[:start]+replacement+source[end:],'<audit-only-grid-cache-prototype>','exec'),namespace)
+Cached._evaluate_one=namespace['_evaluate_one']
+old=bridge.DynamicFamilyMetrics(b,ref);new=Cached(b,ref)
+def run_metrics(obj,iterations=5):
+ times=[];last=None
+ for i in range(iterations):
+  epoch.epoch+=1;epoch.epoch_hash='E'+str(epoch.epoch)
+  t=time.perf_counter();last=obj.evaluate(matrices);times.append(time.perf_counter()-t)
+ return times,last
+# Alternate order, fresh epoch each evaluation: no cache survives assignments.
+oldtimes=[];newtimes=[]
+for rep in range(3):
+ for obj,label in ((old,'old'),(new,'new')) if rep%2==0 else ((new,'new'),(old,'old')):
+  times,out=run_metrics(obj,2)
+  (oldtimes if label=='old' else newtimes).extend(times)
+expected=old.evaluate(matrices);actual=new.evaluate(matrices)
+for key in expected:
+ for field,value in expected[key].items():
+  candidate=actual[key][field]
+  if isinstance(value,np.ndarray):assert np.array_equal(value,candidate),(key,field)
+  else:assert value==candidate,(key,field,value,candidate)
+hash_times={'old':[],'new':[]}
+for rep in range(3):
+ for fn,label in ((skim.matrix_values_hash,'old'),(optimized_hash.matrix_values_hash,'new')) if rep%2==0 else ((optimized_hash.matrix_values_hash,'new'),(skim.matrix_values_hash,'old')):
+  t=time.perf_counter();value=fn(distances['WORK']);hash_times[label].append(time.perf_counter()-t)
+  if label=='old':old_hash=value
+  else:assert value==old_hash
+report={'baseline_commit':'25594238f24451191bf6535fa3a4c9865f8fc979','offline_only':True,'live_visum':False,'reference_sha256':ref_sha,
+ 'zones':n,'cells':n*n,'target_count':len(ref.TARGETS),'metrics':{'original_seconds':oldtimes,'prototype_seconds':newtimes,
+ 'original_median':statistics.median(oldtimes),'prototype_median':statistics.median(newtimes),'speedup':statistics.median(oldtimes)/statistics.median(newtimes),
+ 'grid_preparations_before':len(ref.TARGETS),'grid_preparations_after':len(new.grids),'all_output_fields_exact':True,'cache_cleared_each_epoch':True},
+ 'hash':{'original_seconds':hash_times['old'],'existing_blocked_helper_seconds':hash_times['new'],'original_median':statistics.median(hash_times['old']),
+ 'helper_median':statistics.median(hash_times['new']),'speedup':statistics.median(hash_times['old'])/statistics.median(hash_times['new']),'sha_exact':True},
+ 'limitations':'Synthetic 681x681 arrays, one BLAS thread; no COM or assignment timing; prototype not installed in runtime.'}
+(root.parent/'NUMPY_PROBES.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report,indent=2))

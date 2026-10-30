@@ -1,0 +1,160 @@
+{
+  "schema": "R1_TD_OPTIMIZATION_AUDIT_V1",
+  "baseline_commit": "25594238f24451191bf6535fa3a4c9865f8fc979",
+  "baseline_tree": "c215ba6e98243deee9ff598d42e2fac965f84f98",
+  "task": "Read-only audit of optimization opportunities in user-selected currently running branch",
+  "runtime_changes_made": false,
+  "prototype_installed": false,
+  "live_visum_tested": false,
+  "main_conclusion": "Největší potenciál je v počtu plných nativních přepočtů a jejich COM přípravě. Čistě NumPy zrychlení je doložené pouze pro výpočetní části.",
+  "findings": [
+    {
+      "id": "TDOPT1",
+      "priority": 1,
+      "title": "Proložit sondy b a log(-c), nejen komponenty",
+      "observation": "Při globálním poolu 12 bloků, hodnotách uvnitř mezí a budgetu 28 včetně baseline vznikne 24 b sond a jen 3 logc sondy. SCHOOL a LONG_COMPOSITE mají v tomto reprodukovaném scénáři logc=0.",
+      "proposal": "První dvě kola rozdělit po souřadnicích b/logc; opačné znaménko nebo pořadí střídat. Zachovat férové pokrytí komponent, meze a skutečné nativní vyhodnocení.",
+      "benefit": "Vyšší informační hodnota stejných 28 drahých vyhodnocení; nejde o zrychlení jednoho assignmentu.",
+      "limits": "Skutečné aktivní cílení může mít méně než 12 bloků a ořezání na mezích mění počet sond. Aktuální živý seznam skupin není k dispozici.",
+      "proof": "PROPOSAL_COVERAGE.json",
+      "source": [
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_td_joint_v24917.py#L121",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_td_joint_v24917.py#L137",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_td_joint_v24917.py#L195"
+      ],
+      "validation": "Při budgetu 28 ověřit pokrytí obou souřadnic všech 12 bloků, omezení budgetu, neúplné polly a zákaz falešné stationarity."
+    },
+    {
+      "id": "TDOPT2",
+      "priority": 1,
+      "title": "Odstranit druhý navazující návrat k již ověřenému best stavu",
+      "observation": "optimize na konci každé iterace volá restore_state(best). Po návratu z optimize run_finecdf_inner znovu volá restore_state stejného best. restore_state provádí execute, tedy v DYNAMIC celý TD/20A/20B/assignment/skim řetězec.",
+      "proposal": "Předat plný důkaz aktuálního nejlepšího nativního stavu a přeskočit druhé spuštění pouze při shodě skutečných parametrů, OD, protected/source hodnot a aktuální epochy bez mezilehlé mutace.",
+      "benefit": "Potenciálně jeden celý dynamický přepočet na TD stage; další skip jen když poslední platná sonda už je best.",
+      "limits": "Žádné vypnutí skutečného rollbacku po reject/chybě. Samotná shoda b/c ani boolean verified nejsou důkaz stavu.",
+      "source": [
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_td_joint_v24917.py#L266",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_finecdf_bridge_v24916.py#L721",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_finecdf_bridge_v24916.py#L414"
+      ],
+      "validation": "Počítat skutečná volání execute, zachovat bitově/tolerančně ověřený návrat, testovat mezilehlou mutaci a selhání epochy i obnovu ACTIVE/DSTRATSET."
+    },
+    {
+      "id": "TDOPT3",
+      "priority": 1,
+      "title": "Pro vážené skimy číst jen čtyři potřebné OD matice",
+      "observation": "Vnitřní dynamický bridge předává _live_generation_matrices() do capture_after_execution. Ten pro váhy používá pouze NATIVE_CW, NATIVE_CW_NOT, NATIVE_CS, NATIVE_CS_NOT. LONG/FOREIGN vzdálenosti jsou přímé kopie příslušných DIS, EXOG váhy se v tomto výpočtu nepoužívají.",
+      "proposal": "Přidat úzce vymezené čtení těchto čtyř vah pro skimy; veřejné úplné čtení Generation/LONG incidence ponechat pro jejich samostatné spotřebitele.",
+      "benefit": "Při 12 exportních DSeg odpadá 8 GetValues a přibližně 29,68 MB float64 dat na jeden nativní přepočet, plus režie SAFEARRAY/Python převodů.",
+      "limits": "Neměnit nativní rozsah TD/assignmentu ani šest autoritativních DIS skimů. Úspora času COM zde nezměřena.",
+      "source": [
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_finecdf_bridge_v24916.py#L374",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_dynamic_skim_v24916p2c.py#L199",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_trial_adapter_v240.py#L519"
+      ],
+      "validation": "Počítadlo GetValues, stejné vážené family_distance a jejich SHA při rozdílných CW/CS objemech, nulových vahách, normovaných názvech a změně epochy."
+    },
+    {
+      "id": "TDOPT4",
+      "priority": 2,
+      "title": "Sdílet FineCDF přípravu indexů v rámci jedné čerstvé epochy",
+      "observation": "_evaluate_one znovu počítá idx, searchsorted fine/coarse bins a diagonální masku pro každý target. 12 targetů zde sdílí pouze 3 kombinace family/hranice/grid.",
+      "proposal": "Jednou na rodinu/hranice/grid/epochu připravit indexy; každý target dále používá vlastní hmotnosti, cílovou CDF, stejné redukce a 512 bodů.",
+      "benefit": "Offline prototyp: 0,2543 s -> 0,0847 s medián, asi 3,00x pro samotné metriky, všechny výstupní položky přesně stejné.",
+      "proof": "NUMPY_PROBES.json",
+      "limits": "Cache se při každé nové assignment/skim epoše zahodí. Není to 3x rychlejší celá TD.",
+      "source": [
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_finecdf_bridge_v24916.py#L452",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_finecdf_bridge_v24916.py#L533"
+      ],
+      "validation": "Přesná shoda všech residualů a diagnostik, změna vzdáleností/epochy, SCHOOL i LONG intervaly, hranice uzlů a prázdná podmíněná hmotnost."
+    },
+    {
+      "id": "TDOPT5",
+      "priority": 2,
+      "title": "Použít již existující blokové hashování i pro dynamické skimy",
+      "observation": "Dynamický manager používá původní Python smyčku po buňkách. V repozitáři již existuje ekvivalentní blokový float.hex helper. Navíc se LONG a FOREIGN hashuje znovu jako přesná kopie CL/CF DIS.",
+      "proposal": "Napojit existující byte-identický helper do dynamické větve. Hash přesné kopie LONG/FOREIGN převzít z právě ověřené zdrojové matice ve stejné funkci.",
+      "benefit": "Offline jeden hash 681x681: 0,2082 s -> 0,1151 s, asi 1,81x. Při zachování všech šesti DIS může počet samostatných plných hashů klesnout z 10 na 8.",
+      "proof": "NUMPY_PROBES.json",
+      "limits": "Neměnit SHA protokol, float.hex přesnost, znaménko nuly, zónové pořadí ani zdrojovou identitu.",
+      "source": [
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_dynamic_skim_v24916p2c.py#L194",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_dynamic_skim_v24916p2c.py#L220",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_path_incidence_v24917.py#L28"
+      ],
+      "validation": "Stejné SHA pro náhodná data, signed zero, ne-contiguous pole a nesprávné/nonfinite vstupy; žádná cache přes mutaci."
+    },
+    {
+      "id": "TDOPT6",
+      "priority": 2,
+      "title": "Sdílet jednorázové post-assignment čtení mezi kontrolami",
+      "observation": "execute a Runner.evaluate znovu kontrolují protected matice/Generation/ADDVAL. LONG support navíc čte 11 matic a OSRM opakovaně u různých hranic.",
+      "proposal": "V jednom jasně ohraničeném post-assignment ověřování sdílet neměnná NumPy pole a jejich úplné receipt. Před/po nativním zápisu ponechat oddělené živé kontroly.",
+      "benefit": "Méně duplicitního COM čtení a převodů, bez vypnutí jednotlivých věcných kontrol.",
+      "limits": "Bez trvalé cache; nemíchat pre-write/post-write data, nevynechat přímou kontrolu zdroje a invalidaci. Vyžaduje přesné vymezení životnosti.",
+      "source": [
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_finecdf_bridge_v24916.py#L388",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_finecdf_bridge_v24916.py#L411",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/reference_v19/R1_BC_AUTO_DIST_ONLY_FINECDF_SOFT_v1_9.py#L2074",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_long_composite_td_v24917.py#L149"
+      ],
+      "validation": "Počítadla čtení, cílené změny protected/FP/FA/OSRM/epochy mezi hranicemi, negativní scénáře a nulová možnost stale reuse."
+    },
+    {
+      "id": "TDOPT7",
+      "priority": 3,
+      "title": "Prověřit předání posledního měřeného kandidáta do outer scale=1",
+      "observation": "DYNAMIC inner už provádí assignment/skimy. Outer první realizace přesto znovu nastavuje parent/target b/c a realizuje plný downstream řetězec.",
+      "proposal": "Pouze při prokázané ekvivalenci plánů a plném aktuálním snapshotu převzít nativní stav. Vnější živé 12D/11D, původní acceptance a rollback musí zůstat samostatnou autoritou.",
+      "benefit": "Možná další úspora celého dynamického přepočtu pro první škálu.",
+      "limits": "Vyšší riziko: vnitřní a vnější procedurální plány a readback kontext nejsou automaticky totožné. Žádné automatické převzetí samotného inner skóre.",
+      "source": [
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_finecdf_bridge_v24916.py#L340",
+        "https://github.com/vilemknap/R1_15A2_V24917_v7/blob/25594238f24451191bf6535fa3a4c9865f8fc979/r1_15a2_overnight_controller_coupled_v24915p2_force100.py#L482"
+      ],
+      "validation": "Nejdříve audit plánů, všech downstream matic/counts/skimů/gap a kontextu, potom zamítací scénáře, nižší škály a recovery."
+    },
+    {
+      "id": "TDOPT8",
+      "priority": 3,
+      "title": "Naučený lokální návrhový model pro výběr drahých sond",
+      "proposal": "Z již skutečně změřených odpovědí odhadnout lokální citlivost skóre/countů/CDF a v NumPy vybírat slibné kroky. Nativní Visum vždy změří rozhodující kandidáty.",
+      "benefit": "Potenciálně méně drahých sond pro stejný dosažený výsledek; zatím hypotéza, bez časového příslibu.",
+      "limits": "Samostatná změna strategie hledání. Zachovat férové pokrytí SCHOOL/LONG, aktuální P/A a network binding a důkaz úplného pollu pro stationaritu. SCHOOL/LONG count response nesmí být nahrazena W/S frozen proxy.",
+      "validation": "Porovnání nativních počtů evaluací při stejném cíli a rozpočtu, deterministický baseline, konfliktní count/IDP cíle a změna rodiče po TG."
+    }
+  ],
+  "recommended_first_increment": [
+    "TDOPT1",
+    "TDOPT2",
+    "TDOPT3",
+    "TDOPT4",
+    "TDOPT5"
+  ],
+  "invariants": [
+    "native unified TG/TD/20A/20B/assignment authority",
+    "DYNAMIC measured response for LONG and SCHOOL",
+    "fixed SCHOOL Generation",
+    "LONG OSRM >=80 without upper cap",
+    "parent-local acceptance score/limits",
+    "native IPF tolerance",
+    "verified rollback and freshness",
+    "sealed original reference/targets"
+  ],
+  "observability": [
+    "TDJOINT_SEARCH.json: component and axis coverage, rejected/accepted probes",
+    "EVAL_*/EXECUTION.json: inclusive evaluate wall time",
+    "DYNAMIC_ASSIGNMENT_SKIMS/EVAL_*/: counts include restores outside td_evaluations",
+    "V24917_TIMING.json: procedure_sequence vs diagnostics vs td_stage"
+  ],
+  "verification": {
+    "focused_tests": 111,
+    "returncode": 0,
+    "log": "FOCUSED.log",
+    "source_integrity": "SOURCE_INTEGRITY.json",
+    "numpy_prototype": "NUMPY_PROBES.json",
+    "proposal_generator": "PROPOSAL_COVERAGE.json"
+  },
+  "limits": "No live timings or current model logs are available. Active target pool may be smaller than 12. Kernel speedups are not end-to-end predictions."
+}

@@ -1,0 +1,73 @@
+{
+  "baseline_commit": "25594238f24451191bf6535fa3a4c9865f8fc979",
+  "scenario": "12 groups, both b/logc interior to bounds, equal steps, 28 evaluations including 1 baseline",
+  "groups": [
+    "WORK_E_C",
+    "WORK_E_noC",
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "WORK_stud",
+    "SERV_E_C",
+    "SERV_E_noC",
+    "SERV_noE_C",
+    "SERV_noE_noC",
+    "SERV_stud",
+    "SCHOOL",
+    "LONG_COMPOSITE"
+  ],
+  "baseline_evaluations": 1,
+  "proposal_evaluations": 27,
+  "polled": {
+    "WORK_E_C": {
+      "b": 2,
+      "logc": 1
+    },
+    "WORK_E_noC": {
+      "b": 2,
+      "logc": 1
+    },
+    "WORK_noE_C": {
+      "b": 2,
+      "logc": 1
+    },
+    "WORK_noE_noC": {
+      "b": 2,
+      "logc": 0
+    },
+    "WORK_stud": {
+      "b": 2,
+      "logc": 0
+    },
+    "SERV_E_C": {
+      "b": 2,
+      "logc": 0
+    },
+    "SERV_E_noC": {
+      "b": 2,
+      "logc": 0
+    },
+    "SERV_noE_C": {
+      "b": 2,
+      "logc": 0
+    },
+    "SERV_noE_noC": {
+      "b": 2,
+      "logc": 0
+    },
+    "SERV_stud": {
+      "b": 2,
+      "logc": 0
+    },
+    "SCHOOL": {
+      "b": 2,
+      "logc": 0
+    },
+    "LONG_COMPOSITE": {
+      "b": 2,
+      "logc": 0
+    }
+  },
+  "b_probes": 24,
+  "logc_probes": 3,
+  "limitations": "Exact production proposal generator with synthetic interior parameters; actual boundary clipping can change order. No live model or TD calls."
+}
