@@ -399,8 +399,12 @@ class VisumAdapter(_V24916ActiveAdapter):
         tdlong1_deferred = bool((getattr(self, "v24917_ls", None) or {}).get("active") and
                                 (not (ls or {}).get("summary", {}).get("long_generation_permitted")
                                  or (ls or {}).get("summary", {}).get("long_solver_converged") is False))
+        school_fp_deferred = bool(ls and
+            (ls.get("summary") or {}).get("school_generation_search_complete") is False)
+        self.v24917_status["school_fp_link_deferred"] = school_fp_deferred
         self.v24917_status["ls_incomplete_current_cycle"] = bool(
-            ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or fallback or not mz["target_satisfied"])
+            ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred
+            or school_fp_deferred or fallback or not mz["target_satisfied"])
         context["v24917"] = {"release": RELEASE, "phase": phase, "overlay_phase": phase if not fallback else None,
                              "model_obs_ratio": ratio, "raw_fit_summary": summary, "fit_summary": summary,
                              "flowbundle_mask": mask["audit"], "bounds_count": len(bounds),
@@ -409,7 +413,8 @@ class VisumAdapter(_V24916ActiveAdapter):
                                              ({"status": "DEFERRED_READ_UNAVAILABLE",
                                                "activation": dict(ls_activation), "search_complete": False}
                                               if ls_deferred else {"status": "INACTIVE", "activation": dict(ls_activation)})),
-                             "long_school_search_incomplete": bool(ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or fallback or not mz["target_satisfied"]),
+                             "long_school_search_incomplete": bool(ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or school_fp_deferred or fallback or not mz["target_satisfied"]),
+                             "school_fp_link_deferred": school_fp_deferred,
                              "longguard1_parent": self._longguard1_parent,
                              "longguard1_long_step_deferred": longguard_deferred,
                              "tdlong1": {"source_status": self._tdlong1_mask.get("status"),
