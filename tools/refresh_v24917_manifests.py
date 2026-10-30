@@ -45,6 +45,7 @@ RUNTIME = [
     "r1_15a2_fast_trial_assignment_v24917.py",
     "r1_15a2_step_search_v24917.py",
     "r1_15a2_perf_v24917.py",
+    "r1_15a2_path_store_build_v24917.py",
     "r1_15a2_combusy2_v24917.py",
     "r1_15a2_preflight_explain_v24917.py",
     "r1_15a2_boundary_generation_v24917.py",

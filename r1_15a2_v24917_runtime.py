@@ -154,8 +154,10 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
     # Import before generation/TD/supply patches begin any model transaction.
     # Do not depend on sys.path at the eventual lazy-import callsite.
     parent_eq_status = preload_parent_equivalence()
+    import r1_15a2_path_store_build_v24917 as path_store_build
     import r1_15a2_targeted_generation_v24917 as tg
     status = {"release": RELEASE, "parent_equivalence_preload": parent_eq_status}
+    status["path_store_build"] = path_store_build.install()
     import r1_15a2_snapshot_reads_v24917 as snapshot_reads
     status["snapshot_reads"] = {
         "enabled": True, "release": snapshot_reads.RELEASE,

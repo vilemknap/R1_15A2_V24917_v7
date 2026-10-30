@@ -1,0 +1,861 @@
+diff --git a/.gitattributes b/.gitattributes
+index 125d3ac..847f12d 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -51,3 +51,5 @@ artifacts_school_td_review_20261030/*.patch -text -diff
+ artifacts_school_td_review_20261030/baseline_reproduction.log -text -diff
+ artifacts_long_chain_review_20261030/*.patch -text -diff
+ artifacts_long_chain_review_20261030/prior_attempt/*.log -text -diff
++artifacts_path_store_build_perf_20261030/*.patch -text -diff
++artifacts_path_store_build_perf_20261030/*.log -text -diff
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index 3059ffc..ae28826 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -22,6 +22,7 @@
+     "R1_TDLONG1_STANDALONE_READ_ONLY.py": "e4c46037f490c2636dc98d0f0d100fb5fee2dd3d258dd9cb538d4a137b49da8e",
+     "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
+     "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
++    "benchmarks/run_path_store_build_benchmark.py": "e6b789aa2c3a8b9cf6842845c93fb3cb446a4c14aaf12a94e6c3c5eec749c6ce",
+     "diagfast_tests/conftest.py": "4e718a83a7134ec8c2efc6fd1e4dcaa62332a3ff5cfc1d2bf82dcf4a9a4b559d",
+     "diagfast_tests/fakes.py": "d5982cf7b3733c6fb7937efe00d944c7ada06112ec8ba2e1917a108971d2f5f2",
+     "diagfast_tests/test_decision_parity.py": "b02be669a8d4d017bff9edc5940671af18652c3634507bc0d57811cc106561ad",
+@@ -69,6 +70,7 @@
+     "r1_15a2_mobility_zone_v24917.py": "21c0dc62183167552ee87c8a675f7b6da6e85540d0ca8a015f8bad492f3766bb",
+     "r1_15a2_parent_equivalence_v24917.py": "acc0f39f6bbbffc88119a75f3e5dedf2f02bda69abe719716e7a679ecf992d60",
+     "r1_15a2_path_incidence_v24917.py": "3c4830a61fe3de9cb1a39a5ca8f203220a008585e1dd3f34d3dbd2dba787fb78",
++    "r1_15a2_path_store_build_v24917.py": "a382ea21ab53d7f32391a271035cfc4879025627ed150e1548c0b412d4fe676a",
+     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+     "r1_15a2_preflight_explain_v24917.py": "741ee6301f61a7ff8606dd778d484e5bad15648129c5894d841e4b3a281f3c87",
+     "r1_15a2_preflight_iofix_v24917.py": "a843a89df41aaec1ff4d2e9d442cb88b18a4e8273b3e45a8c3498de3800ea6f8",
+@@ -89,7 +91,7 @@
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+     "r1_15a2_trial_adapter_v24917.py": "4bb307197d737f781255c0ccb6323c590dcdabc0c7a3cf33c3badbb645ab157b",
+-    "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
++    "r1_15a2_v24917_runtime.py": "6d2ae9dc4c275abcd99e9ddc79f194ff533ae42e146053fc5d48214437d1cbe2",
+     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+@@ -122,13 +124,14 @@
+     "tests/test_v24917_mobilityfix1.py": "77c5d0b51f2dbeb7af073b3bed05eedb794c42baef7d02965aa1e7235ebfdd37",
+     "tests/test_v24917_mobilityzone1.py": "93213d13fa626598670e0bd88f49f8844efb9bf0eeda292504d5c6f52d39f94e",
+     "tests/test_v24917_path_incidence_review.py": "5e469acc20f1e42ca292f48623736d05893ade67c3caeb58922ce2f215989eee",
++    "tests/test_v24917_path_store_build.py": "be0e13e9af6682fe6cfae77e13a49f31da03ec840c73424c3ca00f422f4423b4",
+     "tests/test_v24917_perf3.py": "2623e752b3d819ce8f9a64ef6417e667cfc27d78b153bcddb70658f99ae72185",
+     "tests/test_v24917_preflight2.py": "8c55cd8f64b2c1188bb3211a541c8ed21ad4b65fdcc460ff5ec882b305a8b89c",
+     "tests/test_v24917_preflight_op20_partial_activation.py": "3695f61481e78aa3ce2b61d4a34c58affc433e8c79d39a817a98721f0c7a3bcd",
+     "tests/test_v24917_procseq_bootstrapfix1.py": "8615c765e437758a5543b0d50e5702dc5bb20c482048de2880034686bad0eb4d",
+     "tests/test_v24917_rbcons_audit.py": "482aee6cfd341610d271a811e76df0dfcc955015383726afbb82c4dde0385528",
+     "tests/test_v24917_read_reuse.py": "672a1a7428612ef801c21de6e01c54a4e09eb602c32ba338f8cfc3e6fbe27fae",
+-    "tests/test_v24917_runtime_install.py": "1424680da0f27b0ae8af2580c4354bfcf33386ec2cc44b804fee2c72702284a1",
++    "tests/test_v24917_runtime_install.py": "0f941887b4c888af74168f7ca8ce60d656c3ed36079a9efd55130efaf221147d",
+     "tests/test_v24917_runtime_options_fail_closed.py": "e852f0b46a9bac44cd30252533c33a0770512212bde23cf0eb653746d56d296d",
+     "tests/test_v24917_safetyfix1.py": "6881853827eea163f77201536dcd77536292a11a16a23d550dc97074ad661999",
+     "tests/test_v24917_school_td_activation.py": "370c0cde2ccbf6dea472969594abe70d2ff4f2216f3af8d63cfef37d5020d418",
+@@ -148,7 +151,7 @@
+     "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
+     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "553f149d546f405c555272bf4d7ade3f475fa91e9c1125082f72d93ef9fdae50",
++    "tools/refresh_v24917_manifests.py": "de90237191a68cb2d6f33932b0dbfea4899462b5eae1254cacdd479e62157dd0",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
+     "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0"
+   }
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 95939b5..4d6af64 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -20,7 +20,7 @@
+     "r1_15a2_trial_adapter_v24917.py": "4bb307197d737f781255c0ccb6323c590dcdabc0c7a3cf33c3badbb645ab157b",
+     "r1_15a2_active_demand_evidence_v24917.py": "3aaa457bdac3722a298a37866c18bee7d5c37cf0367424bc05a948d2253389bb",
+     "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
+-    "r1_15a2_v24917_runtime.py": "0f32807fc29ba5ebbaca5ab6fd200f559cdc3b01723f982be52c3453e9b3a953",
++    "r1_15a2_v24917_runtime.py": "6d2ae9dc4c275abcd99e9ddc79f194ff533ae42e146053fc5d48214437d1cbe2",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_dynamic_11d_files_v24917.py": "70aa29f5fac9aa8d6004d02835a72df5f1bbeb23598140d469afb89058da41ed",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+@@ -38,6 +38,7 @@
+     "r1_15a2_fast_trial_assignment_v24917.py": "2f223bc58ffebb5c5594d330cca3653b29b9ff75c037693b2832617502780c8d",
+     "r1_15a2_step_search_v24917.py": "0876b10c65c6b6b44e49c13418677cdeb170b0f090053b916bc8b15d8c3d9f07",
+     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
++    "r1_15a2_path_store_build_v24917.py": "a382ea21ab53d7f32391a271035cfc4879025627ed150e1548c0b412d4fe676a",
+     "r1_15a2_combusy2_v24917.py": "21cfa0e83e99853268e3ec4777d583537eac58a80f1efc655ea2617109ab4f0f",
+     "r1_15a2_preflight_explain_v24917.py": "741ee6301f61a7ff8606dd778d484e5bad15648129c5894d841e4b3a281f3c87",
+     "r1_15a2_boundary_generation_v24917.py": "b437fcde80c8815a80911138665c3974e298d80e1c3ed4561a3862a931e32d5e",
+@@ -75,7 +76,7 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "a0fe2775b8146490714d90f68d758c99a1405f5fcdf25b33b090ce32fbfefffe",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "b5f9a8f5b3321436248cf6fab4451ff06ded89d9a7aab710e03a496884474e7e",
+     "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0",
+     "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
+diff --git a/benchmarks/run_path_store_build_benchmark.py b/benchmarks/run_path_store_build_benchmark.py
+new file mode 100644
+index 0000000..77f685d
+--- /dev/null
++++ b/benchmarks/run_path_store_build_benchmark.py
+@@ -0,0 +1,143 @@
++"""Offline exact-path-store benchmark. No Visum, COM timing or speed assertion.
++
++Example: python benchmarks/run_path_store_build_benchmark.py --output /tmp/path-build.json
++Runs alternate old/new order, validates every SQL table and canonical path hash.
++"""
++from __future__ import annotations
++
++import argparse
++from array import array
++import hashlib
++import importlib.util
++import json
++from pathlib import Path
++import statistics
++import struct
++import sys
++import tempfile
++import time
++from types import MethodType
++
++ROOT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(ROOT))
++import r1_15a2_path_store_build_v24917 as fast
++from r1_15a2_supply import SupplyPolicy
++
++
++class QueryProbe:
++    def __init__(self, connection):
++        self.connection = connection
++        self.keymap_reads = 0
++
++    def execute(self, sql, *args, **kwargs):
++        if sql.startswith('SELECT gid,orig,dest,path_index FROM geometry WHERE mode='):
++            self.keymap_reads += 1
++        return self.connection.execute(sql, *args, **kwargs)
++
++    def __getattr__(self, name):
++        return getattr(self.connection, name)
++
++
++def sql_digest(db):
++    hashes = {}
++    for (name,) in db.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"):
++        ncols = len(list(db.execute('PRAGMA table_info(' + name + ')')))
++        digest = hashlib.sha256()
++        for row in db.execute('SELECT * FROM ' + name + ' ORDER BY ' + ','.join(str(i + 1) for i in range(ncols))):
++            for value in row:
++                blob = value if isinstance(value, bytes) else repr(value).encode('utf-8')
++                digest.update(struct.pack('<Q', len(blob))); digest.update(blob)
++        hashes[name] = digest.hexdigest()
++    return hashes
++
++
++def run(sealed, folder, n, optimized, links_per_path):
++    # One directed cycle, traversed twice: exercise repeated-edge multiplicity.
++    edges = [(100 + i, i + 1, (i + 1) % links_per_path + 1) for i in range(links_per_path)]
++    network = {e: {'eligible': True, 'addval1': 0., 't0_c_seconds': 60.} for e in edges}
++    profile = dict(link_no=edges[0][0], from_node_no=edges[0][1], to_node_no=edges[0][2],
++                   observed=1., model=1., role='CALIBRATION', countlocation_no='P1')
++    keys = [(i // 680 + 1, (i % 680 + 100) % 681 + 1, 1) for i in range(n)]
++    c = sealed.TwoModeRouteCollector([profile], SupplyPolicy(), 'state', network,
++        folder / ('new.sqlite' if optimized else 'old.sqlite'),
++        dict(sealed.DEFAULT_SETTINGS, min_free_disk_gib=0))
++    if optimized:
++        c.add_parents = MethodType(fast.add_parents, c)
++        c.add_geometry = MethodType(fast.add_geometry, c)
++    c.db = QueryProbe(c.db)
++
++    def geometry_rows():
++        for key in keys:
++            yield (*key, '', '', '', '')
++            for ix, edge in enumerate(edges * 2, 1):
++                yield ('', '', '', ix, *edge)
++
++    try:
++        # Construct inputs outside timed region; feed identical reverse-ordered
++        # keys and floating-point volumes with explicit zero rows to both builds.
++        parents = [[(*k, 0. if i % 13 == 0 else 10. + d / 10.)
++                    for i, k in reversed(list(enumerate(keys)))] for d in range(8)]
++        authorities = [{'matrix_interzonal': sum(v for o, de, ix, v in rows if o != de)}
++                       for rows in parents]
++        t0 = time.perf_counter()
++        for mode, count in (('C', 8), ('C_NOT', 4)):
++            for d in range(count):
++                c.add_parents(mode + str(d), mode, iter(parents[d]), authorities[d])
++        t1 = time.perf_counter()
++        for mode in ('C', 'C_NOT'):
++            c.add_geometry(mode, geometry_rows())
++        t2 = time.perf_counter()
++        c.prepare_incidence_evidence()
++        t3 = time.perf_counter()
++        result = {'parent_seconds': t1 - t0, 'geometry_seconds': t2 - t1,
++                  'incidence_seconds': t3 - t2, 'total_seconds': t3 - t0,
++                  'keymap_sql_reads': c.db.keymap_reads,
++                  'store_bytes': Path(c.route_db_path).stat().st_size,
++                  'tables_sha256': sql_digest(c.db), 'flow': c.flow,
++                  'structure_hash': c.path_structure_hash(), 'basis_hash': c.path_basis_hash(),
++                  'comparison_hash': c.path_basis_comparison_hash()}
++        assert list(c.db.execute('PRAGMA foreign_key_check')) == []
++        assert c.db.execute('PRAGMA quick_check').fetchone()[0] == 'ok'
++        return result
++    finally:
++        c.close()
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--output', required=True, type=Path)
++    parser.add_argument('--paths-per-mode', type=int, default=12000)
++    parser.add_argument('--cycle-links', type=int, default=20)
++    parser.add_argument('--repetitions', type=int, default=3)
++    args = parser.parse_args()
++    if not 1 <= args.paths_per_mode <= 681 * 680 or args.cycle_links < 1 or args.repetitions < 1:
++        parser.error('invalid workload')
++    spec = importlib.util.spec_from_file_location('_sealed_path_store_benchmark', ROOT / 'r1_15a2_two_mode_v238.py')
++    sealed = importlib.util.module_from_spec(spec); spec.loader.exec_module(sealed)
++    results = {False: [], True: []}
++    for rep in range(args.repetitions):
++        with tempfile.TemporaryDirectory(prefix='r1-path-build-') as directory:
++            pair = {}
++            for optimized in ((False, True) if rep % 2 == 0 else (True, False)):
++                pair[optimized] = run(sealed, Path(directory), args.paths_per_mode, optimized, args.cycle_links)
++                results[optimized].append(pair[optimized])
++            for key in ('tables_sha256', 'flow', 'structure_hash', 'basis_hash', 'comparison_hash'):
++                assert pair[False][key] == pair[True][key], key
++    metrics = ('parent_seconds', 'geometry_seconds', 'incidence_seconds', 'total_seconds')
++    medians = {name: {m: statistics.median(r[m] for r in results[opt]) for m in metrics}
++               for opt, name in ((False, 'original'), (True, 'optimized'))}
++    output = {'schema': 'R1_PATH_STORE_BUILD_OFFLINE_BENCHMARK_V1', 'live_visum_run': False,
++              'paths_per_mode': args.paths_per_mode, 'dsegs': 12,
++              'geometry_rows': 2 * args.paths_per_mode * (2 * args.cycle_links + 1),
++              'repetitions': args.repetitions, 'all_tables_and_hashes_exact': True,
++              'median_seconds': medians,
++              'speedup': {m: medians['original'][m] / medians['optimized'][m] for m in metrics},
++              'runs': {'original': results[False], 'optimized': results[True]},
++              'limitations': 'Synthetic cyclic paths; excludes live COM and network/Windows disk latency.'}
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++    args.output.write_text(json.dumps(output, indent=2) + '\n', encoding='utf-8')
++    print(json.dumps({k: v for k, v in output.items() if k != 'runs'}, indent=2))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/r1_15a2_path_store_build_v24917.py b/r1_15a2_path_store_build_v24917.py
+new file mode 100644
+index 0000000..f4e2b9d
+--- /dev/null
++++ b/r1_15a2_path_store_build_v24917.py
+@@ -0,0 +1,324 @@
++"""Exact build acceleration for the sealed V238 SQLite saved-path store.
++
++Patch methods on the existing class, so previously imported adapter aliases and
++read-only reopen remain compatible. No schema, COM page size, durability, path
++authority, geometry sampling or completion/parity gate is changed.
++"""
++from __future__ import annotations
++
++from array import array
++from collections import Counter, defaultdict
++from functools import wraps
++import hashlib
++import json
++import math
++import struct
++import time
++import zlib
++
++import r1_15a2_two_mode_v238 as base
++
++RELEASE = "R1_15A2_PATH_STORE_BUILD1_20261030"
++Error = base.SupplyContractError
++
++
++def _stats(store):
++    return store.summary.setdefault("path_store_build", {
++        "release": RELEASE, "keymap_sql_reads": 0, "keymap_cache_hits": 0,
++        "parent_calls": 0, "parent_seconds": 0.0,
++        "geometry_calls": 0, "geometry_seconds": 0.0,
++        "geometry_sql_seconds": 0.0, "geometry_flushes": 0,
++        "max_cached_modes": 1, "journal_mode": "DELETE", "synchronous": "FULL",
++        "timing_semantics": "PHASES_INCLUDE_COM_ITERATION;SQL_FLUSH_INCLUDES_PACKING_COMPRESSION_COMMIT",
++    })
++
++
++def _key_map(store, mode):
++    # One mode only, only in this collector/build. Detect both local out-of-band
++    # SQL and commits on another connection before reusing a map. No hash-only
++    # key comparison and no cross-run cache authorization is introduced.
++    version = store.db.execute("PRAGMA data_version").fetchone()[0]
++    cached = getattr(store, "_path_build_keymap", None)
++    token = (mode, store.db.total_changes, version)
++    if cached is not None and cached[:3] == token and not store.db.in_transaction:
++        _stats(store)["keymap_cache_hits"] += 1
++        return cached[3]
++    store._path_build_keymap = None
++    cached = None
++    result = {(o, d, ix): gid for gid, o, d, ix in store.db.execute(
++        "SELECT gid,orig,dest,path_index FROM geometry WHERE mode=?", (mode,))}
++    _stats(store)["keymap_sql_reads"] += 1
++    return result
++
++
++def _timed_build(phase, release_map=False):
++    def decorate(fn):
++        @wraps(fn)
++        def run(self, *args, **kwargs):
++            started = time.perf_counter()
++            stats = _stats(self)
++            stats[phase + "_calls"] += 1
++            try:
++                return fn(self, *args, **kwargs)
++            except BaseException:
++                self._path_build_keymap = None
++                if self.db.in_transaction:
++                    self.db.rollback()
++                raise
++            finally:
++                stats[phase + "_seconds"] += time.perf_counter() - started
++                if release_map:
++                    self._path_build_keymap = None
++        run.__r1_path_store_build__ = RELEASE
++        return run
++    return decorate
++
++
++@_timed_build("parent")
++def add_parents(self, code, mode, rows, matrix_authority):
++    """Exact key join; one sort and ordered primary-key inserts per DSeg."""
++    code = base.core.norm_code(code)
++    if code in self.parents or mode not in ('C', 'C_NOT'):
++        raise Error('DUPLICATE_DSEG_OR_UNKNOWN_MODE')
++    values = {}
++    max_rows = int(self.settings['max_parent_rows_per_dseg'])
++    for raw in rows:
++        if len(raw) != 4:
++            raise Error('PARENT_ROW_SCHEMA_MISMATCH')
++        key = (base._id(raw[0]), base._id(raw[1]), base._id(raw[2]))
++        if key in values:
++            raise Error('DUPLICATE_PARENT_KEY:' + code)
++        vol = base.com.finite_float(raw[3], 'Vol(AP)')
++        if vol < 0:
++            raise Error('NEGATIVE_PATH_VOLUME')
++        if len(values) >= max_rows:
++            raise Error('PARENT_ROW_BUDGET_EXCEEDED')
++        values[key] = vol
++    sorted_keys = sorted(values)
++    mode_is_new = mode not in self.mode_audits
++    if mode_is_new:
++        self._path_build_keymap = None
++        self.db.executemany('INSERT INTO geometry(mode,orig,dest,path_index) VALUES(?,?,?,?)',
++                            ((mode, *key) for key in sorted_keys))
++    key_map = _key_map(self, mode)
++    if not mode_is_new and (len(key_map) != len(values) or any(k not in key_map for k in values)):
++        missing = sorted(set(key_map) - set(values))[:8]
++        extra = sorted(set(values) - set(key_map))[:8]
++        raise Error('FULL_PARENT_KEYS_DIFFER: %s missing=%r extra=%r' % (code, missing, extra))
++    # Hash bytes and ordering remain identical to the original implementation.
++    key_digest = hashlib.sha256()
++    vol_hash = hashlib.sha256()
++    comparison_hash = hashlib.sha256()
++    decimals = int(self.settings['path_epoch_volume_comparison_decimals'])
++    for key in sorted_keys:
++        if mode_is_new:
++            key_digest.update(struct.pack('<III', *key))
++        vol_hash.update(struct.pack('<IIId', *key, values[key]))
++        comparison_hash.update(struct.pack('<IIId', *key, round(values[key], decimals)))
++    key_hash = (key_digest.hexdigest() if mode_is_new else
++                self.mode_audits[mode]['parent_keys_sha256'])
++    if mode_is_new:
++        self.mode_audits[mode] = {'representative_dseg': code, 'parent_keys_sha256': key_hash,
++                                'parent_count': len(values), 'dsegs': []}
++    total = math.fsum(values.values())
++    intra = math.fsum(v for (o, d, _), v in values.items() if o == d)
++    inter = math.fsum(v for (o, d, _), v in values.items() if o != d)
++    ref = float(matrix_authority['matrix_interzonal'])
++    rel = abs(inter - ref) / max(1.0, abs(ref))
++    tolerance = float(self.settings.get('dseg_path_volume_relative_tolerance', 0.01))
++    passes = abs(inter) <= 1e-9 if ref <= 1e-9 else rel <= tolerance
++    audit = {'dseg_code': code, 'mode': mode, 'path_rows': len(values),
++             'positive_volume_rows': sum(v > 0 for v in values.values()),
++             'zero_volume_rows': sum(v == 0 for v in values.values()),
++             'intrazonal_parent_rows': sum(o == d for o, d, _ in values),
++             'parent_keys_sha256': key_hash, 'keys_and_volumes_sha256': vol_hash.hexdigest(),
++             'keys_and_volumes_comparison_sha256': comparison_hash.hexdigest(),
++             'path_epoch_volume_comparison_decimals': decimals,
++             'saved_path_volume_sum': total, 'saved_path_interzonal_volume_sum': inter,
++             'saved_path_intrazonal_volume_sum': intra,
++             'relative_abs_diff': rel, 'passes': passes, 'tolerance': tolerance,
++             'parity_basis': 'SAME_RUN_INTERZONAL_MATRIX_VS_INTERZONAL_SAVED_PATHS',
++             **matrix_authority}
++    self.db.execute('INSERT INTO segments VALUES(?,?,?)', (code, mode, json.dumps(audit)))
++    self.db.executemany('INSERT INTO volumes VALUES(?,?,?)',
++                        ((key_map[key], code, values[key]) for key in sorted_keys))
++    self.db.commit()
++    version = self.db.execute('PRAGMA data_version').fetchone()[0]
++    self._path_build_keymap = (mode, self.db.total_changes, version, key_map)
++    self.parents[code] = audit
++    self.parity_rows.append(audit)
++    self.mode_audits[mode]['dsegs'].append(code)
++    self.summary['dsegs'].append(code)
++    self.control.checkpoint('PARENTS_DSEG_COMPLETE', force=True, dseg_code=code,
++                           parent_rows=len(values), positive_volume_rows=audit['positive_volume_rows'],
++                           offdiagonal_relative_difference=rel)
++    self.check_resources(force=True)
++    if not passes:
++        raise Error('SAME_RUN_OFFDIAGONAL_PARITY_FAILED:' + code)
++    return audit
++
++
++@_timed_build("geometry", release_map=True)
++def add_geometry(self, mode, raw_rows):
++    """Stream official hierarchy/flat rows; avoid per-child slice/generator churn."""
++    if mode not in self.mode_audits or self.mode_audits[mode].get('geometry_complete'):
++        raise Error('INVALID_OR_DUPLICATE_GEOMETRY_MODE')
++    key_map = _key_map(self, mode)
++    self._path_build_keymap = None
++    seen = set()
++    parent = None
++    seq_ids = []
++    updates, hits_batch = [], []
++    market_batch = set()
++    postings = defaultdict(lambda: array('I'))
++    raw_count = child_count = 0
++    last_end = None
++    mode_max_mult = Counter()
++    zero_link_interzonal = zero_link_intrazonal = 0
++    to_id = base._id
++    edge_ids = self.edge_ids
++    edge_profiles = {edge_ids[k]: indices for k, indices in self.profile_index_by_key.items()
++                     if k in edge_ids}
++    commit_routes = int(self.settings['commit_routes'])
++    max_rows = int(self.settings['max_geometry_rows_per_mode'])
++    max_links = int(self.settings['max_links_per_path'])
++    stats = _stats(self)
++
++    def flush():
++        if not updates:
++            return
++        self.control.checkpoint('GEOMETRY_STORE_COMMIT', mode=mode,
++                                geometry_routes=len(seen), raw_rows=raw_count, link_children=child_count)
++        started = time.perf_counter()
++        self.db.executemany('UPDATE geometry SET edge_ids=?,edge_count=?,sequence_sha256=?,geometry_kind=? WHERE gid=?', updates)
++        self.db.executemany('INSERT INTO profile_hits VALUES(?,?,?)', hits_batch)
++        self.db.executemany('INSERT OR IGNORE INTO driver_markets VALUES(?,?,?)', market_batch)
++        self._posting_chunk += 1
++        self.db.executemany('INSERT INTO edge_postings VALUES(?,?,?)',
++                            ((eid, self._posting_chunk, zlib.compress(base._packed(ids), 1))
++                             for eid, ids in postings.items()))
++        self.db.commit()
++        stats['geometry_sql_seconds'] += time.perf_counter() - started
++        stats['geometry_flushes'] += 1
++        updates.clear(); hits_batch.clear(); market_batch.clear(); postings.clear()
++        self.check_resources()
++
++    def finish_route():
++        nonlocal zero_link_interzonal, zero_link_intrazonal
++        if parent is None:
++            return
++        if parent not in key_map or parent in seen:
++            raise Error('ORPHAN_OR_REPEATED_GEOMETRY_PARENT:%r' % (parent,))
++        gid = key_map[parent]
++        kind = 'LINK_SEQUENCE'
++        if not seq_ids:
++            if parent[0] != parent[1]:
++                zero_link_interzonal += 1
++                kind = 'ZERO_LINK_INTERZONAL_NO_ADDVAL1_EFFECT'
++            else:
++                zero_link_intrazonal += 1
++                kind = 'ZERO_LINK_INTRAZONAL_NO_ADDVAL1_EFFECT'
++        seen.add(parent)
++        blob = base._packed(seq_ids)
++        updates.append((blob, len(seq_ids), hashlib.sha256(blob).hexdigest(), kind, gid))
++        hit = Counter()
++        for eid, n in Counter(seq_ids).items():
++            postings[eid].extend((gid, n))
++            if n > mode_max_mult[eid]:
++                mode_max_mult[eid] = n
++            for i in edge_profiles.get(eid, ()):
++                hit[i] += n
++        hits_batch.extend((gid, i, n) for i, n in hit.items())
++        if any(i in hit for i in self.cal_indices):
++            market_batch.add((mode, parent[0], parent[1]))
++        if len(updates) >= commit_routes:
++            flush()
++
++    for raw in raw_rows:
++        raw_count += 1
++        if raw_count > max_rows:
++            raise Error('GEOMETRY_ROW_BUDGET_EXCEEDED')
++        if len(raw) != 7:
++            raise Error('GEOMETRY_ROW_SCHEMA_MISMATCH')
++        o, d, ix, index, link, start, end = raw
++        po = o is not None and o != ''
++        pd = d is not None and d != ''
++        pi = ix is not None and ix != ''
++        li = index is not None and index != ''
++        ll = link is not None and link != ''
++        ls = start is not None and start != ''
++        le = end is not None and end != ''
++        if not (li or ll or ls or le):
++            if not (po and pd and pi):
++                raise Error('INCOMPLETE_GEOMETRY_PARENT')
++            next_parent = (to_id(o), to_id(d), to_id(ix))
++            finish_route()
++            parent = next_parent; seq_ids = []; last_end = None
++            if parent not in key_map or parent in seen:
++                raise Error('UNKNOWN_OR_REOPENED_GEOMETRY_PARENT')
++            continue
++        if not (li and ll and ls and le):
++            raise Error('INCOMPLETE_GEOMETRY_CHILD')
++        if po and pd and pi:
++            key = (to_id(o), to_id(d), to_id(ix))
++            if key != parent:
++                finish_route()
++                parent = key; seq_ids = []; last_end = None
++                if parent not in key_map or parent in seen:
++                    raise Error('UNKNOWN_OR_REOPENED_FLAT_PARENT')
++        elif po or pd or pi:
++            if (parent is None or (po and to_id(o) != parent[0]) or
++                    (pd and to_id(d) != parent[1]) or (pi and to_id(ix) != parent[2])):
++                raise Error('CONFLICTING_PARTIAL_GEOMETRY_PARENT')
++        if parent is None:
++            raise Error('ORPHAN_GEOMETRY_CHILD')
++        index = to_id(index)
++        key = (to_id(link), to_id(start), to_id(end))
++        if index != len(seq_ids) + 1:
++            raise Error('GEOMETRY_LINK_INDEX_NOT_CONTIGUOUS')
++        if last_end is not None and last_end != key[1]:
++            raise Error('DISCONNECTED_OFFICIAL_PATH_LINK_SEQUENCE')
++        if key not in edge_ids:
++            raise Error('PATH_EDGE_NOT_IN_LIVE_NETWORK:%r' % (key,))
++        seq_ids.append(edge_ids[key]); last_end = key[2]; child_count += 1
++        if len(seq_ids) > max_links:
++            raise Error('SINGLE_ROUTE_LENGTH_BUDGET_EXCEEDED')
++    finish_route(); flush()
++    if len(seen) != len(key_map):  # Every seen key was checked against key_map.
++        raise Error('GEOMETRY_PARENT_COVERAGE_INCOMPLETE')
++    for eid, n in mode_max_mult.items():
++        key = self.edge_keys[eid]
++        self.edge_max_multiplicity[key] = max(self.edge_max_multiplicity[key], n)
++    h = hashlib.sha256()
++    for o, d, ix, digest in self.db.execute(
++            'SELECT orig,dest,path_index,sequence_sha256 FROM geometry WHERE mode=? ORDER BY orig,dest,path_index', (mode,)):
++        h.update(struct.pack('<III', o, d, ix)); h.update(digest.encode('ascii'))
++    self.mode_audits[mode].update(geometry_complete=True, geometry_routes=len(seen),
++        geometry_link_children=child_count, geometry_raw_rows=raw_count,
++        zero_link_interzonal_paths=zero_link_interzonal, zero_link_intrazonal_paths=zero_link_intrazonal,
++        representative_geometry_sha256=h.hexdigest(), geometry_reads=1)
++    self.geometry_count += len(seen)
++    self.control.checkpoint('MODE_GEOMETRY_COMPLETE', force=True, mode=mode,
++                            geometry_routes=len(seen), link_children=child_count)
++    return self.mode_audits[mode]
++
++
++def install():
++    """Idempotent method patch: aliases to the original class remain effective."""
++    cls = base.TwoModeRouteCollector
++    if getattr(cls.add_geometry, '__r1_path_store_build__', None) == RELEASE:
++        return {'installed': True, 'already': True, 'release': RELEASE}
++    original_close = cls.close
++
++    @wraps(original_close)
++    def close(self):
++        try:
++            return original_close(self)
++        finally:
++            self._path_build_keymap = None
++
++    cls.add_parents = add_parents
++    cls.add_geometry = add_geometry
++    cls.close = close
++    return {'installed': True, 'release': RELEASE, 'schema_changed': False,
++            'com_page_size_changed': False, 'durability': 'DELETE/FULL'}
+diff --git a/r1_15a2_v24917_runtime.py b/r1_15a2_v24917_runtime.py
+index 02ee080..a8aa871 100644
+--- a/r1_15a2_v24917_runtime.py
++++ b/r1_15a2_v24917_runtime.py
+@@ -154,8 +154,10 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
+     # Import before generation/TD/supply patches begin any model transaction.
+     # Do not depend on sys.path at the eventual lazy-import callsite.
+     parent_eq_status = preload_parent_equivalence()
++    import r1_15a2_path_store_build_v24917 as path_store_build
+     import r1_15a2_targeted_generation_v24917 as tg
+     status = {"release": RELEASE, "parent_equivalence_preload": parent_eq_status}
++    status["path_store_build"] = path_store_build.install()
+     import r1_15a2_snapshot_reads_v24917 as snapshot_reads
+     status["snapshot_reads"] = {
+         "enabled": True, "release": snapshot_reads.RELEASE,
+diff --git a/tests/test_v24917_path_store_build.py b/tests/test_v24917_path_store_build.py
+new file mode 100644
+index 0000000..a10e926
+--- /dev/null
++++ b/tests/test_v24917_path_store_build.py
+@@ -0,0 +1,242 @@
++"""Compare accelerated writes/parsing against the sealed production builder."""
++import importlib.util
++from pathlib import Path
++import sqlite3
++from types import MethodType
++
++import pytest
++
++import r1_15a2_path_store_build_v24917 as fast
++from r1_15a2_supply import SupplyPolicy
++from test_supply_v22 import A, P, B, C, T, links, profile
++from test_two_mode_v238 import authority, hierarchy, SEQS, BoundedHierarchical
++from test_two_mode_v238 import live_fixture, store
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++@pytest.fixture
++def sealed():
++    spec = importlib.util.spec_from_file_location('_path_build_sealed_oracle', ROOT / 'r1_15a2_two_mode_v238.py')
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def collector(sealed, tmp_path, name, optimized, settings=None, control=None):
++    network = links()
++    network[(16, 4, 2)] = dict(network[P])
++    c = sealed.TwoModeRouteCollector(
++        [profile(model=1000), profile(A, model=1400, ident='b'),
++         profile(T, model=1400, role='VALIDATION', ident='v')],
++        SupplyPolicy(min_geh=1, min_residual=1), 'state', network, tmp_path / name,
++        dict(sealed.DEFAULT_SETTINGS, commit_routes=1, min_free_disk_gib=0, **(settings or {})),
++        control=control)
++    if optimized:
++        c.add_parents = MethodType(fast.add_parents, c)
++        c.add_geometry = MethodType(fast.add_geometry, c)
++    return c
++
++
++def add(c, code='NATIVE_CW', mode='C', values=None):
++    values = values or [(1, 2, 1, 600.), (1, 2, 2, 400.)]
++    ref = sum(v for o, d, ix, v in values if o != d)
++    return c.add_parents(code, mode, values, authority([ref]))
++
++
++def table_contents(c):
++    tables = [r[0] for r in c.db.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
++    return {t: sorted(c.db.execute('SELECT * FROM ' + t)) for t in tables}
++
++
++@pytest.mark.parametrize('format', ['hierarchy', 'flat', 'partial', 'serialized'])
++def test_exact_database_hash_flow_and_supply_evidence(sealed, tmp_path, format):
++    old = collector(sealed, tmp_path, 'old.sqlite', False)
++    new = collector(sealed, tmp_path, 'new.sqlite', True)
++    keys = [(1, 2, 1), (1, 2, 2), (2, 2, 1), (2, 3, 1)]
++    seqs = [(A, P, (16, 4, 2), P, T), SEQS[1], (), ()]
++    raw = hierarchy(seqs, keys)
++    if format == 'flat':
++        raw = [r for r in raw if r[3] != '' or tuple(r[:3]) in keys[2:]]
++        cursor = -1
++        for r in raw:
++            if r[3] == 1 or r[3] == '':
++                cursor += 1
++            r[:3] = keys[cursor]
++    elif format == 'partial':
++        raw[1][:3] = [1, '', None]
++        raw[2][:3] = [None, 2, '']
++    elif format == 'serialized':
++        raw = [[None if x == '' else str(x) for x in r] for r in raw]
++    try:
++        for c in (old, new):
++            for mode in ('C', 'C_NOT'):
++                for i in range(3):
++                    vals = [(*k, v) for k, v in zip(keys, (600. + i, 400., 0., 0.25))]
++                    add(c, mode + str(i), mode, list(reversed(vals)))
++                obj = BoundedHierarchical(raw)
++                rows = sealed.bounded_rows(obj, sealed.GEOMETRY_COLUMNS,
++                    dict(c.settings, page_size=2), sealed.QuietControl(), 'TEST')
++                c.add_geometry(mode, rows)
++                assert obj.unbounded_calls == 0
++            c.build_route_evidence()
++        assert table_contents(old) == table_contents(new)
++        assert old.parents == new.parents
++        assert old.mode_audits == new.mode_audits
++        assert old.path_structure_hash() == new.path_structure_hash()
++        assert old.path_basis_hash() == new.path_basis_hash()
++        assert old.path_basis_comparison_hash() == new.path_basis_comparison_hash()
++        assert old.flow == new.flow
++        assert old.evidence == new.evidence
++        assert old.edge_max_multiplicity == new.edge_max_multiplicity
++        assert old.support == new.support
++        assert new._path_build_keymap is None
++        summary = dict(new.summary); summary.pop('path_store_build')
++        assert summary == old.summary
++        assert new.db.execute('PRAGMA synchronous').fetchone()[0] == 2
++        assert new.db.execute('PRAGMA journal_mode').fetchone()[0] == 'delete'
++        assert new.db.execute('PRAGMA quick_check').fetchone()[0] == 'ok'
++        assert list(new.db.execute('PRAGMA foreign_key_check')) == []
++    finally:
++        old.close(); new.close()
++
++
++@pytest.mark.parametrize('damage', [
++    'orphan', 'missing', 'repeat', 'gap', 'broken', 'unknown', 'partial',
++    'child_missing', 'parent_missing', 'bad_schema', 'fraction', 'bool', 'nan',
++    'zero_id', 'too_large_id', 'negative_id', 'row_budget', 'link_budget'])
++def test_same_rejections_for_bad_geometry(sealed, tmp_path, damage):
++    errors = []
++    settings = {'max_geometry_rows_per_mode': 4} if damage == 'row_budget' else (
++        {'max_links_per_path': 2} if damage == 'link_budget' else {})
++    for optimized in (False, True):
++        c = collector(sealed, tmp_path, str(optimized) + '.sqlite', optimized, settings)
++        raw = hierarchy()
++        if damage == 'orphan': raw = raw[1:]
++        if damage == 'missing': raw = raw[:4]
++        if damage == 'repeat': raw += hierarchy()[:4]
++        if damage == 'gap': raw[2][3] = 3
++        if damage == 'broken': raw[2][5] = 9
++        if damage == 'unknown': raw[1][4] = 999
++        if damage == 'partial': raw[2][0] = 8
++        if damage == 'child_missing': raw[2][4] = None
++        if damage == 'parent_missing': raw[0][0] = None
++        if damage == 'bad_schema': raw[2].pop()
++        if damage in ('fraction', 'bool', 'nan', 'zero_id', 'too_large_id', 'negative_id'):
++            raw[1][4] = dict(fraction=12.5, bool=True, nan=float('nan'), zero_id=0,
++                            too_large_id=2147483648, negative_id=-1)[damage]
++        try:
++            add(c)
++            with pytest.raises(Exception) as exc:
++                c.add_geometry('C', raw)
++            errors.append((type(exc.value).__name__, str(exc.value)))
++            assert not c.incidence_ready
++            assert not c.mode_audits['C'].get('geometry_complete')
++            assert c.db.execute("SELECT value FROM metadata WHERE key='structural_export_complete'").fetchone() is None
++            if optimized:
++                assert c._path_build_keymap is None
++        finally:
++            c.close()
++    assert errors[0] == errors[1]
++
++
++@pytest.mark.parametrize('damage', ['duplicate', 'missing', 'extra', 'negative', 'parity', 'budget', 'numeric'])
++def test_same_parent_failures_and_no_stale_map(sealed, tmp_path, damage):
++    errors = []
++    for optimized in (False, True):
++        c = collector(sealed, tmp_path, str(optimized) + '.sqlite', optimized)
++        try:
++            add(c)
++            rows = [(1, 2, 1, 600.), (1, 2, 2, 400.)]
++            if damage == 'duplicate': rows[1] = rows[0]
++            if damage == 'missing': rows.pop()
++            if damage == 'extra': rows[1] = (1, 2, 3, 400.)
++            if damage == 'negative': rows[1] = (1, 2, 2, -1.)
++            if damage == 'budget': c.settings['max_parent_rows_per_dseg'] = 1
++            if damage == 'numeric': rows[1] = (1, 2, 2, float('inf'))
++            with pytest.raises(Exception) as exc:
++                c.add_parents('NATIVE_CS', 'C', rows, authority([2000 if damage == 'parity' else 1000]))
++            errors.append((type(exc.value).__name__, str(exc.value)))
++            if optimized:
++                assert c._path_build_keymap is None
++        finally:
++            c.close()
++    assert errors[0] == errors[1]
++
++
++@pytest.mark.parametrize('external', [False, True])
++def test_keymap_cache_detects_sql_changes(sealed, tmp_path, external):
++    c = collector(sealed, tmp_path, 'cached.sqlite', True)
++    try:
++        add(c)
++        add(c, 'NATIVE_CS')
++        assert fast._stats(c)['keymap_cache_hits'] == 1
++        db = sqlite3.connect(c.route_db_path) if external else c.db
++        try:
++            # Preserve references but change the official key set behind the cache.
++            db.execute('UPDATE geometry SET path_index=3 WHERE path_index=2')
++            db.commit()
++        finally:
++            if external: db.close()
++        with pytest.raises(Exception, match='FULL_PARENT_KEYS_DIFFER'):
++            add(c, 'NATIVE_CL')
++        assert fast._stats(c)['keymap_sql_reads'] == 2
++        assert c._path_build_keymap is None
++    finally:
++        c.close()
++
++
++def test_sql_failure_rolls_back_active_flush_and_cannot_reopen(sealed, tmp_path):
++    c = collector(sealed, tmp_path, 'failed.sqlite', True)
++    try:
++        add(c)
++        c.db.execute("CREATE TRIGGER fail_hit BEFORE INSERT ON profile_hits BEGIN SELECT RAISE(ABORT,'INJECTED_WRITE_ERROR'); END")
++        c.db.commit()
++        with pytest.raises(sqlite3.IntegrityError, match='INJECTED_WRITE_ERROR'):
++            c.add_geometry('C', hierarchy())
++        assert not c.db.in_transaction
++        assert c.db.execute('SELECT COUNT(*) FROM geometry WHERE edge_ids IS NOT NULL').fetchone()[0] == 0
++        assert c._path_build_keymap is None
++        with pytest.raises(Exception, match='PERSISTENT_MODE_STORE_NOT_COMPLETE'):
++            sealed.TwoModeRouteCollector.open_existing(c.profiles, c.policy, links(), c.route_db_path)
++    finally:
++        c.close()
++
++
++def test_install_preserves_class_alias_and_clears_map_on_close(sealed, tmp_path, monkeypatch):
++    alias = sealed.TwoModeRouteCollector
++    monkeypatch.setattr(fast.base, 'TwoModeRouteCollector', alias)
++    assert fast.install()['installed']
++    assert fast.install()['already']
++    assert sealed.TwoModeRouteCollector is alias
++    c = collector(sealed, tmp_path, 'installed.sqlite', False)
++    add(c)
++    assert c._path_build_keymap is not None
++    c.close()
++    assert c._path_build_keymap is None
++
++
++def test_full_12_dseg_export_and_readonly_reopen(sealed, tmp_path):
++    visum, cfg, model, lists = live_fixture()
++    c = store(tmp_path, [profile(model=model)], settings={'sample_windows': [[1, 2]], 'page_size': 3})
++    c.add_parents = MethodType(fast.add_parents, c)
++    c.add_geometry = MethodType(fast.add_geometry, c)
++    try:
++        result = sealed.collect_two_modes(visum, c, cfg, tmp_path)
++        assert result['full_geometry_read_count'] == 2
++        assert result['dseg_complete_count'] == 12
++        assert c.flow == [model]
++        assert fast._stats(c)['keymap_sql_reads'] == 4
++        assert fast._stats(c)['keymap_cache_hits'] == 10
++        assert c._path_build_keymap is None
++        assert all(x.unbounded_calls == 0 for x in lists.instances)
++        reopened = sealed.TwoModeRouteCollector.open_existing(c.profiles, c.policy, links(), c.route_db_path)
++        try:
++            assert reopened.flow == c.flow
++            assert reopened.path_basis_hash() == c.path_basis_hash()
++            assert reopened.path_structure_hash() == c.path_structure_hash()
++            assert reopened.read_only
++        finally:
++            reopened.close()
++    finally:
++        c.close()
+diff --git a/tests/test_v24917_runtime_install.py b/tests/test_v24917_runtime_install.py
+index 161c9cf..e102d96 100644
+--- a/tests/test_v24917_runtime_install.py
++++ b/tests/test_v24917_runtime_install.py
+@@ -90,6 +90,8 @@ res.update({
+   "diagfast_guard": rt.run_12d.__name__ == "run_12d_direct_guard" and rt.run_11d.__name__ == "run_11d_direct_guard",
+   "diagfast_integrity": status["v24917"]["diagfast"]["integrity"]["status"],
+   "v24917_manifest": status["v24917_manifest"]["passes"],
++  "path_store_build_installed": status["v24917"]["path_store_build"]["installed"],
++  "path_store_build_adapter_alias": getattr(__import__("r1_15a2_trial_adapter_v240").TwoModeRouteCollector.add_geometry, "__r1_path_store_build__", None) == __import__("r1_15a2_path_store_build_v24917").RELEASE,
+   "parent_eq_preloaded": "r1_15a2_parent_equivalence_v24917" in sys.modules,
+   "parent_eq_source_exact": Path(sys.modules["r1_15a2_parent_equivalence_v24917"].__file__).resolve() == (root / "r1_15a2_parent_equivalence_v24917.py").resolve(),
+   "skim_type_detected": com.SKIMS_PRT == 104 and status["v24917_prt_skim_operation_type"]["code"] == 104,
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 0f75bca..9d02d8b 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -45,6 +45,7 @@ RUNTIME = [
+     "r1_15a2_fast_trial_assignment_v24917.py",
+     "r1_15a2_step_search_v24917.py",
+     "r1_15a2_perf_v24917.py",
++    "r1_15a2_path_store_build_v24917.py",
+     "r1_15a2_combusy2_v24917.py",
+     "r1_15a2_preflight_explain_v24917.py",
+     "r1_15a2_boundary_generation_v24917.py",

@@ -1,0 +1,29 @@
+import cProfile, pstats, sys, time
+from pathlib import Path
+root=Path('/workspace/work/path_store_build_perf_20261030/source')
+sys.path.insert(0,str(root))
+from r1_15a2_two_mode_v238 import TwoModeRouteCollector,DEFAULT_SETTINGS
+from r1_15a2_supply import SupplyPolicy
+edges=[(100+i,1+i,(i+1)%20+1) for i in range(20)]
+links={k:{'eligible':True,'addval1':0.,'t0_c_seconds':60.} for k in edges}
+p=dict(link_no=105,from_node_no=6,to_node_no=7,observed=240000.,model=240000.,role='CALIBRATION',countlocation_no='P1')
+N=12000
+keys=[(i//680+1,(i%680+100)%681+1,1) for i in range(N)]
+def rows():
+ for key in keys:
+  yield (*key,'','','','')
+  for ix,edge in enumerate(edges*2,1):yield ('','','',ix,*edge)
+def run():
+ db=Path('/tmp/r1pathprofile.sqlite')
+ if db.exists():db.unlink()
+ c=TwoModeRouteCollector([p],SupplyPolicy(),'state',links,db,dict(DEFAULT_SETTINGS,min_free_disk_gib=0))
+ t=time.perf_counter()
+ for d in range(8):
+  vals=[(*k,10.+d) for k in keys]
+  inter=sum(v for o,de,ix,v in vals if o!=de)
+  c.add_parents('NATIVE_'+str(d),'C',vals,{'matrix_interzonal':inter})
+ print('parents_seconds',time.perf_counter()-t)
+ t=time.perf_counter();c.add_geometry('C',rows());print('geometry_seconds',time.perf_counter()-t)
+ t=time.perf_counter();c.prepare_incidence_evidence();print('incidence_seconds',time.perf_counter()-t)
+ c.close()
+prof=cProfile.Profile();prof.runcall(run);pstats.Stats(prof).strip_dirs().sort_stats('cumtime').print_stats(24)

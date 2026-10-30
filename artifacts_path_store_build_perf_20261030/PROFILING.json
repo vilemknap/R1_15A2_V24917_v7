@@ -1,0 +1,25 @@
+{
+  "schema": "R1_PATH_BUILD_PROFILE_OBSERVATION_V1",
+  "source": "cProfile stdout observed during this task; profiling overhead included",
+  "workload": {
+    "paths": 12000,
+    "geometry_rows": 492000,
+    "dsegs": 8,
+    "modes": 1
+  },
+  "original": {
+    "total_seconds": 5.703,
+    "geometry_seconds": 4.672260497,
+    "parent_seconds": 0.936453853,
+    "function_calls": 19754281,
+    "sqlite_executemany_cumulative_seconds": 0.372
+  },
+  "optimized": {
+    "total_seconds": 2.429,
+    "geometry_seconds": 1.616110354,
+    "parent_seconds": 0.722154186,
+    "function_calls": 7262397,
+    "sqlite_executemany_cumulative_seconds": 0.365
+  },
+  "unprofiled_measurement": "BENCHMARK.json"
+}

@@ -51,3 +51,5 @@ artifacts_school_td_review_20261030/*.patch -text -diff
 artifacts_school_td_review_20261030/baseline_reproduction.log -text -diff
 artifacts_long_chain_review_20261030/*.patch -text -diff
 artifacts_long_chain_review_20261030/prior_attempt/*.log -text -diff
+artifacts_path_store_build_perf_20261030/*.patch -text -diff
+artifacts_path_store_build_perf_20261030/*.log -text -diff

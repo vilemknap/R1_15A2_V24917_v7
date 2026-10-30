@@ -1,0 +1,43 @@
+{
+  "baseline_remote_commit": "074fd24eb1dc69ce9073ed7a95b87908a5a1ce7e",
+  "baseline_tree": "b79eb9a8644347ebdbd9ce283542e96750d29f08",
+  "live_visum": "NOT_RUN",
+  "commands": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python benchmarks/run_path_store_build_benchmark.py --output /workspace/work/path_store_build_perf_20261030/BENCHMARK.json",
+      "returncode": 0,
+      "evidence": "BENCHMARK.json"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/refresh_v24917_manifests.py",
+      "returncode": 0,
+      "runtime_files": 79,
+      "release_sources": 151,
+      "protected_originals": 1059
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_path_store_build.py tests/test_two_mode_v238.py tests/test_v247_path_epochs.py tests/test_v248_persistent_path_cache.py tests/test_v24917_runtime_install.py tests/test_v24917_path_incidence_review.py tests/test_v24917_long_cache_generation.py --basetemp=/tmp/r1ps-focus",
+      "returncode": 0,
+      "passed": 185,
+      "evidence": "FOCUSED.log"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTEST_ADDOPTS=--basetemp=/tmp/r1ps-full /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/path_store_build_perf_20261030/verified",
+      "returncode": 0,
+      "evidence": "CHECKS.json",
+      "main_passed": 2098,
+      "main_skipped": 4,
+      "diagfast_passed": 138,
+      "audit_passed": 18
+    },
+    {
+      "command": "SHA-256 every runtime/release/base manifest entry; compile changed Python sources using compile(bytes, path, exec)",
+      "returncode": 0,
+      "evidence": "INTEGRITY.json"
+    },
+    {
+      "command": "git diff --check",
+      "returncode": 0
+    }
+  ]
+}

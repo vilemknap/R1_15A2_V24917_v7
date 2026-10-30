@@ -90,6 +90,8 @@ res.update({
   "diagfast_guard": rt.run_12d.__name__ == "run_12d_direct_guard" and rt.run_11d.__name__ == "run_11d_direct_guard",
   "diagfast_integrity": status["v24917"]["diagfast"]["integrity"]["status"],
   "v24917_manifest": status["v24917_manifest"]["passes"],
+  "path_store_build_installed": status["v24917"]["path_store_build"]["installed"],
+  "path_store_build_adapter_alias": getattr(__import__("r1_15a2_trial_adapter_v240").TwoModeRouteCollector.add_geometry, "__r1_path_store_build__", None) == __import__("r1_15a2_path_store_build_v24917").RELEASE,
   "parent_eq_preloaded": "r1_15a2_parent_equivalence_v24917" in sys.modules,
   "parent_eq_source_exact": Path(sys.modules["r1_15a2_parent_equivalence_v24917"].__file__).resolve() == (root / "r1_15a2_parent_equivalence_v24917.py").resolve(),
   "skim_type_detected": com.SKIMS_PRT == 104 and status["v24917_prt_skim_operation_type"]["code"] == 104,

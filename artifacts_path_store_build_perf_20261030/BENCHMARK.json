@@ -1,0 +1,180 @@
+{
+  "schema": "R1_PATH_STORE_BUILD_OFFLINE_BENCHMARK_V1",
+  "live_visum_run": false,
+  "paths_per_mode": 12000,
+  "dsegs": 12,
+  "geometry_rows": 984000,
+  "repetitions": 3,
+  "all_tables_and_hashes_exact": true,
+  "median_seconds": {
+    "original": {
+      "parent_seconds": 0.824192385999595,
+      "geometry_seconds": 2.3458065039994835,
+      "incidence_seconds": 0.14026715100044385,
+      "total_seconds": 3.316149229000075
+    },
+    "optimized": {
+      "parent_seconds": 0.6367175749992384,
+      "geometry_seconds": 1.2324175540006763,
+      "incidence_seconds": 0.13307118299962895,
+      "total_seconds": 2.002618920999339
+    }
+  },
+  "speedup": {
+    "parent_seconds": 1.2944395103285484,
+    "geometry_seconds": 1.9034186070983181,
+    "incidence_seconds": 1.0540760804751768,
+    "total_seconds": 1.6559062706474696
+  },
+  "runs": {
+    "original": [
+      {
+        "parent_seconds": 0.824192385999595,
+        "geometry_seconds": 2.502446245000101,
+        "incidence_seconds": 0.14026715100044385,
+        "total_seconds": 3.46690578200014,
+        "keymap_sql_reads": 16,
+        "store_bytes": 12316672,
+        "tables_sha256": {
+          "driver_markets": "7f8f41a976ebe8bdf0cf7d43b50f42faa30dc7a917d80ff25e1875d7a0098bf9",
+          "edge_postings": "6ae68d5d884d4a2fbbc4404688524bdf2f64f0d83493274cdefdef62630c49d8",
+          "edges": "d7a514b4b506a9ea20d9a10ea7be5d1e5656272f1eaf3b2d5f4df9077a04fd2d",
+          "geometry": "c942053f7fbf8d24a37739563a30cf6aa0ec1a7125ad5425f6dab41a6483f145",
+          "metadata": "1472e5e3eab312f11236cf986bc1428420fab35e1f3b85f9b3f5d291625c5d5f",
+          "profile_hits": "16ce086c89766d74aa0224e54c73461c27a0ee822d9b633409ee448852604506",
+          "segments": "80ea29521be33adabba711c5aea28e5aa161012ab35b9dc9e5f9e2a284d072bd",
+          "volumes": "781e979fc36ab845e525b345a029d3af05ccfe87eadb0f24ac62c47fd8f8f974"
+        },
+        "flow": [
+          2733556.8
+        ],
+        "structure_hash": "b8a31d98af0221473fddb3e89070af345b8d3a72926a6ffe5978604a16971c1c",
+        "basis_hash": "01a702689c40b524a7e1510784ac468ccdd57551563dc827c4c287a09ab7c2a9",
+        "comparison_hash": "927a6de49a7e4f9f3df0b91991e131248213b362a6c5adccbca63cbbeccbe65e"
+      },
+      {
+        "parent_seconds": 0.8224694640002781,
+        "geometry_seconds": 2.339498115999959,
+        "incidence_seconds": 0.13871302699953958,
+        "total_seconds": 3.3006806069997765,
+        "keymap_sql_reads": 16,
+        "store_bytes": 12316672,
+        "tables_sha256": {
+          "driver_markets": "7f8f41a976ebe8bdf0cf7d43b50f42faa30dc7a917d80ff25e1875d7a0098bf9",
+          "edge_postings": "6ae68d5d884d4a2fbbc4404688524bdf2f64f0d83493274cdefdef62630c49d8",
+          "edges": "d7a514b4b506a9ea20d9a10ea7be5d1e5656272f1eaf3b2d5f4df9077a04fd2d",
+          "geometry": "c942053f7fbf8d24a37739563a30cf6aa0ec1a7125ad5425f6dab41a6483f145",
+          "metadata": "1472e5e3eab312f11236cf986bc1428420fab35e1f3b85f9b3f5d291625c5d5f",
+          "profile_hits": "16ce086c89766d74aa0224e54c73461c27a0ee822d9b633409ee448852604506",
+          "segments": "80ea29521be33adabba711c5aea28e5aa161012ab35b9dc9e5f9e2a284d072bd",
+          "volumes": "781e979fc36ab845e525b345a029d3af05ccfe87eadb0f24ac62c47fd8f8f974"
+        },
+        "flow": [
+          2733556.8
+        ],
+        "structure_hash": "b8a31d98af0221473fddb3e89070af345b8d3a72926a6ffe5978604a16971c1c",
+        "basis_hash": "01a702689c40b524a7e1510784ac468ccdd57551563dc827c4c287a09ab7c2a9",
+        "comparison_hash": "927a6de49a7e4f9f3df0b91991e131248213b362a6c5adccbca63cbbeccbe65e"
+      },
+      {
+        "parent_seconds": 0.8282817760000398,
+        "geometry_seconds": 2.3458065039994835,
+        "incidence_seconds": 0.14206094900055177,
+        "total_seconds": 3.316149229000075,
+        "keymap_sql_reads": 16,
+        "store_bytes": 12316672,
+        "tables_sha256": {
+          "driver_markets": "7f8f41a976ebe8bdf0cf7d43b50f42faa30dc7a917d80ff25e1875d7a0098bf9",
+          "edge_postings": "6ae68d5d884d4a2fbbc4404688524bdf2f64f0d83493274cdefdef62630c49d8",
+          "edges": "d7a514b4b506a9ea20d9a10ea7be5d1e5656272f1eaf3b2d5f4df9077a04fd2d",
+          "geometry": "c942053f7fbf8d24a37739563a30cf6aa0ec1a7125ad5425f6dab41a6483f145",
+          "metadata": "1472e5e3eab312f11236cf986bc1428420fab35e1f3b85f9b3f5d291625c5d5f",
+          "profile_hits": "16ce086c89766d74aa0224e54c73461c27a0ee822d9b633409ee448852604506",
+          "segments": "80ea29521be33adabba711c5aea28e5aa161012ab35b9dc9e5f9e2a284d072bd",
+          "volumes": "781e979fc36ab845e525b345a029d3af05ccfe87eadb0f24ac62c47fd8f8f974"
+        },
+        "flow": [
+          2733556.8
+        ],
+        "structure_hash": "b8a31d98af0221473fddb3e89070af345b8d3a72926a6ffe5978604a16971c1c",
+        "basis_hash": "01a702689c40b524a7e1510784ac468ccdd57551563dc827c4c287a09ab7c2a9",
+        "comparison_hash": "927a6de49a7e4f9f3df0b91991e131248213b362a6c5adccbca63cbbeccbe65e"
+      }
+    ],
+    "optimized": [
+      {
+        "parent_seconds": 0.6273893019997558,
+        "geometry_seconds": 1.2324175540006763,
+        "incidence_seconds": 0.13424314499934553,
+        "total_seconds": 1.9940500009997777,
+        "keymap_sql_reads": 4,
+        "store_bytes": 11943936,
+        "tables_sha256": {
+          "driver_markets": "7f8f41a976ebe8bdf0cf7d43b50f42faa30dc7a917d80ff25e1875d7a0098bf9",
+          "edge_postings": "6ae68d5d884d4a2fbbc4404688524bdf2f64f0d83493274cdefdef62630c49d8",
+          "edges": "d7a514b4b506a9ea20d9a10ea7be5d1e5656272f1eaf3b2d5f4df9077a04fd2d",
+          "geometry": "c942053f7fbf8d24a37739563a30cf6aa0ec1a7125ad5425f6dab41a6483f145",
+          "metadata": "1472e5e3eab312f11236cf986bc1428420fab35e1f3b85f9b3f5d291625c5d5f",
+          "profile_hits": "16ce086c89766d74aa0224e54c73461c27a0ee822d9b633409ee448852604506",
+          "segments": "80ea29521be33adabba711c5aea28e5aa161012ab35b9dc9e5f9e2a284d072bd",
+          "volumes": "781e979fc36ab845e525b345a029d3af05ccfe87eadb0f24ac62c47fd8f8f974"
+        },
+        "flow": [
+          2733556.8
+        ],
+        "structure_hash": "b8a31d98af0221473fddb3e89070af345b8d3a72926a6ffe5978604a16971c1c",
+        "basis_hash": "01a702689c40b524a7e1510784ac468ccdd57551563dc827c4c287a09ab7c2a9",
+        "comparison_hash": "927a6de49a7e4f9f3df0b91991e131248213b362a6c5adccbca63cbbeccbe65e"
+      },
+      {
+        "parent_seconds": 0.6441139179996753,
+        "geometry_seconds": 1.2282119629999215,
+        "incidence_seconds": 0.13231730700044864,
+        "total_seconds": 2.0046431880000455,
+        "keymap_sql_reads": 4,
+        "store_bytes": 11943936,
+        "tables_sha256": {
+          "driver_markets": "7f8f41a976ebe8bdf0cf7d43b50f42faa30dc7a917d80ff25e1875d7a0098bf9",
+          "edge_postings": "6ae68d5d884d4a2fbbc4404688524bdf2f64f0d83493274cdefdef62630c49d8",
+          "edges": "d7a514b4b506a9ea20d9a10ea7be5d1e5656272f1eaf3b2d5f4df9077a04fd2d",
+          "geometry": "c942053f7fbf8d24a37739563a30cf6aa0ec1a7125ad5425f6dab41a6483f145",
+          "metadata": "1472e5e3eab312f11236cf986bc1428420fab35e1f3b85f9b3f5d291625c5d5f",
+          "profile_hits": "16ce086c89766d74aa0224e54c73461c27a0ee822d9b633409ee448852604506",
+          "segments": "80ea29521be33adabba711c5aea28e5aa161012ab35b9dc9e5f9e2a284d072bd",
+          "volumes": "781e979fc36ab845e525b345a029d3af05ccfe87eadb0f24ac62c47fd8f8f974"
+        },
+        "flow": [
+          2733556.8
+        ],
+        "structure_hash": "b8a31d98af0221473fddb3e89070af345b8d3a72926a6ffe5978604a16971c1c",
+        "basis_hash": "01a702689c40b524a7e1510784ac468ccdd57551563dc827c4c287a09ab7c2a9",
+        "comparison_hash": "927a6de49a7e4f9f3df0b91991e131248213b362a6c5adccbca63cbbeccbe65e"
+      },
+      {
+        "parent_seconds": 0.6367175749992384,
+        "geometry_seconds": 1.2328301630004717,
+        "incidence_seconds": 0.13307118299962895,
+        "total_seconds": 2.002618920999339,
+        "keymap_sql_reads": 4,
+        "store_bytes": 11943936,
+        "tables_sha256": {
+          "driver_markets": "7f8f41a976ebe8bdf0cf7d43b50f42faa30dc7a917d80ff25e1875d7a0098bf9",
+          "edge_postings": "6ae68d5d884d4a2fbbc4404688524bdf2f64f0d83493274cdefdef62630c49d8",
+          "edges": "d7a514b4b506a9ea20d9a10ea7be5d1e5656272f1eaf3b2d5f4df9077a04fd2d",
+          "geometry": "c942053f7fbf8d24a37739563a30cf6aa0ec1a7125ad5425f6dab41a6483f145",
+          "metadata": "1472e5e3eab312f11236cf986bc1428420fab35e1f3b85f9b3f5d291625c5d5f",
+          "profile_hits": "16ce086c89766d74aa0224e54c73461c27a0ee822d9b633409ee448852604506",
+          "segments": "80ea29521be33adabba711c5aea28e5aa161012ab35b9dc9e5f9e2a284d072bd",
+          "volumes": "781e979fc36ab845e525b345a029d3af05ccfe87eadb0f24ac62c47fd8f8f974"
+        },
+        "flow": [
+          2733556.8
+        ],
+        "structure_hash": "b8a31d98af0221473fddb3e89070af345b8d3a72926a6ffe5978604a16971c1c",
+        "basis_hash": "01a702689c40b524a7e1510784ac468ccdd57551563dc827c4c287a09ab7c2a9",
+        "comparison_hash": "927a6de49a7e4f9f3df0b91991e131248213b362a6c5adccbca63cbbeccbe65e"
+      }
+    ]
+  },
+  "limitations": "Synthetic cyclic paths; excludes live COM and network/Windows disk latency."
+}
