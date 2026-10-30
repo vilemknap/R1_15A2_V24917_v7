@@ -78,6 +78,7 @@ def validate_fresh_path_root(cfg, paths):
 
 def validate_native_execution_plan(path):
     """The audited Visum sequence must have regenerated TG + TD + realization."""
+    require(Path(path).is_file(), "NATIVE_EXECUTION_PLAN_MISSING")
     plan = original.read_json(path)
     phases = plan.get("phases") or []
     by_name = {str(name): {int(x) for x in positions}
