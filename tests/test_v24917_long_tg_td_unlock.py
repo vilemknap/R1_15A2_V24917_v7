@@ -161,3 +161,51 @@ def test_td_joint_requires_measured_count_if_long_in_pool(monkeypatch):
                stacked=lambda out, matrices: (np.array([0.]), 0., {}))
     with pytest.raises(RuntimeError, match="FROZEN_PATH_COUNT_RESPONSE_FORBIDDEN"):
         joint.score_blend(blend, {}, {})
+
+
+def test_v24917_scopes_one_long_target_without_modifying_sealed_finecdf(monkeypatch):
+    import r1_15a2_finecdf_bridge_v24916 as bridge
+    import r1_15a2_active_controller_patch_v24916p2c as active
+    from types import SimpleNamespace as NS
+    monkeypatch.setattr(wire.joint, "options", lambda: {
+        "enabled": True, "long_enabled": True, "inner_mode": "DYNAMIC",
+        "outer_isolates": False, "max_isolates": 0})
+    # Monkeypatch saves old module attributes for exact cleanup, because
+    # install() modifies dispatch by design and full pytest runs other modules.
+    for mod, name in ((bridge, "load_reference"),
+                      (bridge, "run_finecdf_inner"),
+                      (active, "targeted_run_finecdf_inner")):
+        monkeypatch.setattr(mod, name, getattr(mod, name))
+    controller = NS(run_finecdf_inner=lambda *a: None,
+                    _realize_finecdf_td=lambda *a: None)
+    wire.install(controller, print_fn=lambda *a: None)
+    cfg = {"coupled_demand": {"finecdf_td": {
+        "active_components": ["WORK_E_C", "LONG_COMPOSITE"]}}}
+    effective, selected, token = wire._scope_long_target(cfg)
+    try:
+        assert effective["coupled_demand"]["finecdf_td"].get("active_components") is None
+        assert cfg["coupled_demand"]["finecdf_td"]["active_components"] == list(selected)
+        from test_v24917_long_composite_td import ROOT, FINE
+        reference, _, _ = bridge.load_reference(ROOT, FINE)
+        assert "LONG_COMPOSITE" in reference.GROUPS
+        assert set(reference.GROUPS) == {"WORK_E_C", "LONG_COMPOSITE"}
+        assert "LONG_COMPOSITE" in reference.TARGETS
+        assert reference.long_composite_td_contract["aggregate_target_points"] == 512
+        assert len(reference.TARGETS["LONG_COMPOSITE"]["matrix_nos"]) == 5
+    finally:
+        wire._LONG_TARGET_CONTEXT.reset(token)
+
+
+def test_long_target_rejects_school_and_unsafe_modes(monkeypatch):
+    monkeypatch.setattr(wire.joint, "options", lambda: {
+        "enabled": True, "long_enabled": True, "inner_mode": "DYNAMIC"})
+    for targets in (["SCHOOL", "LONG_COMPOSITE"], ["LONG_COMPOSITE", "LONG_COMPOSITE"]):
+        with pytest.raises(RuntimeError, match="TARGET_COMPONENT_SET_INVALID"):
+            wire._scope_long_target({"coupled_demand": {
+                "finecdf_td": {"active_components": targets}}})
+    assert wire._LONG_TARGET_CONTEXT.get() is None
+    monkeypatch.setattr(wire.joint, "options", lambda: {
+        "enabled": True, "long_enabled": True, "inner_mode": "FROZEN_PATHS"})
+    with pytest.raises(RuntimeError, match="TARGET_REQUIRES_DYNAMIC"):
+        wire._scope_long_target({"coupled_demand": {
+            "finecdf_td": {"active_components": ["LONG_COMPOSITE"]}}})
