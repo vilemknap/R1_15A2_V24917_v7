@@ -13,7 +13,7 @@ from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 import traceback
 
-RELEASE = "R1_V24917_FRESH_UNIVERSAL_TDPERF_ISOLATED_V1_20261030"
+RELEASE = "R1_V24917_FRESH_UNIVERSAL_TDPERF_ALLTD_V2_20261030"
 SANDBOX_NAME = "R1FRESH17"
 RUNS_NAME = "R1_15A2_V16_RUNS"
 SCHEMA = "R1_V24917_FRESH_UNIVERSAL_EPOCH_AUTHORITY_V1"
@@ -76,12 +76,18 @@ def validate_fresh_config(cfg, options):
     require(options.get("td_joint_enabled") is True, "TDJOINT_DISABLED")
     require(options.get("td_inner_mode") == "DYNAMIC", "DYNAMIC_TD_DISABLED")
     require(options.get("td_first_cycle") is True, "FIRST_CYCLE_TD_DISABLED")
+    require(options.get("td_policy") == "ALWAYS"
+            and options.get("td_every_n_cycles") == 1
+            and options.get("td_during_catchup") is True,
+            "TD_EVERY_CYCLE_POLICY_REQUIRED")
     require(options.get("school_td_enabled") is True
             and options.get("long_composite_td_enabled") is True,
             "SCHOOL_OR_LONG_TD_DISABLED")
     return {"fresh_lineage": True, "accepted_count_start": 0,
             "outer_cycle_start": 1, "fresh_native_paths": True,
-            "td_optimizations_required": True}
+            "td_optimizations_required": True,
+            "td_policy": "ALWAYS", "td_skipping_allowed": False,
+            "td_catchup_included": True}
 
 
 def verify_runtime_status(status):
@@ -93,6 +99,17 @@ def verify_runtime_status(status):
                 "OPTIMIZATION_NOT_INSTALLED:" + name)
     require("REVIEW1" in str(optimized["td_restore"].get("release", "")),
             "TD_RESTORE_SAFETY_REVIEW_MISSING")
+    # The actual controller patch, not just the static options JSON, must
+    # use the non-skipping policy. R1_TD_POLICY/R1_TD_EVERY_N environment
+    # overrides are permitted by the shared loader, so reject them HERE.
+    demand = optimized.get("demand_policy") or {}
+    effective_demand = (demand.get("note") or {}).get("options") or {}
+    require(demand.get("installed") is True
+            and effective_demand.get("td_policy") == "ALWAYS"
+            and effective_demand.get("td_every_n_cycles") == 1
+            and effective_demand.get("td_during_catchup") is True
+            and effective_demand.get("td_first_cycle") is True,
+            "EFFECTIVE_TD_EVERY_CYCLE_POLICY_MISMATCH")
     # Runtime may apply R1_* environment overrides AFTER options JSON is read.
     # Installing the wrappers alone does not prove that joint native TD is ON.
     effective = optimized["tdjoint1"].get("options") or {}
@@ -102,7 +119,8 @@ def verify_runtime_status(status):
             and effective.get("inner_mode") == "DYNAMIC",
             "EFFECTIVE_TD_OPTIMIZATION_DISABLED")
     return {name: copy.deepcopy(optimized[name])
-            for name in ("tdjoint1", "td_numpy", "td_restore", "path_store_build")}
+            for name in ("demand_policy", "tdjoint1", "td_numpy",
+                         "td_restore", "path_store_build")}
 
 
 def install_native_epoch_guard(adapter_type, sandbox):
