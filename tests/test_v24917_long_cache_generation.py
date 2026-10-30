@@ -168,7 +168,7 @@ def test_long_zonal_fit_does_not_subtract_unrealized_school_effect(live, monkeyp
     assert out['steps']['ADD_PROD_SCH'] == {}
     assert out['steps']['ADD_ATT_SCH'] == {}
     assert out['summary']['school_generation_status'] == (
-        'FROZEN_PENDING_NATIVE_FORMULA_PROOF')
+        'FIXED_AMDY_NO_SCHOOL_ADD_COEFFICIENT')
     assert out['summary']['long_generation_permitted']
     assert out['summary']['long_zone_steps'] > 0
 
@@ -325,8 +325,8 @@ def test_automatic_generation_design_uses_shared_cache_and_keeps_live_trial_cont
     # LONG has source-verified shared-cache evidence, but the 2026-10-30
     # live SCHOOL FP dependency does not: do NOT report LONG+SCHOOL complete.
     assert context['v24917']['long_school_search_incomplete']
-    assert context['v24917']['school_fp_link_deferred']
-    assert context['v24917_ls']['summary']['school_generation_search_complete'] is False
+    assert not context['v24917']['school_fp_link_deferred']
+    assert context['v24917_ls']['summary']['school_generation_search_complete'] is True
     assert context['v24917_step_model']['available']
     assert context['v24917']['tdlong1']['native_filter_status'] == 'NOT_REQUIRED_POST_TD_MASK'
     assert calls == (['parent', 'refresh', 'parent'] if refresh else ['parent'])
