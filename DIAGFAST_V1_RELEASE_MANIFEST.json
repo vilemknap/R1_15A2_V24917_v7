@@ -41,7 +41,7 @@
     "diagfast_tests/test_v2_bulk_numpy.py": "87a0a928a62f45018b809feca2b890e505143491011f04ce55e36bba271bb5e6",
     "diagfast_tools/refresh_source_manifest.py": "428cc365cccfff8feca7863f985940dd2aac40d92684967791edf2290b060462",
     "diagfast_tools/summarize_diagfast_profiles.py": "161792bf9bc4a1f93a4fe84cc99759ac648bb99e460cebd5a1e0a7d15f8e493e",
-    "genfix2_audit_tests/test_audit_regressions.py": "cc584dd3ce155138093e14f469908f0820aaa60d136df89694001d2bb754eb4a",
+    "genfix2_audit_tests/test_audit_regressions.py": "9d6568dc3b0a97b1dba1d86c0399b71634dc797f153d951262c9d26fbf98c119",
     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
     "helpers/R1_12D_PROFILE_ROSTER_V24917.py": "518b70b894dcd3156022fb60ff3933cfd04a955a9be890900a770585b741d9df",
