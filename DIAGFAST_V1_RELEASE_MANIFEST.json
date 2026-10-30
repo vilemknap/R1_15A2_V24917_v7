@@ -90,7 +90,7 @@
     "r1_15a2_td_joint_v24917.py": "89838ffd1e5f9b638588cc7e75b50a7f9dcedd91450cfd083fa9f6f20d2e81de",
     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
-    "r1_15a2_trial_adapter_v24917.py": "4bb307197d737f781255c0ccb6323c590dcdabc0c7a3cf33c3badbb645ab157b",
+    "r1_15a2_trial_adapter_v24917.py": "48af34367f6f9b2ffa1708ca6a028c884dfd5190dfb283d65e9f1e7a15372fb9",
     "r1_15a2_v24917_runtime.py": "6d2ae9dc4c275abcd99e9ddc79f194ff533ae42e146053fc5d48214437d1cbe2",
     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
@@ -151,7 +151,7 @@
     "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
-    "tools/refresh_v24917_manifests.py": "de90237191a68cb2d6f33932b0dbfea4899462b5eae1254cacdd479e62157dd0",
+    "tools/refresh_v24917_manifests.py": "db6e54a614b86d19b292b4884eeb510b75c14f3e1b631d544a85f31cf06101af",
     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
     "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0"
   }
