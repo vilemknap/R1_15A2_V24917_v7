@@ -43,6 +43,22 @@ def wrap_inner(original):
     return inner
 
 
+def wrap_dynamic_realization(original):
+    """Guarantee post-TD OSRM masking inside EVERY native LONG b/c probe."""
+    @functools.wraps(original)
+    def dynamic_with_long_mask(self):
+        if not joint.options().get("long_enabled", False):
+            return original(self)
+        from r1_15a2_long_post_td_mask_v24917 import execution_scope
+        outer = getattr(self, "outer_adapter", None)
+        if outer is None or getattr(outer, "_long_post_td_mask_enabled", False) is not True:
+            raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
+        with execution_scope(outer):
+            return original(self)
+    dynamic_with_long_mask._tdlong_dynamic_scope = True
+    return dynamic_with_long_mask
+
+
 def wrap_realization(original, ctrl):
     """Retain the existing combined/backtracking path, then bounded ablations.
 
@@ -149,17 +165,8 @@ def install(controller, print_fn=print):
     # and fresh native skims. Never mask in FROZEN_PATHS mode.
     old_dynamic = bridge.NoDirectMatrixWriteTDAdapter._execute_dynamic_realization
     if not getattr(old_dynamic, "_tdlong_dynamic_scope", False):
-        @functools.wraps(old_dynamic)
-        def dynamic_with_long_mask(self):
-            if not joint.options().get("long_enabled", False):
-                return old_dynamic(self)
-            from r1_15a2_long_post_td_mask_v24917 import execution_scope
-            if getattr(self, "outer_adapter", None) is None:
-                raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_OUTER_ADAPTER_MISSING")
-            with execution_scope(self.outer_adapter):
-                return old_dynamic(self)
-        dynamic_with_long_mask._tdlong_dynamic_scope = True
-        bridge.NoDirectMatrixWriteTDAdapter._execute_dynamic_realization = dynamic_with_long_mask
+        bridge.NoDirectMatrixWriteTDAdapter._execute_dynamic_realization = (
+            wrap_dynamic_realization(old_dynamic))
     # The active controller owns its own imported function; patch that actual
     # dispatch too.  All wrappers are installed after GENFIX2 / IZ wrappers.
     for module, name in ((bridge, "run_finecdf_inner"),
