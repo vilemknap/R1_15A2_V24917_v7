@@ -170,6 +170,29 @@ def test_envelope_bounds(mb, real_cfg):
     assert mb._salary_coefficient_bounds(cfg, 1.0)[:2] == (0.5, 2.0)
 
 
+@pytest.mark.parametrize("attr,upper", [
+    ("ADD_PROD_W", 2.5), ("ADD_PROD_S", 2.5),
+    ("ADD_ATT_W", 4.0), ("ADD_ATT_S", 4.0),
+])
+@pytest.mark.parametrize("phase", ["CATCH_UP", "REFINE"])
+def test_role_reference_reaches_byte_locked_multiblock_mapper(mb, real_cfg, attr, upper, phase):
+    cfg = tg.overlay_cfg(real_cfg, phase)
+    ref = mb._reference_coefficient(None, attr, 1, 1.0)
+    assert isinstance(ref, float) and float(ref) == 1.0
+    assert getattr(ref, "v24917_generation_role") in ("PROD", "ATT")
+    hard = mb._multiplicative_coefficient_bounds(
+        "DOMESTIC", cfg, current=1.0, reference=ref)
+    soft = mb._soft_multiplier_bounds("DOMESTIC", cfg, 1.0, ref)
+    assert hard[:2] == pytest.approx((0.75, upper))
+    assert soft == pytest.approx((0.75, upper))
+    # Generic / unrelated reference retains the prior scalar 2.0 band.
+    unchanged_ref = mb._reference_coefficient(None, "ADD_SALARY", 1, 1.0)
+    assert getattr(unchanged_ref, "v24917_generation_role", None) is None
+    assert mb._multiplicative_coefficient_bounds(
+        "DOMESTIC", cfg, current=1.0, reference=unchanged_ref)[:2] == (0.75, 2.0)
+    assert mb._salary_coefficient_bounds(cfg, 1.0)[:2] == (0.5, 2.0)
+
+
 def zone_rows(zones, value=1.9):
     out = []
     for z in zones:
