@@ -163,6 +163,22 @@ def overlay_cfg(cfg: Mapping[str, Any], phase: str) -> Dict[str, Any]:
 
 
 # --------------------------------------------------------------- multiblock
+class _RoleTaggedReference(float):
+    """Numerically identical coefficient reference with immutable row role.
+
+    The protected V24915/V24916 multiblock has no role argument on its bound
+    calls, but obtains the reference from _reference_coefficient immediately
+    before each bound. A float subclass carries the role through those
+    unchanged calls without mutating protected sources, reading Python frames
+    or relying on mutable global context. Ordinary float math and JSON remain
+    unchanged; only the V24917 installed bounds inspect the annotation.
+    """
+    def __new__(cls, value, role):
+        obj = float.__new__(cls, value)
+        obj.v24917_generation_role = role
+        return obj
+
+
 def _domestic_role_envelope(env, role, *, soft=False):
     # Only targeted WORK/SERVICE PROD/ATT callers supply role.  Generic bounds
     # queries retain the legacy scalar bands; SCHOOL and LONG are separate.
@@ -179,7 +195,7 @@ def _bounds_patch(orig_hard, orig_soft, mb):
     def hard(branch, cfg, current=None, reference=None, *, role=None):
         policy = policy_of(cfg)
         if policy is None or not mb._signed_generation_policy(cfg):
-            return orig_hard(branch, cfg, current, reference, role=role)
+            return orig_hard(branch, cfg, current, reference)
         env = policy["envelope"]
         if str(branch).upper() == "ZAHR":
             ref = float(reference if reference is not None and reference > EPS
@@ -187,7 +203,8 @@ def _bounds_patch(orig_hard, orig_soft, mb):
             lo, hi = (ref * float(x) for x in env["zahr_reference_multiplier"])
             name = "RUN_START_REFERENCE_RELATIVE_MULTIPLIER"
         else:
-            lo, hi = _domestic_role_envelope(env, role)
+            effective_role = role or getattr(reference, "v24917_generation_role", None)
+            lo, hi = _domestic_role_envelope(env, effective_role)
             name = "AMDY_LIKE_DOMESTIC_ABSOLUTE_ENVELOPE"
         if current is not None and math.isfinite(float(current)):
             lo, hi = min(lo, float(current)), max(hi, float(current))
@@ -198,7 +215,7 @@ def _bounds_patch(orig_hard, orig_soft, mb):
     def soft(branch, cfg, current, reference=None, *, role=None):
         policy = policy_of(cfg)
         if policy is None or not mb._signed_generation_policy(cfg):
-            return orig_soft(branch, cfg, current, reference, role=role)
+            return orig_soft(branch, cfg, current, reference)
         if cfg.get(PHASE_KEY) == "CATCH_UP":
             lo, hi, _ = hard(branch, cfg, current, reference, role=role)
             return lo, hi          # no damping inside the hard envelope
@@ -206,7 +223,8 @@ def _bounds_patch(orig_hard, orig_soft, mb):
         if str(branch).upper() == "ZAHR":
             ref = float(reference if reference is not None and reference > EPS else current)
             return tuple(ref * float(x) for x in env["refine_zahr_reference_soft"])
-        return _domestic_role_envelope(env, role, soft=True)
+        effective_role = role or getattr(reference, "v24917_generation_role", None)
+        return _domestic_role_envelope(env, effective_role, soft=True)
     soft.__r1_v24917__ = True
     return hard, soft
 
@@ -231,12 +249,11 @@ def targeted_zone_direct(mb, normalized, zone_map, cfg, reference_values, skippe
             continue
         reference = mb._reference_coefficient(reference_values, attr, z, float(current))
         low, high, envelope = mb._multiplicative_coefficient_bounds(
-            branch, cfg, current=float(current), reference=reference,
-            role=row["role"])
+            branch, cfg, current=float(current), reference=reference)
         step_low = max(-max_down, math.log(max(EPS, low) / float(current)))
         step_high = min(max_up, math.log(max(EPS, high) / float(current)))
         soft_low, soft_high = mb._soft_multiplier_bounds(
-            branch, cfg, float(current), reference, role=row["role"])
+            branch, cfg, float(current), reference)
         step, changed = mb._damp_outward_log_step(float(current), requested, soft_low,
                                                   soft_high, soft_factor)
         bounded = min(step_high, max(step_low, step))
@@ -276,7 +293,30 @@ def patch_multiblock(mb=None) -> Dict[str, Any]:
     if mb is None:
         import r1_15a2_multiblock as mb
     if getattr(mb._multiplicative_coefficient_bounds, "__r1_v24917__", False):
-        return {"patched": True, "already": True}
+        if not getattr(mb._reference_coefficient,
+                       "__r1_v24917_role_reference__", False):
+            raise RuntimeError("V24917_ROLE_REFERENCE_PATCH_MISSING")
+        return {"patched": True, "already": True,
+                "role_reference_tagging": True}
+    if getattr(mb._reference_coefficient,
+               "__r1_v24917_role_reference__", False):
+        raise RuntimeError("V24917_ROLE_REFERENCE_PARTIAL_INSTALL")
+    previous_reference = mb._reference_coefficient
+    roles_by_attr = {
+        str(attr).upper(): role
+        for (family, role, _branch), attr in mb.GENERATION_ATTR_MAP.items()
+        if family in ("WORK", "SERVICE") and role in ("PROD", "ATT")
+    }
+
+    @functools.wraps(previous_reference)
+    def tagged_reference(reference_values, attr, zone_no, fallback):
+        value = previous_reference(reference_values, attr, zone_no, fallback)
+        role = roles_by_attr.get(str(attr).upper())
+        if role is None:
+            return value
+        return _RoleTaggedReference(value, role)
+
+    tagged_reference.__r1_v24917_role_reference__ = True
     hard, soft = _bounds_patch(mb._multiplicative_coefficient_bounds, mb._soft_multiplier_bounds, mb)
     orig_refine = mb._signed_generation_refinement
 
@@ -287,10 +327,13 @@ def patch_multiblock(mb=None) -> Dict[str, Any]:
                                         skipped, min_step)
         return orig_refine(normalized, zone_map, cfg, reference_values, skipped, min_step)
     refine.__r1_v24917__ = True
+    mb._reference_coefficient = tagged_reference
     mb._multiplicative_coefficient_bounds = hard
     mb._soft_multiplier_bounds = soft
     mb._signed_generation_refinement = refine
-    return {"patched": True, "already": False, "release": RELEASE}
+    return {"patched": True, "already": False, "release": RELEASE,
+            "role_reference_tagging": True,
+            "protected_multiblock_source_modified": False}
 
 
 # --------------------------------------------------------------- zone bounds
@@ -322,8 +365,7 @@ def zone_bounds(mb, zone_rows, cfg, reference_values=None) -> Dict[Tuple[str, st
                     continue
                 reference = mb._reference_coefficient(reference_values, attr, int(z), float(current))
                 low, high, _ = mb._multiplicative_coefficient_bounds(
-                    branch, cfg, current=float(current), reference=reference,
-                    role=role)
+                    branch, cfg, current=float(current), reference=reference)
                 dom_lo = math.log(max(EPS, low) / float(current))
                 dom_hi = math.log(max(EPS, high) / float(current))
                 if (family, role, branch) == ("WORK", "ATT", "DOMESTIC"):
