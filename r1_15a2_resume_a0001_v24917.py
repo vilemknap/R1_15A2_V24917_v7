@@ -113,8 +113,13 @@ def load_continuation(paths, recipe, hash_reference):
             "GENERATION_ACCEPTED_STEP_MISMATCH")
     basis = (generation.get("path_epoch_transition") or {}).get("basis_hash")
     require(basis == recipe["path_epoch"]["basis_hash"], "GENERATION_PATH_BASIS_MISMATCH")
-    require((run.get("latest_accepted_checkpoint") or {}).get("checkpoint", {}).get("path", "").replace("\\", "/").split("/")[-1] ==
+    latest = run.get("latest_accepted_checkpoint") or {}
+    # Real 2026-10-30 RUN_STATUS has a flat {path, sha256, size} record.
+    # Do not confuse it with the separately uploaded SLOT_A wrapper.
+    require(latest.get("path", "").replace("\\", "/").split("/")[-1] ==
             recipe["checkpoint_filename"], "RUN_LATEST_CHECKPOINT_MISMATCH")
+    require(latest.get("sha256") == recipe["expected_checkpoint_raw_sha256"],
+            "RUN_LATEST_CHECKPOINT_SHA_MISMATCH")
     reference = read_json(paths["reference"])
     require(isinstance(reference, dict) and
             reference.get("schema") == "R1_15A2_SHARED_OBJECTIVE_V22", "REFERENCE_SCHEMA_MISMATCH")
@@ -169,6 +174,59 @@ def validate_continuation(cfg, recipe):
     return copy.deepcopy(row)
 
 
+def verify_legacy_profile_hits(collector):
+    """Prove profile-index attribution for a non-persistent V24916 path store.
+
+    That store has no observation_authority_hash/profile_order_hash metadata:
+    these fields are added by PersistentPathCacheManager.publish(), which was
+    disabled in the failed source run. Instead, reconstruct each stored
+    profile_hit from its immutable geometry edge IDs and the live ordered
+    12D profile edge keys. The entire comparison is a read-only SQL scan;
+    no COM path list, path export or native assignment is invoked.
+    """
+    from collections import Counter
+    from r1_15a2_two_mode_v238 import _unpacked
+    from r1_15a2_supply import SupplyContractError
+
+    conn = collector.db
+    rows = conn.execute("SELECT gid,edge_ids,edge_count FROM geometry ORDER BY gid")
+    hits = iter(conn.execute(
+        "SELECT gid,profile_index,multiplicity FROM profile_hits ORDER BY gid,profile_index"))
+    current_hit = next(hits, None)
+    routes = rows_checked = links_checked = 0
+    for gid, blob, edge_count in rows:
+        gid = int(gid)
+        sequence = _unpacked(blob)
+        if len(sequence) != int(edge_count):
+            raise SupplyContractError("A0001_RESUME_GEOMETRY_EDGE_COUNT_MISMATCH")
+        expected = Counter()
+        for eid in sequence:
+            eid = int(eid)
+            if not 0 < eid < len(collector.edge_keys):
+                raise SupplyContractError("A0001_RESUME_GEOMETRY_EDGE_ID_INVALID")
+            key = collector.edge_keys[eid]
+            for profile_index in collector.profile_index_by_key.get(key, ()):
+                expected[int(profile_index)] += 1
+        while current_hit is not None and int(current_hit[0]) == gid:
+            index = int(current_hit[1])
+            multiplicity = int(current_hit[2])
+            if expected.pop(index, None) != multiplicity or multiplicity <= 0:
+                raise SupplyContractError(
+                    "A0001_RESUME_PROFILE_HITS_STATIC_AUTHORITY_MISMATCH")
+            rows_checked += 1
+            current_hit = next(hits, None)
+        if expected or (current_hit is not None and int(current_hit[0]) < gid):
+            raise SupplyContractError("A0001_RESUME_PROFILE_HITS_STATIC_AUTHORITY_MISMATCH")
+        routes += 1
+        links_checked += len(sequence)
+    if current_hit is not None or routes <= 0:
+        raise SupplyContractError("A0001_RESUME_PROFILE_HITS_STATIC_AUTHORITY_MISMATCH")
+    return {"method": "RECONSTRUCT_PROFILE_HITS_FROM_READ_ONLY_GEOMETRY",
+            "passes": True, "routes_checked": routes,
+            "links_checked": links_checked, "hit_rows_checked": rows_checked,
+            "com_path_export_calls": 0}
+
+
 def restore_readonly_path_epoch(adapter, diag, snapshot, paths, recipe, output_folder,
                                 collector_type=None):
     """Reopen original SQLite in read-only mode; validate original B basis."""
@@ -197,7 +255,8 @@ def restore_readonly_path_epoch(adapter, diag, snapshot, paths, recipe, output_f
                 "design_only_duplicate_scope_policy", "DIAGNOSTIC_EXCLUDE_CONFLICTED_DRIVERS"),
             max_unique_sequences=seq.get("max_unique_sequences", 100000),
             max_pairs_per_market=seq.get("max_pairs_per_market", 64),
-            read_only=True, require_profile_metadata=True)
+            read_only=True, require_profile_metadata=False)
+        profile_proof = verify_legacy_profile_hits(collector)
         require(collector.parent_hash == recipe["epoch_origin_snapshot_state_hash"],
                 "PATH_STORE_ORIGIN_MISMATCH")
         require(collector.path_basis_hash() == recipe["path_epoch"]["basis_hash"],
@@ -235,7 +294,7 @@ def restore_readonly_path_epoch(adapter, diag, snapshot, paths, recipe, output_f
             "origin_state_hash": collector.parent_hash,
             "basis_hash": collector.path_basis_hash(),
             "comparison_basis_hash": collector.path_basis_comparison_hash(),
-            "profile_rebind": audit,
+            "profile_rebind": audit, "legacy_profile_hits_proof": profile_proof,
         }
         from r1_15a2_two_mode_v238 import atomic_json
         atomic_json(Path(output_folder) / "A0001_PATH_EPOCH_RESTORE.json", record)
