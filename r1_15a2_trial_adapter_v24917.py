@@ -90,6 +90,36 @@ class VisumAdapter(_V24916ActiveAdapter):
             long_incidence_read.bind_after_assignment(self)
         return epoch
 
+    def diagnostics(self, folder, label="CURRENT"):
+        """Rebind LONG only after a semantically unchanged diagnostic read.
+
+        The PERF2 diagnostic reader invalidates the candidate readback mutation
+        epoch because CountLocation UDAs may be written.  This alone does not
+        change a completed assignment, but no stale binding is ever accepted.
+        """
+        bound = getattr(self, "_long_incidence_assignment_binding", None)
+        current = None
+        if bound is not None:
+            current = long_incidence_read._epoch(self, require_completed=True)
+            if current != bound:
+                current = None
+        if current is None:
+            return super().diagnostics(folder, label=label)
+
+        before = self.generation_guard_snapshot()
+        result = super().diagnostics(folder, label=label)
+        after = long_incidence_read._epoch(self, require_completed=True)
+        if any(after[key] != current[key] for key in (
+                "assignment_epoch", "skim_epoch_hash", "assignment_token",
+                "zone_order_sha256")):
+            raise RuntimeError("LONG_INCIDENCE_DIAGNOSTICS_ASSIGNMENT_CHANGED")
+        if after["mutation_epoch"] != current["mutation_epoch"] + 1:
+            raise RuntimeError("LONG_INCIDENCE_DIAGNOSTICS_MUTATION_EPOCH_UNEXPECTED")
+        if self.generation_guard_snapshot() != before:
+            raise RuntimeError("LONG_INCIDENCE_DIAGNOSTICS_MODEL_CHANGED")
+        long_incidence_read.bind_after_assignment(self)
+        return result
+
     def td_target_plan(self, diag, folder):
         """Add SCHOOL and LONG to the native TDJOINT1 active pool independently.
 
