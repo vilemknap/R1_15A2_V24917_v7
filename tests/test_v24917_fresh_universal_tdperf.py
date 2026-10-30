@@ -35,7 +35,7 @@ def valid_options():
             "td_policy": "ALWAYS", "td_every_n_cycles": 1,
             "td_during_catchup": True,
             "mg_enabled": True, "mg_min_ratio": 0.75,
-            "mg_max_ratio": 2.5}
+            "mg_max_ratio": 3.0}
 
 
 def valid_cfg():
@@ -54,7 +54,7 @@ def runtime_status():
             "options": {"td_policy": "ALWAYS", "td_every_n_cycles": 1,
                         "td_during_catchup": True, "td_first_cycle": True,
                         "mg_enabled": True, "mg_min_ratio": 0.75,
-                        "mg_max_ratio": 2.5}}},
+                        "mg_max_ratio": 3.0}}},
         "tdjoint1": {"installed": True, "release": "TDJOINT",
                      "options": {"enabled": True, "long_enabled": True,
                                  "school_enabled": True, "inner_mode": "DYNAMIC"}},
@@ -167,7 +167,7 @@ def test_options_file_explicitly_schedules_native_td_every_cycle():
     assert options["td_inner_mode"] == "DYNAMIC"
     assert options["td_count_weight"] == 0.6
     assert options["td_inner_max_evaluations"] == 60
-    assert options["mg_max_ratio"] == 2.5
+    assert options["mg_max_ratio"] == 3.0
 
 
 def test_actual_demand_policy_runs_td_for_every_one_of_100_cycles_even_in_catchup(monkeypatch):
@@ -354,8 +354,8 @@ def test_relocate_parent_lock_workspace_without_touching_source(tmp_path):
     assert installed["fresh_universal"]["fresh_contract"]["accepted_count_start"] == 0
     assert installed["fresh_universal"]["fresh_contract"]["td_skipping_allowed"] is False
     assert installed["fresh_universal"]["fresh_contract"]["td_policy"] == "ALWAYS"
-    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_prod_bounds"] == [0.75, 2.5]
-    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_att_bounds"] == [0.75, 4.0]
+    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_prod_bounds"] == [0.75, 3.0]
+    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_att_bounds"] == [0.75, 5.0]
     assert installed["fresh_universal"]["path_epoch"]["native_export_only"]
     assert (workspace / "FRESH_UNIVERSAL_BOOTSTRAP_AUTHORITY.json").exists()
     assert not (original.parent/".R1_15A2_V16.lock").exists()
