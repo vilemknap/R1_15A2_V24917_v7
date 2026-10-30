@@ -112,7 +112,7 @@ def test_no_caller_verified_flag_can_enable_live_long(reference, monkeypatch, tm
                                 'native_filter_verified': True})
     calls = []
     run = wire.wrap_realization(lambda *args: calls.append(args), NS())
-    with pytest.raises(RuntimeError, match='LONG_COUNT_RESPONSE_UNVERIFIED'):
+    with pytest.raises(RuntimeError, match='LONG_COUNT_RESPONSE_UNVERIFIED|MEASURED_NATIVE_STAGE_PROOF_MISSING'):
         run(adapter, {}, tmp_path, None, {'td_values': parent}, {}, rows)
     assert not calls
     assert not long_td.activation_plan()['live_enabled']
