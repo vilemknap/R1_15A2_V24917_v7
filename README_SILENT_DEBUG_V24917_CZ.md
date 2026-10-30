@@ -65,8 +65,16 @@ Pro další debug nahraj **jen**
 
 ZIP obsahuje popis chyby, chvost Python logu a jen vybrané relevantní
 `RUN_STATUS`, `00_RESULT`, `LONG_MASK_RESULT`, `LONG_MASK_EXECUTION_PLAN`
-a související JSON/TXT bez obrovských matic. Poslední balíček stačí
-přiložit do další konverzace místo 20 souborů.
+a související JSON/TXT bez obrovských matic. Od 30. 10. 2026 obsahuje
+navíc `SILENT_CALIBRATION_SUMMARY.json`: kompaktní souhrn obřích
+Generation/TD výsledků (GEH, přijetí, příčiny zamítnutí, součet
+MOBILITYZONE1 porušení, TD fallback, rollback). Při další chybě stačí
+přiložit poslední ZIP místo 20 souborů.
+
+Oprava `SCHOOL_FP_LINK_POLICY` v navazující větvi dočasně pozastavuje
+jen neověřenou produkci/atrakci SCHOOL v Generation; pokračuje WORK/SERVICE
+a SCHOOL TD. Nejde o zrušení kontrol — chybějící link musí být doložen
+nativní formulí Visumu před opětovným zapnutím SCHOOL Generation.
 
 **Důležité:** není potvrzen živý PASS ve Windows COM. Před dalším
 dlouhým během je třeba ověřit zejména `BASELINE_FULL_RECOMPUTE`.
