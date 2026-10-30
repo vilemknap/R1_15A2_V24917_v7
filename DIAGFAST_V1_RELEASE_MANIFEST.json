@@ -136,7 +136,7 @@
     "tests/test_v24917_safetyfix1.py": "6881853827eea163f77201536dcd77536292a11a16a23d550dc97074ad661999",
     "tests/test_v24917_school_td_activation.py": "370c0cde2ccbf6dea472969594abe70d2ff4f2216f3af8d63cfef37d5020d418",
     "tests/test_v24917_school_td_review.py": "3cab4405e3c5e3eec0d2e09af449378e2d010b3f4cf0b823750402d1ab56512e",
-    "tests/test_v24917_silent_debug.py": "7e50b61ab970acfccb4bed85f4c1df7110d2e8fb9e8b4e3e7341a505c95e3c8f",
+    "tests/test_v24917_silent_debug.py": "e1068ec5999b84b6e58666542677714a164170f3d302db6c74d621baefb25e57",
     "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
     "tests/test_v24917_step_search.py": "10b78a9068ffab80e67c4dbe0761898230736a6f302fe7ad059279d1aafd123f",
     "tests/test_v24917_supply_mix.py": "31803439c9c23d27b3829d66e7b9e95538f7922b111ca95a5158981f8c081cfe",
