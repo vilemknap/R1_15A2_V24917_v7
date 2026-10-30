@@ -303,6 +303,10 @@ def guard_ls(ls, authority):
                                   "after": 0.0, "reason": "SCHOOL_FP_LINK_UNVERIFIED"})
                     changed = True
                 items[z] = 0.0
+            # Do not emit hundreds of zero-step SCHOOL COM write rows from
+            # lsgen.rows_at_scale(): remove these keys entirely. Missing
+            # variables are already interpreted as zero by the effect operator.
+            steps[attr] = {}
     # If optional LS data is unavailable, freeze that family's attraction too.
     for attr,fam in ATT_FAMILY.items():
         if fam in authority["unavailable"]:
