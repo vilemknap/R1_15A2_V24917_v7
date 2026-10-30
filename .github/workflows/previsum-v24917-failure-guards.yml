@@ -15,6 +15,7 @@ on:
       - codex/a0001-hard-disk-reload-20261030
       - codex/v24917-tdlong-school-epochfix-20261030
       - codex/v24917-b0002-cycle2-native-epoch-20261030
+      - codex/v24917-b0002-diagfast-supplymix-20261030
   workflow_dispatch:
 permissions:
   contents: read
@@ -58,6 +59,9 @@ jobs:
           python -m py_compile 01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py
           python -m py_compile tests/test_v24917_resume_b0002_cycle2.py
           python -m py_compile tests/test_v24917_resume_a0001_td_no_enum.py
+          python -m py_compile r1_15a2_diagfast_direct_v2.py r1_15a2_diagfast_parity_v1.py r1_15a2_supply_mix_v24917.py
+          python -m py_compile diagfast_tests/test_relaxed_semantic_parity_v3.py diagfast_tests/test_tolerant_numeric_parity.py
+          python -m py_compile diagfast_tests/test_direct_feature_isolation.py tests/test_v24917_supplymix_completion_isolation.py
       - name: Verify sealed runtime and DIAGFAST files (read only)
         run: |
           python - <<'PY'
@@ -87,6 +91,9 @@ jobs:
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_resume_a0001_td_no_enum.py tests/test_v24917_long_diagnostics_epoch_fix.py tests/test_v24917_epoch_td_fairness_20261030.py
       - name: Verified B0002 cycle 2 restart and fresh native route epoch regression
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_resume_b0002_cycle2.py tests/test_v24917_epoch_td_fairness_20261030.py
+      - name: Combined B0002, relaxed DIAGFAST and SupplyMix integration regression
+        run: |
+          python -m pytest -q -p no:cacheprovider tests/test_v24917_resume_b0002_cycle2.py tests/test_v24917_epoch_td_fairness_20261030.py tests/test_v24917_supplymix_completion_isolation.py tests/test_v24917_genfix2.py diagfast_tests/test_relaxed_semantic_parity_v3.py diagfast_tests/test_tolerant_numeric_parity.py diagfast_tests/test_direct_feature_isolation.py diagfast_tests/test_parity.py
       - name: Full main regression in isolated process
         run: python -m pytest -q -p no:cacheprovider tests
       - name: DIAGFAST suite in isolated process
