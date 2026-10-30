@@ -231,8 +231,11 @@ def test_end_to_end_design_targeted_coarse_and_gate_passes(mb, real_cfg):
     cfg = tg.overlay_cfg(real_cfg, "CATCH_UP")
     zr = zone_rows(zones, value=1.9)            # within new W/S production 3.0; attraction 5.0
     bounds = tg.zone_bounds(mb, zr, cfg)
-    assert bounds[("WORK", "PROD", 1)] == pytest.approx((DN, math.log(3.0 / 1.9)))
-    assert bounds[("SERVICE", "PROD", 1)] == pytest.approx((DN, math.log(3.0 / 1.9)))
+    # The new hard maximum is 3.0, but the existing +50% per-cycle cap
+    # dominates at current=1.9 (1.9 * 1.5 = 2.85 < 3.0).
+    max_prod_step = min(UP, math.log(3.0 / 1.9))
+    assert bounds[("WORK", "PROD", 1)] == pytest.approx((DN, max_prod_step))
+    assert bounds[("SERVICE", "PROD", 1)] == pytest.approx((DN, max_prod_step))
     assert bounds[("WORK", "ATT", 1)][1] == pytest.approx(UP)
     assert bounds[("SERVICE", "ATT", 1)][1] == pytest.approx(UP)
     rows, summary, _, _ = zf.fit(inc, zones, bounds, cfg, tg.DEFAULT_POLICY["fit"])
