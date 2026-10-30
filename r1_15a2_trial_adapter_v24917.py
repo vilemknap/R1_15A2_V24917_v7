@@ -42,6 +42,7 @@ import r1_15a2_long_od_mask_v24917 as longmask
 import r1_15a2_long_post_td_mask_v24917 as post_td_mask
 import r1_15a2_long_incidence_read_v24917 as long_incidence_read
 import r1_15a2_long_cache_generation_v24917 as long_cache
+import r1_15a2_demand_policy_v1 as long_opts
 import r1_15a2_boundary_generation_v24917 as bdgen
 import r1_15a2_boundary_pa_v24917 as bdpa
 import r1_15a2_mobility_guard_v24917 as mguard
@@ -66,7 +67,11 @@ class VisumAdapter(_V24916ActiveAdapter):
                               "last_phase": None, "last_ratio": None,
                               "long_school_activation": dict(self.v24917_ls),
                               "ls_incomplete_current_cycle": False,
-                              "longguard1": longguard.RELEASE}
+                              "longguard1": longguard.RELEASE,
+                              "long_generation_requested": bool(
+                                  long_opts.load_options()["long_generation_enabled"]),
+                              "long_composite_td_requested": bool(
+                                  long_opts.load_options()["long_composite_td_enabled"])}
 
     def assign(self, folder, *, supply_only):
         with post_td_mask.execution_scope(self):
@@ -82,6 +87,34 @@ class VisumAdapter(_V24916ActiveAdapter):
         if epoch is not None:
             long_incidence_read.bind_after_assignment(self)
         return epoch
+
+    def td_target_plan(self, diag, folder):
+        """Keep W/S targeting and add one atomic LONG_COMPOSITE group.
+
+        In global-IDP fallback the FineCDF loader already exposes the full
+        target set, including the one LONG aggregate. In a selected W/S mask,
+        never silently starve LONG or copy its 512-point target into 5 layers.
+        The live-native readiness proof is made BEFORE parameter mutation
+        by TDJOINT1, not by fabricating a TD_TARGET_PLAN flag here.
+        """
+        plan = super().td_target_plan(diag, folder)
+        if not long_opts.load_options()["long_composite_td_enabled"]:
+            return plan
+        plan = dict(plan)
+        if plan.get("status") == "ACTIVE" and plan.get("active_components"):
+            selected = list(dict.fromkeys(str(x) for x in plan["active_components"]))
+            if "SCHOOL" in selected or "LONG_COMPOSITE" in selected:
+                raise supply_visum.SupplyContractError("TDLONG_COMPOSITE_TARGET_MASK_COLLISION")
+            selected.append("LONG_COMPOSITE")
+            plan["active_components"] = selected
+            plan["long_composite_policy"] = "SHARED_B_OFFSET_LOG_NEG_C_5_COMPONENTS"
+            plan["long_count_response"] = "LIVE_NATIVE_DYNAMIC_ASSIGNMENT_REQUIRED"
+            plan["targeted_long_component_count"] = 1
+            rt.write_json(Path(folder) / "TD_ACTIVE_COMPONENT_MASK.json", plan)
+        else:
+            plan["long_composite_policy"] = "GLOBAL_IDP_FALLBACK_INCLUDES_ONE_LONG_COMPOSITE"
+            plan["long_count_response"] = "LIVE_NATIVE_DYNAMIC_ASSIGNMENT_REQUIRED"
+        return plan
 
     def long_profile_incidence(self, diag, folder):
         """Explicit read-only LONG audit using the same ordered 12D profile rows.
@@ -257,8 +290,11 @@ class VisumAdapter(_V24916ActiveAdapter):
         self.v24917_status["longguard1_parent_status"] = self._longguard1_parent.get("status")
         self.v24917_status["longguard1_parent_short"] = self._longguard1_parent.get("below_min_km")
         long_observed = None
-        long_cache_error = "PARENT_SUPPORT_OR_FINECDF_UNVERIFIED"
-        if ((getattr(self, "v24917_ls", None) or {}).get("active")
+        long_requested = bool(long_opts.load_options()["long_generation_enabled"])
+        long_cache_error = ("PARENT_SUPPORT_OR_FINECDF_UNVERIFIED" if long_requested
+                            else "LONG_ZONAL_GENERATION_EXPLICITLY_DISABLED")
+        if (long_requested
+                and (getattr(self, "v24917_ls", None) or {}).get("active")
                 and self._longguard1_parent.get("long_generation_permitted")):
             try:
                 try:
@@ -338,6 +374,7 @@ class VisumAdapter(_V24916ActiveAdapter):
                             # current NATIVE_CL skim is unverified, defer only
                             # LONG production. SCHOOL and W/S can still run.
                             ls_fit["longguard1_allow_long"] = bool(
+                                long_requested and
                                 self._longguard1_parent.get("long_generation_permitted"))
                             ls_fit["tdlong1_source_status"] = self._tdlong1_mask.get("status")
                             ls_fit["tdlong1_native_filter_verified"] = False
@@ -415,6 +452,12 @@ class VisumAdapter(_V24916ActiveAdapter):
                                               if ls_deferred else {"status": "INACTIVE", "activation": dict(ls_activation)})),
                              "long_school_search_incomplete": bool(ls_deferred or ls_design_error or longguard_deferred or tdlong1_deferred or school_fp_deferred or fallback or not mz["target_satisfied"]),
                              "school_fp_link_deferred": school_fp_deferred,
+                             "long_generation_requested": long_requested,
+                             "long_generation_candidate_eligible": bool(
+                                 (ls or {}).get("summary", {}).get("long_generation_permitted")
+                                 and context.get("_long_cache_receipt")),
+                             "long_composite_td_requested": bool(
+                                 long_opts.load_options()["long_composite_td_enabled"]),
                              "longguard1_parent": self._longguard1_parent,
                              "longguard1_long_step_deferred": longguard_deferred,
                              "tdlong1": {"source_status": self._tdlong1_mask.get("status"),
