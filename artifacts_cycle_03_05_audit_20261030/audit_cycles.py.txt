@@ -1,0 +1,118 @@
+"""Read-only checks of the 19 user-uploaded result files; no Visum access."""
+import hashlib
+import json
+import math
+from pathlib import Path
+
+TASK=Path('/workspace/work/cycle_03_05_audit_20261030')
+OUT=TASK/'source/artifacts_cycle_03_05_audit_20261030'
+manifest=json.loads((TASK/'UPLOADS.json').read_text())
+assert len(manifest)==19 and all(e['status']=='fulfilled' for e in manifest)
+data={e['label']:json.loads(Path(e['result']['path']).read_text()) for e in manifest}
+checks=[]
+
+def check(condition,label):
+    assert condition,label
+    checks.append(label)
+
+cycles=[]
+for label in ('cycle3','cycle4','cycle5'):
+ c=data[label];g=c['generation'];b=g['objective_before'];a=g['objective_after'];td=c['td']
+ check(g['status']=='ACCEPTED' and g['adopted_in_place'],label+':generation_adopted')
+ check(g['solver_converged'] and g['gap']>0,label+':native_solver_reported_converged')
+ check(a['raw_cal']<b['raw_cal'],label+':weighted_geh_improved')
+ check(c['generation_completed'] and c['td_completed'] and c['td_realization_complete'],label+':substeps_returned')
+ check(c['status']=='PROGRESS_CONTINUE_DEMAND' and c['progress_continue'] and not c['joint_stationary'],label+':continue_not_stationary')
+ accepted=[r for r in g['attempts'] if r['decision']['accepted']]
+ check(len(accepted)==1 and accepted[0]['trial']==g['early_stop_trial'],label+':one_adopted_trial')
+ chosen=accepted[0];guard=chosen['decision']['longguard1_parent']
+ check(guard['support_clean'] and guard['below_min_km']==0,label+':long_osrm_support_clean')
+ check(guard['fine_100_200_rmse'] is None and not guard['fine_cdf_verified'] and not guard['long_generation_permitted'],label+':long_generation_still_blocked')
+ check(chosen['decision']['protected_guard']['passes'] and chosen['decision']['severity_transition_guard']['passes'] and chosen['decision']['mobility_guard_live']['passes'],label+':chosen_guards_passed')
+ cycles.append({'cycle':c['cycle'],'status':c['status'],'generation':{
+   'status':g['status'],'trial':g['early_stop_trial'],'scale':g['candidate']['scale'],
+   'geh_before':b['raw_cal'],'geh_after':a['raw_cal'],'improvement_percent':100*(1-a['raw_cal']/b['raw_cal']),
+   'model_observed_ratio_before':b['cal_metrics']['model_obs_ratio'],'model_observed_ratio_after':a['cal_metrics']['model_obs_ratio'],
+   'geh_ge20_before':b['cal_metrics']['geh_ge20'],'geh_ge20_after':a['cal_metrics']['geh_ge20'],
+   'geh_ge30_before':b['cal_metrics']['geh_ge30'],'geh_ge30_after':a['cal_metrics']['geh_ge30'],
+   'gap':g['gap'],'rows_reported':g['rows'],'ls_search_incomplete':g['ls_search_incomplete'],
+   'attempts':[{'trial':r['trial'],'scale':r['candidate']['scale'],'status':r['status'],
+                'geh':r['decision']['cal_objective_after'],'reasons':r['decision']['reasons']} for r in g['attempts']],
+   'longguard':{k:guard[k] for k in ('total_volume','below_min_km','support_clean','fine_100_200_rmse','fine_cdf_verified','long_generation_permitted')}},
+   'td_status':td['status'],'state_hash_start':c['state_hash_start'],'state_hash_end':c['state_hash_end'],
+   'diagnostic_hash_end':c['diagnostic_hash_end']})
+check(data['cycle3']['state_hash_end']==data['cycle4']['state_hash_start'],'state_chain_3_to_4')
+check(data['cycle4']['state_hash_end']==data['cycle5']['state_hash_start'],'state_chain_4_to_5')
+check(data['generation']==data['cycle3']['generation'],'standalone_generation_matches_cycle_3')
+check(data['td3']==data['cycle3']['td'],'standalone_td3_matches_cycle_3')
+check(data['td1']==data['td2']==data['cycle5']['td'],'both_standalone_skip_files_are_cycle_5')
+for label in ('cycle4','cycle5'):
+ check(data[label]['td']['status']=='TD_SKIPPED_BY_RUN_POLICY' and data[label]['td']['skip_policy_reason']=='NOT_DUE',label+':td_skipped_by_schedule')
+td=data['cycle3']['td'];j=td['inner']['tdjoint'];attempt=td['realization']['attempts'][0];decision=attempt['decision']
+check(td['status']=='ACCEPTED_FINECDF_TD' and decision['accepted'] and attempt['scale']==1.,'cycle3_td_accepted_at_scale_1')
+check(td['inner']['td_evaluations']==60 and j['mode']=='DYNAMIC' and j['w_cnt']==.6 and j['w_idp']==.4,'td_dynamic_budget_and_weights')
+check(set(j['component_pool'])==set(td['inner']['active_components'])==set(data['td_plan']['active_components']),'td_target_pool_consistent')
+check({'SCHOOL','LONG_COMPOSITE'}<=set(j['component_pool']),'school_long_in_td_active_pool')
+check(j['long_composite_live_readiness']['status']=='READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE','long_td_current_native_readiness')
+check(j['stop_reason']=='TD_EVALUATION_BUDGET' and td['inner']['stop_reason']=='LONG_SCHOOL_DESIGN_UNVERIFIED','distinct_solver_stop_and_outer_incomplete_reason')
+changed={r['component']:r for r in td['changed_rows']}
+check(set(changed)=={'WORK_noE_noC','SERV_noE_noC','SCHOOL'},'td_changed_three_groups_without_long')
+school=next(r for r in decision['selected_component_checks'] if r['component']=='SCHOOL')
+check(school['passes'] and school['after_objective']<school['before_objective'],'school_target_objective_improved')
+check(changed['SCHOOL']['candidate_b']==changed['SCHOOL']['parent_b'],'school_b_held_c_changed')
+check(decision['cal_csd_objective_after']<decision['cal_csd_objective_before'],'td_outer_weighted_geh_improved')
+supply=data['supply'];embedded=dict(data['cycle4']['generation']['v24917_supplymix']);embedded.pop('folder',None)
+check(embedded==supply and supply['outer_cycle']==4,'supply_matches_cycle_4')
+check(supply['status']=='NO_ACCEPTED_TRIAL' and supply['search_complete'] and not supply['stationarity_confirmed'],'supply_completed_without_acceptance')
+check(len(supply['attempts'])==2 and all(r['status']=='REJECTED' for r in supply['attempts']),'supply_both_attempts_rejected')
+parent=supply['objective_before']
+for r in supply['attempts']:
+ check(r['objective_after']['raw_cal']>parent['raw_cal'] and r['objective_after']['total']>parent['total'],'supply_trial_%d_worsened_both_objectives'%r['trial'])
+changes={tuple(r['key']):r for r in data['supply_candidate']['changes']};back={tuple(r['key']):r for r in data['supply_readback']}
+check(changes.keys()==back.keys() and len(changes)==16,'supply_trial_2_keys_match')
+check(data['supply_candidate']['candidate_id']==supply['attempts'][-1]['candidate_id'],'supply_candidate_matches_last_trial')
+for key,r in changes.items():
+ check(r['new']==back[key]['new']==back[key]['readback'] and r['expected_old']==back[key]['expected_old'] and math.isclose(r['new']-r['expected_old'],r['delta'],abs_tol=1e-12),'supply_readback_'+str(key))
+rb=data['rollback'];proof=rb['genfix2_parent_proof'];diag=proof['diagnostics']
+check(rb['passes'] and rb['snapshot_equal'] and rb['diagnostic_equal'] and rb['diagnostic_equivalent'] and proof['passes'],'final_supply_rollback_passed')
+check(diag['weighted_geh_before']==diag['weighted_geh_after']==parent['raw_cal']==data['cycle4']['generation']['objective_after']['raw_cal'],'supply_rollback_kept_adopted_generation')
+check(diag['profile_drift']['profiles']==248 and diag['profile_drift']['violations']==0 and diag['profile_drift']['max_abs_diff']==0,'all_248_rollback_profiles_equal')
+check(rb['diagnostic_hash']==data['cycle4']['diagnostic_hash_end'],'rollback_diagnostic_matches_cycle_4_end')
+check(proof['matrix_proof']['mode']=='EXACT_MATRIX_FINGERPRINTS' and proof['matrix_proof']['passes'],'rollback_matrix_fingerprints_reported_exact')
+check(all(rb[k] is False for k in ('load_version_called','save_version_called','direct_od_matrix_writes')),'rollback_no_version_reload_or_direct_od_write_reported')
+check(data['acceptance']['accepted'] is False and data['acceptance']['cal_objective_after']==supply['attempts'][-1]['objective_after']['raw_cal'],'standalone_acceptance_matches_supply_trial_2')
+first=data['cycle3']['generation']['objective_before'];last=data['cycle5']['generation']['objective_after']
+result={'scope':'READ_ONLY_USER_UPLOADED_CYCLES_3_4_5','checked_documents':len(manifest),'checks_passed':len(checks),
+ 'cycles':cycles,'overall':{'geh_before':first['raw_cal'],'geh_after':last['raw_cal'],
+ 'improvement_percent':100*(1-last['raw_cal']/first['raw_cal']),
+ 'model_observed_ratio_before':first['cal_metrics']['model_obs_ratio'],'model_observed_ratio_after':last['cal_metrics']['model_obs_ratio'],
+ 'geh_ge20_before':first['cal_metrics']['geh_ge20'],'geh_ge20_after':last['cal_metrics']['geh_ge20'],
+ 'geh_ge30_before':first['cal_metrics']['geh_ge30'],'geh_ge30_after':last['cal_metrics']['geh_ge30']},
+ 'td_cycle_3':{'geh_before_outer':decision['cal_csd_objective_before'],'geh_after_outer':decision['cal_csd_objective_after'],
+ 'generation_after_before_td_baseline_refresh':data['cycle3']['generation']['objective_after']['raw_cal'],
+ 'td_evaluations':60,'budget':td['progressive_budget'],'mode':j['mode'],'native_gap':td['gap'],
+ 'solver_stop_reason':j['stop_reason'],'outer_incomplete_reason':td['inner']['stop_reason'],'complete_coordinate_polls':j['polls_completed'],
+ 'component_pool':j['component_pool'],'changed_rows':td['changed_rows'],'school_objective_check':school,
+ 'long_td_readiness':j['long_composite_live_readiness']['status'],'accepted_long_td_change':False,
+ 'stage_seconds':data['timing3']['block']['td_stage']['seconds'],'procedure_sequence_counters':data['timing3']['block']['procedure_sequence']},
+ 'supply_cycle_4':{'status':supply['status'],'elapsed_seconds':supply['elapsed_s'],'geh_before':parent['raw_cal'],
+ 'attempts':[{'trial':r['trial'],'candidate_id':r['candidate_id'],'edges':r['edges'],'status':r['status'],
+ 'geh_after':r['objective_after']['raw_cal'],'reasons':r['decision_reasons']} for r in supply['attempts']],
+ 'trial_2_readback_verified_rows':len(back),'final_rollback':{'passes':True,'restored_geh':diag['weighted_geh_after'],
+ 'profile_count':248,'profile_drift':0,'mode':rb['diagnostic_verification_mode']}},
+ 'duplicate_uploads':[['td1','td2'],['timing1','timing2']],
+ 'timing_notes':'Inclusive nested counters overlap. The 73 procedure_sequence calls do not establish 73 full independent TD chains. The two 0.027-second TD timing files are identical copies of the cycle-5 skip snapshot.',
+ 'reported_remaining_blocker':'LONG Generation still has clean OSRM support but no verified FineCDF composite metric. School TD is active and accepted despite the generic LONG_SCHOOL_DESIGN_UNVERIFIED label.',
+ 'next_scheduled_td_cycle':6,'runtime_changed':False,'live_visum_accessed':False,
+ 'limits':['The files describe completed substeps up to cycle 5; they do not reveal the live present position of the still-running process.',
+ 'Latest GitHub fixes are prepared for a later launch. These logs do not measure their performance.',
+ 'The supplied rollback summary proves the final restoration; no separate trial-1 rollback file was provided.',
+ 'Coefficient rows are not present in these result summaries, so no per-zone coefficient values/counts are inferred from their absence.',
+ 'The profile model/observation sum is a profile-passage diagnostic, not unique-trip demand or a global mobility estimate.'],
+ 'checks':checks}
+OUT.mkdir(parents=True,exist_ok=True)
+(OUT/'SUMMARY.json').write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+'\n')
+source_files=[{'label':e['label'],'file_name':Path(e['result']['path']).name,'file_id':e['file_id'],
+ 'bytes':Path(e['result']['path']).stat().st_size,'sha256':hashlib.sha256(Path(e['result']['path']).read_bytes()).hexdigest()} for e in manifest]
+(OUT/'SOURCE_FILES.json').write_text(json.dumps(source_files,indent=2)+'\n')
+print(json.dumps({'status':'PASS','checks':len(checks),'documents':len(manifest),'geh_after':last['raw_cal'],'improvement_percent':result['overall']['improvement_percent'],'runtime_changed':False}))

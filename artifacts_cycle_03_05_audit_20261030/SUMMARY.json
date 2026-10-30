@@ -1,0 +1,393 @@
+{
+  "scope": "READ_ONLY_USER_UPLOADED_CYCLES_3_4_5",
+  "checked_documents": 19,
+  "checks_passed": 74,
+  "cycles": [
+    {
+      "cycle": 3,
+      "status": "PROGRESS_CONTINUE_DEMAND",
+      "generation": {
+        "status": "ACCEPTED",
+        "trial": 2,
+        "scale": 0.286842,
+        "geh_before": 40.68361367143461,
+        "geh_after": 38.160969925296556,
+        "improvement_percent": 6.2006383368773506,
+        "model_observed_ratio_before": 0.5215940922900031,
+        "model_observed_ratio_after": 0.5642159175829055,
+        "geh_ge20_before": 187,
+        "geh_ge20_after": 178,
+        "geh_ge30_before": 146,
+        "geh_ge30_after": 133,
+        "gap": 0.00142547,
+        "rows_reported": 3454,
+        "ls_search_incomplete": true,
+        "attempts": [
+          {
+            "trial": 1,
+            "scale": 1.0,
+            "status": "REJECTED",
+            "geh": 32.75123758189517,
+            "reasons": [
+              "NEW_SEVERE_GEH_PROFILE",
+              "PROTECTED_PROFILE_GUARD_FAILED"
+            ]
+          },
+          {
+            "trial": 2,
+            "scale": 0.286842,
+            "status": "ELIGIBLE",
+            "geh": 38.160969925296556,
+            "reasons": []
+          }
+        ],
+        "longguard": {
+          "total_volume": 10291.608198776134,
+          "below_min_km": 0.0,
+          "support_clean": true,
+          "fine_100_200_rmse": null,
+          "fine_cdf_verified": false,
+          "long_generation_permitted": false
+        }
+      },
+      "td_status": "ACCEPTED_FINECDF_TD",
+      "state_hash_start": "230efe083cacf87e2bac0cc3fb6453a00b542efaef40fce829c3ca7839093135",
+      "state_hash_end": "99f4cef4626724d3d5c800b742c0e5de994f84edb3f6f215df4d62ee76018cb8",
+      "diagnostic_hash_end": "98e542366e949dfc235d77b109a213100dc4fb40f4f4dca5274fb36b577b9f4b"
+    },
+    {
+      "cycle": 4,
+      "status": "PROGRESS_CONTINUE_DEMAND",
+      "generation": {
+        "status": "ACCEPTED",
+        "trial": 2,
+        "scale": 0.286842,
+        "geh_before": 37.98602211714074,
+        "geh_after": 36.03210724894257,
+        "improvement_percent": 5.143773312648303,
+        "model_observed_ratio_before": 0.5632591727714045,
+        "model_observed_ratio_after": 0.5990718520277997,
+        "geh_ge20_before": 179,
+        "geh_ge20_after": 168,
+        "geh_ge30_before": 128,
+        "geh_ge30_after": 113,
+        "gap": 0.0015807,
+        "rows_reported": 3454,
+        "ls_search_incomplete": true,
+        "attempts": [
+          {
+            "trial": 1,
+            "scale": 1.0,
+            "status": "REJECTED",
+            "geh": 31.5412291828709,
+            "reasons": [
+              "NEW_SEVERE_GEH_PROFILE"
+            ]
+          },
+          {
+            "trial": 2,
+            "scale": 0.286842,
+            "status": "ELIGIBLE",
+            "geh": 36.03210724894257,
+            "reasons": []
+          }
+        ],
+        "longguard": {
+          "total_volume": 10287.58272033739,
+          "below_min_km": 0.0,
+          "support_clean": true,
+          "fine_100_200_rmse": null,
+          "fine_cdf_verified": false,
+          "long_generation_permitted": false
+        }
+      },
+      "td_status": "TD_SKIPPED_BY_RUN_POLICY",
+      "state_hash_start": "99f4cef4626724d3d5c800b742c0e5de994f84edb3f6f215df4d62ee76018cb8",
+      "state_hash_end": "73c249f2d9d9909616eb59465428d1c016a230063fdbe9c69c77e31809abc67d",
+      "diagnostic_hash_end": "f1de73b1fa6a3e866043f0353a1da53b2d4656c408a6a316a25a6dc2981a3f87"
+    },
+    {
+      "cycle": 5,
+      "status": "PROGRESS_CONTINUE_DEMAND",
+      "generation": {
+        "status": "ACCEPTED",
+        "trial": 3,
+        "scale": 0.512368,
+        "geh_before": 36.03210724894257,
+        "geh_after": 33.391847673392284,
+        "improvement_percent": 7.327519196446031,
+        "model_observed_ratio_before": 0.5990718520277997,
+        "model_observed_ratio_after": 0.6526888416234827,
+        "geh_ge20_before": 168,
+        "geh_ge20_after": 148,
+        "geh_ge30_before": 113,
+        "geh_ge30_after": 97,
+        "gap": 0.00259674,
+        "rows_reported": 3454,
+        "ls_search_incomplete": true,
+        "attempts": [
+          {
+            "trial": 1,
+            "scale": 1.0,
+            "status": "REJECTED",
+            "geh": 31.30135090216726,
+            "reasons": [
+              "NEW_SEVERE_GEH_PROFILE",
+              "PROTECTED_PROFILE_GUARD_FAILED"
+            ]
+          },
+          {
+            "trial": 2,
+            "scale": 0.713158,
+            "status": "REJECTED",
+            "geh": 32.64723546401979,
+            "reasons": [
+              "NEW_SEVERE_GEH_PROFILE"
+            ]
+          },
+          {
+            "trial": 3,
+            "scale": 0.512368,
+            "status": "ELIGIBLE",
+            "geh": 33.391847673392284,
+            "reasons": []
+          }
+        ],
+        "longguard": {
+          "total_volume": 10287.58272033739,
+          "below_min_km": 0.0,
+          "support_clean": true,
+          "fine_100_200_rmse": null,
+          "fine_cdf_verified": false,
+          "long_generation_permitted": false
+        }
+      },
+      "td_status": "TD_SKIPPED_BY_RUN_POLICY",
+      "state_hash_start": "73c249f2d9d9909616eb59465428d1c016a230063fdbe9c69c77e31809abc67d",
+      "state_hash_end": "5720ab734e91b98049bdfa6374143ce05b21fb12d3d2c1d720d6555275518122",
+      "diagnostic_hash_end": "c446d00a19e5616a5a465b523c57072c97752ee1dd791b5d6a9af984dc0719fd"
+    }
+  ],
+  "overall": {
+    "geh_before": 40.68361367143461,
+    "geh_after": 33.391847673392284,
+    "improvement_percent": 17.923103038317677,
+    "model_observed_ratio_before": 0.5215940922900031,
+    "model_observed_ratio_after": 0.6526888416234827,
+    "geh_ge20_before": 187,
+    "geh_ge20_after": 148,
+    "geh_ge30_before": 146,
+    "geh_ge30_after": 97
+  },
+  "td_cycle_3": {
+    "geh_before_outer": 38.03233802243346,
+    "geh_after_outer": 37.98602211714074,
+    "generation_after_before_td_baseline_refresh": 38.160969925296556,
+    "td_evaluations": 60,
+    "budget": {
+      "allow_progress_continue": true,
+      "max_iterations": 10,
+      "max_td_evaluations": 60,
+      "name": "REFINE",
+      "through_outer_cycle": 4
+    },
+    "mode": "DYNAMIC",
+    "native_gap": 0.00134218,
+    "solver_stop_reason": "TD_EVALUATION_BUDGET",
+    "outer_incomplete_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED",
+    "complete_coordinate_polls": 2,
+    "component_pool": [
+      "WORK_noE_C",
+      "WORK_noE_noC",
+      "SERV_noE_C",
+      "SERV_noE_noC",
+      "SCHOOL",
+      "LONG_COMPOSITE"
+    ],
+    "changed_rows": [
+      {
+        "component": "WORK_noE_noC",
+        "candidate_b": 2.75296317049111,
+        "candidate_c": -2.7068623480948,
+        "realization_scale": 1.0,
+        "parent_b": 2.75296317049111,
+        "parent_c": -2.86927408898049,
+        "target_b": 2.75296317049111,
+        "target_c": -2.7068623480948,
+        "coordinate_system": "B_LINEAR_LOG_NEG_C"
+      },
+      {
+        "component": "SERV_noE_noC",
+        "candidate_b": 1.11398988923972,
+        "candidate_c": -1.86529737608591,
+        "realization_scale": 1.0,
+        "parent_b": 1.11398988923972,
+        "parent_c": -1.97721521865106,
+        "target_b": 1.11398988923972,
+        "target_c": -1.86529737608591,
+        "coordinate_system": "B_LINEAR_LOG_NEG_C"
+      },
+      {
+        "component": "SCHOOL",
+        "candidate_b": 0.0359375,
+        "candidate_c": -0.528464021131207,
+        "realization_scale": 1.0,
+        "parent_b": 0.0359375,
+        "parent_c": -0.593782174143024,
+        "target_b": 0.0359375,
+        "target_c": -0.528464021131207,
+        "coordinate_system": "B_LINEAR_LOG_NEG_C"
+      }
+    ],
+    "school_objective_check": {
+      "component": "SCHOOL",
+      "before_objective": 0.6044107728664769,
+      "after_objective": 0.5577454469739865,
+      "relative_improvement": 0.07720796515782725,
+      "relative_degradation": -0.07720796515782725,
+      "passes": true
+    },
+    "long_td_readiness": "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE",
+    "accepted_long_td_change": false,
+    "stage_seconds": 4073.549,
+    "procedure_sequence_counters": {
+      "calls": 73,
+      "seconds": 2680.931
+    }
+  },
+  "supply_cycle_4": {
+    "status": "NO_ACCEPTED_TRIAL",
+    "elapsed_seconds": 905.3,
+    "geh_before": 36.03210724894257,
+    "attempts": [
+      {
+        "trial": 1,
+        "candidate_id": "SUPPLYMIX_56874d775556",
+        "edges": 18,
+        "status": "REJECTED",
+        "geh_after": 36.09805983744419,
+        "reasons": [
+          "CAL_GEH_OBJECTIVE_NOT_IMPROVED",
+          "SHARED_OBJECTIVE_NOT_IMPROVED"
+        ]
+      },
+      {
+        "trial": 2,
+        "candidate_id": "SUPPLYMIX_6da6cf5ef4a6",
+        "edges": 16,
+        "status": "REJECTED",
+        "geh_after": 36.077278843327335,
+        "reasons": [
+          "CAL_GEH_OBJECTIVE_NOT_IMPROVED",
+          "SHARED_OBJECTIVE_NOT_IMPROVED"
+        ]
+      }
+    ],
+    "trial_2_readback_verified_rows": 16,
+    "final_rollback": {
+      "passes": true,
+      "restored_geh": 36.03210724894257,
+      "profile_count": 248,
+      "profile_drift": 0,
+      "mode": "FULL_12D_11D_FALLBACK"
+    }
+  },
+  "duplicate_uploads": [
+    [
+      "td1",
+      "td2"
+    ],
+    [
+      "timing1",
+      "timing2"
+    ]
+  ],
+  "timing_notes": "Inclusive nested counters overlap. The 73 procedure_sequence calls do not establish 73 full independent TD chains. The two 0.027-second TD timing files are identical copies of the cycle-5 skip snapshot.",
+  "reported_remaining_blocker": "LONG Generation still has clean OSRM support but no verified FineCDF composite metric. School TD is active and accepted despite the generic LONG_SCHOOL_DESIGN_UNVERIFIED label.",
+  "next_scheduled_td_cycle": 6,
+  "runtime_changed": false,
+  "live_visum_accessed": false,
+  "limits": [
+    "The files describe completed substeps up to cycle 5; they do not reveal the live present position of the still-running process.",
+    "Latest GitHub fixes are prepared for a later launch. These logs do not measure their performance.",
+    "The supplied rollback summary proves the final restoration; no separate trial-1 rollback file was provided.",
+    "Coefficient rows are not present in these result summaries, so no per-zone coefficient values/counts are inferred from their absence.",
+    "The profile model/observation sum is a profile-passage diagnostic, not unique-trip demand or a global mobility estimate."
+  ],
+  "checks": [
+    "cycle3:generation_adopted",
+    "cycle3:native_solver_reported_converged",
+    "cycle3:weighted_geh_improved",
+    "cycle3:substeps_returned",
+    "cycle3:continue_not_stationary",
+    "cycle3:one_adopted_trial",
+    "cycle3:long_osrm_support_clean",
+    "cycle3:long_generation_still_blocked",
+    "cycle3:chosen_guards_passed",
+    "cycle4:generation_adopted",
+    "cycle4:native_solver_reported_converged",
+    "cycle4:weighted_geh_improved",
+    "cycle4:substeps_returned",
+    "cycle4:continue_not_stationary",
+    "cycle4:one_adopted_trial",
+    "cycle4:long_osrm_support_clean",
+    "cycle4:long_generation_still_blocked",
+    "cycle4:chosen_guards_passed",
+    "cycle5:generation_adopted",
+    "cycle5:native_solver_reported_converged",
+    "cycle5:weighted_geh_improved",
+    "cycle5:substeps_returned",
+    "cycle5:continue_not_stationary",
+    "cycle5:one_adopted_trial",
+    "cycle5:long_osrm_support_clean",
+    "cycle5:long_generation_still_blocked",
+    "cycle5:chosen_guards_passed",
+    "state_chain_3_to_4",
+    "state_chain_4_to_5",
+    "standalone_generation_matches_cycle_3",
+    "standalone_td3_matches_cycle_3",
+    "both_standalone_skip_files_are_cycle_5",
+    "cycle4:td_skipped_by_schedule",
+    "cycle5:td_skipped_by_schedule",
+    "cycle3_td_accepted_at_scale_1",
+    "td_dynamic_budget_and_weights",
+    "td_target_pool_consistent",
+    "school_long_in_td_active_pool",
+    "long_td_current_native_readiness",
+    "distinct_solver_stop_and_outer_incomplete_reason",
+    "td_changed_three_groups_without_long",
+    "school_target_objective_improved",
+    "school_b_held_c_changed",
+    "td_outer_weighted_geh_improved",
+    "supply_matches_cycle_4",
+    "supply_completed_without_acceptance",
+    "supply_both_attempts_rejected",
+    "supply_trial_1_worsened_both_objectives",
+    "supply_trial_2_worsened_both_objectives",
+    "supply_trial_2_keys_match",
+    "supply_candidate_matches_last_trial",
+    "supply_readback_(2004183, 1003259, 1003309)",
+    "supply_readback_(2004183, 1003309, 1003259)",
+    "supply_readback_(2004230, 1003325, 1000219)",
+    "supply_readback_(2004231, 1003321, 1003319)",
+    "supply_readback_(2004232, 1003317, 1003323)",
+    "supply_readback_(2004234, 1003313, 1002787)",
+    "supply_readback_(2004247, 1003273, 1003264)",
+    "supply_readback_(2004256, 1003303, 1003295)",
+    "supply_readback_(2004257, 1003302, 1003306)",
+    "supply_readback_(2004258, 1003291, 1003300)",
+    "supply_readback_(2004275, 1003288, 1003290)",
+    "supply_readback_(2004806, 1003294, 1003577)",
+    "supply_readback_(8000656, 9000810, 1003309)",
+    "supply_readback_(8001079, 9000526, 9000466)",
+    "supply_readback_(8001089, 1002787, 9000383)",
+    "supply_readback_(8001463, 1003259, 9000151)",
+    "final_supply_rollback_passed",
+    "supply_rollback_kept_adopted_generation",
+    "all_248_rollback_profiles_equal",
+    "rollback_diagnostic_matches_cycle_4_end",
+    "rollback_matrix_fingerprints_reported_exact",
+    "rollback_no_version_reload_or_direct_od_write_reported",
+    "standalone_acceptance_matches_supply_trial_2"
+  ]
+}

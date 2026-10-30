@@ -1,0 +1,20 @@
+{
+  "runtime_changed": false,
+  "baseline_remote_commit": "6794184143df5516708651c1d27b5f57c04b94b8",
+  "baseline_local_commit": "40b2083b4becf47f755faed3b8979634923c7ed4",
+  "baseline_tree": "20be7d21b27f7698863ab187d9fca064b19d1ca3",
+  "manifests": {
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "count": 1059,
+      "all_hashes_match": true
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "count": 172,
+      "all_hashes_match": true
+    },
+    "V24917_RUNTIME_MANIFEST.json": {
+      "count": 89,
+      "all_hashes_match": true
+    }
+  }
+}
