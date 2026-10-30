@@ -134,6 +134,19 @@ def coordinate_proposals(space, x, components, radius):
                 yield key, axis, sign, trial
 
 
+def balanced_coordinate_proposals(space, x, components, radius):
+    """Exhaust each round across groups before trying a second direction.
+
+    The first 12 probes sample all 12 W/S/SCHOOL/LONG groups.  Each
+    component's native b/logc limits and +/- probes are unchanged.
+    """
+    per_group = [list(coordinate_proposals(space, x, [key], radius))
+                 for key in components]
+    for round_index in range(max(map(len, per_group), default=0)):
+        for group_trials in per_group:
+            yield from group_trials[round_index:round_index + 1]
+
+
 def _signature(x):
     return tuple((k, tuple(float(v) for v in x[k])) for k in sorted(x))
 
@@ -182,14 +195,8 @@ def optimize(runner, ref):
         order = groups[offset:] + groups[:offset]
         # Bounded EXPLORE must sample every group before refining any group.
         # A 28-evaluation budget covers >=2 probes of all 12 components.
-        per_group = [list(coordinate_proposals(
-            runner.space, base["x"], [key], radius)) for key in order]
-        proposals = [
-            proposal
-            for round_index in range(max(map(len, per_group), default=0))
-            for group_trials in per_group
-            for proposal in group_trials[round_index:round_index + 1]
-        ]
+        proposals = list(balanced_coordinate_proposals(
+            runner.space, base["x"], order, radius))
         seen = {_signature(base["x"])}
         records = []
         completed = True
