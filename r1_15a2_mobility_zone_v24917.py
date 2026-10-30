@@ -30,14 +30,14 @@ ATOL = 1e-7
 RTOL = 1e-10
 REFERENCE = "AMDY_DOMESTIC_FP_AT_CANONICAL_COEFFICIENT_NOT_RAW_SURVEY"
 LONG_BAND = (0.5, 1.5)  # ADD_PROD_L 0.3 x [0.5, 1.5] = [0.15, 0.45]
-SCHOOL_BAND = (0.75, 2.0)  # SCHOOL must NOT inherit W/S production max 2.5
+SCHOOL_HARD_MAX = 2.0  # SCHOOL may not inherit W/S production max 2.5
 
 
 def family_band(family, authority):
     if family == "LONG":
         return tuple(authority["long_band"])
     if family == "SCHOOL":
-        return tuple(authority.get("school_band", SCHOOL_BAND))
+        return tuple(authority.get("school_band", authority["band"]))
     return tuple(authority["band"])  # WORK and SERVICE only
 
 # The live 2026-10-30 generation trials proved that in 575 domestic zones
@@ -116,9 +116,12 @@ def enrich(adapter, rows):
 def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=None):
     """Build a fixed reference and retain the raw parent for readback/rollback."""
     lo, hi = limits(opts)
+    # The original SCHOOL band always followed opts. Only prevent widening
+    # above its former upper bound 2.0 in the new W/S-specific configuration.
+    school_band = (lo, min(hi, SCHOOL_HARD_MAX))
     if anchor is not None and tuple(anchor.get("long_band", ())) != LONG_BAND:
         raise ValueError("MOBILITYZONE1_LONG_BAND_CHANGED")
-    if anchor is not None and tuple(anchor.get("school_band", SCHOOL_BAND)) != SCHOOL_BAND:
+    if anchor is not None and tuple(anchor.get("school_band", school_band)) != school_band:
         raise ValueError("MOBILITYZONE1_SCHOOL_BAND_CHANGED")
     by_zone = zone_map(rows)
     entries, errors = {}, dict(unavailable or {})
@@ -166,15 +169,15 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
     outside = []
     for e in entries.values():
         band_lo, band_hi = family_band(e["family"],
-                                          {"band": [lo, hi],
-                                           "long_band": LONG_BAND,
-                                           "school_band": SCHOOL_BAND})
+                                         {"band": [lo, hi],
+                                          "long_band": LONG_BAND,
+                                          "school_band": school_band})
         if e["ratio_current"] is not None and not band_lo-EPS <= e["ratio_current"] <= band_hi+EPS:
             outside.append({"zone_no": e["zone_no"], "family": e["family"],
                             "ratio": e["ratio_current"]})
     return {"release": RELEASE, "enabled": bool(opts.get("enabled", True)),
             "band": [lo, hi], "long_band": list(LONG_BAND),
-            "school_band": list(SCHOOL_BAND), "reference_role": REFERENCE,
+            "school_band": list(school_band), "reference_role": REFERENCE,
             "families": list(families), "entries": entries,
             "unavailable": errors, "out_of_band": outside,
             "target_satisfied": not bool(errors or outside), "parent_zone_rows": copy.deepcopy(list(rows)),
