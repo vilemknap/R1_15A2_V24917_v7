@@ -17,6 +17,9 @@ def _inputs():
         "vehicle_production": np.array([100., 50.]),
         "vehicle_attraction": np.array([50., 100.]),
         "vehicle_total": 150.,
+        # Synthetic fully-overnight case reproduces the old normalized
+        # path formula; real AMDY elasticity is normally strictly below 1.
+        "attraction_elasticity": {1: 1.0, 2: 1.0},
         "profile_identity": ["P0", "P1"],
         "variables": [
             {"dseg_code": "NATIVE_CL", "family": "LONG", "origin": 1,
@@ -92,6 +95,7 @@ def test_unexposed_zones_and_identity_mismatch_fail_closed():
     observed["vehicle_production"] = np.array([110., 50., 10.])
     observed["vehicle_attraction"] = np.array([60., 100., 10.])
     observed["vehicle_total"] = 170.
+    observed["attraction_elasticity"][3] = 1.0
     zones = (1, 2, 3)
     observed["zone_order_sha256"] = ordered_zone_hash(zones)
     bounds.update({("LONG", role, 3): (-.1, .1) for role in ("PROD", "ATT")})
@@ -112,3 +116,36 @@ def test_wrong_source_or_bounds_cannot_produce_long_proposal():
     observed["status"] = "UNVERIFIED"
     with pytest.raises(ValueError, match="OBSERVED_INCIDENCE_REQUIRED"):
         longfit.fit(observed, ws, sol, zones, bounds)
+
+
+def test_long_overnight_only_derivative_and_exact_balance():
+    observed, ws, sol, zones, bounds = _inputs()
+    # PROD applies to the whole source production; ADD_ATT_L changes only
+    # 25/50 percent of the attraction through PRENOC_SVK.
+    observed["attraction_elasticity"] = {1: .25, 2: .50}
+    p = longfit.build_problem(observed, ws, sol, zones, bounds,
+                              observed["attraction_elasticity"])
+    assert p.base == pytest.approx([100., 50., 12.5, 50.])
+    assert p.balance_vectors["LONG"][0] == pytest.approx([100., 50., -12.5, -50.])
+    # The destination-2 profile contribution is scaled by eta_2=.5,
+    # not by one, and the normalization is scaled consistently.
+    assert p.G[0, 3] == pytest.approx(
+        100. * .5 - 100. * .5 * 50. / 150.)
+    assert p.G[1, 2] == pytest.approx(
+        50. * .25 - 50. * .5 * 12.5 / 150.)
+    solution = zf.solve(p, {"balance_mode": "HARD",
+                            "nonlinear_pa_repair": True,
+                            "max_iter": 2000})
+    prod = p.base[:2] @ np.expm1(solution["x"][:2])
+    att = p.base[2:] @ np.expm1(solution["x"][2:])
+    assert prod == pytest.approx(att, abs=2e-8)
+
+
+def test_missing_or_invalid_overnight_share_fails_closed():
+    obs, ws, sol, zones, bounds = _inputs()
+    del obs["attraction_elasticity"]
+    with pytest.raises(ValueError, match="LONG_FIT_OVERNIGHT_ELASTICITY_REQUIRED"):
+        longfit.build_problem(obs, ws, sol, zones, bounds)
+    with pytest.raises(ValueError, match="LONG_FIT_OVERNIGHT_ELASTICITY_INVALID"):
+        longfit.build_problem(obs, ws, sol, zones, bounds,
+                              {1: .2, 2: 1.4})
