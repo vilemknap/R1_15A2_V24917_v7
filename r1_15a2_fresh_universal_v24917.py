@@ -146,6 +146,14 @@ def verify_runtime_status(status):
             and effective_demand.get("mg_min_ratio") == 0.75
             and effective_demand.get("mg_max_ratio") == 3.0,
             "EFFECTIVE_MOBILITY2_WS_PRODUCTION_BAND_MISMATCH")
+    # The attraction coefficient gate is independent of the FP mobility ratio.
+    # Verify the installed adapter's actual semantic declaration, not merely
+    # the declared Generation soft/hard envelope.
+    semantics = optimized.get("genfix2_policy_semantics") or {}
+    require(semantics.get("ws_attraction_coefficient_band") == [0.75, 5.0]
+            and semantics.get("mobility_band") == [0.75, 3.0]
+            and semantics.get("attraction_changes_mobility_ratio") is False,
+            "EFFECTIVE_WS_ATTRACTION_GUARD_NOT_INSTALLED")
     # Runtime may apply R1_* environment overrides AFTER options JSON is read.
     # Installing the wrappers alone does not prove that joint native TD is ON.
     effective = optimized["tdjoint1"].get("options") or {}
