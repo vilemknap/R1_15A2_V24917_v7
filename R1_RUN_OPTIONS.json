@@ -92,7 +92,7 @@
   "td_max_survey_degradation": 1.25,
   "mg_enabled": true,
   "mg_min_ratio": 0.75,
-  "mg_max_ratio": 2.5,
+  "mg_max_ratio": 3,
   "td_joint_enabled": true,
   "td_joint_outer_isolates": true,
   "td_joint_max_isolates": 2
