@@ -11,7 +11,7 @@ import pytest
 
 import r1_15a2_resume_a0001_v24917 as resume
 
-ROOT = Path(__file__).parent
+ROOT = Path(resume.__file__).resolve().parent
 
 @pytest.fixture
 def recipe():
