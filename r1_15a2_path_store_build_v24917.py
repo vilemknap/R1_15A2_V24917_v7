@@ -109,11 +109,16 @@ def add_parents(self, code, mode, rows, matrix_authority):
     key_digest = hashlib.sha256()
     vol_hash = hashlib.sha256()
     comparison_hash = hashlib.sha256()
+    sql_hash = hashlib.sha256() if self.settings.get('path_cache_verify_sql') else None
     decimals = int(self.settings['path_epoch_volume_comparison_decimals'])
     for key in sorted_keys:
         if mode_is_new:
             key_digest.update(struct.pack('<III', *key))
         vol_hash.update(struct.pack('<IIId', *key, values[key]))
+        if sql_hash is not None:
+            # SQLite REAL normalizes signed zero; preserve the original source
+            # audit while separately verifying its actual storage semantics.
+            sql_hash.update(struct.pack('<IIId', *key, values[key] if values[key] != 0 else 0.))
         comparison_hash.update(struct.pack('<IIId', *key, round(values[key], decimals)))
     key_hash = (key_digest.hexdigest() if mode_is_new else
                 self.mode_audits[mode]['parent_keys_sha256'])
@@ -143,6 +148,10 @@ def add_parents(self, code, mode, rows, matrix_authority):
     self.db.executemany('INSERT INTO volumes VALUES(?,?,?)',
                         ((key_map[key], code, values[key]) for key in sorted_keys))
     self.db.commit()
+    if sql_hash is not None:
+        if not hasattr(self, '_path_sql_volume_hashes'):
+            self._path_sql_volume_hashes = {}
+        self._path_sql_volume_hashes[code] = sql_hash.hexdigest()
     version = self.db.execute('PRAGMA data_version').fetchone()[0]
     self._path_build_keymap = (mode, self.db.total_changes, version, key_map)
     self.parents[code] = audit

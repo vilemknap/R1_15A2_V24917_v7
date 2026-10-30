@@ -1,0 +1,7 @@
+{
+  "targeted_first.log": "4 failed / 33 passed. Fake reference span was smaller than reference page and collided with the simulated large-page failures; fake RPC message was not recognized as transient. Corrected mocks, preserving production retry eligibility.",
+  "targeted_third.log": "1 failed / 43 passed. Reopened collector lacked cal_indices needed by Supply impact. Published reopen now calls the existing driver-state initializer and uses immutable main/read-write TEMP.",
+  "main_lazy_binding_failure.log": "19 failed / 2129 passed / 4 skipped. Existing bootstrap tests reload modules; a late builder import could patch a different collector class from the adapter alias. Fixed by eager coherent helper binding in publication module.",
+  "BENCHMARK_MILLION.json": "Earlier two-repetition measurement before final staging/open guards. Final guarded source verification is BENCHMARK_FINAL.json in parent artifact directory.",
+  "final": "CHECKS.json in parent artifact directory is authoritative: all suites passed after fixes."
+}

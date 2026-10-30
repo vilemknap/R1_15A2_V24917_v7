@@ -1,0 +1,40 @@
+{"repetition": 0, "variant": "full", "parent_seconds": 11.98000289400079, "geometry_seconds": 7.337586375000683, "incidence_and_comparison_seconds": 14.265348099999756, "bulk_seconds": 33.58293736900123, "publication_seconds": 8.329345726999236, "end_to_end_seconds": 41.912283096000465}
+{"repetition": 0, "variant": "fast", "parent_seconds": 11.529701720999583, "geometry_seconds": 7.457438810000895, "incidence_and_comparison_seconds": 14.365141267999206, "bulk_seconds": 33.352281798999684, "publication_seconds": 8.367295007999928, "end_to_end_seconds": 41.71957680699961}
+{"repetition": 1, "variant": "fast", "parent_seconds": 11.524485403000654, "geometry_seconds": 7.518583643999591, "incidence_and_comparison_seconds": 14.236848622000252, "bulk_seconds": 33.2799176690005, "publication_seconds": 8.280861569999615, "end_to_end_seconds": 41.56077923900011}
+{"repetition": 1, "variant": "full", "parent_seconds": 12.093961112001125, "geometry_seconds": 7.463807210999221, "incidence_and_comparison_seconds": 14.236001016000955, "bulk_seconds": 33.7937693390013, "publication_seconds": 8.26639306799916, "end_to_end_seconds": 42.06016240700046}
+{
+  "schema": "R1_STAGING_MILLION_ROW_BENCHMARK_V1",
+  "synthetic": true,
+  "live_visum": false,
+  "paths_per_mode": 180000,
+  "volume_rows": 2160000,
+  "geometry_rows": 360000,
+  "geometry_input_rows": 3240000,
+  "repetitions": 2,
+  "identical_strong_publication_gates": true,
+  "semantics_exact": true,
+  "median_seconds": {
+    "full": {
+      "parent_seconds": 12.036982003000958,
+      "geometry_seconds": 7.400696792999952,
+      "bulk_seconds": 33.688353354001265,
+      "publication_seconds": 8.297869397499198,
+      "end_to_end_seconds": 41.98622275150046
+    },
+    "fast": {
+      "parent_seconds": 11.527093562000118,
+      "geometry_seconds": 7.488011227000243,
+      "bulk_seconds": 33.31609973400009,
+      "publication_seconds": 8.324078288999772,
+      "end_to_end_seconds": 41.64017802299986
+    }
+  },
+  "full_over_fast": {
+    "parent_seconds": 1.0442339118927362,
+    "geometry_seconds": 0.9883394360193462,
+    "bulk_seconds": 1.011173385329414,
+    "publication_seconds": 0.9968514362082336,
+    "end_to_end_seconds": 1.0083103566058114
+  },
+  "limitations": "Linux local disk; no live model, COM or network-disk timing."
+}

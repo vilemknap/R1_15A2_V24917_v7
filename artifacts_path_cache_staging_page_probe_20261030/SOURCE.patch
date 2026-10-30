@@ -1,0 +1,2033 @@
+diff --git a/.gitattributes b/.gitattributes
+index 847f12d..90abf22 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -53,3 +53,6 @@ artifacts_long_chain_review_20261030/*.patch -text -diff
+ artifacts_long_chain_review_20261030/prior_attempt/*.log -text -diff
+ artifacts_path_store_build_perf_20261030/*.patch -text -diff
+ artifacts_path_store_build_perf_20261030/*.log -text -diff
++artifacts_path_cache_staging_page_probe_20261030/*.patch -text -diff
++artifacts_path_cache_staging_page_probe_20261030/*.log -text -diff
++artifacts_path_cache_staging_page_probe_20261030/prior_attempts/*.log -text -diff
+diff --git a/01_SPUSTIT_V24917_PATH_IO_PROBE_SILENT.py b/01_SPUSTIT_V24917_PATH_IO_PROBE_SILENT.py
+new file mode 100644
+index 0000000..1633dd9
+--- /dev/null
++++ b/01_SPUSTIT_V24917_PATH_IO_PROBE_SILENT.py
+@@ -0,0 +1,45 @@
++# -*- coding: utf-8 -*-
++"""Optional FULL calibration: qualify pages + private fast SQLite publication.
++
++Run R1_BENCHMARK_PATH_EXPORT.py first for a standalone READ-ONLY page profile.
++This launcher runs the NORMAL calibration and native model calculations. It
++sets two flags only for this call; sealed run options/manifests are not edited.
++"""
++from __future__ import annotations
++
++import importlib.util
++import os
++from pathlib import Path
++
++HERE = Path(__file__).resolve().parent
++FLAGS = ('R1_PATH_STORE_FAST_STAGING', 'R1_PATH_EXPORT_PAGE_PROBE')
++
++
++def load_parent():
++    spec = importlib.util.spec_from_file_location('_r1_path_io_silent_parent',
++        HERE / '01_SPUSTIT_V24917_TDJOINT1_SILENT.py')
++    if spec is None or spec.loader is None:
++        raise RuntimeError('PATH_IO_SILENT_PARENT_UNAVAILABLE')
++    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++    return module
++
++
++def main(visum=None):
++    visum = visum if visum is not None else globals().get('Visum')
++    com = globals().get('COM')
++    if visum is None and com is None:
++        raise RuntimeError('NO_INJECTED_VISUM')
++    previous = {name: os.environ.get(name) for name in FLAGS}
++    try:
++        for name in FLAGS: os.environ[name] = '1'
++        parent = load_parent()
++        parent.Visum, parent.COM = visum, com
++        return parent.main()
++    finally:
++        for name, value in previous.items():
++            if value is None: os.environ.pop(name, None)
++            else: os.environ[name] = value
++
++
++if __name__ == '__main__' or globals().get('Visum') is not None or globals().get('COM') is not None:
++    main()
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index ae28826..0d4b4c0 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -5,6 +5,7 @@
+   "files": {
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
++    "01_SPUSTIT_V24917_PATH_IO_PROBE_SILENT.py": "dd62e5600ede4ae09442ae1f6a24df4886c133153d0b6c6e9fe7ba36cd78fbe2",
+     "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py": "da8953c4c4da056e092ed546a158ec13bce12590bdb230fd86122f809702f960",
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+     "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
+@@ -13,16 +14,19 @@
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+     "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
+     "R1_ADD_LONG_SCHOOL_COEFFICIENTS.py": "4e659040b390b38333330bef402b7447f2fefa73030b144501c48d8ce7ab87b6",
++    "R1_BENCHMARK_PATH_EXPORT.py": "efc3d4eb5b99a509d4d9ed8c35848e441bf45b0809cd30017e0ec8586a082f66",
+     "R1_BOUNDARY_X_PA_UPLIFT_APPLY.py": "ebe5a9395652c010b3b6c119e8b4f4046489613fc1c419ffd5391a3c97d5bc20",
+     "R1_BOUNDARY_X_PA_UPLIFT_DRY_RUN.py": "cd9353c4d9ea1f36b56eca19355b78a0c9dd760c3e5091f91eeddc0f38d26c67",
+     "R1_LONG_SCHOOL_FORMULA_CHECK.py": "b5109b0863dcc2f8b39a83c4ecb5931dc400b12f68db6ab8f320afd1c55d7c6c",
+     "R1_RESET_ZONAL_COEFFICIENTS.py": "916b841cadbafbfb5253b0ca8ee6b0949576ee3d1ac90963c8c882e9366620cb",
+-    "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
++    "R1_RUN_OPTIONS.json": "71325a47b9da86f0d8174c7ba1afbb4dc8153aaff8004adfb00effbdf43545c5",
+     "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
+     "R1_TDLONG1_STANDALONE_READ_ONLY.py": "e4c46037f490c2636dc98d0f0d100fb5fee2dd3d258dd9cb538d4a137b49da8e",
+     "R1_VDF_DIAGNOSTIC.py": "1e710226be87312c9247762c44479c64f80f9c4e465a533b38361cfbcdfc703b",
+     "R1_VDF_EDIT.py": "5fcd415b8e46cac5a647ba63bbb222797eeaf7649bd501bf057283dc097a80ec",
++    "benchmarks/run_path_cache_staging_benchmark.py": "873fd3c90d950720487c0e8feaf7e66e71c1b7c558c2b1ba2e698fbaede2f74b",
+     "benchmarks/run_path_store_build_benchmark.py": "e6b789aa2c3a8b9cf6842845c93fb3cb446a4c14aaf12a94e6c3c5eec749c6ce",
++    "benchmarks/run_sqlite_path_store_replay.py": "718636d26c3f61b2b96018b350fcd19cc2bf0810bb9d07d850862991fa96eb4a",
+     "diagfast_tests/conftest.py": "4e718a83a7134ec8c2efc6fd1e4dcaa62332a3ff5cfc1d2bf82dcf4a9a4b559d",
+     "diagfast_tests/fakes.py": "d5982cf7b3733c6fb7937efe00d944c7ada06112ec8ba2e1917a108971d2f5f2",
+     "diagfast_tests/test_decision_parity.py": "b02be669a8d4d017bff9edc5940671af18652c3634507bc0d57811cc106561ad",
+@@ -69,8 +73,10 @@
+     "r1_15a2_mobility_guard_v24917.py": "7c7bf33eb61fe61a8817a61fd69e7490edcea83d4d6e0b0523be161eacef8f19",
+     "r1_15a2_mobility_zone_v24917.py": "21c0dc62183167552ee87c8a675f7b6da6e85540d0ca8a015f8bad492f3766bb",
+     "r1_15a2_parent_equivalence_v24917.py": "acc0f39f6bbbffc88119a75f3e5dedf2f02bda69abe719716e7a679ecf992d60",
++    "r1_15a2_path_cache_publish_v24917.py": "8a3f85a64b0ad407aaabab4238a58afed7ff30827c01eed14e189eebe7bb5e4c",
++    "r1_15a2_path_export_probe_v24917.py": "d0d02ff2cbcce70b50be40887b0ba5c8b2ff727d1b987a3d9f06a5ad952c424b",
+     "r1_15a2_path_incidence_v24917.py": "3c4830a61fe3de9cb1a39a5ca8f203220a008585e1dd3f34d3dbd2dba787fb78",
+-    "r1_15a2_path_store_build_v24917.py": "a382ea21ab53d7f32391a271035cfc4879025627ed150e1548c0b412d4fe676a",
++    "r1_15a2_path_store_build_v24917.py": "7eefba4ea6e38d55f257e1afe887c57f54b33ed893936a06e70e3e60d29baf21",
+     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+     "r1_15a2_preflight_explain_v24917.py": "741ee6301f61a7ff8606dd778d484e5bad15648129c5894d841e4b3a281f3c87",
+     "r1_15a2_preflight_iofix_v24917.py": "a843a89df41aaec1ff4d2e9d442cb88b18a4e8273b3e45a8c3498de3800ea6f8",
+@@ -90,8 +96,8 @@
+     "r1_15a2_td_joint_v24917.py": "89838ffd1e5f9b638588cc7e75b50a7f9dcedd91450cfd083fa9f6f20d2e81de",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+-    "r1_15a2_trial_adapter_v24917.py": "4bb307197d737f781255c0ccb6323c590dcdabc0c7a3cf33c3badbb645ab157b",
+-    "r1_15a2_v24917_runtime.py": "6d2ae9dc4c275abcd99e9ddc79f194ff533ae42e146053fc5d48214437d1cbe2",
++    "r1_15a2_trial_adapter_v24917.py": "2109b3ca647929f4c6b58a78c3bbc282ca516a1964e0fbfcd763c02267a41276",
++    "r1_15a2_v24917_runtime.py": "63973e7359d0b5efe55582e884d0b4910557c592dc904306a29f2f7d935316d0",
+     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
+     "tests/test_r1_vdf_diagnostic.py": "47d678b9c812749572bb9f1a467325e9378b30b96e70e1285100c966da7dd422",
+     "tests/test_r1_vdf_edit.py": "b8c4445f58416a56fa9b7a67e54f4f19b9ff6cb9fa1a5b4f8970d04f71bdc8f9",
+@@ -123,7 +129,10 @@
+     "tests/test_v24917_mobilityalloc1_solver.py": "9421fe7d9a1a07d9ecf7e6dc6b73f391af87a86aa2e5a666d1fb98fa15578265",
+     "tests/test_v24917_mobilityfix1.py": "77c5d0b51f2dbeb7af073b3bed05eedb794c42baef7d02965aa1e7235ebfdd37",
+     "tests/test_v24917_mobilityzone1.py": "93213d13fa626598670e0bd88f49f8844efb9bf0eeda292504d5c6f52d39f94e",
++    "tests/test_v24917_path_cache_publish.py": "e6c9e7e1255718c932905d3597ef956154121b4c5f8826f0da96ec6ebcc57f17",
++    "tests/test_v24917_path_export_probe.py": "8f4044100ae98aca914a7faeb3190f131e66e8f4bf31e3b91cdf1a9154b34bfb",
+     "tests/test_v24917_path_incidence_review.py": "5e469acc20f1e42ca292f48623736d05893ade67c3caeb58922ce2f215989eee",
++    "tests/test_v24917_path_io_launcher.py": "8fc828028801e3046c25295c84e138b4f6e98748848e03043b24ead599520e59",
+     "tests/test_v24917_path_store_build.py": "be0e13e9af6682fe6cfae77e13a49f31da03ec840c73424c3ca00f422f4423b4",
+     "tests/test_v24917_perf3.py": "2623e752b3d819ce8f9a64ef6417e667cfc27d78b153bcddb70658f99ae72185",
+     "tests/test_v24917_preflight2.py": "8c55cd8f64b2c1188bb3211a541c8ed21ad4b65fdcc460ff5ec882b305a8b89c",
+@@ -131,13 +140,14 @@
+     "tests/test_v24917_procseq_bootstrapfix1.py": "8615c765e437758a5543b0d50e5702dc5bb20c482048de2880034686bad0eb4d",
+     "tests/test_v24917_rbcons_audit.py": "482aee6cfd341610d271a811e76df0dfcc955015383726afbb82c4dde0385528",
+     "tests/test_v24917_read_reuse.py": "672a1a7428612ef801c21de6e01c54a4e09eb602c32ba338f8cfc3e6fbe27fae",
+-    "tests/test_v24917_runtime_install.py": "0f941887b4c888af74168f7ca8ce60d656c3ed36079a9efd55130efaf221147d",
++    "tests/test_v24917_runtime_install.py": "41049ce949b50ac2ec3029dffda2ea0b8869a79709d24d17bdd3379bfeb3892a",
+     "tests/test_v24917_runtime_options_fail_closed.py": "e852f0b46a9bac44cd30252533c33a0770512212bde23cf0eb653746d56d296d",
+     "tests/test_v24917_safetyfix1.py": "6881853827eea163f77201536dcd77536292a11a16a23d550dc97074ad661999",
+     "tests/test_v24917_school_td_activation.py": "370c0cde2ccbf6dea472969594abe70d2ff4f2216f3af8d63cfef37d5020d418",
+     "tests/test_v24917_school_td_review.py": "3cab4405e3c5e3eec0d2e09af449378e2d010b3f4cf0b823750402d1ab56512e",
+     "tests/test_v24917_silent_debug.py": "7e50b61ab970acfccb4bed85f4c1df7110d2e8fb9e8b4e3e7341a505c95e3c8f",
+     "tests/test_v24917_snapshot_reads_genfix1.py": "42e68dea37837fb8b5cbea7953c352c44e9de968fbddbe4802daac8e6dc0017a",
++    "tests/test_v24917_sqlite_store_replay.py": "1dc483392299b04d8be812962719761d1079f08035741ee99726e9f3a147f076",
+     "tests/test_v24917_step_search.py": "10b78a9068ffab80e67c4dbe0761898230736a6f302fe7ad059279d1aafd123f",
+     "tests/test_v24917_supply_mix.py": "31803439c9c23d27b3829d66e7b9e95538f7922b111ca95a5158981f8c081cfe",
+     "tests/test_v24917_targeted_catchup.py": "c345a4367ea20c536edef36064ce51dcdc45ceea8e3c77bc268c4e24dd72e2ba",
+@@ -151,7 +161,7 @@
+     "tests/test_v24917_zonal_reference_reset.py": "91e4d935dba53a7bd072fd142ae9bda972761743b888f84cd049e704bdbe6ed2",
+     "tools/build_long_osrm_mask.py": "affbb40a92364583e02ae9d7d85ecbdb47859872d9b14db9aa545b6c0790265e",
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+-    "tools/refresh_v24917_manifests.py": "de90237191a68cb2d6f33932b0dbfea4899462b5eae1254cacdd479e62157dd0",
++    "tools/refresh_v24917_manifests.py": "e41739fbabff9580e9c01fcb04dd98a0cb6bfb7374cf6177708a4646848a4f81",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
+     "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0"
+   }
+diff --git a/R1_BENCHMARK_PATH_EXPORT.py b/R1_BENCHMARK_PATH_EXPORT.py
+new file mode 100644
+index 0000000..226b89b
+--- /dev/null
++++ b/R1_BENCHMARK_PATH_EXPORT.py
+@@ -0,0 +1,77 @@
++# -*- coding: utf-8 -*-
++"""Run in opened Visum: read-only page profiling, no calibration or model writes.
++
++Writes PATH_EXPORT_BENCHMARK_*/REPORT.json beside this script. The winner is
++advisory: enable path_io.page_probe in R1_RUN_OPTIONS.json to qualify and pin a
++size again inside the exact parent/assignment of a normal calibration build.
++Larger pages have not been live-qualified by the offline package tests.
++"""
++from __future__ import annotations
++
++from datetime import datetime
++from pathlib import Path
++import sys
++
++HERE = Path(__file__).resolve().parent
++
++
++def main(visum=None):
++    visum = visum if visum is not None else globals().get('Visum')
++    if visum is None:
++        visum = globals().get('COM')
++    if visum is None:
++        raise RuntimeError('NO_INJECTED_VISUM')
++    if str(HERE) not in sys.path:
++        sys.path.insert(0, str(HERE))
++    for name, module in list(sys.modules.items()):
++        if name.startswith('r1_15a2_'):
++            source = getattr(module, '__file__', None)
++            if source and Path(source).resolve().parent != HERE:
++                raise RuntimeError('PATH_PAGE_PROBE_WRONG_MODULE_ORIGIN:' + name)
++    import r1_15a2_path_export_probe_v24917 as probe
++    import r1_15a2_path_cache_publish_v24917 as publication
++    import r1_15a2_two_mode_v238 as paths
++    codes = sorted(set().union(*paths.EXPECTED_MODE_DSEGS.values()))
++    # Use the approved live spelling; the normalizer maps *_noT to *_NOT.
++    cfg = {'path_export_dsegs': codes}
++    out = HERE / ('PATH_EXPORT_BENCHMARK_' + datetime.now().strftime('%Y%m%d_%H%M%S_%f'))
++    out.mkdir(exist_ok=False)
++    opts = publication.options(HERE)
++    settings = dict(paths.DEFAULT_SETTINGS)
++    settings['max_runtime_seconds'] = 3600.
++    control = paths.RunControl(out, settings)
++
++    def binding():
++        zones = sorted(paths.com.get_multi_att_values(visum.Net.Zones, 'NO'))
++        nos = [paths._id(row[1]) for row in zones]
++        if len(nos) != 681 or len(set(nos)) != 681:
++            raise RuntimeError('PATH_PAGE_PROBE_EXPECTED_681_UNIQUE_ZONES')
++        segments = paths.rt.selected_passenger_dsegs(visum, cfg)
++        if {r['norm_code'] for r in segments} != set(codes):
++            raise RuntimeError('PATH_PAGE_PROBE_EXPECTED_12_PASSENGER_DSEGS')
++        return {'zone_order': zones, 'matrices': {
++            r['norm_code']: paths.read_matrix_authority(r, 681) for r in segments}}
++
++    try:
++        before = binding()
++        report = probe.benchmark(visum, settings, control,
++            candidates=opts['probe_candidates'], starts=opts['probe_starts'],
++            repetitions=opts['probe_repetitions'], memory_limit_mib=opts['probe_memory_mib'])
++        if binding() != before:
++            raise RuntimeError('PATH_PAGE_PROBE_MODEL_CHANGED')
++        report.update(binding_hash=paths.canonical_hash(before), advisory_only=True,
++                      model_modified=False, assignment_executed=False)
++        paths.atomic_json(out / 'REPORT.json', report)
++        control.finish('COMPLETE', selected_page_size=report['selected_page_size'])
++        print('PATH EXPORT PROBE: page_size=%d; report=%s' % (report['selected_page_size'], out / 'REPORT.json'))
++        return report
++    except BaseException as exc:
++        paths.atomic_json(out / 'FAILED.json', {'error': type(exc).__name__ + ':' + str(exc),
++                                              'model_modified': False,
++                                              'probe_report': getattr(exc, 'probe_report', None)})
++        control.finish('FAILED', error=str(exc))
++        raise
++
++
++if __name__ == '__main__' or globals().get('Visum') is not None or globals().get('COM') is not None:
++    main()
+diff --git a/R1_RUN_OPTIONS.json b/R1_RUN_OPTIONS.json
+index d658ef5..cf2dacb 100644
+--- a/R1_RUN_OPTIONS.json
++++ b/R1_RUN_OPTIONS.json
+@@ -12,6 +12,14 @@
+   "long_generation_enabled": true,
+   "long_composite_td_enabled": true,
+   "school_td_enabled": true,
++  "path_io": {
++    "fast_staging": false,
++    "page_probe": false,
++    "probe_candidates": [256, 2048, 4096, 8192, 16384],
++    "probe_starts": [1, 65537],
++    "probe_repetitions": 2,
++    "probe_memory_mib": 128
++  },
+   "tg_max_trials": 3,
+   "td_realization_max_trials": 3,
+   "td_inner_max_evaluations": 60,
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 4d6af64..418e02a 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -17,10 +17,10 @@
+     "01_SPUSTIT_V24917_TARGETED_CATCHUP.py": "ff1a53ba20b484ff18a06efef639e923acba11d71f6414783ecd7a18159dd4a0",
+     "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
+     "r1_15a2_targeted_generation_v24917.py": "71b53387090552a501183e998a639b27561ec854b798d2a7f4109e3e9daf9562",
+-    "r1_15a2_trial_adapter_v24917.py": "4bb307197d737f781255c0ccb6323c590dcdabc0c7a3cf33c3badbb645ab157b",
++    "r1_15a2_trial_adapter_v24917.py": "2109b3ca647929f4c6b58a78c3bbc282ca516a1964e0fbfcd763c02267a41276",
+     "r1_15a2_active_demand_evidence_v24917.py": "3aaa457bdac3722a298a37866c18bee7d5c37cf0367424bc05a948d2253389bb",
+     "r1_15a2_runtime_delta_v24917.py": "f300081bf647220848ba132008582b8405c52c680caa7912629700820a7d4645",
+-    "r1_15a2_v24917_runtime.py": "6d2ae9dc4c275abcd99e9ddc79f194ff533ae42e146053fc5d48214437d1cbe2",
++    "r1_15a2_v24917_runtime.py": "63973e7359d0b5efe55582e884d0b4910557c592dc904306a29f2f7d935316d0",
+     "r1_15a2_skim_optype_v24917.py": "fe9cae11fe7272dee5598d3a96459e305575b425c21a4ad71e2b997319635276",
+     "r1_15a2_dynamic_11d_files_v24917.py": "70aa29f5fac9aa8d6004d02835a72df5f1bbeb23598140d469afb89058da41ed",
+     "r1_15a2_finecdf_gapfix_v24917.py": "4e6305adab0feb2f497427424302af2b86b774dc4f92d90f85601e5123c425e4",
+@@ -38,7 +38,11 @@
+     "r1_15a2_fast_trial_assignment_v24917.py": "2f223bc58ffebb5c5594d330cca3653b29b9ff75c037693b2832617502780c8d",
+     "r1_15a2_step_search_v24917.py": "0876b10c65c6b6b44e49c13418677cdeb170b0f090053b916bc8b15d8c3d9f07",
+     "r1_15a2_perf_v24917.py": "a2f08218e5e8931a4bb905599b8c6943b14a894dccb24c987a3032483d76ae2a",
+-    "r1_15a2_path_store_build_v24917.py": "a382ea21ab53d7f32391a271035cfc4879025627ed150e1548c0b412d4fe676a",
++    "r1_15a2_path_store_build_v24917.py": "7eefba4ea6e38d55f257e1afe887c57f54b33ed893936a06e70e3e60d29baf21",
++    "r1_15a2_path_cache_publish_v24917.py": "8a3f85a64b0ad407aaabab4238a58afed7ff30827c01eed14e189eebe7bb5e4c",
++    "r1_15a2_path_export_probe_v24917.py": "d0d02ff2cbcce70b50be40887b0ba5c8b2ff727d1b987a3d9f06a5ad952c424b",
++    "R1_BENCHMARK_PATH_EXPORT.py": "efc3d4eb5b99a509d4d9ed8c35848e441bf45b0809cd30017e0ec8586a082f66",
++    "01_SPUSTIT_V24917_PATH_IO_PROBE_SILENT.py": "dd62e5600ede4ae09442ae1f6a24df4886c133153d0b6c6e9fe7ba36cd78fbe2",
+     "r1_15a2_combusy2_v24917.py": "21cfa0e83e99853268e3ec4777d583537eac58a80f1efc655ea2617109ab4f0f",
+     "r1_15a2_preflight_explain_v24917.py": "741ee6301f61a7ff8606dd778d484e5bad15648129c5894d841e4b3a281f3c87",
+     "r1_15a2_boundary_generation_v24917.py": "b437fcde80c8815a80911138665c3974e298d80e1c3ed4561a3862a931e32d5e",
+@@ -76,10 +80,10 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "b5f9a8f5b3321436248cf6fab4451ff06ded89d9a7aab710e03a496884474e7e",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "339bcdff424bae92afa2d3d13f4e77e63d397dbe1f13d62622fe696dac328ef5",
+     "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0",
+     "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+-    "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
++    "R1_RUN_OPTIONS.json": "71325a47b9da86f0d8174c7ba1afbb4dc8153aaff8004adfb00effbdf43545c5",
+     "r1_15a2_finecdf_bridge_v24916.py": "059a2a5b08003bb08f109911dad5dc42e3a21bcc7073f8005e686e279012141a",
+     "r1_15a2_school_td_v24917.py": "7d8236327718c5f37b028db9522c7361876144a88d7e24795e76f16f47b58939"
+   }
+diff --git a/benchmarks/run_path_cache_staging_benchmark.py b/benchmarks/run_path_cache_staging_benchmark.py
+new file mode 100644
+index 0000000..b848a85
+--- /dev/null
++++ b/benchmarks/run_path_cache_staging_benchmark.py
+@@ -0,0 +1,119 @@
++"""Million-row SQLite build benchmark, identical strong publication gates.
++
++Synthetic source paths only; includes checks/fsync/hash/atomic rename/RO open.
++Does not measure live Visum, COM latency, SMB or Windows power-loss behavior.
++"""
++from __future__ import annotations
++
++import argparse
++import json
++from pathlib import Path
++import statistics
++import sys
++import tempfile
++import time
++from types import SimpleNamespace
++
++ROOT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(ROOT))
++import r1_15a2_path_cache_publish_v24917 as publication
++import r1_15a2_path_store_build_v24917 as builder
++import r1_15a2_two_mode_v238 as paths
++from r1_15a2_supply import SupplyPolicy
++
++
++def run(folder, count, fast):
++    folder.mkdir()
++    network = {(10 + i, i + 1, (i + 1) % 4 + 1):
++               {'eligible': True, 'addval1': 0., 't0_c_seconds': 60.} for i in range(4)}
++    edges = tuple(network) * 2
++    keys = [(i // 680 + 1, (i % 680 + i // 680 + 1) % 681 + 1, 1) for i in range(count)]
++    nonzero = sum(i % 17 != 0 for i in range(count))
++    model = float(nonzero * (sum(range(1, 9)) + sum(range(1, 5))) * 2)
++    profile = dict(link_no=10, from_node_no=1, to_node_no=2,
++        observed=model, model=model, role='CALIBRATION', countlocation_no='SYNTHETIC')
++    snapshot = {'state_hash': 'synthetic-parent'}
++    codes = {m: sorted(v, key=lambda c: (c != paths.core.norm_code(paths.DEFAULT_SETTINGS['representatives'][m]), c))
++             for m, v in paths.EXPECTED_MODE_DSEGS.items()}
++    adapter = SimpleNamespace(persistent_path_cache=SimpleNamespace(enabled=False),
++        snapshot=lambda: dict(snapshot), cfg={'supply': {'passenger_dsegs': sum(codes.values(), [])}},
++        visum=None)
++    scope = publication.BuildScope(adapter, folder, snapshot,
++                                    dict(publication.DEFAULTS, fast_staging=True))
++    token = publication._SCOPE.set(scope)
++    c = None
++    try:
++        c = paths.TwoModeRouteCollector([profile], SupplyPolicy(), 'synthetic-parent', network,
++            folder / publication.STORE, dict(paths.DEFAULT_SETTINGS, min_free_disk_gib=0), paths.QuietControl())
++        if not fast:
++            c.db.execute('PRAGMA journal_mode=DELETE')
++            c.db.execute('PRAGMA synchronous=FULL')
++        t0 = time.perf_counter()
++        for mode in ('C', 'C_NOT'):
++            for d, code in enumerate(codes[mode], 1):
++                c.add_parents(code, mode, ((*k, float(d) if i % 17 else 0.) for i, k in enumerate(keys)),
++                              {'matrix_interzonal': float(nonzero * d)})
++        t1 = time.perf_counter()
++        def geometry():
++            for key in keys:
++                yield (*key, '', '', '', '')
++                for ix, edge in enumerate(edges, 1):
++                    yield ('', '', '', ix, *edge)
++        for mode in ('C', 'C_NOT'):
++            c.add_geometry(mode, geometry())
++        t2 = time.perf_counter()
++        c.prepare_incidence_evidence()
++        comparison = c.path_basis_comparison_hash()
++        t3 = time.perf_counter()
++        manifest = scope.publish(c)
++        t4 = time.perf_counter()
++        return {'parent_seconds': t1 - t0, 'geometry_seconds': t2 - t1,
++                'incidence_and_comparison_seconds': t3 - t2, 'bulk_seconds': t3 - t0,
++                'publication_seconds': t4 - t3, 'end_to_end_seconds': t4 - t0,
++                'semantic': manifest['semantic'], 'store_bytes': manifest['store_bytes'],
++                'comparison_hash': comparison, 'read_only_after_publish': c.read_only}
++    finally:
++        if c is not None: c.close()
++        publication._SCOPE.reset(token)
++        scope.cleanup()
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--output', required=True, type=Path)
++    parser.add_argument('--paths-per-mode', type=int, default=180000)
++    parser.add_argument('--repetitions', type=int, default=2)
++    args = parser.parse_args()
++    if not 1 <= args.paths_per_mode <= 681 * 680 or not 1 <= args.repetitions <= 5:
++        parser.error('invalid workload')
++    builder.install(); publication.install()
++    rows = {'full': [], 'fast': []}
++    for rep in range(args.repetitions):
++        with tempfile.TemporaryDirectory(prefix='r1-staging-benchmark-') as directory:
++            pair = {}
++            for fast in ((False, True) if rep % 2 == 0 else (True, False)):
++                label = 'fast' if fast else 'full'
++                result = run(Path(directory) / label, args.paths_per_mode, fast)
++                pair[label] = result
++                rows[label].append(result)
++                print(json.dumps({'repetition': rep, 'variant': label,
++                    **{k: v for k, v in result.items() if k.endswith('_seconds')}}), flush=True)
++            assert pair['full']['semantic'] == pair['fast']['semantic']
++    metrics = ('parent_seconds', 'geometry_seconds', 'bulk_seconds',
++               'publication_seconds', 'end_to_end_seconds')
++    medians = {label: {m: statistics.median(row[m] for row in runs) for m in metrics}
++               for label, runs in rows.items()}
++    report = {'schema': 'R1_STAGING_MILLION_ROW_BENCHMARK_V1', 'synthetic': True, 'live_visum': False,
++              'paths_per_mode': args.paths_per_mode, 'volume_rows': 12 * args.paths_per_mode,
++              'geometry_rows': 2 * args.paths_per_mode, 'geometry_input_rows': 18 * args.paths_per_mode,
++              'repetitions': args.repetitions, 'identical_strong_publication_gates': True,
++              'semantics_exact': True, 'median_seconds': medians,
++              'full_over_fast': {m: medians['full'][m] / medians['fast'][m] for m in metrics},
++              'runs': rows, 'limitations': 'Linux local disk; no live model, COM or network-disk timing.'}
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++    args.output.write_text(json.dumps(report, indent=2) + '\n')
++    print(json.dumps({k: v for k, v in report.items() if k != 'runs'}, indent=2))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/benchmarks/run_sqlite_path_store_replay.py b/benchmarks/run_sqlite_path_store_replay.py
+new file mode 100644
+index 0000000..7e9163f
+--- /dev/null
++++ b/benchmarks/run_sqlite_path_store_replay.py
+@@ -0,0 +1,166 @@
++"""Replay a REAL completed path store into private benchmark copies (stdlib only).
++
++Source is read-only and SHA-checked before/after. Copies are never calibration
++authorities and are removed. Measures disk/SQLite behavior without re-exporting
++paths through COM. Commit batching is explicit, not a live-calibration forecast.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import sqlite3
++import statistics
++import struct
++import shutil
++import sys
++import tempfile
++import time
++
++TABLES = ('metadata', 'segments', 'edges', 'geometry', 'volumes',
++          'profile_hits', 'driver_markets', 'edge_postings')
++SCHEMA = 'R1_15A2_TWO_MODE_PATH_STORE_V238'
++
++
++def sha_file(path):
++    h = hashlib.sha256()
++    with Path(path).open('rb') as f:
++        for blob in iter(lambda: f.read(1024 ** 2), b''): h.update(blob)
++    return h.hexdigest()
++
++
++def fingerprint(db):
++    result = {}
++    for table in TABLES:
++        cols = list(db.execute('PRAGMA table_info(' + table + ')'))
++        order = sorted((c[5], c[0] + 1) for c in cols if c[5])
++        query = 'SELECT * FROM ' + table + ' ORDER BY ' + ','.join(str(c) for _, c in order)
++        h = hashlib.sha256(); count = 0
++        for row in db.execute(query):
++            for value in row:
++                blob = value if isinstance(value, bytes) else repr(value).encode('utf-8')
++                h.update(type(value).__name__.encode('ascii') + b'\0')
++                h.update(struct.pack('<Q', len(blob))); h.update(blob)
++            count += 1
++        result[table] = {'rows': count, 'sha256': h.hexdigest()}
++    return result
++
++
++def replay(source, folder, expected, fast, commit_rows):
++    stage = folder / 'UNPUBLISHED.sqlite'
++    db = sqlite3.connect(str(stage))
++    try:
++        # Copy only to obtain the exact schema/index definitions, then clear and
++        # vacuum outside the timed region. No source DDL is executed as code.
++        source.backup(db)
++        db.execute('PRAGMA foreign_keys=OFF')
++        for table in reversed(TABLES): db.execute('DELETE FROM ' + table)
++        db.commit(); db.execute('VACUUM')
++        db.execute('PRAGMA foreign_keys=ON')
++        db.execute('PRAGMA journal_mode=' + ('MEMORY' if fast else 'DELETE'))
++        db.execute('PRAGMA synchronous=' + ('OFF' if fast else 'FULL'))
++        db.execute('PRAGMA cache_size=-32768')
++        started = time.perf_counter()
++        commits = 0
++        for table in TABLES:
++            ncols = len(list(db.execute('PRAGMA table_info(' + table + ')')))
++            sql = 'INSERT INTO ' + table + ' VALUES(' + ','.join('?' for _ in range(ncols)) + ')'
++            batch, memory, in_transaction = [], 0, 0
++            for row in source.execute('SELECT * FROM ' + table):
++                batch.append(row)
++                memory += sys.getsizeof(row) + sum(sys.getsizeof(v) for v in row)
++                in_transaction += 1
++                if len(batch) >= commit_rows or memory >= 16 * 1024 ** 2 or in_transaction == commit_rows:
++                    db.executemany(sql, batch); batch.clear(); memory = 0
++                if in_transaction == commit_rows:
++                    db.commit(); commits += 1; in_transaction = 0
++            if batch: db.executemany(sql, batch)
++            if in_transaction: db.commit(); commits += 1
++        written = time.perf_counter()
++        assert list(db.execute('PRAGMA integrity_check')) == [('ok',)]
++        assert list(db.execute('PRAGMA foreign_key_check')) == []
++        actual = fingerprint(db)
++        if actual != expected: raise RuntimeError('SQLITE_REPLAY_CONTENT_MISMATCH')
++        db.execute('PRAGMA journal_mode=DELETE'); db.execute('PRAGMA synchronous=FULL')
++        db.close()
++        with stage.open('r+b') as f:
++            import os
++            os.fsync(f.fileno())
++        digest = sha_file(stage)
++        elapsed = time.perf_counter()
++        return {'insert_seconds': written - started, 'checks_fsync_sha_seconds': elapsed - written,
++                'total_seconds': elapsed - started, 'commits': commits, 'store_bytes': stage.stat().st_size,
++                'store_sha256': digest, 'content_exact': True}
++    finally:
++        db.close()
++
++
++def benchmark(source_path, output, *, repetitions=2, commit_rows=5000, work_root=None):
++    source_path, output = Path(source_path).resolve(), Path(output).resolve()
++    if (output == source_path or output.parent == source_path.parent or not 1 <= repetitions <= 5
++            or not 1 <= commit_rows <= 100000):
++        raise ValueError('REPLAY_USE_SEPARATE_OUTPUT_DIRECTORY_AND_VALID_BUDGETS')
++    if any(p.name.startswith('.UNPUBLISHED_PATH_CACHE_') for p in source_path.parents):
++        raise ValueError('REPLAY_COMPLETED_SOURCE_REQUIRED')
++    scratch = Path(work_root) if work_root is not None else Path(tempfile.gettempdir())
++    if shutil.disk_usage(scratch).free < source_path.stat().st_size * 3 + 512 * 1024 ** 2:
++        raise ValueError('REPLAY_INSUFFICIENT_SCRATCH_SPACE')
++    source = sqlite3.connect(source_path.as_uri() + '?mode=ro', uri=True)
++    try:
++        source.execute('PRAGMA query_only=ON')
++        objects = list(source.execute("SELECT type,name FROM sqlite_master WHERE type NOT IN ('index')"))
++        if {name for kind, name in objects if kind == 'table'} != set(TABLES) or any(k != 'table' for k, _ in objects):
++            raise ValueError('REPLAY_EXPECTED_EXACT_PATH_STORE_TABLES_NO_VIEWS_OR_TRIGGERS')
++        metadata = dict(source.execute('SELECT key,value FROM metadata'))
++        if metadata.get('schema') != SCHEMA:
++            raise ValueError('REPLAY_PATH_STORE_SCHEMA_MISMATCH')
++        if (metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true'
++                or metadata.get('path_cache_publication_state') == 'UNPUBLISHED'
++                or source.execute('PRAGMA journal_mode').fetchone()[0] != 'delete'):
++            raise ValueError('REPLAY_COMPLETED_DELETE_MODE_SOURCE_REQUIRED')
++        if any(not list(source.execute('PRAGMA table_info(' + t + ')')) for t in TABLES):
++            raise ValueError('REPLAY_PATH_STORE_TABLE_MISSING')
++        before = sha_file(source_path)
++        expected = fingerprint(source)
++        runs = {'full': [], 'fast': []}
++        for rep in range(repetitions):
++            for fast in ((False, True) if rep % 2 == 0 else (True, False)):
++                with tempfile.TemporaryDirectory(prefix='.UNPUBLISHED_PATH_CACHE_REPLAY_', dir=work_root) as name:
++                    label = 'fast' if fast else 'full'
++                    result = replay(source, Path(name), expected, fast, commit_rows)
++                    runs[label].append(result)
++                    print(json.dumps({'repetition': rep, 'variant': label, **result}), flush=True)
++        if sha_file(source_path) != before:
++            raise RuntimeError('REPLAY_SOURCE_CHANGED_DURING_BENCHMARK')
++        metrics = ('insert_seconds', 'checks_fsync_sha_seconds', 'total_seconds')
++        medians = {label: {m: statistics.median(r[m] for r in rows) for m in metrics}
++                   for label, rows in runs.items()}
++        report = {'schema': 'R1_REAL_SQLITE_REPLAY_BENCHMARK_V1', 'source_sha256': before,
++            'source_read_only': True, 'source_content_unchanged': True, 'source_tables': expected,
++            'benchmark_copies_are_authorities': False, 'commit_rows': commit_rows,
++            'repetitions': repetitions, 'median_seconds': medians, 'runs': runs,
++            'full_over_fast': {m: medians['full'][m] / medians['fast'][m] for m in metrics},
++            'limitations': 'SQLite replay batching; excludes source-copy/vacuum setup, COM and native calibration.'}
++        output.parent.mkdir(parents=True, exist_ok=True)
++        output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
++        return report
++    finally:
++        source.close()
++
++
++def main():
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--source-store', required=True, type=Path)
++    p.add_argument('--output', required=True, type=Path)
++    p.add_argument('--work-root', type=Path, help='Existing scratch directory on the disk to measure')
++    p.add_argument('--repetitions', type=int, default=2)
++    p.add_argument('--commit-rows', type=int, default=5000)
++    args = p.parse_args()
++    result = benchmark(args.source_store, args.output, repetitions=args.repetitions,
++                       commit_rows=args.commit_rows, work_root=args.work_root)
++    print(json.dumps({k: v for k, v in result.items() if k != 'runs'}, indent=2))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/r1_15a2_path_cache_publish_v24917.py b/r1_15a2_path_cache_publish_v24917.py
+new file mode 100644
+index 0000000..2946ee7
+--- /dev/null
++++ b/r1_15a2_path_cache_publish_v24917.py
+@@ -0,0 +1,458 @@
++"""Private MEMORY/OFF build -> checked, hash-bound, atomic read-only publication.
++
++This is a same-run local cache. Existing cross-run authorization is unchanged;
++the historical persistent manager, if enabled, keeps its original FULL path.
++Only the V24917 adapter's scoped build may request the private fast constructor.
++"""
++from __future__ import annotations
++
++from contextvars import ContextVar
++import copy
++from functools import wraps
++import hashlib
++import json
++import os
++from pathlib import Path
++import shutil
++import sqlite3
++import struct
++import time
++import uuid
++
++import r1_15a2_two_mode_v238 as paths
++import r1_15a2_path_export_probe_v24917 as probe
++import r1_15a2_path_store_build_v24917 as builder
++
++RELEASE = 'R1_PATH_CACHE_ATOMIC_PUBLISH1_20261030'
++STORE = 'TWO_MODE_PATH_STORE.sqlite'
++MANIFEST = 'PATH_CACHE_MANIFEST.json'
++_SCOPE = ContextVar('r1_path_cache_build_scope', default=None)
++DEFAULTS = {'fast_staging': False, 'page_probe': False,
++            'probe_candidates': [256, 2048, 4096, 8192, 16384],
++            'probe_starts': [1, 65537], 'probe_repetitions': 2, 'probe_memory_mib': 128.}
++
++
++def options(root=None, environ=None):
++    root = Path(root) if root is not None else Path(__file__).resolve().parent
++    path = root / 'R1_RUN_OPTIONS.json'
++    raw = json.loads(path.read_text(encoding='utf-8-sig')) if path.is_file() else {}
++    if not isinstance(raw, dict) or not isinstance(raw.get('path_io', {}), dict):
++        raise ValueError('PATH_IO_OPTIONS_NOT_OBJECT')
++    raw = raw.get('path_io', {})
++    if set(raw) - set(DEFAULTS):
++        raise ValueError('PATH_IO_UNKNOWN_OPTIONS:' + repr(sorted(set(raw) - set(DEFAULTS))))
++    out = dict(DEFAULTS, **raw)
++    environ = os.environ if environ is None else environ
++    for key, name in (('fast_staging', 'R1_PATH_STORE_FAST_STAGING'),
++                      ('page_probe', 'R1_PATH_EXPORT_PAGE_PROBE')):
++        value = str(environ.get(name, '')).strip().lower()
++        if value:
++            if value not in ('1', '0', 'true', 'false'):
++                raise ValueError('PATH_IO_INVALID_ENV_BOOLEAN:' + name)
++            out[key] = value in ('1', 'true')
++    for key in ('fast_staging', 'page_probe'):
++        if type(out[key]) is not bool:
++            raise ValueError('PATH_IO_BOOLEAN_REQUIRED:' + key)
++    for key, maximum in (('probe_candidates', probe.MAX_PAGE), ('probe_starts', 1000000000)):
++        values = out[key]
++        if not isinstance(values, list) or not 1 <= len(values) <= 8:
++            raise ValueError('PATH_IO_INVALID_LIST:' + key)
++        values = [paths.com.exact_int(v, key) for v in values]
++        if min(values) < 1 or max(values) > maximum or len(set(values)) != len(values):
++            raise ValueError('PATH_IO_INVALID_RANGE:' + key)
++        out[key] = values
++    out['probe_repetitions'] = paths.com.exact_int(out['probe_repetitions'], 'PROBE_REPETITIONS')
++    out['probe_memory_mib'] = paths.com.finite_float(out['probe_memory_mib'], 'PROBE_MEMORY_MIB')
++    if not 1 <= out['probe_repetitions'] <= 5 or not 1 <= out['probe_memory_mib'] <= 1024:
++        raise ValueError('PATH_IO_INVALID_PROBE_BUDGET')
++    return out
++
++
++def _sha(path, control=None):
++    digest = hashlib.sha256()
++    with Path(path).open('rb') as f:
++        for i, block in enumerate(iter(lambda: f.read(1024 ** 2), b'')):
++            digest.update(block)
++            if control is not None and i % 16 == 0:
++                control.checkpoint('PATH_CACHE_PUBLICATION_SHA256', hashed_mib=i + 1)
++    return digest.hexdigest()
++
++
++def _fsync_dir(path):
++    # Python cannot open a Windows directory for fsync. Files are always flushed;
++    # the receipt explicitly states this platform limit instead of promising a
++    # power-loss-durable directory rename on Windows/network file systems.
++    if os.name == 'nt':
++        return 'NOT_AVAILABLE_ON_WINDOWS_FILES_FSYNCED'
++    fd = os.open(str(path), os.O_RDONLY | os.O_DIRECTORY)
++    try:
++        os.fsync(fd)
++    finally:
++        os.close(fd)
++    return 'FSYNCED'
++
++
++def _write_manifest(path, value):
++    with path.open('x', encoding='utf-8', newline='\n') as f:
++        json.dump(value, f, sort_keys=True, indent=2, allow_nan=False)
++        f.write('\n'); f.flush(); os.fsync(f.fileno())
++
++
++def _readonly(path):
++    db = sqlite3.connect(path.resolve().as_uri() + '?mode=ro&immutable=1', uri=True)
++    try:
++        db.execute('PRAGMA foreign_keys=ON')
++        db.execute('PRAGMA temp_store=MEMORY')
++        # Main DB writes are denied by mode=ro. query_only=ON would also deny
++        # Supply's required CREATE TEMP TABLE current_impact and break proposals.
++        return db
++    except BaseException:
++        db.close()
++        raise
++
++
++def _published_manifest(path):
++    """Verify fast-cache publication; a source SHA alone is not reuse permission."""
++    path = Path(path)
++    if any(p.name.startswith('.UNPUBLISHED_PATH_CACHE_') for p in path.parents):
++        raise paths.SupplyContractError('PATH_CACHE_UNPUBLISHED_OPEN_FORBIDDEN')
++    if not path.is_file() or path.stat().st_size <= 0:
++        return None  # Preserve the historical missing/empty-store error.
++    db = sqlite3.connect(path.resolve().as_uri() + '?mode=ro', uri=True)
++    try:
++        marker = db.execute("SELECT value FROM metadata WHERE key='path_cache_publication_state'").fetchone()
++    finally:
++        db.close()
++    if marker is None:
++        return None  # Historical stores retain their original authorization.
++    manifest_path = path.parent / MANIFEST
++    if marker[0] != 'PUBLISHED' or not manifest_path.is_file():
++        raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MANIFEST_REQUIRED')
++    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
++    if (manifest.get('schema') != RELEASE or manifest.get('store_file') != path.name
++            or manifest.get('manifest_sha256') != paths.canonical_hash(
++                {k: v for k, v in manifest.items() if k != 'manifest_sha256'})
++            or manifest.get('store_bytes') != path.stat().st_size
++            or manifest.get('store_sha256') != _sha(path)):
++        raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MANIFEST_OR_SHA_MISMATCH')
++    return manifest
++
++
++def _semantic(collector, codes):
++    collector.prepare_incidence_evidence()
++    if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
++            or not collector.export_complete or not collector.incidence_ready
++            or not collector.summary.get('all_selected_dsegs_complete')
++            or not all(a['passes'] for a in collector.parents.values())
++            or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
++        raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
++    metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
++    if metadata.get('schema') != paths.SCHEMA:
++        raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
++    if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
++        raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
++    stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
++        'SELECT dseg,audit_json FROM segments')}
++    if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
++        raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
++    # Verify actual stored volume bytes against the source hashes, rather than
++    # treating in-memory completion counters as proof of what SQLite contains.
++    for code, audit in collector.parents.items():
++        key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
++        count = 0
++        for o, d, ix, vol in collector.db.execute('''
++                SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
++                JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
++                ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
++            key_hash.update(struct.pack('<III', o, d, ix))
++            volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
++            count += 1
++            if count % 8192 == 0:
++                collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
++        expected = collector._path_sql_volume_hashes[code]
++        if (count != audit['path_rows'] or key_hash.hexdigest() != audit['parent_keys_sha256']
++                or volume_hash.hexdigest() != expected):
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_VOLUME_HASH:' + code)
++    for mode, audit in collector.mode_audits.items():
++        geometry_hash = hashlib.sha256()
++        checked = 0
++        for o, d, ix, blob, count, digest, kind in collector.db.execute('''
++                SELECT orig,dest,path_index,edge_ids,edge_count,sequence_sha256,geometry_kind
++                FROM geometry WHERE mode=? ORDER BY orig,dest,path_index''', (mode,)):
++            expected_kind = ('LINK_SEQUENCE' if count else
++                'ZERO_LINK_INTRAZONAL_NO_ADDVAL1_EFFECT' if o == d else
++                'ZERO_LINK_INTERZONAL_NO_ADDVAL1_EFFECT')
++            if (blob is None or len(blob) != count * 4 or hashlib.sha256(blob).hexdigest() != digest
++                    or kind != expected_kind):
++                raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_GEOMETRY_HASH')
++            geometry_hash.update(struct.pack('<III', o, d, ix)); geometry_hash.update(digest.encode('ascii'))
++            checked += 1
++            if checked % 8192 == 0:
++                collector.control.checkpoint('PATH_CACHE_VERIFY_GEOMETRY', mode=mode, rows=checked)
++        if geometry_hash.hexdigest() != audit['representative_geometry_sha256']:
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MODE_GEOMETRY_HASH')
++    flow = [0.] * len(collector.profiles)
++    for i, value in collector.db.execute('''SELECT h.profile_index,SUM(v.volume*h.multiplicity)
++            FROM profile_hits h JOIN volumes v ON v.gid=h.gid GROUP BY h.profile_index'''):
++        if not 0 <= i < len(flow):
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_PROFILE_INDEX')
++        flow[i] = value
++    if flow != collector.flow:
++        raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_PROFILE_FLOW')
++    profile_rows = []
++    for i, row in enumerate(collector.epoch_profiles):
++        model = paths.number(row['model'])
++        actual = paths.number(collector.flow[i])
++        tolerance = max(collector.policy.parity_absolute_tolerance,
++                        collector.policy.parity_relative_tolerance * abs(model))
++        if abs(actual - model) > tolerance:
++            raise paths.SupplyContractError('ALL_PASSENGER_PATH_TO_PROFILE_FLOW_PARITY:PATH_CACHE_PUBLICATION')
++        profile_rows.append((collector._profile_id(row), model, actual))
++    counts = {table: collector.db.execute('SELECT COUNT(*) FROM ' + table).fetchone()[0]
++              for table in ('segments', 'geometry', 'volumes', 'edges', 'profile_hits', 'edge_postings')}
++    if (counts['segments'] != len(collector.parents)
++            or counts['geometry'] != collector.geometry_count
++            or counts['volumes'] != sum(a['path_rows'] for a in collector.parents.values())
++            or collector.db.execute('SELECT COUNT(*) FROM geometry WHERE edge_ids IS NULL OR edge_count IS NULL').fetchone()[0]):
++        raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_ROW_COUNTS')
++    return {'parent_hash': collector.parent_hash, 'schema': paths.SCHEMA, 'counts': counts,
++            'profile_order_hash': paths.canonical_hash([collector._profile_id(r) for r in collector.profiles]),
++            'observation_authority_hash': collector.authority_hash,
++            'profile_origin_parity_hash': paths.canonical_hash(profile_rows),
++            'path_structure_hash': collector.path_structure_hash(),
++            'path_basis_hash': collector.path_basis_hash(),
++            'path_basis_comparison_hash': collector.path_basis_comparison_hash()}
++
++
++class BuildScope:
++    def __init__(self, adapter, folder, snapshot, opts):
++        self.adapter, self.folder, self.snapshot, self.opts = adapter, Path(folder), copy.deepcopy(snapshot), opts
++        self.fast = opts['fast_staging'] and not adapter.persistent_path_cache.enabled
++        self.staging = self.destination = self.collector = None
++        self.retirement = None
++        self.page_report = None
++        self.published = False
++        self.completed = False
++
++    def construct(self, original, collector, args, kwargs):
++        if self.collector is not None:
++            raise paths.SupplyContractError('PATH_CACHE_MULTIPLE_BUILDERS_IN_SCOPE')
++        # Original signature: profiles, policy, parent_hash, links, db_path,...
++        args = list(args)
++        requested = Path(args[4] if len(args) > 4 else kwargs['db_path'])
++        if self.fast:
++            token = uuid.uuid4().hex
++            self.staging = requested.parent / ('.UNPUBLISHED_PATH_CACHE_' + token)
++            self.destination = requested.parent / ('PATH_CACHE_' + token)
++            self.staging.mkdir(exist_ok=False)
++            target = self.staging / STORE
++            if len(args) > 4: args[4] = target
++            else: kwargs = dict(kwargs, db_path=target)
++        original(collector, *args, **kwargs)
++        self.collector = collector
++        try:
++            if self.fast:
++                # Keep the sealed constructor/schema (one initial FULL commit).
++                # Only the unpublished bulk-load phase uses MEMORY/OFF. MEMORY
++                # preserves logical SQL rollback unlike journal_mode=OFF.
++                mode = collector.db.execute('PRAGMA journal_mode=MEMORY').fetchone()[0]
++                collector.db.execute('PRAGMA synchronous=OFF')
++                if mode != 'memory' or collector.db.execute('PRAGMA synchronous').fetchone()[0] != 0:
++                    raise paths.SupplyContractError('PATH_CACHE_FAST_PRAGMAS_NOT_APPLIED')
++                collector.db.execute('INSERT INTO metadata VALUES(?,?)',
++                                     ('path_cache_publication_state', 'UNPUBLISHED'))
++                collector.db.commit()
++            size = int(collector.settings['page_size'])
++            if self.opts['page_probe']:
++                before = self.adapter.snapshot()
++                if before != self.snapshot:
++                    raise paths.SupplyContractError('PATH_PAGE_PROBE_PARENT_CHANGED_BEFORE')
++                self.page_report = probe.benchmark(self.adapter.visum, collector.settings, collector.control,
++                    candidates=self.opts['probe_candidates'], starts=self.opts['probe_starts'],
++                    repetitions=self.opts['probe_repetitions'], memory_limit_mib=self.opts['probe_memory_mib'])
++                if self.adapter.snapshot() != before:
++                    raise paths.SupplyContractError('PATH_PAGE_PROBE_PARENT_CHANGED_AFTER')
++                size = self.page_report['selected_page_size']
++                self.page_report['snapshot_hash'] = paths.canonical_hash(before)
++            else:
++                self.page_report = {'selected_page_size': size, 'probe_enabled': False,
++                                    'runtime_page_fallback': False}
++            collector.settings['path_export_fixed_page_size'] = size
++            collector.settings['path_export_page_stats'] = {}
++            collector.summary['path_export_pages'] = collector.settings['path_export_page_stats']
++            if self.fast:
++                collector.settings['path_cache_verify_sql'] = True
++                builder._stats(collector).update(journal_mode='MEMORY', synchronous='OFF',
++                                                unpublished_only=True)
++            paths.atomic_json(self.folder / 'PATH_EXPORT_PAGE_PROFILE.json', self.page_report)
++        except BaseException:
++            collector.close()
++            raise
++
++    def publish(self, collector):
++        if collector is not self.collector or self.staging is None:
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_BUILDER_MISMATCH')
++        started = time.perf_counter()
++        collector.control.checkpoint('PATH_CACHE_PUBLICATION_CHECKS', force=True)
++        semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
++        collector.db.commit()
++        # Required unique/primary indexes and FKs were kept throughout loading.
++        # No secondary index is deferred unless an actual consumer needs it.
++        for key, value in semantic.items():
++            if key.endswith('_hash'):
++                collector.db.execute('INSERT OR REPLACE INTO metadata VALUES(?,?)', (key, value))
++        collector.db.execute('UPDATE metadata SET value=? WHERE key=?',
++                             ('PUBLISHED', 'path_cache_publication_state'))
++        collector.db.commit()
++        integrity = [r[0] for r in collector.db.execute('PRAGMA integrity_check')]
++        if integrity != ['ok'] or list(collector.db.execute('PRAGMA foreign_key_check')):
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SQLITE_INTEGRITY')
++        collector.db.execute('PRAGMA journal_mode=DELETE')
++        collector.db.execute('PRAGMA synchronous=FULL')
++        collector.db.close()  # Preserve in-memory evidence/readiness on this object.
++        store = self.staging / STORE
++        with store.open('r+b') as f:
++            os.fsync(f.fileno())
++        collector.control.checkpoint('PATH_CACHE_PUBLICATION_SHA256', force=True, bytes=store.stat().st_size)
++        digest = _sha(store, collector.control)
++        stat = store.stat()
++        manifest = {'schema': RELEASE, 'store_file': STORE, 'store_sha256': digest,
++            'store_bytes': stat.st_size, 'semantic': semantic, 'sqlite_integrity': 'ok',
++            'foreign_key_violations': 0, 'secondary_indexes_deferred': False,
++            'page_profile': self.page_report, 'same_run_only': True,
++            'main_database': 'IMMUTABLE_READ_ONLY', 'temporary_tables': 'MEMORY_WRITABLE',
++            'directory_fsync': 'UNAVAILABLE_WINDOWS' if os.name == 'nt' else 'SUPPORTED'}
++        manifest['manifest_sha256'] = paths.canonical_hash(manifest)
++        _write_manifest(self.staging / MANIFEST, manifest)
++        _fsync_dir(self.staging)
++        # This can be a long hash/check pass: recheck live parent immediately
++        # before publication, not just before the export or before hashing.
++        if self.adapter.snapshot() != self.snapshot:
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_LIVE_PARENT_CHANGED')
++        if self.destination.exists():
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_DESTINATION_EXISTS')
++        collector.control.checkpoint('PATH_CACHE_ATOMIC_RENAME', force=True)
++        os.rename(str(self.staging), str(self.destination))
++        self.published = True
++        _fsync_dir(self.destination.parent)
++        final = self.destination / STORE
++        after = final.stat()
++        if (stat.st_size, stat.st_ino, stat.st_mtime_ns) != (after.st_size, after.st_ino, after.st_mtime_ns):
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_FILE_IDENTITY_CHANGED')
++        readback = json.loads((self.destination / MANIFEST).read_text(encoding='utf-8'))
++        if readback != manifest:
++            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MANIFEST_READBACK')
++        collector.db = _readonly(final)
++        collector.read_only = True
++        collector.route_db_path = str(final)
++        collector.summary['path_cache_publication'] = {
++            'published': True, 'store_sha256': digest, 'store_bytes': after.st_size,
++            'manifest': str(self.destination / MANIFEST), 'seconds': time.perf_counter() - started,
++            'main_read_only': True, 'same_run_only': True}
++        paths.atomic_json(self.folder / 'PATH_CACHE_PUBLICATION.json', collector.summary['path_cache_publication'])
++        return manifest
++
++    def cleanup(self):
++        if self.staging is not None and self.staging.exists():
++            shutil.rmtree(self.staging)
++
++
++def defer_retirement(adapter, store_path, audit_folder):
++    scope = _SCOPE.get()
++    if scope is None or scope.adapter is not adapter or not scope.fast:
++        return None
++    scope.retirement = (store_path, audit_folder)
++    return {'retired': False, 'reason': 'DEFERRED_UNTIL_ATOMIC_PATH_CACHE_PUBLICATION'}
++
++
++def run_build(adapter, folder, snapshot, callback):
++    builder.install()
++    install()
++    opts = options()
++    scope = BuildScope(adapter, folder, snapshot, opts)
++    token = _SCOPE.set(scope)
++    try:
++        result = callback()
++        collector, links, export = result
++        if scope.fast:
++            scope.publish(collector)
++            # Update audit summaries written by the historical collector while
++            # it was still unpublished, then retire the old payload LAST.
++            for name in ('TWO_MODE_CACHE_AUDIT.json', '03A_PATH_EXPORT_SUMMARY.json'):
++                paths.atomic_json(Path(folder) / name, collector.summary)
++        scope.completed = True
++        return collector, links, export
++    except BaseException as exc:
++        if scope.collector is not None:
++            try:
++                scope.collector.close()
++            finally:
++                if getattr(adapter, 'cache', None) is scope.collector:
++                    adapter.cache = None
++                    adapter.cache_snapshot = None
++                    adapter.cache_live_snapshot = None
++        paths.atomic_json(Path(folder) / 'PATH_CACHE_BUILD_FAILED.json', {
++            'error': type(exc).__name__ + ':' + str(exc), 'published': scope.published,
++            'failed_staging_is_authority': False, 'probe_report': getattr(exc, 'probe_report', None)})
++        raise
++    finally:
++        _SCOPE.reset(token)
++        scope.cleanup()
++        # Retirement must happen outside the scope to reach the original owner.
++        # A failed build keeps the previous store even when it has been closed.
++        if scope.completed and scope.published and scope.retirement is not None:
++            old, audit = scope.retirement
++            record = adapter._retire_obsolete_epoch_store(old, audit)
++            epoch_path = Path(folder) / 'PATH_EPOCH.json'
++            if epoch_path.exists():
++                epoch = json.loads(epoch_path.read_text(encoding='utf-8'))
++                epoch['obsolete_store_retention'] = record
++                epoch['path_cache_publication'] = scope.collector.summary['path_cache_publication']
++                paths.atomic_json(epoch_path, epoch)
++
++
++def install():
++    probe.install()
++    cls = paths.TwoModeRouteCollector
++    original = cls.__init__
++    if getattr(original, '__r1_unpublished_cache__', False):
++        return {'installed': True, 'already': True, 'release': RELEASE}
++    @wraps(original)
++    def init(self, *args, **kwargs):
++        scope = _SCOPE.get()
++        if scope is None:
++            return original(self, *args, **kwargs)
++        return scope.construct(original, self, args, kwargs)
++    init.__r1_unpublished_cache__ = True
++    cls.__init__ = init
++    original_open = cls.open_existing.__func__
++    @classmethod
++    @wraps(original_open)
++    def open_existing(cls_, profiles, policy, links, db_path, settings=None, control=None,
++                      duplicate_scope_policy='FAIL', max_unique_sequences=100000,
++                      max_pairs_per_market=64, read_only=True, require_profile_metadata=False):
++        # Check the path before opening even a structurally complete staging DB.
++        manifest = _published_manifest(db_path)
++        if manifest is not None and read_only is not True:
++            raise paths.SupplyContractError('PATH_CACHE_PUBLISHED_STORE_IS_IMMUTABLE')
++        result = original_open(cls_, profiles, policy, links, db_path, settings, control,
++            duplicate_scope_policy, max_unique_sequences, max_pairs_per_market,
++            read_only, require_profile_metadata)
++        if manifest is not None:
++            try:
++                if (result.parent_hash != manifest['semantic']['parent_hash']
++                        or result.path_basis_hash() != manifest['semantic']['path_basis_hash']):
++                    raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SEMANTIC_READBACK')
++                result.db.close()
++                result.db = _readonly(Path(db_path))
++                result.read_only = True
++                result._refresh_driver_state()
++                result.summary.update(same_run_only=True, persistent_cross_run_reuse=False,
++                                      published_local_cache_read_only=True)
++            except BaseException:
++                result.close()
++                raise
++        return result
++    cls.open_existing = open_existing
++    return {'installed': True, 'release': RELEASE, 'options': options(),
++            'cross_run_cache_policy_changed': False}
+diff --git a/r1_15a2_path_export_probe_v24917.py b/r1_15a2_path_export_probe_v24917.py
+new file mode 100644
+index 0000000..e845046
+--- /dev/null
++++ b/r1_15a2_path_export_probe_v24917.py
+@@ -0,0 +1,266 @@
++"""Read-only page-size profiling and fixed-page native path enumeration.
++
++Profiling is opt-in: a failed candidate is rejected BEFORE an export starts.
++Once selected, production pagination never changes size after an error. Only
++the existing transient COM retry of the identical range remains permitted.
++"""
++from __future__ import annotations
++
++import ctypes
++import hashlib
++import os
++from pathlib import Path
++import statistics
++import struct
++import sys
++import time
++
++import r1_15a2_two_mode_v238 as paths
++
++RELEASE = 'R1_PATH_EXPORT_PAGE_PROBE1_20261030'
++MAX_PAGE = 16384
++REFERENCE_PAGE = 256
++_clock = time.perf_counter
++
++
++def _rss():
++    """Current Python-host RSS; never presented as Visum/native peak memory."""
++    if os.name == 'nt':
++        from ctypes import wintypes
++        class Counters(ctypes.Structure):
++            _fields_ = [('cb', wintypes.DWORD), ('faults', wintypes.DWORD)] + [
++                (name, ctypes.c_size_t) for name in (
++                    'peak', 'working', 'qpeak', 'q', 'ppeak', 'p', 'page', 'pagepeak')]
++        c = Counters(); c.cb = ctypes.sizeof(c)
++        kernel = ctypes.WinDLL('kernel32', use_last_error=True)
++        psapi = ctypes.WinDLL('psapi', use_last_error=True)
++        kernel.GetCurrentProcess.restype = wintypes.HANDLE
++        psapi.GetProcessMemoryInfo.argtypes = [wintypes.HANDLE, ctypes.c_void_p, wintypes.DWORD]
++        if not psapi.GetProcessMemoryInfo(kernel.GetCurrentProcess(), ctypes.byref(c), c.cb):
++            raise OSError(ctypes.get_last_error(), 'GetProcessMemoryInfo')
++        return int(c.working)
++    stat = Path('/proc/self/statm')
++    return int(stat.read_text().split()[1]) * os.sysconf('SC_PAGE_SIZE') if stat.exists() else None
++
++
++def _page_bytes(page):
++    # Bound probe payload, not the unobservable native COM allocator high water.
++    return sys.getsizeof(page) + sum(sys.getsizeof(r) + sum(sys.getsizeof(v) for v in r) for r in page)
++
++
++def _hash_rows(digest, page, columns):
++    if columns == paths.PARENT_COLUMNS:
++        for row in page:
++            o, d, ix = (paths._id(v) for v in row[:3])
++            vol = paths.com.finite_float(row[3], 'Vol(AP)')
++            if vol < 0:
++                raise paths.SupplyContractError('NEGATIVE_PATH_VOLUME')
++            digest.update(struct.pack('<IIId', o, d, ix, vol))
++    else:
++        for row in page:
++            digest.update(struct.pack('<7I', *(paths._id(v) if paths._filled(v) else 0 for v in row)))
++
++
++def _window(obj, columns, start, span, size, control, memory_limit):
++    ole, memid, kind = paths.rt.verified_bounded_signature(obj)
++    first, end = start, start + span - 1
++    digest = hashlib.sha256()
++    rows = full_pages = calls = peak_payload = retry_errors = 0
++    latencies = []
++    previous = None
++    rss_before = _rss()
++    while first <= end:
++        last = min(end, first + size - 1)
++        control.checkpoint('PATH_PAGE_PROBE', page_size=size, first=first, last=last)
++        started = _clock()
++        try:
++            # No COMBUSY budget-floor retries during a size qualification. Any
++            # transient rejection disqualifies this candidate in this profile.
++            raw = paths.com.bounded_ole_invoke_with_retry(
++                ole, memid, kind, first, last, retry_policy={'enabled': False}, label='PATH_PAGE_PROBE')
++        except Exception as exc:
++            if paths.com.is_retryable_com_error(exc):
++                retry_errors += 1
++            raise
++        latencies.append(_clock() - started)
++        calls += 1
++        page = [] if raw is None else raw
++        count = len(page)
++        if count > last - first + 1:
++            raise paths.SupplyContractError('PATH_PAGE_PROBE_EXCEEDS_REQUEST')
++        if any(len(r) != len(columns) for r in page):
++            raise paths.SupplyContractError('PATH_PAGE_PROBE_ROW_SCHEMA')
++        if count == size and previous is not None and page == previous:
++            raise paths.SupplyContractError('REPEATED_BOUNDED_PAGE_NO_PROGRESS')
++        payload = _page_bytes(page)
++        peak_payload = max(peak_payload, payload)
++        if payload > memory_limit:
++            raise paths.SupplyContractError('PATH_PAGE_PROBE_PAYLOAD_BUDGET')
++        _hash_rows(digest, page, columns)
++        rows += count
++        full_pages += count == size
++        previous = page if count == size else None
++        if count < last - first + 1:
++            break
++        first = last + 1
++    seconds = sum(latencies)
++    return {'rows': rows, 'sha256': digest.hexdigest(), 'calls': calls,
++            'com_seconds': seconds, 'latency_median_seconds': statistics.median(latencies),
++            'rows_per_second': rows / max(seconds, 1e-12), 'full_pages': full_pages,
++            'max_python_page_bytes': peak_payload, 'host_rss_before': rss_before,
++            'host_rss_after': _rss(), 'retryable_errors': retry_errors}
++
++
++def benchmark(visum, settings, control, *, candidates=(256, 2048, 4096, 8192, 16384),
++              starts=(1, 65537), repetitions=2, memory_limit_mib=128):
++    """Compare identical bounded windows for both modes and both native lists.
++
++    Caller owns whole-model before/after identity. Results are advisory outside
++    that scope; no saved profile can authorize a later assignment/Visum session.
++    """
++    candidates = sorted(set(paths.com.exact_int(v, 'PAGE_CANDIDATE') for v in candidates))
++    if not candidates or candidates[0] < 1 or candidates[-1] > MAX_PAGE:
++        raise ValueError('PATH_PAGE_PROBE_CANDIDATES')
++    starts = tuple(paths.com.exact_int(v, 'PAGE_WINDOW_START') for v in starts)
++    repetitions = paths.com.exact_int(repetitions, 'PAGE_REPETITIONS')
++    memory_limit_mib = paths.com.finite_float(memory_limit_mib, 'PAGE_MEMORY_MIB')
++    memory_limit = memory_limit_mib * 1024 ** 2
++    if (not starts or min(starts) < 1 or len(starts) > 8 or len(set(starts)) != len(starts)
++            or not 1 <= repetitions <= 5 or not 1 <= memory_limit_mib <= 1024):
++        raise ValueError('PATH_PAGE_PROBE_BUDGET')
++    span = max(candidates)
++    limits = {paths.PARENT_COLUMNS: settings['max_parent_rows_per_dseg'],
++              paths.GEOMETRY_COLUMNS: settings['max_geometry_rows_per_mode']}
++    results = {size: {'page_size': size, 'eligible': True, 'samples': [], 'errors': []}
++               for size in candidates}
++    references = {}
++    for mode, code in sorted(settings['representatives'].items()):
++        for kind, columns in (('CreatePrTPathList', paths.PARENT_COLUMNS),
++                              ('CreatePrTPathLinkList', paths.GEOMETRY_COLUMNS)):
++            if any(start + span - 1 > limits[columns] for start in starts):
++                raise ValueError('PATH_PAGE_PROBE_WINDOW_EXCEEDS_ROW_BUDGET')
++            obj = paths.create_list(visum, kind, code)
++            label = mode + ':' + kind
++            for start in starts:
++                references[(label, start)] = _window(
++                    obj, columns, start, span, REFERENCE_PAGE, control, memory_limit)
++            if not sum(references[(label, start)]['rows'] for start in starts):
++                raise paths.SupplyContractError('PATH_PAGE_PROBE_EMPTY_REFERENCE:' + label)
++            for rep in range(repetitions):
++                for size in (candidates if rep % 2 == 0 else list(reversed(candidates))):
++                    result = results[size]
++                    if not result['eligible']:
++                        continue
++                    for start in starts:
++                        try:
++                            sample = _window(obj, columns, start, span, size, control, memory_limit)
++                            ref = references[(label, start)]
++                            if (sample['rows'], sample['sha256']) != (ref['rows'], ref['sha256']):
++                                raise paths.SupplyContractError('PATH_PAGE_PROBE_CONTENT_MISMATCH')
++                            sample.update(list=label, start=start, repetition=rep)
++                            result['samples'].append(sample)
++                        except Exception as exc:
++                            if getattr(exc, 'stop_design_run', False):
++                                raise
++                            result['eligible'] = False
++                            result['errors'].append({'list': label, 'start': start, 'repetition': rep,
++                                'error': type(exc).__name__ + ':' + str(exc),
++                                'retryable': paths.com.is_retryable_com_error(exc)})
++                            break
++            # A partial/empty tail cannot qualify a large page. Require a full
++            # page in EACH list and EACH repetition, wherever it fits the data.
++            for size, result in results.items():
++                for rep in range(repetitions):
++                    if not any(s['list'] == label and s['repetition'] == rep and s['full_pages']
++                               for s in result['samples']):
++                        result['eligible'] = False
++                        result['errors'].append({'list': label, 'repetition': rep,
++                                                 'error': 'NO_FULL_PAGE_OBSERVED'})
++            # Re-read the independent small-page authority after qualification.
++            for start in starts:
++                after = _window(obj, columns, start, span, REFERENCE_PAGE, control, memory_limit)
++                ref = references[(label, start)]
++                if (after['rows'], after['sha256']) != (ref['rows'], ref['sha256']):
++                    raise paths.SupplyContractError('PATH_PAGE_PROBE_REFERENCE_CHANGED')
++            del obj
++    for result in results.values():
++        per_rep = [sum(s['com_seconds'] for s in result['samples'] if s['repetition'] == rep)
++                   for rep in range(repetitions)]
++        result['median_com_seconds'] = statistics.median(per_rep)
++        result['retry_incidence'] = sum(e.get('retryable', False) for e in result['errors'])
++    eligible = [r for r in results.values() if r['eligible']]
++    if not eligible:
++        exc = paths.SupplyContractError('PATH_PAGE_PROBE_NO_QUALIFIED_SIZE')
++        exc.probe_report = {'candidates': list(results.values()), 'runtime_page_fallback': False}
++        raise exc
++    winner = min(eligible, key=lambda r: (r['median_com_seconds'], r['page_size']))['page_size']
++    return {'schema': RELEASE, 'selected_page_size': winner, 'candidates': list(results.values()),
++            'reference_page_size': REFERENCE_PAGE, 'window_span': span, 'window_starts': starts,
++            'repetitions': repetitions, 'read_only': True, 'runtime_page_fallback': False,
++            'scope': 'CURRENT_BUILD_ONLY_NOT_A_CROSS_SESSION_CERTIFICATE',
++            'memory_semantics': 'PYTHON_PAGE_PAYLOAD_AND_SAMPLED_HOST_RSS_NOT_NATIVE_PEAK',
++            'retry_semantics': 'NO_PYTHON_RETRIES_DURING_PROBE;HOST_MESSAGE_FILTER_NOT_OBSERVABLE'}
++
++
++def fixed_rows(obj, columns, settings, control, phase, **details):
++    """Never backtrack, skip or resize; validate the same bounded export gates."""
++    size = paths.com.exact_int(settings['path_export_fixed_page_size'], 'FIXED_PAGE_SIZE')
++    if not 1 <= size <= MAX_PAGE:
++        raise ValueError('PATH_EXPORT_FIXED_PAGE_SIZE_RANGE')
++    limit = int(settings['max_parent_rows_per_dseg'] if columns == paths.PARENT_COLUMNS
++                else settings['max_geometry_rows_per_mode'])
++    ole, memid, kind = paths.rt.verified_bounded_signature(obj)
++    first = 1
++    pages = 0
++    previous = None
++    stats = settings.setdefault('path_export_page_stats', {})
++    label = ':'.join(str(v) for v in (phase, details.get('mode', ''), details.get('dseg_code', '')))
++    stat = stats.setdefault(label, {'calls': 0, 'rows': 0, 'com_seconds': 0., 'retry_events': 0,
++                                   'errors': 0, 'fixed_page_size': size})
++    while True:
++        control.checkpoint(phase, raw_rows=first - 1, pages=pages, **details)
++        last = first + size - 1
++        def retry(event):
++            stat['retry_events'] += 1
++            control.checkpoint(phase, force=True, raw_rows=first - 1, pages=pages,
++                bounded_range_first=first, bounded_range_last=last, bounded_page_size=size,
++                com_retry_event=event, **details)
++        started = time.perf_counter()
++        stat['calls'] += 1
++        try:
++            raw = paths.com.bounded_ole_invoke_with_retry(
++                ole, memid, kind, first, last, retry_policy=settings.get('com_retry_policy'),
++                label=phase, on_retry=retry, on_exhausted=retry)
++        except BaseException:
++            stat['errors'] += 1
++            raise
++        finally:
++            stat['com_seconds'] += time.perf_counter() - started
++        page = [] if raw is None else raw
++        if len(page) > size:
++            raise paths.SupplyContractError('BOUNDED_PAGE_EXCEEDS_REQUEST')
++        if first - 1 + len(page) > limit:
++            raise paths.SupplyContractError('PATH_ROW_BUDGET_EXCEEDED:' + phase)
++        if len(page) == size and previous is not None and page == previous:
++            raise paths.SupplyContractError('REPEATED_BOUNDED_PAGE_NO_PROGRESS')
++        previous = page if len(page) == size else None
++        for row in page:
++            if len(row) != len(columns):
++                raise paths.SupplyContractError('BOUNDED_ROW_SCHEMA_MISMATCH')
++            yield row
++        stat['rows'] += len(page)
++        pages += 1
++        if len(page) < size:
++            break
++        first = last + 1
++
++
++def install():
++    original = paths.bounded_rows
++    if getattr(original, '__r1_fixed_page_dispatch__', False):
++        return
++    def dispatch(obj, columns, settings, control, phase, **details):
++        fn = fixed_rows if 'path_export_fixed_page_size' in settings else original
++        return fn(obj, columns, settings, control, phase, **details)
++    dispatch.__r1_fixed_page_dispatch__ = True
++    paths.bounded_rows = dispatch
+diff --git a/r1_15a2_path_store_build_v24917.py b/r1_15a2_path_store_build_v24917.py
+index f4e2b9d..3975b3c 100644
+--- a/r1_15a2_path_store_build_v24917.py
++++ b/r1_15a2_path_store_build_v24917.py
+@@ -109,11 +109,16 @@ def add_parents(self, code, mode, rows, matrix_authority):
+     key_digest = hashlib.sha256()
+     vol_hash = hashlib.sha256()
+     comparison_hash = hashlib.sha256()
++    sql_hash = hashlib.sha256() if self.settings.get('path_cache_verify_sql') else None
+     decimals = int(self.settings['path_epoch_volume_comparison_decimals'])
+     for key in sorted_keys:
+         if mode_is_new:
+             key_digest.update(struct.pack('<III', *key))
+         vol_hash.update(struct.pack('<IIId', *key, values[key]))
++        if sql_hash is not None:
++            # SQLite REAL normalizes signed zero; preserve the original source
++            # audit while separately verifying its actual storage semantics.
++            sql_hash.update(struct.pack('<IIId', *key, values[key] if values[key] != 0 else 0.))
+         comparison_hash.update(struct.pack('<IIId', *key, round(values[key], decimals)))
+     key_hash = (key_digest.hexdigest() if mode_is_new else
+                 self.mode_audits[mode]['parent_keys_sha256'])
+@@ -143,6 +148,10 @@ def add_parents(self, code, mode, rows, matrix_authority):
+     self.db.executemany('INSERT INTO volumes VALUES(?,?,?)',
+                         ((key_map[key], code, values[key]) for key in sorted_keys))
+     self.db.commit()
++    if sql_hash is not None:
++        if not hasattr(self, '_path_sql_volume_hashes'):
++            self._path_sql_volume_hashes = {}
++        self._path_sql_volume_hashes[code] = sql_hash.hexdigest()
+     version = self.db.execute('PRAGMA data_version').fetchone()[0]
+     self._path_build_keymap = (mode, self.db.total_changes, version, key_map)
+     self.parents[code] = audit
+diff --git a/r1_15a2_trial_adapter_v24917.py b/r1_15a2_trial_adapter_v24917.py
+index cee1f94..a0da422 100644
+--- a/r1_15a2_trial_adapter_v24917.py
++++ b/r1_15a2_trial_adapter_v24917.py
+@@ -50,6 +50,7 @@ import r1_15a2_mobility_zone_v24917 as zguard
+ import r1_15a2_intrazonal_penalty_v24917 as izpen
+ import r1_15a2_snapshot_reads_v24917 as snapshot_reads
+ import r1_15a2_com_busy_snapshot_hotfix_v24916 as snapshot_retry
++import r1_15a2_path_cache_publish_v24917 as path_publish
+ 
+ RELEASE = "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_ADAPTER_20261027"
+ 
+@@ -57,6 +58,18 @@ RELEASE = "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_ADAPTER_20261027"
+ class VisumAdapter(_V24916ActiveAdapter):
+     runtime_backend = "VISUM_COM_V24917_TARGETED_CATCHUP_ZONAL_COUNT_FIT"
+ 
++    def _build_cache(self, diag, folder, snapshot, *, build_sequence_evidence=False,
++                     allow_persistent_restore=True):
++        return path_publish.run_build(self, folder, snapshot,
++            lambda: super(VisumAdapter, self)._build_cache(
++                diag, folder, snapshot, build_sequence_evidence=build_sequence_evidence,
++                allow_persistent_restore=allow_persistent_restore))
++
++    def _retire_obsolete_epoch_store(self, store_path, audit_folder):
++        deferred = path_publish.defer_retirement(self, store_path, audit_folder)
++        return (deferred if deferred is not None else
++                super()._retire_obsolete_epoch_store(store_path, audit_folder))
++
+     def __init__(self, visum: Any, cfg: Mapping[str, Any], control: Any = None):
+         self._long_post_td_mask_enabled = True
+         self.v24917_ls = lsgen.activate(visum)        # idempotent; launcher activates first
+diff --git a/r1_15a2_v24917_runtime.py b/r1_15a2_v24917_runtime.py
+index a8aa871..9316baf 100644
+--- a/r1_15a2_v24917_runtime.py
++++ b/r1_15a2_v24917_runtime.py
+@@ -158,6 +158,8 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
+     import r1_15a2_targeted_generation_v24917 as tg
+     status = {"release": RELEASE, "parent_equivalence_preload": parent_eq_status}
+     status["path_store_build"] = path_store_build.install()
++    import r1_15a2_path_cache_publish_v24917 as path_cache_publish
++    status["path_cache_publication"] = path_cache_publish.install()
+     import r1_15a2_snapshot_reads_v24917 as snapshot_reads
+     status["snapshot_reads"] = {
+         "enabled": True, "release": snapshot_reads.RELEASE,
+diff --git a/tests/test_v24917_path_cache_publish.py b/tests/test_v24917_path_cache_publish.py
+new file mode 100644
+index 0000000..add3e86
+--- /dev/null
++++ b/tests/test_v24917_path_cache_publish.py
+@@ -0,0 +1,329 @@
++"""Actual adapter export -> private SQLite -> atomic immutable publication."""
++import hashlib
++import json
++from pathlib import Path
++from types import SimpleNamespace
++import sqlite3
++import subprocess
++import sys
++import os
++
++import pytest
++
++import r1_15a2_path_cache_publish_v24917 as pub
++import r1_15a2_path_store_build_v24917 as builder
++import r1_15a2_two_mode_v238 as paths
++from r1_15a2_trial_adapter_v24917 import VisumAdapter
++from r1_15a2_supply import SupplyPolicy
++from test_supply_v22 import profile, links, P
++from test_two_mode_v238 import live_fixture
++
++
++@pytest.fixture(autouse=True)
++def isolate_patches(monkeypatch):
++    cls = paths.TwoModeRouteCollector
++    for name in ('__init__', 'close', 'add_parents', 'add_geometry'):
++        monkeypatch.setattr(cls, name, getattr(cls, name))
++    monkeypatch.setattr(cls, 'open_existing', cls.__dict__['open_existing'])
++    monkeypatch.setattr(paths, 'bounded_rows', paths.bounded_rows)
++    monkeypatch.setattr(pub, 'options', lambda: dict(pub.DEFAULTS, fast_staging=True))
++
++
++def adapter(tmp_path, control=None):
++    visum, cfg, model, lists = live_fixture()
++    cfg.update(two_mode=dict(paths.DEFAULT_SETTINGS, page_size=3, sample_windows=[[1, 2]],
++                             min_free_disk_gib=0), dseg_path_volume_relative_tolerance=.01)
++    a = object.__new__(VisumAdapter)
++    a.visum, a.cfg, a.control = visum, cfg, control or paths.QuietControl()
++    a.policy = SupplyPolicy(min_geh=1, min_residual=1)
++    a.persistent_path_cache = SimpleNamespace(enabled=False)
++    a.cache = None
++    a.cache_snapshot = None
++    a.cache_live_snapshot = None
++    a.path_epoch_index = 0
++    a.path_epoch_history = []
++    a.read_links = links
++    a.snapshot = lambda: {'state_hash': 'parent', 'fixed_link_hash': 'fixed',
++                         'dseg_hash': 'ds', 'operations_hash': 'ops'}
++    def invalidate(*args, **kwargs):
++        if a.cache is not None: a.cache.close()
++        a.cache = None
++    a.invalidate_cache = invalidate
++    a._path_epoch_cfg = lambda: {'cleanup_obsolete_sqlite_after_verified_refresh': True,
++                                 'retain_sqlite_stores': 1}
++    diag = {'d12': {'rows': [profile(model=model)]}}
++    return a, diag, lists
++
++
++def build(a, diag, folder):
++    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
++
++
++def previous_cache(a, tmp_path):
++    old = tmp_path / 'OLD' / pub.STORE
++    old.parent.mkdir(); old.write_bytes(b'previous verified cache')
++    a.cache = SimpleNamespace(route_db_path=str(old), close=lambda: None)
++    return old
++
++
++def test_real_adapter_publication_and_supply_temp_writes(tmp_path):
++    a, diag, lists = adapter(tmp_path)
++    old = previous_cache(a, tmp_path)
++    c, network, export = build(a, diag, tmp_path / 'CACHE')
++    try:
++        final = Path(c.route_db_path)
++        assert final.parent.name.startswith('PATH_CACHE_')
++        assert not old.exists()
++        assert not list((tmp_path / 'CACHE').glob('.UNPUBLISHED*'))
++        manifest = json.loads((final.parent / pub.MANIFEST).read_text())
++        assert hashlib.sha256(final.read_bytes()).hexdigest() == manifest['store_sha256']
++        assert manifest['semantic']['path_basis_hash'] == c.path_basis_hash()
++        assert manifest['semantic']['counts']['volumes'] == 24
++        assert c.read_only and c.incidence_ready
++        assert all(obj.unbounded_calls == 0 for obj in lists.instances)
++        assert c.summary['path_store_build']['journal_mode'] == 'MEMORY'
++        with pytest.raises(sqlite3.OperationalError, match='readonly'):
++            c.db.execute("UPDATE metadata SET value='bad' WHERE key='schema'")
++        before = final.read_bytes()
++        c.prepare_sequence_evidence()
++        assert c.finish()['profile_parity'][0]['passes']
++        impact = c.impact([{'key': P, 'delta': 1.}], 0, 1000.)
++        assert impact['affected_routes'] > 0
++        assert final.read_bytes() == before
++        assert c.db.execute("SELECT name FROM sqlite_temp_master WHERE name='current_impact'").fetchone()
++        epoch = json.loads((tmp_path / 'CACHE/PATH_EPOCH.json').read_text())
++        assert epoch['obsolete_store_retention']['retired']
++        assert epoch['path_cache_publication']['main_read_only']
++    finally:
++        c.close()
++
++
++@pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
++def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
++    original = pub._semantic
++    def corrupt(c, codes):
++        sql = {
++            'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
++            'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
++            'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
++            'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
++            'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
++            'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
++        }
++        if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
++        else: c.db.execute(sql[damage]); c.db.commit()
++        return original(c, codes)
++    monkeypatch.setattr(pub, '_semantic', corrupt)
++    a, diag, _ = adapter(tmp_path)
++    old = previous_cache(a, tmp_path)
++    with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
++        build(a, diag, tmp_path / 'CACHE')
++    assert old.read_bytes() == b'previous verified cache'
++    assert a.cache is None
++    assert not list((tmp_path / 'CACHE').glob('.UNPUBLISHED*'))
++    assert not list((tmp_path / 'CACHE').glob('PATH_CACHE_*/*sqlite'))
++
++
++@pytest.mark.parametrize('phase', ['PATH_CACHE_PUBLICATION_CHECKS', 'PATH_CACHE_PUBLICATION_SHA256', 'PATH_CACHE_ATOMIC_RENAME'])
++def test_stop_at_publish_boundaries_preserves_parent(tmp_path, phase):
++    class Stop:
++        def checkpoint(self, name='', **kw):
++            if name == phase: raise paths.DesignStopRequested('INJECTED_STOP')
++    a, diag, _ = adapter(tmp_path, Stop())
++    old = previous_cache(a, tmp_path)
++    with pytest.raises(Exception, match='INJECTED_STOP'):
++        build(a, diag, tmp_path / 'CACHE')
++    assert old.exists() and a.cache is None
++    assert not list((tmp_path / 'CACHE').glob('.UNPUBLISHED*'))
++
++
++def test_rename_failure_preserves_parent(tmp_path, monkeypatch):
++    def fail(*args): raise OSError('INJECTED_RENAME_FAILURE')
++    monkeypatch.setattr(pub.os, 'rename', fail)
++    a, diag, _ = adapter(tmp_path)
++    old = previous_cache(a, tmp_path)
++    with pytest.raises(OSError, match='INJECTED_RENAME_FAILURE'):
++        build(a, diag, tmp_path / 'CACHE')
++    assert old.exists() and a.cache is None
++    assert not list((tmp_path / 'CACHE').glob('.UNPUBLISHED*'))
++
++
++def test_failure_after_rename_does_not_retire_parent(tmp_path, monkeypatch):
++    def fail(*args): raise RuntimeError('INJECTED_REOPEN_FAILURE')
++    monkeypatch.setattr(pub, '_readonly', fail)
++    a, diag, _ = adapter(tmp_path)
++    old = previous_cache(a, tmp_path)
++    with pytest.raises(RuntimeError, match='INJECTED_REOPEN_FAILURE'):
++        build(a, diag, tmp_path / 'CACHE')
++    assert old.exists() and a.cache is None
++    assert len(list((tmp_path / 'CACHE').glob('PATH_CACHE_*/' + pub.MANIFEST))) == 1
++
++
++def test_live_parent_change_during_checks_blocks_rename(tmp_path, monkeypatch):
++    original = pub._semantic
++    a, diag, _ = adapter(tmp_path)
++    old = previous_cache(a, tmp_path)
++    def changed(*args):
++        result = original(*args)
++        a.snapshot = lambda: {'state_hash': 'CHANGED'}
++        return result
++    monkeypatch.setattr(pub, '_semantic', changed)
++    with pytest.raises(Exception, match='LIVE_PARENT_CHANGED'):
++        build(a, diag, tmp_path / 'CACHE')
++    assert old.exists() and a.cache is None
++
++
++def test_unpublished_structural_completion_cannot_be_reopened(tmp_path, monkeypatch):
++    original = pub._semantic
++    def inspect(c, codes):
++        with pytest.raises(Exception, match='UNPUBLISHED_OPEN_FORBIDDEN'):
++            paths.TwoModeRouteCollector.open_existing(c.profiles, c.policy, links(), c.route_db_path)
++        return original(c, codes)
++    monkeypatch.setattr(pub, '_semantic', inspect)
++    a, diag, _ = adapter(tmp_path)
++    c, _, _ = build(a, diag, tmp_path / 'CACHE')
++    c.close()
++
++
++@pytest.mark.parametrize('tamper', ['none', 'missing_manifest', 'manifest', 'bytes'])
++def test_published_reopen_verifies_sha_and_supports_supply(tmp_path, tamper):
++    a, diag, _ = adapter(tmp_path)
++    c, network, _ = build(a, diag, tmp_path / 'CACHE')
++    path, profiles, policy = Path(c.route_db_path), c.profiles, c.policy
++    c.close()
++    if tamper == 'missing_manifest': (path.parent / pub.MANIFEST).unlink()
++    if tamper == 'manifest':
++        m = json.loads((path.parent / pub.MANIFEST).read_text()); m['store_bytes'] += 1
++        (path.parent / pub.MANIFEST).write_text(json.dumps(m))
++    if tamper == 'bytes':
++        with path.open('ab') as f: f.write(b'changed')
++    if tamper != 'none':
++        with pytest.raises(Exception, match='MANIFEST'):
++            paths.TwoModeRouteCollector.open_existing(profiles, policy, network, path)
++    else:
++        reopened = paths.TwoModeRouteCollector.open_existing(profiles, policy, network, path)
++        try:
++            reopened.prepare_sequence_evidence()
++            assert reopened.impact([{'key': P, 'delta': 1.}], 0, 1000.)['affected_routes'] > 0
++            assert reopened.read_only
++        finally:
++            reopened.close()
++
++
++def test_published_open_cannot_request_writable_main(tmp_path):
++    a, diag, _ = adapter(tmp_path)
++    c, network, _ = build(a, diag, tmp_path / 'CACHE')
++    path, profiles, policy = Path(c.route_db_path), c.profiles, c.policy
++    c.close()
++    before = path.read_bytes()
++    with pytest.raises(Exception, match='IS_IMMUTABLE'):
++        paths.TwoModeRouteCollector.open_existing(profiles, policy, network, path, read_only=False)
++    assert path.read_bytes() == before
++
++
++def test_hard_process_exit_leaves_only_unpublished_orphan(tmp_path):
++    script = r'''
++import os,sys
++from pathlib import Path
++from types import SimpleNamespace
++import r1_15a2_path_cache_publish_v24917 as p
++import r1_15a2_path_store_build_v24917 as b
++import r1_15a2_two_mode_v238 as paths
++from test_supply_v22 import profile,links
++from test_two_mode_v238 import authority,hierarchy
++from r1_15a2_supply import SupplyPolicy
++folder=Path(sys.argv[1]);folder.mkdir()
++b.install();p.install()
++a=SimpleNamespace(persistent_path_cache=SimpleNamespace(enabled=False))
++s=p.BuildScope(a,folder,{'state_hash':'s'},dict(p.DEFAULTS,fast_staging=True))
++p._SCOPE.set(s)
++c=paths.TwoModeRouteCollector([profile()],SupplyPolicy(),'s',links(),folder/p.STORE)
++c.add_parents('NATIVE_CW','C',[[1,2,1,600],[1,2,2,400]],authority([600,400]))
++c.add_geometry('C',hierarchy());c.prepare_incidence_evidence()
++os._exit(17)
++'''
++    root = Path(paths.__file__).resolve().parent
++    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=os.pathsep.join([str(root), str(root / 'tests')]))
++    result = subprocess.run([sys.executable, '-c', script, str(tmp_path / 'CRASH')], env=env,
++                            cwd=root, capture_output=True, text=True, timeout=30)
++    assert result.returncode == 17, result.stderr
++    orphan, = (tmp_path / 'CRASH').glob('.UNPUBLISHED*/*.sqlite')
++    pub.install()
++    with pytest.raises(Exception, match='UNPUBLISHED_OPEN_FORBIDDEN'):
++        paths.TwoModeRouteCollector.open_existing([], SupplyPolicy(), links(), orphan)
++    assert not list((tmp_path / 'CRASH').glob('PATH_CACHE_*'))
++
++
++def test_signed_zero_keeps_source_hash_but_verifies_sql_normalization(tmp_path, monkeypatch):
++    a, diag, lists = adapter(tmp_path)
++    for code, (first, second) in lists.volumes.items():
++        lists.volumes[code] = (first + second, -0.)
++    # Rebuild the fixture matrices and count profile to match this synthetic input.
++    total = 0.
++    for ds in a.visum.Net.DemandSegments.GetAll:
++        if 'noT' not in ds.code: total += 100.
++    diag['d12']['rows'][0]['model'] = total
++    c, _, _ = build(a, diag, tmp_path / 'CACHE')
++    try:
++        assert c.read_only
++        assert c._path_sql_volume_hashes['NATIVE_CW'] != c.parents['NATIVE_CW']['keys_and_volumes_sha256']
++    finally:
++        c.close()
++
++
++def test_probe_size_is_pinned_for_real_adapter_export(tmp_path, monkeypatch):
++    monkeypatch.setattr(pub, 'options', lambda: dict(pub.DEFAULTS, fast_staging=True, page_probe=True))
++    monkeypatch.setattr(pub.probe, 'benchmark', lambda *a, **kw: {'selected_page_size': 8192})
++    a, diag, _ = adapter(tmp_path)
++    c, _, _ = build(a, diag, tmp_path / 'CACHE')
++    try:
++        assert c.settings['page_size'] == 3
++        assert c.settings['path_export_fixed_page_size'] == 8192
++        assert all(s['fixed_page_size'] == 8192 for s in c.summary['path_export_pages'].values())
++        assert c.read_only
++    finally:
++        c.close()
++
++
++def test_probe_model_drift_blocks_entire_build(tmp_path, monkeypatch):
++    monkeypatch.setattr(pub, 'options', lambda: dict(pub.DEFAULTS, fast_staging=True, page_probe=True))
++    a, diag, _ = adapter(tmp_path)
++    old = previous_cache(a, tmp_path)
++    def drift(*args, **kw):
++        a.snapshot = lambda: {'state_hash': 'CHANGED'}
++        return {'selected_page_size': 8192}
++    monkeypatch.setattr(pub.probe, 'benchmark', drift)
++    with pytest.raises(Exception, match='PATH_PAGE_PROBE_PARENT_CHANGED_AFTER'):
++        build(a, diag, tmp_path / 'CACHE')
++    assert old.exists() and not list((tmp_path / 'CACHE').glob('.UNPUBLISHED*'))
++
++
++@pytest.mark.parametrize('value', [True, 'yes', 0, None, []])
++def test_invalid_options_rejected(tmp_path, value, monkeypatch):
++    # Fixture patches the normal loader; access its original source for validation.
++    import importlib.util
++    spec = importlib.util.spec_from_file_location('_path_pub_options', Path(pub.__file__))
++    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++    (tmp_path / 'R1_RUN_OPTIONS.json').write_text(json.dumps({'path_io': value}))
++    with pytest.raises(ValueError): module.options(tmp_path)
++
++
++def test_env_flags_override_options_without_editing_source(tmp_path):
++    import importlib.util
++    spec = importlib.util.spec_from_file_location('_path_pub_options', Path(pub.__file__))
++    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++    path = tmp_path / 'R1_RUN_OPTIONS.json'
++    path.write_text(json.dumps({'path_io': {'fast_staging': False, 'page_probe': False}}))
++    before = path.read_bytes()
++    opts = module.options(tmp_path, environ={'R1_PATH_STORE_FAST_STAGING': '1', 'R1_PATH_EXPORT_PAGE_PROBE': 'true'})
++    assert opts['fast_staging'] and opts['page_probe']
++    assert path.read_bytes() == before
++
++
++@pytest.mark.parametrize('value', ['yes', '2', 'invalid'])
++def test_bad_env_flags_fail_before_build(tmp_path, value):
++    import importlib.util
++    spec = importlib.util.spec_from_file_location('_path_pub_options', Path(pub.__file__))
++    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++    with pytest.raises(ValueError, match='INVALID_ENV_BOOLEAN'):
++        module.options(tmp_path, environ={'R1_PATH_STORE_FAST_STAGING': value})
+diff --git a/tests/test_v24917_path_export_probe.py b/tests/test_v24917_path_export_probe.py
+new file mode 100644
+index 0000000..2f0f79a
+--- /dev/null
++++ b/tests/test_v24917_path_export_probe.py
+@@ -0,0 +1,159 @@
++"""Bounded fake-COM qualification, immutable range retries, no size fallback."""
++from types import SimpleNamespace
++
++import pytest
++
++import r1_15a2_path_export_probe_v24917 as probe
++import r1_15a2_two_mode_v238 as paths
++from test_v237_15p_bounded_offdiag_stream import BoundedHierarchical
++
++
++def fake_lists(monkeypatch, damage=None, count=100):
++    ticks = [0.]
++    objects = []
++    if count < 256:
++        monkeypatch.setattr(probe, 'REFERENCE_PAGE', 1)
++    def make(visum, kind, code):
++        rows = ([[i + 1, i + 2, 1, 2.5] for i in range(count)] if kind == 'CreatePrTPathList'
++                else [['', '', '', i + 1, i + 2, i + 3, i + 4] for i in range(count)])
++        obj = BoundedHierarchical(rows)
++        original = obj._oleobj_.Invoke
++        def invoke(memid, lcid, k, method, first, last):
++            size = last - first + 1
++            ticks[0] += 1. + .001 * size
++            if damage == 'capacity' and size in (8, 16):
++                raise MemoryError('PAGE_TOO_LARGE')
++            if damage == 'transient' and size == 8:
++                raise RuntimeError('call was rejected by callee')
++            raw = original(memid, lcid, k, method, first, last)
++            if damage == 'content' and size == 8 and raw:
++                raw = [list(r) for r in raw]; raw[0][0] = 999
++            if damage == 'reference_drift' and first == 1 and size == 16:
++                obj.raw[0] = [999] + obj.raw[0][1:]
++            return raw
++        obj._oleobj_.Invoke = invoke
++        objects.append(obj)
++        return obj
++    monkeypatch.setattr(paths, 'create_list', make)
++    monkeypatch.setattr(probe, '_clock', lambda: ticks[0])
++    monkeypatch.setattr(probe, '_rss', lambda: 123456)
++    return objects
++
++
++def run_probe():
++    return probe.benchmark(None, paths.DEFAULT_SETTINGS, paths.QuietControl(),
++                           candidates=(2, 4, 8, 16), starts=(1, 65), repetitions=2)
++
++
++def test_selects_one_size_from_exact_same_windows(monkeypatch):
++    objects = fake_lists(monkeypatch)
++    report = run_probe()
++    assert report['selected_page_size'] == 16
++    assert all(r['eligible'] for r in report['candidates'])
++    assert all(not obj.unbounded_calls for obj in objects)
++    assert len(objects) == 4
++    assert report['runtime_page_fallback'] is False
++    assert all(s['host_rss_after'] == 123456 for r in report['candidates'] for s in r['samples'])
++
++
++def test_native_16384_size_is_supported_by_probe_not_sealed_config(monkeypatch):
++    fake_lists(monkeypatch, count=17000)
++    report = probe.benchmark(None, paths.DEFAULT_SETTINGS, paths.QuietControl(),
++                            candidates=(2048, 4096, 8192, 16384), starts=(1,), repetitions=1)
++    assert report['selected_page_size'] == 16384
++    assert all(r['eligible'] for r in report['candidates'])
++
++
++@pytest.mark.parametrize('damage', ['capacity', 'transient', 'content'])
++def test_failed_probe_candidate_is_disqualified_before_export(monkeypatch, damage):
++    fake_lists(monkeypatch, damage)
++    report = run_probe()
++    result = {r['page_size']: r for r in report['candidates']}
++    assert not result[8]['eligible']
++    assert result[8]['errors']
++    if damage == 'capacity': assert report['selected_page_size'] == 4
++    else: assert report['selected_page_size'] == 16
++    if damage == 'transient': assert result[8]['retry_incidence'] == 1
++
++
++def test_reference_drift_is_fatal(monkeypatch):
++    fake_lists(monkeypatch, 'reference_drift')
++    with pytest.raises(Exception, match='REFERENCE_CHANGED'):
++        run_probe()
++
++
++def test_no_full_page_is_not_a_large_page_certificate(monkeypatch):
++    fake_lists(monkeypatch, count=3)
++    report = run_probe()
++    assert report['selected_page_size'] == 2
++    assert all(not r['eligible'] for r in report['candidates'] if r['page_size'] > 2)
++
++
++def test_no_winner_fails_with_diagnostic_details(monkeypatch):
++    fake_lists(monkeypatch, count=1)
++    with pytest.raises(Exception, match='NO_QUALIFIED_SIZE') as exc:
++        run_probe()
++    assert len(exc.value.probe_report['candidates']) == 4
++
++
++def test_memory_limit_disqualifies_candidate(monkeypatch):
++    fake_lists(monkeypatch)
++    monkeypatch.setattr(probe, '_page_bytes', lambda page: (200 if len(page) == 16 else 1) * 1024 ** 2)
++    report = run_probe()
++    assert report['selected_page_size'] == 8
++    assert not next(r for r in report['candidates'] if r['page_size'] == 16)['eligible']
++
++
++@pytest.mark.parametrize('damage', ['size_error', 'wrong_schema', 'too_many', 'repeated', 'wrong_signature'])
++def test_fixed_export_never_resizes_on_failure(damage):
++    obj = BoundedHierarchical([[i + 1, i + 2, 1, 10.] for i in range(10)])
++    original = obj._oleobj_.Invoke
++    def invoke(memid, lcid, k, method, first, last):
++        if damage == 'size_error':
++            obj._oleobj_.calls.append((first, last))
++            raise MemoryError('PAGE_TOO_LARGE')
++        result = original(memid, lcid, k, method, first, last)
++        if damage == 'wrong_schema': return [[1]]
++        if damage == 'too_many': return result + result
++        if damage == 'repeated': return obj.raw[:4]
++        return result
++    obj._oleobj_.Invoke = invoke
++    if damage == 'wrong_signature': obj._oleobj_.typeinfo.names = ('SaveToArray', 'Wrong', 'LastObject')
++    settings = dict(paths.DEFAULT_SETTINGS, path_export_fixed_page_size=4,
++                    com_retry_policy={'enabled': False})
++    with pytest.raises(Exception):
++        list(probe.fixed_rows(obj, paths.PARENT_COLUMNS, settings, paths.QuietControl(), 'TEST'))
++    assert all(last - first + 1 == 4 for first, last in obj._oleobj_.calls)
++    assert obj.unbounded_calls == 0
++
++
++def test_transient_retry_repeats_identical_range(monkeypatch):
++    obj = BoundedHierarchical([[i + 1, i + 2, 1, 10.] for i in range(5)])
++    calls = []
++    def invoke(memid, lcid, kind, method, first, last):
++        calls.append((first, last))
++        if len(calls) == 1: raise RuntimeError('call was rejected by callee')
++        return obj.raw[first - 1:last]
++    obj._oleobj_.Invoke = invoke
++    settings = dict(paths.DEFAULT_SETTINGS, path_export_fixed_page_size=4,
++                    com_retry_policy={'enabled': True, 'max_attempts': 2,
++                                      'initial_delay_seconds': 0., 'max_delay_seconds': 0.})
++    result = list(probe.fixed_rows(obj, paths.PARENT_COLUMNS, settings, paths.QuietControl(), 'TEST'))
++    assert result == obj.raw
++    assert calls == [(1, 4), (1, 4), (5, 8)]
++    assert settings['path_export_page_stats']['TEST::']['retry_events'] == 1
++
++
++def test_fixed_reader_above_4096_preserves_all_rows():
++    obj = BoundedHierarchical([[i + 1, i + 2, 1, 10.] for i in range(20000)])
++    settings = dict(paths.DEFAULT_SETTINGS, path_export_fixed_page_size=8192)
++    result = list(probe.fixed_rows(obj, paths.PARENT_COLUMNS, settings, paths.QuietControl(), 'TEST'))
++    assert result == obj.raw
++    assert obj._oleobj_.calls == [(1, 8192), (8193, 16384), (16385, 24576)]
++
++
++def test_fixed_reader_keeps_row_budget():
++    obj = BoundedHierarchical([[i + 1, i + 2, 1, 10.] for i in range(5)])
++    settings = dict(paths.DEFAULT_SETTINGS, path_export_fixed_page_size=4, max_parent_rows_per_dseg=4)
++    with pytest.raises(Exception, match='PATH_ROW_BUDGET_EXCEEDED'):
++        list(probe.fixed_rows(obj, paths.PARENT_COLUMNS, settings, paths.QuietControl(), 'TEST'))
+diff --git a/tests/test_v24917_path_io_launcher.py b/tests/test_v24917_path_io_launcher.py
+new file mode 100644
+index 0000000..438d8d0
+--- /dev/null
++++ b/tests/test_v24917_path_io_launcher.py
+@@ -0,0 +1,39 @@
++"""Optional launcher scopes flags without changing sealed options or Visum API."""
++import importlib.util
++import os
++from pathlib import Path
++from types import SimpleNamespace
++
++import pytest
++
++
++def load():
++    path = Path(__file__).resolve().parents[1] / '01_SPUSTIT_V24917_PATH_IO_PROBE_SILENT.py'
++    spec = importlib.util.spec_from_file_location('_path_io_launcher_test', path)
++    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++    return module
++
++
++@pytest.mark.parametrize('fail', [False, True])
++def test_flags_are_scoped_and_restored(monkeypatch, fail):
++    launcher = load()
++    monkeypatch.setenv(launcher.FLAGS[0], '0')
++    monkeypatch.delenv(launcher.FLAGS[1], raising=False)
++    host = object()
++    def run():
++        assert all(os.environ[name] == '1' for name in launcher.FLAGS)
++        assert parent.Visum is host
++        if fail: raise RuntimeError('INJECTED_PARENT_ERROR')
++        return 'DONE'
++    parent = SimpleNamespace(main=run)
++    monkeypatch.setattr(launcher, 'load_parent', lambda: parent)
++    if fail:
++        with pytest.raises(RuntimeError, match='INJECTED_PARENT_ERROR'): launcher.main(host)
++    else:
++        assert launcher.main(host) == 'DONE'
++    assert os.environ[launcher.FLAGS[0]] == '0'
++    assert launcher.FLAGS[1] not in os.environ
++
++
++def test_no_host_cannot_start_calibration():
++    with pytest.raises(RuntimeError, match='NO_INJECTED_VISUM'): load().main()
+diff --git a/tests/test_v24917_runtime_install.py b/tests/test_v24917_runtime_install.py
+index e102d96..b2a5a97 100644
+--- a/tests/test_v24917_runtime_install.py
++++ b/tests/test_v24917_runtime_install.py
+@@ -91,6 +91,7 @@ res.update({
+   "diagfast_integrity": status["v24917"]["diagfast"]["integrity"]["status"],
+   "v24917_manifest": status["v24917_manifest"]["passes"],
+   "path_store_build_installed": status["v24917"]["path_store_build"]["installed"],
++  "path_cache_publication_installed": status["v24917"]["path_cache_publication"]["installed"],
+   "path_store_build_adapter_alias": getattr(__import__("r1_15a2_trial_adapter_v240").TwoModeRouteCollector.add_geometry, "__r1_path_store_build__", None) == __import__("r1_15a2_path_store_build_v24917").RELEASE,
+   "parent_eq_preloaded": "r1_15a2_parent_equivalence_v24917" in sys.modules,
+   "parent_eq_source_exact": Path(sys.modules["r1_15a2_parent_equivalence_v24917"].__file__).resolve() == (root / "r1_15a2_parent_equivalence_v24917.py").resolve(),
+diff --git a/tests/test_v24917_sqlite_store_replay.py b/tests/test_v24917_sqlite_store_replay.py
+new file mode 100644
+index 0000000..6b9898f
+--- /dev/null
++++ b/tests/test_v24917_sqlite_store_replay.py
+@@ -0,0 +1,47 @@
++"""Real-store replay entrypoint: no source writes, exact contents, bounded copies."""
++import importlib.util
++import json
++from pathlib import Path
++
++import pytest
++
++from test_two_mode_v238 import fill, store
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def module():
++    spec = importlib.util.spec_from_file_location('_sqlite_replay_benchmark',
++        ROOT / 'benchmarks/run_sqlite_path_store_replay.py')
++    result = importlib.util.module_from_spec(spec); spec.loader.exec_module(result)
++    return result
++
++
++@pytest.mark.parametrize('batch', [1, 3])
++def test_replay_is_exact_and_source_unchanged(tmp_path, batch):
++    c = store(tmp_path / 'SOURCE'); fill(c)
++    path = Path(c.route_db_path); before = path.read_bytes(); c.close()
++    scratch = tmp_path / 'scratch'; scratch.mkdir()
++    report_path = tmp_path / 'results/REPORT.json'
++    report = module().benchmark(path, report_path, repetitions=1, commit_rows=batch, work_root=scratch)
++    assert path.read_bytes() == before
++    assert report['source_read_only'] and report['source_content_unchanged']
++    assert report['source_tables']['volumes']['rows'] == 2
++    assert not report['benchmark_copies_are_authorities']
++    assert all(row['content_exact'] for runs in report['runs'].values() for row in runs)
++    assert not list(scratch.iterdir())
++    assert json.loads(report_path.read_text()) == report
++
++
++def test_replay_refuses_incomplete_source(tmp_path):
++    c = store(tmp_path / 'SOURCE')
++    path = Path(c.route_db_path); c.close()
++    with pytest.raises(ValueError, match='COMPLETED'):
++        module().benchmark(path, tmp_path / 'out/REPORT.json', repetitions=1)
++
++
++def test_replay_refuses_report_in_source_directory(tmp_path):
++    c = store(tmp_path / 'SOURCE'); fill(c)
++    path = Path(c.route_db_path); c.close()
++    with pytest.raises(ValueError, match='SEPARATE_OUTPUT'):
++        module().benchmark(path, path.parent / 'REPORT.json')
+diff --git a/tools/refresh_v24917_manifests.py b/tools/refresh_v24917_manifests.py
+index 9d02d8b..c899ab3 100644
+--- a/tools/refresh_v24917_manifests.py
++++ b/tools/refresh_v24917_manifests.py
+@@ -46,6 +46,10 @@ RUNTIME = [
+     "r1_15a2_step_search_v24917.py",
+     "r1_15a2_perf_v24917.py",
+     "r1_15a2_path_store_build_v24917.py",
++    "r1_15a2_path_cache_publish_v24917.py",
++    "r1_15a2_path_export_probe_v24917.py",
++    "R1_BENCHMARK_PATH_EXPORT.py",
++    "01_SPUSTIT_V24917_PATH_IO_PROBE_SILENT.py",
+     "r1_15a2_combusy2_v24917.py",
+     "r1_15a2_preflight_explain_v24917.py",
+     "r1_15a2_boundary_generation_v24917.py",

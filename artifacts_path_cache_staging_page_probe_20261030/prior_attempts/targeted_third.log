@@ -1,0 +1,72 @@
+................................F...........                             [100%]
+=================================== FAILURES ===================================
+_________ test_published_reopen_verifies_sha_and_supports_supply[none] _________
+
+tmp_path = PosixPath('/tmp/r1pub/test_published_reopen_verifies0')
+tamper = 'none'
+
+    @pytest.mark.parametrize('tamper', ['none', 'missing_manifest', 'manifest', 'bytes'])
+    def test_published_reopen_verifies_sha_and_supports_supply(tmp_path, tamper):
+        a, diag, _ = adapter(tmp_path)
+        c, network, _ = build(a, diag, tmp_path / 'CACHE')
+        path, profiles, policy = Path(c.route_db_path), c.profiles, c.policy
+        c.close()
+        if tamper == 'missing_manifest': (path.parent / pub.MANIFEST).unlink()
+        if tamper == 'manifest':
+            m = json.loads((path.parent / pub.MANIFEST).read_text()); m['store_bytes'] += 1
+            (path.parent / pub.MANIFEST).write_text(json.dumps(m))
+        if tamper == 'bytes':
+            with path.open('ab') as f: f.write(b'changed')
+        if tamper != 'none':
+            with pytest.raises(Exception, match='MANIFEST'):
+                paths.TwoModeRouteCollector.open_existing(profiles, policy, network, path)
+        else:
+            reopened = paths.TwoModeRouteCollector.open_existing(profiles, policy, network, path)
+            try:
+                reopened.prepare_sequence_evidence()
+>               assert reopened.impact([{'key': P, 'delta': 1.}], 0, 1000.)['affected_routes'] > 0
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f7ad728fc50>
+changes = [{'delta': 1.0, 'key': (12, 2, 4)}], driver_idx = 0
+driver_support = 1000.0
+
+    def impact(self, changes, driver_idx, driver_support):
+        """All stored geometry exposure x ALL 12 distinct segment volumes.
+    
+        Exact conditional on the provisional sharing assumption, NOT a flow
+        prediction and NOT proof of native cross-DSeg geometry equivalence.
+        """
+        self.finish()
+        if not changes:raise SupplyContractError('EMPTY_SEQUENCE_IMPACT')
+        self.control.checkpoint('ALL_PATH_COLLATERAL_IMPACT',force=True)
+        by_geometry=defaultdict(float)
+        for change in changes:
+            eid=self.edge_ids[tuple(change['key'])]
+            delta=10.0*number(change['delta'])
+            for (blob,) in self.db.execute('SELECT pairs FROM edge_postings WHERE eid=? ORDER BY chunk',(eid,)):
+                data=_unpacked(zlib.decompress(blob))
+                if len(data)%2:raise SupplyContractError('CORRUPT_EDGE_POSTINGS')
+                for j in range(0,len(data),2):by_geometry[data[j]]+=delta*data[j+1]
+                self.control.checkpoint()
+        self.db.execute('DROP TABLE IF EXISTS temp.current_impact')
+        self.db.execute('CREATE TEMP TABLE current_impact(gid INTEGER PRIMARY KEY,delta REAL)')
+        self.db.executemany('INSERT INTO current_impact VALUES(?,?)',
+                            ((gid,d) for gid,d in by_geometry.items() if abs(d)>1e-12))
+        groups=defaultdict(lambda: {'routes':0,'volume':0.0,
+            'volume_weighted_abs_seconds':0.0,'volume_weighted_signed_seconds':0.0})
+        protected={'routes':0,'volume':0.0,'volume_weighted_abs_seconds':0.0}
+        # CAL only; VALIDATION observations must not classify/rank proposals.
+        calmap=defaultdict(set)
+        for gid,i in self.db.execute('SELECT h.gid,h.profile_index FROM profile_hits h JOIN current_impact c ON c.gid=h.gid'):
+>           if i in self.cal_indices:calmap[gid].add(i)
+                    ^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute 'cal_indices'
+
+r1_15a2_two_mode_v238.py:1150: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_path_cache_publish.py::test_published_reopen_verifies_sha_and_supports_supply[none]
+1 failed, 43 passed in 1.55s

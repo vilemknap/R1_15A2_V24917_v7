@@ -53,3 +53,6 @@ artifacts_long_chain_review_20261030/*.patch -text -diff
 artifacts_long_chain_review_20261030/prior_attempt/*.log -text -diff
 artifacts_path_store_build_perf_20261030/*.patch -text -diff
 artifacts_path_store_build_perf_20261030/*.log -text -diff
+artifacts_path_cache_staging_page_probe_20261030/*.patch -text -diff
+artifacts_path_cache_staging_page_probe_20261030/*.log -text -diff
+artifacts_path_cache_staging_page_probe_20261030/prior_attempts/*.log -text -diff

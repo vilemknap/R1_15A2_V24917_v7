@@ -1,0 +1,54 @@
+{
+  "V24917_RUNTIME_MANIFEST.json": {
+    "files": 83,
+    "errors": []
+  },
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "files": 161,
+    "errors": []
+  },
+  "DIAGFAST_V1_BASE_MANIFEST.json": {
+    "files": 1059,
+    "errors": []
+  },
+  "compiled_sources": [
+    "r1_15a2_path_store_build_v24917.py",
+    "r1_15a2_trial_adapter_v24917.py",
+    "r1_15a2_v24917_runtime.py",
+    "tests/test_v24917_runtime_install.py",
+    "tools/refresh_v24917_manifests.py",
+    "01_SPUSTIT_V24917_PATH_IO_PROBE_SILENT.py",
+    "R1_BENCHMARK_PATH_EXPORT.py",
+    "benchmarks/run_path_cache_staging_benchmark.py",
+    "benchmarks/run_sqlite_path_store_replay.py",
+    "r1_15a2_path_cache_publish_v24917.py",
+    "r1_15a2_path_export_probe_v24917.py",
+    "tests/test_v24917_path_cache_publish.py",
+    "tests/test_v24917_path_export_probe.py",
+    "tests/test_v24917_path_io_launcher.py",
+    "tests/test_v24917_sqlite_store_replay.py"
+  ],
+  "default_features": {
+    "long_generation_enabled": true,
+    "long_composite_td_enabled": true,
+    "school_td_enabled": true,
+    "td_inner_mode": "DYNAMIC",
+    "path_io": {
+      "fast_staging": false,
+      "page_probe": false,
+      "probe_candidates": [
+        256,
+        2048,
+        4096,
+        8192,
+        16384
+      ],
+      "probe_starts": [
+        1,
+        65537
+      ],
+      "probe_repetitions": 2,
+      "probe_memory_mib": 128
+    }
+  }
+}

@@ -50,12 +50,25 @@ import r1_15a2_mobility_zone_v24917 as zguard
 import r1_15a2_intrazonal_penalty_v24917 as izpen
 import r1_15a2_snapshot_reads_v24917 as snapshot_reads
 import r1_15a2_com_busy_snapshot_hotfix_v24916 as snapshot_retry
+import r1_15a2_path_cache_publish_v24917 as path_publish
 
 RELEASE = "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_ADAPTER_20261027"
 
 
 class VisumAdapter(_V24916ActiveAdapter):
     runtime_backend = "VISUM_COM_V24917_TARGETED_CATCHUP_ZONAL_COUNT_FIT"
+
+    def _build_cache(self, diag, folder, snapshot, *, build_sequence_evidence=False,
+                     allow_persistent_restore=True):
+        return path_publish.run_build(self, folder, snapshot,
+            lambda: super(VisumAdapter, self)._build_cache(
+                diag, folder, snapshot, build_sequence_evidence=build_sequence_evidence,
+                allow_persistent_restore=allow_persistent_restore))
+
+    def _retire_obsolete_epoch_store(self, store_path, audit_folder):
+        deferred = path_publish.defer_retirement(self, store_path, audit_folder)
+        return (deferred if deferred is not None else
+                super()._retire_obsolete_epoch_store(store_path, audit_folder))
 
     def __init__(self, visum: Any, cfg: Mapping[str, Any], control: Any = None):
         self._long_post_td_mask_enabled = True

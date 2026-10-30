@@ -1,0 +1,38 @@
+{"repetition": 0, "variant": "full", "parent_seconds": 11.926602502000605, "geometry_seconds": 7.339509100000214, "incidence_and_comparison_seconds": 14.341507397999521, "bulk_seconds": 33.60761900000034, "publication_seconds": 8.306105735999154, "end_to_end_seconds": 41.913724735999494}
+{"repetition": 0, "variant": "fast", "parent_seconds": 11.681770247001623, "geometry_seconds": 7.490639364999879, "incidence_and_comparison_seconds": 14.452556188000017, "bulk_seconds": 33.62496580000152, "publication_seconds": 8.404416297998978, "end_to_end_seconds": 42.0293820980005}
+{
+  "schema": "R1_STAGING_MILLION_ROW_BENCHMARK_V1",
+  "synthetic": true,
+  "live_visum": false,
+  "paths_per_mode": 180000,
+  "volume_rows": 2160000,
+  "geometry_rows": 360000,
+  "geometry_input_rows": 3240000,
+  "repetitions": 1,
+  "identical_strong_publication_gates": true,
+  "semantics_exact": true,
+  "median_seconds": {
+    "full": {
+      "parent_seconds": 11.926602502000605,
+      "geometry_seconds": 7.339509100000214,
+      "bulk_seconds": 33.60761900000034,
+      "publication_seconds": 8.306105735999154,
+      "end_to_end_seconds": 41.913724735999494
+    },
+    "fast": {
+      "parent_seconds": 11.681770247001623,
+      "geometry_seconds": 7.490639364999879,
+      "bulk_seconds": 33.62496580000152,
+      "publication_seconds": 8.404416297998978,
+      "end_to_end_seconds": 42.0293820980005
+    }
+  },
+  "full_over_fast": {
+    "parent_seconds": 1.0209584891520893,
+    "geometry_seconds": 0.9798241167895729,
+    "bulk_seconds": 0.9994841095124273,
+    "publication_seconds": 0.9883025116184176,
+    "end_to_end_seconds": 0.9972481783878877
+  },
+  "limitations": "Linux local disk; no live model, COM or network-disk timing."
+}

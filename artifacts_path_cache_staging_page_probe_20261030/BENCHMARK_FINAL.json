@@ -1,0 +1,100 @@
+{
+  "schema": "R1_STAGING_MILLION_ROW_BENCHMARK_V1",
+  "synthetic": true,
+  "live_visum": false,
+  "paths_per_mode": 180000,
+  "volume_rows": 2160000,
+  "geometry_rows": 360000,
+  "geometry_input_rows": 3240000,
+  "repetitions": 1,
+  "identical_strong_publication_gates": true,
+  "semantics_exact": true,
+  "median_seconds": {
+    "full": {
+      "parent_seconds": 11.926602502000605,
+      "geometry_seconds": 7.339509100000214,
+      "bulk_seconds": 33.60761900000034,
+      "publication_seconds": 8.306105735999154,
+      "end_to_end_seconds": 41.913724735999494
+    },
+    "fast": {
+      "parent_seconds": 11.681770247001623,
+      "geometry_seconds": 7.490639364999879,
+      "bulk_seconds": 33.62496580000152,
+      "publication_seconds": 8.404416297998978,
+      "end_to_end_seconds": 42.0293820980005
+    }
+  },
+  "full_over_fast": {
+    "parent_seconds": 1.0209584891520893,
+    "geometry_seconds": 0.9798241167895729,
+    "bulk_seconds": 0.9994841095124273,
+    "publication_seconds": 0.9883025116184176,
+    "end_to_end_seconds": 0.9972481783878877
+  },
+  "runs": {
+    "full": [
+      {
+        "parent_seconds": 11.926602502000605,
+        "geometry_seconds": 7.339509100000214,
+        "incidence_and_comparison_seconds": 14.341507397999521,
+        "bulk_seconds": 33.60761900000034,
+        "publication_seconds": 8.306105735999154,
+        "end_to_end_seconds": 41.913724735999494,
+        "semantic": {
+          "parent_hash": "synthetic-parent",
+          "schema": "R1_15A2_TWO_MODE_PATH_STORE_V238",
+          "counts": {
+            "segments": 12,
+            "geometry": 360000,
+            "volumes": 2160000,
+            "edges": 4,
+            "profile_hits": 360000,
+            "edge_postings": 288
+          },
+          "profile_order_hash": "7fef8de501d04e7c8739b0946964c7e977c3651ad446abdc7d96502bb10c8a80",
+          "observation_authority_hash": "a4dae1c16000844650c910de5b0825536fa174588256d7922538b46580d30ff7",
+          "profile_origin_parity_hash": "b3d87bae1a99e26cbdd2843b14192b9dd52115af93034f3c23daefba92e0c89d",
+          "path_structure_hash": "aae2189d442c7531094bc1ed1edf8ec3ba87f8c63eaef5fa27a9ed4dfd2836cf",
+          "path_basis_hash": "218c6af06836f575d4c0914e7fcea0b78094d6f49b1bd39ad935bd467e4e303e",
+          "path_basis_comparison_hash": "5052c178db26753cfdf3ee06a3f31442aa1ee8227057e4a6163c11813f268ba2"
+        },
+        "store_bytes": 124354560,
+        "comparison_hash": "5052c178db26753cfdf3ee06a3f31442aa1ee8227057e4a6163c11813f268ba2",
+        "read_only_after_publish": true
+      }
+    ],
+    "fast": [
+      {
+        "parent_seconds": 11.681770247001623,
+        "geometry_seconds": 7.490639364999879,
+        "incidence_and_comparison_seconds": 14.452556188000017,
+        "bulk_seconds": 33.62496580000152,
+        "publication_seconds": 8.404416297998978,
+        "end_to_end_seconds": 42.0293820980005,
+        "semantic": {
+          "parent_hash": "synthetic-parent",
+          "schema": "R1_15A2_TWO_MODE_PATH_STORE_V238",
+          "counts": {
+            "segments": 12,
+            "geometry": 360000,
+            "volumes": 2160000,
+            "edges": 4,
+            "profile_hits": 360000,
+            "edge_postings": 288
+          },
+          "profile_order_hash": "7fef8de501d04e7c8739b0946964c7e977c3651ad446abdc7d96502bb10c8a80",
+          "observation_authority_hash": "a4dae1c16000844650c910de5b0825536fa174588256d7922538b46580d30ff7",
+          "profile_origin_parity_hash": "b3d87bae1a99e26cbdd2843b14192b9dd52115af93034f3c23daefba92e0c89d",
+          "path_structure_hash": "aae2189d442c7531094bc1ed1edf8ec3ba87f8c63eaef5fa27a9ed4dfd2836cf",
+          "path_basis_hash": "218c6af06836f575d4c0914e7fcea0b78094d6f49b1bd39ad935bd467e4e303e",
+          "path_basis_comparison_hash": "5052c178db26753cfdf3ee06a3f31442aa1ee8227057e4a6163c11813f268ba2"
+        },
+        "store_bytes": 124354560,
+        "comparison_hash": "5052c178db26753cfdf3ee06a3f31442aa1ee8227057e4a6163c11813f268ba2",
+        "read_only_after_publish": true
+      }
+    ]
+  },
+  "limitations": "Linux local disk; no live model, COM or network-disk timing."
+}

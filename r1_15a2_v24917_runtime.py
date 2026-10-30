@@ -158,6 +158,8 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
     import r1_15a2_targeted_generation_v24917 as tg
     status = {"release": RELEASE, "parent_equivalence_preload": parent_eq_status}
     status["path_store_build"] = path_store_build.install()
+    import r1_15a2_path_cache_publish_v24917 as path_cache_publish
+    status["path_cache_publication"] = path_cache_publish.install()
     import r1_15a2_snapshot_reads_v24917 as snapshot_reads
     status["snapshot_reads"] = {
         "enabled": True, "release": snapshot_reads.RELEASE,

@@ -12,6 +12,14 @@
   "long_generation_enabled": true,
   "long_composite_td_enabled": true,
   "school_td_enabled": true,
+  "path_io": {
+    "fast_staging": false,
+    "page_probe": false,
+    "probe_candidates": [256, 2048, 4096, 8192, 16384],
+    "probe_starts": [1, 65537],
+    "probe_repetitions": 2,
+    "probe_memory_mib": 128
+  },
   "tg_max_trials": 3,
   "td_realization_max_trials": 3,
   "td_inner_max_evaluations": 60,

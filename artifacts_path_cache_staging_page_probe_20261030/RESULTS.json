@@ -1,0 +1,46 @@
+{
+  "baseline_remote_commit": "a4042f1df6401298e60c404afe5d8956133556e2",
+  "baseline_tree": "416085935680c5f0e018d17d10e27248426c18ae",
+  "default_fast_staging": false,
+  "default_page_probe": false,
+  "live_visum": "NOT_RUN",
+  "real_user_store": "NOT_AVAILABLE_NOT_RUN",
+  "commands": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python benchmarks/run_path_cache_staging_benchmark.py --paths-per-mode 180000 --repetitions 1 --output /workspace/work/path_cache_staging_page_probe_20261030/BENCHMARK_FINAL.json",
+      "returncode": 0,
+      "evidence": "BENCHMARK_FINAL.json"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/refresh_v24917_manifests.py",
+      "returncode": 0,
+      "runtime": 83,
+      "release_sources": 161,
+      "sealed_originals": 1059
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_path_export_probe.py tests/test_v24917_path_cache_publish.py tests/test_v24917_sqlite_store_replay.py tests/test_v24917_path_io_launcher.py tests/test_v24917_path_store_build.py tests/test_v24917_runtime_install.py tests/test_two_mode_v238.py tests/test_v248_persistent_path_cache.py tests/test_v247_path_epochs.py tests/test_v24917_path_incidence_review.py tests/test_v24917_long_cache_generation.py --basetemp=/tmp/r1pubfocus",
+      "returncode": 0,
+      "passed": 242,
+      "evidence": "FOCUSED_RELEASE.log"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTEST_ADDOPTS=--basetemp=/tmp/r1pubfull /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/path_cache_staging_page_probe_20261030/verified_release",
+      "returncode": 0,
+      "main_passed": 2155,
+      "main_skipped": 4,
+      "diagfast_passed": 138,
+      "audit_passed": 18,
+      "evidence": "CHECKS.json"
+    },
+    {
+      "command": "SHA-256 every runtime/release/base manifest entry; compile all changed/new Python sources using compile(bytes,path,exec)",
+      "returncode": 0,
+      "evidence": "INTEGRITY.json"
+    },
+    {
+      "command": "git diff --check",
+      "returncode": 0
+    }
+  ]
+}

@@ -1,0 +1,1618 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+......................................s.s..........s................s... [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+...................................................FFFFF.F..FFFFFFFFFFF. [ 66%]
+FF...................................................................... [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 93%]
+........................................................................ [ 97%]
+................................................................         [100%]
+=================================== FAILURES ===================================
+_____________ test_real_adapter_publication_and_supply_temp_writes _____________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_real_adapter_publication_0')
+
+    def test_real_adapter_publication_and_supply_temp_writes(tmp_path):
+        a, diag, lists = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+>       c, network, export = build(a, diag, tmp_path / 'CACHE')
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4914050>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+______________ test_bad_staging_never_replaces_old_cache[volume] _______________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7afac10>
+damage = 'volume'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_path_cache_publish.py:115: in corrupt
+    return original(c, codes)
+           ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915450>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7afac10>
+damage = 'volume'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+>       with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'PUBLICATION|PROFILE_FLOW_PARITY'
+E        Input: "'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'"
+
+tests/test_v24917_path_cache_publish.py:119: AssertionError
+_______________ test_bad_staging_never_replaces_old_cache[blob] ________________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7c00280>
+damage = 'blob'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_path_cache_publish.py:115: in corrupt
+    return original(c, codes)
+           ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915f90>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7c00280>
+damage = 'blob'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+>       with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'PUBLICATION|PROFILE_FLOW_PARITY'
+E        Input: "'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'"
+
+tests/test_v24917_path_cache_publish.py:119: AssertionError
+_______________ test_bad_staging_never_replaces_old_cache[kind] ________________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df85fa200>
+damage = 'kind'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_path_cache_publish.py:115: in corrupt
+    return original(c, codes)
+           ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915450>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df85fa200>
+damage = 'kind'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+>       with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'PUBLICATION|PROFILE_FLOW_PARITY'
+E        Input: "'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'"
+
+tests/test_v24917_path_cache_publish.py:119: AssertionError
+______________ test_bad_staging_never_replaces_old_cache[profile] ______________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7bc8670>
+damage = 'profile'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_path_cache_publish.py:115: in corrupt
+    return original(c, codes)
+           ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4914050>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7bc8670>
+damage = 'profile'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+>       with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'PUBLICATION|PROFILE_FLOW_PARITY'
+E        Input: "'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'"
+
+tests/test_v24917_path_cache_publish.py:119: AssertionError
+______________ test_bad_staging_never_replaces_old_cache[parity] _______________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace5')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7b5f310>
+damage = 'parity'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_path_cache_publish.py:115: in corrupt
+    return original(c, codes)
+           ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915f90>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_bad_staging_never_replace5')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7b5f310>
+damage = 'parity'
+
+    @pytest.mark.parametrize('damage', ['volume', 'blob', 'kind', 'profile', 'audit', 'parity', 'incomplete'])
+    def test_bad_staging_never_replaces_old_cache(tmp_path, monkeypatch, damage):
+        original = pub._semantic
+        def corrupt(c, codes):
+            sql = {
+                'volume': 'UPDATE volumes SET volume=volume+1 WHERE gid=1',
+                'blob': "UPDATE geometry SET edge_ids=x'00000000' WHERE gid=1",
+                'kind': "UPDATE geometry SET geometry_kind='WRONG' WHERE gid=1",
+                'profile': 'UPDATE profile_hits SET multiplicity=multiplicity+1 WHERE gid=1',
+                'audit': "UPDATE segments SET audit_json='{}' WHERE dseg='NATIVE_CW'",
+                'incomplete': "DELETE FROM metadata WHERE key='structural_export_complete'",
+            }
+            if damage == 'parity': c.epoch_profiles[0]['model'] += 10000.
+            else: c.db.execute(sql[damage]); c.db.commit()
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', corrupt)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+>       with pytest.raises(Exception, match='PUBLICATION|PROFILE_FLOW_PARITY'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'PUBLICATION|PROFILE_FLOW_PARITY'
+E        Input: "'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'"
+
+tests/test_v24917_path_cache_publish.py:119: AssertionError
+_ test_stop_at_publish_boundaries_preserves_parent[PATH_CACHE_PUBLICATION_SHA256] _
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_stop_at_publish_boundarie1')
+phase = 'PATH_CACHE_PUBLICATION_SHA256'
+
+    @pytest.mark.parametrize('phase', ['PATH_CACHE_PUBLICATION_CHECKS', 'PATH_CACHE_PUBLICATION_SHA256', 'PATH_CACHE_ATOMIC_RENAME'])
+    def test_stop_at_publish_boundaries_preserves_parent(tmp_path, phase):
+        class Stop:
+            def checkpoint(self, name='', **kw):
+                if name == phase: raise paths.DesignStopRequested('INJECTED_STOP')
+        a, diag, _ = adapter(tmp_path, Stop())
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(Exception, match='INJECTED_STOP'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915450>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_stop_at_publish_boundarie1')
+phase = 'PATH_CACHE_PUBLICATION_SHA256'
+
+    @pytest.mark.parametrize('phase', ['PATH_CACHE_PUBLICATION_CHECKS', 'PATH_CACHE_PUBLICATION_SHA256', 'PATH_CACHE_ATOMIC_RENAME'])
+    def test_stop_at_publish_boundaries_preserves_parent(tmp_path, phase):
+        class Stop:
+            def checkpoint(self, name='', **kw):
+                if name == phase: raise paths.DesignStopRequested('INJECTED_STOP')
+        a, diag, _ = adapter(tmp_path, Stop())
+        old = previous_cache(a, tmp_path)
+>       with pytest.raises(Exception, match='INJECTED_STOP'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'INJECTED_STOP'
+E        Input: "'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'"
+
+tests/test_v24917_path_cache_publish.py:134: AssertionError
+__ test_stop_at_publish_boundaries_preserves_parent[PATH_CACHE_ATOMIC_RENAME] __
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_stop_at_publish_boundarie2')
+phase = 'PATH_CACHE_ATOMIC_RENAME'
+
+    @pytest.mark.parametrize('phase', ['PATH_CACHE_PUBLICATION_CHECKS', 'PATH_CACHE_PUBLICATION_SHA256', 'PATH_CACHE_ATOMIC_RENAME'])
+    def test_stop_at_publish_boundaries_preserves_parent(tmp_path, phase):
+        class Stop:
+            def checkpoint(self, name='', **kw):
+                if name == phase: raise paths.DesignStopRequested('INJECTED_STOP')
+        a, diag, _ = adapter(tmp_path, Stop())
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(Exception, match='INJECTED_STOP'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4914050>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_stop_at_publish_boundarie2')
+phase = 'PATH_CACHE_ATOMIC_RENAME'
+
+    @pytest.mark.parametrize('phase', ['PATH_CACHE_PUBLICATION_CHECKS', 'PATH_CACHE_PUBLICATION_SHA256', 'PATH_CACHE_ATOMIC_RENAME'])
+    def test_stop_at_publish_boundaries_preserves_parent(tmp_path, phase):
+        class Stop:
+            def checkpoint(self, name='', **kw):
+                if name == phase: raise paths.DesignStopRequested('INJECTED_STOP')
+        a, diag, _ = adapter(tmp_path, Stop())
+        old = previous_cache(a, tmp_path)
+>       with pytest.raises(Exception, match='INJECTED_STOP'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'INJECTED_STOP'
+E        Input: "'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'"
+
+tests/test_v24917_path_cache_publish.py:134: AssertionError
+_____________________ test_rename_failure_preserves_parent _____________________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_rename_failure_preserves_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df4dc8910>
+
+    def test_rename_failure_preserves_parent(tmp_path, monkeypatch):
+        def fail(*args): raise OSError('INJECTED_RENAME_FAILURE')
+        monkeypatch.setattr(pub.os, 'rename', fail)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(OSError, match='INJECTED_RENAME_FAILURE'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:146: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915f90>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+_______________ test_failure_after_rename_does_not_retire_parent _______________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_failure_after_rename_does0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df7c00e50>
+
+    def test_failure_after_rename_does_not_retire_parent(tmp_path, monkeypatch):
+        def fail(*args): raise RuntimeError('INJECTED_REOPEN_FAILURE')
+        monkeypatch.setattr(pub, '_readonly', fail)
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        with pytest.raises(RuntimeError, match='INJECTED_REOPEN_FAILURE'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915450>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+_____________ test_live_parent_change_during_checks_blocks_rename ______________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_live_parent_change_during0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df4dc9010>
+
+    def test_live_parent_change_during_checks_blocks_rename(tmp_path, monkeypatch):
+        original = pub._semantic
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        def changed(*args):
+            result = original(*args)
+            a.snapshot = lambda: {'state_hash': 'CHANGED'}
+            return result
+        monkeypatch.setattr(pub, '_semantic', changed)
+        with pytest.raises(Exception, match='LIVE_PARENT_CHANGED'):
+>           build(a, diag, tmp_path / 'CACHE')
+
+tests/test_v24917_path_cache_publish.py:172: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_path_cache_publish.py:167: in changed
+    result = original(*args)
+             ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4914050>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_live_parent_change_during0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df4dc9010>
+
+    def test_live_parent_change_during_checks_blocks_rename(tmp_path, monkeypatch):
+        original = pub._semantic
+        a, diag, _ = adapter(tmp_path)
+        old = previous_cache(a, tmp_path)
+        def changed(*args):
+            result = original(*args)
+            a.snapshot = lambda: {'state_hash': 'CHANGED'}
+            return result
+        monkeypatch.setattr(pub, '_semantic', changed)
+>       with pytest.raises(Exception, match='LIVE_PARENT_CHANGED'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'LIVE_PARENT_CHANGED'
+E        Input: "'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'"
+
+tests/test_v24917_path_cache_publish.py:171: AssertionError
+__________ test_unpublished_structural_completion_cannot_be_reopened ___________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_unpublished_structural_co0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df5092040>
+
+    def test_unpublished_structural_completion_cannot_be_reopened(tmp_path, monkeypatch):
+        original = pub._semantic
+        def inspect(c, codes):
+            with pytest.raises(Exception, match='UNPUBLISHED_OPEN_FORBIDDEN'):
+                paths.TwoModeRouteCollector.open_existing(c.profiles, c.policy, links(), c.route_db_path)
+            return original(c, codes)
+        monkeypatch.setattr(pub, '_semantic', inspect)
+        a, diag, _ = adapter(tmp_path)
+>       c, _, _ = build(a, diag, tmp_path / 'CACHE')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:184: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_path_cache_publish.py:181: in inspect
+    return original(c, codes)
+           ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915f90>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+_________ test_published_reopen_verifies_sha_and_supports_supply[none] _________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_published_reopen_verifies0')
+tamper = 'none'
+
+    @pytest.mark.parametrize('tamper', ['none', 'missing_manifest', 'manifest', 'bytes'])
+    def test_published_reopen_verifies_sha_and_supports_supply(tmp_path, tamper):
+        a, diag, _ = adapter(tmp_path)
+>       c, network, _ = build(a, diag, tmp_path / 'CACHE')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915450>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+___ test_published_reopen_verifies_sha_and_supports_supply[missing_manifest] ___
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_published_reopen_verifies1')
+tamper = 'missing_manifest'
+
+    @pytest.mark.parametrize('tamper', ['none', 'missing_manifest', 'manifest', 'bytes'])
+    def test_published_reopen_verifies_sha_and_supports_supply(tmp_path, tamper):
+        a, diag, _ = adapter(tmp_path)
+>       c, network, _ = build(a, diag, tmp_path / 'CACHE')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4914050>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+_______ test_published_reopen_verifies_sha_and_supports_supply[manifest] _______
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_published_reopen_verifies2')
+tamper = 'manifest'
+
+    @pytest.mark.parametrize('tamper', ['none', 'missing_manifest', 'manifest', 'bytes'])
+    def test_published_reopen_verifies_sha_and_supports_supply(tmp_path, tamper):
+        a, diag, _ = adapter(tmp_path)
+>       c, network, _ = build(a, diag, tmp_path / 'CACHE')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915f90>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+________ test_published_reopen_verifies_sha_and_supports_supply[bytes] _________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_published_reopen_verifies3')
+tamper = 'bytes'
+
+    @pytest.mark.parametrize('tamper', ['none', 'missing_manifest', 'manifest', 'bytes'])
+    def test_published_reopen_verifies_sha_and_supports_supply(tmp_path, tamper):
+        a, diag, _ = adapter(tmp_path)
+>       c, network, _ = build(a, diag, tmp_path / 'CACHE')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915450>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+_______________ test_published_open_cannot_request_writable_main _______________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_published_open_cannot_req0')
+
+    def test_published_open_cannot_request_writable_main(tmp_path):
+        a, diag, _ = adapter(tmp_path)
+>       c, network, _ = build(a, diag, tmp_path / 'CACHE')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:215: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4914050>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+______ test_signed_zero_keeps_source_hash_but_verifies_sql_normalization _______
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_signed_zero_keeps_source_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df513c750>
+
+    def test_signed_zero_keeps_source_hash_but_verifies_sql_normalization(tmp_path, monkeypatch):
+        a, diag, lists = adapter(tmp_path)
+        for code, (first, second) in lists.volumes.items():
+            lists.volumes[code] = (first + second, -0.)
+        # Rebuild the fixture matrices and count profile to match this synthetic input.
+        total = 0.
+        for ds in a.visum.Net.DemandSegments.GetAll:
+            if 'noT' not in ds.code: total += 100.
+        diag['d12']['rows'][0]['model'] = total
+>       c, _, _ = build(a, diag, tmp_path / 'CACHE')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:266: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915450>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+______________ test_probe_size_is_pinned_for_real_adapter_export _______________
+
+tmp_path = PosixPath('/tmp/r1pubfull/test_probe_size_is_pinned_for_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3df4b5e2e0>
+
+    def test_probe_size_is_pinned_for_real_adapter_export(tmp_path, monkeypatch):
+        monkeypatch.setattr(pub, 'options', lambda: dict(pub.DEFAULTS, fast_staging=True, page_probe=True))
+        monkeypatch.setattr(pub.probe, 'benchmark', lambda *a, **kw: {'selected_page_size': 8192})
+        a, diag, _ = adapter(tmp_path)
+>       c, _, _ = build(a, diag, tmp_path / 'CACHE')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_path_cache_publish.py:278: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_v24917_path_cache_publish.py:59: in build
+    return a._build_cache(diag, folder, a.snapshot(), allow_persistent_restore=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_trial_adapter_v24917.py:63: in _build_cache
+    return path_publish.run_build(self, folder, snapshot,
+r1_15a2_path_cache_publish_v24917.py:371: in run_build
+    scope.publish(collector)
+r1_15a2_path_cache_publish_v24917.py:289: in publish
+    semantic = _semantic(collector, self.adapter.cfg['supply']['passenger_dsegs'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+collector = <r1_15a2_two_mode_v238.TwoModeRouteCollector object at 0x7f3df4915f90>
+codes = ['NATIVE_CW', 'NATIVE_CS', 'NATIVE_CF', 'NATIVE_CL', 'EXOG_EE_CW', 'EXOG_EE_CS', ...]
+
+    def _semantic(collector, codes):
+        collector.prepare_incidence_evidence()
+        if (set(collector.parents) != {paths.core.norm_code(c) for c in codes}
+                or not collector.export_complete or not collector.incidence_ready
+                or not collector.summary.get('all_selected_dsegs_complete')
+                or not all(a['passes'] for a in collector.parents.values())
+                or not all(a.get('geometry_complete') for a in collector.mode_audits.values())):
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_INCOMPLETE_EXPORT')
+        metadata = dict(collector.db.execute('SELECT key,value FROM metadata'))
+        if metadata.get('schema') != paths.SCHEMA:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_SCHEMA')
+        if metadata.get('structural_export_complete') != 'true' or metadata.get('incidence_ready') != 'true':
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_MISSING_COMPLETION_MARKERS')
+        stored_audits = {code: json.loads(value) for code, value in collector.db.execute(
+            'SELECT dseg,audit_json FROM segments')}
+        if stored_audits != collector.parents or metadata.get('parent_hash') != collector.parent_hash:
+            raise paths.SupplyContractError('PATH_CACHE_PUBLICATION_STORED_AUTHORITY')
+        # Verify actual stored volume bytes against the source hashes, rather than
+        # treating in-memory completion counters as proof of what SQLite contains.
+        for code, audit in collector.parents.items():
+            key_hash, volume_hash = hashlib.sha256(), hashlib.sha256()
+            count = 0
+            for o, d, ix, vol in collector.db.execute('''
+                    SELECT g.orig,g.dest,g.path_index,v.volume FROM geometry g
+                    JOIN volumes v ON v.gid=g.gid AND v.dseg=? WHERE g.mode=?
+                    ORDER BY g.orig,g.dest,g.path_index''', (code, audit['mode'])):
+                key_hash.update(struct.pack('<III', o, d, ix))
+                volume_hash.update(struct.pack('<IIId', o, d, ix, vol))
+                count += 1
+                if count % 8192 == 0:
+                    collector.control.checkpoint('PATH_CACHE_VERIFY_VOLUMES', dseg_code=code, rows=count)
+>           expected = collector._path_sql_volume_hashes[code]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'TwoModeRouteCollector' object has no attribute '_path_sql_volume_hashes'
+
+r1_15a2_path_cache_publish_v24917.py:163: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_path_cache_publish.py::test_real_adapter_publication_and_supply_temp_writes
+FAILED tests/test_v24917_path_cache_publish.py::test_bad_staging_never_replaces_old_cache[volume]
+FAILED tests/test_v24917_path_cache_publish.py::test_bad_staging_never_replaces_old_cache[blob]
+FAILED tests/test_v24917_path_cache_publish.py::test_bad_staging_never_replaces_old_cache[kind]
+FAILED tests/test_v24917_path_cache_publish.py::test_bad_staging_never_replaces_old_cache[profile]
+FAILED tests/test_v24917_path_cache_publish.py::test_bad_staging_never_replaces_old_cache[parity]
+FAILED tests/test_v24917_path_cache_publish.py::test_stop_at_publish_boundaries_preserves_parent[PATH_CACHE_PUBLICATION_SHA256]
+FAILED tests/test_v24917_path_cache_publish.py::test_stop_at_publish_boundaries_preserves_parent[PATH_CACHE_ATOMIC_RENAME]
+FAILED tests/test_v24917_path_cache_publish.py::test_rename_failure_preserves_parent
+FAILED tests/test_v24917_path_cache_publish.py::test_failure_after_rename_does_not_retire_parent
+FAILED tests/test_v24917_path_cache_publish.py::test_live_parent_change_during_checks_blocks_rename
+FAILED tests/test_v24917_path_cache_publish.py::test_unpublished_structural_completion_cannot_be_reopened
+FAILED tests/test_v24917_path_cache_publish.py::test_published_reopen_verifies_sha_and_supports_supply[none]
+FAILED tests/test_v24917_path_cache_publish.py::test_published_reopen_verifies_sha_and_supports_supply[missing_manifest]
+FAILED tests/test_v24917_path_cache_publish.py::test_published_reopen_verifies_sha_and_supports_supply[manifest]
+FAILED tests/test_v24917_path_cache_publish.py::test_published_reopen_verifies_sha_and_supports_supply[bytes]
+FAILED tests/test_v24917_path_cache_publish.py::test_published_open_cannot_request_writable_main
+FAILED tests/test_v24917_path_cache_publish.py::test_signed_zero_keeps_source_hash_but_verifies_sql_normalization
+FAILED tests/test_v24917_path_cache_publish.py::test_probe_size_is_pinned_for_real_adapter_export
+19 failed, 2129 passed, 4 skipped in 39.93s
