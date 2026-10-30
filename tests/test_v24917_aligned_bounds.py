@@ -67,9 +67,9 @@ def test_new_ws_mobility_prod_3_0_does_not_widen_school_or_long():
         {'zone_no': 1, 'attr': 'ADD_PROD_SCH', 'current': 1., 'proposed': 2.0}
     ], authority)['passes']
     candidate = [{'zone_no': 1, 'attr': 'ADD_PROD_W',
-                  'current': 1., 'proposed': 2.5},
+                  'current': 1., 'proposed': 3.0},
                  {'zone_no': 1, 'attr': 'ADD_PROD_S',
-                  'current': 1., 'proposed': 2.5}]
+                  'current': 1., 'proposed': 3.0}]
     assert mg.check_candidate(candidate, [row], opts)['passes']
     candidate[0]['proposed'] = 3.001
     assert not mg.check_candidate(candidate, [row], opts)['passes']
