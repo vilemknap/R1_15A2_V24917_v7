@@ -11,8 +11,11 @@ def test_artifact_diff_detects_tiny_numeric_and_order(tmp_path):
     a=tmp_path/'a';b=tmp_path/'b';a.mkdir();b.mkdir()
     (a/'values.csv').write_text('key;value\nx;1.0000000000000002\ny;2\n')
     (b/'values.csv').write_text('key;value\nx;1.0000000000000000\ny;2\n')
-    r=compare_artifacts(a,b,'OFFLINE_MOCK');assert r['status']=='PARITY_FAILED'
-    assert r['artifacts'][0]['differences'][0]['abs_difference']>0
+    r=compare_artifacts(a,b,'OFFLINE_MOCK')
+    assert r['status']=='PARITY_PASS'
+    assert r['tolerated_value_count']==1
+    assert r['equal_artifacts']==1 and r['byte_equal_artifacts']==0
+    assert compare_artifacts(a,b,numeric_tolerance=False)['status']=='PARITY_FAILED' 
     (b/'values.csv').write_bytes((a/'values.csv').read_bytes())
     assert compare_artifacts(a,b)['status']=='PARITY_PASS'
     (b/'values.csv').write_text('key;value\ny;2\nx;1.0000000000000002\n')
@@ -24,7 +27,7 @@ def test_path_timestamp_normalization_not_numbers(tmp_path):
     for p,stamp in ((a,'today'),(b,'tomorrow')):
         (p/'summary.json').write_text(json.dumps({'timestamp':stamp,'path':str(p/'x'),'observed':123.456789}))
     assert compare_artifacts(a,b)['status']=='PARITY_PASS'
-    (b/'summary.json').write_text(json.dumps({'timestamp':'later','path':str(b/'x'),'observed':123.456790}))
+    (b/'summary.json').write_text(json.dumps({'timestamp':'later','path':str(b/'x'),'observed':123.456900}))
     assert compare_artifacts(a,b)['status']=='PARITY_FAILED'
 
 

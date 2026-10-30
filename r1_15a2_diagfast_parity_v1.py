@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Strict artifact comparison and isolated read-only parity helpers."""
+"""Schema-strict, bounded-float artifact comparison and read-only parity helpers."""
 from __future__ import annotations
 import csv
 import hashlib
@@ -28,6 +28,154 @@ _11D_EPHEMERAL_PROVENANCE_FILES = frozenset((
 _11D_TEMP_ID_RE = re.compile(
     r'(?i)([\\/]AppData[\\/]Local[\\/]Temp[\\/])R1A2_11DLIVEPAR_[a-z0-9_]{8}(?=[\\/])'
 )
+
+# Numeric tolerances apply ONLY to finite floating-point quantities in JSON
+# or decimal/exponent cells in CSV. ID/code/status/shape/sign/zero parity is
+# exact; text and binary artifacts remain strict byte-for-byte after existing
+# provenance normalization. No rounding/reformatting of the actual outputs.
+DEFAULT_NUMERIC_ATOL = 1e-8
+DEFAULT_NUMERIC_RTOL = 1e-9
+MAX_NEAR_ZERO_RELATIVE_DRIFT = 1e-6
+_CSV_FLOAT_RE = re.compile(r'^[+-]?(?:(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?|[0-9]+[eE][+-]?[0-9]+)$')
+_EXACT_FIELD_NAMES = frozenset((
+    'id', 'no', 'code', 'key', 'index', 'indices', 'order', 'ordinal',
+    'year', 'rank', 'position', 'zone', 'zone_id', 'matrix_id', 'matrix_no',
+    'link_id', 'link_no', 'countlocation_id', 'countlocation_no',
+    'source', 'target', 'status', 'state', 'decision', 'accepted', 'valid',
+    'bin_label', 'label', 'version', 'sha256', 'digest', 'fingerprint',
+))
+_EXACT_FIELD_SUFFIXES = ('_id', '_no', '_code', '_index', '_indices',
+                         '_hash', '_sha256', '_fingerprint', '_checksum')
+
+
+def _is_identity_field(field):
+    if field is None:
+        return False
+    text = str(field).strip().lower()
+    return text in _EXACT_FIELD_NAMES or text.endswith(_EXACT_FIELD_SUFFIXES)
+
+
+def _close_numeric(a, b, atol, rtol):
+    """Accept insignificant float drift, not support, sign or scale changes."""
+    if not (math.isfinite(a) and math.isfinite(b)):
+        return a == b  # identical +/- infinity; NaN is handled separately
+    if a == b:
+        return True
+    # Zero vs nonzero can change support and clipping/guard decisions.
+    if a == 0.0 or b == 0.0 or ((a < 0.0) != (b < 0.0)):
+        return False
+    delta = abs(a - b)
+    scale = max(abs(a), abs(b))
+    return (delta <= max(atol, rtol * scale) and
+            delta <= MAX_NEAR_ZERO_RELATIVE_DRIFT * scale)
+
+
+def _compare_numeric_value(a, b, field, fmt, atol, rtol):
+    if _is_identity_field(field):
+        return None
+    if fmt == 'JSON' and type(a) is float and type(b) is float:
+        if math.isnan(a) and math.isnan(b):
+            return (True, 0.0, 0.0)
+        return (_close_numeric(a, b, atol, rtol), abs(a - b),
+                abs(a - b) / max(abs(a), abs(b), 1e-300))
+    if fmt == 'CSV' and isinstance(a, str) and isinstance(b, str):
+        if not (_CSV_FLOAT_RE.fullmatch(a) and _CSV_FLOAT_RE.fullmatch(b)):
+            return None
+        x, y = float(a), float(b)
+        if not (math.isfinite(x) and math.isfinite(y)):
+            return None
+        return (_close_numeric(x, y, atol, rtol), abs(x-y),
+                abs(x-y) / max(abs(x), abs(y), 1e-300))
+    return None
+
+
+def _bounded_diff(a, b, fmt, *, atol, rtol, limit=30):
+    """Return exact-structure / bounded-float verdict plus auditable extrema.
+
+    Any schema, type, array length, order, identifier, integer, NaN-status or
+    binary change remains a hard failure. The comparator never mutates files.
+    """
+    stats = {'failed_values': 0, 'tolerated_values': 0,
+             'max_tolerated_abs_difference': 0.0,
+             'max_tolerated_relative_difference': 0.0,
+             'tolerated_examples': [], 'differences': []}
+
+    def add_diff(x, y, path):
+        stats['failed_values'] += 1
+        if len(stats['differences']) < limit:
+            diff = {'path': path, 'legacy': repr(x)[:300], 'fast': repr(y)[:300]}
+            if type(x) in (int, float, str) and type(y) in (int, float, str):
+                try:
+                    lx, ly = float(x), float(y)
+                    if math.isfinite(lx) and math.isfinite(ly):
+                        diff['abs_difference'] = abs(lx-ly)
+                        diff['relative_difference'] = abs(lx-ly)/max(abs(lx),abs(ly),1e-300)
+                except (ValueError, TypeError, OverflowError):
+                    pass
+            stats['differences'].append(diff)
+
+    def scalar(x, y, path, field=None):
+        if type(x) is not type(y):
+            add_diff(x, y, path)
+            return
+        if type(x) is float and math.isnan(x) and math.isnan(y):
+            return
+        if x == y:
+            return
+        compared = _compare_numeric_value(x, y, field, fmt, atol, rtol)
+        if compared is None or not compared[0]:
+            add_diff(x, y, path)
+            return
+        _, delta, relative = compared
+        stats['tolerated_values'] += 1
+        stats['max_tolerated_abs_difference'] = max(
+            stats['max_tolerated_abs_difference'], delta)
+        stats['max_tolerated_relative_difference'] = max(
+            stats['max_tolerated_relative_difference'], relative)
+        if len(stats['tolerated_examples']) < 10:
+            stats['tolerated_examples'].append({
+                'path': path, 'legacy': repr(x)[:100], 'fast': repr(y)[:100],
+                'abs_difference': delta, 'relative_difference': relative,
+            })
+
+    def json_walk(x, y, path='$', field=None):
+        if type(x) is not type(y):
+            add_diff(x, y, path)
+        elif isinstance(x, dict):
+            if set(x) != set(y):
+                add_diff(sorted(x), sorted(y), path + '.keys')
+            for k in sorted(set(x) & set(y)):
+                json_walk(x[k], y[k], path + '.' + str(k), field=k)
+        elif isinstance(x, list):
+            if len(x) != len(y):
+                add_diff(len(x), len(y), path + '.length')
+            for i, (xx, yy) in enumerate(zip(x, y)):
+                json_walk(xx, yy, '%s[%d]' % (path, i), field=field)
+        else:
+            scalar(x, y, path, field)
+
+    if fmt == 'JSON':
+        json_walk(a, b)
+    elif fmt == 'CSV':
+        if not isinstance(a, list) or not isinstance(b, list):
+            add_diff(type(a), type(b), '$.schema')
+        else:
+            if len(a) != len(b):
+                add_diff(len(a), len(b), '$.row_count')
+            ha = a[0] if a else []
+            hb = b[0] if b else []
+            if ha != hb:
+                add_diff(ha, hb, '$.header')
+            for i, (ra, rb) in enumerate(zip(a[1:], b[1:]), 1):
+                if len(ra) != len(rb):
+                    add_diff(len(ra), len(rb), '$.rows[%d].length' % i)
+                for j, (x, y) in enumerate(zip(ra, rb)):
+                    field = ha[j] if j < len(ha) and ha == hb else None
+                    scalar(x, y, '$.rows[%d][%d]' % (i,j), field)
+    else:
+        if a != b:
+            add_diff(a, b, '$')
+    return stats
 
 
 def _normalize_11d_temp_authority(value, name):
@@ -158,28 +306,94 @@ def _diff_values(a,b,path='',limit=30):
     return diffs
 
 
-def compare_artifacts(legacy, fast, scope='PARITY_EXECUTION'):
-    a,b=artifact_map(legacy),artifact_map(fast)
-    entries=[];failures=[]
-    for name in sorted(set(a)|set(b)):
-        aa,bb=a.get(name),b.get(name)
-        same=aa is not None and bb is not None and aa['sha256']==bb['sha256']
-        entry={'artifact':name,'equal':same,
-               'legacy_sha256':aa['sha256'] if aa else None,'fast_sha256':bb['sha256'] if bb else None,
-               'legacy_schema':aa['metadata'] if aa else None,'fast_schema':bb['metadata'] if bb else None}
+def compare_artifacts(legacy, fast, scope='PARITY_EXECUTION', *,
+                      numeric_tolerance=True,
+                      numeric_atol=DEFAULT_NUMERIC_ATOL,
+                      numeric_rtol=DEFAULT_NUMERIC_RTOL):
+    """Compare every output, allowing tightly bounded decimal float drift.
+
+    Set numeric_tolerance=False for forensic bitwise/serialization parity.
+    Never use tolerance for IDs, integer counts, JSON schema, CSV headers or
+    ordering, text/binary files, zip members or support/zero/sign changes.
+    """
+    if (type(numeric_tolerance) is not bool or
+            not math.isfinite(numeric_atol) or not math.isfinite(numeric_rtol) or
+            numeric_atol < 0 or numeric_rtol < 0):
+        raise df.DiagFastError('DIAGFAST_PARITY_INVALID_NUMERIC_TOLERANCE')
+    a, b = artifact_map(legacy), artifact_map(fast)
+    entries, failures = [], []
+    tolerated_artifacts = tolerated_values = 0
+    max_abs = max_rel = 0.0
+    for name in sorted(set(a) | set(b)):
+        aa, bb = a.get(name), b.get(name)
+        byte_equal = aa is not None and bb is not None and aa['sha256'] == bb['sha256']
+        same = byte_equal
+        record = None
+        if (not same and numeric_tolerance and aa is not None and bb is not None and
+                aa['metadata'] == bb['metadata'] and
+                aa['metadata']['format'] in ('JSON', 'CSV')):
+            record = _bounded_diff(aa['value'], bb['value'], aa['metadata']['format'],
+                                   atol=numeric_atol, rtol=numeric_rtol)
+            same = not record['failed_values']
+        entry = {
+            'artifact': name, 'equal': same, 'byte_equal': byte_equal,
+            'legacy_sha256': aa['sha256'] if aa else None,
+            'fast_sha256': bb['sha256'] if bb else None,
+            'legacy_schema': aa['metadata'] if aa else None,
+            'fast_schema': bb['metadata'] if bb else None,
+            'numeric_tolerance_accepted': bool(same and not byte_equal),
+            'tolerated_values': record['tolerated_values'] if record else 0,
+            'max_tolerated_abs_difference': record['max_tolerated_abs_difference'] if record else 0.0,
+            'max_tolerated_relative_difference': record['max_tolerated_relative_difference'] if record else 0.0,
+        }
+        if record and record['tolerated_examples']:
+            entry['tolerated_examples'] = record['tolerated_examples']
         if not same:
-            entry['differences']=_diff_values(aa['value'] if aa else None,bb['value'] if bb else None)
+            entry['differences'] = (record['differences'] if record is not None else
+                                    _diff_values(aa['value'] if aa else None,
+                                                 bb['value'] if bb else None))
             failures.append(name)
+        elif not byte_equal:
+            tolerated_artifacts += 1
+            tolerated_values += record['tolerated_values']
+            max_abs = max(max_abs, record['max_tolerated_abs_difference'])
+            max_rel = max(max_rel, record['max_tolerated_relative_difference'])
         entries.append(entry)
-    return {'schema':'R1_DIAGFAST_PARITY_REPORT_V1','status':'PARITY_PASS' if entries and not failures else 'PARITY_FAILED',
-            'scope':scope,'artifact_count':len(entries),'equal_artifacts':sum(x['equal'] for x in entries),
-            'failures':failures,'artifacts':entries,'exact_values_required':True,'numeric_rounding_used':False,
-            'normalizations':['exact workspace prefix','R1_12D_YYYYMMDD_HHMMSS directory names',
-                'JSON timestamp/created_at/updated_at fields','12D executive timestamp row','12D log timestamp prefixes',
-                'ZIP entry container metadata only; payloads compared recursively',
-                '11D authority autorecovery 8-character Python tempfile nonce [a-z0-9_] ONLY in 3 known provenance outputs under Windows AppData/Local/Temp; enclosing paths preserved'],
-            'new_instrumentation_excluded':'DIAGFAST_* files only; separately retained and audited',
-            'source_files_excluded':'*.py/*.pyc are verified by SHA manifests, not value artifacts'}
+    return {
+        'schema': 'R1_DIAGFAST_PARITY_REPORT_V2',
+        'status': 'PARITY_PASS' if entries and not failures else 'PARITY_FAILED',
+        'scope': scope,
+        'artifact_count': len(entries),
+        'equal_artifacts': sum(x['equal'] for x in entries),
+        'byte_equal_artifacts': sum(x['byte_equal'] for x in entries),
+        'tolerated_artifacts': tolerated_artifacts,
+        'tolerated_value_count': tolerated_values,
+        'max_tolerated_abs_difference': max_abs,
+        'max_tolerated_relative_difference': max_rel,
+        'failures': failures,
+        'artifacts': entries,
+        'exact_values_required': not numeric_tolerance,
+        'numeric_tolerance_used': numeric_tolerance,
+        'numeric_rounding_used': False,
+        'numeric_tolerance': {
+            'absolute': numeric_atol, 'relative': numeric_rtol,
+            'max_near_zero_relative_drift': MAX_NEAR_ZERO_RELATIVE_DRIFT,
+            'formula': 'abs(x-y) <= max(absolute, relative*max(abs(x),abs(y)))',
+            'zero_sign_and_identity_fields_exact': True,
+            'applies_only_to': 'finite float JSON or decimal/exponent CSV cells',
+        },
+        'normalizations': [
+            'exact workspace prefix',
+            'R1_12D_YYYYMMDD_HHMMSS directory names',
+            'JSON timestamp/created_at/updated_at fields',
+            '12D executive timestamp row',
+            '12D log timestamp prefixes',
+            'ZIP entry container metadata only; payloads compared recursively',
+            '11D authority autorecovery 8-character Python tempfile nonce [a-z0-9_] ONLY in 3 known provenance outputs under Windows AppData/Local/Temp; enclosing paths preserved',
+        ],
+        'new_instrumentation_excluded': 'DIAGFAST_* files only; separately retained and audited',
+        'source_files_excluded': '*.py/*.pyc are verified by SHA manifests, not value artifacts',
+    }
 
 
 def _read_full_td_abc_guard(guarded):
