@@ -7,10 +7,10 @@ overwrite a successfully completed Generation search with search_complete=False.
 """
 from pathlib import Path
 from types import SimpleNamespace as NS
+import importlib
 import pytest
 
 import r1_15a2_supply_mix_v24917 as sm
-import r1_15a2_demand_policy_v1 as dp
 
 
 @pytest.mark.parametrize("supply_status", (
@@ -25,8 +25,11 @@ def test_no_write_supplymix_incomplete_does_not_corrupt_generation_completion(
     state = {"state_hash": "unchanged-parent"}
     diag = {"d12": {"rows": []}}
     value = {"total": 1.2}
+    # Other regression modules reload DemandPolicy: use the CURRENT module
+    # in sys.modules, exactly as the SupplyMix runtime wrapper does.
+    dp = importlib.import_module("r1_15a2_demand_policy_v1")
     policy = NS(last_generation_complete=True, last_generation_changed=False)
-    monkeypatch.setitem(dp._ACTIVE, -20261030, {"policy": policy})
+    monkeypatch.setattr(dp, "_ACTIVE", {-20261030: {"policy": policy}})
     monkeypatch.setattr(sm, "options", lambda: {
         "enabled": True, "start_cycle": 2, "every_n": 2,
     })
