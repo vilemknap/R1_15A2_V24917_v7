@@ -8,6 +8,7 @@ from pathlib import Path
 
 import r1_15a2_td_joint_v24917 as joint
 import r1_15a2_long_composite_td_v24917 as long_td
+import r1_15a2_school_td_v24917 as school_td
 
 # The sealed V24916 FineCDF bridge explicitly forbids LONG in its *caller*
 # active_components. Preserve that source exactly. The V24917 layer binds
@@ -22,14 +23,23 @@ def _scope_long_target(cfg):
     requested = tuple(str(x) for x in (
         cfg.get("coupled_demand", {}).get("finecdf_td", {}).get("active_components", [])
         or []) if str(x))
-    if not requested or long_td.GROUP not in requested:
+    if not requested or not set(requested).intersection(
+            (long_td.GROUP, school_td.GROUP)):
         return cfg, None, None
-    if not options.get("enabled", False) or not options.get("long_enabled", False):
-        raise RuntimeError("TDLONG_COMPOSITE_TARGET_REQUEST_NOT_ENABLED")
-    if options.get("inner_mode") != "DYNAMIC":
-        raise RuntimeError("TDLONG_COMPOSITE_TARGET_REQUIRES_DYNAMIC")
-    if len(set(requested)) != len(requested) or "SCHOOL" in requested:
+    if len(set(requested)) != len(requested):
         raise RuntimeError("TDLONG_COMPOSITE_TARGET_COMPONENT_SET_INVALID")
+    wants_long = long_td.GROUP in requested
+    wants_school = school_td.GROUP in requested
+    if wants_long and (not options.get("enabled", False)
+                       or not options.get("long_enabled", False)):
+        raise RuntimeError("TDLONG_COMPOSITE_TARGET_REQUEST_NOT_ENABLED")
+    if wants_school and (not options.get("enabled", False)
+                         or not options.get("school_enabled", False)):
+        if wants_long:
+            raise RuntimeError("TDLONG_COMPOSITE_TARGET_COMPONENT_SET_INVALID")
+        raise RuntimeError("TDSCHOOL_TARGET_REQUEST_NOT_ENABLED")
+    if wants_long and options.get("inner_mode") != "DYNAMIC":
+        raise RuntimeError("TDLONG_COMPOSITE_TARGET_REQUIRES_DYNAMIC")
     effective = copy.deepcopy(cfg)
     effective["coupled_demand"]["finecdf_td"].pop("active_components", None)
     token = _LONG_TARGET_CONTEXT.set(requested)
@@ -55,24 +65,50 @@ def wrap_inner(original):
         result = dict(result)
         if selected is not None:
             result["targeted_component_mask_applied"] = True
-            result["targeting_authority"] = "V24917_ADDITIVE_SHARED_LONG_SELECTOR"
+            result["targeting_authority"] = (
+                "V24917_ADDITIVE_SCHOOL_LONG_SELECTOR"
+                if school_td.GROUP in selected
+                else "V24917_ADDITIVE_SHARED_LONG_SELECTOR")
             result["active_components"] = list(selected)
             result["frozen_components"] = sorted(set(stage.get(
                 "long_full_reference_groups", ())) - set(selected))
-            result["long_composite_target_count"] = 1
             from r1_15a2_controller_v22 import atomic_json
-            atomic_json(Path(folder) / "TDLONG_COMPOSITE_TARGET_SCOPE.json", {
-                "schema": "R1_V24917_NATIVE_LONG_TARGET_SCOPE_V1",
-                "active_components": list(selected),
-                "sealed_reference_unchanged": True,
-                "shared_long_target_copies": 1,
-                "native_measured_dynamic_required": True,
-                "frozen_components": result["frozen_components"]})
+            if long_td.GROUP in selected:
+                result["long_composite_target_count"] = 1
+                atomic_json(Path(folder) / "TDLONG_COMPOSITE_TARGET_SCOPE.json", {
+                    "schema": "R1_V24917_NATIVE_LONG_TARGET_SCOPE_V1",
+                    "active_components": list(selected),
+                    "sealed_reference_unchanged": True,
+                    "shared_long_target_copies": 1,
+                    "native_measured_dynamic_required": True,
+                    "frozen_components": result["frozen_components"]})
+            if school_td.GROUP in selected:
+                contract = stage.get("school_td_reference_contract")
+                if not isinstance(contract, dict) or contract.get("target_points") != 512:
+                    raise RuntimeError("TDSCHOOL_SEALED_REFERENCE_PROOF_MISSING")
+                result["school_td_target_count"] = 1
+                atomic_json(Path(folder) / "TDSCHOOL_TARGET_SCOPE.json", {
+                    "schema": "R1_V24917_NATIVE_SCHOOL_TD_SCOPE_V1",
+                    "active_components": list(selected),
+                    "matrix_no": school_td.MATRIX_NO,
+                    "dstrat_code": school_td.DSTRAT_CODE,
+                    "target_points": contract["target_points"],
+                    "school_generation_unchanged": True,
+                    "optimized_parameters": ["b", "c"],
+                    "sealed_reference_unchanged": True,
+                    "frozen_components": result["frozen_components"]})
         result["long_composite_td"] = dict(
             long_td.activation_plan(),
             requested=bool(joint.options().get("long_enabled")),
             live_enabled=stage.get("long_composite_live_readiness") is not None,
             live_readiness=stage.get("long_composite_live_readiness"))
+        result["school_td"] = {
+            "requested": bool(joint.options().get("school_enabled")),
+            "active": school_td.GROUP in stage.get("component_pool", ()),
+            "reference": stage.get("school_td_reference_contract"),
+            "native_generation_optimized": False,
+            "native_td_candidate_b_c_only": True,
+        }
         result.update({k: stage[k] for k in (
             "objective_start", "objective_final", "objective_improvement",
             "search_complete", "stationarity_confirmed",
@@ -202,7 +238,12 @@ def install(controller, print_fn=print):
             ref, path, sha = original_loader(package_root, fine_cfg)
             if joint.options()["enabled"]:
                 ref.long_composite_td_contract = long_td.reference_contract(ref)
+                school_enabled = bool(joint.options().get("school_enabled", False))
+                ref.school_td_reference_contract = (
+                    school_td.reference_contract(ref) if school_enabled else None)
                 full_groups = list(ref.GROUPS)
+                if not school_enabled:
+                    ref.GROUPS = [key for key in ref.GROUPS if key != school_td.GROUP]
                 # A single shared b / log(-c) group for all five LONG layers.
                 # Disabled mode retains historical frozen behaviour; enabled
                 # mode can run ONLY via measured native DYNAMIC TD evaluations.
@@ -211,8 +252,9 @@ def install(controller, print_fn=print):
                 selected = _LONG_TARGET_CONTEXT.get()
                 if selected is not None:
                     invalid = set(selected) - set(ref.GROUPS)
-                    if invalid or long_td.GROUP not in selected:
-                        raise RuntimeError("TDLONG_COMPOSITE_TARGET_REFERENCE_MISMATCH:" +
+                    if invalid or not set(selected).intersection(
+                            {long_td.GROUP, school_td.GROUP}):
+                        raise RuntimeError("TDLONG_SCHOOL_TARGET_REFERENCE_MISMATCH:" +
                                            ",".join(sorted(invalid)))
                     ref.GROUPS = [key for key in ref.GROUPS if key in set(selected)]
                     if not ref.GROUPS:
@@ -245,7 +287,11 @@ def install(controller, print_fn=print):
     status = {"release": joint.RELEASE, "installed": True, "options": joint.options(),
               "sealed_reference_modified": False, "outer_acceptance_modified": False,
               "long_composite_td": dict(long_td.activation_plan(),
-                                        requested=bool(joint.options().get("long_enabled")))}
+                                        requested=bool(joint.options().get("long_enabled"))),
+              "school_td": {"requested": bool(joint.options().get("school_enabled")),
+                            "matrix_no": school_td.MATRIX_NO,
+                            "reference_target": "IDP_DIRECT_PURPOSE_512",
+                            "generation_fixed": True}}
     print_fn("R1 TDJOINT1: %s; shared score once; native isolated +/- probes; outer isolates=%s" %
              ("ENABLED" if status["options"]["enabled"] else "DISABLED", status["options"]["outer_isolates"]))
     return status
