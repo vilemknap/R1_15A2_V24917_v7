@@ -19,7 +19,9 @@ def recipe():
 
 
 def make_artifacts(tmp_path, recipe):
-    calib = tmp_path / 'CALIBRATION'
+    # Exact 2026-10-30 nested source layout; the new run must be a sibling.
+    calib = (tmp_path / 'R1_15A2_V16_RUNS' /
+             'RUN_20261030_143622_183126' / 'CALIBRATION')
     cps = calib / 'CHECKPOINTS'
     cps.mkdir(parents=True)
     checkpoint = cps / recipe['checkpoint_filename']
@@ -121,10 +123,17 @@ def test_runtime_binding_requires_real_completed_assignment_source(monkeypatch,t
         calls.append(('run',cfg['runtime_demand_continuation']['resume_substep']))
         adapter.diagnostics(folder,label='BASELINE')
         return mock_controller._runtime_demand_continuation(cfg)
-    v16=NS(_install_runtime=lambda *a:None,
+    original_runs_root = cp.parent.parent.parent.parent
+    v16=NS(RUNS_ROOT_NAME='R1_15A2_V16_RUNS',
+           _base_layout=lambda source: {
+               'project_base':original_runs_root.parent,
+               'detected_run_roots_nearest_first':[original_runs_root],
+               'outermost_run_root':original_runs_root},
+           _install_runtime=lambda *a:None,
            _run_live_preflight=lambda *a,**k:({'source_semantic_state_hash':auth['checkpoint_semantic_state_hash'],
                'source_semantic_hashes':auth['checkpoint_semantic_hashes']},{}),
-           parent=NS(run_overnight_calibration_coupled=original))
+           parent=NS(run_overnight_calibration_coupled=original,
+                     _assert_new_run_is_not_nested=lambda *args:None))
     def fake_restore(*args):calls.append(('restore',))
     monkeypatch.setattr(resume,'restore_readonly_path_epoch',fake_restore)
     resume.install_resume(v16,cp,auth,paths,cont,print_fn=lambda *x:None)
@@ -221,3 +230,72 @@ def test_real_run_status_latest_checkpoint_is_flat(tmp_path,recipe):
     paths['run_status'].write_text(json.dumps(run))
     with pytest.raises(RuntimeError,match='RUN_LATEST_CHECKPOINT_MISMATCH'):
         resume.load_continuation(paths,auth,lambda _:auth['generation_reference_hash'])
+
+def test_real_parent_layout_false_positive_is_fixed_for_a0001(tmp_path, recipe):
+    """Test real resolver and old false-positive guard, then scoped correction."""
+    import ast
+    cp, _, _, _ = make_artifacts(tmp_path, recipe)
+    source_run = cp.parent.parent.parent
+    runs_root = source_run.parent
+    source_path = ROOT / "r1_15a2_fresh0_shortroot_parent_v24916.py"
+    syntax = ast.parse(source_path.read_text(encoding="utf-8"))
+    names = {"_is_runs_root", "_run_tree_ancestors", "_stable_project_layout",
+             "_is_relative_to", "_assert_new_run_is_not_nested"}
+    nodes = [n for n in syntax.body
+             if isinstance(n, ast.FunctionDef) and n.name in names]
+    assert {n.name for n in nodes} == names
+    ns = {"Path": Path}
+    exec(compile(ast.Module(body=nodes, type_ignores=[]),
+                 str(source_path), "exec"), ns)
+    layout = ns["_stable_project_layout"](cp)
+    assert layout["project_base"] == tmp_path.resolve()
+    assert layout["detected_run_roots_nearest_first"] == [runs_root.resolve()]
+    assert layout["outermost_run_root"] == runs_root.resolve()
+
+    sibling = runs_root / "RUN_20261030_235959_999999"
+    with pytest.raises(RuntimeError, match="V24915P2_NEW_RUN_STILL_NESTED_UNDER_PRIOR_RUN_TREE"):
+        ns["_assert_new_run_is_not_nested"](
+            sibling, layout["detected_run_roots_nearest_first"])
+    parent = NS(_assert_new_run_is_not_nested=ns["_assert_new_run_is_not_nested"])
+    v16 = NS(RUNS_ROOT_NAME="R1_15A2_V16_RUNS",
+             _base_layout=ns["_stable_project_layout"], parent=parent)
+    info = resume.install_sibling_run_layout_guard(
+        v16, cp, print_fn=lambda *args:None)
+    assert info["runs_root"] == str(runs_root.resolve())
+    assert info["source_run"] == str(source_run.resolve())
+    assert parent._assert_new_run_is_not_nested(
+        sibling, layout["detected_run_roots_nearest_first"]) is None
+
+    invalid = (
+        cp.parent / sibling.name,  # below CHECKPOINTS
+        source_run / "R1_15A2_V16_RUNS" / sibling.name,  # historical error
+        source_run / sibling.name,
+        tmp_path / "WRONG_RUNS" / sibling.name,
+        source_run,  # cannot reuse or overwrite the old run
+    )
+    for candidate in invalid:
+        with pytest.raises(RuntimeError, match="A0001_RESUME_NEW_RUN_"):
+            parent._assert_new_run_is_not_nested(
+                candidate, layout["detected_run_roots_nearest_first"])
+    with pytest.raises(RuntimeError, match="A0001_RESUME_PRIOR_RUN_ROOTS_CHANGED"):
+        parent._assert_new_run_is_not_nested(sibling, [])
+
+
+def test_sibling_layout_guard_rejects_unexpected_project_base(tmp_path, recipe):
+    cp, _, _, _ = make_artifacts(tmp_path, recipe)
+    old_root = cp.parent.parent.parent.parent
+    v16 = NS(
+        RUNS_ROOT_NAME="R1_15A2_V16_RUNS",
+        _base_layout=lambda _: {
+            "project_base":cp.parent,
+            "detected_run_roots_nearest_first":[old_root]},
+        parent=NS(_assert_new_run_is_not_nested=lambda *a:None),
+    )
+    with pytest.raises(RuntimeError, match="A0001_RESUME_SOURCE_LAYOUT_PROJECT_BASE_MISMATCH"):
+        resume.install_sibling_run_layout_guard(v16, cp, print_fn=lambda *args:None)
+    v16._base_layout = lambda _: {
+        "project_base":tmp_path,
+        "detected_run_roots_nearest_first":[],
+    }
+    with pytest.raises(RuntimeError, match="A0001_RESUME_SOURCE_LAYOUT_RUNS_ROOT_MISMATCH"):
+        resume.install_sibling_run_layout_guard(v16, cp, print_fn=lambda *args:None)

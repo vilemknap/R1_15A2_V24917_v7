@@ -10,6 +10,7 @@ on:
       - codex/v24917-unlock-long-zonal-tg-composite-td-20261030
       - codex/v24917-school-td-finecdf-active-20261030
       - codex/resume-a0001-td-no-enum-20261030
+      - codex/resume-a0001-sibling-run-root-fix-20261030
   workflow_dispatch:
 permissions:
   contents: read
@@ -46,6 +47,8 @@ jobs:
           python -m py_compile v24917_silent_debug.py
           python -m py_compile 01_SPUSTIT_V24917_TDJOINT1_SILENT.py
           python -m py_compile tests/test_v24917_silent_debug.py
+          python -m py_compile r1_15a2_resume_a0001_v24917.py
+          python -m py_compile tests/test_v24917_resume_a0001_td_no_enum.py
       - name: Verify sealed runtime and DIAGFAST files (read only)
         run: |
           python - <<'PY'

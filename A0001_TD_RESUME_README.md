@@ -15,6 +15,26 @@ The launcher requires these unchanged original run artifacts:
 
 The source `.ver` bytes must match SHA-256 `9f209ce288cb8693c4ef22649b229e6f404d52c0451bd0bbdc15827b55300f63`; its **semantic state**, before and after baseline realization, must match the seven approved field hashes in `A0001_TD_RESUME_AUTHORITY.json`.
 
+## Checkpoint inside an older RUN_* tree (fixed)
+
+The source checkpoint remains at:
+`...\2022\R1_15A2_V16_RUNS\RUN_20261030_143622_183126\CALIBRATION\CHECKPOINTS\ACCEPTED_A_0001_8dcf6dca8fa2.ver`.
+
+The **new** run must be created at the SAME `R1_15A2_V16_RUNS` level:
+`...\2022\R1_15A2_V16_RUNS\RUN_<new_unique_timestamp>`.
+Never create it below the old `RUN_20261030_143622_183126`, its
+`CALIBRATION` or `CHECKPOINTS`. Neither the checkpoint nor its large
+`TWO_MODE_PATH_STORE.sqlite` should be moved.
+
+The V24916 frozen project-root resolver correctly normalizes the source to
+`...\2022`, but its original postcondition incorrectly rejects even a new
+direct RUN_* sibling because both share the same `R1_15A2_V16_RUNS` ancestor.
+This A0001-only launcher installs a stricter sibling-only postcondition:
+the frozen original resolver's project base and source RUNS root must match;
+new output must be a direct, unique RUN_* child; actual nesting, changed
+prior roots and source-run collisions remain fatal. The previous run and
+its SQLite remain read-only evidence.
+
 ## What the launcher preserves
 
 - Resumes accepted count **1**, outer cycle **1**, substep **TD_FINECDF_V17**. It does not replay the accepted Generation step (scale 0.538158).

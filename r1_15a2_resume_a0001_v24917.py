@@ -312,8 +312,78 @@ def refuse_enumeration(*args, **kwargs):
                               "the existing accepted checkpoint remains authoritative")
 
 
+
+def install_sibling_run_layout_guard(v16, checkpoint, print_fn=print):
+    """Allow a NEW direct RUN_* sibling under V16_RUNS; refuse actual nesting.
+
+    The historical parent postcondition rejects ANY descendant of a detected
+    _RUNS root, including valid direct siblings. This resume-only hook fixes
+    the postcondition, without changing the frozen V24916 project resolver.
+    """
+    cp = Path(checkpoint).resolve()
+    source_run = cp.parent.parent.parent  # RUN_OLD/CALIBRATION/CHECKPOINTS/file.ver
+    source_runs_root = source_run.parent
+    require(source_run.name.upper().startswith("RUN_"),
+            "SOURCE_RUN_DIRECTORY_NOT_RECOGNIZED")
+    require(source_runs_root.name.upper() == "R1_15A2_V16_RUNS",
+            "SOURCE_RUNS_ROOT_NOT_RECOGNIZED")
+    resolver = getattr(v16, "_base_layout", None)
+    require(callable(resolver), "SOURCE_LAYOUT_RESOLVER_UNAVAILABLE")
+    layout = resolver(cp)  # frozen ORIGINAL resolver, not the wrapped one
+    require(isinstance(layout, dict) and layout.get("project_base") is not None,
+            "SOURCE_LAYOUT_INVALID")
+    project_base = source_runs_root.parent.resolve()
+    require(Path(layout["project_base"]).resolve() == project_base,
+            "SOURCE_LAYOUT_PROJECT_BASE_MISMATCH")
+    detected_roots = tuple(
+        Path(p).resolve() for p in layout.get("detected_run_roots_nearest_first", ())
+    )
+    require(detected_roots and detected_roots[-1] == source_runs_root,
+            "SOURCE_LAYOUT_RUNS_ROOT_MISMATCH")
+    runs_name = str(getattr(v16, "RUNS_ROOT_NAME", "") or "")
+    require(runs_name == "R1_15A2_V16_RUNS", "OUTPUT_RUNS_ROOT_NAME_CHANGED")
+    output_root = (project_base / runs_name).resolve()
+    require(output_root == source_runs_root, "OUTPUT_RUNS_ROOT_NOT_SIBLING_ROOT")
+    original_guard = getattr(v16.parent, "_assert_new_run_is_not_nested", None)
+    require(callable(original_guard), "PARENT_NESTED_RUN_GUARD_MISSING")
+
+    def assert_new_run_is_direct_sibling(new_run_directory, prior_run_roots):
+        new_run = Path(new_run_directory).resolve()
+        require(new_run.parent == output_root,
+                "NEW_RUN_NOT_DIRECT_SIBLING:" + str(new_run))
+        require(new_run.name.upper().startswith("RUN_") and new_run != source_run,
+                "NEW_RUN_NAME_OR_SOURCE_COLLISION")
+        roots = tuple(Path(p).resolve() for p in prior_run_roots)
+        require(roots == detected_roots, "PRIOR_RUN_ROOTS_CHANGED")
+        # Other ancestor RUNS trees remain prohibited (doubly nested history).
+        for root in roots:
+            if root == output_root:
+                continue  # ONLY this direct-sibling relation is permitted.
+            try:
+                new_run.relative_to(root)
+            except ValueError:
+                continue
+            raise RuntimeError(
+                "A0001_RESUME_NEW_RUN_NESTED_UNDER_OTHER_RUN_TREE:" + str(root))
+        return None
+
+    v16.parent._assert_new_run_is_not_nested = assert_new_run_is_direct_sibling
+    print_fn("A0001 output is a sibling RUN_* under: " + str(output_root))
+    return {
+        "policy": "EXACT_SOURCE_RUN_TREE__NEW_RUN_DIRECT_SIBLING_ONLY",
+        "source_run": str(source_run),
+        "runs_root": str(output_root),
+        "project_base": str(project_base),
+        "source_checkpoint": str(cp),
+        "source_is_in_existing_run": True,
+        "new_run_must_be_sibling": True,
+        "original_parent_guard_is_incorrect_for_same_RUNS_root": True,
+    }
+
+
 def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print):
     """Bind hooks to actual V24916 parent after the normal V24917 installer."""
+    output_layout = install_sibling_run_layout_guard(v16, checkpoint, print_fn=print_fn)
     base_install = v16._install_runtime
     base_preflight = v16._run_live_preflight
 
@@ -375,4 +445,5 @@ def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print)
     v16._run_live_preflight = checked_preflight
     v16._install_runtime = installer
     return {"release": RELEASE, "checkpoint": str(checkpoint),
-            "source_path_store": str(paths["sqlite"]), "mode": MODE}
+            "source_path_store": str(paths["sqlite"]), "mode": MODE,
+            "output_layout": output_layout}
