@@ -35,6 +35,21 @@ Spouštěč současně ověřuje skutečně nainstalovanou politiku `demand_poli
 
 Toto neznamená automaticky přijetí TD změny: i při provedené kalibraci může být výsledek odmítnut a vrácen rollbackem, nebo hledání zůstat neúplné. Výpadek Visumu či porušení safety brány zůstává chybou, nikoli přeskokem. Počítejte s tím, že každý provedený TD může být časově náročný; žádný naměřený čas celého cyklu zatím nová verze nemá.
 
+## Rozšířené meze Generation pro WORK / SERVICE
+
+Při zachování dolní hranice **0,75** se mění horní hranice domácích zón v kalibračních koeficientech:
+
+| Účel a role | Atributy zón | Původní maximum | Nové maximum |
+|---|---|---:|---:|
+| WORK a SERVICE, produkce | `ADD_PROD_W`, `ADD_PROD_S` | 2,0 | **2,5** |
+| WORK a SERVICE, atrakce | `ADD_ATT_W`, `ADD_ATT_S` | 2,0 | **4,0** |
+
+Nové hranice platí pro `CATCH_UP` i `REFINE`, shodně pro tvrdou mez a soft band; návrh, P/A projekce, zonální solver a finální kontrola realizovaného koeficientu používají stejnou hodnotu. `MOBILITY2` a `MOBILITYZONE1` měly nezávislou ochranu produkce 2,0, která by nové povolené hodnoty předčasně blokovala. Pro **WORK a SERVICE** je horní limit těchto produkčních kontrol nově **2,5** (`mg_max_ratio=2.5`), jejich dolní limit 0,75 a veškeré důkazy z nativních `FP_*` zůstávají povinné. Ochrana `SCHOOL` zůstává na [0,75; 2,0] a `LONG` na vlastní původní hranici.
+
+**Beze změny:** `ADD_SALARY` [0,5; 2,0], ZAHR relativní interval [0,5×; 10×] podle startovního koeficientu, LONG/SCHOOL, zachování strukturálních nul, intervaly změny koeficientu za jeden cyklus (+50 % / −20 % v `CATCH_UP`; +25 % / −20 % v `REFINE`), přesné bilancování produkcí a atrakcí, TD, akceptační bezpečnost a rollback.
+
+Pokud by proměnná prostředí přepsala `mg_max_ratio` na starou hodnotu 2,0 nebo chyběla nová role-specific Generation policy, univerzální spouštěč odmítne zahájit kalibraci; nesmí potichu přejít na jinou interpretaci. Předchozí stažený ZIP s původními mezemi nepoužívat.
+
 ## Adresáře a nezávislost
 
 Zdrojový .ver zůstává na místě. Jeho skutečný projektový kořen je složka obsahující .ver, případně nadřazená složka původního *nejvnějšího* `R1_15A2_*_RUNS`.
