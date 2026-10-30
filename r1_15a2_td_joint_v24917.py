@@ -29,6 +29,7 @@ def options() -> dict:
     o = dp.load_options()  # invalid configuration must not disable the feature
     return {"enabled": o.get("td_joint_enabled", False),
             "long_enabled": o.get("long_composite_td_enabled", False),
+            "school_enabled": o.get("school_td_enabled", False),
             "long_generation_enabled": o.get("long_generation_enabled", False),
             "inner_mode": o.get("td_inner_mode"),
             "outer_isolates": o.get("td_joint_outer_isolates", False),
