@@ -235,6 +235,16 @@ def attach_fit(school, observed, visum, cfg, zones, ws_problem, ws_solution, ref
         raise ValueError("LONG_CACHE_PROPOSAL_REQUIRED")
     out = copy.deepcopy(school)
     nrows = len(ws_problem.profile_rows)
+    # AMDY's original SCHOOL FP/FA formulas have no ADD_PROD_SCH/ADD_ATT_SCH
+    # coefficient; the old synthetic SCHOOL proposal is now intentionally
+    # frozen by MOBILITYZONE1. Fit LONG on the *actual* residual after W/S,
+    # not on fictitious school-induced profile changes which will be removed
+    # later in the transaction. The same pure guard is applied after the
+    # fit for bounded LONG steps; its first pass here is SCHOOL-only.
+    authority = fit_cfg["long_mobility_authority"]
+    if (authority.get("school_fp_link_verified") is not True
+            and (out.get("effect_operator") or {}).get("G") is not None):
+        out = mz.guard_ls(out, authority)
     prior = np.asarray(out.get("predicted_change", np.zeros(nrows)), dtype=float)
     current = out.setdefault("current", {})
     for attr in ("ADD_PROD_L", "ADD_ATT_L"):
