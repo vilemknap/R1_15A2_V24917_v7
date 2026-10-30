@@ -135,6 +135,39 @@ def test_long_fit_is_zonal_bounded_and_preserves_nonlinear_pa(live, monkeypatch)
     assert mz.check_candidate(rows, a)['passes']
 
 
+def test_long_zonal_fit_does_not_subtract_unrealized_school_effect(live, monkeypatch):
+    adapter, _, profiles = live
+    observed = lc.capture(adapter)
+    ws = problem(profiles)
+    # SCHOOL's speculative 0.1 log-step predicts [1, 1.2] profile vehicles,
+    # but the AMDY SCHOOL production formula does not depend on ADD_PROD_SCH.
+    # The candidate SCHOOL step will be frozen by the same MOBILITYZONE1 gate;
+    # it must be excluded BEFORE solving the LONG residual, not only after.
+    school = {
+        'steps': {'ADD_PROD_SCH': {1: .1}},
+        'current': {'ADD_PROD_SCH': {1: 1.}},
+        'predicted_change': [1., 1.2],
+        'effect_operator': {'keys': [['SCHOOL', 'PROD', 1]],
+                            'G': [[10.], [12.]]},
+        'summary': {'status': 'OK'},
+    }
+    monkeypatch.setattr(ls, 'ls_options', lambda: dict(ls.LS_DEFAULTS))
+    fit_cfg = {
+        'long_mobility_authority': authority(mobility_rows()),
+        'max_iter': 2000,
+    }
+    out = lc.attach_fit(school, observed, adapter.visum,
+                        {'max_add_log_up': .5, 'max_add_log_down': .5}, [1, 2],
+                        ws, {'predicted_change': np.zeros(2)},
+                        {'ADD_ATT_L': {'1': 1., '2': 1.}}, fit_cfg)
+    assert out['steps']['ADD_PROD_SCH'] == {}
+    assert out['steps']['ADD_ATT_SCH'] == {}
+    assert out['summary']['school_generation_status'] == (
+        'FROZEN_PENDING_NATIVE_FORMULA_PROOF')
+    assert out['summary']['long_generation_permitted']
+    assert out['summary']['long_zone_steps'] > 0
+
+
 def test_missing_attraction_reference_defers_long_and_retains_school(live, monkeypatch):
     adapter, _, profiles = live
     obs = lc.capture(adapter)
