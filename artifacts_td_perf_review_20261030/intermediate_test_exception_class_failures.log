@@ -1,0 +1,167 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+......................................s.s..........s................s... [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+...........................................................FF........... [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+........................................................................ [ 99%]
+..................                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_live_procedure_collection_is_checked_instead_of_old_objects _______
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f817bbe02b0>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_live_procedure_collection_is_checked_instead_of_old_objects(native):
+        from types import SimpleNamespace as NS
+        b,state,abc,expected=native
+        b.restore_state(abc,expected)
+        changed=NS(AttValue=lambda attr:{'OPERATIONTYPE':65,'ACTIVE':1}.get(attr,''))
+        b.v.Procedures.Operations.GetAll=lambda:[changed]
+        from r1_15a2_supply import SupplyContractError
+        with pytest.raises(SupplyContractError,match='TD_OPERATION_CHANGED'):
+>           b.restore_state(abc,expected)
+
+tests/test_v24917_td_perf_review.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_restore_v24917.py:231: in restore
+    bound = binding(adapter)
+            ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+adapter = <r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f817bbe02b0>
+
+    def binding(adapter):
+        outer = getattr(adapter, 'outer_adapter', None)
+        manager = getattr(outer, 'v24916_dynamic_skims', None)
+        rm = getattr(outer, 'readback_manager', None)
+        if (not getattr(adapter, 'dynamic_skim_enabled', False)
+                or getattr(adapter, '_v24917_frozen', False) or manager is None or rm is None
+                or getattr(rm, 'assignment_in_progress', True)
+                or getattr(rm, 'assignment_completed', False) is not True
+                or kernels.SKIM_WEIGHT_SCOPE.get() is not None
+                or getattr(outer, '_v24917_generation_reads', None) is not None
+                or getattr(adapter, 'v', None) is not getattr(outer, 'visum', None)):
+            return None
+        if not all(isinstance(getattr(rm, name, None), str) and getattr(rm, name)
+                   for name in ('run_token', 'visum_session_token')):
+            return None
+        try:
+            epoch = manager.require_current()
+        except SupplyContractError:
+            return None  # Native restore must refresh an unavailable/stale skim.
+        if epoch is not getattr(adapter, 'dynamic_skim_epoch', None):
+            return None
+        plan = adapter._dynamic_realization_plan()
+        if plan is None or set(epoch.matrix_meta_by_dseg) != set(dyn.REQUIRED_NATIVE_DSEGS):
+            return None
+        adapter.assert_isolated()
+        live_zones = tuple(int(v) for _, v in adapter.v.Net.Zones.GetMultiAttValues('NO'))
+        if live_zones != tuple(adapter.zone_order) or live_zones != tuple(outer.zones):
+            raise SupplyContractError('TD_PERF_RESTORE_ZONE_ORDER_CHANGED')
+        if dyn.ordered_zone_hash(live_zones) != epoch.zone_order_sha256:
+            raise SupplyContractError('TD_PERF_RESTORE_ZONE_HASH_CHANGED')
+        if epoch.assignment_epoch != rm.assignment_epoch:
+            return None
+        # Pin actual current procedure types/ACTIVE/DSTRATSET as well as the plan.
+        operations = dyn._call(outer, lambda: snapshot_reads._operation_records(adapter.v),
+                               'TD_RESTORE_OPERATION_SOURCES')
+        position = adapter.td_index
+        if (type(position) is not int or not 1 <= position <= len(operations)
+                or operations[position - 1].operation_type != 46):
+>           raise SupplyContractError('TD_PERF_RESTORE_TD_OPERATION_CHANGED')
+E           r1_15a2_supply.SupplyContractError: TD_PERF_RESTORE_TD_OPERATION_CHANGED
+
+r1_15a2_td_restore_v24917.py:89: SupplyContractError
+_____ test_replaced_td_parameter_root_is_read_live_not_from_cached_object ______
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f81798d9350>, namespace(native_calls=2, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_replaced_td_parameter_root_is_read_live_not_from_cached_object(native):
+        import copy
+        from types import SimpleNamespace as NS
+        b,state,abc,expected=native
+        b.read_abc=lambda:copy.deepcopy(getattr(b.td,'values',state.coeff))
+        b.restore_state(abc,expected)
+        changed=copy.deepcopy(abc);changed[9101]['b']+=.1
+        replacement=NS(values=changed,AttValue=lambda attr:'R1_MUTABLE')
+        b.ops[0].TripDistributionParameters=replacement
+        from r1_15a2_supply import SupplyContractError
+        with pytest.raises(SupplyContractError,match='RESTORE_PARAMETER_CHANGED'):
+>           b.restore_state(abc,expected)
+
+tests/test_v24917_td_perf_review.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_td_restore_v24917.py:252: in restore
+    fingerprint, _ = content(adapter, bound, abc, result)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+adapter = <r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f81798d9350>
+bound = {'epoch': DynamicSkimEpoch(schema='R1_15A2_V24916_DYNAMIC_ASSIGNMENT_SKIM_V1', epoch=3, assignment_epoch=3, assignment...ckManager object at 0x7f817d0cca10>, 'sha256': 'c226f01cfc7b42faad2807bfa69aec616469db8d109a9ae2e08511934e8a9157', ...}
+requested_abc = {9101: {'a': 1.0, 'b': 1.0, 'c': -0.1}, 9102: {'a': 1.0, 'b': 1.0, 'c': -0.1}, 9103: {'a': 1.0, 'b': 1.0, 'c': -0.1}, 9104: {'a': 1.0, 'b': 1.0, 'c': -0.1}, ...}
+arrays = {9101: array([[1., 2.],
+       [3., 4.]]), 9102: array([[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...}
+
+    def content(adapter, bound, requested_abc, arrays=None, *, read_skims=False, verify_requested=True):
+        # All reads below are after the completed native operation. Scope is closed
+        # before any fallback recomputation or parameter mutation can occur.
+        with matrix_read_scope(adapter):
+            adapter.guard_protected(full=True)
+            # The current operation may expose a replacement parameter object.
+            # Read it with the original accessor, then restore only our Python
+            # handle; no native parameter/control write occurs in this scope.
+            cached_td = adapter.td
+            adapter.td = bound['td_root']
+            try:
+                actual_abc = adapter.read_abc()
+            finally:
+                adapter.td = cached_td
+            if verify_requested and set(actual_abc) != set(requested_abc):
+                raise SupplyContractError('TD_PERF_RESTORE_PARAMETER_SCOPE_CHANGED')
+            tolerance = float(adapter.ref.CONFIG['parameter_readback_atol'])
+            for no in requested_abc if verify_requested else ():
+                for parameter in ('a', 'b', 'c'):
+                    value = float(actual_abc[no][parameter])
+                    if (not math.isfinite(value)
+                            or abs(value - float(requested_abc[no][parameter])) > tolerance):
+>                       raise SupplyContractError('TD_PERF_RESTORE_PARAMETER_CHANGED_M%d_%s' % (no, parameter))
+E                       r1_15a2_supply.SupplyContractError: TD_PERF_RESTORE_PARAMETER_CHANGED_M9101_b
+
+r1_15a2_td_restore_v24917.py:164: SupplyContractError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_td_perf_review.py::test_live_procedure_collection_is_checked_instead_of_old_objects
+FAILED tests/test_v24917_td_perf_review.py::test_replaced_td_parameter_root_is_read_live_not_from_cached_object
+2 failed, 2244 passed, 4 skipped in 39.71s

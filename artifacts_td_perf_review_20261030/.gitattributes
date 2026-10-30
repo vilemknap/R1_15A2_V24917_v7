@@ -1,0 +1,3 @@
+*.patch -text -diff
+*.log -text -diff
+*.py.txt -text -diff

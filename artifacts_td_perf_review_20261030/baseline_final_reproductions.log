@@ -1,0 +1,169 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+___________ test_audit_write_failure_cannot_publish_restore_receipt ____________
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f00543c17f0>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0054254180>
+
+    def test_audit_write_failure_cannot_publish_restore_receipt(native, monkeypatch):
+        b,state,abc,expected=native
+        def fail(*args,**kwargs):
+            raise OSError('SIMULATED_AUDIT_WRITE_FAILURE')
+        monkeypatch.setattr(restore,'audit',fail)
+        with pytest.raises(OSError,match='SIMULATED_AUDIT_WRITE_FAILURE'):
+            b.restore_state(abc,expected)
+        assert state.native_calls==1
+>       assert b._td_perf_restore_receipt is None
+E       AssertionError: assert {'bound': {'epoch': DynamicSkimEpoch(schema='R1_15A2_V24916_DYNAMIC_ASSIGNMENT_SKIM_V1', epoch=2, assignment_epoch=2, ...9e22adf1b6b785aabb711de90e965179cf3b9b', 'request': '125c4b93332f0cf9341382d8916c71f28976fd9086700ec6afac1ed7ccb81fff'} is None
+E        +  where {'bound': {'epoch': DynamicSkimEpoch(schema='R1_15A2_V24916_DYNAMIC_ASSIGNMENT_SKIM_V1', epoch=2, assignment_epoch=2, ...9e22adf1b6b785aabb711de90e965179cf3b9b', 'request': '125c4b93332f0cf9341382d8916c71f28976fd9086700ec6afac1ed7ccb81fff'} = <r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f00543c17f0>._td_perf_restore_receipt
+
+tests/test_v24917_td_perf_review.py:17: AssertionError
+_____ test_identical_dis_values_under_new_binding_require_native_recompute _____
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f0054302ad0>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_identical_dis_values_under_new_binding_require_native_recompute(native):
+        b,state,abc,expected=native
+        b.restore_state(abc,expected)
+        rows=dyn._native_dis_rows(b.outer_adapter)
+        old_no=rows['NATIVE_CW']['matrix_no_int']
+        state.arrays[801]=state.arrays[old_no].copy()
+        rows['NATIVE_CW']['matrix_no_int']=801
+        b.restore_state(abc,expected)
+>       assert state.native_calls==2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = namespace(native_calls=1, reads=[701, 702, 703, 704, 705, 706, 9101, 9102, 9103, 9104, 9105, 9106, 9107, 9108, 9109, 9...TIVE_CS_NOT': 9309, 'EXOG_EE_NATIVE_CL': 9310, 'EXOG_EE_NATIVE_CF': 9311}, override_parameter=False, fail_native=False).native_calls
+
+tests/test_v24917_td_perf_review.py:28: AssertionError
+__________ test_generation_cache_cannot_supply_a_fresh_restore_proof ___________
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f0054303890>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_generation_cache_cannot_supply_a_fresh_restore_proof(native):
+        b,state,abc,expected=native
+        b.restore_state(abc,expected)
+        outer=b.outer_adapter
+        cached=outer._live_generation_matrices()
+        outer._v24917_generation_reads={}
+        outer._live_generation_matrices=lambda:{code:a.copy() for code,a in cached.items()}
+        state.arrays[9300][0,1]+=10.
+        b.restore_state(abc,expected)
+>       assert state.native_calls==2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = namespace(native_calls=1, reads=[701, 702, 703, 704, 705, 706, 9101, 9102, 9103, 9104, 9105, 9106, 9107, 9108, 9109, 9...TIVE_CS_NOT': 9309, 'EXOG_EE_NATIVE_CL': 9310, 'EXOG_EE_NATIVE_CF': 9311}, override_parameter=False, fail_native=False).native_calls
+
+tests/test_v24917_td_perf_review.py:41: AssertionError
+_ test_equal_vehicle_od_values_under_changed_dseg_binding_require_native_recompute _
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f0054303b10>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_equal_vehicle_od_values_under_changed_dseg_binding_require_native_recompute(native):
+        b,state,abc,expected=native
+        b.restore_state(abc,expected)
+        old=state.dseg_matrix_numbers['NATIVE_CW']
+        state.arrays[9400]=state.arrays[old].copy()
+        state.dseg_matrix_numbers['NATIVE_CW']=9400
+        b.restore_state(abc,expected)
+>       assert state.native_calls==2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = namespace(native_calls=1, reads=[701, 702, 703, 704, 705, 706, 9101, 9102, 9103, 9104, 9105, 9106, 9107, 9108, 9109, 9...TIVE_CS_NOT': 9309, 'EXOG_EE_NATIVE_CL': 9310, 'EXOG_EE_NATIVE_CF': 9311}, override_parameter=False, fail_native=False).native_calls
+
+tests/test_v24917_td_perf_review.py:52: AssertionError
+_________ test_renamed_protected_matrix_cannot_reuse_old_source_proof __________
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f0054303ed0>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_renamed_protected_matrix_cannot_reuse_old_source_proof(native):
+        b,state,abc,expected=native
+        b.restore_state(abc,expected)
+        state.matrix_codes[9697]='CHANGED_OSRM_SOURCE_IDENTITY'
+        b.restore_state(abc,expected)
+>       assert state.native_calls==2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = namespace(native_calls=1, reads=[701, 702, 703, 704, 705, 706, 9101, 9102, 9103, 9104, 9105, 9106, 9107, 9108, 9109, 9...TIVE_CS_NOT': 9309, 'EXOG_EE_NATIVE_CL': 9310, 'EXOG_EE_NATIVE_CF': 9311}, override_parameter=False, fail_native=False).native_calls
+
+tests/test_v24917_td_perf_review.py:61: AssertionError
+______________ test_other_visum_wrapper_is_not_same_restore_owner ______________
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f0054214190>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_other_visum_wrapper_is_not_same_restore_owner(native):
+        from types import SimpleNamespace as NS
+        b,state,abc,expected=native
+        b.restore_state(abc,expected)
+        b.outer_adapter.visum=NS(Net=b.v.Net)
+        b.restore_state(abc,expected)
+>       assert state.native_calls==2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = namespace(native_calls=1, reads=[701, 702, 703, 704, 705, 706, 9101, 9102, 9103, 9104, 9105, 9106, 9107, 9108, 9109, 9...TIVE_CS_NOT': 9309, 'EXOG_EE_NATIVE_CL': 9310, 'EXOG_EE_NATIVE_CF': 9311}, override_parameter=False, fail_native=False).native_calls
+
+tests/test_v24917_td_perf_review.py:71: AssertionError
+_______ test_live_procedure_collection_is_checked_instead_of_old_objects _______
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f0054214550>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_live_procedure_collection_is_checked_instead_of_old_objects(native):
+        from types import SimpleNamespace as NS
+        b,state,abc,expected=native
+        b.restore_state(abc,expected)
+        changed=NS(AttValue=lambda attr:{'OPERATIONTYPE':65,'ACTIVE':1}.get(attr,''))
+        b.v.Procedures.Operations.GetAll=lambda:[changed]
+        from r1_15a2_supply import SupplyContractError
+>       with pytest.raises(SupplyContractError,match='TD_OPERATION_CHANGED'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'r1_15a2_supply.SupplyContractError'>
+
+tests/test_v24917_td_perf_review.py:82: Failed
+_____ test_replaced_td_parameter_root_is_read_live_not_from_cached_object ______
+
+native = (<r1_15a2_finecdf_bridge_v24916.NoDirectMatrixWriteTDAdapter object at 0x7f0054214190>, namespace(native_calls=1, read...[[1., 2.],
+       [3., 4.]]), 9103: array([[1., 2.],
+       [3., 4.]]), 9104: array([[1., 2.],
+       [3., 4.]]), ...})
+
+    def test_replaced_td_parameter_root_is_read_live_not_from_cached_object(native):
+        import copy
+        from types import SimpleNamespace as NS
+        b,state,abc,expected=native
+        b.read_abc=lambda:copy.deepcopy(getattr(b.td,'values',state.coeff))
+        b.restore_state(abc,expected)
+        changed=copy.deepcopy(abc);changed[9101]['b']+=.1
+        replacement=NS(values=changed,AttValue=lambda attr:'R1_MUTABLE')
+        b.ops[0].TripDistributionParameters=replacement
+        from r1_15a2_supply import SupplyContractError
+>       with pytest.raises(SupplyContractError,match='RESTORE_PARAMETER_CHANGED'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'r1_15a2_supply.SupplyContractError'>
+
+tests/test_v24917_td_perf_review.py:98: Failed
+=========================== short test summary info ============================
+FAILED tests/test_v24917_td_perf_review.py::test_audit_write_failure_cannot_publish_restore_receipt
+FAILED tests/test_v24917_td_perf_review.py::test_identical_dis_values_under_new_binding_require_native_recompute
+FAILED tests/test_v24917_td_perf_review.py::test_generation_cache_cannot_supply_a_fresh_restore_proof
+FAILED tests/test_v24917_td_perf_review.py::test_equal_vehicle_od_values_under_changed_dseg_binding_require_native_recompute
+FAILED tests/test_v24917_td_perf_review.py::test_renamed_protected_matrix_cannot_reuse_old_source_proof
+FAILED tests/test_v24917_td_perf_review.py::test_other_visum_wrapper_is_not_same_restore_owner
+FAILED tests/test_v24917_td_perf_review.py::test_live_procedure_collection_is_checked_instead_of_old_objects
+FAILED tests/test_v24917_td_perf_review.py::test_replaced_td_parameter_root_is_read_live_not_from_cached_object
+8 failed in 0.16s

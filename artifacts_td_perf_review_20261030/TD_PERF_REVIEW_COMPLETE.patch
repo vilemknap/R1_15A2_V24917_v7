@@ -1,0 +1,371 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index 2a11d8d..2d1f4c3 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -99,7 +99,7 @@
+     "r1_15a2_td_joint_runtime_v24917.py": "853a27529a2782c61c5a275b804d9731cf60b8dd4d8af6ad743d24045d54777e",
+     "r1_15a2_td_joint_v24917.py": "035736b7c9c3f1e21bbd3c320b9ddcbfec6d65d9edf2544800dd8b1e87218609",
+     "r1_15a2_td_numpy_v24917.py": "b6257a6a7bb44533377a2fa791ff23e84b6c4f93d0230467141cdd3733a37859",
+-    "r1_15a2_td_restore_v24917.py": "50e0bd095133eada8172905eeb45d7bb203dcdac68ba942232afd8dd15f6ba61",
++    "r1_15a2_td_restore_v24917.py": "0eae4b789b407274ef7934817e99597b8b5a73c597bc7a3aae698698208c6d35",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+     "r1_15a2_trial_adapter_v24917.py": "ec0600e6719fd9b2be3fd93b81808b6d8c35b3b1e69f22f29367fe64afb22fed",
+@@ -160,7 +160,8 @@
+     "tests/test_v24917_supplymix_completion_isolation.py": "b61885f792901e8371cef3181c744869b2c590603b4ce8c8ff99362cb7008b88",
+     "tests/test_v24917_targeted_catchup.py": "65b153ae46fe1e36cb833c7336f75327dc813b5f7fa109a97726fc593c253703",
+     "tests/test_v24917_td_numpy_perf.py": "06a01fe764f4cd9eb9d47b51b70adc4fbc8d671da2e0146d8560359d305b6b86",
+-    "tests/test_v24917_td_restore_perf.py": "c2206ce8ae13d69c79dfe144eb77e7cf9c99cfa6927006ffcb9d4e31b810abf1",
++    "tests/test_v24917_td_perf_review.py": "26d8f0c931c26813ef08d2e8adb7265ef370b7e8a09855968486528ac24b9945",
++    "tests/test_v24917_td_restore_perf.py": "5ef414d7ed33754907fb323db2ed9b5a0b69e0947496ea3048a3899de46c5017",
+     "tests/test_v24917_td_rollback_tolerant.py": "7f03276f74e29715f7dd865688d079458184f97ab1d36b4f4eec76012e40215b",
+     "tests/test_v24917_td_stage_integration.py": "8e4d9636f3472ae5fcc88a28113209458142909467bfc3146f4b206672f86a25",
+     "tests/test_v24917_tdjoint1.py": "4c47b63f2b6323f952975d5efb9c96bc4e2ed8879b49f7149f165f4e22e987ae",
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 8735240..ffa48af 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -9,7 +9,7 @@
+     "r1_15a2_td_joint_v24917.py": "035736b7c9c3f1e21bbd3c320b9ddcbfec6d65d9edf2544800dd8b1e87218609",
+     "r1_15a2_td_joint_runtime_v24917.py": "853a27529a2782c61c5a275b804d9731cf60b8dd4d8af6ad743d24045d54777e",
+     "r1_15a2_td_numpy_v24917.py": "b6257a6a7bb44533377a2fa791ff23e84b6c4f93d0230467141cdd3733a37859",
+-    "r1_15a2_td_restore_v24917.py": "50e0bd095133eada8172905eeb45d7bb203dcdac68ba942232afd8dd15f6ba61",
++    "r1_15a2_td_restore_v24917.py": "0eae4b789b407274ef7934817e99597b8b5a73c597bc7a3aae698698208c6d35",
+     "r1_15a2_long_composite_td_v24917.py": "db65e11fc887d16d8f70198146597bac25bdb8fed2e8244e0f17e65f68b3408b",
+     "r1_15a2_long_support_distance_v24917.py": "79765255b057b1f09345ce4b7ac9874cd4b1fe91a09d996ba20d4c63223c02e9",
+     "r1_15a2_long_post_td_mask_v24917.py": "ea50a146233dbb5f0d1d554effbef5574a5c84091d4afc334f50f4f8a6b276cd",
+@@ -79,7 +79,7 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "3c8a5b4f2ec25a95e87e091294afd804a6b5eb1d560ead7868a85e987aa318a5",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "77da0ba14238e68bc41ff1cd2b802898856dd590ebc8e495134d31bccdb6dbd7",
+     "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec",
+     "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
+diff --git a/r1_15a2_td_restore_v24917.py b/r1_15a2_td_restore_v24917.py
+index fc8db39..247b75c 100644
+--- a/r1_15a2_td_restore_v24917.py
++++ b/r1_15a2_td_restore_v24917.py
+@@ -20,9 +20,10 @@ import r1_15a2_finecdf_bridge_v24916 as bridge
+ import r1_15a2_long_composite_td_v24917 as long_td
+ import r1_15a2_school_td_v24917 as school_td
+ import r1_15a2_td_numpy_v24917 as kernels
++import r1_15a2_snapshot_reads_v24917 as snapshot_reads
+ from r1_15a2_supply import canonical_hash, SupplyContractError
+ 
+-RELEASE = 'R1_V24917_TD_CONSECUTIVE_RESTORE_PROOF_20261030'
++RELEASE = 'R1_V24917_TD_CONSECUTIVE_RESTORE_PROOF_REVIEW1_20261030'
+ _MISSING = object()
+ 
+ 
+@@ -55,7 +56,9 @@ def binding(adapter):
+             or getattr(adapter, '_v24917_frozen', False) or manager is None or rm is None
+             or getattr(rm, 'assignment_in_progress', True)
+             or getattr(rm, 'assignment_completed', False) is not True
+-            or kernels.SKIM_WEIGHT_SCOPE.get() is not None):
++            or kernels.SKIM_WEIGHT_SCOPE.get() is not None
++            or getattr(outer, '_v24917_generation_reads', None) is not None
++            or getattr(adapter, 'v', None) is not getattr(outer, 'visum', None)):
+         return None
+     if not all(isinstance(getattr(rm, name, None), str) and getattr(rm, name)
+                for name in ('run_token', 'visum_session_token')):
+@@ -78,15 +81,28 @@ def binding(adapter):
+     if epoch.assignment_epoch != rm.assignment_epoch:
+         return None
+     # Pin actual current procedure types/ACTIVE/DSTRATSET as well as the plan.
+-    controls = [(int(op.AttValue('OPERATIONTYPE')), int(bridge.com.active_bool(op.AttValue('ACTIVE'))))
+-                for op in adapter.ops]
++    operations = dyn._call(outer, lambda: snapshot_reads._operation_records(adapter.v),
++                           'TD_RESTORE_OPERATION_SOURCES')
++    position = adapter.td_index
++    if (type(position) is not int or not 1 <= position <= len(operations)
++            or operations[position - 1].operation_type != 46):
++        raise SupplyContractError('TD_PERF_RESTORE_TD_OPERATION_CHANGED')
++    live_td = dyn._call(outer,
++        lambda: bridge.com.object_property(operations[position - 1].obj, 'TripDistributionParameters'),
++        'TD_RESTORE_LIVE_TD_ROOT')
++    live_dset = str(dyn._call(outer, lambda: live_td.AttValue('DSTRATSET'), 'TD_RESTORE_LIVE_DSTRATSET'))
++    cached_dset = str(dyn._call(outer, lambda: adapter.td.AttValue('DSTRATSET'), 'TD_RESTORE_DSTRATSET'))
++    if bridge.com.code_set(live_dset) != bridge.com.code_set(cached_dset):
++        raise SupplyContractError('TD_PERF_RESTORE_TD_DSTRATSET_CHANGED')
++    controls = [(op.position, op.operation_type, op.active, op.comment, op.name) for op in operations]
+     payload = {'assignment_epoch': rm.assignment_epoch, 'mutation_epoch': rm.mutation_epoch,
+         'run_token': rm.run_token, 'visum_session_token': rm.visum_session_token,
+         'epoch': epoch.summary(), 'plan': plan, 'controls': controls,
+-        'dstratset': str(adapter.td.AttValue('DSTRATSET')), 'groups': list(adapter.ref.GROUPS),
++        'dstratset': live_dset, 'groups': list(adapter.ref.GROUPS),
+         'long_mask_enabled': getattr(outer, '_long_post_td_mask_enabled', False),
+         'gap_evidence': getattr(outer, 'last_gap_evidence', None)}
+-    return {'epoch': epoch, 'manager': manager, 'readback': rm, 'sha256': canonical_hash(payload)}
++    return {'epoch': epoch, 'manager': manager, 'readback': rm, 'td_root': live_td,
++            'sha256': canonical_hash(payload)}
+ 
+ 
+ def requested_state(adapter, abc, matrices):
+@@ -94,12 +110,49 @@ def requested_state(adapter, abc, matrices):
+         int(no): adapter.ref.sha_array(a) for no, a in matrices.items()}})
+ 
+ 
++def matrix_source(adapter, matrix, expected_no=None):
++    owner = adapter.outer_adapter
++    no = bridge.com.exact_int(dyn._call(owner, lambda: matrix.AttValue('NO'),
++                                       'TD_RESTORE_MATRIX_NO'), 'RESTORE_MATRIX_NO')
++    if no <= 0 or (expected_no is not None and no != expected_no):
++        raise SupplyContractError('TD_PERF_RESTORE_MATRIX_IDENTITY_CHANGED')
++    code = dyn._call(owner, lambda: matrix.AttValue('CODE'), 'TD_RESTORE_MATRIX_CODE')
++    return {'matrix_no': no, 'matrix_code': str(code)}
++
++
++def demand_sources(adapter, expected_codes):
++    """Strict metadata read, independent of the Generation array cache."""
++    result = {}
++    rows = dyn._call(adapter.outer_adapter,
++        lambda: snapshot_reads._dseg_bindings(adapter.outer_adapter.visum), 'TD_RESTORE_DEMAND_SOURCES')
++    for row in rows:
++        code = row['norm_code']
++        if code not in expected_codes:
++            continue
++        if code in result:
++            raise SupplyContractError('TD_PERF_RESTORE_DUPLICATE_DEMAND_SOURCE:' + code)
++        matrix = dyn._call(adapter.outer_adapter,
++            lambda: bridge.com.object_property(row['object'], 'ODMatrix'), 'TD_RESTORE_OD_BINDING:' + code)
++        result[code] = matrix_source(adapter, matrix, row['matrix_no'])
++    if set(result) != expected_codes:
++        raise SupplyContractError('TD_PERF_RESTORE_DEMAND_SOURCE_SCOPE_CHANGED')
++    return result
++
++
+ def content(adapter, bound, requested_abc, arrays=None, *, read_skims=False, verify_requested=True):
+     # All reads below are after the completed native operation. Scope is closed
+     # before any fallback recomputation or parameter mutation can occur.
+     with matrix_read_scope(adapter):
+         adapter.guard_protected(full=True)
+-        actual_abc = adapter.read_abc()
++        # The current operation may expose a replacement parameter object.
++        # Read it with the original accessor, then restore only our Python
++        # handle; no native parameter/control write occurs in this scope.
++        cached_td = adapter.td
++        adapter.td = bound['td_root']
++        try:
++            actual_abc = adapter.read_abc()
++        finally:
++            adapter.td = cached_td
+         if verify_requested and set(actual_abc) != set(requested_abc):
+             raise SupplyContractError('TD_PERF_RESTORE_PARAMETER_SCOPE_CHANGED')
+         tolerance = float(adapter.ref.CONFIG['parameter_readback_atol'])
+@@ -120,19 +173,32 @@ def content(adapter, bound, requested_abc, arrays=None, *, read_skims=False, ver
+     expected_codes = {bridge.rt.norm_code(x) for x in adapter.outer_adapter.cfg['path_export_dsegs']}
+     if set(flows) != expected_codes:
+         raise SupplyContractError('TD_PERF_RESTORE_DEMAND_SCOPE_CHANGED')
++    sources = demand_sources(adapter, expected_codes)
++    protected_sources = {}
++    for no in (9001, 9002, 9697, 9116):
++        matrix = dyn._call(adapter.outer_adapter, lambda: adapter.v.Net.Matrices.ItemByKey(no),
++                           'TD_RESTORE_PROTECTED_SOURCE:%d' % no)
++        protected_sources[no] = matrix_source(adapter, matrix, no)
+     epoch = bound['epoch']
+-    skims = {}
++    skims, skim_sources = {}, {}
++    live_rows = dyn._native_dis_rows(adapter.outer_adapter) if read_skims else None
+     for dseg in dyn.REQUIRED_NATIVE_DSEGS:
+         meta = epoch.matrix_meta_by_dseg[dseg]
+         if read_skims:
+-            a = dyn._matrix_values(adapter.outer_adapter, meta['matrix_no'], len(adapter.zone_order), 'RESTORE:' + dseg)
++            row = live_rows[dseg]
++            no = int(row['matrix_no_int'])
++            skim_sources[dseg] = {'matrix_no': no, 'matrix_code': str(row.get('matrix_code', 'DIS')),
++                                  'dseg_code': str(row.get('dseg_code', dseg))}
++            a = dyn._matrix_values(adapter.outer_adapter, no, len(adapter.zone_order), 'RESTORE:' + dseg)
+             skims[dseg] = kernels.matrix_values_hash(a)
+         else:
+             # The original native restore just created this epoch. Verification
+             # of a reuse request below re-reads the actual six DIS matrices.
+             skims[dseg] = meta['values_sha256']
++            skim_sources[dseg] = {key: meta[key] for key in ('matrix_no', 'matrix_code', 'dseg_code')}
+     result = {'abc': actual_abc, 'outputs': {int(n): adapter.ref.sha_array(a) for n, a in outputs.items()},
+         'protected': protected, 'generation': generation,
++        'demand_sources': sources, 'protected_sources': protected_sources, 'skim_sources': skim_sources,
+         'demand': {code: adapter.ref.sha_array(a) for code, a in flows.items()}, 'skims': skims,
+         'cached_skims': {d: adapter.ref.sha_array(a) for d, a in epoch.matrices_by_dseg.items()},
+         'cached_family_distance': {family: adapter.ref.sha_array(a) for family, a in epoch.family_distance.items()}}
+@@ -180,11 +246,15 @@ def wrap_restore(original):
+                 return live
+         result = original(adapter, abc, matrices)
+         bound = binding(adapter)
++        pending_receipt = None
+         if bound is not None:
+             signature = requested_state(adapter, abc, matrices)
+             fingerprint, _ = content(adapter, bound, abc, result)
+-            adapter._td_perf_restore_receipt = {'bound': bound, 'request': signature, 'content': fingerprint}
++            pending_receipt = {'bound': bound, 'request': signature, 'content': fingerprint}
+         audit(adapter, 'NATIVE_RESTORE_VERIFIED', time.monotonic() - started)
++        # Publication is last: a failed forensic write cannot leave authority
++        # for another restore even though the native computation completed.
++        adapter._td_perf_restore_receipt = pending_receipt
+         return result
+     restore._td_perf_restore = True
+     return restore
+diff --git a/tests/test_v24917_td_perf_review.py b/tests/test_v24917_td_perf_review.py
+new file mode 100644
+index 0000000..71e3f1c
+--- /dev/null
++++ b/tests/test_v24917_td_perf_review.py
+@@ -0,0 +1,97 @@
++"""Adversarial review of the actual consecutive-native-restore optimization."""
++import pytest
++import r1_15a2_td_restore_v24917 as restore
++import r1_15a2_dynamic_skim_v24916p2c as dyn
++from test_v24917_td_restore_perf import native
++
++
++def test_audit_write_failure_cannot_publish_restore_receipt(native, monkeypatch):
++    b,state,abc,expected=native
++    def fail(*args,**kwargs):
++        raise OSError('SIMULATED_AUDIT_WRITE_FAILURE')
++    monkeypatch.setattr(restore,'audit',fail)
++    with pytest.raises(OSError,match='SIMULATED_AUDIT_WRITE_FAILURE'):
++        b.restore_state(abc,expected)
++    assert state.native_calls==1
++    assert b._td_perf_restore_receipt is None
++
++
++def test_identical_dis_values_under_new_binding_require_native_recompute(native):
++    b,state,abc,expected=native
++    b.restore_state(abc,expected)
++    rows=dyn._native_dis_rows(b.outer_adapter)
++    old_no=rows['NATIVE_CW']['matrix_no_int']
++    state.arrays[801]=state.arrays[old_no].copy()
++    rows['NATIVE_CW']['matrix_no_int']=801
++    b.restore_state(abc,expected)
++    assert state.native_calls==2
++    assert b._td_perf_restore_audit['verified_reuses']==0
++
++
++def test_generation_cache_cannot_supply_a_fresh_restore_proof(native):
++    b,state,abc,expected=native
++    b.restore_state(abc,expected)
++    outer=b.outer_adapter
++    cached=outer._live_generation_matrices()
++    outer._v24917_generation_reads={}
++    outer._live_generation_matrices=lambda:{code:a.copy() for code,a in cached.items()}
++    state.arrays[9300][0,1]+=10.
++    b.restore_state(abc,expected)
++    assert state.native_calls==2
++    assert b._td_perf_restore_audit['verified_reuses']==0
++
++
++def test_equal_vehicle_od_values_under_changed_dseg_binding_require_native_recompute(native):
++    b,state,abc,expected=native
++    b.restore_state(abc,expected)
++    old=state.dseg_matrix_numbers['NATIVE_CW']
++    state.arrays[9400]=state.arrays[old].copy()
++    state.dseg_matrix_numbers['NATIVE_CW']=9400
++    b.restore_state(abc,expected)
++    assert state.native_calls==2
++    assert b._td_perf_restore_audit['verified_reuses']==0
++
++
++def test_renamed_protected_matrix_cannot_reuse_old_source_proof(native):
++    b,state,abc,expected=native
++    b.restore_state(abc,expected)
++    state.matrix_codes[9697]='CHANGED_OSRM_SOURCE_IDENTITY'
++    b.restore_state(abc,expected)
++    assert state.native_calls==2
++    assert b._td_perf_restore_audit['verified_reuses']==0
++
++
++def test_other_visum_wrapper_is_not_same_restore_owner(native):
++    from types import SimpleNamespace as NS
++    b,state,abc,expected=native
++    b.restore_state(abc,expected)
++    b.outer_adapter.visum=NS(Net=b.v.Net)
++    b.restore_state(abc,expected)
++    assert state.native_calls==2
++    assert b._td_perf_restore_audit['verified_reuses']==0
++
++
++def test_live_procedure_collection_is_checked_instead_of_old_objects(native):
++    from types import SimpleNamespace as NS
++    b,state,abc,expected=native
++    b.restore_state(abc,expected)
++    changed=NS(AttValue=lambda attr:{'OPERATIONTYPE':65,'ACTIVE':1}.get(attr,''))
++    b.v.Procedures.Operations.GetAll=lambda:[changed]
++    with pytest.raises(restore.SupplyContractError,match='TD_OPERATION_CHANGED'):
++        b.restore_state(abc,expected)
++    assert state.native_calls==1
++    assert b._td_perf_restore_audit['verified_reuses']==0
++
++
++def test_replaced_td_parameter_root_is_read_live_not_from_cached_object(native):
++    import copy
++    from types import SimpleNamespace as NS
++    b,state,abc,expected=native
++    b.read_abc=lambda:copy.deepcopy(getattr(b.td,'values',state.coeff))
++    b.restore_state(abc,expected)
++    changed=copy.deepcopy(abc);changed[9101]['b']+=.1
++    replacement=NS(values=changed,AttValue=lambda attr:'R1_MUTABLE')
++    b.ops[0].TripDistributionParameters=replacement
++    with pytest.raises(restore.SupplyContractError,match='RESTORE_PARAMETER_CHANGED'):
++        b.restore_state(abc,expected)
++    assert b._td_perf_restore_audit['verified_reuses']==0
+diff --git a/tests/test_v24917_td_restore_perf.py b/tests/test_v24917_td_restore_perf.py
+index dd099ea..9333464 100644
+--- a/tests/test_v24917_td_restore_perf.py
++++ b/tests/test_v24917_td_restore_perf.py
+@@ -20,7 +20,7 @@ from r1_15a2_supply import canonical_hash, SupplyContractError
+ def native(monkeypatch,tmp_path):
+     mutable=tuple(range(9101,9116))+(9117,)
+     state=NS(native_calls=0,reads=[],coeff={no:{'a':1.,'b':1.,'c':-.1} for no in mutable+(9116,)},
+-        arrays={},attrs={},override_parameter=False,fail_native=False)
++        arrays={},attrs={},matrix_codes={},dseg_matrix_numbers={},override_parameter=False,fail_native=False)
+     attrs=('ADD_PROD_W','ADD_ATT_W','ADD_PROD_S','ADD_ATT_S','ADD_SALARY',
+            'ZAHR_PROD_WORK','ZAHR_PROD_SERV','ZAHR_ATR_WORK','ZAHR_ATR_SERV')
+     for attr in attrs+school_td.GENERATION_ATTRS+long_td.GENERATION_ATTRS+('ADD_PROD_L','ADD_ATT_L'):
+@@ -31,6 +31,8 @@ def native(monkeypatch,tmp_path):
+     class Matrix:
+         def __init__(self,no):self.no=no
+         def GetValues(self):state.reads.append(self.no);return state.arrays[self.no].copy()
++        def AttValue(self,attr):
++            return {'NO':self.no,'CODE':state.matrix_codes.get(self.no,'M%d'%self.no)}[attr]
+     class Op:
+         def AttValue(self,attr):return {'OPERATIONTYPE':46,'ACTIVE':1}[attr]
+     class TD:
+@@ -40,18 +42,27 @@ def native(monkeypatch,tmp_path):
+     for no in mutable+(9001,9002,9697,9116):state.arrays[no]=np.array([[1.,2.],[3.,4.]])
+     for i,d in enumerate(dyn.REQUIRED_NATIVE_DSEGS):state.arrays[701+i]=np.array([[0.,120.+i],[150.+i,0.]])
+     codes=list(dyn.REQUIRED_NATIVE_DSEGS)+['EXOG_EE_'+d for d in dyn.REQUIRED_NATIVE_DSEGS]
++    state.dseg_matrix_numbers={code:9300+i for i,code in enumerate(codes)}
++    class DSeg:
++        def __init__(self,code):self.code=code
++        def AttValue(self,attr):return {'CODE':self.code}[attr]
++        @property
++        def ODMatrix(self):return Matrix(state.dseg_matrix_numbers[self.code])
++    v.Net.DemandSegments=NS(GetAll=lambda:[DSeg(code) for code in codes],Count=len(codes))
+     for i,_ in enumerate(codes):state.arrays[9300+i]=np.array([[0.,10.+i],[20.+i,0.]])
+     rm=CandidateReadbackManager({},run_token='run',visum_session_token='session')
+     outer=NS(zones=[1,2],visum=v,cfg={'path_export_dsegs':codes,'expected_zones':2},
+              readback_manager=rm,last_gap_evidence={'gap':.001},_long_post_td_mask_enabled=True,
+              v24917_ls={'active':True})
+-    outer._live_generation_matrices=lambda:{code:state.arrays[9300+i].copy() for i,code in enumerate(codes)}
++    outer._live_generation_matrices=lambda:{code:state.arrays[state.dseg_matrix_numbers[code]].copy() for code in codes}
+     manager=outer.v24916_dynamic_skims=dyn.DynamicSkimManager(outer)
+     rows={d:{'matrix_no_int':701+i,'matrix_code':'DIS','dseg_code':d} for i,d in enumerate(dyn.REQUIRED_NATIVE_DSEGS)}
+     monkeypatch.setattr(dyn,'_native_dis_rows',lambda _:rows)
+     b=object.__new__(bridge.NoDirectMatrixWriteTDAdapter)
+     b.v=v;b.n=2;b.root=tmp_path;b.outer_adapter=outer;b.dynamic_skim_enabled=True
+     b._v24917_frozen=False;b.zone_order=[1,2];b.ops=[Op()];b.td=TD();b.dynamic_eval_index=0
++    b.td_index=1;b.ops[0].TripDistributionParameters=b.td
++    v.Procedures=NS(Operations=NS(GetAll=lambda:b.ops))
+     b.ref=NS(np=np,CONFIG={'parameter_readback_atol':1.e-8},MUTABLE_NOS=mutable,
+              GROUPS=['WORK_E_C','SCHOOL','LONG_COMPOSITE'],
+              sha_array=lambda a:canonical_hash(np.asarray(a).tolist()))
+@@ -71,7 +82,7 @@ def native(monkeypatch,tmp_path):
+             raise RuntimeError('NATIVE_FAILED')
+         for no in mutable:
+             state.arrays[no]=np.array([[1.,2.],[3.,4.]])*state.coeff[no]['b']
+-        for i,_ in enumerate(codes):state.arrays[9300+i]=np.array([[0.,10.+i],[20.+i,0.]])
++        for i,code in enumerate(codes):state.arrays[state.dseg_matrix_numbers[code]]=np.array([[0.,10.+i],[20.+i,0.]])
+         for i,_ in enumerate(dyn.REQUIRED_NATIVE_DSEGS):state.arrays[701+i]=np.array([[0.,120.+i],[150.+i,0.]])
+         if state.override_parameter:state.coeff[9101]['b']+=.1
+         rm.mark_assignment_completed({'gap':.001})

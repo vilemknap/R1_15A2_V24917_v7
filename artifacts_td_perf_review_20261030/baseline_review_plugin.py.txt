@@ -1,0 +1,9 @@
+import importlib.util,sys
+from pathlib import Path
+def pytest_configure(config):
+    root=Path('/workspace/work/td_perf_review_20261030/source')
+    sys.path.insert(0,str(root))
+    spec=importlib.util.spec_from_file_location('r1_15a2_td_restore_v24917',Path(__file__).with_name('baseline_restore.py'))
+    module=importlib.util.module_from_spec(spec)
+    sys.modules[spec.name]=module
+    spec.loader.exec_module(module)

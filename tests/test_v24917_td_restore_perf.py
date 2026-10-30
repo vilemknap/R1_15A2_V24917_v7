@@ -20,7 +20,7 @@ from r1_15a2_supply import canonical_hash, SupplyContractError
 def native(monkeypatch,tmp_path):
     mutable=tuple(range(9101,9116))+(9117,)
     state=NS(native_calls=0,reads=[],coeff={no:{'a':1.,'b':1.,'c':-.1} for no in mutable+(9116,)},
-        arrays={},attrs={},override_parameter=False,fail_native=False)
+        arrays={},attrs={},matrix_codes={},dseg_matrix_numbers={},override_parameter=False,fail_native=False)
     attrs=('ADD_PROD_W','ADD_ATT_W','ADD_PROD_S','ADD_ATT_S','ADD_SALARY',
            'ZAHR_PROD_WORK','ZAHR_PROD_SERV','ZAHR_ATR_WORK','ZAHR_ATR_SERV')
     for attr in attrs+school_td.GENERATION_ATTRS+long_td.GENERATION_ATTRS+('ADD_PROD_L','ADD_ATT_L'):
@@ -31,6 +31,8 @@ def native(monkeypatch,tmp_path):
     class Matrix:
         def __init__(self,no):self.no=no
         def GetValues(self):state.reads.append(self.no);return state.arrays[self.no].copy()
+        def AttValue(self,attr):
+            return {'NO':self.no,'CODE':state.matrix_codes.get(self.no,'M%d'%self.no)}[attr]
     class Op:
         def AttValue(self,attr):return {'OPERATIONTYPE':46,'ACTIVE':1}[attr]
     class TD:
@@ -40,18 +42,27 @@ def native(monkeypatch,tmp_path):
     for no in mutable+(9001,9002,9697,9116):state.arrays[no]=np.array([[1.,2.],[3.,4.]])
     for i,d in enumerate(dyn.REQUIRED_NATIVE_DSEGS):state.arrays[701+i]=np.array([[0.,120.+i],[150.+i,0.]])
     codes=list(dyn.REQUIRED_NATIVE_DSEGS)+['EXOG_EE_'+d for d in dyn.REQUIRED_NATIVE_DSEGS]
+    state.dseg_matrix_numbers={code:9300+i for i,code in enumerate(codes)}
+    class DSeg:
+        def __init__(self,code):self.code=code
+        def AttValue(self,attr):return {'CODE':self.code}[attr]
+        @property
+        def ODMatrix(self):return Matrix(state.dseg_matrix_numbers[self.code])
+    v.Net.DemandSegments=NS(GetAll=lambda:[DSeg(code) for code in codes],Count=len(codes))
     for i,_ in enumerate(codes):state.arrays[9300+i]=np.array([[0.,10.+i],[20.+i,0.]])
     rm=CandidateReadbackManager({},run_token='run',visum_session_token='session')
     outer=NS(zones=[1,2],visum=v,cfg={'path_export_dsegs':codes,'expected_zones':2},
              readback_manager=rm,last_gap_evidence={'gap':.001},_long_post_td_mask_enabled=True,
              v24917_ls={'active':True})
-    outer._live_generation_matrices=lambda:{code:state.arrays[9300+i].copy() for i,code in enumerate(codes)}
+    outer._live_generation_matrices=lambda:{code:state.arrays[state.dseg_matrix_numbers[code]].copy() for code in codes}
     manager=outer.v24916_dynamic_skims=dyn.DynamicSkimManager(outer)
     rows={d:{'matrix_no_int':701+i,'matrix_code':'DIS','dseg_code':d} for i,d in enumerate(dyn.REQUIRED_NATIVE_DSEGS)}
     monkeypatch.setattr(dyn,'_native_dis_rows',lambda _:rows)
     b=object.__new__(bridge.NoDirectMatrixWriteTDAdapter)
     b.v=v;b.n=2;b.root=tmp_path;b.outer_adapter=outer;b.dynamic_skim_enabled=True
     b._v24917_frozen=False;b.zone_order=[1,2];b.ops=[Op()];b.td=TD();b.dynamic_eval_index=0
+    b.td_index=1;b.ops[0].TripDistributionParameters=b.td
+    v.Procedures=NS(Operations=NS(GetAll=lambda:b.ops))
     b.ref=NS(np=np,CONFIG={'parameter_readback_atol':1.e-8},MUTABLE_NOS=mutable,
              GROUPS=['WORK_E_C','SCHOOL','LONG_COMPOSITE'],
              sha_array=lambda a:canonical_hash(np.asarray(a).tolist()))
@@ -71,7 +82,7 @@ def native(monkeypatch,tmp_path):
             raise RuntimeError('NATIVE_FAILED')
         for no in mutable:
             state.arrays[no]=np.array([[1.,2.],[3.,4.]])*state.coeff[no]['b']
-        for i,_ in enumerate(codes):state.arrays[9300+i]=np.array([[0.,10.+i],[20.+i,0.]])
+        for i,code in enumerate(codes):state.arrays[state.dseg_matrix_numbers[code]]=np.array([[0.,10.+i],[20.+i,0.]])
         for i,_ in enumerate(dyn.REQUIRED_NATIVE_DSEGS):state.arrays[701+i]=np.array([[0.,120.+i],[150.+i,0.]])
         if state.override_parameter:state.coeff[9101]['b']+=.1
         rm.mark_assignment_completed({'gap':.001})
