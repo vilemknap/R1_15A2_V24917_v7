@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """V24917 LONG and SCHOOL trip-generation calibration (LSGEN1).
 
-Requires the zone attributes ADD_PROD_L (AMDY k_long, reference 0.3), ADD_ATT_L, ADD_PROD_SCH,
+Requires the zone attributes ADD_PROD_L (AMDY k_long, reference 0.2), ADD_ATT_L, ADD_PROD_SCH,
 ADD_ATT_SCH and the generation formulas that multiply FP_3_LONG_*, FA_3_LONG, FP_5_SCHOOL,
 FA_5_SCHOOL by them.  When the attributes are missing the module stays inactive.
 
