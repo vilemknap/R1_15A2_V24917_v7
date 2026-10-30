@@ -221,6 +221,10 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
     }
     import r1_15a2_td_joint_runtime_v24917 as tdjoint
     status["tdjoint1"] = tdjoint.install(controller, print_fn=print_fn)
+    import r1_15a2_td_numpy_v24917 as td_numpy
+    import r1_15a2_td_restore_v24917 as td_restore
+    status["td_numpy"] = td_numpy.install()
+    status["td_restore"] = td_restore.install()
     _STATE.update(status)
     return _STATE
 

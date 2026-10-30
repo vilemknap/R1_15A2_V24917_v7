@@ -134,17 +134,26 @@ def coordinate_proposals(space, x, components, radius):
                 yield key, axis, sign, trial
 
 
-def balanced_coordinate_proposals(space, x, components, radius):
-    """Exhaust each round across groups before trying a second direction.
+def balanced_coordinate_proposals(space, x, components, radius, poll_index=0):
+    """Cover b AND log(-c) before opposite signs; preserve all native probes.
 
-    The first 12 probes sample all 12 W/S/SCHOOL/LONG groups.  Each
-    component's native b/logc limits and +/- probes are unchanged.
+    Clip first so a blocked sign cannot deprive a coordinate of its first
+    feasible probe. Rotate the leading axis/sign between polls. The first
+    2*N feasible probes cover both coordinates of N interior groups.
     """
-    per_group = [list(coordinate_proposals(space, x, [key], radius))
-                 for key in components]
-    for round_index in range(max(map(len, per_group), default=0)):
-        for group_trials in per_group:
-            yield from group_trials[round_index:round_index + 1]
+    axes = (0, 1) if poll_index % 2 == 0 else (1, 0)
+    first_sign = 1 if (poll_index // 2) % 2 == 0 else -1
+    per_axis = {}
+    for key in components:
+        trials = list(coordinate_proposals(space, x, [key], radius))
+        for axis in axes:
+            per_axis[key, axis] = sorted(
+                (trial for trial in trials if trial[1] == axis),
+                key=lambda trial: trial[2] != first_sign)
+    for direction in (0, 1):
+        for axis in axes:
+            for key in components:
+                yield from per_axis[key, axis][direction:direction + 1]
 
 
 def _signature(x):
@@ -194,16 +203,16 @@ def optimize(runner, ref):
         offset = (iteration - 1) % len(groups)
         order = groups[offset:] + groups[:offset]
         # Bounded EXPLORE must sample every group before refining any group.
-        # A 28-evaluation budget covers >=2 probes of all 12 components.
+        # A 28-evaluation budget covers b AND logc of all 12 interior groups.
         proposals = list(balanced_coordinate_proposals(
-            runner.space, base["x"], order, radius))
+            runner.space, base["x"], order, radius, poll_index=iteration - 1))
         seen = {_signature(base["x"])}
         records = []
         completed = True
         native_rejections = 0
         at_min_radius = all(radius[k] <= ref.CONFIG["trust_radius_min"] + EPS for k in groups)
 
-        def evaluate_trial(x, label, kind, component=None):
+        def evaluate_trial(x, label, kind, component=None, axis=None, sign=None):
             nonlocal winner, stop, completed, native_rejections
             signature = _signature(x)
             if signature in seen:
@@ -219,10 +228,12 @@ def optimize(runner, ref):
                 native_rejections += 1
                 runner.adapter.restore_state(base["abc"], base["matrices"])
                 records.append({"label": label, "kind": kind, "component": component,
+                                "axis": axis, "sign": sign,
                                 "status": "REJECTED_NATIVE_MARGIN", "error": str(exc)})
                 return None
             guards = metric_guards(base["metrics"], result["metrics"], ref.CONFIG)
             rec = {"label": label, "kind": kind, "component": component,
+                   "axis": axis, "sign": sign,
                    "objective_before": _score(base), "objective": _score(result),
                    "relative_improvement": (_score(base) - _score(result)) / max(EPS, abs(_score(base))),
                    "guard_reasons": guards, "parts": result["tdjoint"]["parts"],
@@ -243,7 +254,7 @@ def optimize(runner, ref):
         for key, axis, sign, x in proposals:
             evaluate_trial(x, "J%02d_%s_%s_%s" %
                            (iteration, key, "B" if axis == 0 else "LOGC", "P" if sign > 0 else "M"),
-                           "ISOLATED", key)
+                           "ISOLATED", key, axis, sign)
             if stop is not None:
                 break
         ranking = sorted(best_by_component, key=lambda k: (best_by_component[k]["objective"], k))
@@ -273,6 +284,8 @@ def optimize(runner, ref):
                          if record.get("kind") == "ISOLATED"
                          and record.get("component") is not None})
         item = {"iteration": iteration, "complete_poll": completed,
+                "coordinate_coverage": {key: sorted({r['axis'] for r in records
+                    if r.get('component') == key and r.get('axis') is not None}) for key in groups},
                 "polled_components": polled,
                 "unpolled_components": sorted(set(groups) - set(polled)),
                 "native_rejections": native_rejections, "polled_at_min_radius": at_min_radius,

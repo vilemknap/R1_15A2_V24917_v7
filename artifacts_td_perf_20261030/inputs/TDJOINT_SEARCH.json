@@ -1,0 +1,614 @@
+{
+  "release": "R1_15A2_V24917_TDJOINT1_20261027",
+  "component_pool": [
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "SERV_noE_C",
+    "SERV_noE_noC",
+    "SCHOOL",
+    "LONG_COMPOSITE"
+  ],
+  "polls": [
+    {
+      "iteration": 1,
+      "complete_poll": true,
+      "polled_components": [
+        "LONG_COMPOSITE",
+        "SCHOOL",
+        "SERV_noE_C",
+        "SERV_noE_noC",
+        "WORK_noE_C",
+        "WORK_noE_noC"
+      ],
+      "unpolled_components": [],
+      "native_rejections": 0,
+      "polled_at_min_radius": false,
+      "status": "ACCEPTED_INNER_SURROGATE",
+      "changed_components": [
+        "WORK_noE_C",
+        "WORK_noE_noC"
+      ],
+      "ranked_components": [
+        "WORK_noE_noC",
+        "WORK_noE_C",
+        "SCHOOL",
+        "SERV_noE_noC"
+      ],
+      "objective_before": 1.0,
+      "objective_after": 0.9633517976264715,
+      "evaluations": 26,
+      "trials": [
+        {
+          "label": "J01_WORK_noE_C_B_P",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_C",
+          "objective_before": 1.0,
+          "objective": 0.9994823193036856,
+          "relative_improvement": 0.0005176806963144154,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.42625535766370654,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.5128650392453,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9987606886704332,
+            "count_term": 0.9999634063925211,
+            "mean_geh_weighted": 40.73633375928615,
+            "model_obs_ratio": 0.5207608152434988
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_WORK_noE_noC_B_P",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_noC",
+          "objective_before": 1.0,
+          "objective": 0.9993940798719887,
+          "relative_improvement": 0.0006059201280113058,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.42614448147093176,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.5824406188876,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9985008942053035,
+            "count_term": 0.9999895369831125,
+            "mean_geh_weighted": 40.7368220166703,
+            "model_obs_ratio": 0.5207528360853735
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SERV_noE_C_B_P",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_C",
+          "objective_before": 1.0,
+          "objective": 0.9995012024988285,
+          "relative_improvement": 0.000498797501171544,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4266836490007799,
+            "J_ref": 0.4267842762525473,
+            "Q": 2660.8153210155733,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9997642198708655,
+            "count_term": 0.9993258575841373,
+            "mean_geh_weighted": 40.71608014887089,
+            "model_obs_ratio": 0.5210357419821403
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SERV_noE_noC_B_P",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_noC",
+          "objective_before": 1.0,
+          "objective": 0.9997608020304657,
+          "relative_improvement": 0.0002391979695343105,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4265505928686997,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.5207463462425,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.999452455498362,
+            "count_term": 0.9999663663852014,
+            "mean_geh_weighted": 40.73654429479849,
+            "model_obs_ratio": 0.5207605041340294
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SCHOOL_B_P",
+          "kind": "ISOLATED",
+          "component": "SCHOOL",
+          "objective_before": 1.0,
+          "objective": 0.9990763268658114,
+          "relative_improvement": 0.0009236731341886184,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.42582277869863344,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.5103736607343,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9977471111111299,
+            "count_term": 0.9999624707022657,
+            "mean_geh_weighted": 40.736051741784415,
+            "model_obs_ratio": 0.5207646806217572
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_LONG_COMPOSITE_B_P",
+          "kind": "ISOLATED",
+          "component": "LONG_COMPOSITE",
+          "objective_before": 1.0,
+          "objective": 0.999923069679245,
+          "relative_improvement": 7.693032075495321e-05,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.426790649138308,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.2424011222265,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.0000149323349414,
+            "count_term": 0.9998618279087813,
+            "mean_geh_weighted": 40.73205654062477,
+            "model_obs_ratio": 0.5208191062288267
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_WORK_noE_C_B_M",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_C",
+          "objective_before": 1.0,
+          "objective": 1.0005225527263677,
+          "relative_improvement": -0.0005225527263676977,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4273170102592039,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.7134855830095,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.001248251250806,
+            "count_term": 1.0000387537100754,
+            "mean_geh_weighted": 40.73781938500906,
+            "model_obs_ratio": 0.5207378992761149
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_WORK_noE_noC_B_M",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_noC",
+          "objective_before": 1.0,
+          "objective": 1.0006041173483442,
+          "relative_improvement": -0.0006041173483442019,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.42742078442522907,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.6438279308945,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.0014914049277326,
+            "count_term": 1.000012592295419,
+            "mean_geh_weighted": 40.73731459548762,
+            "model_obs_ratio": 0.5207459919811376
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SERV_noE_C_B_M",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_C",
+          "objective_before": 1.0,
+          "objective": 1.0003840826642252,
+          "relative_improvement": -0.00038408266422518267,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4269393819085943,
+            "J_ref": 0.4267842762525473,
+            "Q": 2663.6696243127058,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.0003634287031589,
+            "count_term": 1.0003978519716032,
+            "mean_geh_weighted": 40.752493753250064,
+            "model_obs_ratio": 0.5205094320202985
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SERV_noE_noC_B_M",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_noC",
+          "objective_before": 1.0,
+          "objective": 1.000245282528266,
+          "relative_improvement": -0.0002452825282659443,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.42701447614186766,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.741342600673,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.000539382311227,
+            "count_term": 1.0000492160062922,
+            "mean_geh_weighted": 40.738468796540644,
+            "model_obs_ratio": 0.5207257696014193
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SCHOOL_B_M",
+          "kind": "ISOLATED",
+          "component": "SCHOOL",
+          "objective_before": 1.0,
+          "objective": 1.000669484300513,
+          "relative_improvement": -0.0006694843005130569,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4274737854292577,
+            "J_ref": 0.4267842762525473,
+            "Q": 2662.7134649691543,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.001615591799128,
+            "count_term": 1.0000387459681033,
+            "mean_geh_weighted": 40.73820863018538,
+            "model_obs_ratio": 0.5207319018498914
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_LONG_COMPOSITE_B_M",
+          "kind": "ISOLATED",
+          "component": "LONG_COMPOSITE",
+          "objective_before": 1.0,
+          "objective": 1.0000856759771837,
+          "relative_improvement": -8.567597718367459e-05,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.42677790492093215,
+            "J_ref": 0.4267842762525473,
+            "Q": 2663.017001982772,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9999850713065835,
+            "count_term": 1.0001527457575836,
+            "mean_geh_weighted": 40.74183132365737,
+            "model_obs_ratio": 0.5206629976226846
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_WORK_noE_C_LOGC_P",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_C",
+          "objective_before": 1.0,
+          "objective": 1.0238215512030697,
+          "relative_improvement": -0.023821551203069724,
+          "guard_reasons": [
+            "MEAN_GUARD:WORK_noE_C"
+          ],
+          "parts": {
+            "J": 0.45121656359666823,
+            "J_ref": 0.4267842762525473,
+            "Q": 2666.7044794010867,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.0572473933638156,
+            "count_term": 1.0015376564292393,
+            "mean_geh_weighted": 40.76984737882375,
+            "model_obs_ratio": 0.520264125322185
+          },
+          "status": "REJECTED_SURVEY_GUARD"
+        },
+        {
+          "label": "J01_WORK_noE_noC_LOGC_P",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_noC",
+          "objective_before": 1.0,
+          "objective": 1.0183880732283392,
+          "relative_improvement": -0.01838807322833924,
+          "guard_reasons": [
+            "MEAN_GUARD:WORK_noE_noC"
+          ],
+          "parts": {
+            "J": 0.4460908644612797,
+            "J_ref": 0.4267842762525473,
+            "Q": 2663.91113826011,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.0452373465542293,
+            "count_term": 1.000488557677746,
+            "mean_geh_weighted": 40.747907046984594,
+            "model_obs_ratio": 0.5205824657189175
+          },
+          "status": "REJECTED_SURVEY_GUARD"
+        },
+        {
+          "label": "J01_SERV_noE_C_LOGC_P",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_C",
+          "objective_before": 1.0,
+          "objective": 1.0023083667444195,
+          "relative_improvement": -0.0023083667444194766,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4276856097018529,
+            "J_ref": 0.4267842762525473,
+            "Q": 2669.1052913657704,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.002111918126928,
+            "count_term": 1.002439332489414,
+            "mean_geh_weighted": 40.817448394815266,
+            "model_obs_ratio": 0.5190968312363138
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SERV_noE_noC_LOGC_P",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_noC",
+          "objective_before": 1.0,
+          "objective": 1.0044178239773682,
+          "relative_improvement": -0.004417823977368229,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4311137607744082,
+            "J_ref": 0.4267842762525473,
+            "Q": 2664.208090961069,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.0101444330608351,
+            "count_term": 1.0006000845883902,
+            "mean_geh_weighted": 40.74866526430711,
+            "model_obs_ratio": 0.5202680445616304
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SCHOOL_LOGC_P",
+          "kind": "ISOLATED",
+          "component": "SCHOOL",
+          "objective_before": 1.0,
+          "objective": 1.0079107791889175,
+          "relative_improvement": -0.007910779188917472,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.43508473801720027,
+            "J_ref": 0.4267842762525473,
+            "Q": 2663.192704264177,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.0194488462357063,
+            "count_term": 1.0002187344910585,
+            "mean_geh_weighted": 40.74381934323719,
+            "model_obs_ratio": 0.5205964170611435
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_LONG_COMPOSITE_LOGC_P",
+          "kind": "ISOLATED",
+          "component": "LONG_COMPOSITE",
+          "objective_before": 1.0,
+          "objective": 1.0001923149372047,
+          "relative_improvement": -0.00019231493720472947,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4266621041886731,
+            "J_ref": 0.4267842762525473,
+            "Q": 2663.9718683072597,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9997137381326535,
+            "count_term": 1.0005113661402385,
+            "mean_geh_weighted": 40.754734567976946,
+            "model_obs_ratio": 0.5204692844737049
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_WORK_noE_C_LOGC_M",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_C",
+          "objective_before": 1.0,
+          "objective": 0.9876954507619795,
+          "relative_improvement": 0.01230454923802049,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4147625042418573,
+            "J_ref": 0.4267842762525473,
+            "Q": 2658.007339592663,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9718317363604647,
+            "count_term": 0.9982712603629896,
+            "mean_geh_weighted": 40.701937640127866,
+            "model_obs_ratio": 0.5213059918948819
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_WORK_noE_noC_LOGC_M",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_noC",
+          "objective_before": 1.0,
+          "objective": 0.9755474690835343,
+          "relative_improvement": 0.02445253091646571,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4013349543672133,
+            "J_ref": 0.4267842762525473,
+            "Q": 2659.946063121276,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9403695888030456,
+            "count_term": 0.998999389270527,
+            "mean_geh_weighted": 40.715446227777385,
+            "model_obs_ratio": 0.5210684451983215
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SERV_noE_C_LOGC_M",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_C",
+          "objective_before": 1.0,
+          "objective": 1.0002209410142169,
+          "relative_improvement": -0.00022094101421687995,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.42790446515102315,
+            "J_ref": 0.4267842762525473,
+            "Q": 2658.931696278957,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.0026247192335946,
+            "count_term": 0.9986184222012986,
+            "mean_geh_weighted": 40.719409421548455,
+            "model_obs_ratio": 0.5219343331972857
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SERV_noE_noC_LOGC_M",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_noC",
+          "objective_before": 1.0,
+          "objective": 0.9949680125361798,
+          "relative_improvement": 0.0050319874638201645,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.42235655752803736,
+            "J_ref": 0.4267842762525473,
+            "Q": 2658.695618715094,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9896253939733013,
+            "count_term": 0.998529758244766,
+            "mean_geh_weighted": 40.69610536298846,
+            "model_obs_ratio": 0.5213965718885831
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_SCHOOL_LOGC_M",
+          "kind": "ISOLATED",
+          "component": "SCHOOL",
+          "objective_before": 1.0,
+          "objective": 0.9934017744383223,
+          "relative_improvement": 0.006598225561677662,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.41934461383097654,
+            "J_ref": 0.4267842762525473,
+            "Q": 2664.2723716166765,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.982568096259553,
+            "count_term": 1.0006242265575016,
+            "mean_geh_weighted": 40.76273443602202,
+            "model_obs_ratio": 0.5208053844333219
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_LONG_COMPOSITE_LOGC_M",
+          "kind": "ISOLATED",
+          "component": "LONG_COMPOSITE",
+          "objective_before": 1.0,
+          "objective": 0.999828844686715,
+          "relative_improvement": 0.00017115531328504296,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.4268967855136353,
+            "J_ref": 0.4267842762525473,
+            "Q": 2661.3828198811707,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 1.000263620914238,
+            "count_term": 0.9995389938683664,
+            "mean_geh_weighted": 40.72035561863835,
+            "model_obs_ratio": 0.5209716285864947
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J01_COMBINED_TOP2",
+          "kind": "COMBINED",
+          "component": null,
+          "objective_before": 1.0,
+          "objective": 0.9633517976264715,
+          "relative_improvement": 0.036648202373528505,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.38930869973970667,
+            "J_ref": 0.4267842762525473,
+            "Q": 2655.844912346544,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9121908219255372,
+            "count_term": 0.997459114760428,
+            "mean_geh_weighted": 40.68361367143459,
+            "model_obs_ratio": 0.5215940922900032
+          },
+          "status": "SAFE"
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "complete_poll": false,
+      "polled_components": [
+        "SERV_noE_C",
+        "WORK_noE_noC"
+      ],
+      "unpolled_components": [
+        "LONG_COMPOSITE",
+        "SCHOOL",
+        "SERV_noE_noC",
+        "WORK_noE_C"
+      ],
+      "native_rejections": 0,
+      "polled_at_min_radius": false,
+      "status": "KEPT_PARENT",
+      "changed_components": [],
+      "ranked_components": [],
+      "objective_before": 0.9633517976264715,
+      "objective_after": 0.9633517976264715,
+      "evaluations": 28,
+      "trials": [
+        {
+          "label": "J02_WORK_noE_noC_B_P",
+          "kind": "ISOLATED",
+          "component": "WORK_noE_noC",
+          "objective_before": 0.9633517976264715,
+          "objective": 0.9626973875733394,
+          "relative_improvement": 0.0006793053739499933,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.38862485069897823,
+            "J_ref": 0.4267842762525473,
+            "Q": 2655.785100140296,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9105884924144009,
+            "count_term": 0.9974366510126321,
+            "mean_geh_weighted": 40.68311504867206,
+            "model_obs_ratio": 0.5216014676018159
+          },
+          "status": "SAFE"
+        },
+        {
+          "label": "J02_SERV_noE_C_B_P",
+          "kind": "ISOLATED",
+          "component": "SERV_noE_C",
+          "objective_before": 0.9633517976264715,
+          "objective": 0.963412398994444,
+          "relative_improvement": -6.290678869525166e-05,
+          "guard_reasons": [],
+          "parts": {
+            "J": 0.3891817343090723,
+            "J_ref": 0.4267842762525473,
+            "Q": 2656.6419144070196,
+            "Q_ref": 2662.6102995554165,
+            "idp_term": 0.9118933287007419,
+            "count_term": 0.9977584458569121,
+            "mean_geh_weighted": 40.69598564351171,
+            "model_obs_ratio": 0.521776945767197
+          },
+          "status": "SAFE"
+        }
+      ]
+    }
+  ],
+  "count_residual_copies": 1,
+  "outer_acceptance_authority_changed": false
+}

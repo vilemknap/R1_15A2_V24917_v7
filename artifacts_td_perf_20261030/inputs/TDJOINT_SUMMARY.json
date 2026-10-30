@@ -1,0 +1,320 @@
+{
+  "release": "R1_15A2_V24917_TDJOINT1_20261027",
+  "metric": "NORMALIZED_GEH2_PLUS_FINECDF512_SURROGATE",
+  "objective_start": 1.0,
+  "objective_final": 0.9633517976264715,
+  "objective_improvement": 0.036648202373528505,
+  "component_pool": [
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "SERV_noE_C",
+    "SERV_noE_noC",
+    "SCHOOL",
+    "LONG_COMPOSITE"
+  ],
+  "candidate_selection": "MEASURED_SHARED_SURROGATE_WITHIN_EXISTING_MASK",
+  "count_residual_copies": 1,
+  "mode": "DYNAMIC",
+  "long_composite_live_readiness": {
+    "status": "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE",
+    "group": "LONG_COMPOSITE",
+    "component_matrix_nos": [
+      9111,
+      9112,
+      9113,
+      9114,
+      9115
+    ],
+    "vehicle_component_matrix_nos": [
+      9291,
+      9292,
+      9293,
+      9294,
+      9295
+    ],
+    "final_vehicle_matrix_no": 9305,
+    "count_response_method": "MEASURED_NATIVE_ASSIGNMENT_EVERY_TD_EVALUATION",
+    "assignment_epoch": 37,
+    "assignment_binding": {
+      "assignment_epoch": 37,
+      "mutation_epoch": 392,
+      "skim_epoch_hash": "cb0353a67de48d856357536e9294d2a820a1af258d22c6f7dd8b241a1c5bdd43",
+      "assignment_token": "349b843ced16465b1d54e69bd4540e963f09d558e8570ecf8acdb87ed0e5cf36",
+      "zone_order_sha256": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968"
+    },
+    "skim_epoch_hash": "cb0353a67de48d856357536e9294d2a820a1af258d22c6f7dd8b241a1c5bdd43",
+    "support_basis": {
+      "distance_basis": "FIXED_OSRM_DIST_KM_9697",
+      "matrix_no": 9697,
+      "matrix_code": "R1_OSRM_DIST_KM",
+      "unit": "km",
+      "unit_authority": "USER_SELECTED_R1_OSRM_DIST_KM_CONTRACT",
+      "values_sha256": "8ae02c5c105db8b9fcdb6aa1d65347e9b8b58b8e4c264bd25fecfa357515fe87",
+      "zone_order_sha256": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968",
+      "assignment_dependent": false
+    },
+    "minimum_km": 80.0,
+    "finecdf_conditional_km": [
+      100.0,
+      200.0
+    ],
+    "above_200_km_permitted": true,
+    "aggregate_target_count": 1,
+    "vehicle_volume": 4615.727900215114,
+    "source_model_modified": false
+  },
+  "school_td_reference_contract": {
+    "release": "R1_V24917_SCHOOL_TD_512_IDP_20261030",
+    "group": "SCHOOL",
+    "matrix_no": 9117,
+    "dstrat_code": "5_SCHOOL",
+    "target_points": 512,
+    "distance_grid_km": [
+      0.1,
+      100.0
+    ],
+    "finecdf_source": "IDP_AMDY_17_STRATA_EXTRACTOR_V5__20261006",
+    "school_purpose": "DIRECT_PURPOSE",
+    "school_generation_policy": "FIXED_ORIGINAL_AMDY_FORMULAS",
+    "optimized_parameters": [
+      "b",
+      "c"
+    ],
+    "parameter_a_frozen": true,
+    "native_td_and_assignment_required_for_acceptance": true,
+    "status": "SOURCE_REFERENCE_VERIFIED_LIVE_OPTIMIZATION_PENDING"
+  },
+  "school_generation_freeze": {
+    "status": "VERIFIED_FIXED_SCHOOL_PA",
+    "attributes": [
+      "FP_5_SCHOOL",
+      "FA_5_SCHOOL"
+    ],
+    "zone_count": 681,
+    "source_values_hash": "912e6ad4cae203e8a1e16344ee6fa2bb089029131354699c4fb5f543e7796338",
+    "readback_values_hash": "912e6ad4cae203e8a1e16344ee6fa2bb089029131354699c4fb5f543e7796338",
+    "verified_native_evaluations": 30
+  },
+  "long_generation_freeze": {
+    "status": "VERIFIED_FIXED_LONG_GENERATION",
+    "zone_count": 681,
+    "attributes": [
+      "FP_3_LONG_E_C",
+      "FP_3_LONG_E_noC",
+      "FP_3_LONG_noE_C",
+      "FP_3_LONG_noE_noC",
+      "FP_3_LONG_stud",
+      "FA_3_LONG",
+      "ADD_PROD_L",
+      "ADD_ATT_L"
+    ],
+    "source_values_hash": "e9704c7ba3309a2ba01024d9d8ccfbee16bdf6eb4199a2ed0dd27c6984abbb43",
+    "readback_values_hash": "e9704c7ba3309a2ba01024d9d8ccfbee16bdf6eb4199a2ed0dd27c6984abbb43",
+    "verified_native_evaluations": 30
+  },
+  "entry_abc": {
+    "9101": {
+      "a": 6.951,
+      "b": 1.7546875,
+      "c": -0.542615476401332
+    },
+    "9102": {
+      "a": 6.047,
+      "b": 2.47229566358642,
+      "c": -0.941740817719422
+    },
+    "9103": {
+      "a": 3.686,
+      "b": 3.77625380303621,
+      "c": -2.4828655081475
+    },
+    "9104": {
+      "a": 3.484,
+      "b": 2.75296317049111,
+      "c": -3.04143053431932
+    },
+    "9105": {
+      "a": 3.607,
+      "b": 0.375,
+      "c": -0.873599950214794
+    },
+    "9106": {
+      "a": 7.102,
+      "b": 0.0359375,
+      "c": -0.198022674690329
+    },
+    "9107": {
+      "a": 5.891,
+      "b": 2.78251854587403,
+      "c": -1.45538334571847
+    },
+    "9108": {
+      "a": 6.512,
+      "b": 0.6375,
+      "c": -0.507926282035722
+    },
+    "9109": {
+      "a": 6.131,
+      "b": 1.11398988923972,
+      "c": -1.97721521865106
+    },
+    "9110": {
+      "a": 5.789,
+      "b": 0.0359375,
+      "c": -0.195039717225944
+    },
+    "9111": {
+      "a": 3.157,
+      "b": 5.95501408385776,
+      "c": -0.0623552045399024
+    },
+    "9112": {
+      "a": 1.387,
+      "b": 5.92394615329108,
+      "c": -0.0591389342783902
+    },
+    "9113": {
+      "a": 1.622,
+      "b": 5.96062474286443,
+      "c": -0.0504881577919804
+    },
+    "9114": {
+      "a": 1.162,
+      "b": 5.96053029838707,
+      "c": -0.0601024573341114
+    },
+    "9115": {
+      "a": 2.203,
+      "b": 5.95891661311513,
+      "c": -0.0504502955626033
+    },
+    "9116": {
+      "a": 1.0,
+      "b": 1.0,
+      "c": -1.0
+    },
+    "9117": {
+      "a": 5.844,
+      "b": 0.0359375,
+      "c": -0.593782174143024
+    }
+  },
+  "long_full_reference_groups": [
+    "WORK_E_C",
+    "WORK_E_noC",
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "WORK_stud",
+    "SERV_E_C",
+    "SERV_E_noC",
+    "SERV_noE_C",
+    "SERV_noE_noC",
+    "SERV_stud",
+    "SCHOOL",
+    "LONG_COMPOSITE"
+  ],
+  "w_cnt": 0.6,
+  "w_idp": 0.4,
+  "linear_profile_coverage": {
+    "mapped": 0,
+    "profiles": 247,
+    "used": false,
+    "reason": "MEASURED_NATIVE_ASSIGNMENT"
+  },
+  "td_evaluations": 28,
+  "stop_reason": "TD_EVALUATION_BUDGET",
+  "search_complete": false,
+  "stationarity_confirmed": false,
+  "stationarity_scope": "CONFIGURED_ACTIVE_COMPONENT_COORDINATE_POLL_NOT_GLOBAL",
+  "fresh_assignment_and_skims_per_finecdf_evaluation": true,
+  "prediction_is_not_live_acceptance": true,
+  "inner_root": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V16_RUNS\\RUN_20261030_185400_964782\\CALIBRATION\\DEMAND_CYCLE_02_TD_FINECDF\\FINECDF_INNER",
+  "final_abc": {
+    "9101": {
+      "a": 6.951,
+      "b": 1.7546875,
+      "c": -0.542615476401332
+    },
+    "9102": {
+      "a": 6.047,
+      "b": 2.47229566358642,
+      "c": -0.941740817719422
+    },
+    "9103": {
+      "a": 3.686,
+      "b": 3.77625380303621,
+      "c": -2.34232595108255
+    },
+    "9104": {
+      "a": 3.484,
+      "b": 2.75296317049111,
+      "c": -2.86927408898049
+    },
+    "9105": {
+      "a": 3.607,
+      "b": 0.375,
+      "c": -0.873599950214794
+    },
+    "9106": {
+      "a": 7.102,
+      "b": 0.0359375,
+      "c": -0.198022674690329
+    },
+    "9107": {
+      "a": 5.891,
+      "b": 2.78251854587403,
+      "c": -1.45538334571847
+    },
+    "9108": {
+      "a": 6.512,
+      "b": 0.6375,
+      "c": -0.507926282035722
+    },
+    "9109": {
+      "a": 6.131,
+      "b": 1.11398988923972,
+      "c": -1.97721521865106
+    },
+    "9110": {
+      "a": 5.789,
+      "b": 0.0359375,
+      "c": -0.195039717225944
+    },
+    "9111": {
+      "a": 3.157,
+      "b": 5.95501408385776,
+      "c": -0.0623552045399024
+    },
+    "9112": {
+      "a": 1.387,
+      "b": 5.92394615329108,
+      "c": -0.0591389342783902
+    },
+    "9113": {
+      "a": 1.622,
+      "b": 5.96062474286443,
+      "c": -0.0504881577919804
+    },
+    "9114": {
+      "a": 1.162,
+      "b": 5.96053029838707,
+      "c": -0.0601024573341114
+    },
+    "9115": {
+      "a": 2.203,
+      "b": 5.95891661311513,
+      "c": -0.0504502955626033
+    },
+    "9116": {
+      "a": 1.0,
+      "b": 1.0,
+      "c": -1.0
+    },
+    "9117": {
+      "a": 5.844,
+      "b": 0.0359375,
+      "c": -0.593782174143024
+    }
+  },
+  "polls_completed": 1
+}

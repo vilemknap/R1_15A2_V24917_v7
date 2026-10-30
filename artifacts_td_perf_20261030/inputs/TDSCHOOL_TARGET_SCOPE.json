@@ -1,0 +1,39 @@
+{
+  "schema": "R1_V24917_NATIVE_SCHOOL_TD_SCOPE_V1",
+  "active_components": [
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "SERV_noE_noC",
+    "SERV_noE_C",
+    "SCHOOL",
+    "LONG_COMPOSITE"
+  ],
+  "matrix_no": 9117,
+  "dstrat_code": "5_SCHOOL",
+  "target_points": 512,
+  "school_generation_unchanged": true,
+  "generation_freeze_readback": {
+    "status": "VERIFIED_FIXED_SCHOOL_PA",
+    "attributes": [
+      "FP_5_SCHOOL",
+      "FA_5_SCHOOL"
+    ],
+    "zone_count": 681,
+    "source_values_hash": "912e6ad4cae203e8a1e16344ee6fa2bb089029131354699c4fb5f543e7796338",
+    "readback_values_hash": "912e6ad4cae203e8a1e16344ee6fa2bb089029131354699c4fb5f543e7796338",
+    "verified_native_evaluations": 30
+  },
+  "optimized_parameters": [
+    "b",
+    "c"
+  ],
+  "sealed_reference_unchanged": true,
+  "frozen_components": [
+    "SERV_E_C",
+    "SERV_E_noC",
+    "SERV_stud",
+    "WORK_E_C",
+    "WORK_E_noC",
+    "WORK_stud"
+  ]
+}

@@ -543,6 +543,7 @@ def test_finecdf_gap_is_read_inside_active_plan(monkeypatch, tmp_path):
     outer = SimpleNamespace(gap=gap, readback_manager=None, last_gap_evidence=None,
                             v24916_dynamic_skims=SimpleNamespace(capture_after_execution=lambda *a: epoch),
                             _live_generation_matrices=lambda: {})
+    monkeypatch.setattr(gapfix.td_numpy, 'read_skim_weights', lambda _outer: {})
     obj = bridge.NoDirectMatrixWriteTDAdapter.__new__(bridge.NoDirectMatrixWriteTDAdapter)
     obj.v = None; obj.root = tmp_path; obj.dynamic_eval_index = 0; obj.outer_adapter = outer
     obj._dynamic_realization_plan = lambda: {"dynamic_skim_operation_positions": [31]}

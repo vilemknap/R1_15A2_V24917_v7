@@ -1,0 +1,39 @@
+{
+  "schema": "R1_V24917_NATIVE_LONG_TARGET_SCOPE_V1",
+  "active_components": [
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "SERV_noE_noC",
+    "SERV_noE_C",
+    "SCHOOL",
+    "LONG_COMPOSITE"
+  ],
+  "sealed_reference_unchanged": true,
+  "shared_long_target_copies": 1,
+  "generation_freeze_readback": {
+    "status": "VERIFIED_FIXED_LONG_GENERATION",
+    "zone_count": 681,
+    "attributes": [
+      "FP_3_LONG_E_C",
+      "FP_3_LONG_E_noC",
+      "FP_3_LONG_noE_C",
+      "FP_3_LONG_noE_noC",
+      "FP_3_LONG_stud",
+      "FA_3_LONG",
+      "ADD_PROD_L",
+      "ADD_ATT_L"
+    ],
+    "source_values_hash": "e9704c7ba3309a2ba01024d9d8ccfbee16bdf6eb4199a2ed0dd27c6984abbb43",
+    "readback_values_hash": "e9704c7ba3309a2ba01024d9d8ccfbee16bdf6eb4199a2ed0dd27c6984abbb43",
+    "verified_native_evaluations": 30
+  },
+  "native_measured_dynamic_required": true,
+  "frozen_components": [
+    "SERV_E_C",
+    "SERV_E_noC",
+    "SERV_stud",
+    "WORK_E_C",
+    "WORK_E_noC",
+    "WORK_stud"
+  ]
+}

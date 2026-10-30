@@ -1,0 +1,71 @@
+"""Check the supplied TD JSONs; large ZIP/NPZ were unavailable (>32 MiB)."""
+import collections
+import hashlib
+import json
+from pathlib import Path
+import shutil
+
+ROOT=Path(__file__).resolve().parent
+SOURCES={
+ 'timing':'/workspace/attachments/4e56a5b0-e61f-4cc4-a8b1-ce64b2ea34d7/V24917_TIMING.json',
+ 'block':'/workspace/attachments/f3ac292a-f1d2-4033-9376-71c80b42ab0c/TD_FINECDF_BLOCK_RESULT.json',
+ 'joint':'/workspace/attachments/f48fe3da-7cbe-4d8b-8375-61cb8f507cb7/TDJOINT_SUMMARY.json',
+ 'plan':'/workspace/attachments/07ab88b9-3a0a-4cec-9a35-9090f45a3489/TD_TARGET_PLAN.json',
+ 'attempts':'/workspace/attachments/ab315b68-b4c9-400b-ab34-0d60ecdb73bc/TD_REALIZATION_ATTEMPTS.json',
+ 'preflight':'/workspace/attachments/020951db-0af3-4490-8bf1-65f969562358/PATCHED_INPUT_PREFLIGHT.json',
+ 'best':'/workspace/attachments/519cc251-8a93-4830-a6b6-ca541d5e8d3b/BEST_STATE.json',
+ 'inventory':'/workspace/attachments/1a864876-d280-4e46-884e-281bad6336b9/TD_PROCEDURE_INVENTORY.csv',
+ 'contract':'/workspace/attachments/df38aedd-0fe7-4e06-986d-0741d7e23979/TD09C_NATIVE_SCOPE_CONTRACT.json',
+ 'search':'/workspace/attachments/d483c9ac-f9da-4574-b362-5c096d31ad70/TDJOINT_SEARCH.json',
+ 'long_scope':'/workspace/attachments/19314afa-1132-4b49-8034-9c56e01e9637/TDLONG_COMPOSITE_TARGET_SCOPE.json',
+ 'school_scope':'/workspace/attachments/5229f7bd-6840-4686-9053-b35ebed6e135/TDSCHOOL_TARGET_SCOPE.json',
+ 'inner':'/workspace/attachments/4bc8b579-bf2b-4a7b-85ee-e4da99724e73/V24916_FINECDF_INNER_RESULT.json',
+ 'status':'/workspace/attachments/0ed61648-83c0-4e64-ac0b-a0103961e77a/00_STATUS.txt',
+ 'space':'/workspace/attachments/dc6088ad-d05b-4e94-a01f-960efc3c9a50/03_PARAMETER_SPACE.json',
+ 'master':'/workspace/attachments/6bfbe811-feab-4426-a8f1-5afc6319a306/00_MASTER_SUMMARY.json',
+}
+SOURCES={key:str(Path(path) if Path(path).is_file() else ROOT/'inputs'/Path(path).name) for key,path in SOURCES.items()}
+for path in SOURCES.values():
+ destination=ROOT/'inputs'/Path(path).name
+ if Path(path).resolve()!=destination.resolve():shutil.copyfile(path,destination)
+d={key:json.loads((ROOT/'inputs'/Path(p).name).read_text()) for key,p in SOURCES.items() if p.endswith('.json')}
+timing,block,joint,search,inner=(d[k] for k in ('timing','block','joint','search','inner'))
+assert block['status']=='ACCEPTED_FINECDF_TD' and block['td_realization_complete']
+assert joint['mode']=='DYNAMIC' and joint['td_evaluations']==inner['td_evaluations']==28
+assert set(joint['component_pool'])==set(inner['active_components'])==set(d['long_scope']['active_components'])==set(d['school_scope']['active_components'])
+assert joint['objective_final']<joint['objective_start'] and not joint['stationarity_confirmed']
+coverage=[]
+for poll in search['polls']:
+ counts=collections.Counter()
+ for row in poll['trials']:
+  label=row['label'];axis='LOGC' if '_LOGC_' in label else 'B' if '_B_' in label else 'COMBINED'
+  counts[(row.get('component'),axis)]+=1
+ coverage.append({'iteration':poll['iteration'],'complete_poll':poll['complete_poll'],
+   'changed_components':poll['changed_components'],
+   'coordinate_trials':[{'component':k,'axis':a,'count':n} for (k,a),n in counts.items()]})
+assert coverage[0]['complete_poll']
+for key in ('SCHOOL','LONG_COMPOSITE'):
+ assert {x['axis'] for x in coverage[0]['coordinate_trials'] if x['component']==key}=={'B','LOGC'}
+real=block['realization'];decision=real['attempts'][0]['decision']
+assert real['status']=='REALIZED' and real['selected_scale']==1. and decision['accepted']
+assert block['gap']==.00111732
+assert [r['component'] for r in block['changed_rows']]==['WORK_noE_C','WORK_noE_noC']
+for scope in ('school_scope','long_scope'):
+ proof=d[scope]['generation_freeze_readback']
+ assert proof['source_values_hash']==proof['readback_values_hash'] and proof['zone_count']==681
+result={'scope':'UPLOADED_TD_CYCLE_2_REPORTED_RESULTS_AND_TIMING',
+ 'inputs':{key:{'file':Path(path).name,'bytes':Path(path).stat().st_size,
+                   'sha256':hashlib.sha256(Path(path).read_bytes()).hexdigest()} for key,path in SOURCES.items()},
+ 'reported_native_result':{'status':block['status'],'gap':block['gap'],
+   'realization_scale':real['selected_scale'],'changed_components':[r['component'] for r in block['changed_rows']],
+   'outer_geh_before':decision['cal_csd_objective_before'],'outer_geh_after':decision['cal_csd_objective_after'],
+   'inner_objective_before':joint['objective_start'],'inner_objective_after':joint['objective_final'],
+   'inner_stop_reason':joint['stop_reason'],'search_complete':joint['search_complete'],
+   'long_and_school_in_active_pool':True,'long_and_school_both_coordinates_measured':True},
+ 'timing':timing['block'],'coordinate_coverage':coverage,
+ 'timing_limits':'Inclusive nested counters overlap; 40 procedure_sequence calls do not establish 40 independent full TD chains or 12 dispensable recalculations.',
+ 'not_read_due_to_executor_32_mib_transfer_limit':['DEMAND_CYCLE_02_TD_FINECDF.zip','ACCEPTED_001.npz','ACCEPTED_026.npz'],
+ 'limits':'Reported acceptance/identity claims come from uploaded JSON. Raw accepted matrix bytes could not be inspected; no live Visum run by Codex.',
+ 'checks_passed':True}
+(ROOT/'UPLOADED_TD_AUDIT.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'checks_passed':True,'inputs':len(SOURCES),'reported_status':block['status'],'stage_seconds':timing['block']['td_stage']['seconds']}))

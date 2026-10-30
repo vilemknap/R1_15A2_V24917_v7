@@ -1,0 +1,234 @@
+{
+  "scope": "UPLOADED_TD_CYCLE_2_REPORTED_RESULTS_AND_TIMING",
+  "inputs": {
+    "timing": {
+      "file": "V24917_TIMING.json",
+      "bytes": 2496,
+      "sha256": "8bc36d8de6eb4768baba84fe94141d8b5e8e7b8a0c4230bb0d41b7459244db0c"
+    },
+    "block": {
+      "file": "TD_FINECDF_BLOCK_RESULT.json",
+      "bytes": 125702,
+      "sha256": "439b55358c2ca5405751f02014ff07a21872c0183110b835edcf17f28c3dcaec"
+    },
+    "joint": {
+      "file": "TDJOINT_SUMMARY.json",
+      "bytes": 8175,
+      "sha256": "ab8b4a5e4918cec4c42974481a6aa655b1c70e46ddaeb567ca0d0ff55ee12958"
+    },
+    "plan": {
+      "file": "TD_TARGET_PLAN.json",
+      "bytes": 6548,
+      "sha256": "a0ffb0c6b75715342978fe6a0ccf3f11223957aaa984d4e6f1795e4927bbd4af"
+    },
+    "attempts": {
+      "file": "TD_REALIZATION_ATTEMPTS.json",
+      "bytes": 44273,
+      "sha256": "a3538480b2c6aa1a2b87d5a165fadf7f86f348f7c81846bb3fcde1c42bb8060e"
+    },
+    "preflight": {
+      "file": "PATCHED_INPUT_PREFLIGHT.json",
+      "bytes": 1167,
+      "sha256": "d6c064551a8ab4d8a485836922cde1666eb6c0cb34468523d0c30b2795b30210"
+    },
+    "best": {
+      "file": "BEST_STATE.json",
+      "bytes": 2991,
+      "sha256": "15814df2766041694cb068d3dbf62862910fb8affd285571e36aa3fc4e3a0240"
+    },
+    "inventory": {
+      "file": "TD_PROCEDURE_INVENTORY.csv",
+      "bytes": 2120,
+      "sha256": "62c9038ef377363174566d1a6ed84b0dcbee36f955e64212a237111d825c93b2"
+    },
+    "contract": {
+      "file": "TD09C_NATIVE_SCOPE_CONTRACT.json",
+      "bytes": 867,
+      "sha256": "7a434121e34e5602bb144865001e51fa1dac19b63fcfc1e85aa4310685983814"
+    },
+    "search": {
+      "file": "TDJOINT_SEARCH.json",
+      "bytes": 21416,
+      "sha256": "fff0bfb935e61dc290bb7bc700c7710e606d743ff3de6b9af2e4d24d92e750b0"
+    },
+    "long_scope": {
+      "file": "TDLONG_COMPOSITE_TARGET_SCOPE.json",
+      "bytes": 1027,
+      "sha256": "8e752f350fd69a1bf8a02745731d607735239a6cbb350a804194a1c41ea92c1e"
+    },
+    "school_scope": {
+      "file": "TDSCHOOL_TARGET_SCOPE.json",
+      "bytes": 964,
+      "sha256": "4394ea22883308096bb2ab0eed7f15e468b835254f0047d3334d461d004cb200"
+    },
+    "inner": {
+      "file": "V24916_FINECDF_INNER_RESULT.json",
+      "bytes": 17418,
+      "sha256": "b6ed3e85ba7bba75aa602c691adc704d49c0a624af9a9aab61c36b83c8766d04"
+    },
+    "status": {
+      "file": "00_STATUS.txt",
+      "bytes": 7080,
+      "sha256": "13c5924724c4fc958f5961d20e4480364f0d8cb902f57322b1a387ec0722e2ce"
+    },
+    "space": {
+      "file": "03_PARAMETER_SPACE.json",
+      "bytes": 4680,
+      "sha256": "83010de17dd942d14af290229f563a17135e287bda9e92c2f4c201f3c444966a"
+    },
+    "master": {
+      "file": "00_MASTER_SUMMARY.json",
+      "bytes": 4062,
+      "sha256": "91abb6ccd19e2cceb2802cc36ed2afed32e051a44f402ff21fa9bc526bfb1c26"
+    }
+  },
+  "reported_native_result": {
+    "status": "ACCEPTED_FINECDF_TD",
+    "gap": 0.00111732,
+    "realization_scale": 1.0,
+    "changed_components": [
+      "WORK_noE_C",
+      "WORK_noE_noC"
+    ],
+    "outer_geh_before": 40.737048835849116,
+    "outer_geh_after": 40.68361367143461,
+    "inner_objective_before": 1.0,
+    "inner_objective_after": 0.9633517976264715,
+    "inner_stop_reason": "TD_EVALUATION_BUDGET",
+    "search_complete": false,
+    "long_and_school_in_active_pool": true,
+    "long_and_school_both_coordinates_measured": true
+  },
+  "timing": {
+    "snapshot": {
+      "calls": 5,
+      "seconds": 54.097
+    },
+    "procedure_sequence": {
+      "calls": 40,
+      "seconds": 1479.127
+    },
+    "evidence_zip": {
+      "calls": 4,
+      "seconds": 0.267
+    },
+    "diag_12d": {
+      "calls": 2,
+      "seconds": 2.073
+    },
+    "diag_11d": {
+      "calls": 2,
+      "seconds": 74.261
+    },
+    "diagnostics_total": {
+      "calls": 2,
+      "seconds": 142.387
+    },
+    "td_stage": {
+      "calls": 1,
+      "seconds": 2399.609
+    }
+  },
+  "coordinate_coverage": [
+    {
+      "iteration": 1,
+      "complete_poll": true,
+      "changed_components": [
+        "WORK_noE_C",
+        "WORK_noE_noC"
+      ],
+      "coordinate_trials": [
+        {
+          "component": "WORK_noE_C",
+          "axis": "B",
+          "count": 2
+        },
+        {
+          "component": "WORK_noE_noC",
+          "axis": "B",
+          "count": 2
+        },
+        {
+          "component": "SERV_noE_C",
+          "axis": "B",
+          "count": 2
+        },
+        {
+          "component": "SERV_noE_noC",
+          "axis": "B",
+          "count": 2
+        },
+        {
+          "component": "SCHOOL",
+          "axis": "B",
+          "count": 2
+        },
+        {
+          "component": "LONG_COMPOSITE",
+          "axis": "B",
+          "count": 2
+        },
+        {
+          "component": "WORK_noE_C",
+          "axis": "LOGC",
+          "count": 2
+        },
+        {
+          "component": "WORK_noE_noC",
+          "axis": "LOGC",
+          "count": 2
+        },
+        {
+          "component": "SERV_noE_C",
+          "axis": "LOGC",
+          "count": 2
+        },
+        {
+          "component": "SERV_noE_noC",
+          "axis": "LOGC",
+          "count": 2
+        },
+        {
+          "component": "SCHOOL",
+          "axis": "LOGC",
+          "count": 2
+        },
+        {
+          "component": "LONG_COMPOSITE",
+          "axis": "LOGC",
+          "count": 2
+        },
+        {
+          "component": null,
+          "axis": "COMBINED",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "complete_poll": false,
+      "changed_components": [],
+      "coordinate_trials": [
+        {
+          "component": "WORK_noE_noC",
+          "axis": "B",
+          "count": 1
+        },
+        {
+          "component": "SERV_noE_C",
+          "axis": "B",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "timing_limits": "Inclusive nested counters overlap; 40 procedure_sequence calls do not establish 40 independent full TD chains or 12 dispensable recalculations.",
+  "not_read_due_to_executor_32_mib_transfer_limit": [
+    "DEMAND_CYCLE_02_TD_FINECDF.zip",
+    "ACCEPTED_001.npz",
+    "ACCEPTED_026.npz"
+  ],
+  "limits": "Reported acceptance/identity claims come from uploaded JSON. Raw accepted matrix bytes could not be inspected; no live Visum run by Codex.",
+  "checks_passed": true
+}

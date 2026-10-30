@@ -1,0 +1,47 @@
+﻿index;type;active;comment;is_group;td09c_stratum_count;td09c_dstratset;td09c_match
+1;9;1;R1 09C - reset PrT assignment results before native TG/TD;False;;;
+2;75;1;;True;;;
+3;65;0;14A COUTRY_ADD Preset;False;;;
+4;75;1;;True;;;
+5;45;1;R1 09C - native trip generation incl 09b boundary P/A presym inputs | R1_STEP_09I_V2_BOUNDARY_PA_TG_FORMULA_PATCH;False;;;
+6;46;1;R1 09C - native trip distribution for II+IE+EI component curves;False;16;1_WORK_E_C,1_WORK_E_noC,1_WORK_noE_C,1_WORK_noE_noC,1_WORK_stud,2_SERV_E_C,2_SERV_E_noC,2_SERV_noE_C,2_SERV_noE_noC,2_SERV_stud,3_LONG_E_C,3_LONG_E_noC,3_LONG_noE_C,3_LONG_noE_noC,3_LONG_stud,5_SCHOOL;NATIVE16_FOREIGN_SEPARATE
+7;75;1;;True;;;
+8;65;1; Foreign Matrix Post Processing;False;;;
+9;75;1;;True;;;
+10;65;1;"AMDY parent κ audit by R1 9001 bands; read-only";False;;;
+11;65;1;kappa-band Non Foregin Car Realization;False;;;
+12;91;1;kappa-fixed Foregin Car Realization;False;;;
+13;75;1;;True;;;
+14;65;1;Matrix Symmetrization;False;;;
+15;9;1;R1 09C - reset stale PrT assignment results after regenerated demand;False;;;
+16;75;1;R1 09C - assignment wrapper after native TG/TD;True;;;
+17;101;1;R1 09C - freight LNV + NV;False;;;
+18;101;1;R1 09C - native passenger CF + CL after boundary-aware TG/TD;False;;;
+19;101;1;R1 09C - native passenger service/work after boundary-aware TG/TD;False;;;
+20;101;1;R1 09C - joint freight + native passenger after boundary-aware TG/TD;False;;;
+21;65;0;"GEH (EXOG_EE_CF, EXOG_EE_CL, EXOG_EE_CS, EXOG_EE_CS_noT,
+EXOG_EE_CW, EXOG_EE_CW_noT,
+NATIVE_CF, NATIVE_CL, NATIVE_CS, NATIVE_CS_noT,
+NATIVE_CW, NATIVE_CW_noT)";False;;;
+22;75;1;;True;;;
+23;103;0;;False;;;
+24;103;0;;False;;;
+25;103;0;;False;;;
+26;103;0;;False;;;
+27;103;0;;False;;;
+28;103;0;;False;;;
+29;103;0;;False;;;
+30;103;0;;False;;;
+31;103;1;;False;;;
+32;103;1;;False;;;
+33;103;1;;False;;;
+34;103;1;;False;;;
+35;103;1;;False;;;
+36;103;1;;False;;;
+37;9;0;R1 09C - reset stale PrT assignment results after regenerated demand;False;;;
+38;101;0;;False;;;
+39;101;0;;False;;;
+40;75;0;;True;;;
+41;1;0;;False;;;
+42;101;0;;False;;;
+43;65;0;;False;;;

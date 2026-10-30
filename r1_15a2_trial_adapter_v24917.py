@@ -50,6 +50,7 @@ import r1_15a2_mobility_zone_v24917 as zguard
 import r1_15a2_intrazonal_penalty_v24917 as izpen
 import r1_15a2_snapshot_reads_v24917 as snapshot_reads
 import r1_15a2_com_busy_snapshot_hotfix_v24916 as snapshot_retry
+import r1_15a2_td_numpy_v24917 as td_numpy
 
 RELEASE = "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_ADAPTER_20261027"
 
@@ -85,7 +86,8 @@ class VisumAdapter(_V24916ActiveAdapter):
 
     def _refresh_dynamic_skims_after_assignment(self, *args, **kwargs):
         self._long_incidence_assignment_binding = None
-        epoch = super()._refresh_dynamic_skims_after_assignment(*args, **kwargs)
+        with td_numpy.skim_weight_scope(self):
+            epoch = super()._refresh_dynamic_skims_after_assignment(*args, **kwargs)
         if epoch is not None:
             long_incidence_read.bind_after_assignment(self)
         return epoch
@@ -304,6 +306,8 @@ class VisumAdapter(_V24916ActiveAdapter):
                 self.cfg.get("expected_zones"))
 
     def _live_generation_matrices(self):
+        if td_numpy.SKIM_WEIGHT_SCOPE.get() is self:
+            return td_numpy.read_skim_weights(self)
         scope = getattr(self, "_v24917_generation_reads", None)
         if scope is None:
             return super()._live_generation_matrices()

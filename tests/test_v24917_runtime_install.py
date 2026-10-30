@@ -91,6 +91,11 @@ res.update({
   "diagfast_integrity": status["v24917"]["diagfast"]["integrity"]["status"],
   "v24917_manifest": status["v24917_manifest"]["passes"],
   "path_store_build_installed": status["v24917"]["path_store_build"]["installed"],
+  "td_numpy_installed": status["v24917"]["td_numpy"]["installed"],
+  "td_restore_installed": status["v24917"]["td_restore"]["installed"],
+  "td_numpy_metric_bound": getattr(__import__("r1_15a2_finecdf_bridge_v24916").DynamicFamilyMetrics.evaluate, "_td_perf_numpy", False),
+  "td_numpy_skim_bound": getattr(__import__("r1_15a2_dynamic_skim_v24916p2c").DynamicSkimManager._read_epoch, "_td_perf_numpy", False),
+  "td_restore_bound": getattr(__import__("r1_15a2_finecdf_bridge_v24916").NoDirectMatrixWriteTDAdapter.restore_state, "_td_perf_restore", False),
   "path_store_build_adapter_alias": getattr(__import__("r1_15a2_trial_adapter_v240").TwoModeRouteCollector.add_geometry, "__r1_path_store_build__", None) == __import__("r1_15a2_path_store_build_v24917").RELEASE,
   "parent_eq_preloaded": "r1_15a2_parent_equivalence_v24917" in sys.modules,
   "parent_eq_source_exact": Path(sys.modules["r1_15a2_parent_equivalence_v24917"].__file__).resolve() == (root / "r1_15a2_parent_equivalence_v24917.py").resolve(),
@@ -123,6 +128,7 @@ def test_v24917_manifest_covers_all_new_runtime_files():
                  "r1_15a2_diagfast_parity_v1.py", "r1_15a2_diagfast_direct_v2.py",
                  "r1_15a2_long_od_mask_v24917.py", "r1_15a2_tdlong1_probe_v24917.py",
                  "r1_15a2_long_distance_guard_v24917.py", "r1_15a2_mobility_zone_v24917.py",
+                 "r1_15a2_td_numpy_v24917.py", "r1_15a2_td_restore_v24917.py",
                  "helpers/R1_12D_DIAGFAST_V1.py", "helpers/R1_11D_DIAGFAST_V1.py",
                  "V24916_PERF2C_RUNTIME_MANIFEST.json", "DIAGFAST_V1_RELEASE_MANIFEST.json"]:
         assert name in names, name

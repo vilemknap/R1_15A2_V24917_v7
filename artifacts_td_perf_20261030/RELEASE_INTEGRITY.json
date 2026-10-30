@@ -1,0 +1,78 @@
+{
+  "baseline_remote_commit": "a63cb38ef459004ac152b45536a40bfcbcc95aab",
+  "baseline_local_commit": "6e8159069350560f5a3743dd5d1fda5d8728f231",
+  "baseline_tree": "4beba774320bcbda12138b00d1c455b32890556d",
+  "manifests": {
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "all_hashes_match": true,
+      "added": [],
+      "removed": [],
+      "changed": []
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 171,
+      "all_hashes_match": true,
+      "added": [
+        "benchmarks/run_td_numpy_benchmark.py",
+        "r1_15a2_td_numpy_v24917.py",
+        "r1_15a2_td_restore_v24917.py",
+        "tests/test_v24917_td_numpy_perf.py",
+        "tests/test_v24917_td_restore_perf.py"
+      ],
+      "removed": [],
+      "changed": [
+        "r1_15a2_finecdf_gapfix_v24917.py",
+        "r1_15a2_td_joint_v24917.py",
+        "r1_15a2_trial_adapter_v24917.py",
+        "r1_15a2_v24917_runtime.py",
+        "tests/test_v24917_runtime_install.py",
+        "tests/test_v24917_targeted_catchup.py",
+        "tools/refresh_v24917_manifests.py"
+      ]
+    },
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 89,
+      "all_hashes_match": true,
+      "added": [
+        "r1_15a2_td_numpy_v24917.py",
+        "r1_15a2_td_restore_v24917.py"
+      ],
+      "removed": [],
+      "changed": [
+        "DIAGFAST_V1_RELEASE_MANIFEST.json",
+        "r1_15a2_finecdf_gapfix_v24917.py",
+        "r1_15a2_td_joint_v24917.py",
+        "r1_15a2_trial_adapter_v24917.py",
+        "r1_15a2_v24917_runtime.py"
+      ]
+    }
+  },
+  "untouched_files": {
+    "r1_15a2_finecdf_bridge_v24916.py": "059a2a5b08003bb08f109911dad5dc42e3a21bcc7073f8005e686e279012141a",
+    "r1_15a2_dynamic_skim_v24916p2c.py": "645a43d12f011a0e177d0db4b72b9522de24cd607163db0665c8a0e6f5c79f87",
+    "reference_v19/R1_BC_AUTO_DIST_ONLY_FINECDF_SOFT_v1_9.py": "fcdfa535940296e6cc793b6416c7c0a56c18aae8d5d20beddb064a170c673ff5",
+    "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
+    "r1_15a2_long_post_td_mask_v24917.py": "ea50a146233dbb5f0d1d554effbef5574a5c84091d4afc334f50f4f8a6b276cd",
+    "r1_15a2_long_composite_diagnostic_v24917.py": "0378bfd4bbe245f4bc00e5c31f208b57632ce6ef5b26fd2b3fcbae57c1185ecb",
+    "r1_15a2_parent_equivalence_v24917.py": "9714a9390169c6dce91ea4ace6254131fd49871e8331b25f14bc7d4277491332"
+  },
+  "protected_originals_unchanged": 1059,
+  "compiled": [
+    "benchmarks/run_td_numpy_benchmark.py",
+    "r1_15a2_finecdf_gapfix_v24917.py",
+    "r1_15a2_td_joint_v24917.py",
+    "r1_15a2_td_numpy_v24917.py",
+    "r1_15a2_td_restore_v24917.py",
+    "r1_15a2_trial_adapter_v24917.py",
+    "r1_15a2_v24917_runtime.py",
+    "tests/test_v24917_runtime_install.py",
+    "tests/test_v24917_targeted_catchup.py",
+    "tests/test_v24917_td_numpy_perf.py",
+    "tests/test_v24917_td_restore_perf.py",
+    "tools/refresh_v24917_manifests.py"
+  ],
+  "finecdf_reduction_ast_exact": true,
+  "diff_check_passed": true,
+  "live_visum_tested": false
+}

@@ -1,0 +1,174 @@
+{
+  "status": "ACTIVE",
+  "family_pressure": {
+    "WORK": {
+      "bins": {
+        "[30,50)": 14608004.780126477,
+        "[100,INF)": 10269676.07360045,
+        "[75,100)": 19623929.04001131,
+        "[5,10)": 79126448.6279206,
+        "[50,75)": 10995076.327596545,
+        "[0,5)": 87401270.18931408,
+        "[10,20)": 17732917.295346264,
+        "[20,30)": 9747653.298999842
+      },
+      "evidence_weight": 249504975.63291714,
+      "evidence_mean_distance_km": 22.704755679329143
+    },
+    "SERVICE": {
+      "bins": {
+        "[5,10)": 4717651.4786486635,
+        "[10,20)": 8647378.113455294,
+        "[50,75)": 1195014.1501171817,
+        "[30,50)": 1824009.0826099445,
+        "[20,30)": 2573779.124730821,
+        "[75,100)": 858763.6832696255,
+        "[100,INF)": 654993.0303729179,
+        "[0,5)": 14317649.329580707
+      },
+      "evidence_weight": 34789237.992785074,
+      "evidence_mean_distance_km": 16.20907338077019
+    }
+  },
+  "alignment_rows": [
+    {
+      "component": "WORK_E_C",
+      "family": "WORK",
+      "alignment_score": 9.602094033014552,
+      "l1_distance_half": 0.3856782279028028,
+      "rmse_share": 0.14168396536507888,
+      "mean_delta_model_minus_target": 4.009728553748424,
+      "flowbundle_family_evidence_weight": 249504975.63291714,
+      "flowbundle_family_mean_distance_km": 22.704755679329143,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "WORK_E_noC",
+      "family": "WORK",
+      "alignment_score": 6.708380337570209,
+      "l1_distance_half": 0.28599519518047384,
+      "rmse_share": 0.11358872936117834,
+      "mean_delta_model_minus_target": -0.41659099384556875,
+      "flowbundle_family_evidence_weight": 249504975.63291714,
+      "flowbundle_family_mean_distance_km": 22.704755679329143,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "WORK_noE_C",
+      "family": "WORK",
+      "alignment_score": 11.337662158209586,
+      "l1_distance_half": 0.46264346048313926,
+      "rmse_share": 0.2277060307873049,
+      "mean_delta_model_minus_target": -0.9884096271062077,
+      "flowbundle_family_evidence_weight": 249504975.63291714,
+      "flowbundle_family_mean_distance_km": 22.704755679329143,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "WORK_noE_noC",
+      "family": "WORK",
+      "alignment_score": 10.78252615215737,
+      "l1_distance_half": 0.4397872668244782,
+      "rmse_share": 0.21372811444282436,
+      "mean_delta_model_minus_target": -1.1017776168301827,
+      "flowbundle_family_evidence_weight": 249504975.63291714,
+      "flowbundle_family_mean_distance_km": 22.704755679329143,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "WORK_stud",
+      "family": "WORK",
+      "alignment_score": 9.284321708976245,
+      "l1_distance_half": 0.3734257690517597,
+      "rmse_share": 0.1580464732213053,
+      "mean_delta_model_minus_target": 2.773339876495287,
+      "flowbundle_family_evidence_weight": 249504975.63291714,
+      "flowbundle_family_mean_distance_km": 22.704755679329143,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "SERV_E_C",
+      "family": "SERVICE",
+      "alignment_score": 7.657320511928776,
+      "l1_distance_half": 0.3430702350227047,
+      "rmse_share": 0.13669887691338622,
+      "mean_delta_model_minus_target": 2.9547816956895616,
+      "flowbundle_family_evidence_weight": 34789237.992785074,
+      "flowbundle_family_mean_distance_km": 16.20907338077019,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "SERV_E_noC",
+      "family": "SERVICE",
+      "alignment_score": 8.190872023679864,
+      "l1_distance_half": 0.376856486202166,
+      "rmse_share": 0.15801196130831469,
+      "mean_delta_model_minus_target": -1.5831028948146022,
+      "flowbundle_family_evidence_weight": 34789237.992785074,
+      "flowbundle_family_mean_distance_km": 16.20907338077019,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "SERV_noE_C",
+      "family": "SERVICE",
+      "alignment_score": 8.469693513620404,
+      "l1_distance_half": 0.4017664337240888,
+      "rmse_share": 0.1669612489222155,
+      "mean_delta_model_minus_target": 0.2503126444985604,
+      "flowbundle_family_evidence_weight": 34789237.992785074,
+      "flowbundle_family_mean_distance_km": 16.20907338077019,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "SERV_noE_noC",
+      "family": "SERVICE",
+      "alignment_score": 12.516320877703036,
+      "l1_distance_half": 0.5826425741457271,
+      "rmse_share": 0.2605375111178341,
+      "mean_delta_model_minus_target": -0.7874824974136354,
+      "flowbundle_family_evidence_weight": 34789237.992785074,
+      "flowbundle_family_mean_distance_km": 16.20907338077019,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    },
+    {
+      "component": "SERV_stud",
+      "family": "SERVICE",
+      "alignment_score": 8.252297397419479,
+      "l1_distance_half": 0.3487331924837735,
+      "rmse_share": 0.13765545005427723,
+      "mean_delta_model_minus_target": 5.766992440109885,
+      "flowbundle_family_evidence_weight": 34789237.992785074,
+      "flowbundle_family_mean_distance_km": 16.20907338077019,
+      "attribution_level": "FAMILY_ONLY_NOT_EXACT_COMPONENT"
+    }
+  ],
+  "active_components": [
+    "WORK_noE_C",
+    "WORK_noE_noC",
+    "SERV_noE_noC",
+    "SERV_noE_C",
+    "SCHOOL",
+    "LONG_COMPOSITE"
+  ],
+  "frozen_components": [
+    "SCHOOL",
+    "LONG_COMPOSITE"
+  ],
+  "global_11d_evaluation_required": true,
+  "finecdf_remains_direction_and_magnitude_authority": true,
+  "targeting_evidence_families": [
+    "SERVICE",
+    "WORK"
+  ],
+  "reason": "POSITIVE_FLOWBUNDLE_EVIDENCE",
+  "safetyfix1_no_zero_evidence_targeting": true,
+  "finecdf_direction_and_magnitude_authority_preserved": true,
+  "acceptance_authority_changed": false,
+  "school_td_requested": true,
+  "long_composite_td_requested": true,
+  "school_td_policy": "SCHOOL_9117_NATIVE_B_C_IDP_512",
+  "school_td_target_count": 1,
+  "long_composite_policy": "SHARED_B_OFFSET_LOG_NEG_C_5_COMPONENTS",
+  "long_count_response": "LIVE_NATIVE_DYNAMIC_ASSIGNMENT_REQUIRED",
+  "targeted_long_component_count": 1
+}

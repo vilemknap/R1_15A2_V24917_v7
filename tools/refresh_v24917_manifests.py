@@ -15,6 +15,8 @@ RUNTIME = [
     "02_SPUSTIT_V24917_TDJOINT1_60_40.py",
     "r1_15a2_td_joint_v24917.py",
     "r1_15a2_td_joint_runtime_v24917.py",
+    "r1_15a2_td_numpy_v24917.py",
+    "r1_15a2_td_restore_v24917.py",
     "r1_15a2_long_composite_td_v24917.py",
     "r1_15a2_long_support_distance_v24917.py",
     "r1_15a2_long_post_td_mask_v24917.py",

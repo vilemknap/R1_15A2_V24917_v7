@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import r1_15a2_finecdf_bridge_v24916 as bridge
 import r1_15a2_runtime_v1 as rt
+import r1_15a2_td_numpy_v24917 as td_numpy
 from r1_15a2_supply import canonical_hash
 
 RELEASE = "R1_15A2_V24917_FINECDF_GAP_INSIDE_PLAN_FIX_V1_20261025"
@@ -57,7 +58,7 @@ def _execute_dynamic_realization(self):
     })
     epoch = self.outer_adapter.v24916_dynamic_skims.capture_after_execution(
         folder, token, plan["dynamic_skim_operation_positions"],
-        self.outer_adapter._live_generation_matrices())
+        td_numpy.read_skim_weights(self.outer_adapter))
     self.dynamic_skim_epoch = epoch
     rt.write_json(folder / "DYNAMIC_FINECDF_BINDING.json", {
         "passes": True,

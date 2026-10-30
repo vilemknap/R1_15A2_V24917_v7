@@ -1,0 +1,3 @@
+*.patch -text -diff
+*.log -text -diff
+inputs/** -text -diff

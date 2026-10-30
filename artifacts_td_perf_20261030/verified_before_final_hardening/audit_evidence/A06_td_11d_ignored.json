@@ -1,0 +1,73 @@
+{
+  "release": "R1_15A2_V24917_TDROLLBACKFIX1_20261027",
+  "parameter_differences": [],
+  "changed_matrices": [
+    9101
+  ],
+  "changed_matrix_count": 1,
+  "td_parameters_restored": true,
+  "parent_equivalence": {
+    "passes": false,
+    "release": "R1_15A2_V24917_PARENT_EQUIVALENCE_TDROLLBACKFIX1_20261027",
+    "parameter_differences": [],
+    "matrix_proof": {
+      "passes": false,
+      "matrices": [],
+      "atol": 1e-07,
+      "rtol": 1e-10,
+      "margin_atol": 1e-06,
+      "reason": "NO_BYTE_BOUND_PRE_MUTATION_MATRIX_PROOF"
+    },
+    "diagnostics": {
+      "passes": false,
+      "profile_drift": {
+        "profiles": 30,
+        "missing": [],
+        "violations": 0,
+        "max_abs_diff": 0.0,
+        "max_rel_diff": 0.0,
+        "worst_profile": null,
+        "abs_tol": 0.5,
+        "rel_tol": 0.0001,
+        "identity_errors": []
+      },
+      "weighted_geh_before": 2.508613836503768,
+      "weighted_geh_after": 2.508613836503768,
+      "geh_tol": 0.01,
+      "component_differences": [
+        "d11.error:NUMERIC",
+        "signals.WORK.objective:NUMERIC"
+      ],
+      "signal_atol": 1e-09,
+      "signal_rtol": 1e-08,
+      "comparison_contract": "TDROLLBACKFIX1_CONTENT_NOT_EXECUTION_IDENTITY",
+      "dynamic_skim_hash_policy": "MATRIX_AND_FAMILY_CONTENT_HASHES_EXACT; EPOCH_REFERENCE_SELF_CHECKED",
+      "inactive_long_objective_policy": "ONLY_DOCUMENTED_POSITIVE_INFINITY_SENTINEL"
+    }
+  },
+  "passes": false,
+  "profile_drift": {
+    "profiles": 30,
+    "missing": [],
+    "violations": 0,
+    "max_abs_diff": 0.0,
+    "max_rel_diff": 0.0,
+    "worst_profile": null,
+    "abs_tol": 0.5,
+    "rel_tol": 0.0001,
+    "identity_errors": []
+  },
+  "weighted_geh_before": 2.508613836503768,
+  "weighted_geh_after": 2.508613836503768,
+  "geh_tol": 0.01,
+  "component_differences": [
+    "d11.error:NUMERIC",
+    "signals.WORK.objective:NUMERIC"
+  ],
+  "signal_atol": 1e-09,
+  "signal_rtol": 1e-08,
+  "comparison_contract": "TDROLLBACKFIX1_CONTENT_NOT_EXECUTION_IDENTITY",
+  "dynamic_skim_hash_policy": "MATRIX_AND_FAMILY_CONTENT_HASHES_EXACT; EPOCH_REFERENCE_SELF_CHECKED",
+  "inactive_long_objective_policy": "ONLY_DOCUMENTED_POSITIVE_INFINITY_SENTINEL",
+  "status": "REFUSED_NOT_NUMERICALLY_EQUIVALENT"
+}
