@@ -4,12 +4,21 @@ from __future__ import annotations
 import copy
 import json
 import sys
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from types import SimpleNamespace as NS
 
 import pytest
 import r1_15a2_fresh_universal_v24917 as fresh
 import r1_15a2_targeted_generation_v24917 as tg
+
+
+@pytest.fixture(autouse=True)
+def isolated_home(tmp_path, monkeypatch):
+    # No real user-profile writes during tests of the short Windows sandbox.
+    home = tmp_path / "test_home"
+    home.mkdir()
+    monkeypatch.setattr(fresh.Path, "home", classmethod(lambda cls: home))
+    return home
 
 
 def source(tmp_path, relative="BASE/original.ver"):
@@ -57,11 +66,16 @@ def runtime_status():
 def test_any_compatible_source_is_fresh_baseline_without_specific_checkpoint(tmp_path):
     original = source(tmp_path)
     assert fresh.true_project_base(original) == original.parent
-    assert fresh.sandbox_for(original) == original.parent / fresh.SANDBOX_NAME
+    sandbox = fresh.sandbox_for(original)
+    assert sandbox == Path.home() / fresh.compact_sandbox_name(original.parent)
+    assert sandbox.name.startswith(fresh.COMPACT_SANDBOX_PREFIX)
+    assert sandbox != original.parent / fresh.SANDBOX_NAME
     nested = source(tmp_path, "BASE/R1_15A2_V16_RUNS/RUN_OLD/CALIBRATION/CHECKPOINTS/ACCEPTED_B_0099.ver")
     assert fresh.true_project_base(nested) == tmp_path / "BASE"
-    assert fresh.sandbox_for(nested) == tmp_path / "BASE" / fresh.SANDBOX_NAME
+    assert fresh.sandbox_for(nested) == sandbox
     assert not fresh.path_is_under(fresh.sandbox_for(nested), nested.parent.parent.parent)
+    different = source(tmp_path, "OTHER_SOURCE/source.ver")
+    assert fresh.sandbox_for(different) != sandbox
 
 
 def test_bad_or_recursive_source_fails_before_any_runtime_install(tmp_path):
@@ -70,13 +84,16 @@ def test_bad_or_recursive_source_fails_before_any_runtime_install(tmp_path):
     nested = source(tmp_path, "BASE/R1FRESH17/a.ver")
     with pytest.raises(RuntimeError, match="SOURCE_INSIDE_OUTPUT_SANDBOX"):
         fresh.sandbox_for(nested)
-    base = tmp_path / "OTHER_BASE"
+    compact_inside = source(tmp_path, "BASE/R1F_deadbeef/a.ver")
+    with pytest.raises(RuntimeError, match="SOURCE_INSIDE_OUTPUT_SANDBOX"):
+        fresh.sandbox_for(compact_inside)
     ext = tmp_path / "OTHER"
     ext.mkdir()
-    base.mkdir(exist_ok=True)
-    (base/"R1FRESH17").symlink_to(ext, target_is_directory=True)
+    other_source = source(tmp_path, "OTHER_BASE/other.ver")
+    compact_root = fresh.sandbox_for(other_source)
+    compact_root.symlink_to(ext, target_is_directory=True)
     with pytest.raises(RuntimeError, match="SYMLINKED_SANDBOX_FORBIDDEN"):
-        fresh.sandbox_for(source(tmp_path, "OTHER_BASE/other.ver"))
+        fresh.sandbox_for(other_source)
 
 
 @pytest.mark.parametrize("change", [
@@ -322,8 +339,13 @@ def test_relocate_parent_lock_workspace_without_touching_source(tmp_path):
         _install_runtime=lambda *args: runtime_status(),
         ActiveVisumAdapter=native, parent=Parent(),
         runtime_io_hotfix=NS(_ensure_parent=lambda p: Path(p).parent.mkdir(
-            parents=True, exist_ok=True)))
-    fresh.install(v16, original, sandbox, options=valid_options())
+            parents=True, exist_ok=True),
+            audit_run_path_budget=lambda p: {
+                "passes": True, "safe_logical_path_budget": 240,
+                "max_projected_logical_length": 222}))
+    installed_root = fresh.install(v16, original, sandbox, options=valid_options())
+    assert installed_root["projected_path_budget"]["passes"] is True
+    assert installed_root["projected_path_budget"]["max_projected_logical_length"] == 222
     original_layout, workspace = v16._isolated_workspace(original)
     assert workspace == sandbox/fresh.RUNS_NAME
     assert original_layout["project_base"] == sandbox
@@ -337,6 +359,40 @@ def test_relocate_parent_lock_workspace_without_touching_source(tmp_path):
     assert installed["fresh_universal"]["path_epoch"]["native_export_only"]
     assert (workspace / "FRESH_UNIVERSAL_BOOTSTRAP_AUTHORITY.json").exists()
     assert not (original.parent/".R1_15A2_V16.lock").exists()
+
+
+
+def test_actual_crash_path_projects_under_safe_240_limit_with_margin():
+    """2026-10-31 00:05:21 live RUN failed at 244; shorten the ROOT not the gate."""
+    previous = PureWindowsPath(
+        r"C:\Users\vilem_knap\Documents\VISUM\v45\2022\R1FRESH17\R1_15A2_V16_RUNS\RUN_20261031_000521_968727")
+    base = PureWindowsPath(r"C:\Users\vilem_knap\Documents\VISUM\v45\2022")
+    new = (PureWindowsPath(r"C:\Users\vilem_knap")
+           / fresh.compact_sandbox_name(base)
+           / fresh.RUNS_NAME / "RUN_20261031_000521_968727")
+    assert len(str(previous)) == 98
+    projected = 244 - len(str(previous)) + len(str(new))
+    assert projected <= 224, "require at least 16 characters of safety margin"
+    assert projected < 240
+    assert len(str(new)) < len(str(previous))
+    assert fresh.RUNS_NAME in str(new)
+
+
+def test_fresh_install_rejects_any_still_overlong_root_without_creating_runs(tmp_path):
+    original = source(tmp_path)
+    sandbox = fresh.sandbox_for(original)
+    v16 = NS(
+        RUNS_ROOT_NAME=fresh.RUNS_NAME, LOCK_NAME=".R1_15A2_V16.lock",
+        _base_layout=lambda p: {"project_base": original.parent},
+        _install_runtime=lambda *args: runtime_status(),
+        runtime_io_hotfix=NS(audit_run_path_budget=lambda p: {
+            "passes": False, "safe_logical_path_budget": 240,
+            "max_projected_logical_length": 244}))
+    with pytest.raises(RuntimeError, match="COMPACT_ROOT_PATH_BUDGET_FAILED:244"):
+        fresh.install(v16, original, sandbox, options=valid_options())
+    assert not (sandbox / fresh.RUNS_NAME).exists()
+    assert not (sandbox / ".R1_15A2_V16.lock").exists()
+    assert not getattr(v16, "_fresh_universal_guard_installed", False)
 
 
 def test_detached_silent_only_writes_in_own_sandbox(tmp_path):
