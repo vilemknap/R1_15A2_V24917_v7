@@ -279,6 +279,7 @@ def optimize(runner, ref):
               "component_pool": groups, "candidate_selection": "MEASURED_SHARED_SURROGATE_WITHIN_EXISTING_MASK",
               "count_residual_copies": 1, "mode": baseline["tdjoint"]["mode"],
               "long_composite_live_readiness": long_readiness,
+              "school_td_reference_contract": getattr(ref, "school_td_reference_contract", None),
               "long_full_reference_groups": list(getattr(
                   ref, "_v24917_full_long_reference_groups", ref.GROUPS)),
               "w_cnt": baseline["tdjoint"]["w_cnt"], "w_idp": baseline["tdjoint"]["w_idp"],
