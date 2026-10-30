@@ -124,6 +124,12 @@ def test_runtime_binding_requires_real_completed_assignment_source(monkeypatch,t
         def snapshot(self):return dict(checkpoint['current'])
         def generation_guard_snapshot(self):return dict(checkpoint['current'])
         def diagnostics(self,*args,**kwargs):return {'d12':{'rows':[]}}
+        def _build_cache(self,*args,**kwargs):
+            calls.append(('native_build',))
+            return ('new_collector', {}, {})
+        def _retire_obsolete_epoch_store(self,*args,**kwargs):
+            calls.append(('retire',))
+            return {'retired':True}
     adapter=Adapter()
     calls=[]
     mock_supply=types.ModuleType('r1_15a2_supply'); mock_supply.canonical_hash=lambda _:auth['generation_reference_hash']; mock_supply.SupplyContractError=RuntimeError
@@ -160,7 +166,7 @@ def test_runtime_binding_requires_real_completed_assignment_source(monkeypatch,t
     assert result['accepted_count']==1 and result['resume_generation_record']['search_complete'] is False
     assert calls==[('run','TD_FINECDF_V17'),('restore',)]
     with pytest.raises(Exception,match='A0001_RESUME_NO_PATH_ENUMERATION_ALLOWED'):
-        adapter._build_cache()
+        adapter._build_cache({}, tmp_path/'NEXT_EPOCH', {'state_hash':'live'})
 
 
 def test_read_only_store_hash_and_origin_checks(monkeypatch,tmp_path,recipe):
@@ -427,6 +433,10 @@ def test_reopened_matrix_requires_post_native_exact_proof(
         def generation_guard_snapshot(self):return dict(live)
         def snapshot(self):return dict(live)
         def diagnostics(self,*args,**kwargs):return {'d12':{'rows':[]}}
+        def _build_cache(self,*args,**kwargs):
+            raise AssertionError("unexpected native path enumeration")
+        def _retire_obsolete_epoch_store(self,*args,**kwargs):
+            raise AssertionError("unexpected source-store retirement")
     adapter=Adapter()
     mock_supply=types.ModuleType('r1_15a2_supply')
     mock_supply.canonical_hash=lambda _:auth['generation_reference_hash']

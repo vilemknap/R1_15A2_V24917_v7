@@ -134,6 +134,19 @@ def coordinate_proposals(space, x, components, radius):
                 yield key, axis, sign, trial
 
 
+def balanced_coordinate_proposals(space, x, components, radius):
+    """Exhaust each round across groups before trying a second direction.
+
+    The first 12 probes sample all 12 W/S/SCHOOL/LONG groups.  Each
+    component's native b/logc limits and +/- probes are unchanged.
+    """
+    per_group = [list(coordinate_proposals(space, x, [key], radius))
+                 for key in components]
+    for round_index in range(max(map(len, per_group), default=0)):
+        for group_trials in per_group:
+            yield from group_trials[round_index:round_index + 1]
+
+
 def _signature(x):
     return tuple((k, tuple(float(v) for v in x[k])) for k in sorted(x))
 
@@ -180,7 +193,10 @@ def optimize(runner, ref):
         # permits only part of a sweep.  The original shortlist is unchanged.
         offset = (iteration - 1) % len(groups)
         order = groups[offset:] + groups[:offset]
-        proposals = list(coordinate_proposals(runner.space, base["x"], order, radius))
+        # Bounded EXPLORE must sample every group before refining any group.
+        # A 28-evaluation budget covers >=2 probes of all 12 components.
+        proposals = list(balanced_coordinate_proposals(
+            runner.space, base["x"], order, radius))
         seen = {_signature(base["x"])}
         records = []
         completed = True
@@ -253,7 +269,12 @@ def optimize(runner, ref):
             if key not in changed_groups:
                 radius[key] = max(ref.CONFIG["trust_radius_min"],
                                   radius[key] * ref.CONFIG["trust_shrink_rejected"])
+        polled = sorted({record["component"] for record in records
+                         if record.get("kind") == "ISOLATED"
+                         and record.get("component") is not None})
         item = {"iteration": iteration, "complete_poll": completed,
+                "polled_components": polled,
+                "unpolled_components": sorted(set(groups) - set(polled)),
                 "native_rejections": native_rejections, "polled_at_min_radius": at_min_radius,
                 "status": "ACCEPTED_INNER_SURROGATE" if changed else "KEPT_PARENT",
                 "changed_components": changed_groups, "ranked_components": ranking,

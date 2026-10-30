@@ -43,7 +43,7 @@ import traceback
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
-RELEASE = "R1_15A2_V24917_SUPPLYMIX_COSTFIX1_20261027"
+RELEASE = "R1_15A2_V24917_SUPPLYMIX_COSTFIX1_TG_COMPLETION_ISOLATION_20261030"
 BLOCK = "SUPPLY_ADDVAL1"
 RESET_TYPE = 9
 GROUP_TYPE = 75
@@ -882,11 +882,24 @@ def _wrap_generation(orig, ctrl, base, tx):
                 pass
             return True, st2, dg2, value2, rec
         if srec.get("search_complete") is False:
+            # SUPPLYMIX is a separate, optional ADDVAL route-choice search
+            # wrapped OUTSIDE DemandPolicy.note_generation. A legal-branch
+            # exhaustion / verified no-write failure is not proof of SUPPLY
+            # stationarity, but it also must NOT convert an otherwise complete
+            # Generation search into DEMAND_SEARCH_INCOMPLETE_SUPPLY_LOCKED.
+            #
+            # Keep the original TG search_complete value unchanged. Block
+            # joint stationarity for this cycle and retain the SupplyMix reason
+            # in its own namespace. A genuine TG failure (original
+            # search_complete=False) still propagates unchanged.
             rec["stationarity_confirmed"] = False
-            rec["search_complete"] = False
+            rec["v24917_supplymix_search_incomplete"] = True
+            rec["v24917_supplymix_incomplete_reason"] = (
+                srec.get("stop_reason") or srec.get("status") or "UNKNOWN")
+            rec["v24917_supplymix_tg_completion_preserved"] = True
             # This wrapper runs outside DemandPolicy.note_generation. Clear its
-            # earlier completeness claim too; a recovered technical failure is
-            # not a verified stationary demand cycle.
+            # earlier stationary claim; a SupplyMix incomplete search cannot
+            # certify a complete JOINT fixed point.
             import r1_15a2_demand_policy_v1 as dp
             for item in dp._ACTIVE.values():
                 pol = item.get("policy")

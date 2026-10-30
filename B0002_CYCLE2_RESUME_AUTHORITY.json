@@ -1,0 +1,27 @@
+{
+  "schema": "R1_V24917_B0002_CYCLE2_RESUME_AUTHORITY_V1",
+  "source_run_name": "RUN_20261030_163527_853780",
+  "checkpoint_filename": "ACCEPTED_B_0002_e9eb29d6b38d.ver",
+  "expected_checkpoint_raw_sha256": "c19027ba4b3ce283d54d364b6f023f6990f4ba639870b56c7ba9a25e3fbf61b2",
+  "expected_checkpoint_size_bytes": 534576048,
+  "checkpoint_semantic_state_hash": "0c19a6443a2f2b794da2e7fd5868aeb2ab39c2eed0a70b384e91a3114fc59f17",
+  "checkpoint_semantic_hashes": {
+    "fixed_link_hash": "da1561b6a4059c3022c1a9d2d6324c7a37d9b4a1d81dab227518e768e71b43e2",
+    "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+    "operations_hash": "d02ecc1d2190f1c71961309340bf89516d4f94c524e0f10f1eaa3fcf702bcd04",
+    "addval_hash": "725c95127392b5a5ef4edf8e3431fc2b36daa9bce7412a4049fca586047f2a56",
+    "matrix_hash": "6bfe807922169e5379023d4f3e6b8404fbc3e54cfd54ce731f0cd3e5bdd2f62d",
+    "generation_hash": "b10e94aef55e4943f326fc05217e0d8e9ebe6ef5a4742ee57dabcdcbd35c2d49",
+    "td_hash": "b7b69f6992779ab9901a060b92f82c3c6a4424b6621ca6aa02d323b5f10832f7"
+  },
+  "checkpoint_snapshot_state_hash_diagnostic": "1bf4af0d0fced50dee12c958a6b57d093affa41775b50cf09061d9890565c48e",
+  "generation_reference_hash": "28d835b716275e278efdaff44594f360f2944c3cc59746c8ab77c08e334bba9c",
+  "accepted_count": 2,
+  "next_outer_cycle": 2,
+  "inherited_outer_cycles": 1,
+  "initial_path_epoch": "FRESH_NATIVE_ROUTE_ENUMERATION_UNDER_NEW_RUN",
+  "original_cache_policy": "NO_CROSS_RUN_CACHE_IMPORT_OR_RETIRE",
+  "prior_accepted_tg_td_replayed": false,
+  "td_school_long_policy": "FAIR_NATIVE_PROBING_WITHIN_PROGRESSIVE_BUDGET",
+  "source_evidence": "RUN_STATUS(20261030-165003).json and best_so_far_checkpoint.semantic_restart_authority"
+}

@@ -304,7 +304,11 @@ def test_supply_failure_clears_outer_policy_stationarity(monkeypatch):
     wrapped=sm._wrap_generation(lambda *args,**kwargs:(False,{}, {}, {},
                                 {'search_complete':True,'stationarity_confirmed':True}),NS(),NS(),NS())
     result=wrapped(None,{},'x',None,{}, {},None,None,None,outer_cycle=3)
-    assert not result[4]['search_complete'] and not result[4]['stationarity_confirmed']
+    # A no-write SupplyMix failure must suppress JOINT stationarity, but
+    # cannot overwrite an otherwise completed TG search (GENFIX2 isolation).
+    assert result[4]['search_complete'] is True
+    assert result[4]['stationarity_confirmed'] is False
+    assert result[4]['v24917_supplymix_search_incomplete'] is True
     assert not policy.last_generation_complete
 
 
