@@ -6,8 +6,8 @@
   no soft-band damping.
 * Phase REFINE afterwards: the inherited per-cycle stage caps
   (generation_step_schedule) and soft-band damping.
-* Coefficient envelope (both phases): WORK/SERVICE domestic ADD_PROD [0.75, 2.5],
-  ADD_ATT [0.75, 4.0].  ZAHR run-start reference x [0.5, 10.0].
+* Coefficient envelope (both phases): WORK/SERVICE domestic ADD_PROD [0.75, 3.0],
+  ADD_ATT [0.75, 5.0].  ZAHR run-start reference x [0.5, 10.0].
   Role-specific soft bands equal the corresponding hard bands.
   The normalized ZAHR reference is 1; native raw units are preserved.  ADD_SALARY keeps [0.5, 2.0].
 * Design mode TARGETED_ZONE_DIRECT replaces the family-global + centred
@@ -24,7 +24,7 @@ import functools
 import math
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
-RELEASE = "R1_15A2_V24917_TARGETED_PA_COEFFICIENT_BOUNDS_V2_20261030"
+RELEASE = "R1_15A2_V24917_TARGETED_PA_COEFFICIENT_BOUNDS_V3_20261031"
 POLICY_KEY = "v24917_targeted_generation"
 PHASE_KEY = "v24917_generation_phase"
 MODE_KEY = "v24917_generation_mode"
@@ -48,13 +48,13 @@ DEFAULT_POLICY: Dict[str, Any] = {
     "envelope": {
         "domestic_hard": [0.75, 2.0],  # backward-compatible unknown-role query
         "domestic_hard_by_role": {
-            "PROD": [0.75, 2.5], "ATT": [0.75, 4.0],
+            "PROD": [0.75, 3.0], "ATT": [0.75, 5.0],
         },
         "zahr_reference_multiplier": [0.5, 10.0],
         "boundary_reference_multiplier": [0.5, 2.0],
         "refine_domestic_soft": [0.75, 2.0],  # backward-compatible unknown role
         "refine_domestic_soft_by_role": {
-            "PROD": [0.75, 2.5], "ATT": [0.75, 4.0],
+            "PROD": [0.75, 3.0], "ATT": [0.75, 5.0],
         },
         "refine_zahr_reference_soft": [0.5, 10.0],
     },
