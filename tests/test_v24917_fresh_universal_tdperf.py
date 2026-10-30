@@ -50,6 +50,10 @@ def valid_cfg():
 
 def runtime_status():
     return {"v24917": {
+        "genfix2_policy_semantics": {
+            "ws_attraction_coefficient_band": [0.75, 5.0],
+            "mobility_band": [0.75, 3.0],
+            "attraction_changes_mobility_ratio": False},
         "demand_policy": {"installed": True, "note": {
             "options": {"td_policy": "ALWAYS", "td_every_n_cycles": 1,
                         "td_during_catchup": True, "td_first_cycle": True,
@@ -239,6 +243,19 @@ def test_runtime_rejects_environment_override_of_ws_mobility_band():
     status = runtime_status()
     status["v24917"]["demand_policy"]["note"]["options"]["mg_max_ratio"] = 2.0
     with pytest.raises(RuntimeError, match="EFFECTIVE_MOBILITY2_WS_PRODUCTION_BAND_MISMATCH"):
+        fresh.verify_runtime_status(status)
+
+
+
+@pytest.mark.parametrize("wrong", [
+    {"ws_attraction_coefficient_band": [0.75, 4.0]},
+    {"mobility_band": [0.75, 2.5]},
+    {"attraction_changes_mobility_ratio": True},
+])
+def test_runtime_rejects_old_or_mixed_ws_attraction_guard(wrong):
+    status = runtime_status()
+    status["v24917"]["genfix2_policy_semantics"].update(wrong)
+    with pytest.raises(RuntimeError, match="EFFECTIVE_WS_ATTRACTION_GUARD_NOT_INSTALLED"):
         fresh.verify_runtime_status(status)
 
 
