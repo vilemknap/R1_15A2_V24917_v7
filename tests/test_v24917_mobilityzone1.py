@@ -384,8 +384,8 @@ def test_live_school_fp_nonresponse_rejected_and_school_steps_frozen():
     assert projected["steps"]["ADD_PROD_SCH"] == {}
     assert projected["steps"]["ADD_ATT_SCH"] == {}
     assert projected["summary"]["school_generation_status"] == (
-        "FROZEN_PENDING_NATIVE_FORMULA_PROOF")
-    assert projected["summary"]["school_generation_search_complete"] is False
+        "FIXED_AMDY_NO_SCHOOL_ADD_COEFFICIENT")
+    assert projected["summary"]["school_generation_search_complete"] is True
     assert projected["summary"]["school_zones_changed"] == 0
     # Existing LONG predictions remain unchanged until their separate gate
     # freezes them, but SCHOOL has no influence or no-op rows.
@@ -404,6 +404,7 @@ def test_source_verified_fixture_retains_school_proposals():
     a = authority(raw)
     projected = z.guard_ls(ls_payload(), a)
     assert projected["summary"]["school_fp_link_verified"] is True
+    assert projected["summary"]["school_generation_status"] == "FP_LINK_VERIFIED_SYNTHETIC"
     assert projected["summary"]["school_generation_search_complete"] is True
     assert projected["steps"]["ADD_PROD_SCH"]
     assert projected["steps"]["ADD_ATT_SCH"]
