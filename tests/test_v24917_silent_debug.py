@@ -93,3 +93,50 @@ def test_bundle_excludes_large_unneeded_payload(tmp_path):
     with zipfile.ZipFile(report["bundle_file"]) as z:
         assert not any("sensitive_huge_data" in n for n in z.namelist())
         assert "RUN/RUN_STATUS.json" in z.namelist()
+
+
+def test_compact_silent_zip_keeps_575_school_violations_and_td_fallback(tmp_path):
+    host, _ = _host(tmp_path)
+    def calibration():
+        folder = tmp_path / silent.RUNS_NAME / "RUN_20261030" / "CALIBRATION" / "CYCLE_01"
+        folder.mkdir(parents=True)
+        (folder / "GENERATION_BLOCK_RESULT.json").write_text(json.dumps({
+            "status": "CONFIGURED_GENERATION_SEARCH_EXHAUSTED",
+            "search_complete": False,
+            "attempts": [{"trial": 2, "status": "REJECTED", "gap": 0.0015,
+                          "candidate": {"scale": 0.538158},
+                          "decision": {
+                              "cal_objective_before": 51.588767,
+                              "cal_objective_after": 46.524209,
+                              "reasons": ["MOBILITY2_LIVE_ENVELOPE_REJECTED"],
+                              "mobility_guard_live": {
+                                  "families": {"WORK": {"passes": True},
+                                               "SERVICE": {"passes": True}},
+                                  "mobilityzone1": {
+                                      "status": "REJECT_CANDIDATE",
+                                      "violations": [
+                                          {"family": "SCHOOL", "zone_no": i+1,
+                                           "reasons": ["FP_REFERENCE_OR_FORMULA_CHANGED:FP_5_SCHOOL"]}
+                                          for i in range(575)]}}}}]}))
+        (folder / "TD_TARGET_PLAN.json").write_text(json.dumps({
+            "status": "GLOBAL_IDP_FALLBACK",
+            "reason": "PATH_EPOCH_NEW_POSITIVE_OD_REQUIRES_REENUMERATION:NATIVE_CS_NOT:616:676",
+            "global_11d_evaluation_required": True}))
+        (folder / "TD_FINECDF_BLOCK_RESULT.json").write_text(json.dumps({
+            "status": "ACCEPTED_FINECDF_TD", "gap": .00056377,
+            "inner": {"changed_components": ["WORK_E_C"], "td_evaluations": 28}}))
+        return {"status": "RETURNED_UNVERIFIED"}
+    report = silent.run_silent(host, tmp_path, calibration)
+    with zipfile.ZipFile(report["bundle_file"]) as archive:
+        summary = json.loads(archive.read("SILENT_CALIBRATION_SUMMARY.json"))
+        g = summary["files"]["generation"]["summary"]
+        assert g["status"] == "CONFIGURED_GENERATION_SEARCH_EXHAUSTED"
+        trial = g["attempts"][0]
+        assert trial["zonal_mobility_violation_count"] == 575
+        assert trial["zonal_mobility_violation_counts"][
+            "SCHOOL:FP_REFERENCE_OR_FORMULA_CHANGED:FP_5_SCHOOL"] == 575
+        assert len(trial["zonal_mobility_sample"]) == 5
+        assert summary["files"]["td"]["summary"]["status"] == "ACCEPTED_FINECDF_TD"
+        assert "PATH_EPOCH_NEW_POSITIVE_OD" in summary["files"]["target_plan"]["summary"]["reason"]
+        assert not any(name.endswith("GENERATION_BLOCK_RESULT.json")
+                       for name in archive.namelist())
