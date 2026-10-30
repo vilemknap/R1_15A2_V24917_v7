@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Run the INCOMPLETE cycle-1 TD from opened ACCEPTED_A_0001_*.ver.
 
-PTV Visum: open the exact accepted A0001 checkpoint; choose Scripts >
-Run script file > this launcher. Never reloads model or re-enumerates routes.
+PTV Visum: select exact accepted A0001 checkpoint; choose Scripts >
+Run script file > this launcher. It ALWAYS reopens that .ver from disk using
+LoadVersion (discarding unsaved in-memory state), then verifies all seven
+semantic hashes before continuing without route re-enumeration.
 Original complete SQLite path store and fixed generation reference MUST exist.
 """
 from __future__ import annotations
@@ -38,9 +40,17 @@ def _execute(host, com):
         recipe = resume.authority(HERE)
         checkpoint = Path(str(host.IO.CurrentVersionFile)).resolve()
         paths = resume.check_source(checkpoint, recipe)
+        # A save can update CurrentVersionFile while the unsaved live model
+        # later diverges. Only a real LoadVersion establishes the persisted
+        # source state. Never rely on filename/path equality alone.
+        disk_reload = resume.hard_reopen_checkpoint(host, paths, recipe)
+        print("A0001 HARD DISK REOPEN COMPLETE: " +
+              disk_reload["source_version"] +
+              " sha256=" + disk_reload["source_raw_sha256"])
         continuation = resume.load_continuation(paths, recipe, canonical_hash)
-        resume.install_resume(v16, checkpoint, recipe, paths, continuation)
-        print("A0001: original checkpoint verified; cycle 1 TD continuation prepared.")
+        resume.install_resume(v16, checkpoint, recipe, paths, continuation,
+                              source_reload_receipt=disk_reload)
+        print("A0001: checkpoint reloaded from disk; exact seven-hash preflight required; cycle 1 TD prepared.")
         print("A0001: source SQLite is read-only: " + str(paths["sqlite"]))
         return v16.main()
     finally:

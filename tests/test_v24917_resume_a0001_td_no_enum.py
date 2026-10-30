@@ -59,6 +59,17 @@ def make_artifacts(tmp_path, recipe):
     return checkpoint,rec,run,reference
 
 
+def verified_hard_reload(cp, auth):
+    return {
+        'schema':'R1_A0001_FORCED_REOPEN_V1',
+        'status':'VERIFIED_LOADVERSION_CALLED_FROM_ORIGINAL_FILE',
+        'load_version_called':True,
+        'source_version':str(cp),
+        'source_raw_sha256':auth['expected_checkpoint_raw_sha256'],
+        'checkpoint_file_unchanged':True,
+    }
+
+
 def test_source_and_partial_generation_resume(tmp_path,recipe):
     cp,auth,run,ref=make_artifacts(tmp_path,recipe)
     paths=resume.check_source(cp,auth)
@@ -141,7 +152,8 @@ def test_runtime_binding_requires_real_completed_assignment_source(monkeypatch,t
                      _assert_new_run_is_not_nested=lambda *args:None))
     def fake_restore(*args):calls.append(('restore',))
     monkeypatch.setattr(resume,'restore_readonly_path_epoch',fake_restore)
-    resume.install_resume(v16,cp,auth,paths,cont,print_fn=lambda *x:None)
+    resume.install_resume(v16,cp,auth,paths,cont,print_fn=lambda *x:None,
+                          source_reload_receipt=verified_hard_reload(cp,auth))
     v16._install_runtime()
     assert v16._run_live_preflight()[0]['source_semantic_state_hash']==auth['checkpoint_semantic_state_hash']
     result=v16.parent.run_overnight_calibration_coupled(adapter,adapter.cfg,tmp_path,None,None)
@@ -404,7 +416,6 @@ def test_reopened_matrix_requires_post_native_exact_proof(
     paths=resume.check_source(cp,auth)
     cont=resume.load_continuation(paths,auth,lambda _:auth['generation_reference_hash'])
     before = dict(auth['checkpoint_semantic_hashes'])
-    before['matrix_hash']='22dc5ab9027dbb753b38b09f6842a3572e474b12a2e8d264415c9f2c4f63565e'
     live={'state_hash':'live','matrices':[{
         'matrix_no':9101,'rows':681,'cols':681,'sha256_float64_le':'a'*64}],
         **before}
@@ -426,8 +437,8 @@ def test_reopened_matrix_requires_post_native_exact_proof(
     monkeypatch.setitem(sys.modules,mock_controller.__name__,mock_controller)
     def original(a,cfg,folder,control,root):
         calls.append('native_baseline')
-        if native_repairs:
-            live['matrix_hash']=auth['checkpoint_semantic_hashes']['matrix_hash']
+        if not native_repairs:
+            live['matrix_hash']='22dc5ab9027dbb753b38b09f6842a3572e474b12a2e8d264415c9f2c4f63565e'
         a.diagnostics(folder,label='BASELINE')
         calls.append('continued')
         return mock_controller._runtime_demand_continuation(cfg)
@@ -448,7 +459,8 @@ def test_reopened_matrix_requires_post_native_exact_proof(
                      _assert_new_run_is_not_nested=lambda *a:None))
     monkeypatch.setattr(resume,'restore_readonly_path_epoch',
                         lambda *args:calls.append('path_cache_readonly'))
-    resume.install_resume(v16,cp,auth,paths,cont,print_fn=lambda *a:None)
+    resume.install_resume(v16,cp,auth,paths,cont,print_fn=lambda *a:None,
+                          source_reload_receipt=verified_hard_reload(cp,auth))
     v16._run_live_preflight()
     v16._install_runtime()
     run_folder=tmp_path/'NEXT_RUN'/'CALIBRATION'
@@ -468,3 +480,100 @@ def test_reopened_matrix_requires_post_native_exact_proof(
         assert report['changed_semantic_fields']==['matrix_hash']
     assert not (run_folder/'GENERATION_CACHE').exists()
     assert adapter.cache is None
+
+
+def test_actual_disk_reopen_overwrites_stale_in_memory_model(tmp_path,recipe):
+    cp,auth,_,_=make_artifacts(tmp_path,recipe)
+    paths=resume.check_source(cp,auth)
+    class IO:
+        CurrentVersionFile=str(cp)
+        load_calls=[]
+        def LoadVersion(self,path):
+            self.load_calls.append(path)
+            host.memory_state='accepted_from_disk'
+    class Host:
+        IO=IO()
+        memory_state='post_failed_td_rollback'
+    host=Host()
+    assert str(host.IO.CurrentVersionFile)==str(cp)
+    receipt=resume.hard_reopen_checkpoint(
+        host,paths,auth,load_fn=lambda h,p:h.IO.LoadVersion(str(p)))
+    assert host.IO.load_calls==[str(cp)]
+    assert host.memory_state=='accepted_from_disk'
+    assert receipt['load_version_called'] is True
+    assert receipt['source_raw_sha256']==auth['expected_checkpoint_raw_sha256']
+    assert cp.read_bytes()==b'fake-test-only-checkpoint'
+
+
+@pytest.mark.parametrize('failure', ['load_exception','path_changed','bytes_changed'])
+def test_disk_reopen_fails_closed_on_loader_problems(tmp_path,recipe,failure):
+    cp,auth,_,_=make_artifacts(tmp_path,recipe)
+    paths=resume.check_source(cp,auth)
+    class IO:
+        CurrentVersionFile=str(cp)
+    class Host:
+        IO=IO()
+    def loader(h,p):
+        if failure=='load_exception':
+            raise RuntimeError('COM rejected LoadVersion')
+        if failure=='path_changed':
+            h.IO.CurrentVersionFile=str(tmp_path/'other.ver')
+        elif failure=='bytes_changed':
+            cp.write_bytes(b'changed by COM')
+    with pytest.raises(RuntimeError,match={
+        'load_exception':'HARD_REOPEN_LOADVERSION_FAILED',
+        'path_changed':'HARD_REOPEN_LOADED_OTHER_SOURCE',
+        'bytes_changed':'HARD_REOPEN_SOURCE_BYTES_CHANGED_AFTER_LOAD',
+    }[failure]):
+        resume.hard_reopen_checkpoint(Host(),paths,auth,load_fn=loader)
+
+
+def test_matching_filename_cannot_substitute_for_disk_reload_receipt(tmp_path,recipe):
+    cp,auth,_,_=make_artifacts(tmp_path,recipe)
+    paths=resume.check_source(cp,auth)
+    root=cp.parent.parent.parent.parent
+    def pf():
+        return ({
+            'passes':True,'current_version_file':str(cp),
+            'source_raw_ver_sha256_provenance_only':auth['expected_checkpoint_raw_sha256'],
+            'semantic_before_after':{'passes':True},
+            'source_semantic_state_hash':auth['checkpoint_semantic_state_hash'],
+            'source_semantic_hashes':auth['checkpoint_semantic_hashes']}, {})
+    v16=NS(RUNS_ROOT_NAME='R1_15A2_V16_RUNS',
+           _base_layout=lambda source:{
+               'project_base':root.parent,
+               'detected_run_roots_nearest_first':[root],
+               'outermost_run_root':root},
+           _install_runtime=lambda *a:None,
+           _run_live_preflight=pf,
+           parent=NS(_assert_new_run_is_not_nested=lambda *a:None))
+    resume.install_resume(v16,cp,auth,paths,{},print_fn=lambda *a:None)
+    with pytest.raises(RuntimeError,match='HARD_REOPEN_PROVENANCE_MISSING'):
+        v16._run_live_preflight()
+
+
+def test_strict_source_preflight_rejects_post_rollback_matrices_even_with_reload_receipt(
+        tmp_path,recipe):
+    cp,auth,_,_=make_artifacts(tmp_path,recipe)
+    paths=resume.check_source(cp,auth)
+    from r1_15a2_restart_v2494 import semantic_state_hash
+    hashes=dict(auth['checkpoint_semantic_hashes'])
+    hashes['matrix_hash']='22dc5ab9027dbb753b38b09f6842a3572e474b12a2e8d264415c9f2c4f63565e'
+    root=cp.parent.parent.parent.parent
+    v16=NS(RUNS_ROOT_NAME='R1_15A2_V16_RUNS',
+           _base_layout=lambda source:{
+               'project_base':root.parent,
+               'detected_run_roots_nearest_first':[root],
+               'outermost_run_root':root},
+           _install_runtime=lambda *a:None,
+           _run_live_preflight=lambda *a:({
+               'passes':True,'current_version_file':str(cp),
+               'source_raw_ver_sha256_provenance_only':auth['expected_checkpoint_raw_sha256'],
+               'semantic_before_after':{'passes':True},
+               'source_semantic_state_hash':semantic_state_hash(hashes),
+               'source_semantic_hashes':hashes},{}),
+           parent=NS(_assert_new_run_is_not_nested=lambda *a:None))
+    resume.install_resume(v16,cp,auth,paths,{},print_fn=lambda *a:None,
+                          source_reload_receipt=verified_hard_reload(cp,auth))
+    with pytest.raises(RuntimeError,match='LIVE_SEMANTIC_DIFFERENCE:matrix_hash'):
+        v16._run_live_preflight()

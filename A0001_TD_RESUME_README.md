@@ -3,8 +3,8 @@
 ## Start
 
 1. Keep the **original** `RUN_20261030_143622_183126/CALIBRATION` folder and its path-store SQLite file intact.
-2. In PTV Visum open the original `CALIBRATION/CHECKPOINTS/ACCEPTED_A_0001_8dcf6dca8fa2.ver` (not B0000 or the post-crash in-memory state).
-3. Use **Scripts > Run script file** and choose `01_SPUSTIT_V24917_RESUME_A0001_TD_NO_ENUM_SILENT.py` from the updated repository directory. The new launcher uses the existing V24917 PREFLIGHTIOFIX1 installation, but has an explicit A0001 continuation and read-only path-store rehydration.
+2. In PTV Visum select the original `CALIBRATION/CHECKPOINTS/ACCEPTED_A_0001_8dcf6dca8fa2.ver` (not B0000 or the post-crash in-memory state).
+3. **Warning: the launcher intentionally calls Visum.LoadVersion and discards any unsaved model changes in the active Visum session.** Only use it after saving your other work. Use **Scripts > Run script file** and choose `01_SPUSTIT_V24917_RESUME_A0001_TD_NO_ENUM_SILENT.py` from the updated repository directory. The new launcher uses the existing V24917 PREFLIGHTIOFIX1 installation, but has an explicit A0001 continuation and read-only path-store rehydration.
 
 The launcher requires these unchanged original run artifacts:
 
@@ -13,7 +13,7 @@ The launcher requires these unchanged original run artifacts:
 - `CALIBRATION/RUN_STATUS.json`
 - `CALIBRATION/DEMAND_CYCLE_01_GENERATION/DESIGN/GENERATION_CACHE/TWO_MODE_PATH_STORE.sqlite`
 
-The source `.ver` bytes must match SHA-256 `9f209ce288cb8693c4ef22649b229e6f404d52c0451bd0bbdc15827b55300f63`; its **semantic state**, before and after baseline realization, must match the seven approved field hashes in `A0001_TD_RESUME_AUTHORITY.json`.
+The launcher now calls `Visum.IO.LoadVersion` (fallback `Visum.LoadVersion`) even if the current filename already matches the accepted checkpoint. The source `.ver` bytes must match SHA-256 `9f209ce288cb8693c4ef22649b229e6f404d52c0451bd0bbdc15827b55300f63`; its **semantic state**, before and after baseline realization, must match the seven approved field hashes in `A0001_TD_RESUME_AUTHORITY.json`.
 
 ## Checkpoint inside an older RUN_* tree (fixed)
 
@@ -126,3 +126,44 @@ For A0001, the stage-gated behavior is:
 **No automatic reference rebasing, no tolerance loosening, no new path
 enumeration, and no promotion of an unverified state as accepted.** The
 live Windows/Visum result of this staged recovery has not yet been observed.
+
+## 2026-10-30 16:21 forensic result and HARD_DISK_REOPEN
+
+Original aborted TD/rollback evidence `GENFIX2_PARENT_PROOF_RETAINED` has
+exactly the **same 37 per-matrix float64 SHA-256 fingerprints and the same
+snapshot state hash** as the subsequent 16:21 restart, both with matrix_hash
+`22dc5ab9027dbb753b38b09f6842a3572e474b12a2e8d264415c9f2c4f63565e`.
+The sidecar attached to accepted A0001 instead claims
+`d3d41a7b64f06e94d3c0001e120176ce1c2141c0de71753cba8e2559992d8d5c`.
+
+Importantly, **IO.CurrentVersionFile is a file name, not proof that file
+contents were deserialized after failed in-memory transactions**. The previous
+launcher explicitly never called LoadVersion, even though the original
+`SaveVersion` could make the CURRENT filename look correct while the model
+was later modified. This means it remains possible that the accepted .ver
+was correct all along but a stale live Visum session was reused.
+
+This dedicated launcher now:
+1. validates original .ver file bytes and the sidecar/SQLite/reference metadata;
+2. forces `r1_15a2_runtime_v1.load_version(visum, checkpoint)` using the
+   verified original .ver **every time**, also if the filename already matches;
+3. validates current COM version path and .ver bytes again (no overwrite);
+4. uses the existing V24916 live structural preflight but requires *all seven*
+   checkpoint semantic hashes to match **before allocating or modifying a new run**;
+5. if exactly matched, creates an isolated sibling RUN_* and uses the original
+   native baseline recompute with a second strict V24917 all-seven-field gate
+   before reattaching the read-only route basis and starting TD_FINECDF_V17;
+6. if the forcibly reopened file still yields the old 22dc matrix hash, it
+   fails early with `A0001_RESUME_LIVE_SEMANTIC_DIFFERENCE:matrix_hash`.
+   This would show the *serialized* checkpoint is not equal to the accepted
+   in-memory scientific authority. A different restart mode would then need
+   deterministic recovery of those matrices, not a bypass of the hash check.
+
+The launcher **does not** regenerate paths, write directly to OD matrices,
+or promote an unverified state. Since it deliberately discards unsaved Visum
+model state, this behavior is restricted to the dedicated A0001 restart script.
+
+Separate performance observation: the 11D inline DIAGFAST parity check fell
+back to LEGACY (three output artifacts not equal); that was NOT the cause of
+the A0001 resume stop. The test result below is still an offline test until
+the new hard-disk-reopen launcher runs in PTV Visum on Windows.

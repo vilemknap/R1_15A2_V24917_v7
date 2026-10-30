@@ -1,7 +1,10 @@
 """Explicit A0001 cycle-1 TD continuation using a verified, read-only old path epoch.
 
-Never calls LoadVersion or enumerates routes. Reuses the existing native TD
-controller. A missing/changed original SQLite path store is a hard stop.
+The dedicated launcher MUST explicitly LoadVersion from the original accepted
+A0001 .ver, even if IO.CurrentVersionFile already displays that same filename.
+This defeats stale in-memory state after a failed TD rollback. The saved .ver
+and seven live semantic fingerprints must then match exactly, and route
+enumeration is prohibited.
 """
 from __future__ import annotations
 
@@ -80,6 +83,47 @@ def check_source(checkpoint, recipe):
     require(paths["reference"].is_file(), "GENERATION_REFERENCE_MISSING")
     require(paths["run_status"].is_file(), "RUN_STATUS_MISSING")
     return paths
+
+
+def hard_reopen_checkpoint(visum, paths, recipe, *, load_fn=None):
+    """Force actual checkpoint byte deserialization, not a filename check.
+
+    The previous launcher trusted IO.CurrentVersionFile, which SaveVersion
+    can leave pointing to an accepted .ver even while later failed TD and
+    rollback transactions have altered the live in-memory model.
+    This operation intentionally replaces the live unsaved model state.
+    The original checkpoint file and path-store are never written.
+    """
+    checkpoint = Path(paths["checkpoint"]).resolve()
+    require(checkpoint.is_file(), "HARD_REOPEN_CHECKPOINT_MISSING")
+    require(Path(str(visum.IO.CurrentVersionFile)).resolve() == checkpoint,
+            "HARD_REOPEN_VISIBLE_SOURCE_MISMATCH")
+    expected_bytes = recipe["expected_checkpoint_raw_sha256"]
+    require(sha256_file(checkpoint) == expected_bytes,
+            "HARD_REOPEN_SOURCE_BYTES_CHANGED_BEFORE_LOAD")
+    if load_fn is None:
+        from r1_15a2_runtime_v1 import load_version
+        load_fn = load_version
+    try:
+        load_fn(visum, checkpoint)
+    except Exception as exc:
+        raise RuntimeError("A0001_RESUME_HARD_REOPEN_LOADVERSION_FAILED:" +
+                           type(exc).__name__ + ":" + str(exc)) from exc
+    require(Path(str(visum.IO.CurrentVersionFile)).resolve() == checkpoint,
+            "HARD_REOPEN_LOADED_OTHER_SOURCE")
+    require(sha256_file(checkpoint) == expected_bytes,
+            "HARD_REOPEN_SOURCE_BYTES_CHANGED_AFTER_LOAD")
+    return {
+        "schema": "R1_A0001_FORCED_REOPEN_V1",
+        "status": "VERIFIED_LOADVERSION_CALLED_FROM_ORIGINAL_FILE",
+        "load_version_called": True,
+        "source_version": str(checkpoint),
+        "source_raw_sha256": expected_bytes,
+        "checkpoint_file_unchanged": True,
+        "live_semantic_match_pending_preflight": True,
+        "com_path_export_calls": 0,
+        "route_enumeration_calls": 0,
+    }
 
 
 def check_live_semantic(live, recipe, *, permit_v24916_matrix_deferral=False):
@@ -464,8 +508,9 @@ def install_sibling_run_layout_guard(v16, checkpoint, print_fn=print):
     }
 
 
-def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print):
-    """Bind hooks to actual V24916 parent after the normal V24917 installer."""
+def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print,
+                   source_reload_receipt=None):
+    """Bind hooks only after an explicit disk LoadVersion certificate."""
     output_layout = install_sibling_run_layout_guard(v16, checkpoint, print_fn=print_fn)
     base_install = v16._install_runtime
     base_preflight = v16._run_live_preflight
@@ -473,7 +518,19 @@ def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print)
 
     def checked_preflight(*args, **kwargs):
         report, manifest = base_preflight(*args, **kwargs)
-        # Provenance checks and six exact fields happen before any working-copy writes.
+        # The source .ver MUST have been deserialized from disk, not just
+        # displayed by IO.CurrentVersionFile after a prior SaveVersion.
+        receipt = source_reload_receipt or {}
+        require(receipt.get("status") ==
+                "VERIFIED_LOADVERSION_CALLED_FROM_ORIGINAL_FILE"
+                and receipt.get("load_version_called") is True
+                and receipt.get("checkpoint_file_unchanged") is True
+                and receipt.get("source_raw_sha256") ==
+                    recipe["expected_checkpoint_raw_sha256"]
+                and Path(receipt.get("source_version", "")).resolve() ==
+                    paths["checkpoint"],
+                "HARD_REOPEN_PROVENANCE_MISSING")
+        # Exact seven-field semantic proof before any working-copy writes.
         require(report.get("passes") is True and
                 (report.get("semantic_before_after") or {}).get("passes") is True,
                 "LIVE_V24916_PREFLIGHT_NOT_STABLE")
@@ -484,11 +541,12 @@ def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print)
         proof = check_live_semantic({
             "semantic_state_hash": report.get("source_semantic_state_hash"),
             "semantic_hashes": report.get("source_semantic_hashes")},
-            recipe, permit_v24916_matrix_deferral=True)
+            recipe, permit_v24916_matrix_deferral=False)
         preflight_proof.clear()
         preflight_proof.update(proof)
         preflight_proof["source_checkpoint"] = str(paths["checkpoint"])
         preflight_proof["checkpoint_raw_sha256_verified"] = True
+        preflight_proof["hard_disk_reopen"] = dict(source_reload_receipt)
         return report, manifest
 
     def installer(*args, **kwargs):
