@@ -6,8 +6,9 @@
   no soft-band damping.
 * Phase REFINE afterwards: the inherited per-cycle stage caps
   (generation_step_schedule) and soft-band damping.
-* Coefficient envelope (both phases): domestic ADD_PROD/ATT [0.75, 2.0],
-  ZAHR run-start reference x [0.5, 10.0]; soft bands equal hard bands.
+* Coefficient envelope (both phases): WORK/SERVICE domestic ADD_PROD [0.75, 2.5],
+  ADD_ATT [0.75, 4.0].  ZAHR run-start reference x [0.5, 10.0].
+  Role-specific soft bands equal the corresponding hard bands.
   The normalized ZAHR reference is 1; native raw units are preserved.  ADD_SALARY keeps [0.5, 2.0].
 * Design mode TARGETED_ZONE_DIRECT replaces the family-global + centred
   pattern: every zone keeps its own fitted step (no uniform family term);
@@ -23,7 +24,7 @@ import functools
 import math
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
-RELEASE = "R1_15A2_V24917_TARGETED_CATCHUP_GENERATION_V1_20261025"
+RELEASE = "R1_15A2_V24917_TARGETED_PA_COEFFICIENT_BOUNDS_V2_20261030"
 POLICY_KEY = "v24917_targeted_generation"
 PHASE_KEY = "v24917_generation_phase"
 MODE_KEY = "v24917_generation_mode"
@@ -45,10 +46,16 @@ DEFAULT_POLICY: Dict[str, Any] = {
     "refine_max_log_down": math.log(0.8),
     "refine_soft_outward_step_factor": 0.5,
     "envelope": {
-        "domestic_hard": [0.75, 2.0],
+        "domestic_hard": [0.75, 2.0],  # backward-compatible unknown-role query
+        "domestic_hard_by_role": {
+            "PROD": [0.75, 2.5], "ATT": [0.75, 4.0],
+        },
         "zahr_reference_multiplier": [0.5, 10.0],
         "boundary_reference_multiplier": [0.5, 2.0],
-        "refine_domestic_soft": [0.75, 2.0],
+        "refine_domestic_soft": [0.75, 2.0],  # backward-compatible unknown role
+        "refine_domestic_soft_by_role": {
+            "PROD": [0.75, 2.5], "ATT": [0.75, 4.0],
+        },
         "refine_zahr_reference_soft": [0.5, 10.0],
     },
     "fit": {"ridge_relative": 0.01, "balance_weight_relative": 50.0,
@@ -81,6 +88,19 @@ def validate_policy(policy: Mapping[str, Any]) -> Dict[str, Any]:
         need(0.0 < lo < 1.0 < hi <= 20.0, "envelope." + key)
     need(float(env["refine_domestic_soft"][0]) >= float(env["domestic_hard"][0]) and
          float(env["refine_domestic_soft"][1]) <= float(env["domestic_hard"][1]), "soft_inside_hard")
+    for role in ("PROD", "ATT"):
+        hard_pair = env["domestic_hard_by_role"][role]
+        soft_pair = env["refine_domestic_soft_by_role"][role]
+        for key, pair in (("domestic_hard_by_role", hard_pair),
+                          ("refine_domestic_soft_by_role", soft_pair)):
+            need(isinstance(pair, (list, tuple)) and len(pair) == 2,
+                 "envelope." + key + "." + role + ".shape")
+            lo, hi = (float(x) for x in pair)
+            need(0.0 < lo < 1.0 < hi <= 20.0,
+                 "envelope." + key + "." + role)
+        need(float(hard_pair[0]) <= float(soft_pair[0])
+             and float(soft_pair[1]) <= float(hard_pair[1]),
+             "soft_inside_hard." + role)
     for ph in ("CATCH_UP", "REFINE"):
         f = float(p["flowbundle_mask_non_target_factor"][ph])
         need(0.0 <= f <= 1.0, "flowbundle_mask_non_target_factor." + ph)
@@ -143,12 +163,23 @@ def overlay_cfg(cfg: Mapping[str, Any], phase: str) -> Dict[str, Any]:
 
 
 # --------------------------------------------------------------- multiblock
+def _domestic_role_envelope(env, role, *, soft=False):
+    # Only targeted WORK/SERVICE PROD/ATT callers supply role.  Generic bounds
+    # queries retain the legacy scalar bands; SCHOOL and LONG are separate.
+    key = "refine_domestic_soft_by_role" if soft else "domestic_hard_by_role"
+    base = "refine_domestic_soft" if soft else "domestic_hard"
+    role = str(role or "").upper()
+    if role in ("PROD", "ATT"):
+        return tuple(float(x) for x in env[key][role])
+    return tuple(float(x) for x in env[base])
+
+
 def _bounds_patch(orig_hard, orig_soft, mb):
     @functools.wraps(orig_hard)
-    def hard(branch, cfg, current=None, reference=None):
+    def hard(branch, cfg, current=None, reference=None, *, role=None):
         policy = policy_of(cfg)
         if policy is None or not mb._signed_generation_policy(cfg):
-            return orig_hard(branch, cfg, current, reference)
+            return orig_hard(branch, cfg, current, reference, role=role)
         env = policy["envelope"]
         if str(branch).upper() == "ZAHR":
             ref = float(reference if reference is not None and reference > EPS
@@ -156,7 +187,7 @@ def _bounds_patch(orig_hard, orig_soft, mb):
             lo, hi = (ref * float(x) for x in env["zahr_reference_multiplier"])
             name = "RUN_START_REFERENCE_RELATIVE_MULTIPLIER"
         else:
-            lo, hi = (float(x) for x in env["domestic_hard"])
+            lo, hi = _domestic_role_envelope(env, role)
             name = "AMDY_LIKE_DOMESTIC_ABSOLUTE_ENVELOPE"
         if current is not None and math.isfinite(float(current)):
             lo, hi = min(lo, float(current)), max(hi, float(current))
@@ -164,18 +195,18 @@ def _bounds_patch(orig_hard, orig_soft, mb):
     hard.__r1_v24917__ = True
 
     @functools.wraps(orig_soft)
-    def soft(branch, cfg, current, reference=None):
+    def soft(branch, cfg, current, reference=None, *, role=None):
         policy = policy_of(cfg)
         if policy is None or not mb._signed_generation_policy(cfg):
-            return orig_soft(branch, cfg, current, reference)
+            return orig_soft(branch, cfg, current, reference, role=role)
         if cfg.get(PHASE_KEY) == "CATCH_UP":
-            lo, hi, _ = hard(branch, cfg, current, reference)
+            lo, hi, _ = hard(branch, cfg, current, reference, role=role)
             return lo, hi          # no damping inside the hard envelope
         env = policy["envelope"]
         if str(branch).upper() == "ZAHR":
             ref = float(reference if reference is not None and reference > EPS else current)
             return tuple(ref * float(x) for x in env["refine_zahr_reference_soft"])
-        return tuple(float(x) for x in env["refine_domestic_soft"])
+        return _domestic_role_envelope(env, role, soft=True)
     soft.__r1_v24917__ = True
     return hard, soft
 
@@ -200,10 +231,12 @@ def targeted_zone_direct(mb, normalized, zone_map, cfg, reference_values, skippe
             continue
         reference = mb._reference_coefficient(reference_values, attr, z, float(current))
         low, high, envelope = mb._multiplicative_coefficient_bounds(
-            branch, cfg, current=float(current), reference=reference)
+            branch, cfg, current=float(current), reference=reference,
+            role=row["role"])
         step_low = max(-max_down, math.log(max(EPS, low) / float(current)))
         step_high = min(max_up, math.log(max(EPS, high) / float(current)))
-        soft_low, soft_high = mb._soft_multiplier_bounds(branch, cfg, float(current), reference)
+        soft_low, soft_high = mb._soft_multiplier_bounds(
+            branch, cfg, float(current), reference, role=row["role"])
         step, changed = mb._damp_outward_log_step(float(current), requested, soft_low,
                                                   soft_high, soft_factor)
         bounded = min(step_high, max(step_low, step))
@@ -289,7 +322,8 @@ def zone_bounds(mb, zone_rows, cfg, reference_values=None) -> Dict[Tuple[str, st
                     continue
                 reference = mb._reference_coefficient(reference_values, attr, int(z), float(current))
                 low, high, _ = mb._multiplicative_coefficient_bounds(
-                    branch, cfg, current=float(current), reference=reference)
+                    branch, cfg, current=float(current), reference=reference,
+                    role=role)
                 dom_lo = math.log(max(EPS, low) / float(current))
                 dom_hi = math.log(max(EPS, high) / float(current))
                 if (family, role, branch) == ("WORK", "ATT", "DOMESTIC"):
