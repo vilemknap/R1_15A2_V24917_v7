@@ -44,7 +44,9 @@ def sandbox_for(source):
     source = Path(source).resolve()
     base = true_project_base(source)
     sandbox = base / SANDBOX_NAME
-    require(sandbox not in source.parents and source != sandbox,
+    require(not any(part.name.upper() == SANDBOX_NAME.upper()
+                    for part in source.parents)
+            and sandbox not in source.parents and source != sandbox,
             "SOURCE_INSIDE_OUTPUT_SANDBOX")
     require(not sandbox.is_symlink(), "SYMLINKED_SANDBOX_FORBIDDEN")
     return sandbox
