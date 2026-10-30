@@ -82,10 +82,85 @@ def check_source(checkpoint, recipe):
     return paths
 
 
-def check_live_semantic(live, recipe):
-    require(live.get("semantic_state_hash") == recipe["checkpoint_semantic_state_hash"],
-            "LIVE_SEMANTIC_STATE_MISMATCH")
-    check_fields(live.get("semantic_hashes"), recipe, "LIVE_SEMANTIC")
+def check_live_semantic(live, recipe, *, permit_v24916_matrix_deferral=False):
+    """Separate cross-release V24916 preflight from V24917 checkpoint proof.
+
+    A matching source .ver SHA alone is never a semantic proof. The six
+    non-matrix fields must match exactly. A V24916-only matrix difference may
+    be deferred, but is NOT ACCEPTED: the V24917 exact live snapshot must
+    independently match all seven fields before TD and path-store use.
+    """
+    from r1_15a2_restart_v2494 import semantic_state_hash
+
+    observed = live.get("semantic_hashes")
+    require(isinstance(observed, dict), "LIVE_SEMANTIC_FIELDS_MISSING")
+    expected = recipe["checkpoint_semantic_hashes"]
+    names = recipe["checkpoint_semantic_fields"]
+    differences = [name for name in names if observed.get(name) != expected[name]]
+    computed = semantic_state_hash(observed)
+    require(live.get("semantic_state_hash") == computed,
+            "LIVE_PREFLIGHT_SEMANTIC_HASH_SELF_INCONSISTENT")
+    if not differences:
+        require(computed == recipe["checkpoint_semantic_state_hash"],
+                "LIVE_SEMANTIC_STATE_MISMATCH")
+        return {"status": "EXACT_ALL_SEVEN_FIELDS", "matrix_match": True,
+                "semantic_state_hash": computed}
+    require(differences == ["matrix_hash"] and permit_v24916_matrix_deferral,
+            "LIVE_SEMANTIC_DIFFERENCE:" + ",".join(differences))
+    return {
+        "status": "V24916_MATRIX_ONLY_UNPROVEN_REQUIRES_V24917_EXACT_SNAPSHOT",
+        "matrix_match": False,
+        "expected_checkpoint_matrix_hash": expected["matrix_hash"],
+        "v24916_live_matrix_hash": observed["matrix_hash"],
+        "v24916_semantic_state_hash": computed,
+        "no_checkpoint_acceptance_granted": True,
+        "model_mutations_allowed_by_this_gate": False,
+    }
+
+
+def publish_matrix_reopen_audit(folder, snapshot, recipe, preflight_proof):
+    """Persist exact live matrix identities BEFORE any resume TD evaluation."""
+    from r1_15a2_restart_v2494 import semantic_state_hash
+    expected = recipe["checkpoint_semantic_hashes"]
+    names = recipe["checkpoint_semantic_fields"]
+    observed = {name: snapshot.get(name) for name in names}
+    diffs = [name for name in names if observed[name] != expected[name]]
+    exact = not diffs and semantic_state_hash(snapshot) == recipe["checkpoint_semantic_state_hash"]
+    matrix_rows = snapshot.get("matrices")
+    require(isinstance(matrix_rows, list), "LIVE_MATRIX_ROWS_MISSING")
+    row = {
+        "schema": "R1_A0001_REOPEN_MATRIX_FORENSICS_V1",
+        "status": "EXACT_V24917_CHECKPOINT" if exact else "MISMATCH_V24917_CHECKPOINT",
+        "source_checkpoint": preflight_proof.get("source_checkpoint"),
+        "checkpoint_raw_sha256_verified": preflight_proof.get("checkpoint_raw_sha256_verified"),
+        "checkpoint_expected_semantic_state_hash": recipe["checkpoint_semantic_state_hash"],
+        "checkpoint_expected_matrix_hash": expected["matrix_hash"],
+        "v24916_preflight": dict(preflight_proof),
+        "v24917_strict": {
+            "semantic_state_hash": semantic_state_hash(snapshot),
+            "matrix_hash": snapshot.get("matrix_hash"),
+            "snapshot_state_hash_diagnostic": snapshot.get("state_hash"),
+            "matrix_count": len(matrix_rows),
+            "matrix_rows": copy.deepcopy(matrix_rows),
+        },
+        "changed_semantic_fields": diffs,
+        "source_original_accepted_snapshot": "CHECKPOINT_SIDECAR_SEVEN_HASHES",
+        "original_per_matrix_sha_available": False,
+        "com_path_export_calls": 0,
+        "path_enumeration_calls": 0,
+        "td_evaluations_executed_by_this_proof": 0,
+        "authority_decision": "CONTINUE_ONLY_IF_EXACT" if exact else "FAIL_CLOSED_NO_TD",
+    }
+    target = Path(folder) / "A0001_MATRIX_REOPEN_FORENSICS.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    tmp = target.with_name(target.name + ".tmp")
+    try:
+        tmp.write_text(json.dumps(row, ensure_ascii=False, indent=2, allow_nan=False)
+                       + "\n", encoding="utf-8")
+        tmp.replace(target)
+    finally:
+        tmp.unlink(missing_ok=True)
+    return row
 
 
 def check_snapshot(snapshot, recipe):
@@ -386,13 +461,26 @@ def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print)
     output_layout = install_sibling_run_layout_guard(v16, checkpoint, print_fn=print_fn)
     base_install = v16._install_runtime
     base_preflight = v16._run_live_preflight
+    preflight_proof = {}
 
     def checked_preflight(*args, **kwargs):
         report, manifest = base_preflight(*args, **kwargs)
-        # Fail before ANY isolated working-copy writes if the loaded version differs.
-        check_live_semantic({
+        # Provenance checks and six exact fields happen before any working-copy writes.
+        require(report.get("passes") is True and
+                (report.get("semantic_before_after") or {}).get("passes") is True,
+                "LIVE_V24916_PREFLIGHT_NOT_STABLE")
+        require(Path(report.get("current_version_file", "")).resolve() ==
+                paths["checkpoint"], "LIVE_SOURCE_VERSION_CHANGED")
+        require(report.get("source_raw_ver_sha256_provenance_only") ==
+                recipe["expected_checkpoint_raw_sha256"], "LIVE_CHECKPOINT_BYTES_CHANGED")
+        proof = check_live_semantic({
             "semantic_state_hash": report.get("source_semantic_state_hash"),
-            "semantic_hashes": report.get("source_semantic_hashes")}, recipe)
+            "semantic_hashes": report.get("source_semantic_hashes")},
+            recipe, permit_v24916_matrix_deferral=True)
+        preflight_proof.clear()
+        preflight_proof.update(proof)
+        preflight_proof["source_checkpoint"] = str(paths["checkpoint"])
+        preflight_proof["checkpoint_raw_sha256_verified"] = True
         return report, manifest
 
     def installer(*args, **kwargs):
@@ -412,8 +500,22 @@ def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print)
             require(cfg.get("coupled_demand", {}).get("max_outer_cycles") == 100,
                     "CONFIG_CYCLE_BUDGET_CHANGED")
             require(adapter.cache is None, "CACHE_ALREADY_INITIALIZED")
-            require(adapter.snapshot().get("state_hash") is not None, "LIVE_SNAPSHOT_UNAVAILABLE")
-            check_snapshot(adapter.snapshot(), recipe)
+            require(preflight_proof.get("checkpoint_raw_sha256_verified") is True,
+                    "V24916_PREFLIGHT_PROOF_NOT_AVAILABLE")
+            # This V24917 reader bypasses candidate readback cache and tests
+            # the real live matrix values, not a legacy V24916 hash or a label.
+            snapshot = adapter.generation_guard_snapshot()
+            require(snapshot.get("state_hash") is not None,
+                    "LIVE_SNAPSHOT_UNAVAILABLE")
+            audit = publish_matrix_reopen_audit(
+                folder, snapshot, recipe, preflight_proof)
+            print_fn("A0001 MATRIX REOPEN: " + audit["status"] +
+                     " changed=" + ",".join(audit["changed_semantic_fields"]) +
+                     " expected=" + recipe["checkpoint_semantic_hashes"]["matrix_hash"] +
+                     " actual=" + str(snapshot.get("matrix_hash")))
+            require(audit["status"] == "EXACT_V24917_CHECKPOINT",
+                    "V24917_REOPENED_MATRIX_AUTHORITY_MISMATCH")
+            check_snapshot(snapshot, recipe)
             require(canonical_hash(continuation["generation_reference"]) ==
                     recipe["generation_reference_hash"], "REFERENCE_CHANGED")
             cfg["runtime_demand_continuation"] = copy.deepcopy(continuation)

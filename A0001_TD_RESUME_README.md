@@ -69,3 +69,31 @@ The source `RUN_STATUS.json` must still contain the verified accepted STEP1 reco
 ## Methodology
 
 The original source has one accepted Generation step but no completed TD cycle. The restart is a **partial cycle continuation**, not a fresh run or a new accepted optimization. Its active path epoch is geometry/volume evidence for Generation/Supply proposals only; acceptance still requires a fresh native assignment with live 12D/11D.
+
+## 2026-10-30 reopen matrix fingerprint incident
+
+The original A0001 acceptance sidecar records matrix_hash
+`d3d41a7b64f06e94d3c0001e120176ce1c2141c0de71753cba8e2559992d8d5c`.
+Reopening the exact same .ver (SHA-256
+`9f209ce288cb8693c4ef22649b229e6f404d52c0451bd0bbdc15827b55300f63`)
+and running the V24916 read-only preflight yields matrix_hash
+`22dc5ab9027dbb753b38b09f6842a3572e474b12a2e8d264415c9f2c4f63565e`.
+All six other semantic field hashes match.
+
+This branch does NOT treat unchanged .ver file bytes as equivalence of
+in-memory matrix values. It allows *only* V24916's differing matrix digest
+to be deferred through a stable read-only preflight and then requires the
+V24917 **strict uncached** snapshot to match ALL SEVEN checkpoint fields
+before any resumed TD or path-store use. If that full comparison fails,
+the controller stops and publishes
+`RUN_*/CALIBRATION/A0001_MATRIX_REOPEN_FORENSICS.json` (also copied into
+the SILENT DEBUG.zip), including the matrix numbers, dimensions, per-matrix
+SHA-256 of float64 LE arrays, V24916/V24917 totals, and exact changed
+semantic domains. It does not invent the unavailable original per-matrix
+fingerprints from the sidecar.
+
+If the strict V24917 matrix hash still equals the reopened V24916 value,
+the checkpoint's original in-memory accepted matrix state was NOT proven
+to survive serialization/reopening. This is a real safety blocker, not
+something to bypass by modifying a manifest, tolerance, or stored authority.
+`LIVE_VISUM_NOT_RUN` for this patch.

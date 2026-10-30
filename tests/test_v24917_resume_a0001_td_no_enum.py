@@ -105,12 +105,13 @@ def test_runtime_binding_requires_real_completed_assignment_source(monkeypatch,t
     cp,auth,_,_=make_artifacts(tmp_path,recipe)
     paths=resume.check_source(cp,auth)
     cont=resume.load_continuation(paths,auth,lambda _:auth['generation_reference_hash'])
-    checkpoint={'current':{'state_hash':'live',**auth['checkpoint_semantic_hashes']}}
+    checkpoint={'current':{'state_hash':'live','matrices':[],**auth['checkpoint_semantic_hashes']}}
     class Adapter:
         def __init__(self):
             self.cache=None
             self.cfg={'coupled_demand':{'max_outer_cycles':100}}
         def snapshot(self):return dict(checkpoint['current'])
+        def generation_guard_snapshot(self):return dict(checkpoint['current'])
         def diagnostics(self,*args,**kwargs):return {'d12':{'rows':[]}}
     adapter=Adapter()
     calls=[]
@@ -131,7 +132,11 @@ def test_runtime_binding_requires_real_completed_assignment_source(monkeypatch,t
                'outermost_run_root':original_runs_root},
            _install_runtime=lambda *a:None,
            _run_live_preflight=lambda *a,**k:({'source_semantic_state_hash':auth['checkpoint_semantic_state_hash'],
-               'source_semantic_hashes':auth['checkpoint_semantic_hashes']},{}),
+               'source_semantic_hashes':auth['checkpoint_semantic_hashes'],
+               'passes':True,
+               'semantic_before_after':{'passes':True},
+               'current_version_file':str(cp),
+               'source_raw_ver_sha256_provenance_only':auth['expected_checkpoint_raw_sha256']},{}),
            parent=NS(run_overnight_calibration_coupled=original,
                      _assert_new_run_is_not_nested=lambda *args:None))
     def fake_restore(*args):calls.append(('restore',))
@@ -315,3 +320,76 @@ def test_a0001_silent_launcher_normalizes_source_to_project_root(tmp_path, recip
     other.write_bytes(b"not-checkpoint")
     with pytest.raises(RuntimeError, match="A0001_RESUME_SILENT_SOURCE_NOT_IN_PREVIOUS_RUN_CHECKPOINTS"):
         mod._source_project_base_for_silent(NS(IO=NS(CurrentVersionFile=str(other))))
+
+
+def test_v24916_matrix_only_difference_requires_v24917_strict_proof(recipe):
+    from r1_15a2_restart_v2494 import semantic_state_hash
+    hashes = dict(recipe['checkpoint_semantic_hashes'])
+    hashes['matrix_hash'] = '22dc5ab9027dbb753b38b09f6842a3572e474b12a2e8d264415c9f2c4f63565e'
+    live = {'semantic_hashes':hashes, 'semantic_state_hash':semantic_state_hash(hashes)}
+    audit = resume.check_live_semantic(live, recipe, permit_v24916_matrix_deferral=True)
+    assert audit['status'].startswith('V24916_MATRIX_ONLY_UNPROVEN')
+    assert audit['no_checkpoint_acceptance_granted'] is True
+    assert audit['v24916_live_matrix_hash'] == hashes['matrix_hash']
+    with pytest.raises(RuntimeError, match="LIVE_SEMANTIC_DIFFERENCE:matrix_hash"):
+        resume.check_live_semantic(live,recipe)
+    damaged = copy.deepcopy(live)
+    damaged['semantic_hashes']['generation_hash'] = '0'*64
+    damaged['semantic_state_hash'] = semantic_state_hash(damaged['semantic_hashes'])
+    with pytest.raises(RuntimeError, match="LIVE_SEMANTIC_DIFFERENCE"):
+        resume.check_live_semantic(damaged,recipe,permit_v24916_matrix_deferral=True)
+    damaged2 = copy.deepcopy(live)
+    damaged2['semantic_state_hash'] = recipe['checkpoint_semantic_state_hash']
+    with pytest.raises(RuntimeError, match="LIVE_PREFLIGHT_SEMANTIC_HASH_SELF_INCONSISTENT"):
+        resume.check_live_semantic(damaged2,recipe,permit_v24916_matrix_deferral=True)
+
+
+def test_v24917_strict_reopen_matrix_audit_persists_in_debug_bundle(tmp_path,recipe):
+    import v24917_silent_debug as silent
+    original = dict(recipe['checkpoint_semantic_hashes'])
+    strict = dict(original,state_hash='strict-live',matrices=[
+        {'matrix_no':9101,'rows':681,'cols':681,
+         'sha256_float64_le':'8'*64},
+        {'matrix_no':9111,'rows':681,'cols':681,
+         'sha256_float64_le':'9'*64}])
+    different = copy.deepcopy(strict)
+    different['matrix_hash'] = '22dc5ab9027dbb753b38b09f6842a3572e474b12a2e8d264415c9f2c4f63565e'
+    proof = {'source_checkpoint':'a.ver','checkpoint_raw_sha256_verified':True}
+    output = tmp_path / 'R1_15A2_V16_RUNS' / 'RUN_NEW' / 'CALIBRATION'
+    audit = resume.publish_matrix_reopen_audit(output,different,recipe,proof)
+    assert audit['status']=='MISMATCH_V24917_CHECKPOINT'
+    assert audit['changed_semantic_fields']==['matrix_hash']
+    assert audit['v24917_strict']['matrix_count']==2
+    assert audit['v24917_strict']['matrix_rows'][0]['matrix_no']==9101
+    assert audit['com_path_export_calls']==0
+    with pytest.raises(RuntimeError,match='LIVE_SNAPSHOT_FIELD_MISMATCH:matrix_hash'):
+        resume.check_snapshot(different,recipe)
+    evidence = json.loads((output / 'A0001_MATRIX_REOPEN_FORENSICS.json').read_text())
+    assert evidence == audit
+    run_folder=output.parent
+    output_zip=tmp_path / 'debug.zip'
+    log=tmp_path / 'empty.log'
+    log.write_text('test')
+    silent._bundle(output_zip, {'status':'FAILED_SILENT'},run_folder,log)
+    import zipfile
+    with zipfile.ZipFile(output_zip) as z:
+        assert 'RUN/CALIBRATION/A0001_MATRIX_REOPEN_FORENSICS.json' in z.namelist()
+    matching = resume.publish_matrix_reopen_audit(output,strict,recipe,proof)
+    assert matching['status']=='EXACT_V24917_CHECKPOINT'
+    resume.check_snapshot(strict,recipe)
+
+
+def test_v24916_exact_still_requires_exact_semantic_hash(recipe):
+    exact=dict(recipe['checkpoint_semantic_hashes'])
+    info=resume.check_live_semantic({
+        'semantic_hashes':exact,
+        'semantic_state_hash':recipe['checkpoint_semantic_state_hash']
+    },recipe,permit_v24916_matrix_deferral=True)
+    assert info['status']=='EXACT_ALL_SEVEN_FIELDS'
+    altered = dict(exact)
+    altered['fixed_link_hash']='0'*64
+    from r1_15a2_restart_v2494 import semantic_state_hash
+    with pytest.raises(RuntimeError,match='LIVE_SEMANTIC_DIFFERENCE:fixed_link_hash'):
+        resume.check_live_semantic({
+            'semantic_hashes':altered,'semantic_state_hash':semantic_state_hash(altered)
+        },recipe,permit_v24916_matrix_deferral=True)

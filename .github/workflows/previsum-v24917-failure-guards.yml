@@ -11,6 +11,7 @@ on:
       - codex/v24917-school-td-finecdf-active-20261030
       - codex/resume-a0001-td-no-enum-20261030
       - codex/resume-a0001-sibling-run-root-fix-20261030
+      - codex/a0001-matrix-semantic-forensic-20261030
   workflow_dispatch:
 permissions:
   contents: read
