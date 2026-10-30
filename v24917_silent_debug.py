@@ -105,6 +105,108 @@ def _terminal_status(run_folder, result):
     return "RETURNED_UNVERIFIED", "NO_TERMINAL_STATUS"
 
 
+def _compact_run_evidence(run_folder):
+    """Bounded scientific evidence for an uploadable ZIP without huge JSONs.
+
+    A live Generation result can exceed 3 MB solely because it repeats several
+    hundred zone-level SCHOOL FP violations for every rejected trial. Preserve
+    counts, causes and a small deterministic sample instead of silently
+    omitting that essential evidence from the silent debug bundle.
+    """
+    from collections import Counter
+    result = {"schema": "R1_15A2_SILENT_COMPACT_EVIDENCE_V1",
+              "run_folder": run_folder.name, "files": {}}
+    patterns = {
+        "generation": "GENERATION_BLOCK_RESULT*.json",
+        "td": "TD_FINECDF_BLOCK_RESULT*.json",
+        "target_plan": "TD_TARGET_PLAN*.json",
+        "rollback": "ROLLBACK_SUMMARY*.json",
+        "generation_timing": "V24917_TIMING*.json",
+    }
+    for label, pattern in patterns.items():
+        matching = []
+        for f in run_folder.rglob(pattern):
+            if f.is_file():
+                try:
+                    stat = f.stat()
+                    if stat.st_size <= 8_000_000:
+                        matching.append((stat.st_mtime_ns, f))
+                except OSError:
+                    continue
+        if not matching:
+            continue
+        _, selected = max(matching, key=lambda pair: pair[0])
+        payload = _read_json(selected)
+        if not isinstance(payload, dict):
+            result["files"][label] = {"status": "UNREADABLE_JSON",
+                                      "path": selected.relative_to(run_folder).as_posix()}
+            continue
+        loc = selected.relative_to(run_folder).as_posix()
+        if label == "generation":
+            trials = []
+            for trial in payload.get("attempts", []):
+                decision = trial.get("decision") or {}
+                mobility = decision.get("mobility_guard_live") or {}
+                zonal = mobility.get("mobilityzone1") or {}
+                by_reason = Counter()
+                for violation in zonal.get("violations", []):
+                    for reason in violation.get("reasons", [violation.get("reason", "UNKNOWN")]):
+                        by_reason[str(violation.get("family", "?")) + ":" + str(reason)] += 1
+                trials.append({
+                    "trial": trial.get("trial"),
+                    "scale": (trial.get("candidate") or {}).get("scale"),
+                    "status": trial.get("status"), "gap": trial.get("gap"),
+                    "reasons": decision.get("reasons"),
+                    "model_obs_ratio_before": (decision.get("cal_before") or {}).get("model_obs_ratio"),
+                    "model_obs_ratio_after": (decision.get("cal_after") or {}).get("model_obs_ratio"),
+                    "weighted_geh_before": decision.get("cal_objective_before"),
+                    "weighted_geh_after": decision.get("cal_objective_after"),
+                    "mobility_families": mobility.get("families"),
+                    "zonal_mobility_status": zonal.get("status"),
+                    "zonal_mobility_violation_count": len(zonal.get("violations", [])),
+                    "zonal_mobility_violation_counts": dict(sorted(by_reason.items())),
+                    "zonal_mobility_sample": (zonal.get("violations") or [])[:5],
+                })
+            summary = {"status": payload.get("status"),
+                       "configured_search_exhausted": payload.get("configured_search_exhausted"),
+                       "search_complete": payload.get("search_complete"),
+                       "stationarity_confirmed": payload.get("stationarity_confirmed"),
+                       "ls_search_incomplete": payload.get("ls_search_incomplete"),
+                       "attempts": trials}
+        elif label == "td":
+            inner = payload.get("inner") or {}
+            summary = {"status": payload.get("status"), "gap": payload.get("gap"),
+                       "td_realization_complete": payload.get("td_realization_complete"),
+                       "inner_status": inner.get("status"),
+                       "inner_stop_reason": inner.get("stop_reason"),
+                       "inner_search_complete": inner.get("search_complete"),
+                       "inner_evaluations": inner.get("td_evaluations"),
+                       "changed_components": inner.get("changed_components"),
+                       "changed_rows": payload.get("changed_rows"),
+                       "td_target_plan": payload.get("td_target_plan"),
+                       "incomplete_search_reasons": payload.get("incomplete_search_reasons")}
+        elif label == "rollback":
+            summary = {"passes": payload.get("passes"),
+                       "snapshot_equal": payload.get("snapshot_equal"),
+                       "diagnostic_equal": payload.get("diagnostic_equal"),
+                       "reason": payload.get("reason"),
+                       "gap": payload.get("gap"),
+                       "genfix2_parent_proof_passes":
+                           (payload.get("genfix2_parent_proof") or {}).get("passes")}
+        elif label == "generation_timing":
+            summary = {"label": payload.get("label"),
+                       "block": payload.get("block"),
+                       "savings": payload.get("savings")}
+        else:
+            summary = {"status": payload.get("status"),
+                       "reason": payload.get("reason"),
+                       "active_components": payload.get("active_components"),
+                       "global_11d_evaluation_required":
+                           payload.get("global_11d_evaluation_required")}
+        result["files"][label] = {"path": loc, "summary": summary}
+    return result
+
+
 def _bundle(target, report, run_folder, log):
     files = []
     if run_folder is not None and run_folder.is_dir():
@@ -126,6 +228,14 @@ def _bundle(target, report, run_folder, log):
                          compresslevel=6) as archive:
         archive.writestr("SILENT_STATUS.json",
                          json.dumps(report, ensure_ascii=False, indent=2, default=str))
+        if run_folder is not None and run_folder.is_dir():
+            try:
+                compact = _compact_run_evidence(run_folder)
+            except Exception as exc:
+                compact = {"status": "SUMMARY_FAILED", "error": repr(exc)}
+            archive.writestr("SILENT_CALIBRATION_SUMMARY.json",
+                             json.dumps(compact, ensure_ascii=False, indent=2,
+                                        default=str))
         if log.exists():
             with log.open("rb") as stream:
                 stream.seek(max(0, log.stat().st_size - MAX_CAPTURE_FILE_BYTES))
