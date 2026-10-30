@@ -28,6 +28,13 @@ ATOL = 1e-7
 RTOL = 1e-10
 REFERENCE = "AMDY_DOMESTIC_FP_AT_CANONICAL_COEFFICIENT_NOT_RAW_SURVEY"
 LONG_BAND = (0.5, 1.5)  # ADD_PROD_L 0.3 x [0.5, 1.5] = [0.15, 0.45]
+# The live 2026-10-30 generation trials proved that in 575 domestic zones
+# FP_5_SCHOOL stayed at exactly its run-start value when the SCHOOL candidate
+# changed ADD_PROD_SCH.  Our fixed-FP reference guard correctly rejected all
+# three trials; repeating smaller steps cannot fix an unverified native formula.
+# An explicit source-verified positive proof is required before SCHOOL levers
+# may be applied. Do not silently loosen check_live() to accept unchanged FP.
+SCHOOL_FP_LINK_POLICY = "FROZEN_UNTIL_NATIVE_FP_LINK_VERIFIED"
 
 
 def finite(value, name):
@@ -154,7 +161,9 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
             "unavailable": errors, "out_of_band": outside,
             "target_satisfied": not bool(errors or outside), "parent_zone_rows": copy.deepcopy(list(rows)),
             "status": "VERIFIED" if not errors else "PARTIAL_DEFERRED",
-            "search_complete": not bool(errors)}
+            "search_complete": not bool(errors),
+            "school_fp_link_policy": SCHOOL_FP_LINK_POLICY,
+            "school_fp_link_verified": False}
 
 
 def interval(entry, authority):
@@ -276,6 +285,24 @@ def guard_ls(ls, authority):
                 edits.append({"attr":attr,"zone_no":int(z),"before":items[z],"after":t})
                 changed = True
             items[z]=t
+    # Live failure 2026-10-30: changing ADD_PROD_SCH did not produce the
+    # proportional FP_5_SCHOOL readback on any of 575 positive domestic zones.
+    # Until the actual native formula dependency is positively certified,
+    # zero BOTH SCHOOL production and attraction proposals. WORK/SERVICE and
+    # the existing native TD stay active; no acceptance guard is bypassed.
+    # Synthetic tests may explicitly certify their fixture's exact linear
+    # dependency. Production capture() always defaults to unverified.
+    school_certified = authority.get("school_fp_link_verified") is True
+    if not school_certified:
+        for attr in ("ADD_PROD_SCH", "ADD_ATT_SCH"):
+            items = steps.get(attr, {})
+            for z in list(items):
+                s = finite(items[z], "unverified_school_step")
+                if abs(s) > EPS:
+                    edits.append({"attr": attr, "zone_no": int(z), "before": s,
+                                  "after": 0.0, "reason": "SCHOOL_FP_LINK_UNVERIFIED"})
+                    changed = True
+                items[z] = 0.0
     # If optional LS data is unavailable, freeze that family's attraction too.
     for attr,fam in ATT_FAMILY.items():
         if fam in authority["unavailable"]:
@@ -312,6 +339,13 @@ def guard_ls(ls, authority):
         summary["long_search_status"] = "LONG_SEARCH_INCOMPLETE" if summary["long_zone_steps"] == 0 else "PENDING_NATIVE_VERIFICATION"
     summary["school_zones_changed"] = sum(abs(float(v)) > EPS for attr in
         ("ADD_PROD_SCH", "ADD_ATT_SCH") for v in steps.get(attr, {}).values())
+    summary["school_fp_link_policy"] = SCHOOL_FP_LINK_POLICY
+    summary["school_fp_link_verified"] = school_certified
+    summary["school_generation_permitted"] = school_certified
+    summary["school_generation_search_complete"] = school_certified
+    summary["school_generation_status"] = ("FP_LINK_VERIFIED"
+                                           if school_certified
+                                           else "FROZEN_PENDING_NATIVE_FORMULA_PROOF")
     summary["mobilityzone1"] = {"changes": edits, "deferred": authority["unavailable"],
         "prediction_role": "GUARDED_EFFECT_OPERATOR" if changed and out.get("effect_operator")
                            else "UNAVAILABLE" if out.get("prediction_unavailable_after_guard")
