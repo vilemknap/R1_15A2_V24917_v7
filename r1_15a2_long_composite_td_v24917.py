@@ -21,7 +21,8 @@ def activation_plan():
     return {
         "group": GROUP, "matrix_nos": list(MATRIX_NOS),
         "requested_policy": "SHARED_B_OFFSET_AND_C_MULTIPLIER",
-        "a_frozen": True, "generation_fixed_during_td_stage": True,
+        "a_frozen": True, "generation_frozen": True,
+        "generation_fixed_during_td_stage": True,
         "target_copies": 1, "component_targets_created": False,
         "component_guards": ["A_AND_FOREIGN_FROZEN", "NATIVE_MARGINALS_BEFORE_MASK",
                              "POST_MASK_VOLUME_LOSS_AUDIT",
