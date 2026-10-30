@@ -200,6 +200,8 @@ def install_test_environment(monkeypatch,tmp_path,recipe,*,mutate_during_export=
               'runtime_persistent_path_cache_root':str(fresh)}
         def generation_guard_snapshot(self):
             return dict(after)
+        def snapshot(self):
+            return dict(after)
         def diagnostics(self,folder,label='CURRENT'):
             steps.append('diagnostics')
             return {'d12':{'rows':[{'id':i} for i in range(248)]}}

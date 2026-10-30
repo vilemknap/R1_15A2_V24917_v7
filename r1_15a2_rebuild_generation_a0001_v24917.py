@@ -260,8 +260,17 @@ def install_rebuild(v16, paths, recipe, continuation, disk_receipt, print_fn=pri
                 require(not state["baseline_called"], "BASELINE_CALLED_TWICE")
                 # Original controller's FULL downstream native recompute has
                 # finished (ops 1, 5, 6, 8, 10, 11, 12, 14, 17-20).
-                before_enum = adapter.generation_guard_snapshot()
-                six_fields_match(before_enum, recipe, "AFTER_NATIVE")
+                strict_native = adapter.generation_guard_snapshot()
+                before_enum = adapter.snapshot()
+                six_fields_match(strict_native, recipe, "AFTER_NATIVE_STRICT")
+                six_fields_match(before_enum, recipe, "AFTER_NATIVE_CONTROLLER")
+                # The original _build_cache requires exact object equality
+                # to adapter.snapshot() after the export. Use THAT native
+                # controller snapshot as its origin, never a differently
+                # shaped optimized/strict readback object.
+                for name in SIX_IMMUTABLE + ("matrix_hash", "state_hash"):
+                    require(strict_native.get(name) == before_enum.get(name),
+                            "STRICT_VS_CONTROLLER_SNAPSHOT_MISMATCH:" + name)
                 plan = validate_native_execution_plan(
                     Path(folder) / "BASELINE_FULL_RECOMPUTE" /
                     "LONG_MASK_EXECUTION_PLAN.json")
@@ -274,7 +283,7 @@ def install_rebuild(v16, paths, recipe, continuation, disk_receipt, print_fn=pri
                     allow_persistent_restore=False)
                 require(adapter.cache is collector,
                         "NEW_PATH_EPOCH_NOT_BOUND")
-                after_enum = adapter.generation_guard_snapshot()
+                after_enum = adapter.snapshot()
                 require(after_enum == before_enum,
                         "NEW_PATH_ENUMERATION_MUTATED_LIVE_MODEL")
                 report = write_rebuilt_authority(
