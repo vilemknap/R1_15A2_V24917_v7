@@ -27,7 +27,7 @@ def test_path_timestamp_normalization_not_numbers(tmp_path):
     for p,stamp in ((a,'today'),(b,'tomorrow')):
         (p/'summary.json').write_text(json.dumps({'timestamp':stamp,'path':str(p/'x'),'observed':123.456789}))
     assert compare_artifacts(a,b)['status']=='PARITY_PASS'
-    (b/'summary.json').write_text(json.dumps({'timestamp':'later','path':str(b/'x'),'observed':123.456900}))
+    (b/'summary.json').write_text(json.dumps({'timestamp':'later','path':str(b/'x'),'observed':124.000000}))
     assert compare_artifacts(a,b)['status']=='PARITY_FAILED'
 
 

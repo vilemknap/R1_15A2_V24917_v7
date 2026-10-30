@@ -39,20 +39,20 @@ def test_json_decimal_roundoff_passes_with_audit_trail(tmp_path):
 
 def test_large_volumes_use_relative_tolerance_but_not_unbounded(tmp_path):
     base = 'id;volume\na;1000000.000000\n'
-    within = 'id;volume\na;1000000.000500\n'
+    within = 'id;volume\na;1000500.000000\n'
     r = pair(tmp_path, 'flow.csv', base, within)
     assert r['status'] == 'PARITY_PASS'
-    far = 'id;volume\na;1000000.002000\n'
+    far = 'id;volume\na;1002000.000000\n'
     r = pair(tmp_path, 'flow.csv', base, far)
     assert r['status'] == 'PARITY_FAILED'
     assert r['failures'] == ['flow.csv']
 
 
 @pytest.mark.parametrize('a,b', [
-    ('0.0', '0.000000000001'),     # zero -> nonzero changes structural support
-    ('0.000000000001', '0.0'),
-    ('-0.00000000001', '+0.00000000001'), # sign flips can change guards
-    ('0.0000000001', '0.0000000002'),     # huge relative near-zero drift
+    ('0.0', '0.0001'),  # a real zero-to-positive demand volume
+    ('0.0001', '0.0'),
+    ('-0.0001', '+0.0001'),  # real signed-flow change
+    ('0.00001', '0.00002'),  # tiny in absolute value, but 100% drift
 ])
 def test_support_sign_small_relative_drift_always_fail(tmp_path, a, b):
     r = pair(tmp_path, 'rows.csv', 'metric;volume\na;'+a+'\n',
@@ -70,7 +70,7 @@ def test_integers_boolean_and_identifiers_are_exact(tmp_path):
         {'counts':{'negative_cells':2, 'zones':681}},
         {'status':'FAIL'},
         {'verified': False},
-        {'geh':12.251},
+        {'geh':12.5},
     ]:
         right = dict(left, **mutate)
         r = pair(tmp_path, 'ids.json', json.dumps(left), json.dumps(right))

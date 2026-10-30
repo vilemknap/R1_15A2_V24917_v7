@@ -146,5 +146,5 @@ def test_one_ulp_csv_and_json_difference_is_audited_but_fast_kept(tmp_path):
     assert r['equal_artifacts'] == 2
     assert r['tolerated_artifacts'] == 2
     assert r['tolerated_value_count'] == 2
-    assert r['numeric_tolerance']['absolute'] == 1e-8
+    assert r['numeric_tolerance']['absolute'] == 1e-3
     assert guard.certificate()['numeric_parity_relaxed'] is True

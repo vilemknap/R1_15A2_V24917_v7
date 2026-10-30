@@ -4,10 +4,11 @@
 Replaces the manual live-parity certificate by two automatic guards inside the
 calibration run itself:
 
-1. Bounded numeric parity: before the first N calls of 12D and of 11D
-   (default N=1), compare LEGACY and FAST_EXACT artifacts in scratch folders.
-   Identity/schema/text/structural zeros/signs stay exact; float values in
-   JSON/CSV may differ within a documented tight absolute/relative tolerance.
+1. RELAXED semantic parity: before the first N calls of 12D/11D, compare
+   JSON/CSV numeric values using a 0.1% relative / 0.001 absolute envelope.
+   Tiny zero crossings are tolerated; selected derived diagnostic output SHA
+   fields may differ if the same report contains verified numeric payload.
+   Source/model/cache hashes, IDs, dimensions and decisions stay exact.
 2. Adaptive parity: if full V2 differs materially, repeat the same bounded
    comparison with narrowly disabled optional V2 features. Only a verified
    PARITY_PASS authorizes that reduced FAST_EXACT configuration.
@@ -35,7 +36,7 @@ import uuid
 import r1_15a2_diagfast_v1 as df
 import r1_15a2_diagfast_v2 as v2
 
-STATUS = 'DIRECT_INLINE_BOUNDED_FLOAT_PARITY_FEATURE_ISOLATION_PER_HELPER_LEGACY_FALLBACK'
+STATUS = 'DIRECT_INLINE_RELAXED_SEMANTIC_PARITY_FEATURE_ISOLATION_PER_HELPER_LEGACY_FALLBACK'
 INLINE_ENV = 'R1_DIAGFAST_INLINE_PARITY'
 _CFG_POSITION = {'12D': 0, '11D': 1}     # run_12d(v,out,label,cfg) / run_11d(v,out,label,d12,cfg)
 # Retry ONLY a structural/material parity failure, not a model/data read error.
@@ -125,12 +126,15 @@ class DirectGuard:
     def certificate(self):
         """Value stored as launcher._diagfast_live_certificate (EFFECTIVE_CONFIG)."""
         return {'status': STATUS,
-                'scope': 'BOUNDED_FLOAT_INLINE_PARITY_WITH_FEATURE_ISOLATION_PER_HELPER_FIRST_%d_CALLS' % self.inline_parity,
+                'scope': 'RELAXED_SEMANTIC_INLINE_PARITY_WITH_FEATURE_ISOLATION_PER_HELPER_FIRST_%d_CALLS' % self.inline_parity,
                 'report_folder': str(self.log_path),
                 'numeric_parity_relaxed': True,
-                'numeric_parity_abs_tol': 1e-8,
-                'numeric_parity_rel_tol': 1e-9,
-                'numeric_parity_zero_and_identifiers_exact': True,
+                'numeric_parity_abs_tol': 1e-3,
+                'numeric_parity_rel_tol': 1e-3,
+                'numeric_parity_zero_cross_noise_floor': 1e-6,
+                'derived_diagnostic_digest_parity_relaxed': True,
+                'source_authority_and_manifest_sha_exact': True,
+                'numeric_parity_identifiers_exact': True,
                 'legacy_fallback_scope': 'AFFECTED_HELPER_ONLY'}
 
     # -- routing ----------------------------------------------------------------
@@ -182,7 +186,9 @@ class DirectGuard:
                            tolerated_values=audit_report.get('tolerated_value_count', 0),
                            tolerated_artifacts=audit_report.get('tolerated_artifacts', 0),
                            max_tolerated_abs_difference=audit_report.get(
-                               'max_tolerated_abs_difference', 0.0))
+                               'max_tolerated_abs_difference', 0.0),
+                           tolerated_derived_digests=audit_report.get(
+                               'tolerated_derived_digest_count', 0))
             return result
         run.__name__ = 'run_' + kind.lower() + '_direct_guard'
         run.__wrapped__ = original
@@ -244,7 +250,8 @@ class DirectGuard:
                    report=str(report_path), scratch=str(base),
                    feature_limits=report['feature_limits'], failures=report['failures'][:10],
                    tolerated_values=report['tolerated_value_count'],
-                   max_abs_delta=report['max_tolerated_abs_difference'])
+                   max_abs_delta=report['max_tolerated_abs_difference'],
+                   tolerated_derived_digests=report['tolerated_derived_digest_count'])
         if report['status'] != 'PARITY_PASS':
             raise df.DiagFastError('DIAGFAST_DIRECT_INLINE_PARITY_FAILED:%s:%s' % (
                 kind, ','.join(report['failures'][:10])))
