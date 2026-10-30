@@ -3,10 +3,37 @@
 from __future__ import annotations
 import copy
 import functools
+from contextvars import ContextVar
 from pathlib import Path
 
 import r1_15a2_td_joint_v24917 as joint
 import r1_15a2_long_composite_td_v24917 as long_td
+
+# The sealed V24916 FineCDF bridge explicitly forbids LONG in its *caller*
+# active_components. Preserve that source exactly. The V24917 layer binds
+# one permitted target set to the verified reference loader instead; the
+# resulting ref.GROUPS contains the same intended native coordinates and
+# all sealed metrics/outer acceptance remain untouched.
+_LONG_TARGET_CONTEXT = ContextVar("r1_v24917_long_target_components", default=None)
+
+
+def _scope_long_target(cfg):
+    options = joint.options()
+    requested = tuple(str(x) for x in (
+        cfg.get("coupled_demand", {}).get("finecdf_td", {}).get("active_components", [])
+        or []) if str(x))
+    if not requested or long_td.GROUP not in requested:
+        return cfg, None, None
+    if not options.get("enabled", False) or not options.get("long_enabled", False):
+        raise RuntimeError("TDLONG_COMPOSITE_TARGET_REQUEST_NOT_ENABLED")
+    if options.get("inner_mode") != "DYNAMIC":
+        raise RuntimeError("TDLONG_COMPOSITE_TARGET_REQUIRES_DYNAMIC")
+    if len(set(requested)) != len(requested) or "SCHOOL" in requested:
+        raise RuntimeError("TDLONG_COMPOSITE_TARGET_COMPONENT_SET_INVALID")
+    effective = copy.deepcopy(cfg)
+    effective["coupled_demand"]["finecdf_td"].pop("active_components", None)
+    token = _LONG_TARGET_CONTEXT.set(requested)
+    return effective, requested, token
 
 
 def wrap_inner(original):
@@ -14,13 +41,33 @@ def wrap_inner(original):
     def inner(adapter, cfg, folder, control, package_root, *args, **kwargs):
         enabled = joint.options()["enabled"]
         adapter._tdjoint_stage = None
-        result = original(adapter, cfg, folder, control, package_root, *args, **kwargs)
+        scoped_cfg, selected, token = _scope_long_target(cfg)
+        try:
+            result = original(adapter, scoped_cfg, folder, control, package_root, *args, **kwargs)
+        finally:
+            if token is not None:
+                _LONG_TARGET_CONTEXT.reset(token)
         if not enabled:
             return result
         stage = getattr(adapter, "_tdjoint_stage", None)
         if stage is None or Path(stage["inner_root"]) != Path(folder).resolve():
             raise RuntimeError("TDJOINT1_STAGE_RESULT_MISSING_OR_STALE")
         result = dict(result)
+        if selected is not None:
+            result["targeted_component_mask_applied"] = True
+            result["targeting_authority"] = "V24917_ADDITIVE_SHARED_LONG_SELECTOR"
+            result["active_components"] = list(selected)
+            result["frozen_components"] = sorted(set(stage.get(
+                "long_full_reference_groups", ())) - set(selected))
+            result["long_composite_target_count"] = 1
+            from r1_15a2_controller_v22 import atomic_json
+            atomic_json(Path(folder) / "TDLONG_COMPOSITE_TARGET_SCOPE.json", {
+                "schema": "R1_V24917_NATIVE_LONG_TARGET_SCOPE_V1",
+                "active_components": list(selected),
+                "sealed_reference_unchanged": True,
+                "shared_long_target_copies": 1,
+                "native_measured_dynamic_required": True,
+                "frozen_components": result["frozen_components"]})
         result["long_composite_td"] = dict(
             long_td.activation_plan(),
             requested=bool(joint.options().get("long_enabled")),
@@ -149,11 +196,22 @@ def install(controller, print_fn=print):
             ref, path, sha = original_loader(package_root, fine_cfg)
             if joint.options()["enabled"]:
                 ref.long_composite_td_contract = long_td.reference_contract(ref)
+                full_groups = list(ref.GROUPS)
                 # A single shared b / log(-c) group for all five LONG layers.
                 # Disabled mode retains historical frozen behaviour; enabled
                 # mode can run ONLY via measured native DYNAMIC TD evaluations.
                 if not joint.options().get("long_enabled", False):
                     ref.GROUPS = [key for key in ref.GROUPS if key != long_td.GROUP]
+                selected = _LONG_TARGET_CONTEXT.get()
+                if selected is not None:
+                    invalid = set(selected) - set(ref.GROUPS)
+                    if invalid or long_td.GROUP not in selected:
+                        raise RuntimeError("TDLONG_COMPOSITE_TARGET_REFERENCE_MISMATCH:" +
+                                           ",".join(sorted(invalid)))
+                    ref.GROUPS = [key for key in ref.GROUPS if key in set(selected)]
+                    if not ref.GROUPS:
+                        raise RuntimeError("TDLONG_COMPOSITE_EMPTY_NATIVE_GROUPS")
+                ref._v24917_full_long_reference_groups = full_groups
                 ref.Runner = joint.make_runner(ref.Runner, ref)
             return ref, path, sha
         loader._tdjoint1 = True
