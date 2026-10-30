@@ -28,6 +28,9 @@ def options() -> dict:
     import r1_15a2_demand_policy_v1 as dp
     o = dp.load_options()  # invalid configuration must not disable the feature
     return {"enabled": o.get("td_joint_enabled", False),
+            "long_enabled": o.get("long_composite_td_enabled", False),
+            "long_generation_enabled": o.get("long_generation_enabled", False),
+            "inner_mode": o.get("td_inner_mode"),
             "outer_isolates": o.get("td_joint_outer_isolates", False),
             "max_isolates": o.get("td_joint_max_isolates", 2)}
 
@@ -65,6 +68,8 @@ def validate_count_model(model, targets, active, count_weight):
 def score_blend(blend, out, matrices):
     """Use existing stacked() once; leave every survey metric unmodified."""
     residual, objective, parts = blend.stacked(out, matrices)
+    if long_td.GROUP in blend.ref.GROUPS and not blend.measured:
+        raise RuntimeError("TDLONG_COMPOSITE_FROZEN_PATH_COUNT_RESPONSE_FORBIDDEN")
     validate_count_model(blend.model, blend.ref.TARGETS, blend.ref.GROUPS,
                          float(blend.opts["w_cnt"]))
     if not (math.isfinite(objective) and np.all(np.isfinite(residual))):
@@ -265,11 +270,14 @@ def optimize(runner, ref):
             reason = "LOCAL_PLATEAU_NOT_PROOF_OF_GLOBAL_OPTIMUM"
             break
     complete = reason == "LOCAL_PLATEAU_NOT_PROOF_OF_GLOBAL_OPTIMUM"
+    long_readiness = (long_td.require_live_ready([(long_td.GROUP, [])],
+                       bridge=runner.adapter) if long_td.GROUP in groups else None)
     result = {"release": RELEASE, "metric": baseline["tdjoint"]["metric"],
               "objective_start": _score(baseline), "objective_final": _score(runner.best),
               "objective_improvement": _score(baseline) - _score(runner.best),
               "component_pool": groups, "candidate_selection": "MEASURED_SHARED_SURROGATE_WITHIN_EXISTING_MASK",
               "count_residual_copies": 1, "mode": baseline["tdjoint"]["mode"],
+              "long_composite_live_readiness": long_readiness,
               "w_cnt": baseline["tdjoint"]["w_cnt"], "w_idp": baseline["tdjoint"]["w_idp"],
               "linear_profile_coverage": baseline["tdjoint"]["linear_profile_coverage"],
               "td_evaluations": runner.evaluations, "stop_reason": reason,
@@ -288,9 +296,14 @@ def optimize(runner, ref):
 def make_runner(parent, ref):
     class JointRunner(parent):
         def evaluate(self, x, label, honor_stop=True):
-            long_td.require_live_ready([(key, []) for key in ref.GROUPS])
-            if long_td.GROUP in x and np.any(np.asarray(x[long_td.GROUP]) != 0):
-                long_td.require_live_ready([(long_td.GROUP, [])])
+            # No LONG frozen-route sensitivity claim. The readiness probe
+            # reads current native 929x/9305, >=80km support and assignment
+            # epoch before any TD parameter mutator is invoked.
+            long_td.require_live_ready([(key, []) for key in ref.GROUPS],
+                                       bridge=getattr(self, "adapter", None))
+            if long_td.GROUP in x and long_td.GROUP not in ref.GROUPS:
+                if np.any(np.asarray(x[long_td.GROUP]) != 0):
+                    long_td.require_live_ready([(long_td.GROUP, [])])
             result = super().evaluate(x, label, honor_stop=honor_stop)
             impl = getattr(self.metrics, "impl", None)
             blend = getattr(impl, "_v24917_blend_state", None)
