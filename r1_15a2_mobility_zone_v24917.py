@@ -4,6 +4,8 @@
 Raw pre-mode-choice FP productions are compared, never profile passages, vehicle
 OD or attraction weights. Reference is the existing AMDY equation evaluated at
 ADD_PROD_W/S/SCH=1 and ADD_PROD_L=0.3, NOT raw unscaled survey trip frequency.
+WORK/SERVICE production follows the configured [0.75,2.5] mobility band;
+SCHOOL remains [0.75,2.0] and LONG retains its own fixed band.
 Existing out-of-band parents may improve or hold, never move further away.
 No COM writes, no LoadVersion, no changes to native TD or boundary production.
 """
