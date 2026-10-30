@@ -118,7 +118,7 @@ def check_live_semantic(live, recipe, *, permit_v24916_matrix_deferral=False):
     }
 
 
-def publish_matrix_reopen_audit(folder, snapshot, recipe, preflight_proof):
+def publish_matrix_reopen_audit(folder, snapshot, recipe, preflight_proof, *, phase="AFTER_NATIVE_BASELINE"):
     """Persist exact live matrix identities BEFORE any resume TD evaluation."""
     from r1_15a2_restart_v2494 import semantic_state_hash
     expected = recipe["checkpoint_semantic_hashes"]
@@ -126,11 +126,17 @@ def publish_matrix_reopen_audit(folder, snapshot, recipe, preflight_proof):
     observed = {name: snapshot.get(name) for name in names}
     diffs = [name for name in names if observed[name] != expected[name]]
     exact = not diffs and semantic_state_hash(snapshot) == recipe["checkpoint_semantic_state_hash"]
+    require(phase in ("BEFORE_NATIVE_BASELINE", "AFTER_NATIVE_BASELINE"),
+            "MATRIX_FORENSIC_PHASE_INVALID")
+    pre_native = phase == "BEFORE_NATIVE_BASELINE"
     matrix_rows = snapshot.get("matrices")
     require(isinstance(matrix_rows, list), "LIVE_MATRIX_ROWS_MISSING")
     row = {
         "schema": "R1_A0001_REOPEN_MATRIX_FORENSICS_V1",
-        "status": "EXACT_V24917_CHECKPOINT" if exact else "MISMATCH_V24917_CHECKPOINT",
+        "status": ("BEFORE_BASELINE_PENDING_EXACT_PROOF" if pre_native
+                   else ("EXACT_V24917_CHECKPOINT" if exact
+                         else "MISMATCH_V24917_CHECKPOINT")),
+        "phase": phase,
         "source_checkpoint": preflight_proof.get("source_checkpoint"),
         "checkpoint_raw_sha256_verified": preflight_proof.get("checkpoint_raw_sha256_verified"),
         "checkpoint_expected_semantic_state_hash": recipe["checkpoint_semantic_state_hash"],
@@ -149,7 +155,9 @@ def publish_matrix_reopen_audit(folder, snapshot, recipe, preflight_proof):
         "com_path_export_calls": 0,
         "path_enumeration_calls": 0,
         "td_evaluations_executed_by_this_proof": 0,
-        "authority_decision": "CONTINUE_ONLY_IF_EXACT" if exact else "FAIL_CLOSED_NO_TD",
+        "authority_decision": ("BASELINE_RECOMPUTE_REQUIRED_NO_TD_APPROVAL" if pre_native
+                               else ("CONTINUE_ONLY_IF_EXACT" if exact
+                                     else "FAIL_CLOSED_NO_TD")),
     }
     target = Path(folder) / "A0001_MATRIX_REOPEN_FORENSICS.json"
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -502,20 +510,26 @@ def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print)
             require(adapter.cache is None, "CACHE_ALREADY_INITIALIZED")
             require(preflight_proof.get("checkpoint_raw_sha256_verified") is True,
                     "V24916_PREFLIGHT_PROOF_NOT_AVAILABLE")
-            # This V24917 reader bypasses candidate readback cache and tests
-            # the real live matrix values, not a legacy V24916 hash or a label.
-            snapshot = adapter.generation_guard_snapshot()
-            require(snapshot.get("state_hash") is not None,
+            # A reopened .ver can contain unrecomputed native OD matrices.
+            # The existing controller intentionally re-runs baseline assignment
+            # and allows ONLY matrix_hash to change during that recomputation.
+            # It is unsafe to adopt the old cache/TD until the POST-native
+            # strict snapshot proves the exact accepted A0001 matrix identity.
+            before_native = adapter.generation_guard_snapshot()
+            require(before_native.get("state_hash") is not None,
                     "LIVE_SNAPSHOT_UNAVAILABLE")
-            audit = publish_matrix_reopen_audit(
-                folder, snapshot, recipe, preflight_proof)
-            print_fn("A0001 MATRIX REOPEN: " + audit["status"] +
-                     " changed=" + ",".join(audit["changed_semantic_fields"]) +
+            for name in recipe["checkpoint_semantic_fields"]:
+                if name != "matrix_hash":
+                    require(before_native.get(name) ==
+                            recipe["checkpoint_semantic_hashes"][name],
+                            "PREBASELINE_NON_MATRIX_FIELD_CHANGED:" + name)
+            before_audit = publish_matrix_reopen_audit(
+                folder, before_native, recipe, preflight_proof,
+                phase="BEFORE_NATIVE_BASELINE")
+            print_fn("A0001 BEFORE NATIVE BASELINE: matrix=" +
+                     str(before_native.get("matrix_hash")) +
                      " expected=" + recipe["checkpoint_semantic_hashes"]["matrix_hash"] +
-                     " actual=" + str(snapshot.get("matrix_hash")))
-            require(audit["status"] == "EXACT_V24917_CHECKPOINT",
-                    "V24917_REOPENED_MATRIX_AUTHORITY_MISMATCH")
-            check_snapshot(snapshot, recipe)
+                     " (never accepts matrix drift before native recompute)")
             require(canonical_hash(continuation["generation_reference"]) ==
                     recipe["generation_reference_hash"], "REFERENCE_CHANGED")
             cfg["runtime_demand_continuation"] = copy.deepcopy(continuation)
@@ -527,6 +541,20 @@ def install_resume(v16, checkpoint, recipe, paths, continuation, print_fn=print)
                 diag = orig_diagnostics(diag_folder, label=label)
                 if label == "BASELINE":
                     require(not used["baseline"], "DUPLICATE_BASELINE")
+                    # Native recompute has now run in the isolated working copy.
+                    # The exact V24917 uncached matrix readback is the authority;
+                    # the six other fields, raw source .ver and saved sidecar
+                    # were already verified before ANY model mutation.
+                    after_native = adapter.generation_guard_snapshot()
+                    audit = publish_matrix_reopen_audit(
+                        folder, after_native, recipe, preflight_proof,
+                        phase="AFTER_NATIVE_BASELINE")
+                    print_fn("A0001 AFTER NATIVE BASELINE: " + audit["status"] +
+                             " changed=" + ",".join(audit["changed_semantic_fields"]) +
+                             " expected=" + recipe["checkpoint_semantic_hashes"]["matrix_hash"] +
+                             " actual=" + str(after_native.get("matrix_hash")))
+                    require(audit["status"] == "EXACT_V24917_CHECKPOINT",
+                            "POST_BASELINE_MATRIX_AUTHORITY_MISMATCH")
                     state = adapter.snapshot()
                     check_snapshot(state, recipe)
                     restore_readonly_path_epoch(

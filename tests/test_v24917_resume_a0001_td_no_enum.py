@@ -393,3 +393,78 @@ def test_v24916_exact_still_requires_exact_semantic_hash(recipe):
         resume.check_live_semantic({
             'semantic_hashes':altered,'semantic_state_hash':semantic_state_hash(altered)
         },recipe,permit_v24916_matrix_deferral=True)
+
+
+@pytest.mark.parametrize('native_repairs', [False,True])
+def test_reopened_matrix_requires_post_native_exact_proof(
+        monkeypatch,tmp_path,recipe,native_repairs):
+    """Native baseline may rehydrate OD, but no cache/TD if it does not."""
+    from r1_15a2_restart_v2494 import semantic_state_hash
+    cp,auth,_,_=make_artifacts(tmp_path,recipe)
+    paths=resume.check_source(cp,auth)
+    cont=resume.load_continuation(paths,auth,lambda _:auth['generation_reference_hash'])
+    before = dict(auth['checkpoint_semantic_hashes'])
+    before['matrix_hash']='22dc5ab9027dbb753b38b09f6842a3572e474b12a2e8d264415c9f2c4f63565e'
+    live={'state_hash':'live','matrices':[{
+        'matrix_no':9101,'rows':681,'cols':681,'sha256_float64_le':'a'*64}],
+        **before}
+    calls=[]
+    class Adapter:
+        def __init__(self):
+            self.cache=None
+            self.cfg={'coupled_demand':{'max_outer_cycles':100}}
+        def generation_guard_snapshot(self):return dict(live)
+        def snapshot(self):return dict(live)
+        def diagnostics(self,*args,**kwargs):return {'d12':{'rows':[]}}
+    adapter=Adapter()
+    mock_supply=types.ModuleType('r1_15a2_supply')
+    mock_supply.canonical_hash=lambda _:auth['generation_reference_hash']
+    mock_supply.SupplyContractError=RuntimeError
+    monkeypatch.setitem(sys.modules,'r1_15a2_supply',mock_supply)
+    mock_controller=types.ModuleType('r1_15a2_overnight_controller_coupled_v24915p2_force100')
+    mock_controller._runtime_demand_continuation=lambda cfg:cfg['runtime_demand_continuation']
+    monkeypatch.setitem(sys.modules,mock_controller.__name__,mock_controller)
+    def original(a,cfg,folder,control,root):
+        calls.append('native_baseline')
+        if native_repairs:
+            live['matrix_hash']=auth['checkpoint_semantic_hashes']['matrix_hash']
+        a.diagnostics(folder,label='BASELINE')
+        calls.append('continued')
+        return mock_controller._runtime_demand_continuation(cfg)
+    original_runs_root=cp.parent.parent.parent.parent
+    v16=NS(RUNS_ROOT_NAME='R1_15A2_V16_RUNS',
+           _base_layout=lambda source:{
+               'project_base':original_runs_root.parent,
+               'detected_run_roots_nearest_first':[original_runs_root],
+               'outermost_run_root':original_runs_root},
+           _install_runtime=lambda *a:None,
+           _run_live_preflight=lambda *a,**k:({
+               'passes':True,'current_version_file':str(cp),
+               'source_raw_ver_sha256_provenance_only':auth['expected_checkpoint_raw_sha256'],
+               'semantic_before_after':{'passes':True},
+               'source_semantic_state_hash':semantic_state_hash(before),
+               'source_semantic_hashes':before},{}),
+           parent=NS(run_overnight_calibration_coupled=original,
+                     _assert_new_run_is_not_nested=lambda *a:None))
+    monkeypatch.setattr(resume,'restore_readonly_path_epoch',
+                        lambda *args:calls.append('path_cache_readonly'))
+    resume.install_resume(v16,cp,auth,paths,cont,print_fn=lambda *a:None)
+    v16._run_live_preflight()
+    v16._install_runtime()
+    run_folder=tmp_path/'NEXT_RUN'/'CALIBRATION'
+    if native_repairs:
+        result=v16.parent.run_overnight_calibration_coupled(
+            adapter,adapter.cfg,run_folder,None,None)
+        assert result['accepted_count']==1
+        assert calls==['native_baseline','path_cache_readonly','continued']
+        assert json.loads((run_folder/'A0001_MATRIX_REOPEN_FORENSICS.json').read_text())['status']=='EXACT_V24917_CHECKPOINT'
+    else:
+        with pytest.raises(RuntimeError,match='A0001_RESUME_POST_BASELINE_MATRIX_AUTHORITY_MISMATCH'):
+            v16.parent.run_overnight_calibration_coupled(
+                adapter,adapter.cfg,run_folder,None,None)
+        assert calls==['native_baseline']
+        report=json.loads((run_folder/'A0001_MATRIX_REOPEN_FORENSICS.json').read_text())
+        assert report['status']=='MISMATCH_V24917_CHECKPOINT'
+        assert report['changed_semantic_fields']==['matrix_hash']
+    assert not (run_folder/'GENERATION_CACHE').exists()
+    assert adapter.cache is None

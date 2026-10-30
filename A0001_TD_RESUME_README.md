@@ -97,3 +97,32 @@ the checkpoint's original in-memory accepted matrix state was NOT proven
 to survive serialization/reopening. This is a real safety blocker, not
 something to bypass by modifying a manifest, tolerance, or stored authority.
 `LIVE_VISUM_NOT_RUN` for this patch.
+
+## Staged native OD rehydration (fix to matrix-state acceptance)
+
+After a .ver is reopened, its OD matrices may not be in the identical
+post-Generation native recomputed state captured by the A0001 sidecar. The
+already-existing parent controller has an authorized baseline native
+assignment/recompute step that intentionally permits matrix_hash to change
+while six immutable parameter hashes stay exact.
+
+For A0001, the stage-gated behavior is:
+1. Verify source .ver byte hash and sidecar, plus six identical non-matrix
+   hashes at V24916 read-only preflight. The matrix mismatch is *not*
+   accepted; it is deferred solely to native recompute and V24917 verification.
+2. Verify the same six fields again using V24917 uncached snapshot, write
+   A0001_MATRIX_REOPEN_FORENSICS.json with phase BEFORE_NATIVE_BASELINE.
+3. Allow the *original parent* to create its isolated working .ver and execute
+   the existing full baseline native recompute (no added COM path export).
+4. At BASELINE diagnostics, before restoring any SQLite path epoch or
+   executing TD proposals, take a second V24917 **uncached** snapshot and
+   demand exact identity of all seven fields, including the previously
+   mismatched matrix_hash and the semantic_state_hash. Then allow the
+   read-only original path-store epoch rehydration and cycle-1 TD.
+5. If the post-native identity differs, stop: no old SQLite cache is adopted,
+   no TD performed, and the new working run's debug ZIP includes the exact
+   per-matrix SHA-256 list. The original accepted .ver is unchanged.
+
+**No automatic reference rebasing, no tolerance loosening, no new path
+enumeration, and no promotion of an unverified state as accepted.** The
+live Windows/Visum result of this staged recovery has not yet been observed.
