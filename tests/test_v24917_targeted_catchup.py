@@ -207,6 +207,24 @@ def zone_rows(zones, value=1.9):
     return out
 
 
+@pytest.mark.parametrize("phase", ["CATCH_UP", "REFINE"])
+def test_new_ws_3_5_headroom_survives_zonal_solver_bounds(mb, real_cfg, phase):
+    """The old 2.5/4.0 ceiling must no longer clip eligible W/S candidates."""
+    cfg = tg.overlay_cfg(real_cfg, phase)
+    zr = zone_rows([1], value=2.8)
+    zr[0]["ADD_ATT_W"] = zr[0]["ADD_ATT_S"] = 4.5
+    bounds = tg.zone_bounds(mb, zr, cfg)
+    for family in ("WORK", "SERVICE"):
+        assert bounds[(family, "PROD", 1)][1] == pytest.approx(
+            math.log(3.0 / 2.8))
+    assert bounds[("SERVICE", "ATT", 1)][1] == pytest.approx(
+        math.log(5.0 / 4.5))
+    # WORK attractiveness retains the established salary-effect reserve.
+    assert bounds[("WORK", "ATT", 1)][1] == pytest.approx(
+        math.log(5.0 / 4.5) - tg.SALARY_DOMAIN_MARGIN)
+    # No modeled coefficient or salary authority is changed in this test.
+
+
 def test_end_to_end_design_targeted_coarse_and_gate_passes(mb, real_cfg):
     import R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1 as master
     inc, zones = synthetic_incidence(n_zones=12)
