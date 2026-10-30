@@ -433,6 +433,10 @@ def test_reopened_matrix_requires_post_native_exact_proof(
         def generation_guard_snapshot(self):return dict(live)
         def snapshot(self):return dict(live)
         def diagnostics(self,*args,**kwargs):return {'d12':{'rows':[]}}
+        def _build_cache(self,*args,**kwargs):
+            raise AssertionError("unexpected native path enumeration")
+        def _retire_obsolete_epoch_store(self,*args,**kwargs):
+            raise AssertionError("unexpected source-store retirement")
     adapter=Adapter()
     mock_supply=types.ModuleType('r1_15a2_supply')
     mock_supply.canonical_hash=lambda _:auth['generation_reference_hash']
