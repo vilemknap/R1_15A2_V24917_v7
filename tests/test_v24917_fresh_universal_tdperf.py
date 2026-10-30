@@ -8,7 +8,6 @@ from types import SimpleNamespace as NS
 
 import pytest
 import r1_15a2_fresh_universal_v24917 as fresh
-from r1_15a2_supply import SupplyContractError
 
 
 def source(tmp_path, relative="BASE/original.ver"):
@@ -161,14 +160,14 @@ def test_first_epoch_cannot_inherit_cache_or_read_other_run(tmp_path):
     adapter = native()
     safe = sandbox / fresh.RUNS_NAME / "RUN_NEW" / "CALIBRATION" / "DEMAND_CYCLE_01_GENERATION" / "GENERATION_CACHE"
     adapter.persistent_path_cache.enabled = True
-    with pytest.raises(SupplyContractError, match="PERSISTENT_CACHE_MUST_BE_DISABLED"):
+    with pytest.raises(RuntimeError, match="PERSISTENT_CACHE_MUST_BE_DISABLED"):
         adapter._build_cache({}, safe, {"state_hash": "live"})
     adapter.persistent_path_cache.enabled = False
     adapter.cache = NS(route_db_path=str(tmp_path/"old.sqlite"))
-    with pytest.raises(SupplyContractError, match="INITIAL_CACHE_NOT_EMPTY"):
+    with pytest.raises(RuntimeError, match="INITIAL_CACHE_NOT_EMPTY"):
         adapter._build_cache({}, safe, {"state_hash": "live"})
     adapter.cache = None
-    with pytest.raises(SupplyContractError, match="OUTSIDE_OWN_RUN"):
+    with pytest.raises(RuntimeError, match="OUTSIDE_OWN_RUN"):
         adapter._build_cache({}, tmp_path/"OLD"/"CALIBRATION"/"GENERATION_CACHE",
                              {"state_hash": "live"})
     assert calls == []
