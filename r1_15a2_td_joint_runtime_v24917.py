@@ -21,7 +21,11 @@ def wrap_inner(original):
         if stage is None or Path(stage["inner_root"]) != Path(folder).resolve():
             raise RuntimeError("TDJOINT1_STAGE_RESULT_MISSING_OR_STALE")
         result = dict(result)
-        result["long_composite_td"] = long_td.activation_plan()
+        result["long_composite_td"] = dict(
+            long_td.activation_plan(),
+            requested=bool(joint.options().get("long_enabled")),
+            live_enabled=stage.get("long_composite_live_readiness") is not None,
+            live_readiness=stage.get("long_composite_live_readiness"))
         result.update({k: stage[k] for k in (
             "objective_start", "objective_final", "objective_improvement",
             "search_complete", "stationarity_confirmed",
@@ -63,8 +67,21 @@ def wrap_realization(original, ctrl):
         import r1_15a2_multiblock as mb
         component_no = {str(k): int(r["matrix_no"]) for k, r in mb.COMPONENT_REGISTRY.items()}
         groups = long_td.realization_groups(target_rows, before.get("td_values", []), component_no)
-        # Shared LONG preparation does not constitute native support evidence.
-        long_td.require_live_ready(groups)
+        # Accept only the real measured native dynamic result from this stage.
+        if any(group == long_td.GROUP for group, _ in groups):
+            proof = stage.get("long_composite_live_readiness")
+            if not isinstance(proof, dict) or proof.get("status") != (
+                    "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE"):
+                raise RuntimeError("TDLONG_COMPOSITE_MEASURED_NATIVE_STAGE_PROOF_MISSING")
+            from types import SimpleNamespace
+            bridge_view = SimpleNamespace(
+                outer_adapter=adapter, dynamic_skim_enabled=True,
+                _v24917_frozen=False)
+            fresh = long_td.require_live_ready(groups, bridge=bridge_view)
+            if not fresh or fresh.get("status") != proof["status"]:
+                raise RuntimeError("TDLONG_COMPOSITE_REALIZATION_AUTHORITY_STALE")
+        else:
+            long_td.require_live_ready(groups)
         for row in target_rows:
             final = stage["final_abc"].get(str(component_no.get(row["component"])))
             if final is None or any(abs(float(final[p]) - float(row["candidate_" + p])) > 1e-8
@@ -116,13 +133,33 @@ def install(controller, print_fn=print):
             ref, path, sha = original_loader(package_root, fine_cfg)
             if joint.options()["enabled"]:
                 ref.long_composite_td_contract = long_td.reference_contract(ref)
-                # Also cover the global-IDP fallback: it must not silently
-                # activate LONG while native support/count response is pending.
-                ref.GROUPS = [key for key in ref.GROUPS if key != long_td.GROUP]
+                # A single shared b / log(-c) group for all five LONG layers.
+                # Disabled mode retains historical frozen behaviour; enabled
+                # mode can run ONLY via measured native DYNAMIC TD evaluations.
+                if not joint.options().get("long_enabled", False):
+                    ref.GROUPS = [key for key in ref.GROUPS if key != long_td.GROUP]
                 ref.Runner = joint.make_runner(ref.Runner, ref)
             return ref, path, sha
         loader._tdjoint1 = True
         bridge.load_reference = loader
+    # For measured LONG count response, the FineCDF inner bridge executes the
+    # complete downstream procedure. Its old direct call to rt.execute_procseq
+    # did NOT set the LONG post-TD mask context. Scope that actual invocation
+    # so each b/c probe includes clipped 911x/929x, formula 9305, all OP17-20
+    # and fresh native skims. Never mask in FROZEN_PATHS mode.
+    old_dynamic = bridge.NoDirectMatrixWriteTDAdapter._execute_dynamic_realization
+    if not getattr(old_dynamic, "_tdlong_dynamic_scope", False):
+        @functools.wraps(old_dynamic)
+        def dynamic_with_long_mask(self):
+            if not joint.options().get("long_enabled", False):
+                return old_dynamic(self)
+            from r1_15a2_long_post_td_mask_v24917 import execution_scope
+            if getattr(self, "outer_adapter", None) is None:
+                raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_OUTER_ADAPTER_MISSING")
+            with execution_scope(self.outer_adapter):
+                return old_dynamic(self)
+        dynamic_with_long_mask._tdlong_dynamic_scope = True
+        bridge.NoDirectMatrixWriteTDAdapter._execute_dynamic_realization = dynamic_with_long_mask
     # The active controller owns its own imported function; patch that actual
     # dispatch too.  All wrappers are installed after GENFIX2 / IZ wrappers.
     for module, name in ((bridge, "run_finecdf_inner"),
@@ -136,7 +173,8 @@ def install(controller, print_fn=print):
         controller._realize_finecdf_td = wrap_realization(old, controller)
     status = {"release": joint.RELEASE, "installed": True, "options": joint.options(),
               "sealed_reference_modified": False, "outer_acceptance_modified": False,
-              "long_composite_td": long_td.activation_plan()}
+              "long_composite_td": dict(long_td.activation_plan(),
+                                        requested=bool(joint.options().get("long_enabled")))}
     print_fn("R1 TDJOINT1: %s; shared score once; native isolated +/- probes; outer isolates=%s" %
              ("ENABLED" if status["options"]["enabled"] else "DISABLED", status["options"]["outer_isolates"]))
     return status
