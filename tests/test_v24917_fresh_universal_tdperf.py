@@ -200,7 +200,9 @@ def test_relocate_parent_lock_workspace_without_touching_source(tmp_path):
             "project_base": original.parent, "mode": "SOURCE_PARENT",
             "detected_run_roots_nearest_first": [], "outermost_run_root": None},
         _install_runtime=lambda *args: runtime_status(),
-        ActiveVisumAdapter=native, parent=Parent())
+        ActiveVisumAdapter=native, parent=Parent(),
+        runtime_io_hotfix=NS(_ensure_parent=lambda p: Path(p).parent.mkdir(
+            parents=True, exist_ok=True)))
     fresh.install(v16, original, sandbox, options=valid_options())
     original_layout, workspace = v16._isolated_workspace(original)
     assert workspace == sandbox/fresh.RUNS_NAME
