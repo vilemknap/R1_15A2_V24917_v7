@@ -68,7 +68,7 @@ def identity() -> dict:
         ],
         "acceptance_authority": "FRESH_VISUM_ASSIGNMENT_PLUS_LIVE_12D_11D",
         "acceptance_thresholds_changed_by_v24917": False,
-        "parent_files_modified": True,  # role-bearing calls in inherited multiblock/demand wrappers
+        "parent_files_modified": False,  # role is tagged by V24917 only; byte-locked parent unchanged
     }
 
 
