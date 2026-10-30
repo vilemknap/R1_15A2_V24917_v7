@@ -106,7 +106,8 @@ def install_native_epoch_guard(adapter_type, sandbox):
 
     def native_only(self, diag, folder, snapshot, *,
                     build_sequence_evidence=False, allow_persistent_restore=True):
-        from r1_15a2_supply import SupplyContractError, atomic_json
+        from r1_15a2_supply import SupplyContractError
+        from r1_15a2_two_mode_v238 import atomic_json
         target = Path(folder).resolve()
         try:
             relative = target.relative_to(runs)
@@ -231,7 +232,7 @@ def install(v16, source, sandbox, *, options):
                                       "source_version": str(source),
                                       "optimizations": verified,
                                       "fresh_contract": contract, "path_epoch": epoch}
-        from r1_15a2_supply import atomic_json
+        from r1_15a2_two_mode_v238 import atomic_json
         atomic_json(Path(workspace) / "FRESH_UNIVERSAL_BOOTSTRAP_AUTHORITY.json",
                     status["fresh_universal"])
         return status
