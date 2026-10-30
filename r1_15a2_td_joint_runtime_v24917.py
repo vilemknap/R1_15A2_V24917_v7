@@ -94,7 +94,13 @@ def wrap_dynamic_realization(original):
     """Guarantee post-TD OSRM masking inside EVERY native LONG b/c probe."""
     @functools.wraps(original)
     def dynamic_with_long_mask(self):
-        if not joint.options().get("long_enabled", False):
+        # Only native evaluations that actually optimize LONG_COMPOSITE
+        # require the LONG post-TD execution scope. Preserve the unmodified
+        # W/S native path when LONG is enabled globally but not selected in
+        # this FineCDF stage (or for legacy adapter/procseq test harnesses).
+        if (not joint.options().get("long_enabled", False)
+                or long_td.GROUP not in getattr(getattr(self, "ref", None),
+                                                "GROUPS", ())):
             return original(self)
         from r1_15a2_long_post_td_mask_v24917 import execution_scope
         outer = getattr(self, "outer_adapter", None)
