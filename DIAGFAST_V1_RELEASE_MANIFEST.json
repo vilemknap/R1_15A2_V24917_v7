@@ -153,6 +153,6 @@
     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
     "tools/refresh_v24917_manifests.py": "db6e54a614b86d19b292b4884eeb510b75c14f3e1b631d544a85f31cf06101af",
     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
-    "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0"
+    "v24917_silent_debug.py": "927a67b1b58cd632667bb6a680b94fbe6dc829c8a3f1ad3e9cbcca5527142d9b"
   }
 }

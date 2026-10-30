@@ -47,6 +47,22 @@ def _execute(host, com):
         sys.path[:] = original_sys_path
 
 
+
+def _source_project_base_for_silent(host):
+    """Validate nested source structure BEFORE choosing the debug directory."""
+    source = Path(str(host.IO.CurrentVersionFile)).resolve()
+    checkpoint_dir = source.parent
+    calibration = checkpoint_dir.parent
+    old_run = calibration.parent
+    old_runs_root = old_run.parent
+    if (checkpoint_dir.name.upper() != "CHECKPOINTS" or
+            calibration.name.upper() != "CALIBRATION" or
+            not old_run.name.upper().startswith("RUN_") or
+            old_runs_root.name.upper() != "R1_15A2_V16_RUNS"):
+        raise RuntimeError("A0001_RESUME_SILENT_SOURCE_NOT_IN_PREVIOUS_RUN_CHECKPOINTS")
+    return old_runs_root.parent.resolve()
+
+
 def main():
     visum = globals().get("Visum")
     com = globals().get("COM")
@@ -59,7 +75,10 @@ def main():
         raise RuntimeError("A0001_RESUME_SILENT_HELPER_UNAVAILABLE")
     helper = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(helper)
-    return helper.run_silent(host, HERE, lambda: _execute(host, com))
+    # New-run detection and SILENT_* output go to .../2022, not old CHECKPOINTS.
+    return helper.run_silent(
+        host, HERE, lambda: _execute(host, com),
+        project_root_override=_source_project_base_for_silent(host))
 
 
 if __name__ == "__main__" or globals().get("Visum") is not None or globals().get("COM") is not None:

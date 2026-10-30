@@ -35,6 +35,15 @@ new output must be a direct, unique RUN_* child; actual nesting, changed
 prior roots and source-run collisions remain fatal. The previous run and
 its SQLite remain read-only evidence.
 
+## SILENT logs and finding the new run
+
+For this nested checkpoint only, SILENT logs and the final compact debug ZIP
+are written to the project-level `...\\2022\\R1_15A2_SILENT_DEBUG` folder.
+The SILENT wrapper scans `...\\2022\\R1_15A2_V16_RUNS` for the new direct
+sibling `RUN_*`. It records the real source checkpoint path unchanged.
+It never creates `R1_15A2_SILENT_DEBUG` or `R1_15A2_V16_RUNS` under the
+source `CHECKPOINTS` directory.
+
 ## What the launcher preserves
 
 - Resumes accepted count **1**, outer cycle **1**, substep **TD_FINECDF_V17**. It does not replay the accepted Generation step (scale 0.538158).

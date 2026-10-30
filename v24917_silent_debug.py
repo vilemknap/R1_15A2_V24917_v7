@@ -260,7 +260,7 @@ def _bundle(target, report, run_folder, log):
     return {"file_count": len(selected), "uncompressed_run_bytes": used}
 
 
-def run_silent(visum, package_root, parent_main):
+def run_silent(visum, package_root, parent_main, *, project_root_override=None):
     """Run normal full controller, capture its terminal status, bundle evidence.
 
     A new run must not be conflated with a stale existing one. Exceptions do
@@ -274,9 +274,18 @@ def run_silent(visum, package_root, parent_main):
         source = Path(str(visum.IO.CurrentVersionFile)).resolve()
     except Exception:
         pass
-    output_root = (source.parent if source is not None else package_root) / DEBUG_NAME
+    # An accepted source checkpoint may live under a previous RUN_*/CHECKPOINTS.
+    # Default behavior is unchanged; A0001 passes the validated outer project
+    # base so debug files and new-run discovery stay OUTSIDE the old run tree.
+    if project_root_override is not None:
+        project_root = Path(project_root_override).resolve()
+        if source is None or project_root not in source.parents:
+            raise RuntimeError("SILENT_PROJECT_ROOT_OVERRIDE_NOT_SOURCE_ANCESTOR")
+    else:
+        project_root = source.parent if source is not None else package_root
+    output_root = project_root / DEBUG_NAME
     output_root.mkdir(parents=True, exist_ok=True)
-    runs_root = (source.parent / RUNS_NAME) if source is not None else None
+    runs_root = (project_root / RUNS_NAME) if source is not None else None
     before = ({p.name for p in runs_root.iterdir()
                if p.is_dir() and p.name.startswith("RUN_")}
               if runs_root is not None and runs_root.is_dir() else set())
@@ -310,6 +319,9 @@ def run_silent(visum, package_root, parent_main):
         "native_visum_dialogs_suppressed": False,
         "error": error, "traceback": traceback_text,
         "source_version": str(source) if source is not None else None,
+        "debug_project_root": str(project_root),
+        "resolved_runs_root": str(runs_root) if runs_root is not None else None,
+        "explicit_project_root_used": project_root_override is not None,
         "run_directory": str(run_folder) if run_folder is not None else None,
         "python_log": str(log),
         "started_tag": tag,

@@ -140,3 +140,40 @@ def test_compact_silent_zip_keeps_575_school_violations_and_td_fallback(tmp_path
         assert "PATH_EPOCH_NEW_POSITIVE_OD" in summary["files"]["target_plan"]["summary"]["reason"]
         assert not any(name.endswith("GENERATION_BLOCK_RESULT.json")
                        for name in archive.namelist())
+
+def test_nested_checkpoint_explicit_project_root_finds_sibling_run(tmp_path):
+    """Debug must neither create in old CHECKPOINTS nor overlook new run."""
+    source = (tmp_path / silent.RUNS_NAME / "RUN_OLD" / "CALIBRATION" /
+              "CHECKPOINTS" / "ACCEPTED_A_0001_test.ver")
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"ACCEPTED-UNCHANGED")
+    host = NS(IO=NS(CurrentVersionFile=str(source)))
+
+    def calibration():
+        new_run = tmp_path / silent.RUNS_NAME / "RUN_NEW"
+        new_run.mkdir()
+        (new_run / "RUN_STATUS.json").write_text('{"status":"COMPLETE"}')
+        return {"status":"COMPLETE"}
+
+    report = silent.run_silent(host, tmp_path, calibration,
+                               project_root_override=tmp_path)
+    assert report["status"] == "COMPLETE"
+    assert report["explicit_project_root_used"] is True
+    assert report["source_version"] == str(source.resolve())
+    assert report["resolved_runs_root"] == str((tmp_path / silent.RUNS_NAME).resolve())
+    assert report["run_directory"] == str((tmp_path / silent.RUNS_NAME / "RUN_NEW").resolve())
+    assert Path(report["python_log"]).parent == tmp_path / silent.DEBUG_NAME
+    assert not (source.parent / silent.DEBUG_NAME).exists()
+    assert not (source.parent / silent.RUNS_NAME).exists()
+    assert source.read_bytes() == b"ACCEPTED-UNCHANGED"
+    with zipfile.ZipFile(report["bundle_file"]) as bundle:
+        assert "RUN/RUN_STATUS.json" in bundle.namelist()
+
+
+def test_silent_explicit_project_root_must_be_source_ancestor(tmp_path):
+    host, _ = _host(tmp_path)
+    unrelated = tmp_path.parent / "UNRELATED_R1_OUTPUT"
+    with pytest.raises(RuntimeError, match="SILENT_PROJECT_ROOT_OVERRIDE_NOT_SOURCE_ANCESTOR"):
+        silent.run_silent(host, tmp_path, lambda:None,
+                          project_root_override=unrelated)
+    assert not (unrelated / silent.DEBUG_NAME).exists()

@@ -299,3 +299,19 @@ def test_sibling_layout_guard_rejects_unexpected_project_base(tmp_path, recipe):
     }
     with pytest.raises(RuntimeError, match="A0001_RESUME_SOURCE_LAYOUT_RUNS_ROOT_MISMATCH"):
         resume.install_sibling_run_layout_guard(v16, cp, print_fn=lambda *args:None)
+
+def test_a0001_silent_launcher_normalizes_source_to_project_root(tmp_path, recipe):
+    import importlib.util
+    launcher = ROOT / "01_SPUSTIT_V24917_RESUME_A0001_TD_NO_ENUM_SILENT.py"
+    spec = importlib.util.spec_from_file_location("_a0001_silent_launch_test", launcher)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    cp, _, _, _ = make_artifacts(tmp_path, recipe)
+    host = NS(IO=NS(CurrentVersionFile=str(cp)))
+    assert mod._source_project_base_for_silent(host) == tmp_path.resolve()
+    assert not (cp.parent / "R1_15A2_SILENT_DEBUG").exists()
+    other = tmp_path / "UNRELATED" / "source.ver"
+    other.parent.mkdir()
+    other.write_bytes(b"not-checkpoint")
+    with pytest.raises(RuntimeError, match="A0001_RESUME_SILENT_SOURCE_NOT_IN_PREVIOUS_RUN_CHECKPOINTS"):
+        mod._source_project_base_for_silent(NS(IO=NS(CurrentVersionFile=str(other))))
