@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """MOBILITY2 / GENFIX2: explicit production envelope, before and after realization.
 
-The existing reference R = sum(FP)/sum(FP/ADD_PROD) and configured [0.75,2.0]
-band are retained. This is NOT an independent validation of survey coefficients.
+The existing reference R = sum(FP)/sum(FP/ADD_PROD) is retained.
+The WORK/SERVICE production band is configured [0.75,3.0] in the universal
+fresh release. It is NOT an independent survey coefficient validation.
+The separate final W/S domestic ADD_ATT coefficient fence [0.75,5.0]
+checks zonal write/readback, NEVER the production/survey mobility ratio.
 For mixed-sign log steps R(s) is convex, not monotone: test its interior minimum
 as well as both endpoints. Every final candidate is checked again after masks,
 bounds and P/A balancing. Missing data never silently disables an enabled guard.
@@ -12,11 +15,13 @@ from __future__ import annotations
 import math
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
-RELEASE = "R1_15A2_V24917_MOBILITY2_GENFIX2_20261027"
+RELEASE = "R1_15A2_V24917_MOBILITY2_W_S_ATTR_FINAL_GATE_V3_20261031"
 GROUPS = ("E_C", "E_noC", "noE_C", "noE_noC", "stud")
 FP_ATTRS = {"WORK": ["FP_1_WORK_%s" % g for g in GROUPS],
             "SERVICE": ["FP_2_SERVICE_%s" % g for g in GROUPS]}
 MULT_ATTR = {"WORK": "ADD_PROD_W", "SERVICE": "ADD_PROD_S"}
+ATTRACTION_ATTR = {"WORK": "ADD_ATT_W", "SERVICE": "ADD_ATT_S"}
+ATTRACTION_BAND = (0.75, 5.0)
 EPS = 1.0e-12
 CERT = "v24917_mobility2_certificate"
 
@@ -24,8 +29,10 @@ CERT = "v24917_mobility2_certificate"
 def options():
     import r1_15a2_demand_policy_v1 as dp
     o = dp.load_options()
-    return {"enabled": bool(o.get("mg_enabled", True)), "lo": float(o.get("mg_min_ratio", .75)),
-            "hi": float(o.get("mg_max_ratio", 2.0))}
+    return {"enabled": bool(o.get("mg_enabled", True)),
+            "lo": float(o.get("mg_min_ratio", .75)),
+            "hi": float(o.get("mg_max_ratio", 2.0)),
+            "ws_attraction_coefficient_band": list(ATTRACTION_BAND)}
 
 
 def _f(value):
@@ -41,6 +48,104 @@ def _limits(opts):
     if lo is None or hi is None or not 0 < lo <= hi:
         raise ValueError("MOBILITY2_INVALID_BAND")
     return lo, hi
+
+
+def _attraction_band(opts):
+    """Separate coefficient authority, not the observed mobility P band.
+
+    Direct historical mobility test fixtures without this new policy remain
+    production-only. The V24917 live adapter always uses options(), which
+    explicitly installs the attraction fence and has complete zone snapshots.
+    """
+    raw = opts.get("ws_attraction_coefficient_band")
+    if raw is None:
+        return None
+    if not isinstance(raw, (list, tuple)) or len(raw) != 2:
+        raise ValueError("MOBILITY2_WS_ATTRACTION_BAND_INVALID")
+    lo, hi = (_f(x) for x in raw)
+    if (lo, hi) != ATTRACTION_BAND:
+        raise ValueError("MOBILITY2_WS_ATTRACTION_BAND_MISMATCH")
+    return lo, hi
+
+
+def _attraction_source(rows):
+    """Strict fixed-pre-trial domestic W/S ADD_ATT parent; all zones, even FP=0."""
+    result, seen = {}, set()
+    for row in rows:
+        z = int(row["zone_no"])
+        if z <= 0 or z in seen:
+            raise ValueError("MOBILITY2_WS_ATTRACTION_ZONE_ID_INVALID:" + str(z))
+        seen.add(z)
+        mask = _f(row.get("NOT_ZAHR"))
+        if mask is None:
+            raise ValueError("MOBILITY2_WS_ATTRACTION_MASK_UNREADABLE:" + str(z))
+        if mask < 0.5:
+            continue
+        for family, attr in ATTRACTION_ATTR.items():
+            value = _f(row.get(attr))
+            if value is None or value < 0.0:
+                raise ValueError("MOBILITY2_WS_ATTRACTION_PARENT_UNREADABLE:%s:%s" % (family, z))
+            result[(z, attr)] = value
+    if not result:
+        raise ValueError("MOBILITY2_WS_ATTRACTION_NO_DOMESTIC_ZONES")
+    return result
+
+
+def _attraction_valid(current, proposed, low, high):
+    if proposed is None or proposed < 0.0:
+        return False
+    tol = 1.0e-9 + 1.0e-10 * max(abs(current), abs(proposed))
+    if current <= EPS:
+        # Preserve structural-zero ADD_ATT. Generation uses preserve_zero_add.
+        return abs(proposed - current) <= tol
+    return min(low, current) - tol <= proposed <= max(high, current) + tol
+
+
+def _attraction_candidate_guard(candidate_rows, parent_rows, band):
+    parent = _attraction_source(parent_rows)
+    low, high = band
+    checked, errors = 0, []
+    for row in candidate_rows:
+        attr = str(row.get("attr", "")).upper()
+        if attr not in ATTRACTION_ATTR.values():
+            continue
+        z = int(row["zone_no"])
+        if (z, attr) not in parent:
+            continue  # Foreign-zone ADD_ATT never receives a domestic constraint.
+        checked += 1
+        before = parent[(z, attr)]
+        current, proposed = _f(row.get("current")), _f(row.get("proposed"))
+        tol = 1.0e-9 + 1.0e-10 * max(abs(before), abs(current or 0.0))
+        if current is None or abs(current - before) > tol:
+            reason = "STALE_PARENT"
+        elif not _attraction_valid(before, proposed, low, high):
+            reason = "ATTRACTION_COEFFICIENT_OUTSIDE_BAND"
+        else:
+            continue
+        errors.append({"zone_no": z, "attr": attr, "reason": reason,
+                       "current": current, "proposed": proposed,
+                       "parent": before})
+    return {"policy": "DOMESTIC_WS_ATTR_COEFFICIENT_NOT_MOBILITY_RATIO",
+            "band": [low, high], "checked_candidates": checked,
+            "checked_parent_zones": len(parent) // len(ATTRACTION_ATTR),
+            "passes": not errors, "violations": errors[:100]}
+
+
+def _attraction_live_guard(before_rows, after_rows, band):
+    before = _attraction_source(before_rows)
+    after = _attraction_source(after_rows)
+    if set(before) != set(after):
+        raise ValueError("MOBILITY2_WS_ATTRACTION_LIVE_ZONE_COVERAGE_CHANGED")
+    low, high = band
+    errors = []
+    for (z, attr), old in before.items():
+        proposed = after[(z, attr)]
+        if not _attraction_valid(old, proposed, low, high):
+            errors.append({"zone_no": z, "attr": attr, "reason": "LIVE_ATTRACTION_OUTSIDE_BAND",
+                           "parent": old, "realized": proposed})
+    return {"policy": "DOMESTIC_WS_ATTR_COEFFICIENT_NOT_MOBILITY_RATIO",
+            "band": [low, high], "checked_live_values": len(before),
+            "passes": not errors, "violations": errors[:100]}
 
 
 def zone_productions(zone_rows, family):
@@ -225,6 +330,11 @@ def check_candidate(rows, zone_rows, opts=None):
         ok = min(lo, r0)-EPS <= r1 <= max(hi, r0)+EPS
         report["families"][fam] = {"ratio_current": r0, "ratio_after": r1, "passes": ok, "zones": len(prod)}
         report["passes"] &= ok
+    band = _attraction_band(opts)
+    if band is not None:
+        attraction = _attraction_candidate_guard(rows, zone_rows, band)
+        report["ws_attraction_coefficient_gate"] = attraction
+        report["passes"] = bool(report["passes"] and attraction["passes"])
     if not report["passes"]:
         report["status"] = "REJECTED_FINAL_CANDIDATE_OUTSIDE_ENVELOPE"
     return report
@@ -251,8 +361,13 @@ def check_live(before_rows, after_rows, opts=None):
         ok = min(lo, r0)-EPS <= r1 <= max(hi, r0)+EPS
         report["families"][fam] = {"ratio_current": r0, "ratio_realized": r1, "passes": ok}
         report["passes"] &= ok
+    band = _attraction_band(opts)
+    if band is not None:
+        attraction = _attraction_live_guard(before_rows, after_rows, band)
+        report["ws_attraction_coefficient_gate"] = attraction
+        report["passes"] = bool(report["passes"] and attraction["passes"])
     if not report["passes"]:
-        report["status"] = "REJECTED_LIVE_PRODUCTION_OUTSIDE_ENVELOPE"
+        report["status"] = "REJECTED_LIVE_WS_PRODUCTION_OR_ATTRACTION_ENVELOPE"
     return report
 
 

@@ -170,6 +170,32 @@ def test_envelope_bounds(mb, real_cfg):
     assert mb._salary_coefficient_bounds(cfg, 1.0)[:2] == (0.5, 2.0)
 
 
+@pytest.mark.parametrize("attr,upper", [
+    ("ADD_PROD_W", 3.0), ("ADD_PROD_S", 3.0),
+    ("ADD_ATT_W", 5.0), ("ADD_ATT_S", 5.0),
+])
+@pytest.mark.parametrize("phase", ["CATCH_UP", "REFINE"])
+def test_role_reference_reaches_byte_locked_multiblock_mapper(mb, real_cfg, attr, upper, phase):
+    cfg = tg.overlay_cfg(real_cfg, phase)
+    ref = mb._reference_coefficient(None, attr, 1, 1.0)
+    assert isinstance(ref, float) and float(ref) == 1.0
+    assert getattr(ref, "v24917_generation_role") in ("PROD", "ATT")
+    cloned = copy.deepcopy(ref)
+    assert float(cloned) == float(ref)
+    assert cloned.v24917_generation_role == ref.v24917_generation_role
+    hard = mb._multiplicative_coefficient_bounds(
+        "DOMESTIC", cfg, current=1.0, reference=ref)
+    soft = mb._soft_multiplier_bounds("DOMESTIC", cfg, 1.0, ref)
+    assert hard[:2] == pytest.approx((0.75, upper))
+    assert soft == pytest.approx((0.75, upper))
+    # Generic / unrelated reference retains the prior scalar 2.0 band.
+    unchanged_ref = mb._reference_coefficient(None, "ADD_SALARY", 1, 1.0)
+    assert getattr(unchanged_ref, "v24917_generation_role", None) is None
+    assert mb._multiplicative_coefficient_bounds(
+        "DOMESTIC", cfg, current=1.0, reference=unchanged_ref)[:2] == (0.75, 2.0)
+    assert mb._salary_coefficient_bounds(cfg, 1.0)[:2] == (0.5, 2.0)
+
+
 def zone_rows(zones, value=1.9):
     out = []
     for z in zones:
@@ -181,19 +207,56 @@ def zone_rows(zones, value=1.9):
     return out
 
 
+@pytest.mark.parametrize("phase", ["CATCH_UP", "REFINE"])
+def test_new_ws_3_5_headroom_survives_zonal_solver_bounds(mb, real_cfg, phase):
+    """The old 2.5/4.0 ceiling must no longer clip eligible W/S candidates."""
+    cfg = tg.overlay_cfg(real_cfg, phase)
+    zr = zone_rows([1], value=2.8)
+    zr[0]["ADD_ATT_W"] = zr[0]["ADD_ATT_S"] = 4.5
+    bounds = tg.zone_bounds(mb, zr, cfg)
+    for family in ("WORK", "SERVICE"):
+        assert bounds[(family, "PROD", 1)][1] == pytest.approx(
+            math.log(3.0 / 2.8))
+    assert bounds[("SERVICE", "ATT", 1)][1] == pytest.approx(
+        math.log(5.0 / 4.5))
+    # WORK attractiveness retains the established salary-effect reserve.
+    assert bounds[("WORK", "ATT", 1)][1] == pytest.approx(
+        math.log(5.0 / 4.5) - tg.SALARY_DOMAIN_MARGIN)
+    # No modeled coefficient or salary authority is changed in this test.
+
+
 def test_end_to_end_design_targeted_coarse_and_gate_passes(mb, real_cfg):
     import R1_15A2_ACTUAL_PATH_MULTIBLOCK_CALIBRATION_MASTER_V2_1 as master
     inc, zones = synthetic_incidence(n_zones=12)
     cfg = tg.overlay_cfg(real_cfg, "CATCH_UP")
-    zr = zone_rows(zones, value=1.9)            # near the old hard cap 2.0
+    zr = zone_rows(zones, value=1.9)            # within new W/S production 3.0; attraction 5.0
     bounds = tg.zone_bounds(mb, zr, cfg)
-    assert bounds[("WORK", "PROD", 1)] == pytest.approx((DN, math.log(2.0 / 1.9)))
+    # The new hard maximum is 3.0, but the existing +50% per-cycle cap
+    # dominates at current=1.9 (1.9 * 1.5 = 2.85 < 3.0).
+    max_prod_step = min(UP, math.log(3.0 / 1.9))
+    assert bounds[("WORK", "PROD", 1)] == pytest.approx((DN, max_prod_step))
+    assert bounds[("SERVICE", "PROD", 1)] == pytest.approx((DN, max_prod_step))
+    assert bounds[("WORK", "ATT", 1)][1] == pytest.approx(UP)
+    assert bounds[("SERVICE", "ATT", 1)][1] == pytest.approx(UP)
     rows, summary, _, _ = zf.fit(inc, zones, bounds, cfg, tg.DEFAULT_POLICY["fit"])
     design = mb.design_generation_candidates(rows, zr, cfg, scale=1.0)
     refine = design["summary"]["signed_generation_refinement"]
     assert refine["mode"] == "V24917_TARGETED_ZONE_DIRECT"
     proposed = {(r["zone_no"], r["attr"]): r["proposed"] for r in design["candidate_rows"]}
-    assert 1.9 < max(proposed.values()) <= 2.0 + 1e-9  # new absolute cap
+    assert any(value > 1.9 for value in proposed.values())
+    # Direct P/Service A coefficients follow the +50% step cap.  WORK
+    # attraction's independent ADD_SALARY co-effect can make its raw
+    # ADD_ATT_W ratio slightly larger; its *implemented total log effect*
+    # must still pass the same +50% cap (checked below).
+    assert all(value <= 1.9 * 1.5 + 1e-9
+               for (_z, attr), value in proposed.items()
+               if attr in ("ADD_PROD_W", "ADD_PROD_S", "ADD_ATT_S"))
+    assert all(value <= 3.0 + 1e-9 for (_z, attr), value in proposed.items()
+               if attr in ("ADD_PROD_W", "ADD_PROD_S"))
+    assert all(value <= 5.0 + 1e-9 for (_z, attr), value in proposed.items()
+               if attr in ("ADD_ATT_W", "ADD_ATT_S"))
+    assert all(value <= 2.0 + 1e-9 for (_z, attr), value in proposed.items()
+               if attr == "ADD_SALARY")
     effects = [r["implemented_total_log_effect"] for r in design["effect_rows"]]
     assert max(effects) <= UP + 1e-9 and min(effects) >= DN - 1e-9   # +50 % / -20 % per cycle
     gate = master.generation_apply_gate(design, cfg)
@@ -210,11 +273,11 @@ def test_end_to_end_design_targeted_coarse_and_gate_passes(mb, real_cfg):
 def test_refine_phase_outside_aligned_band_cannot_move_further_out(mb, real_cfg):
     inc, zones = synthetic_incidence(n_zones=8)
     cfg = dict(tg.overlay_cfg(real_cfg, "REFINE"), max_add_log_up=0.06, max_add_log_down=0.06)
-    zr = zone_rows(zones, value=3.5)             # outside both aligned hard and soft bands
+    zr = zone_rows(zones, value=5.5)             # outside both new P=3.0 and A=5.0 bands
     bounds = tg.zone_bounds(mb, zr, cfg)
     rows, _, _, _ = zf.fit(inc, zones, bounds, cfg, tg.DEFAULT_POLICY["fit"])
     design = mb.design_generation_candidates(rows, zr, cfg, scale=1.0)
-    steps = [math.log(r["proposed"] / 3.5) for r in design["candidate_rows"] if r["attr"] != "ADD_SALARY"]
+    steps = [math.log(r["proposed"] / 5.5) for r in design["candidate_rows"] if r["attr"] != "ADD_SALARY"]
     assert all(step <= 1e-9 for step in steps)  # hold or inward only; no forced clamp
 
 

@@ -2,9 +2,9 @@
 """V24917 runtime installation on top of an already loaded V24916 launcher.
 
 Installed in memory, after the V24916 runtime install and before parent.main:
-  1. r1_15a2_multiblock patch: envelope [0.25, 5], TARGETED_ZONE_DIRECT design;
+  1. r1_15a2_multiblock patch: W/S domestic P upper 3.0, A upper 5.0; TARGETED_ZONE_DIRECT;
   2. TG pre-apply gate non-fatal (GENERATION_GATE rejects the candidate);
-  3. demand policy: TD every N-th cycle + on TG plateau, stationary early stop
+  3. demand policy: TD scheduling from R1_RUN_OPTIONS (universal fresh ALWAYS), early stop
      (options in R1_RUN_OPTIONS.json / environment);
   4. DIAGFAST V2 FAST_EXACT 12D/11D with the DIRECT guard (inline LEGACY vs
      FAST parity on the first call of each helper, automatic LEGACY fallback).
@@ -206,6 +206,7 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
         status["diagfast"] = {"installed": False, "reason": "R1_DIAGFAST_DISABLE"}
     else:
         status["diagfast"] = install_diagfast(rt, print_fn=print_fn)
+    import r1_15a2_mobility_guard_v24917 as _mguard
     o = _dp.load_options()
     status["genfix2_policy_semantics"] = {
         "release": RELEASE,
@@ -214,6 +215,9 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
         "global_survey_error_limit_added": False,
         "mobility_band": [o.get("mg_min_ratio"), o.get("mg_max_ratio")],
         "mobility_reference": "EXISTING_FP_DIV_ADD_REFERENCE_NOT_INDEPENDENT_SURVEY_VALIDATION",
+        "ws_attraction_coefficient_band": list(_mguard.ATTRACTION_BAND),
+        "ws_attraction_gate": "FINAL_GENERATION_CANDIDATE_AND_LIVE_ZONE_READBACK_ONLY",
+        "attraction_changes_mobility_ratio": False,
         "early_exploration_extended": o.get("sev_extend_early_horizon"),
         "fast_assignment_step1": "NOT_ACTIVE_FULL_ASSIGNMENT_REQUIRED",
         "stationarity": "BOUNDED_STEP1_EXHAUSTION_NOT_CERTIFIED",

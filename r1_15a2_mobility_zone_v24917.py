@@ -4,6 +4,8 @@
 Raw pre-mode-choice FP productions are compared, never profile passages, vehicle
 OD or attraction weights. Reference is the existing AMDY equation evaluated at
 ADD_PROD_W/S/SCH=1 and ADD_PROD_L=0.3, NOT raw unscaled survey trip frequency.
+WORK/SERVICE production follows the configured [0.75,3.0] mobility band;
+SCHOOL remains [0.75,2.0] and LONG retains its own fixed band.
 Existing out-of-band parents may improve or hold, never move further away.
 No COM writes, no LoadVersion, no changes to native TD or boundary production.
 """
@@ -28,6 +30,16 @@ ATOL = 1e-7
 RTOL = 1e-10
 REFERENCE = "AMDY_DOMESTIC_FP_AT_CANONICAL_COEFFICIENT_NOT_RAW_SURVEY"
 LONG_BAND = (0.5, 1.5)  # ADD_PROD_L 0.3 x [0.5, 1.5] = [0.15, 0.45]
+SCHOOL_HARD_MAX = 2.0  # SCHOOL may not inherit W/S production max 3.0
+
+
+def family_band(family, authority):
+    if family == "LONG":
+        return tuple(authority["long_band"])
+    if family == "SCHOOL":
+        return tuple(authority.get("school_band", authority["band"]))
+    return tuple(authority["band"])  # WORK and SERVICE only
+
 # The live 2026-10-30 generation trials proved that in 575 domestic zones
 # FP_5_SCHOOL stayed at exactly its run-start value when the SCHOOL candidate
 # changed ADD_PROD_SCH.  Our fixed-FP reference guard correctly rejected all
@@ -104,8 +116,13 @@ def enrich(adapter, rows):
 def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=None):
     """Build a fixed reference and retain the raw parent for readback/rollback."""
     lo, hi = limits(opts)
+    # The original SCHOOL band always followed opts. Only prevent widening
+    # above its former upper bound 2.0 in the new W/S-specific configuration.
+    school_band = (lo, min(hi, SCHOOL_HARD_MAX))
     if anchor is not None and tuple(anchor.get("long_band", ())) != LONG_BAND:
         raise ValueError("MOBILITYZONE1_LONG_BAND_CHANGED")
+    if anchor is not None and tuple(anchor.get("school_band", school_band)) != school_band:
+        raise ValueError("MOBILITYZONE1_SCHOOL_BAND_CHANGED")
     by_zone = zone_map(rows)
     entries, errors = {}, dict(unavailable or {})
     for fam in families:
@@ -151,12 +168,16 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
             errors[fam] = type(exc).__name__ + ":" + str(exc)
     outside = []
     for e in entries.values():
-        band_lo, band_hi = LONG_BAND if e["family"] == "LONG" else (lo, hi)
+        band_lo, band_hi = family_band(e["family"],
+                                         {"band": [lo, hi],
+                                          "long_band": LONG_BAND,
+                                          "school_band": school_band})
         if e["ratio_current"] is not None and not band_lo-EPS <= e["ratio_current"] <= band_hi+EPS:
             outside.append({"zone_no": e["zone_no"], "family": e["family"],
                             "ratio": e["ratio_current"]})
     return {"release": RELEASE, "enabled": bool(opts.get("enabled", True)),
-            "band": [lo, hi], "long_band": list(LONG_BAND), "reference_role": REFERENCE,
+            "band": [lo, hi], "long_band": list(LONG_BAND),
+            "school_band": list(school_band), "reference_role": REFERENCE,
             "families": list(families), "entries": entries,
             "unavailable": errors, "out_of_band": outside,
             "target_satisfied": not bool(errors or outside), "parent_zone_rows": copy.deepcopy(list(rows)),
@@ -167,7 +188,7 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
 
 
 def interval(entry, authority):
-    lo, hi = authority["long_band"] if entry["family"] == "LONG" else authority["band"]
+    lo, hi = family_band(entry["family"], authority)
     r = entry["current"]/entry["reference_coefficient"]
     return min(lo,r), max(hi,r)
 
@@ -424,7 +445,7 @@ def check_live(authority, rows):
                     bad.append("FP_ENVELOPE:"+a)
                 elif base<=EPS and values[a]>ATOL:bad.append("ZERO_GROUP_BECAME_POSITIVE:"+a)
         total=math.fsum(values.values());base=e["reference_production"]
-        target_lo,target_hi = authority["long_band"] if fam == "LONG" else authority["band"]
+        target_lo,target_hi = family_band(fam, authority)
         report["rows"].append({"zone_no":z,"family":fam,"production":total,
             "reference_production":base,"ratio":total/base if base and base>EPS else None,
             "in_target_band":bool(base and base>EPS and target_lo-EPS<=total/base<=target_hi+EPS),
