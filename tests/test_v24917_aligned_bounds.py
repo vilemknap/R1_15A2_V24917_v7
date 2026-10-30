@@ -17,9 +17,14 @@ def test_absolute_and_relative_bands_agree_with_fixed_mobility(phase):
     hard, soft = tg._bounds_patch(mb._multiplicative_coefficient_bounds,
                                   mb._soft_multiplier_bounds, mb)
     opts = dp.load_options(environ={})
-    assert opts['ls_school_envelope'] == [opts['mg_min_ratio'], opts['mg_max_ratio']] == [.75, 2.]
+    assert opts['ls_school_envelope'] == [.75, 2.]
+    assert [opts['mg_min_ratio'], opts['mg_max_ratio']] == [.75, 2.5]
+    assert mz.SCHOOL_BAND == (.75, 2.)
     assert hard('DOMESTIC', cfg, 1.)[:2] == (.75, 2.)
     assert soft('DOMESTIC', cfg, 1.) == (.75, 2.)
+    for role, upper in [('PROD', 2.5), ('ATT', 4.)]:
+        assert hard('DOMESTIC', cfg, 1., role=role)[:2] == (.75, upper)
+        assert soft('DOMESTIC', cfg, 1., role=role) == (.75, upper)
     # Reference 1 is the normalized starting state; raw ZAHR units may differ.
     for ref in [1., 8.]:
         assert hard('ZAHR', cfg, ref, ref)[:2] == (.5*ref, 10.*ref)
@@ -28,8 +33,9 @@ def test_absolute_and_relative_bands_agree_with_fixed_mobility(phase):
              **{name: 10. for name in mz.SPECS['WORK'][2]}}]
     authority = mz.capture(rows, {'lo': opts['mg_min_ratio'], 'hi': opts['mg_max_ratio']}, ['WORK'])
     bounded = mz.bounded_step(authority['entries']['WORK|1'], math.log(3), authority)
-    assert math.exp(bounded) == pytest.approx(2.)
-    for value, allowed in [(.749, False), (.75, True), (2., True), (2.001, False)]:
+    assert math.exp(bounded) == pytest.approx(2.5)
+    for value, allowed in [(.749, False), (.75, True),
+                           (2., True), (2.5, True), (2.501, False)]:
         row = {'zone_no': 1, 'attr': 'ADD_PROD_W', 'family': 'WORK',
                'role': 'PROD', 'current': 1., 'proposed': value}
         assert mz.check_candidate([row], authority)['passes'] is allowed
