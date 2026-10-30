@@ -6,6 +6,7 @@ on:
       - codex/fix-v240-op20-inactive-partials-20261029
       - codex/v24917-op17-20-and-matrix-com-array-fix-20261029
       - codex/v24917-formula-longmask-silent-debug-20261029
+      - codex/v24917-school-fp-link-guard-20261030
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,6 +24,9 @@ jobs:
       - name: Compile changed Python modules
         run: |
           python -m py_compile r1_15a2_long_post_td_mask_v24917.py
+          python -m py_compile r1_15a2_mobility_zone_v24917.py
+          python -m py_compile r1_15a2_trial_adapter_v24917.py
+          python -m py_compile tests/test_v24917_mobilityzone1.py
           python -m py_compile r1_15a2_preflight_explain_v24917.py
           python -m py_compile tests/test_v24917_preflight_op20_partial_activation.py
           python -m py_compile tests/test_v24917_longmask_09c_live_scope_regression.py
@@ -52,7 +56,7 @@ jobs:
           PY
       - name: Exact 09C scope, V240 preflight and LONGMASK regression
         run: |
-          python -m pytest -q -p no:cacheprovider tests/test_v24917_preflight_op20_partial_activation.py tests/test_v239_safety_gates.py tests/test_v240_full_overnight.py tests/test_v24917_longmask_09c_live_scope_regression.py tests/test_v24917_long_post_td_mask.py tests/test_v24917_silent_debug.py
+          python -m pytest -q -p no:cacheprovider tests/test_v24917_mobilityzone1.py tests/test_v24917_preflight_op20_partial_activation.py tests/test_v239_safety_gates.py tests/test_v240_full_overnight.py tests/test_v24917_longmask_09c_live_scope_regression.py tests/test_v24917_long_post_td_mask.py tests/test_v24917_silent_debug.py
       - name: Source/working-copy operation difference regression
         run: python -m pytest -q -p no:cacheprovider tests/test_v24917_working_copy_operation_diff.py
       - name: Full main regression in isolated process
