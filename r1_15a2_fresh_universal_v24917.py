@@ -93,6 +93,14 @@ def verify_runtime_status(status):
                 "OPTIMIZATION_NOT_INSTALLED:" + name)
     require("REVIEW1" in str(optimized["td_restore"].get("release", "")),
             "TD_RESTORE_SAFETY_REVIEW_MISSING")
+    # Runtime may apply R1_* environment overrides AFTER options JSON is read.
+    # Installing the wrappers alone does not prove that joint native TD is ON.
+    effective = optimized["tdjoint1"].get("options") or {}
+    require(effective.get("enabled") is True
+            and effective.get("long_enabled") is True
+            and effective.get("school_enabled") is True
+            and effective.get("inner_mode") == "DYNAMIC",
+            "EFFECTIVE_TD_OPTIMIZATION_DISABLED")
     return {name: copy.deepcopy(optimized[name])
             for name in ("tdjoint1", "td_numpy", "td_restore", "path_store_build")}
 
