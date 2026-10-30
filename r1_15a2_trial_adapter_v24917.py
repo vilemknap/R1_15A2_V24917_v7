@@ -42,6 +42,7 @@ import r1_15a2_long_od_mask_v24917 as longmask
 import r1_15a2_long_post_td_mask_v24917 as post_td_mask
 import r1_15a2_long_incidence_read_v24917 as long_incidence_read
 import r1_15a2_long_cache_generation_v24917 as long_cache
+import r1_15a2_long_amdy_formula_v24917 as long_amdy
 import r1_15a2_demand_policy_v1 as long_opts
 import r1_15a2_boundary_generation_v24917 as bdgen
 import r1_15a2_boundary_pa_v24917 as bdpa
@@ -603,6 +604,40 @@ class VisumAdapter(_V24916ActiveAdapter):
                     decision["accepted"] = False
                     decision["reasons"] = list(decision.get("reasons") or []) + [
                         "LONG_TG_NATIVE_RESPONSE_UNVERIFIED:" + str(exc)]
+                    self.v24917_status["ls_incomplete_current_cycle"] = True
+            # An ADD_ATT_L probe must actually change the native
+            # Table-14 overnight-weighted FA_3_LONG readback. Neither the
+            # coefficient write nor M9305 readback proves that the *attraction*
+            # formula was wired, because production may change simultaneously.
+            changed_att = [
+                row for row in rows
+                if str(row.get("attr", "")).upper() == "ADD_ATT_L"
+                and abs(float(row.get("proposed", 0.0)) -
+                        float(row.get("current", 0.0))) > 1.e-12]
+            if changed_att:
+                try:
+                    native_att = long_amdy.inspect_native(
+                        self.visum, self.zones,
+                        retry_policy=self.com_retry_policy)
+                    for row in changed_att:
+                        zone = int(row["zone_no"])
+                        actual_c = native_att["current_coefficient"][zone]
+                        if not long_amdy.math.isclose(
+                                actual_c, float(row["proposed"]),
+                                abs_tol=1.e-9, rel_tol=1.e-10):
+                            raise ValueError(
+                                "LONG_ATT_COEFFICIENT_CANDIDATE_READBACK_MISMATCH:" +
+                                str(zone))
+                    decision["long_attraction_native_formula"] = {
+                        "status": native_att["status"],
+                        "checked_zones": len(native_att["zones"]),
+                        "tested_attraction_zones": len(changed_att),
+                        "overnight_active_zones":
+                            native_att["active_overnight_zones"]}
+                except Exception as exc:
+                    decision["accepted"] = False
+                    decision["reasons"] = list(decision.get("reasons") or []) + [
+                        "LONG_ATT_NATIVE_FORMULA_UNVERIFIED:" + str(exc)]
                     self.v24917_status["ls_incomplete_current_cycle"] = True
             self.v24917_status["longguard1_last_proof"] = proof
             if not proof["passes"]:
