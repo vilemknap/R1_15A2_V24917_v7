@@ -25,7 +25,8 @@ EPS = 1.0e-12
 
 def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
                   ws_solution: Mapping[str, Any], zone_nos: Sequence[int],
-                  bounds: Mapping[tuple[str, str, int], tuple[float, float]]) -> zf.FitProblem:
+                  bounds: Mapping[tuple[str, str, int], tuple[float, float]],
+                  attraction_elasticity: Mapping[int, float] | None = None) -> zf.FitProblem:
     """Use the same normalized OD/path linearization as the W/S fit.
 
     The caller supplies explicit, independently validated coefficient-domain
@@ -71,6 +72,24 @@ def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
             or not np.isclose(float(np.sum(production)), total, rtol=1.e-12, atol=1.e-8)
             or not np.isclose(float(np.sum(attraction)), total, rtol=1.e-12, atol=1.e-8)):
         raise ValueError("LONG_FIT_MARGINS_INVALID")
+    # AMDY table 14: ADD_ATT_L multiplies only PRENOC_SVK, NOT total FA.
+    # d log(A_z) / d log(ADD_ATT_L_z) = coeff*PRENOC / FA_z.
+    # A frozen-path *vehicle* marginal is only a local proposal basis. The
+    # native formula/readback proof comes from the caller; without it there
+    # may be NO mutable LONG attraction column.
+    eta = {}
+    supplied = dict(attraction_elasticity or {})
+    for z in zones:
+        if z in supplied:
+            x = float(supplied[z])
+            if not math.isfinite(x) or x < 0.0 or x > 1.0 + 1.e-8:
+                raise ValueError("LONG_FIT_OVERNIGHT_ELASTICITY_INVALID:" + str(z))
+            eta[z] = min(1.0, x)
+        else:
+            active_att = bounds.get(("LONG", "ATT", z), (0., 0.))
+            if float(active_att[1]) - float(active_att[0]) > EPS:
+                raise ValueError("LONG_FIT_OVERNIGHT_ELASTICITY_REQUIRED:" + str(z))
+            eta[z] = 0.0
     quantities = []
     seen_od = set()
     origins, destinations = [], []
@@ -108,7 +127,11 @@ def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
                 continue
             key_index[key] = len(keys)
             keys.append(key)
-            base.append(float(margin[zidx[z]]))
+            # Exact nonlinear coefficient-induced trip-end change:
+            # PROD:  P * expm1(dlog k_prod)
+            # ATT:   A * overnight_fraction * expm1(dlog k_att)
+            base.append(float(margin[zidx[z]]) * (
+                eta[z] if role == "ATT" else 1.0))
             lower.append(lo)
             upper.append(hi)
     if not keys:
@@ -128,13 +151,21 @@ def build_problem(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
         lookup = np.array([key_index.get(("LONG", role, z), -1) for z in axis], dtype=np.int64)
         kk = lookup[cc]
         present = kk >= 0
-        np.add.at(G, (rr[present], kk[present]), amount[present])
+        if role == "ATT":
+            weights = np.asarray([eta[z] for z in axis], dtype=float)
+            np.add.at(G, (rr[present], kk[present]),
+                      amount[present] * weights[cc[present]])
+        else:
+            np.add.at(G, (rr[present], kk[present]), amount[present])
     direct = np.abs(G).sum(axis=0)
     unexposed = direct <= EPS
     gvec = np.zeros(len(keys))
     bvec = np.zeros(len(keys))
     for i, (_family, role, z) in enumerate(keys):
-        b = production[zidx[z]] if role == "PROD" else attraction[zidx[z]]
+        # The normalizer and hard/nonlinear P/A projection must use the
+        # same effective trip-end mass, otherwise it pretends a 10% change
+        # in PRENOC also changes the unchanged POP/NUM_PM attraction terms.
+        b = float(base[i])
         gvec[i] = 0.5 * b / total
         bvec[i] = b if role == "PROD" else -b
     G -= np.outer(through, gvec)
@@ -157,7 +188,8 @@ def fit(observed: Mapping[str, Any], ws_problem: zf.FitProblem,
         bounds: Mapping[tuple[str, str, int], tuple[float, float]],
         solver_cfg: Mapping[str, Any] | None = None) -> dict[str, Any]:
     """Produce a diagnostic proposal, never executable generation rows."""
-    problem = build_problem(observed, ws_problem, ws_solution, zone_nos, bounds)
+    problem = build_problem(observed, ws_problem, ws_solution, zone_nos, bounds,
+                            observed.get("attraction_elasticity"))
     cfg = {"balance_mode": "HARD", "nonlinear_pa_repair": True,
            "ridge_relative": 0.05, **dict(solver_cfg or {})}
     # An exploratory caller cannot silently disable the P/A contract.
