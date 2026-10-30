@@ -20,7 +20,9 @@ def source(tmp_path, relative="BASE/original.ver"):
 def valid_options():
     return {"td_joint_enabled": True, "td_inner_mode": "DYNAMIC",
             "td_first_cycle": True, "school_td_enabled": True,
-            "long_composite_td_enabled": True}
+            "long_composite_td_enabled": True,
+            "td_policy": "ALWAYS", "td_every_n_cycles": 1,
+            "td_during_catchup": True}
 
 
 def valid_cfg():
@@ -34,6 +36,9 @@ def valid_cfg():
 
 def runtime_status():
     return {"v24917": {
+        "demand_policy": {"installed": True, "note": {
+            "options": {"td_policy": "ALWAYS", "td_every_n_cycles": 1,
+                        "td_during_catchup": True, "td_first_cycle": True}}},
         "tdjoint1": {"installed": True, "release": "TDJOINT",
                      "options": {"enabled": True, "long_enabled": True,
                                  "school_enabled": True, "inner_mode": "DYNAMIC"}},
@@ -93,7 +98,7 @@ def test_requested_optimized_td_is_enabled(name):
 def test_runtime_must_install_reviewed_restore_not_old_wrapper():
     item = runtime_status()
     assert set(fresh.verify_runtime_status(item)) == {
-        "tdjoint1", "td_numpy", "td_restore", "path_store_build"}
+        "demand_policy", "tdjoint1", "td_numpy", "td_restore", "path_store_build"}
     item["v24917"]["td_restore"]["release"] = "OLD_SKIP_UNVERIFIED"
     with pytest.raises(RuntimeError, match="TD_RESTORE_SAFETY_REVIEW_MISSING"):
         fresh.verify_runtime_status(item)
@@ -102,6 +107,87 @@ def test_runtime_must_install_reviewed_restore_not_old_wrapper():
     item["v24917"]["tdjoint1"]["options"]["school_enabled"] = False
     with pytest.raises(RuntimeError, match="EFFECTIVE_TD_OPTIMIZATION_DISABLED"):
         fresh.verify_runtime_status(item)
+
+
+
+@pytest.mark.parametrize("field,value", [
+    ("td_policy", "EVERY_N"), ("td_policy", "OFF"),
+    ("td_every_n_cycles", 3), ("td_during_catchup", False),
+])
+def test_fresh_start_rejects_any_td_skip_setting(field, value):
+    opts = valid_options()
+    opts[field] = value
+    with pytest.raises(RuntimeError, match="TD_EVERY_CYCLE_POLICY_REQUIRED"):
+        fresh.validate_fresh_config(valid_cfg(), opts)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("td_policy", "EVERY_N"), ("td_policy", "OFF"),
+    ("td_every_n_cycles", 3), ("td_during_catchup", False),
+    ("td_first_cycle", False),
+])
+def test_runtime_rejects_effective_td_skip_overrides(field, value):
+    status = runtime_status()
+    status["v24917"]["demand_policy"]["note"]["options"][field] = value
+    with pytest.raises(RuntimeError, match="EFFECTIVE_TD_EVERY_CYCLE_POLICY_MISMATCH"):
+        fresh.verify_runtime_status(status)
+
+
+def test_options_file_explicitly_schedules_native_td_every_cycle():
+    from r1_15a2_demand_policy_v1 import load_options
+    options = load_options(root=Path(__file__).resolve().parents[1], environ={})
+    assert options["td_policy"] == "ALWAYS"
+    assert options["td_every_n_cycles"] == 1
+    assert options["td_during_catchup"] is True
+    assert options["td_first_cycle"] is True
+    assert options["td_inner_mode"] == "DYNAMIC"
+    assert options["td_count_weight"] == 0.6
+    assert options["td_inner_max_evaluations"] == 60
+
+
+def test_actual_demand_policy_runs_td_for_every_one_of_100_cycles_even_in_catchup(monkeypatch):
+    import r1_15a2_demand_policy_v1 as dp
+    options = dp.load_options(root=Path(__file__).resolve().parents[1], environ={})
+    policy = dp.DemandPolicy(options)
+    monkeypatch.setattr(dp, "catchup_phase", lambda cfg, diag: ("CATCH_UP", 0.60))
+    actual_calls = []
+
+    def genuine_td(adapter, cfg, folder, control, state, diag, root, outer_cycle=None):
+        actual_calls.append(outer_cycle)
+        return False, state, diag, {
+            "inner": {"search_complete": True, "progress_continue": False},
+            "td_realization_complete": True,
+        }
+
+    wrapped = dp.wrap_td(genuine_td, policy, NS())
+    adapter = NS(v24917_status={})
+    state, diag = {"state_hash": "accepted"}, {"d12": {"rows": []}}
+    for outer in range(1, 101):
+        # Exercise both accepted and unaccepted TG transitions.
+        policy.note_generation(outer % 2 == 0,
+                               {"search_complete": True, "stationarity_confirmed": True})
+        changed, returned_state, returned_diag, rec = wrapped(
+            adapter, {}, Path("unused"), NS(), state, diag, Path("unused"),
+            outer_cycle=outer)
+        assert changed is False
+        assert returned_state is state and returned_diag is diag
+        assert rec["td_run_policy_reason"] == "ALWAYS"
+    assert actual_calls == list(range(1, 101))
+    assert policy.td_calls == 100
+    assert all(rec["td_ran"] for rec in policy.records)
+
+
+def test_environment_overrides_cannot_silently_make_this_fresh_run_sparse():
+    from r1_15a2_demand_policy_v1 import load_options
+    folder = Path(__file__).resolve().parents[1]
+    effective = load_options(root=folder, environ={
+        "R1_TD_POLICY": "EVERY_N", "R1_TD_EVERY_N": "3",
+        "R1_TD_DURING_CATCHUP": "false",
+    })
+    status = runtime_status()
+    status["v24917"]["demand_policy"]["note"]["options"] = effective
+    with pytest.raises(RuntimeError, match="EFFECTIVE_TD_EVERY_CYCLE_POLICY_MISMATCH"):
+        fresh.verify_runtime_status(status)
 
 
 def native_adapter(runs, *, native_fails=False):
@@ -209,6 +295,8 @@ def test_relocate_parent_lock_workspace_without_touching_source(tmp_path):
     assert v16._isolated_project_layout(original)["project_base"] == sandbox
     installed = v16._install_runtime(object(), {}, {}, workspace)
     assert installed["fresh_universal"]["fresh_contract"]["accepted_count_start"] == 0
+    assert installed["fresh_universal"]["fresh_contract"]["td_skipping_allowed"] is False
+    assert installed["fresh_universal"]["fresh_contract"]["td_policy"] == "ALWAYS"
     assert installed["fresh_universal"]["path_epoch"]["native_export_only"]
     assert (workspace / "FRESH_UNIVERSAL_BOOTSTRAP_AUTHORITY.json").exists()
     assert not (original.parent/".R1_15A2_V16.lock").exists()
