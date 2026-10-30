@@ -20,7 +20,7 @@ def test_absolute_and_relative_bands_agree_with_fixed_mobility(phase):
     opts = dp.load_options(environ={})
     assert opts['ls_school_envelope'] == [.75, 2.]
     assert [opts['mg_min_ratio'], opts['mg_max_ratio']] == [.75, 2.5]
-    assert mz.SCHOOL_BAND == (.75, 2.)
+    assert mz.SCHOOL_HARD_MAX == 2.
     assert hard('DOMESTIC', cfg, 1.)[:2] == (.75, 2.)
     assert soft('DOMESTIC', cfg, 1.) == (.75, 2.)
     for role, upper in [('PROD', 2.5), ('ATT', 4.)]:
