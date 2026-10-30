@@ -119,16 +119,10 @@ def capture(adapter: Any, diag: Mapping[str, Any]) -> dict:
             raise RuntimeError("LONGGUARD1_DIAGNOSTICS_NOT_BOUND_TO_CL_SKIM_EPOCH")
         from r1_15a2_long_support_distance_v24917 import read_current
         distance, support_source = read_current(adapter)
-        from r1_15a2_com_compat import com_call_with_retry
-        retry = getattr(adapter, "com_retry_policy", None) or {}
+        from r1_15a2_long_post_td_mask_v24917 import _read
         matrices = {}
         for no in MATRIX_NOS:
-            matrix = com_call_with_retry(
-                lambda no=no: adapter.visum.Net.Matrices.ItemByKey(no),
-                label="LONGGUARD1_M%d_LOOKUP" % no, retry_policy=retry)
-            matrices[no] = com_call_with_retry(
-                lambda matrix=matrix: matrix.GetValues(),
-                label="LONGGUARD1_M%d_READ" % no, retry_policy=retry)
+            matrices[no] = _read(adapter, no)[1]
         proof = measure(distance, matrices, epoch={
             "assignment_epoch": int(epoch.assignment_epoch),
             "skim_epoch": int(epoch.epoch),

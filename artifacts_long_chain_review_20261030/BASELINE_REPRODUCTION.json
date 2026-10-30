@@ -1,0 +1,19 @@
+{
+  "wrong_matrix_identity": {
+    "before": "ACCEPTED_WRONG_9116_AS_9111",
+    "after": "LONGMASK_MATRIX_IDENTITY_MISMATCH:9111:9116"
+  },
+  "negative_candidate_b": {
+    "before": "ACCEPTED",
+    "after": "TDLONG_COMPOSITE_PARAMETER_DOMAIN"
+  },
+  "readiness_matrix_reads": {
+    "before": 17,
+    "after": 11,
+    "vehicle_total_equal": true
+  },
+  "missing_completed_assignment_binding": {
+    "before": "ACCEPTED",
+    "after": "LONG_INCIDENCE_ASSIGNMENT_BINDING_STALE_OR_MISSING"
+  }
+}

@@ -50,8 +50,15 @@ def _long_readback(monkeypatch, **overrides):
     arr.update(overrides)
     epoch = NS(assignment_epoch=77, epoch_hash="sha256-current-77",
                family_distance={"LONG": dist})
+    from r1_15a2_skim_v24916p2c import ordered_zone_hash
+    epoch.zone_order_sha256 = ordered_zone_hash([1, 2])
+    epoch.assignment_token = 'current-77'
     manager = NS(require_current=lambda: epoch)
-    outer = NS(_long_post_td_mask_enabled=True, v24916_dynamic_skims=manager)
+    outer = NS(_long_post_td_mask_enabled=True, v24916_dynamic_skims=manager, zones=[1, 2],
+               readback_manager=NS(assignment_epoch=77, mutation_epoch=0,
+                                   assignment_completed=True, assignment_in_progress=False))
+    from r1_15a2_long_incidence_read_v24917 import bind_after_assignment
+    bind_after_assignment(outer)
     bridge = NS(outer_adapter=outer, dynamic_skim_enabled=True, _v24917_frozen=False)
     monkeypatch.setattr(dp, "load_options", lambda *args, **kwargs: _opts())
     # The full V24917 suite reloads modules during snapshot/parity tests.
@@ -119,7 +126,9 @@ def test_native_td_execution_owns_mask_and_preserves_scope(monkeypatch):
         calls.append(active_postmask._SCOPE.get() is outer)
         return "EXECUTED_NATIVE"
     runner = wire.wrap_dynamic_realization(native)
-    assert runner(NS(outer_adapter=outer,
+    zones = NS(GetMultiAttValues=lambda attr, *args: [(1, 1 if attr == 'NO' else 10.),
+                                                     (2, 2 if attr == 'NO' else 10.)])
+    assert runner(NS(outer_adapter=outer, zone_order=[1, 2], v=NS(Net=NS(Zones=zones)),
                      ref=NS(GROUPS=[long_td.GROUP]))) == "EXECUTED_NATIVE"
     assert calls == [True]
     assert active_postmask._SCOPE.get() is None

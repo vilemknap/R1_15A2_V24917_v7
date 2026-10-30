@@ -14,7 +14,7 @@ def make_adapter(distance, zones=(11, 12), matrices=None):
     class Matrix:
         def __init__(self, no): self.no = no
         def AttValue(self, attr):
-            return {'NO': live.no, 'CODE': live.code}[attr]
+            return {'NO': live.no if self.no == 9697 else self.no, 'CODE': live.code}[attr]
         def GetValues(self):
             return live.distance if self.no == 9697 else matrices[self.no]
         def SetValues(self, *args): raise AssertionError('READ_ONLY_OSRM')

@@ -288,6 +288,8 @@ def optimize(runner, ref):
               "long_composite_live_readiness": long_readiness,
               "school_td_reference_contract": getattr(ref, "school_td_reference_contract", None),
               "school_generation_freeze": getattr(runner.adapter, "_school_generation_freeze_proof", None),
+              "long_generation_freeze": getattr(runner.adapter, "_long_generation_freeze_proof", None),
+              "entry_abc": {str(k): dict(v) for k, v in (getattr(runner.adapter, "entry_abc", None) or {}).items()},
               "long_full_reference_groups": list(getattr(
                   ref, "_v24917_full_long_reference_groups", ref.GROUPS)),
               "w_cnt": baseline["tdjoint"]["w_cnt"], "w_idp": baseline["tdjoint"]["w_idp"],

@@ -26,6 +26,7 @@ def harness():
     class Matrix:
         def __init__(self, no): self.no = no
         def AttValue(self, attr):
+            if attr == 'NO': return self.no
             if attr == 'DATASOURCETYPE':
                 return 'FORMULA' if self.no in state.formula_nos else 'DATA'
             raise AssertionError('UNEXPECTED_MATRIX_ATTR:' + attr)

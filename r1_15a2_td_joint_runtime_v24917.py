@@ -3,6 +3,7 @@
 from __future__ import annotations
 import copy
 import functools
+import math
 from contextvars import ContextVar
 from pathlib import Path
 
@@ -71,6 +72,13 @@ def wrap_inner(original):
                     or proof.get("source_values_hash") != proof.get("readback_values_hash")
                     or proof.get("verified_native_evaluations", 0) < 1):
                 raise RuntimeError("TDSCHOOL_FIXED_GENERATION_PROOF_MISSING")
+        if long_td.GROUP in stage.get("component_pool", ()):
+            proof = stage.get("long_generation_freeze")
+            if (not isinstance(proof, dict) or proof.get("status") != "VERIFIED_FIXED_LONG_GENERATION"
+                    or not proof.get("source_values_hash")
+                    or proof.get("source_values_hash") != proof.get("readback_values_hash")
+                    or proof.get("verified_native_evaluations", 0) < 1):
+                raise RuntimeError("TDLONG_COMPOSITE_FIXED_GENERATION_PROOF_MISSING")
         result = dict(result)
         if selected is not None:
             result["targeted_component_mask_applied"] = True
@@ -89,6 +97,7 @@ def wrap_inner(original):
                     "active_components": list(selected),
                     "sealed_reference_unchanged": True,
                     "shared_long_target_copies": 1,
+                    "generation_freeze_readback": stage.get("long_generation_freeze"),
                     "native_measured_dynamic_required": True,
                     "frozen_components": result["frozen_components"]})
             if school_td.GROUP in selected:
@@ -141,17 +150,30 @@ def wrap_dynamic_realization(original):
     @functools.wraps(original)
     def dynamic_with_long_mask(self):
         groups = getattr(getattr(self, "ref", None), "GROUPS", ())
+        outer = getattr(self, "outer_adapter", None)
+        owns_mask = outer is not None and getattr(outer, "_long_post_td_mask_enabled", False) is True
+        if long_td.GROUP in groups and joint.options().get("long_enabled", False) and not owns_mask:
+            raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
         school_before = school_td.generation_snapshot(self) if school_td.GROUP in groups else None
+        long_before = long_td.generation_snapshot(self) if long_td.GROUP in groups else None
         def execute():
             result = original(self)
+            if long_before is not None and getattr(self, "dynamic_skim_enabled", False):
+                # The sealed inner bridge captures skims directly rather than
+                # calling outer._refresh_dynamic_skims_after_assignment. Bind
+                # that completed native epoch before the next LONG probe.
+                manager = getattr(outer, "v24916_dynamic_skims", None)
+                if manager is None or result is not manager.require_current():
+                    raise RuntimeError("TDLONG_COMPOSITE_NATIVE_EPOCH_RESULT_MISMATCH")
+                from r1_15a2_long_incidence_read_v24917 import bind_after_assignment
+                bind_after_assignment(outer)
             if school_before is not None:
                 school_td.verify_generation(self, school_before)
+            if long_before is not None:
+                long_td.verify_generation(self, long_before)
             return result
         from r1_15a2_long_post_td_mask_v24917 import execution_scope
-        outer = getattr(self, "outer_adapter", None)
-        if outer is None or getattr(outer, "_long_post_td_mask_enabled", False) is not True:
-            if joint.options().get("long_enabled", False) and long_td.GROUP in groups:
-                raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
+        if not owns_mask:
             return execute()
         # The unified TD recalculates LONG even when only SCHOOL b/c is tuned.
         # Clipping is therefore required whenever this model owns the mask.
@@ -191,6 +213,20 @@ def wrap_realization(original, ctrl):
             if not isinstance(proof, dict) or proof.get("status") != (
                     "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE"):
                 raise RuntimeError("TDLONG_COMPOSITE_MEASURED_NATIVE_STAGE_PROOF_MISSING")
+            entry = stage.get("entry_abc") or {}
+            # Native abc also includes protected FOREIGN M9116; the outer
+            # calibration snapshot deliberately lists only 16 mutable strata.
+            if set(entry) != {str(n) for n in component_no.values()} | {"9116"}:
+                raise RuntimeError("TDLONG_COMPOSITE_STAGE_PARENT_MISMATCH")
+            if {r["component"] for r in before.get("td_values", ())} != set(component_no):
+                raise RuntimeError("TDLONG_COMPOSITE_STAGE_PARENT_MISMATCH")
+            for row in before.get("td_values", ()):
+                parent_parameters = entry[str(component_no[row["component"]])]
+                if any(not math.isfinite(float(parent_parameters[p])) or
+                       not math.isfinite(float(row["current_" + p])) or
+                       abs(float(parent_parameters[p]) - float(row["current_" + p])) > 1e-8
+                       for p in ("b", "c")):
+                    raise RuntimeError("TDLONG_COMPOSITE_STAGE_PARENT_MISMATCH")
             from types import SimpleNamespace
             bridge_view = SimpleNamespace(
                 outer_adapter=adapter, dynamic_skim_enabled=True,

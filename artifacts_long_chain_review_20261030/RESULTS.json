@@ -1,0 +1,25 @@
+{
+  "baseline_commit": "37019951b5feff212994610c5934253368c633fa",
+  "focused_passed": 215,
+  "main_passed": 2064,
+  "main_skipped": 4,
+  "diagfast_passed": 138,
+  "audit_passed": 18,
+  "live_visum": "NOT_RUN",
+  "native_tg_formula_links": "REQUIRE_LIVE_VERIFICATION",
+  "protected_originals_verified": 1059,
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files": 78,
+      "sha256": "8253a98ebf4b2c79316feb53d8f89386c9d4443e673d85f5cd8d043c4e25daad"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files": 148,
+      "sha256": "a0fe2775b8146490714d90f68d758c99a1405f5fcdf25b33b090ce32fbfefffe"
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files": 1059,
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+    }
+  }
+}

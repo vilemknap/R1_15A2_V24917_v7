@@ -1,0 +1,46 @@
+"""Offline original-vs-fixed LONG seams; no native model or COM writes."""
+import json,subprocess,sys
+from pathlib import Path
+from collections import Counter
+import numpy as np
+import pytest
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tests'))
+import r1_15a2_long_composite_td_v24917 as current
+import r1_15a2_long_post_td_mask_v24917 as mask
+from test_v24917_long_tg_td_unlock import _long_readback
+from types import SimpleNamespace as NS
+
+def baseline(name):
+ ns={};exec(compile(subprocess.check_output(['git','show','37019951b5feff212994610c5934253368c633fa:'+name]),name,'exec'),ns);return ns
+old=baseline('r1_15a2_long_composite_td_v24917.py')
+old_mask=baseline('r1_15a2_long_post_td_mask_v24917.py')
+result={}
+wrong=NS(visum=NS(Net=NS(Matrices=NS(ItemByKey=lambda no:NS(
+ AttValue=lambda a:9116,GetValues=lambda:np.zeros((2,2)))))),com_retry_policy={'enabled':False})
+old_mask['_read'](wrong,9111)
+try:mask._read(wrong,9111)
+except Exception as exc:result['wrong_matrix_identity']={'before':'ACCEPTED_WRONG_9116_AS_9111','after':str(exc)}
+parents=[{'component':str(n),'current_b':1.,'current_c':-.1} for n in current.MATRIX_NOS]
+rows=[{'component':str(n),'candidate_b':-1.,'candidate_c':-.1} for n in current.MATRIX_NOS]
+registry={str(n):n for n in current.MATRIX_NOS}
+assert old['realization_groups'](rows,parents,registry)
+try:current.realization_groups(rows,parents,registry)
+except ValueError as exc:result['negative_candidate_b']={'before':'ACCEPTED','after':str(exc)}
+with pytest.MonkeyPatch.context() as patch:
+ outer,bridge,arrays=_long_readback(patch)
+ import r1_15a2_long_post_td_mask_v24917 as active_mask
+ original=active_mask._read;calls=[]
+ def read(adapter,no):calls.append(no);return original(adapter,no)
+ patch.setattr(active_mask,'_read',read)
+ previous=old['live_readiness'](bridge);old_count=len(calls);calls.clear()
+ fixed=current.live_readiness(bridge)
+ result['readiness_matrix_reads']={'before':old_count,'after':len(calls),
+     'vehicle_total_equal':previous['vehicle_volume']==fixed['vehicle_volume']}
+ outer._long_incidence_assignment_binding=None
+ assert old['live_readiness'](bridge)['status']=='READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE'
+ try:current.live_readiness(bridge)
+ except ValueError as exc:result['missing_completed_assignment_binding']={'before':'ACCEPTED','after':str(exc)}
+assert len(result)==4
+Path('BASELINE_REPRODUCTION_REPLAY.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result,indent=2))

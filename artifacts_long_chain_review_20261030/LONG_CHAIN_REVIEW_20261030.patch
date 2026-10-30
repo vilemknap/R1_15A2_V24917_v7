@@ -1,0 +1,696 @@
+diff --git a/.gitattributes b/.gitattributes
+index ec0a6e1..125d3ac 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -49,3 +49,5 @@ artifacts_zahr_envelope_10x_20261029/prior_attempt/*.log -text -diff
+ artifacts_working_copy_operation_diff_20261029/*.patch -text -diff
+ artifacts_school_td_review_20261030/*.patch -text -diff
+ artifacts_school_td_review_20261030/baseline_reproduction.log -text -diff
++artifacts_long_chain_review_20261030/*.patch -text -diff
++artifacts_long_chain_review_20261030/prior_attempt/*.log -text -diff
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index 6043af5..3059ffc 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -56,11 +56,11 @@
+     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+     "r1_15a2_long_cache_generation_v24917.py": "b838acc3c12eda6a8c5420a42e901023a2368f049dfca78fc496372ade920637",
+-    "r1_15a2_long_composite_td_v24917.py": "2933bac225dd3ba4ef0c35236e599a57f7ec80d252d89a4ba95241ada33c0e9e",
+-    "r1_15a2_long_distance_guard_v24917.py": "94a0e368d35929756c56d913fc50ebd16e321c21ed8c37e8463636338fdad712",
++    "r1_15a2_long_composite_td_v24917.py": "db65e11fc887d16d8f70198146597bac25bdb8fed2e8244e0f17e65f68b3408b",
++    "r1_15a2_long_distance_guard_v24917.py": "6f960862450be3b06c8ee6194f9dd9f75ce54fec0f972c1f3a92824bb59c743a",
+     "r1_15a2_long_incidence_read_v24917.py": "a6baead1427a273862affc2b01677e604f7143706a40030cb99bbb9fa978ea4b",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+-    "r1_15a2_long_post_td_mask_v24917.py": "f5b51e74af295b7a465f3ad338e2972e71e8f60776adaa2353c3dcae525e5e7d",
++    "r1_15a2_long_post_td_mask_v24917.py": "ea50a146233dbb5f0d1d554effbef5574a5c84091d4afc334f50f4f8a6b276cd",
+     "r1_15a2_long_profile_incidence_v24917.py": "b86614ab75a8ccae40918a7028b2d7e0455b41a2aa2b9197ea550dc55d9329db",
+     "r1_15a2_long_school_generation_v24917.py": "3710e3aeca5ca5f39881d25b6838dcbdb44f42a3eb1dd353e0f494d054eb17b8",
+     "r1_15a2_long_support_distance_v24917.py": "79765255b057b1f09345ce4b7ac9874cd4b1fe91a09d996ba20d4c63223c02e9",
+@@ -84,8 +84,8 @@
+     "r1_15a2_supply_mix_v24917.py": "7bf5f551855e9d1c3804cab20d40e518f92793a404071826dd7273054f42a3fd",
+     "r1_15a2_targeted_generation_v24917.py": "71b53387090552a501183e998a639b27561ec854b798d2a7f4109e3e9daf9562",
+     "r1_15a2_td_count_blend_v24917.py": "313acb356557a23941a2ce1d9f422c016674402894374238074d891a3802ae64",
+-    "r1_15a2_td_joint_runtime_v24917.py": "f665847565e3e19e334869bd2299448642f0042858cfaa1ddf83857a2459e571",
+-    "r1_15a2_td_joint_v24917.py": "7042774bd7ee20a26a0746929995a04c65f4b9774fa232510c2e68757f916de5",
++    "r1_15a2_td_joint_runtime_v24917.py": "853a27529a2782c61c5a275b804d9731cf60b8dd4d8af6ad743d24045d54777e",
++    "r1_15a2_td_joint_v24917.py": "89838ffd1e5f9b638588cc7e75b50a7f9dcedd91450cfd083fa9f6f20d2e81de",
+     "r1_15a2_td_rollback_tolerant_v24917.py": "0c9e82dce864a1df4fd306bc254b48625fba77b840004d5440cfc4ba8486922a",
+     "r1_15a2_tdlong1_probe_v24917.py": "8619f461bdb8aef5d863f962e1fa25ba8fae38ffa1b29ad7da21b955559d9507",
+     "r1_15a2_trial_adapter_v24917.py": "4bb307197d737f781255c0ccb6323c590dcdabc0c7a3cf33c3badbb645ab157b",
+@@ -107,12 +107,13 @@
+     "tests/test_v24917_install_chain.py": "7c9d744b7b4d9f5fc711711f4cc703567a48c160c285788043399f51a65b3cd7",
+     "tests/test_v24917_intrazonal_penalty.py": "f846693a6ab64711110cceb404163ebdc38bf73bec5e858ee32c04437a5e25ad",
+     "tests/test_v24917_long_cache_generation.py": "27cb0b38663cf7b7b177dbffa9bb197b7b3e6352ee6fa7f9fa7066af17c08182",
++    "tests/test_v24917_long_chain_review.py": "00cd434cea33065b60df08eab123d90a63f8261a77c049f2ce29b97533aa2dc3",
+     "tests/test_v24917_long_composite_td.py": "371294a571280d7f57023e7acab38c85c3b945777a8dc61353f4d3dc2386abbb",
+     "tests/test_v24917_long_incidence_read.py": "4d9d5be00c08776681335cee40d3d6008624748634eea6399499855f0a32a3bd",
+-    "tests/test_v24917_long_osrm_support.py": "07e3a4edb35957e3d2720dea7a8a74a5c3a6a08424c10de3dcb4df6bcda353f6",
+-    "tests/test_v24917_long_post_td_mask.py": "44f9a214e614e24416a010157bf9e0396d4bab1d4b5e2ceaca4bb795e8567611",
++    "tests/test_v24917_long_osrm_support.py": "8a687a59876a81e30d825e0a11a79ccef9a61f0c8e0c97abc8f6e479f5690d4f",
++    "tests/test_v24917_long_post_td_mask.py": "2b1b8b0f519b54005c20e52018de490fa0bbc249ba0ad1c20947810450cbdc24",
+     "tests/test_v24917_long_profile_incidence.py": "6220c516d2f7c39e0b2ddf80101121714c7f22dfa6249dead14102df5e15d976",
+-    "tests/test_v24917_long_tg_td_unlock.py": "86dc147ae90dd5298178f8a8e5fb39842a7aecf1342035a2e18510a75a2b8578",
++    "tests/test_v24917_long_tg_td_unlock.py": "2ec87aaecf7256ff174b822ce0c5f8f795c13829c42200ecc3011117c4403fce",
+     "tests/test_v24917_long_zonal_fit.py": "e26878643cd4062365f6f7e3b54067ce2c7bffe0dba6e71881afa26fafcba7a1",
+     "tests/test_v24917_longguard1.py": "93daa1627891e8591083b8b4fc8e317135cf438ca49f17f4e71baca7e29b20e2",
+     "tests/test_v24917_longmask_09c_live_scope_regression.py": "276985f43f802b8df0104d791669efca1fcf62224f9545b0c6f5df56cba7ec09",
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index a37432c..95939b5 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -6,11 +6,11 @@
+     "R1_TDLONG1_READ_ONLY_PROBE.py": "5d178bc979181621e4ef3777f664a20a455d4264ceed076ebcc373155d844c41",
+     "01_SPUSTIT_V24917_TDJOINT1.py": "35c156839b4ac5169a0cd488cb8e3e81696ec96de711a33203c610faaaa54b20",
+     "02_SPUSTIT_V24917_TDJOINT1_60_40.py": "069805ca1366578bf51994490f78a3827fdd42a6b44ff2957e2663ed00419f94",
+-    "r1_15a2_td_joint_v24917.py": "7042774bd7ee20a26a0746929995a04c65f4b9774fa232510c2e68757f916de5",
+-    "r1_15a2_td_joint_runtime_v24917.py": "f665847565e3e19e334869bd2299448642f0042858cfaa1ddf83857a2459e571",
+-    "r1_15a2_long_composite_td_v24917.py": "2933bac225dd3ba4ef0c35236e599a57f7ec80d252d89a4ba95241ada33c0e9e",
++    "r1_15a2_td_joint_v24917.py": "89838ffd1e5f9b638588cc7e75b50a7f9dcedd91450cfd083fa9f6f20d2e81de",
++    "r1_15a2_td_joint_runtime_v24917.py": "853a27529a2782c61c5a275b804d9731cf60b8dd4d8af6ad743d24045d54777e",
++    "r1_15a2_long_composite_td_v24917.py": "db65e11fc887d16d8f70198146597bac25bdb8fed2e8244e0f17e65f68b3408b",
+     "r1_15a2_long_support_distance_v24917.py": "79765255b057b1f09345ce4b7ac9874cd4b1fe91a09d996ba20d4c63223c02e9",
+-    "r1_15a2_long_post_td_mask_v24917.py": "f5b51e74af295b7a465f3ad338e2972e71e8f60776adaa2353c3dcae525e5e7d",
++    "r1_15a2_long_post_td_mask_v24917.py": "ea50a146233dbb5f0d1d554effbef5574a5c84091d4afc334f50f4f8a6b276cd",
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+     "r1_15a2_parent_equivalence_v24917.py": "acc0f39f6bbbffc88119a75f3e5dedf2f02bda69abe719716e7a679ecf992d60",
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+@@ -68,14 +68,14 @@
+     "r1_15a2_diagfast_runtime_v1.py": "b71b2356a26985da742ea4c929585c911801415b4987f743a9ad47e7504e938d",
+     "r1_15a2_diagfast_parity_v1.py": "b3b118d8b1808ad17e42fe36bf0a1ecd7b49d2b263562ea9379db1baf2d47332",
+     "r1_15a2_diagfast_direct_v2.py": "9be48df75480eb44b54691d165b889a572bf43e72c0667c455fb80fe32ed1e5d",
+-    "r1_15a2_long_distance_guard_v24917.py": "94a0e368d35929756c56d913fc50ebd16e321c21ed8c37e8463636338fdad712",
++    "r1_15a2_long_distance_guard_v24917.py": "6f960862450be3b06c8ee6194f9dd9f75ce54fec0f972c1f3a92824bb59c743a",
+     "r1_15a2_mobility_zone_v24917.py": "21c0dc62183167552ee87c8a675f7b6da6e85540d0ca8a015f8bad492f3766bb",
+     "r1_15a2_procseq_bootstrap_v24917.py": "a3780c38ca2265ecccc5529bea5fac2bdedb82cb8a17271f173a380076190ce5",
+     "helpers/R1_12D_DIAGFAST_V1.py": "810af98d3c08f55d6098ef6ae8645c2eaf5095f2b940fffe624c98338d3c368b",
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "cecf1306b2200f0b9ae31d67c17262f943149a994719a5d5664653d77cea1f4f",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "a0fe2775b8146490714d90f68d758c99a1405f5fcdf25b33b090ce32fbfefffe",
+     "v24917_silent_debug.py": "d895753c87b82734a549f026878ed5492cdb911627badadcf5870d941396c2e0",
+     "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "R1_RUN_OPTIONS.json": "19fcd6c9b0cca9b6aa1e0cedf51d0b5195164f484f9fa57b5fc7b41215d02fa3",
+diff --git a/r1_15a2_long_composite_td_v24917.py b/r1_15a2_long_composite_td_v24917.py
+index 9b8af27..1893a76 100644
+--- a/r1_15a2_long_composite_td_v24917.py
++++ b/r1_15a2_long_composite_td_v24917.py
+@@ -14,6 +14,48 @@ from r1_15a2_long_distance_guard_v24917 import MATRIX_NOS, MIN_KM, MIN_CDF_KM, M
+ from r1_15a2_long_support_distance_v24917 import MATRIX_NO, MATRIX_CODE, DISTANCE_BASIS
+ 
+ GROUP = "LONG_COMPOSITE"
++GENERATION_ATTRS = tuple("FP_3_LONG_" + group for group in
++                         ("E_C", "E_noC", "noE_C", "noE_noC", "stud")) + ("FA_3_LONG",)
++
++
++def generation_snapshot(bridge):
++    """Fix actual zonal LONG P/A throughout an inner TD stage, as for SCHOOL."""
++    from r1_15a2_com_compat import indexed_zone_values, zone_write_indices
++    outer = bridge.outer_adapter
++    zones = list(bridge.zone_order)
++    indices = zone_write_indices(bridge.v, zones)
++    attrs = GENERATION_ATTRS
++    if (getattr(outer, "v24917_ls", {}) or {}).get("active"):
++        attrs += ("ADD_PROD_L", "ADD_ATT_L")
++    values = []
++    for attr in attrs:
++        row = indexed_zone_values(bridge.v, attr, zones, zone_indices=indices)
++        if any(v < 0 for v in row):
++            raise RuntimeError("TDLONG_COMPOSITE_NEGATIVE_GENERATION:" + attr)
++        values.append((attr, tuple(row)))
++    if zone_write_indices(bridge.v, zones) != indices:
++        raise RuntimeError("TDLONG_COMPOSITE_GENERATION_ZONE_BINDING_CHANGED")
++    snapshot = (tuple(zones), tuple(values))
++    pinned = getattr(bridge, "_long_generation_reference", None)
++    if pinned is None:
++        bridge._long_generation_reference = snapshot
++    elif pinned != snapshot:
++        raise RuntimeError("TDLONG_COMPOSITE_FIXED_GENERATION_CHANGED")
++    return snapshot
++
++
++def verify_generation(bridge, before):
++    from r1_15a2_supply import canonical_hash
++    after = generation_snapshot(bridge)
++    if after != before:
++        raise RuntimeError("TDLONG_COMPOSITE_FIXED_GENERATION_CHANGED")
++    previous = getattr(bridge, "_long_generation_freeze_proof", {})
++    bridge._long_generation_freeze_proof = {
++        "status": "VERIFIED_FIXED_LONG_GENERATION", "zone_count": len(after[0]),
++        "attributes": [a for a, _ in after[1]],
++        "source_values_hash": canonical_hash(before), "readback_values_hash": canonical_hash(after),
++        "verified_native_evaluations": previous.get("verified_native_evaluations", 0) + 1,
++    }
+ 
+ 
+ def activation_plan():
+@@ -69,6 +111,8 @@ def realization_groups(rows, parent_rows, component_no):
+     support authorization belong to the transaction owner, not this pure check.
+     """
+     parent = {str(r["component"]): r for r in parent_rows}
++    if len(parent) != len(parent_rows):
++        raise ValueError("TDLONG_COMPOSITE_DUPLICATE_PARENT_COMPONENT")
+     groups, long_rows, seen = [], [], set()
+     for row in rows:
+         name = str(row["component"])
+@@ -80,14 +124,15 @@ def realization_groups(rows, parent_rows, component_no):
+         else:
+             groups.append((name, [row]))
+     if long_rows:
+-        if {component_no[r["component"]] for r in long_rows} != set(MATRIX_NOS):
++        if (len(long_rows) != len(MATRIX_NOS)
++                or {component_no[r["component"]] for r in long_rows} != set(MATRIX_NOS)):
+             raise ValueError("TDLONG_COMPOSITE_PARTIAL_GROUP")
+         db, lc = [], []
+         for row in long_rows:
+             old = parent[str(row["component"])]
+             b, c = float(old["current_b"]), float(old["current_c"])
+             nb, nc = float(row["candidate_b"]), float(row["candidate_c"])
+-            if not all(math.isfinite(v) for v in (b, c, nb, nc)) or b < 0 or c >= 0 or nc >= 0:
++            if not all(math.isfinite(v) for v in (b, c, nb, nc)) or min(b, nb) < 0 or c >= 0 or nc >= 0:
+                 raise ValueError("TDLONG_COMPOSITE_PARAMETER_DOMAIN")
+             db.append(nb - b)
+             lc.append(math.log(-nc) - math.log(-c))
+@@ -107,7 +152,8 @@ def live_readiness(bridge):
+     The proof is re-read from Visum; a caller flag cannot certify the epoch.
+     """
+     import r1_15a2_demand_policy_v1 as dp
+-    from r1_15a2_long_post_td_mask_v24917 import _verify_support, _read
++    from r1_15a2_long_post_td_mask_v24917 import _verify_support
++    from r1_15a2_long_incidence_read_v24917 import _require_binding
+     from r1_15a2_long_support_distance_v24917 import read_current
+     from r1_15a2_long_profile_incidence_v24917 import COMPONENT_MATRICES, FINAL_MATRIX
+ 
+@@ -130,13 +176,26 @@ def live_readiness(bridge):
+         raise RuntimeError("TDLONG_COMPOSITE_NATIVE_CL_SKIM_NOT_CURRENT")
+     if getattr(epoch, "assignment_epoch", None) is None:
+         raise RuntimeError("TDLONG_COMPOSITE_ASSIGNMENT_EPOCH_UNVERIFIED")
++    binding = _require_binding(outer)
+     distance, support = read_current(outer)
+     mask = np.asarray(distance >= MIN_KM, dtype=bool)
+-    _verify_support(outer, mask, MATRIX_NOS + COMPONENT_MATRICES + (FINAL_MATRIX,))
+-    components = [np.asarray(_read(outer, n)[1], dtype=np.float64)
+-                  for n in COMPONENT_MATRICES]
+-    final = np.asarray(_read(outer, FINAL_MATRIX)[1], dtype=np.float64)
+-    if not np.allclose(sum(components, np.zeros_like(final)), final,
++    component_sum = np.zeros_like(distance, dtype=np.float64)
++    final = None
++    def retain(no, actual):
++        nonlocal final
++        if no in COMPONENT_MATRICES:
++            component_sum[:] += actual
++        elif no == FINAL_MATRIX:
++            final = actual
++    _verify_support(outer, mask, MATRIX_NOS + COMPONENT_MATRICES + (FINAL_MATRIX,), on_read=retain)
++    _, support_after = read_current(outer)
++    try:
++        binding_after = _require_binding(outer)
++    except ValueError as exc:
++        raise RuntimeError("TDLONG_COMPOSITE_STATE_CHANGED_DURING_READINESS") from exc
++    if binding != binding_after or support != support_after:
++        raise RuntimeError("TDLONG_COMPOSITE_STATE_CHANGED_DURING_READINESS")
++    if not np.allclose(component_sum, final,
+                        rtol=1e-8, atol=1e-6):
+         raise RuntimeError("TDLONG_COMPOSITE_FINAL_9305_COMPONENT_PARITY_FAILED")
+     if float(final.sum()) <= 0.0:
+@@ -147,6 +206,7 @@ def live_readiness(bridge):
+             "final_vehicle_matrix_no": FINAL_MATRIX,
+             "count_response_method": "MEASURED_NATIVE_ASSIGNMENT_EVERY_TD_EVALUATION",
+             "assignment_epoch": int(epoch.assignment_epoch),
++            "assignment_binding": binding,
+             "skim_epoch_hash": getattr(epoch, "epoch_hash", None),
+             "support_basis": support,
+             "minimum_km": MIN_KM, "finecdf_conditional_km": [MIN_CDF_KM, MAX_CDF_KM],
+diff --git a/r1_15a2_long_distance_guard_v24917.py b/r1_15a2_long_distance_guard_v24917.py
+index e9554b9..0d62851 100644
+--- a/r1_15a2_long_distance_guard_v24917.py
++++ b/r1_15a2_long_distance_guard_v24917.py
+@@ -119,16 +119,10 @@ def capture(adapter: Any, diag: Mapping[str, Any]) -> dict:
+             raise RuntimeError("LONGGUARD1_DIAGNOSTICS_NOT_BOUND_TO_CL_SKIM_EPOCH")
+         from r1_15a2_long_support_distance_v24917 import read_current
+         distance, support_source = read_current(adapter)
+-        from r1_15a2_com_compat import com_call_with_retry
+-        retry = getattr(adapter, "com_retry_policy", None) or {}
++        from r1_15a2_long_post_td_mask_v24917 import _read
+         matrices = {}
+         for no in MATRIX_NOS:
+-            matrix = com_call_with_retry(
+-                lambda no=no: adapter.visum.Net.Matrices.ItemByKey(no),
+-                label="LONGGUARD1_M%d_LOOKUP" % no, retry_policy=retry)
+-            matrices[no] = com_call_with_retry(
+-                lambda matrix=matrix: matrix.GetValues(),
+-                label="LONGGUARD1_M%d_READ" % no, retry_policy=retry)
++            matrices[no] = _read(adapter, no)[1]
+         proof = measure(distance, matrices, epoch={
+             "assignment_epoch": int(epoch.assignment_epoch),
+             "skim_epoch": int(epoch.epoch),
+diff --git a/r1_15a2_long_post_td_mask_v24917.py b/r1_15a2_long_post_td_mask_v24917.py
+index 0043fd1..87154d4 100644
+--- a/r1_15a2_long_post_td_mask_v24917.py
++++ b/r1_15a2_long_post_td_mask_v24917.py
+@@ -51,10 +51,14 @@ def project(values, mask):
+ 
+ 
+ def _read(adapter, no):
+-    from r1_15a2_com_compat import com_call_with_retry
++    from r1_15a2_com_compat import com_call_with_retry, exact_int
+     retry = getattr(adapter, 'com_retry_policy', None) or {}
+     obj = com_call_with_retry(lambda: adapter.visum.Net.Matrices.ItemByKey(no),
+                              label='LONGMASK_MATRIX_%d' % no, retry_policy=retry)
++    actual_no = exact_int(com_call_with_retry(lambda: obj.AttValue('NO'),
++                         label='LONGMASK_IDENTITY_%d' % no, retry_policy=retry), 'MATRIX_NO')
++    if actual_no != no:
++        raise SupplyContractError('LONGMASK_MATRIX_IDENTITY_MISMATCH:%d:%d' % (no, actual_no))
+     values = com_call_with_retry(obj.GetValues, label='LONGMASK_READ_%d' % no, retry_policy=retry)
+     return obj, np.array(values, dtype=np.float64, copy=True)
+ 
+@@ -247,12 +251,14 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
+         raise
+ 
+ 
+-def _verify_support(adapter, mask, matrix_nos):
++def _verify_support(adapter, mask, matrix_nos, *, on_read=None):
+     for no in matrix_nos:
+         _, actual = _read(adapter, no)
+         if (actual.shape != mask.shape or not np.isfinite(actual).all()
+                 or np.any(actual < 0) or np.any(actual[~mask] != 0)):
+             raise SupplyContractError('LONGMASK_POST_ASSIGNMENT_SUPPORT_FAILED:%d' % no)
++        if on_read is not None:
++            on_read(no, actual)
+ 
+ 
+ 
+diff --git a/r1_15a2_td_joint_runtime_v24917.py b/r1_15a2_td_joint_runtime_v24917.py
+index aeeeaa7..a6fe712 100644
+--- a/r1_15a2_td_joint_runtime_v24917.py
++++ b/r1_15a2_td_joint_runtime_v24917.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+ import copy
+ import functools
++import math
+ from contextvars import ContextVar
+ from pathlib import Path
+ 
+@@ -71,6 +72,13 @@ def wrap_inner(original):
+                     or proof.get("source_values_hash") != proof.get("readback_values_hash")
+                     or proof.get("verified_native_evaluations", 0) < 1):
+                 raise RuntimeError("TDSCHOOL_FIXED_GENERATION_PROOF_MISSING")
++        if long_td.GROUP in stage.get("component_pool", ()):
++            proof = stage.get("long_generation_freeze")
++            if (not isinstance(proof, dict) or proof.get("status") != "VERIFIED_FIXED_LONG_GENERATION"
++                    or not proof.get("source_values_hash")
++                    or proof.get("source_values_hash") != proof.get("readback_values_hash")
++                    or proof.get("verified_native_evaluations", 0) < 1):
++                raise RuntimeError("TDLONG_COMPOSITE_FIXED_GENERATION_PROOF_MISSING")
+         result = dict(result)
+         if selected is not None:
+             result["targeted_component_mask_applied"] = True
+@@ -89,6 +97,7 @@ def wrap_inner(original):
+                     "active_components": list(selected),
+                     "sealed_reference_unchanged": True,
+                     "shared_long_target_copies": 1,
++                    "generation_freeze_readback": stage.get("long_generation_freeze"),
+                     "native_measured_dynamic_required": True,
+                     "frozen_components": result["frozen_components"]})
+             if school_td.GROUP in selected:
+@@ -141,17 +150,30 @@ def wrap_dynamic_realization(original):
+     @functools.wraps(original)
+     def dynamic_with_long_mask(self):
+         groups = getattr(getattr(self, "ref", None), "GROUPS", ())
++        outer = getattr(self, "outer_adapter", None)
++        owns_mask = outer is not None and getattr(outer, "_long_post_td_mask_enabled", False) is True
++        if long_td.GROUP in groups and joint.options().get("long_enabled", False) and not owns_mask:
++            raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
+         school_before = school_td.generation_snapshot(self) if school_td.GROUP in groups else None
++        long_before = long_td.generation_snapshot(self) if long_td.GROUP in groups else None
+         def execute():
+             result = original(self)
++            if long_before is not None and getattr(self, "dynamic_skim_enabled", False):
++                # The sealed inner bridge captures skims directly rather than
++                # calling outer._refresh_dynamic_skims_after_assignment. Bind
++                # that completed native epoch before the next LONG probe.
++                manager = getattr(outer, "v24916_dynamic_skims", None)
++                if manager is None or result is not manager.require_current():
++                    raise RuntimeError("TDLONG_COMPOSITE_NATIVE_EPOCH_RESULT_MISMATCH")
++                from r1_15a2_long_incidence_read_v24917 import bind_after_assignment
++                bind_after_assignment(outer)
+             if school_before is not None:
+                 school_td.verify_generation(self, school_before)
++            if long_before is not None:
++                long_td.verify_generation(self, long_before)
+             return result
+         from r1_15a2_long_post_td_mask_v24917 import execution_scope
+-        outer = getattr(self, "outer_adapter", None)
+-        if outer is None or getattr(outer, "_long_post_td_mask_enabled", False) is not True:
+-            if joint.options().get("long_enabled", False) and long_td.GROUP in groups:
+-                raise RuntimeError("TDLONG_COMPOSITE_DYNAMIC_MASK_CONTEXT_MISSING")
++        if not owns_mask:
+             return execute()
+         # The unified TD recalculates LONG even when only SCHOOL b/c is tuned.
+         # Clipping is therefore required whenever this model owns the mask.
+@@ -191,6 +213,20 @@ def wrap_realization(original, ctrl):
+             if not isinstance(proof, dict) or proof.get("status") != (
+                     "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE"):
+                 raise RuntimeError("TDLONG_COMPOSITE_MEASURED_NATIVE_STAGE_PROOF_MISSING")
++            entry = stage.get("entry_abc") or {}
++            # Native abc also includes protected FOREIGN M9116; the outer
++            # calibration snapshot deliberately lists only 16 mutable strata.
++            if set(entry) != {str(n) for n in component_no.values()} | {"9116"}:
++                raise RuntimeError("TDLONG_COMPOSITE_STAGE_PARENT_MISMATCH")
++            if {r["component"] for r in before.get("td_values", ())} != set(component_no):
++                raise RuntimeError("TDLONG_COMPOSITE_STAGE_PARENT_MISMATCH")
++            for row in before.get("td_values", ()):
++                parent_parameters = entry[str(component_no[row["component"]])]
++                if any(not math.isfinite(float(parent_parameters[p])) or
++                       not math.isfinite(float(row["current_" + p])) or
++                       abs(float(parent_parameters[p]) - float(row["current_" + p])) > 1e-8
++                       for p in ("b", "c")):
++                    raise RuntimeError("TDLONG_COMPOSITE_STAGE_PARENT_MISMATCH")
+             from types import SimpleNamespace
+             bridge_view = SimpleNamespace(
+                 outer_adapter=adapter, dynamic_skim_enabled=True,
+diff --git a/r1_15a2_td_joint_v24917.py b/r1_15a2_td_joint_v24917.py
+index e345bfe..9765e97 100644
+--- a/r1_15a2_td_joint_v24917.py
++++ b/r1_15a2_td_joint_v24917.py
+@@ -288,6 +288,8 @@ def optimize(runner, ref):
+               "long_composite_live_readiness": long_readiness,
+               "school_td_reference_contract": getattr(ref, "school_td_reference_contract", None),
+               "school_generation_freeze": getattr(runner.adapter, "_school_generation_freeze_proof", None),
++              "long_generation_freeze": getattr(runner.adapter, "_long_generation_freeze_proof", None),
++              "entry_abc": {str(k): dict(v) for k, v in (getattr(runner.adapter, "entry_abc", None) or {}).items()},
+               "long_full_reference_groups": list(getattr(
+                   ref, "_v24917_full_long_reference_groups", ref.GROUPS)),
+               "w_cnt": baseline["tdjoint"]["w_cnt"], "w_idp": baseline["tdjoint"]["w_idp"],
+diff --git a/tests/test_v24917_long_chain_review.py b/tests/test_v24917_long_chain_review.py
+new file mode 100644
+index 0000000..0930251
+--- /dev/null
++++ b/tests/test_v24917_long_chain_review.py
+@@ -0,0 +1,247 @@
++"""LONG identity, coherent live proof, fixed TD generation and atomic plans."""
++import copy
++from collections import Counter
++from types import SimpleNamespace as NS
++
++import numpy as np
++import pytest
++
++import r1_15a2_long_composite_td_v24917 as long_td
++import r1_15a2_long_post_td_mask_v24917 as mask
++import r1_15a2_td_joint_runtime_v24917 as wire
++from test_v24917_long_tg_td_unlock import _long_readback
++from test_v24917_long_post_td_mask import harness
++from test_v24917_long_composite_td import reference, proposal
++
++
++@pytest.mark.parametrize('no', [9111, 9291, 9305, 9116])
++def test_matrix_read_never_accepts_wrong_object_even_with_valid_shaped_values(no):
++    reads = []
++    matrix = NS(AttValue=lambda attr: 9116 if no != 9116 else 9111,
++                GetValues=lambda: reads.append(1) or np.zeros((2, 2)))
++    adapter = NS(visum=NS(Net=NS(Matrices=NS(ItemByKey=lambda n: matrix))),
++                 com_retry_policy={'enabled': False})
++    with pytest.raises(Exception, match='LONGMASK_MATRIX_IDENTITY_MISMATCH'):
++        mask._read(adapter, no)
++    assert reads == []
++
++
++def test_wrong_matrix_object_cannot_reach_any_mask_write(tmp_path):
++    adapter, state, operations, support, native = harness()
++    matrices = adapter.visum.Net.Matrices
++    original = matrices.ItemByKey
++    matrices.ItemByKey = lambda no: original(9116 if no == 9111 else no)
++    before = {no: a.copy() for no, a in state.arrays.items()}
++    with pytest.raises(Exception, match='LONGMASK_MATRIX_IDENTITY_MISMATCH'):
++        mask.apply_group(adapter, support, mask.MATRIX_NOS, tmp_path)
++    assert state.writes == []
++    for no, a in before.items():
++        np.testing.assert_array_equal(state.arrays[no], a)
++
++
++@pytest.mark.parametrize('fault', ['in_progress', 'missing_binding', 'wrong_assignment', 'wrong_zone_hash'])
++def test_long_readiness_cannot_certify_pending_or_unbound_assignment(monkeypatch, fault):
++    outer, bridge, _ = _long_readback(monkeypatch)
++    if fault == 'in_progress': outer.readback_manager.assignment_in_progress = True
++    elif fault == 'missing_binding': outer._long_incidence_assignment_binding = None
++    elif fault == 'wrong_assignment': outer.readback_manager.assignment_epoch += 1
++    else: outer.v24916_dynamic_skims.require_current().zone_order_sha256 = 'wrong'
++    with pytest.raises((ValueError, RuntimeError)):
++        long_td.live_readiness(bridge)
++
++
++def test_readiness_uses_one_read_per_long_matrix_and_keeps_parity(monkeypatch):
++    outer, bridge, arrays = _long_readback(monkeypatch)
++    import r1_15a2_long_post_td_mask_v24917 as live_mask
++    original = live_mask._read
++    calls = []
++    def read(adapter, no):
++        calls.append(no)
++        return original(adapter, no)
++    monkeypatch.setattr(live_mask, '_read', read)
++    result = long_td.live_readiness(bridge)
++    expected = long_td.MATRIX_NOS + live_mask.COMPONENT_MATRICES + (9305,)
++    assert Counter(calls) == Counter(expected)
++    assert result['vehicle_volume'] == pytest.approx(float(arrays[9305].sum()))
++    assert result['assignment_binding']['assignment_epoch'] == 77
++
++
++@pytest.mark.parametrize('fault', ['mutation_epoch', 'assignment_epoch', 'support_identity'])
++def test_change_during_long_readiness_invalidates_whole_proof(monkeypatch, fault):
++    outer, bridge, _ = _long_readback(monkeypatch)
++    import r1_15a2_long_post_td_mask_v24917 as live_mask
++    import r1_15a2_long_support_distance_v24917 as live_support
++    original = live_mask._read
++    distance, source = live_support.read_current(outer)
++    source_state = dict(source)
++    monkeypatch.setattr(live_support, 'read_current', lambda a: (distance, dict(source_state)))
++    def read(adapter, no):
++        result = original(adapter, no)
++        if no == 9305:
++            if fault == 'mutation_epoch': outer.readback_manager.mutation_epoch += 1
++            elif fault == 'assignment_epoch':
++                outer.readback_manager.assignment_epoch += 1
++                outer.v24916_dynamic_skims.require_current().assignment_epoch += 1
++            else:
++                source_state['values_sha256'] = 'changed'
++        return result
++    monkeypatch.setattr(live_mask, '_read', read)
++    with pytest.raises(RuntimeError, match='STATE_CHANGED_DURING_READINESS'):
++        long_td.live_readiness(bridge)
++
++
++@pytest.mark.parametrize('fault', ['negative_new_b', 'duplicate_parent', 'aliased_sixth_component'])
++def test_shared_long_plan_rejects_invalid_domain_and_ambiguous_scope(reference, fault):
++    before, after, parents, rows, registry = proposal(reference)
++    if fault == 'negative_new_b':
++        for row in rows:
++            no = registry[row['component']]
++            row['candidate_b'] = before[no]['b'] - 2.
++    elif fault == 'duplicate_parent':
++        parents.append(dict(parents[0]))
++    else:
++        alias = dict(rows[0], component='LONG_ALIAS')
++        no = registry[rows[0]['component']]
++        registry['LONG_ALIAS'] = no
++        parents.append(dict(component='LONG_ALIAS', current_b=before[no]['b'], current_c=before[no]['c']))
++        rows.append(alias)
++    with pytest.raises(ValueError, match='TDLONG_COMPOSITE'):
++        long_td.realization_groups(rows, parents, registry)
++
++
++class Zones:
++    def __init__(self):
++        self.values = {a: {1: 10., 2: 0.} for a in long_td.GENERATION_ATTRS}
++        self.values.update(ADD_PROD_L={1: .3, 2: .3}, ADD_ATT_L={1: 1., 2: 1.})
++    def GetMultiAttValues(self, attr, *args):
++        return [(9, 2 if attr == 'NO' else self.values[attr][2]),
++                (3, 1 if attr == 'NO' else self.values[attr][1])]
++
++
++def host():
++    return NS(outer_adapter=NS(_long_post_td_mask_enabled=True, v24917_ls={'active': True}),
++              zone_order=[1, 2], v=NS(Net=NS(Zones=Zones())), ref=NS(GROUPS=['LONG_COMPOSITE']))
++
++
++@pytest.mark.parametrize('attr', long_td.GENERATION_ATTRS + ('ADD_PROD_L', 'ADD_ATT_L'))
++def test_long_native_td_cannot_change_fixed_generation_or_coefficients(monkeypatch, attr):
++    import r1_15a2_long_post_td_mask_v24917 as live_mask
++    monkeypatch.setattr(wire.joint, 'options', lambda: {'long_enabled': True})
++    bridge = host()
++    def native(obj):
++        assert live_mask._SCOPE.get() is obj.outer_adapter
++        obj.v.Net.Zones.values[attr][1] += .1
++    with pytest.raises(RuntimeError, match='TDLONG_COMPOSITE_FIXED_GENERATION_CHANGED'):
++        wire.wrap_dynamic_realization(native)(bridge)
++    assert live_mask._SCOPE.get() is None
++    assert not hasattr(bridge, '_long_generation_freeze_proof')
++
++
++def test_fixed_long_generation_remains_pinned_between_probes(monkeypatch):
++    monkeypatch.setattr(wire.joint, 'options', lambda: {'long_enabled': True})
++    bridge = host()
++    calls = []
++    run = wire.wrap_dynamic_realization(lambda obj: calls.append(1))
++    run(bridge)
++    assert bridge._long_generation_freeze_proof['status'] == 'VERIFIED_FIXED_LONG_GENERATION'
++    bridge.v.Net.Zones.values['FA_3_LONG'][1] += 1.
++    with pytest.raises(RuntimeError, match='FIXED_GENERATION_CHANGED'):
++        run(bridge)
++    assert len(calls) == 1
++
++
++def outer_stage(reference, monkeypatch):
++    import r1_15a2_multiblock as mb
++    import r1_15a2_td_count_blend_v24917 as tb
++    before, after, parents, rows, registry = proposal(reference)
++    parents = [r for r in parents if r['component'] in mb.COMPONENT_REGISTRY]
++    monkeypatch.setattr(wire.joint, 'options', lambda: {'enabled': True, 'outer_isolates': False})
++    monkeypatch.setattr(tb, 'options', lambda: {'w_cnt': .6, 'w_idp': .4})
++    ready = {'status': 'READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE'}
++    monkeypatch.setattr(wire.long_td, 'require_live_ready', lambda *a, **k: ready)
++    adapter = NS(_tdjoint_stage={'w_cnt': .6, 'w_idp': .4, 'final_abc': {str(n): a for n, a in after.items()},
++        'entry_abc': {str(n): a for n, a in before.items()}, 'long_composite_live_readiness': ready})
++    return adapter, {'td_values': parents}, rows
++
++
++def test_native_17_parameter_stage_binds_to_outer_16_component_parent(reference, monkeypatch, tmp_path):
++    import r1_15a2_intrazonal_penalty_v24917 as iz
++    monkeypatch.setattr(iz, '_STAGE', {})
++    adapter, before, rows = outer_stage(reference, monkeypatch)
++    calls = []
++    expected = (rows, {}, {}, 0., {})
++    run = wire.wrap_realization(lambda *args: calls.append(1) or expected, NS())
++    assert run(adapter, {}, tmp_path, None, before, {}, rows) is expected
++    assert calls == [1]
++
++
++@pytest.mark.parametrize('fault', ['stale_parent', 'missing_entry', 'missing_outer_parent'])
++def test_stale_or_incomplete_long_inner_stage_stops_before_realization(reference, monkeypatch, tmp_path, fault):
++    adapter, before, rows = outer_stage(reference, monkeypatch)
++    if fault == 'stale_parent': before['td_values'][0]['current_b'] += .1
++    elif fault == 'missing_entry': adapter._tdjoint_stage['entry_abc'].pop('9111')
++    else: before['td_values'].pop()
++    calls = []
++    with pytest.raises(RuntimeError, match='TDLONG_COMPOSITE_STAGE_PARENT_MISMATCH'):
++        wire.wrap_realization(lambda *args: calls.append(1), NS())(
++            adapter, {}, tmp_path, None, before, {}, rows)
++    assert calls == []
++
++
++from test_v24917_long_cache_generation import live
++
++
++def test_new_long_generation_proposal_requires_completed_assignment(live):
++    import r1_15a2_long_cache_generation_v24917 as cache
++    adapter, state, _ = live
++    adapter.readback_manager.assignment_completed = False
++    adapter.readback_manager.assignment_epoch += 1  # a failed new assignment cannot reuse the old stamp
++    reads = list(state.matrix_reads)
++    with pytest.raises(ValueError, match='EPOCH_MISMATCH|BINDING_STALE'):
++        cache.capture(adapter)
++    assert state.matrix_reads == reads
++
++
++def test_ended_candidate_keeps_a_proven_completed_assignment_usable(monkeypatch):
++    outer, bridge, _ = _long_readback(monkeypatch)
++    outer.readback_manager.assignment_completed = False  # end_candidate, no model mutation
++    assert long_td.live_readiness(bridge)['assignment_binding'] == outer._long_incidence_assignment_binding
++
++
++def test_each_native_long_probe_publishes_its_completed_assignment_binding(monkeypatch):
++    outer, ready_bridge, _ = _long_readback(monkeypatch)
++    bridge = host()
++    bridge.outer_adapter = outer
++    bridge.dynamic_skim_enabled = True
++    epoch = outer.v24916_dynamic_skims.require_current()
++    monkeypatch.setattr(wire.joint, 'options', lambda: {'long_enabled': True})
++    def native(obj):
++        outer.readback_manager.assignment_epoch += 1
++        outer.readback_manager.mutation_epoch += 1
++        epoch.assignment_epoch = outer.readback_manager.assignment_epoch
++        epoch.epoch_hash = 'skim-' + str(epoch.assignment_epoch)
++        epoch.assignment_token = 'native-' + str(epoch.assignment_epoch)
++        return epoch
++    run = wire.wrap_dynamic_realization(native)
++    for expected in (78, 79):
++        assert run(bridge) is epoch
++        assert outer._long_incidence_assignment_binding['assignment_epoch'] == expected
++        assert long_td.live_readiness(ready_bridge)['assignment_epoch'] == expected
++
++
++@pytest.mark.parametrize('fault', ['wrong_epoch_object', 'not_completed'])
++def test_unproven_native_epoch_never_publishes_a_new_long_binding(monkeypatch, fault):
++    outer, _, _ = _long_readback(monkeypatch)
++    bridge = host()
++    bridge.outer_adapter = outer
++    bridge.dynamic_skim_enabled = True
++    old = dict(outer._long_incidence_assignment_binding)
++    epoch = outer.v24916_dynamic_skims.require_current()
++    def native(obj):
++        if fault == 'not_completed':
++            outer.readback_manager.assignment_completed = False
++            return epoch
++        return NS(assignment_epoch=epoch.assignment_epoch)
++    with pytest.raises((ValueError, RuntimeError), match='EPOCH_RESULT_MISMATCH|COMPLETED_ASSIGNMENT_REQUIRED'):
++        wire.wrap_dynamic_realization(native)(bridge)
++    assert outer._long_incidence_assignment_binding == old
+diff --git a/tests/test_v24917_long_osrm_support.py b/tests/test_v24917_long_osrm_support.py
+index b46b321..632c0b3 100644
+--- a/tests/test_v24917_long_osrm_support.py
++++ b/tests/test_v24917_long_osrm_support.py
+@@ -14,7 +14,7 @@ def make_adapter(distance, zones=(11, 12), matrices=None):
+     class Matrix:
+         def __init__(self, no): self.no = no
+         def AttValue(self, attr):
+-            return {'NO': live.no, 'CODE': live.code}[attr]
++            return {'NO': live.no if self.no == 9697 else self.no, 'CODE': live.code}[attr]
+         def GetValues(self):
+             return live.distance if self.no == 9697 else matrices[self.no]
+         def SetValues(self, *args): raise AssertionError('READ_ONLY_OSRM')
+diff --git a/tests/test_v24917_long_post_td_mask.py b/tests/test_v24917_long_post_td_mask.py
+index 5dcbd7f..5e44f04 100644
+--- a/tests/test_v24917_long_post_td_mask.py
++++ b/tests/test_v24917_long_post_td_mask.py
+@@ -26,6 +26,7 @@ def harness():
+     class Matrix:
+         def __init__(self, no): self.no = no
+         def AttValue(self, attr):
++            if attr == 'NO': return self.no
+             if attr == 'DATASOURCETYPE':
+                 return 'FORMULA' if self.no in state.formula_nos else 'DATA'
+             raise AssertionError('UNEXPECTED_MATRIX_ATTR:' + attr)
+diff --git a/tests/test_v24917_long_tg_td_unlock.py b/tests/test_v24917_long_tg_td_unlock.py
+index bb34c15..5abf47d 100644
+--- a/tests/test_v24917_long_tg_td_unlock.py
++++ b/tests/test_v24917_long_tg_td_unlock.py
+@@ -50,8 +50,15 @@ def _long_readback(monkeypatch, **overrides):
+     arr.update(overrides)
+     epoch = NS(assignment_epoch=77, epoch_hash="sha256-current-77",
+                family_distance={"LONG": dist})
++    from r1_15a2_skim_v24916p2c import ordered_zone_hash
++    epoch.zone_order_sha256 = ordered_zone_hash([1, 2])
++    epoch.assignment_token = 'current-77'
+     manager = NS(require_current=lambda: epoch)
+-    outer = NS(_long_post_td_mask_enabled=True, v24916_dynamic_skims=manager)
++    outer = NS(_long_post_td_mask_enabled=True, v24916_dynamic_skims=manager, zones=[1, 2],
++               readback_manager=NS(assignment_epoch=77, mutation_epoch=0,
++                                   assignment_completed=True, assignment_in_progress=False))
++    from r1_15a2_long_incidence_read_v24917 import bind_after_assignment
++    bind_after_assignment(outer)
+     bridge = NS(outer_adapter=outer, dynamic_skim_enabled=True, _v24917_frozen=False)
+     monkeypatch.setattr(dp, "load_options", lambda *args, **kwargs: _opts())
+     # The full V24917 suite reloads modules during snapshot/parity tests.
+@@ -119,7 +126,9 @@ def test_native_td_execution_owns_mask_and_preserves_scope(monkeypatch):
+         calls.append(active_postmask._SCOPE.get() is outer)
+         return "EXECUTED_NATIVE"
+     runner = wire.wrap_dynamic_realization(native)
+-    assert runner(NS(outer_adapter=outer,
++    zones = NS(GetMultiAttValues=lambda attr, *args: [(1, 1 if attr == 'NO' else 10.),
++                                                     (2, 2 if attr == 'NO' else 10.)])
++    assert runner(NS(outer_adapter=outer, zone_order=[1, 2], v=NS(Net=NS(Zones=zones)),
+                      ref=NS(GROUPS=[long_td.GROUP]))) == "EXECUTED_NATIVE"
+     assert calls == [True]
+     assert active_postmask._SCOPE.get() is None

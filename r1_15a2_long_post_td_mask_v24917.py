@@ -51,10 +51,14 @@ def project(values, mask):
 
 
 def _read(adapter, no):
-    from r1_15a2_com_compat import com_call_with_retry
+    from r1_15a2_com_compat import com_call_with_retry, exact_int
     retry = getattr(adapter, 'com_retry_policy', None) or {}
     obj = com_call_with_retry(lambda: adapter.visum.Net.Matrices.ItemByKey(no),
                              label='LONGMASK_MATRIX_%d' % no, retry_policy=retry)
+    actual_no = exact_int(com_call_with_retry(lambda: obj.AttValue('NO'),
+                         label='LONGMASK_IDENTITY_%d' % no, retry_policy=retry), 'MATRIX_NO')
+    if actual_no != no:
+        raise SupplyContractError('LONGMASK_MATRIX_IDENTITY_MISMATCH:%d:%d' % (no, actual_no))
     values = com_call_with_retry(obj.GetValues, label='LONGMASK_READ_%d' % no, retry_policy=retry)
     return obj, np.array(values, dtype=np.float64, copy=True)
 
@@ -247,12 +251,14 @@ def apply_group(adapter, mask, matrix_nos, folder, *, aggregate_no=None):
         raise
 
 
-def _verify_support(adapter, mask, matrix_nos):
+def _verify_support(adapter, mask, matrix_nos, *, on_read=None):
     for no in matrix_nos:
         _, actual = _read(adapter, no)
         if (actual.shape != mask.shape or not np.isfinite(actual).all()
                 or np.any(actual < 0) or np.any(actual[~mask] != 0)):
             raise SupplyContractError('LONGMASK_POST_ASSIGNMENT_SUPPORT_FAILED:%d' % no)
+        if on_read is not None:
+            on_read(no, actual)
 
 
 

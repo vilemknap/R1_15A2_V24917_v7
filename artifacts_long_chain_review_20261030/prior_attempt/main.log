@@ -1,0 +1,69 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 31%]
+......................................s.s..........s................s... [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+..F..................................................................... [ 62%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+................................................                         [100%]
+=================================== FAILURES ===================================
+______ test_export_is_fresh_each_call_and_previous_evidence_is_preserved _______
+
+tmp_path = PosixPath('/tmp/r1long/test_export_is_fresh_each_call0')
+
+    def test_export_is_fresh_each_call_and_previous_evidence_is_preserved(tmp_path):
+        adapter, state, profiles = harness()
+        reader.read_current(adapter, profiles, tmp_path/'first')
+        before = (tmp_path/'first'/'LONG_INCIDENCE_REPORT.json').read_bytes()
+        with pytest.raises(ValueError, match='FRESH_OUTPUT_DIRECTORY'):
+            reader.read_current(adapter, profiles, tmp_path/'first')
+        # end_candidate clears its own flag, not the recorded completed assignment.
+        adapter.readback_manager.assignment_completed = False
+>       reader.read_current(adapter, profiles, tmp_path/'second')
+
+tests/test_v24917_long_incidence_read.py:179: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+r1_15a2_long_incidence_read_v24917.py:158: in read_current
+    binding = _require_binding(adapter)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_long_incidence_read_v24917.py:54: in _require_binding
+    current = _epoch(adapter, require_completed=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+adapter = namespace(visum=namespace(Net=namespace(Matrices=namespace(ItemByKey=<class 'test_v24917_long_incidence_read.harness.<...zone_order_sha256': '49a64717d5d4cb19952e6eac2946415cf6879adacf9908e7d872332d32c6e684', 'assignment_dependent': False})
+
+    def _epoch(adapter, *, require_completed=False):
+        manager = getattr(adapter, "readback_manager", None)
+        skims = getattr(adapter, "v24916_dynamic_skims", None)
+        if (manager is None or skims is None
+                or (require_completed and not manager.assignment_completed)
+                or manager.assignment_in_progress or manager.assignment_epoch <= 0):
+>           raise ValueError("LONG_INCIDENCE_COMPLETED_ASSIGNMENT_REQUIRED")
+E           ValueError: LONG_INCIDENCE_COMPLETED_ASSIGNMENT_REQUIRED
+
+r1_15a2_long_incidence_read_v24917.py:36: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_long_incidence_read.py::test_export_is_fresh_each_call_and_previous_evidence_is_preserved
+1 failed, 2059 passed, 4 skipped in 37.12s
