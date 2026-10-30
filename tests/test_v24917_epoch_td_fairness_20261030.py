@@ -75,8 +75,8 @@ def test_round_robin_td_probes_reach_school_and_long_inside_28_budget():
         trust={k: np.array([1.0, 1.0]) for k in groups},
         bounds={k: np.array([[0.0, 3.0], [-3.0, 0.0]]) for k in groups},
     )
-    per_group = [list(joint.coordinate_proposals(space, x, [k], {k:1.0})) for k in groups]
-    trials = [v for j in range(4) for part in per_group for v in part[j:j+1]]
+    trials = list(joint.balanced_coordinate_proposals(
+        space, x, groups, {k: 1.0 for k in groups}))
     first_27 = trials[:27]
     first_polled = [p[0] for p in first_27]
     assert set(first_polled) == set(groups)
