@@ -7,9 +7,33 @@
 1. Stáhnout **celou tuto větev** jako ZIP, rozbalit do samostatné složky zdrojového kódu. Nekopírovat jednotlivé Python soubory do zdrojové složky právě běžící kalibrace.
 2. V **druhé samostatné instanci PTV Visum 2026** otevřít původní/požadovaný výchozí kompatibilní model `.ver`, nejlépe základní nekalibrovanou verzi roku 2022. **Není potřeba B0002 ani soubory z jiného RUN_***. Pokud výchozí .ver je checkpoint jiné kalibrace, stane se novým baseline s novou linií; historie předchozích přijetí se nepřenáší.
 3. V druhém Visumu vybrat Scripts → Run script file → `01_SPUSTIT_V24917_FRESH_UNIVERSAL_TDPERF_SILENT.py`.
-4. Spouštěč ověří zdroj, integritu balíku, strukturu sítě, měření/parametry/operace, projde nativní počáteční assignment, vytvoří pracovní kopii a začne **Generation 01 → TD 01** dle stávající politiky `R1_RUN_OPTIONS.json`. Žádné dřívější přijetí nebude znovu přehrávat.
+4. Spouštěč ověří zdroj, integritu balíku, strukturu sítě, měření/parametry/operace, projde nativní počáteční assignment, vytvoří pracovní kopii a začne **Generation 01 → TD 01 → Generation 02 → TD 02 → ...**. Žádné dřívější přijetí nebude znovu přehrávat. **TD se nepřeskakuje v žádném vnějším demand cyklu.**
 5. Podle prvních auditů ověřit vlastní enumeraci. Kontrolní soubor u skutečného prvního exportu: `.../CALIBRATION/DEMAND_CYCLE_01_GENERATION/GENERATION_CACHE/FRESH_UNIVERSAL_NATIVE_EPOCH.json`. Úspěšný stav je přesně `FRESH_NATIVE_ENUMERATION_VERIFIED` a `allow_persistent_restore_passed_to_native: false`. Soubor `PATH_EPOCH.json` a databáze `TWO_MODE_PATH_STORE.sqlite` musí být ve **stejné nové** kalibrační složce.
 6. Při pokračujícím běhu kontrolovat `TDJOINT_SEARCH.json` (SCHOOL/LONG a skutečné sondy), `TD_PERF_RESTORE_AUDIT.json` (počty `native_restores` a `verified_reuses`), `V24917_TIMING.json` a `RUN_STATUS.json`. **V běžícím procesu nic nepřepisovat**.
+
+## TD v každém cyklu – bez řídkého plánování
+
+Nová univerzální větev má v `R1_RUN_OPTIONS.json` výslovně:
+
+```json
+{
+  "td_policy": "ALWAYS",
+  "td_every_n_cycles": 1,
+  "td_during_catchup": true,
+  "td_first_cycle": true,
+  "td_inner_mode": "DYNAMIC",
+  "td_joint_enabled": true,
+  "school_td_enabled": true,
+  "long_composite_td_enabled": true,
+  "td_inner_max_evaluations": 60
+}
+```
+
+Řadič `r1_15a2_demand_policy_v1.DemandPolicy.td_due()` v režimu `ALWAYS` vrací `(True, "ALWAYS")` **pro každý vnější cyklus** bez ohledu na to, zda se Generation změnila, zda jde o plateau, nebo zda model běží v režimu `CATCH_UP`. Tím se odstraňuje původní přeskočení například TD 04 a TD 05 v politice `EVERY_N = 3`.
+
+Spouštěč současně ověřuje skutečně nainstalovanou politiku `demand_policy.note.options`; pokud ji např. proměnná prostředí `R1_TD_POLICY`, `R1_TD_EVERY_N` nebo `R1_TD_DURING_CATCHUP` přepíše na jiné hodnoty, nová kalibrace **bezpečně selže ještě před kandidátní kalibrací**, aby nebylo možné omylem znovu přeskakovat TD.
+
+Toto neznamená automaticky přijetí TD změny: i při provedené kalibraci může být výsledek odmítnut a vrácen rollbackem, nebo hledání zůstat neúplné. Výpadek Visumu či porušení safety brány zůstává chybou, nikoli přeskokem. Počítejte s tím, že každý provedený TD může být časově náročný; žádný naměřený čas celého cyklu zatím nová verze nemá.
 
 ## Adresáře a nezávislost
 
