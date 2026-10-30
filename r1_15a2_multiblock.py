@@ -96,7 +96,8 @@ def _reference_coefficient(reference_values: Optional[Mapping[str, Any]], attr: 
 
 def _multiplicative_coefficient_bounds(branch: str, cfg: Mapping[str, Any],
                                        current: Optional[float] = None,
-                                       reference: Optional[float] = None) -> Tuple[float, float, str]:
+                                       reference: Optional[float] = None,
+                                       *, role: Optional[str] = None) -> Tuple[float, float, str]:
     """Return the active numerical domain for a zonal calibration coefficient.
 
     V2.4.9.2 adds a reviewed, signed refinement envelope.  Standard domestic
@@ -151,7 +152,8 @@ def _salary_coefficient_bounds(cfg: Mapping[str, Any],
 
 
 def _soft_multiplier_bounds(branch: str, cfg: Mapping[str, Any], current: float,
-                            reference: Optional[float] = None) -> Tuple[float, float]:
+                            reference: Optional[float] = None,
+                            *, role: Optional[str] = None) -> Tuple[float, float]:
     signed = _signed_generation_policy(cfg)
     if not signed:
         return -float("inf"), float("inf")
@@ -903,11 +905,13 @@ def _signed_generation_refinement(normalized: Sequence[Mapping[str, Any]],
             continue
         reference = _reference_coefficient(reference_values, attr, z, float(current))
         low, high, envelope = _multiplicative_coefficient_bounds(
-            branch, cfg, current=float(current), reference=reference)
+            branch, cfg, current=float(current), reference=reference,
+            role=row["role"])
         step_low = max(-max_down, math.log(max(EPS, low) / float(current)) if low > 0.0 else -max_down)
         step_high = min(max_up, math.log(max(EPS, high) / float(current)) if high > 0.0 else -max_down)
         requested = float(row.get("requested_log_step", 0.0) or 0.0)
-        soft_low, soft_high = _soft_multiplier_bounds(branch, cfg, float(current), reference)
+        soft_low, soft_high = _soft_multiplier_bounds(
+            branch, cfg, float(current), reference, role=row["role"])
         damped, changed = _damp_outward_log_step(float(current), requested,
                                                  soft_low, soft_high, soft_factor)
         bounded = min(step_high, max(step_low, damped))
@@ -1099,7 +1103,8 @@ def _constrain_generation_projection(normalized: Sequence[Mapping[str, Any]],
         reference = _reference_coefficient(reference_values, row["attr"], z,
                                            float(current) if current is not None else 0.0)
         low, high, coefficient_policy = _multiplicative_coefficient_bounds(
-            row["branch"], cfg, current=current, reference=reference)
+            row["branch"], cfg, current=current, reference=reference,
+            role=row["role"])
         preserve_zero = preserve_zero_zahr if row["branch"] == "ZAHR" else preserve_zero_domestic
         seed_floor = (float(zcfg.get("seed_floor", 0.0)) if row["branch"] == "ZAHR"
                       else float(cfg.get("add_seed_floor", 0.0)))
@@ -1399,7 +1404,8 @@ def design_generation_candidates(projection_rows: Sequence[Mapping[str, Any]],
         reference = _reference_coefficient(reference_values, row["attr"], z,
                                            float(current) if current is not None else 0.0)
         low, high, coefficient_policy = _multiplicative_coefficient_bounds(
-            row["branch"], cfg, current=current, reference=reference)
+            row["branch"], cfg, current=current, reference=reference,
+            role=row["role"])
         preserve_zero = preserve_zero_zahr if row["branch"] == "ZAHR" else preserve_zero_domestic
         if float(current) <= EPS and preserve_zero:
             skipped.append(dict(row, reason="PRESERVE_ZERO_ATTRIBUTE", current=current)); continue
