@@ -152,8 +152,13 @@ def test_long_zonal_fit_does_not_subtract_unrealized_school_effect(live, monkeyp
         'summary': {'status': 'OK'},
     }
     monkeypatch.setattr(ls, 'ls_options', lambda: dict(ls.LS_DEFAULTS))
+    actual_authority = authority(mobility_rows())
+    # The imported synthetic fixture certifies a proportional SCHOOL formula.
+    # Reproduce the REAL 2026-10-30 AMDY source, where this extra coefficient
+    # is not wired into FP_5_SCHOOL and must not affect LONG's residual.
+    actual_authority['school_fp_link_verified'] = False
     fit_cfg = {
-        'long_mobility_authority': authority(mobility_rows()),
+        'long_mobility_authority': actual_authority,
         'max_iter': 2000,
     }
     out = lc.attach_fit(school, observed, adapter.visum,
