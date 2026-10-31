@@ -1,0 +1,208 @@
+{
+  "status": "PASS",
+  "check_count": 29,
+  "checks": [
+    {
+      "check": "seven additional files",
+      "passes": true
+    },
+    {
+      "check": "download size: boundary",
+      "passes": true
+    },
+    {
+      "check": "download size: tdlong",
+      "passes": true
+    },
+    {
+      "check": "download size: mobility",
+      "passes": true
+    },
+    {
+      "check": "download size: projection",
+      "passes": true
+    },
+    {
+      "check": "download size: fit",
+      "passes": true
+    },
+    {
+      "check": "download size: cache",
+      "passes": true
+    },
+    {
+      "check": "download size: guard",
+      "passes": true
+    },
+    {
+      "check": "fit parent matches measured acceptance",
+      "passes": true
+    },
+    {
+      "check": "fit ratio matches preceding Generation parent",
+      "passes": true
+    },
+    {
+      "check": "targeted solver used",
+      "passes": true
+    },
+    {
+      "check": "broad CATCH_UP proposal",
+      "passes": true
+    },
+    {
+      "check": "upper and lower bounds reached",
+      "passes": true
+    },
+    {
+      "check": "optional FlowBundle attenuation off",
+      "passes": true
+    },
+    {
+      "check": "mobility proof available",
+      "passes": true
+    },
+    {
+      "check": "mobility fit did not freeze variables",
+      "passes": true
+    },
+    {
+      "check": "same precise LONG deferral",
+      "passes": true
+    },
+    {
+      "check": "LONG parent gate passes",
+      "passes": true
+    },
+    {
+      "check": "LONG excluded from fit",
+      "passes": true
+    },
+    {
+      "check": "projection rows match fit",
+      "passes": true
+    },
+    {
+      "check": "projection touches same zone count",
+      "passes": true
+    },
+    {
+      "check": "projection is WORK/SERVICE",
+      "passes": true
+    },
+    {
+      "check": "prediction belongs to rejected final scale",
+      "passes": true
+    },
+    {
+      "check": "profile 920023 prediction present",
+      "passes": true
+    },
+    {
+      "check": "same protected failure",
+      "passes": true
+    },
+    {
+      "check": "scale minimum remained unmeasured",
+      "passes": true
+    },
+    {
+      "check": "CSD observation source identity",
+      "passes": true
+    },
+    {
+      "check": "920023 observed authority unchanged",
+      "passes": true
+    },
+    {
+      "check": "raw local prediction far below measured GEH",
+      "passes": true
+    }
+  ],
+  "sources": [
+    {
+      "label": "boundary",
+      "name": "V24917_BOUNDARY_STEPS.json",
+      "upload_id": "file_000000000dcc8243a7ca6311a732bb7c",
+      "sha256": "67d416dbeea96178b2a542a4dd57f30ce88c40c71882a2dfb578e5582d5e2c53",
+      "bytes": 13766
+    },
+    {
+      "label": "tdlong",
+      "name": "TDLONG1_SOURCE_AUTHORITY.json",
+      "upload_id": "file_00000000085c81f49c14b17b2b916562",
+      "sha256": "64b8bde759e205c9555e543b670d7b2ad1208e288200b9303e24be26386fcf35",
+      "bytes": 1245
+    },
+    {
+      "label": "mobility",
+      "name": "MOBILITYZONE1_PARENT.json",
+      "upload_id": "file_0000000076ec81f485d3342b5ec30d34",
+      "sha256": "91d0fed9a3b4484367536c4fe9a4e9c556785e357659477450e03397fc7e77e4",
+      "bytes": 3908133
+    },
+    {
+      "label": "projection",
+      "name": "V24917_FIT_PROJECTION_ROWS.csv",
+      "upload_id": "file_0000000004888246a062441234964f32",
+      "sha256": "b70174879925d2b99d9a04d73a64fb66e8c3527b2e84007cec4a3ecdf800e639",
+      "bytes": 660232
+    },
+    {
+      "label": "fit",
+      "name": "V24917_FIT_SUMMARY.json",
+      "upload_id": "file_000000000f7481f4885bf5f9336c7d50",
+      "sha256": "1911b686390b074eebca412c51de778e703bb10cc9a98c636289e8d44a398627",
+      "bytes": 252972
+    },
+    {
+      "label": "cache",
+      "name": "LONG_SHARED_CACHE_DEFERRED.json",
+      "upload_id": "file_000000004d7081f48bba485e6d26034e",
+      "sha256": "930e58a4c9c67d2ef9389182eb50c22e094a7aca9dea57890b57dffcb9f2c443",
+      "bytes": 69
+    },
+    {
+      "label": "guard",
+      "name": "LONGGUARD1_PARENT.json",
+      "upload_id": "file_00000000721881f4ba1b409bc742205c",
+      "sha256": "ab179a7949a6c68945bb043189416239bee85ec42ffb74457cb28e4a31c448ff",
+      "bytes": 3017
+    }
+  ],
+  "targeted": {
+    "method": "V24917_ZONAL_COUNT_FIT",
+    "profiles": 247,
+    "variables": 2604,
+    "zones_changed": 644,
+    "rows": 2258,
+    "rows_at_upper": 882,
+    "rows_at_lower": 390
+  },
+  "solver_converged": true,
+  "proposal_usable": true,
+  "phase": "CATCH_UP",
+  "flowbundle_mask": {
+    "non_target_factor": 1.0,
+    "status": "OFF"
+  },
+  "long_deferred_reason": "LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID",
+  "profile_920023": {
+    "raw_predicted_flow_delta": -12.806566171356874,
+    "before_geh": 1.522286391501216,
+    "live_after_geh": 37.393888093353084,
+    "observed_from_sealed_roster": 5586.0,
+    "inferred_parent_model_two_possible_signs": [
+      5472.802867517015,
+      5700.35581041186
+    ],
+    "raw_predicted_geh_two_possible_signs": [
+      1.6954923885896618,
+      1.352575013516514
+    ],
+    "raw_prediction_is_not_secant_corrected_scale_selection": true,
+    "native_stage_causing_error_identified": false
+  },
+  "runtime_modified": false,
+  "live_visum_run": false
+}

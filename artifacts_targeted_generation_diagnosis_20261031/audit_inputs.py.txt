@@ -1,0 +1,105 @@
+"""Read-only linkage of new fit evidence to the preceding rejected trials."""
+from pathlib import Path
+import collections
+import csv
+import hashlib
+import json
+import math
+
+BASE = Path(__file__).resolve().parent
+uploads = json.loads((BASE / 'UPLOADS.json').read_text())
+paths = {x['label']: Path(x['result']['path']) for x in uploads}
+data = {k: json.loads(p.read_text(encoding='utf-8-sig')) for k, p in paths.items() if k != 'projection'}
+previous = json.loads((BASE.parent / 'new_results_audit_20261031' / 'UPLOADS.json').read_text())
+prior_paths = {x['label']: Path(x['result']['path']) for x in previous}
+prior = {k: json.loads(prior_paths[k].read_text(encoding='utf-8-sig'))
+         for k in ['generation', 'acceptance', 'prediction', 'preview', 'step3']}
+checks = []
+
+
+def check(name, condition):
+    checks.append({'check': name, 'passes': bool(condition)})
+    if not condition:
+        raise AssertionError(name)
+
+
+check('seven additional files', len(uploads) == 7)
+sources = []
+for item in uploads:
+    raw = paths[item['label']].read_bytes()
+    check('download size: ' + item['label'], len(raw) == item['result']['size_bytes'])
+    sources.append({'label': item['label'], 'name': paths[item['label']].name,
+                    'upload_id': item['file_id'], 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)})
+fit, guard, acceptance = data['fit'], data['guard'], prior['acceptance']
+summary = fit['raw_fit_summary']
+check('fit parent matches measured acceptance', fit['longguard1_parent'] == guard == acceptance['longguard1_parent'])
+check('fit ratio matches preceding Generation parent', math.isclose(fit['model_obs_ratio'],
+      prior['generation']['objective_before']['cal_metrics']['model_obs_ratio'], rel_tol=1e-14))
+check('targeted solver used', summary['method'] == 'V24917_ZONAL_COUNT_FIT'
+      and fit['status'] == 'GUARDED_PROPOSAL' and fit['solver_converged'] is True
+      and fit['proposal_usable'] is True and 'error' not in fit)
+check('broad CATCH_UP proposal', fit['phase'] == 'CATCH_UP' and summary['zones_changed'] == 644
+      and summary['profiles'] == 247 and summary['variables'] == 2604)
+check('upper and lower bounds reached', summary['rows_at_upper'] == 882 and summary['rows_at_lower'] == 390)
+check('optional FlowBundle attenuation off', fit['flowbundle_mask']['status'] == 'OFF'
+      and fit['flowbundle_mask']['non_target_factor'] == 1.)
+check('mobility proof available', data['mobility']['status'] == 'VERIFIED'
+      and data['mobility']['unavailable'] == {} and data['mobility']['target_satisfied'] is True)
+check('mobility fit did not freeze variables', fit['mobility_fit_bounds']['changed'] == 0
+      and fit['mobility_fit_bounds']['frozen'] == 0 and fit['mobilityzone1']['rows_clipped'] == 0)
+reason = 'LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID'
+check('same precise LONG deferral', data['cache'] == {'error': reason}
+      and fit['long_school']['long_deferred_reason'] == reason)
+check('LONG parent gate passes', guard['long_generation_permitted'] is True
+      and guard['fine_cdf_verified'] is True and guard['support_clean'] is True)
+check('LONG excluded from fit', fit['long_generation_requested'] is True
+      and fit['long_generation_candidate_eligible'] is False and fit['long_school']['long_zone_steps'] == 0)
+with paths['projection'].open(encoding='utf-8-sig', newline='') as stream:
+    projection = list(csv.DictReader(stream, delimiter=';'))
+check('projection rows match fit', len(projection) == summary['rows'] == 2258)
+check('projection touches same zone count', len({int(row['zone_no']) for row in projection}) == 644)
+check('projection is WORK/SERVICE', set(row['family'] for row in projection) == {'WORK', 'SERVICE'})
+pred = prior['prediction']['prediction']
+check('prediction belongs to rejected final scale', pred['available'] is True and pred['scale']
+      == prior['preview']['summary']['backtracking_scale'] == prior['step3']['scale'] == .115395)
+delta = dict(zip(pred['keys'], pred['delta']))
+check('profile 920023 prediction present', delta['920023'] == -12.806566171356874)
+critical = next(row for row in acceptance['protected_guard']['details'] if row['profile'] == '920023')
+check('same protected failure', critical['before_geh'] == 1.522286391501216
+      and critical['after_geh'] == 37.393888093353084 and acceptance['accepted'] is False)
+check('scale minimum remained unmeasured', min(a['candidate']['scale'] for a in prior['generation']['attempts'])
+      == .115395 and prior['step3']['grid'][-1]['scale'] == .05
+      and prior['step3']['grid'][-1]['feasible'] is True and prior['step3']['grid'][-1]['robust'] is True)
+
+# These two inverse solutions are diagnostic possibilities, not reported live
+# counts. They show the raw -12.8 prediction cannot explain GEH rising to 37.
+source_root = BASE / 'source'
+roster = json.loads((source_root / 'authorities/R1_PROFILE_ROSTER_V24917.json').read_text())
+csv_path = source_root / roster['csd_csv']
+check('CSD observation source identity', hashlib.sha256(csv_path.read_bytes()).hexdigest() == roster['csd_sha256'])
+with csv_path.open(encoding='utf-8-sig', newline='') as stream:
+    authority_row = next(row for row in csv.DictReader(stream) if row['countlocation_no'] == '920023')
+obs = float(authority_row['observed_passenger_cars_O'])
+check('920023 observed authority unchanged', obs == 5586.)
+g = critical['before_geh']
+possible_parent = [obs+g*g/4+s*g*math.sqrt(obs+g*g/16) for s in [-1, 1]]
+possible_predicted_geh = [math.sqrt(2*(m+delta['920023']-obs)**2/(m+delta['920023']+obs))
+                         for m in possible_parent]
+check('raw local prediction far below measured GEH', max(possible_predicted_geh) < 1.7
+      and critical['after_geh'] > 37.)
+report = {'status': 'PASS', 'check_count': len(checks), 'checks': checks, 'sources': sources,
+    'targeted': {key: summary[key] for key in ['method', 'profiles', 'variables', 'zones_changed',
+                                             'rows', 'rows_at_upper', 'rows_at_lower']},
+    'solver_converged': True, 'proposal_usable': True, 'phase': fit['phase'],
+    'flowbundle_mask': fit['flowbundle_mask'], 'long_deferred_reason': reason,
+    'profile_920023': {'raw_predicted_flow_delta': delta['920023'],
+        'before_geh': critical['before_geh'], 'live_after_geh': critical['after_geh'],
+        'observed_from_sealed_roster': obs,
+        'inferred_parent_model_two_possible_signs': possible_parent,
+        'raw_predicted_geh_two_possible_signs': possible_predicted_geh,
+        'raw_prediction_is_not_secant_corrected_scale_selection': True,
+        'native_stage_causing_error_identified': False},
+    'runtime_modified': False, 'live_visum_run': False}
+(BASE/'SUMMARY.json').write_text(json.dumps(report, indent=2)+'\n')
+print(json.dumps({'status': 'PASS', 'checks': len(checks), 'zones': summary['zones_changed'],
+                  'long_deferred_reason': reason}))
