@@ -1,0 +1,44 @@
+"""Reproduce stored-run arithmetic and demonstrate the surrogate's directional limit."""
+import json
+import math
+from pathlib import Path
+import sys
+import numpy as np
+ROOT=Path(__file__).resolve().parent.parent
+sys.path.insert(0,str(ROOT))
+import r1_15a2_core as core
+import r1_15a2_zonal_count_fit_v24917 as fit
+
+p=Path(__file__).with_name('OBSERVED_RUN_EXTRACT.json')
+data=json.loads(p.read_text())
+o=data['observed']; g0=data['parent_geh']; last=data['attempts'][-1]['measured_profile_geh']; raw=data['last_raw_delta']
+def roots(g):
+    d=math.sqrt(g**4+16*g*g*o)
+    return [o+(g*g+d)/4,o+(g*g-d)/4]
+def geh(m):return math.sqrt(2*(m-o)**2/(m+o))
+min_change=min(abs(a-b) for a in roots(g0) for b in roots(last))
+observed={'possible_parent_volumes':roots(g0),'possible_last_volumes':roots(last),
+          'minimum_absolute_actual_flow_change':min_change,
+          'minimum_magnitude_ratio_to_raw_prediction':min_change/abs(raw),
+          'geh_from_raw_only_prediction':[geh(m+raw) for m in roots(g0)],
+          'last_aggregate_prediction_error':data['attempts'][-1]['aggregate_predicted']-data['attempts'][-1]['aggregate_measured'],
+          'exact_corrected_profile_prediction_available_in_old_logs':False}
+# Simple analytical example, not a Visum execution. The fixed vehicle OD is
+# symmetric; only P1 and A2 change in the asymmetric person OD T12=1000.
+profiles=[{'countlocation_no':str(i+1),'role':'CALIBRATION','observed':500.,'model':500.,'profile_weight':1.} for i in range(2)]
+variables=[{'family':'WORK','origin':1,'destination':2,'q_current':500.},
+           {'family':'WORK','origin':2,'destination':1,'q_current':500.}]
+inc={'profiles':profiles,'variables':variables,'projection_base_variables':variables,
+     'incidence':core.SparseOperator(np.array([0,1]),np.array([0,1]),np.array([500.,500.]),2,2)}
+bounds={('WORK','PROD',1):(-.1,.1),('WORK','ATT',2):(-.1,.1)}
+problem=fit.build_problem(inc,[1,2],bounds,{})
+pred=problem.G@np.full(2,.01)
+assert pred[1]<0 and pred[0]>0
+report={'stored_run_arithmetic':observed,'analytical_symmetry_counterexample':{
+    'status':'MATHEMATICAL_DEMONSTRATION_NOT_LIVE_VISUM',
+    'person_OD_T12':1000.,'person_OD_T21':0.,'vehicle_OD_each_direction':500.,
+    'log_step_P1_and_A2':.01,'current_surrogate_first_order_delta':pred.tolist(),
+    'symmetric_person_to_vehicle_first_order_delta':[5.,5.],
+    'demonstrates':'The directed vehicle-origin zonal surrogate need not preserve the sign of native purpose/symmetrization response.'}}
+Path(__file__).with_name('PREDICTION_FINDINGS.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report))

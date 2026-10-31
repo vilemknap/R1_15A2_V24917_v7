@@ -166,7 +166,7 @@ def test_options_file_explicitly_schedules_native_td_every_cycle():
     assert options["td_first_cycle"] is True
     assert options["td_inner_mode"] == "DYNAMIC"
     assert options["td_count_weight"] == 0.6
-    assert options["td_inner_max_evaluations"] == 60
+    assert options["td_inner_max_evaluations"] == 180
     assert options["mg_max_ratio"] == 2.5
 
 

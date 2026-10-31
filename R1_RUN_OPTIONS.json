@@ -12,9 +12,10 @@
   "long_generation_enabled": true,
   "long_composite_td_enabled": true,
   "school_td_enabled": true,
-  "tg_max_trials": 3,
-  "td_realization_max_trials": 3,
-  "td_inner_max_evaluations": 60,
+  "tg_max_trials": 6,
+  "td_realization_max_trials": 5,
+  "td_inner_max_evaluations": 180,
+  "td_inner_budget_multiplier": 2,
   "ls_max_step_up": 0.5,
   "ls_max_step_down": 0.1,
   "ls_school_envelope": [

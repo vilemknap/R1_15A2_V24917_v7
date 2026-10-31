@@ -74,9 +74,10 @@ DEFAULTS = {
     'school_td_enabled': False,
     'td_joint_outer_isolates': False,
     'td_joint_max_isolates': 2,
-    'tg_max_trials': 3,
-    'td_realization_max_trials': 3,
-    'td_inner_max_evaluations': 60,
+    'tg_max_trials': 6,
+    'td_realization_max_trials': 5,
+    'td_inner_max_evaluations': 180,
+    'td_inner_budget_multiplier': 2.0,
     'ls_max_step_up': 0.10,
     'ls_max_step_down': 0.10,
     'ls_school_envelope': [0.75, 2.0],
@@ -170,6 +171,7 @@ ENV = {
     'tg_max_trials': 'R1_TG_MAX_TRIALS',
     'td_realization_max_trials': 'R1_TD_REALIZATION_MAX_TRIALS',
     'td_inner_max_evaluations': 'R1_TD_INNER_MAX_EVALS',
+    'td_inner_budget_multiplier': 'R1_TD_INNER_BUDGET_MULTIPLIER',
     'ls_max_step_up': 'R1_LS_MAX_STEP_UP',
     'ls_max_step_down': 'R1_LS_MAX_STEP_DOWN',
     'ls_school_envelope': 'R1_LS_SCHOOL_ENVELOPE',
@@ -345,6 +347,7 @@ def validate(raw):
         if not lo <= v <= hi:
             raise RuntimeError('R1_RUN_OPTION_RANGE:%s must be %d..%d' % (key, lo, hi))
         out[key] = v
+    out['td_inner_budget_multiplier'] = _float_opt(out, 'td_inner_budget_multiplier', 1.0, 4.0)
     for key, lo, hi in (('ls_max_step_up', 0.0, 1.0), ('ls_max_step_down', 0.0, 0.5),
                         ('ls_ridge_relative', 1e-6, 10.0)):
         try:

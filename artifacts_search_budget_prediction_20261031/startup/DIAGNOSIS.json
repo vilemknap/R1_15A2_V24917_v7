@@ -1,0 +1,9 @@
+{
+  "error": "FileExistsError at exclusive .R1_15A2_V16.lock creation",
+  "before_generation_trials": true,
+  "source_ver_file_unchanged": true,
+  "owner_liveness_proven": false,
+  "user_report_after_manual_lock_removal": "calibration is running",
+  "automatic_lock_removal_implemented": false,
+  "lock_and_bootstrap_protected_sources_modified": false
+}

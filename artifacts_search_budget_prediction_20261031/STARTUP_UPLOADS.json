@@ -1,0 +1,56 @@
+[
+  {
+    "label": "release",
+    "name": "00_RELEASE.txt",
+    "original_sha256": "049486acc50d9d8a7d80ad2c8e7004c31c0cca151cacce8726c460689441e092",
+    "published_newlines": "LF"
+  },
+  {
+    "label": "preflight",
+    "name": "PATH_LENGTH_PREFLIGHT.json",
+    "original_sha256": "18dab037f96b7d50d653a9478a69bbc35777c9a87a2f440772980c9edc6558ff",
+    "published_newlines": "LF"
+  },
+  {
+    "label": "result",
+    "name": "00_RESULT.json",
+    "original_sha256": "7840718073e648692633d5f22c753418f246aa1854ee85406a895ea6c59b3984",
+    "published_newlines": "LF"
+  },
+  {
+    "label": "status",
+    "name": "00_FINAL_STATUS.txt",
+    "original_sha256": "33e64e16094c6341fd6cdfc3c609a988d3e2753e1606f7a3ef30b8e409007840",
+    "published_newlines": "LF"
+  },
+  {
+    "label": "bootstrap",
+    "name": "LATEST_BOOTSTRAP.json",
+    "original_sha256": "5336b37933a31db2c3090bd3cde1f6b89f00147631e06738966d071f737ef521",
+    "published_newlines": "LF"
+  },
+  {
+    "label": "fresh_authority",
+    "name": "FRESH_UNIVERSAL_BOOTSTRAP_AUTHORITY.json",
+    "original_sha256": "38f5d5705a3893805d2d2d266075eb77e377a9e80ae2fd480b0f889b26b2a953",
+    "published_newlines": "LF"
+  },
+  {
+    "label": "latest_run",
+    "name": "LATEST_RUN.txt",
+    "original_sha256": "f00493c1bc2f98eb2773cc543920b1133e415a64b89d0dc4c26634f20809ef1e",
+    "published_newlines": "LF"
+  },
+  {
+    "label": "isolated_authority",
+    "name": "V24916_FRESH0_ISOLATED_LIVE_AUTHORITY.json",
+    "original_sha256": "3c0e5ff6ff59b0f7798af55c58adec35d21665fa049da3817d07890229d4e183",
+    "published_newlines": "LF"
+  },
+  {
+    "label": "runtime_status",
+    "name": "V24917_RUNTIME_STATUS.json",
+    "original_sha256": "62b30c6a0a9c2b78fe79afe4c991e13d074731dda6972617b208cf013f328527",
+    "published_newlines": "LF"
+  }
+]

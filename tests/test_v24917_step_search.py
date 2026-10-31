@@ -194,7 +194,7 @@ def harness(monkeypatch, tmp_path):
     def run():
         return step.generation_block(ctrl, base, tx, ad, cfg, tmp_path / "GEN", control, state, diag,
                                      None, None, None)
-    return SimpleNamespace(ad=ad, run=run, state=state, diag=diag, base=base, folder=tmp_path / "GEN")
+    return SimpleNamespace(ad=ad, run=run, state=state, diag=diag, base=base, folder=tmp_path / "GEN", cfg=cfg)
 
 
 def test_block_first_trial_rejected_secant_second_trial_kept_in_place(harness):

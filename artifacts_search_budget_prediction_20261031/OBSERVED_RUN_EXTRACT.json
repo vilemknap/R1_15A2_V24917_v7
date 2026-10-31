@@ -1,0 +1,43 @@
+{
+  "profile": "920023",
+  "observed": 5586.0,
+  "parent_geh": 1.522286391501216,
+  "last_raw_delta": -12.806566171356874,
+  "raw_source": "GENFIX2_FINAL_EFFECT_ROWS_INCLUDING_SALARY_BOUNDARY_LS",
+  "attempts": [
+    {
+      "scale": 1.0,
+      "plan_mode": "LINEAR_FIT",
+      "measured_profile_geh": 21.060183513728745,
+      "aggregate_predicted": 24.183822089556525,
+      "aggregate_measured": 25.11192087017282,
+      "assignment_gap": 0.00122141,
+      "protected_limit": 20.0,
+      "support_risk_status": "PASS"
+    },
+    {
+      "scale": 0.239474,
+      "plan_mode": "SECANT_MEASURED",
+      "measured_profile_geh": 34.356263890716576,
+      "aggregate_predicted": 28.840353590403176,
+      "aggregate_measured": 28.966309729987163,
+      "assignment_gap": 0.00054224,
+      "protected_limit": 20.0,
+      "support_risk_status": "PASS"
+    },
+    {
+      "scale": 0.115395,
+      "plan_mode": "SECANT_MEASURED",
+      "measured_profile_geh": 37.393888093353084,
+      "aggregate_predicted": 29.71140793445278,
+      "aggregate_measured": 29.69636689307592,
+      "assignment_gap": 0.00044081,
+      "protected_limit": 20.0,
+      "support_risk_status": "PASS"
+    }
+  ],
+  "source_sha256": {
+    "GENERATION_BLOCK_RESULT.json": "56c1b0a7b6f04fe04ca0adeb9c423c6f41c7af89482ed808c38380cb9e208935",
+    "GENERATION_PREVIEW_0_115395.json": "44510389c2bcec95de0293766cb768663e8ad70142851a559035725ef92cbd89"
+  }
+}

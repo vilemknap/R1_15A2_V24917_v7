@@ -120,25 +120,28 @@ class StepModel:
             return s*self.delta_linear, True, []
         key = float(s)
         if key not in self.preview_cache:
-            preview = self.predictor(key)
-            pred = preview.get("genfix2_prediction") or {}
-            proof = preview.get("genfix2_mobility") or {}
-            pgate = preview.get("_genfix2_pre_gate") or {"passes": True, "reasons": []}
-            ok = proof.get("passes") is True and pgate.get("passes") is True
-            reasons = list(pgate.get("reasons", []))
-            if proof.get("passes") is not True:
-                reasons.append("MOBILITY2_FINAL_ENVELOPE")
-            delta = None
-            if pred.get("available"):
-                keys, vals = pred.get("keys", []), pred.get("delta", [])
-                if len(keys) != len(vals) or len(set(keys)) != len(keys):
-                    raise ValueError("GENFIX2_PREDICTION_IDENTITY_MISMATCH")
-                by = dict(zip(keys, vals))
-                delta = np.array([float(by.get(k, 0.0)) for k in self.keys])
-                if not np.isfinite(delta).all():
-                    raise ValueError("GENFIX2_NONFINITE_PREDICTION")
-            self.preview_cache[key] = (delta, ok, reasons)
+            self.record_preview(key, self.predictor(key))
         return self.preview_cache[key]
+
+    def record_preview(self, scale, preview):
+        """Retain the actual pre-write preview, including off-grid gate shrinks."""
+        pred = preview.get('genfix2_prediction') or {}
+        proof = preview.get('genfix2_mobility') or {}
+        gate = preview.get('_genfix2_pre_gate') or {'passes': True, 'reasons': []}
+        ok = proof.get('passes') is True and gate.get('passes') is True
+        reasons = list(gate.get('reasons', []))
+        if proof.get('passes') is not True:
+            reasons.append('MOBILITY2_FINAL_ENVELOPE')
+        delta = None
+        if pred.get('available'):
+            keys, values = pred.get('keys', []), pred.get('delta', [])
+            if len(keys) != len(values) or len(set(keys)) != len(keys):
+                raise ValueError('GENFIX2_PREDICTION_IDENTITY_MISMATCH')
+            by = dict(zip(keys, values))
+            delta = np.array([float(by.get(k, 0.)) for k in self.keys])
+            if not np.isfinite(delta).all():
+                raise ValueError('GENFIX2_NONFINITE_PREDICTION')
+        self.preview_cache[float(scale)] = (delta, ok, reasons)
 
     def volumes(self, s: float) -> np.ndarray:
         delta, _, _ = self.final_prediction(s)
@@ -168,6 +171,53 @@ class StepModel:
                 q["residual"] = float(o - m)
             out.append(q)
         return out
+
+    def prediction_audit(self, scale, measured_rows):
+        """Compare the ACTUAL planner forecast with measurements, no new COM reads.
+
+        The raw fixed-path delta is distinct from the rho/secant-corrected
+        forecast used by choose_scale. This evidence is never an acceptance
+        authority or a decomposition of native TD/20A/20B/routing effects.
+        """
+        by = {}
+        for r in measured_rows:
+            key = _ident(r)
+            if not key or key in by:
+                return {'status': 'UNAVAILABLE', 'reason': 'MEASURED_PROFILE_IDENTITY_INVALID'}
+            by[key] = r
+        if len(set(self.keys)) != len(self.keys) or set(by) != set(self.keys):
+            return {'status': 'UNAVAILABLE', 'reason': 'PROFILE_ROSTER_CHANGED'}
+        raw, _, _ = self.final_prediction(float(scale))
+        predicted = self.volumes(float(scale))
+        out = []
+        for i, key in enumerate(self.keys):
+            try:
+                value = float(by[key]['model'])
+                observed = float(by[key]['observed'])
+            except (TypeError, ValueError, KeyError):
+                return {'status': 'UNAVAILABLE', 'reason': 'INVALID_MEASURED_VALUE', 'profile': key}
+            if not math.isfinite(value) or value < 0:
+                return {'status': 'UNAVAILABLE', 'reason': 'INVALID_MEASURED_MODEL', 'profile': key}
+            if (not math.isfinite(observed) or not math.isclose(observed, self.obs[i], rel_tol=1e-7, abs_tol=1e-7)
+                    or str(by[key].get('role','')).upper() != str(self.base_rows[i].get('role','')).upper()):
+                return {'status': 'UNAVAILABLE', 'reason': 'OBSERVATION_AUTHORITY_CHANGED', 'profile': key}
+            out.append({'profile': key, 'observed': float(self.obs[i]),
+                'parent_model': float(self.m0[i]), 'parent_geh': _geh(float(self.m0[i]), float(self.obs[i])),
+                'raw_proposal_delta': None if raw is None else float(raw[i]),
+                'planner_model': float(predicted[i]),
+                'planner_geh': _geh(float(predicted[i]), float(self.obs[i])),
+                'measured_model': value, 'measured_geh': _geh(value, float(self.obs[i])),
+                'flow_prediction_error': value-float(predicted[i]),
+                'measured_delta': value-float(self.m0[i])})
+        ranked = sorted(out, key=lambda r: abs(r['flow_prediction_error']), reverse=True)
+        return {'status': 'MEASURED_PREDICTION_COMPARISON', 'scale': float(scale),
+            'mode': 'SECANT_MEASURED' if self.measured is not None else getattr(self, 'origin_mode', 'LINEAR_FIT'),
+            'proposal_origin_mode': getattr(self, 'origin_mode', 'LINEAR_FIT'),
+            'previous_measurement_scale': None if self.measured is None else float(self.measured[0]),
+            'rho': self.rho, 'profiles': out, 'largest_errors': ranked[:10],
+            'model_prediction_available': raw is not None or self.measured is not None,
+            'acceptance_authority': False, 'new_com_reads': 0,
+            'native_stage_attribution': 'UNIDENTIFIED_REQUIRES_STAGE_EVIDENCE'}
 
     def objective(self, s: float) -> float:
         import r1_15a2_core as core
@@ -464,6 +514,8 @@ def _generation_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state,
                     rec["attempts"].append(attempt)
                     rec["stop_reason"] = "NO_PARAMETER_CANDIDATE"
                     break
+                if model.predictor is not None:
+                    model.record_preview(float(scale), dict(preview, _genfix2_pre_gate=pgate))
                 signature = base._candidate_signature("GENERATION", candidate, rows)
                 if hasattr(adapter, "begin_candidate_readback_context"):
                     adapter.begin_candidate_readback_context(
@@ -544,6 +596,12 @@ def _generation_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state,
                     raise
                 raise SupplyContractError("V245_GENERATION_TRIAL_ERROR_NOT_A_PLATEAU:" + str(exc)) from exc
             _STATE["trials"] += 1
+            audit = model.prediction_audit(float(scale), after_diag['d12']['rows'])
+            audit.update(parent_state_hash=state.get('state_hash'), candidate_state_hash=after.get('state_hash'),
+                         assignment_gap=gap)
+            base.atomic_json(trial_folder / 'STEP1_PRED_AUDIT.json', audit)
+            attempt['prediction_audit'] = {'path': str(trial_folder / 'STEP1_PRED_AUDIT.json'),
+                'status': audit['status'], 'mode': audit.get('mode')}
             measured_obj = float(after_value.get("raw_cal", after_value.get("cal_metrics", {}).get(
                 "objective_geh_mean_weighted", float("nan"))))
             attempt.update(status="ELIGIBLE" if decision.get("accepted") else "REJECTED", gap=gap,

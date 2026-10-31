@@ -1,0 +1,90 @@
+{
+  "schema": "R1_15A2_PROFILE488_IOFIX3_PATH_BUDGET_V1",
+  "passes": true,
+  "run_directory": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947",
+  "run_directory_length": 76,
+  "safe_logical_path_budget": 240,
+  "historical_max_path_limit": 260,
+  "max_projected_logical_length": 222,
+  "windows_extended_path_io_active": true,
+  "short_temp_name_policy": "OPAQUE_FIXED_LENGTH_SIBLING_NOT_DESTINATION_NAME_PLUS_SUFFIX",
+  "samples": [
+    {
+      "label": "run_directory",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947",
+      "logical_length": 76,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\.r1j_9283b3e23ee18ab9.tmp",
+      "short_temp_logical_length": 75
+    },
+    {
+      "label": "working_profile488_start",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\WORKING_PROFILE488_START.ver",
+      "logical_length": 105,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\.r1j_73fc98985257b34f.tmp",
+      "short_temp_logical_length": 102
+    },
+    {
+      "label": "accepted_checkpoint",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0100_0123456789ab.ver",
+      "logical_length": 133,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\CHECKPOINTS\\.r1j_a84c3b725f035dcc.tmp",
+      "short_temp_logical_length": 126
+    },
+    {
+      "label": "deep_td_rollback_json",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\REALIZATION\\TRY_16_SCALE_0p000030517578125\\RESTORE_PARENT_BC\\ROLLBACK_PARAMETER_READBACK.json",
+      "logical_length": 210,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\REALIZATION\\TRY_16_SCALE_0p000030517578125\\RESTORE_PARENT_BC\\.r1j_a2908aa4bb353efe.tmp",
+      "short_temp_logical_length": 203
+    },
+    {
+      "label": "deep_td_freeze_audit",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\ROLLBACK_AFTER_TD_FAILURE\\TD_PARENT_AFTER_DIAGNOSTICS_FREEZE_AUDIT.json",
+      "logical_length": 188,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\ROLLBACK_AFTER_TD_FAILURE\\.r1j_625b5722e0f2c72e.tmp",
+      "short_temp_logical_length": 168
+    },
+    {
+      "label": "deep_downstream_execution_plan",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\REALIZATION\\TRY_16_SCALE_0p000030517578125\\FULL_DOWNSTREAM_RECOMPUTE\\PROCEDURE_EXECUTION_PLAN_ACTIVE.json",
+      "logical_length": 222,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\REALIZATION\\TRY_16_SCALE_0p000030517578125\\FULL_DOWNSTREAM_RECOMPUTE\\.r1j_a773f8f55814c1c1.tmp",
+      "short_temp_logical_length": 211
+    },
+    {
+      "label": "deep_finecdf_final_cdf",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\REALIZATION\\TRY_16_SCALE_0p000030517578125\\FINECDF_INNER\\FINAL_FINECDF\\COMPONENT_FINE_CDF.csv",
+      "logical_length": 210,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\REALIZATION\\TRY_16_SCALE_0p000030517578125\\FINECDF_INNER\\FINAL_FINECDF\\.r1j_4a9102c9d037efa2.tmp",
+      "short_temp_logical_length": 213
+    },
+    {
+      "label": "best_semantic_sidecar",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\CHECKPOINTS\\BEST_SO_FAR_0100_0123456789ab.ver.semantic.json",
+      "logical_length": 148,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\CHECKPOINTS\\.r1j_37db225c3c06c918.tmp",
+      "short_temp_logical_length": 126
+    },
+    {
+      "label": "v24916_generation_evidence_manifest",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_GENERATION\\TRY_05\\V24916_ACTIVE_TARGETING\\EVIDENCE\\14_DEMAND_EVIDENCE_MANIFEST.json",
+      "logical_length": 189,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_GENERATION\\TRY_05\\V24916_ACTIVE_TARGETING\\EVIDENCE\\.r1j_0dc70eff5a6a1102.tmp",
+      "short_temp_logical_length": 182
+    },
+    {
+      "label": "v24916_td_evidence_manifest",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\TARGETING\\EVIDENCE\\14_DEMAND_EVIDENCE_MANIFEST.json",
+      "logical_length": 168,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\TARGETING\\EVIDENCE\\.r1j_9e2c0c1bd15d9640.tmp",
+      "short_temp_logical_length": 161
+    },
+    {
+      "label": "v24916_td_fresh_epoch_progress",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\TARGETING\\RECOVERY_TD_FRESH_PATH_EPOCH\\PATHLINK_EXPORT_PROGRESS.json",
+      "logical_length": 185,
+      "short_temp_path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947\\CALIBRATION\\DEMAND_CYCLE_100_TD_FINECDF\\TARGETING\\RECOVERY_TD_FRESH_PATH_EPOCH\\.r1j_81e01d0404ba3449.tmp",
+      "short_temp_logical_length": 181
+    }
+  ]
+}

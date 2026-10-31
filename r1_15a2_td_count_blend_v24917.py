@@ -79,10 +79,46 @@ def options() -> Dict[str, Any]:
     return {"w_cnt": w, "w_idp": 1.0 - w,
             "joint_enabled": bool(o.get("td_joint_enabled", False)),
             "inner_mode": str(o.get("td_inner_mode", "FROZEN_PATHS")).upper(),
-            "tg_max_trials": int(o.get("tg_max_trials", 3)),
-            "td_realization_max_trials": int(o.get("td_realization_max_trials", 3)),
-            "td_inner_max_evaluations": int(o.get("td_inner_max_evaluations", 60)),
+            "tg_max_trials": int(o.get("tg_max_trials", 6)),
+            "td_realization_max_trials": int(o.get("td_realization_max_trials", 5)),
+            "td_inner_max_evaluations": int(o.get("td_inner_max_evaluations", 180)),
+            "td_inner_budget_multiplier": float(o.get("td_inner_budget_multiplier", 2.0)),
             "max_idp_ratio": float(o.get("td_max_survey_degradation", OUTER_MAX_IDP_RATIO))}
+
+
+def search_budget(stage, cfg, opts):
+    """Expand the selected original phase, bounded by explicit integration caps.
+
+    Changing only max evaluations would merely remove the former ceiling;
+    early phases would still have 28/60 evaluations. Keep the phase schedule,
+    the global iteration fence and all stop/stationarity semantics intact.
+    """
+    out = dict(stage)
+    if not out:
+        return out
+    base_eval, base_iter = int(out['max_td_evaluations']), int(out['max_iterations'])
+    factor = float(opts.get('td_inner_budget_multiplier', 1.0))
+    if min(base_eval, base_iter) <= 0 or not math.isfinite(factor) or not 1. <= factor <= 4.:
+        raise ValueError('V24917_INVALID_SEARCH_BUDGET')
+    requested_eval, requested_iter = math.ceil(base_eval*factor), math.ceil(base_iter*factor)
+    fine = (cfg.get('coupled_demand') or {}).get('finecdf_td') or {}
+    iteration_cap = int(fine.get('max_iterations', requested_iter))
+    cap = int(opts['td_inner_max_evaluations'])
+    if min(iteration_cap, cap) <= 0:
+        raise ValueError('V24917_INVALID_SEARCH_BUDGET_CAP')
+    out['max_td_evaluations'] = min(requested_eval, cap)
+    out['max_iterations'] = min(requested_iter, iteration_cap)
+    if requested_eval > cap:
+        out['max_iterations'] = min(out['max_iterations'], max(2, cap//5))
+    capped = out['max_td_evaluations'] < requested_eval or out['max_iterations'] < requested_iter
+    if capped:
+        out['allow_progress_continue'] = True
+        out['v24917_capped'] = True
+    out['v24917_search_budget'] = {'original_evaluations': base_eval, 'original_iterations': base_iter,
+        'multiplier': factor, 'requested_evaluations': requested_eval,
+        'requested_iterations': requested_iter, 'evaluation_cap': cap, 'iteration_cap': iteration_cap,
+        'effective_evaluations': out['max_td_evaluations'], 'effective_iterations': out['max_iterations']}
+    return out
 
 
 # ------------------------------------------------------------------ count model
@@ -512,7 +548,7 @@ def install(print_fn=print) -> Dict[str, Any]:
         execute._v24917_frozen = True
         bridge_mod.NoDirectMatrixWriteTDAdapter.execute = execute
 
-    # 3. faster outer search: fewer TG trials / TD realizations / inner evaluations
+    # 3. Explicit TG/TD search budgets; capped stages remain bounded searches.
     orig_gcfg = ctrl._generation_counts_cfg
     if not getattr(orig_gcfg, "_v24917_fast", False):
         @functools.wraps(orig_gcfg)
@@ -535,24 +571,18 @@ def install(print_fn=print) -> Dict[str, Any]:
     if not getattr(orig_budget, "_v24917_fast", False):
         @functools.wraps(orig_budget)
         def finecdf_budget_for_cycle(cfg, *args, **kwargs):
-            stage = dict(orig_budget(cfg, *args, **kwargs) or {})
-            cap = options()["td_inner_max_evaluations"]
-            if stage and int(stage.get("max_td_evaluations", cap)) > cap:
-                stage["max_td_evaluations"] = cap
-                stage["max_iterations"] = min(int(stage.get("max_iterations", 35)), max(2, cap // 5))
-                stage["allow_progress_continue"] = True
-                stage["v24917_capped"] = True
-            return stage
+            return search_budget(orig_budget(cfg, *args, **kwargs) or {}, cfg, options())
         finecdf_budget_for_cycle._v24917_fast = True
         ctrl._finecdf_budget_for_cycle = finecdf_budget_for_cycle
 
     status = {"installed": True, "release": RELEASE, "options": opts}
     print_fn("R1 V24917 TD BLEND: counts %.0f %% / survey %.0f %%, inner=%s, TG trials<=%d, "
-             "TD realizations<=%d, TD inner evals<=%d"
+             "TD realizations<=%d, TD inner evals<=%d, phase budget multiplier %.2f"
              % (100 * opts["w_cnt"], 100 * opts["w_idp"], opts["inner_mode"], opts["tg_max_trials"],
-                opts["td_realization_max_trials"], opts["td_inner_max_evaluations"]))
+                opts["td_realization_max_trials"], opts["td_inner_max_evaluations"],
+                opts.get("td_inner_budget_multiplier", 1.0)))
     _STATE["installed"] = status
     return status
 
 
-__all__ = ["RELEASE", "SCHEMA", "options", "CountModel", "Blend", "outer_decision", "install"]
+__all__ = ["RELEASE", "SCHEMA", "options", "search_budget", "CountModel", "Blend", "outer_decision", "install"]

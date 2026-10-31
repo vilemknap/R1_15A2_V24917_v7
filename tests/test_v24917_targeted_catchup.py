@@ -841,7 +841,7 @@ def test_td_outer_decision_blend(monkeypatch):
 def test_run_options_td_blend_and_refine_relax(tmp_path):
     import r1_15a2_demand_policy_v1 as dp
     o = dp.load_options(tmp_path, environ={})
-    assert o["td_count_weight"] == 0.60 and o["td_inner_mode"] == "FROZEN_PATHS" and o["tg_max_trials"] == 3
+    assert o["td_count_weight"] == 0.60 and o["td_inner_mode"] == "FROZEN_PATHS" and o["tg_max_trials"] == 6
     with pytest.raises(RuntimeError):
         dp.validate({"td_count_weight": 1.5})
     with pytest.raises(RuntimeError):

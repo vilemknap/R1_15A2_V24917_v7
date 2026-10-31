@@ -1,0 +1,31 @@
+{
+  "new_tests": 24,
+  "focused": {
+    "passed": 159
+  },
+  "final_budget_intrazonal": {
+    "passed": 53
+  },
+  "final_audit_and_transaction": {
+    "passed": 61
+  },
+  "main": {
+    "passed": 2428,
+    "skipped": 4
+  },
+  "diagfast": {
+    "passed": 189
+  },
+  "audit_genfix2": {
+    "passed": 18
+  },
+  "initial_full_run": {
+    "failed": 1,
+    "passed": 2427,
+    "skipped": 4,
+    "reason": "Old live-call-signature test hardcoded previous budget 3/3/60; updated to validated approved limits. Dedicated tests require exact new budgets."
+  },
+  "live_visum_tested": false,
+  "native_jacobian_replacement_implemented": false,
+  "automatic_unlock_implemented": false
+}

@@ -1,0 +1,503 @@
+{
+  "schema": "R1_15A2_V24916_FRESH_EE_BASELINE_LIVE_AUTHORITY_V1",
+  "passes": true,
+  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+  "activation_stage": "FRESH0_ISOLATED_ACTIVE_GENERATION_AND_TD_TARGETING",
+  "current_version_file": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\ACCEPTED_B_0002_c810a3269231.ver",
+  "source_raw_ver_sha256_provenance_only": "22a1e58040b305092f5664cb32eaccd46c4b129335e389d22d71aa9400dd433a",
+  "source_semantic_state_hash": "aa03bde3a4203f2d698d50bd7562737ec641c31f3ca2a78198e90a8147f931bd",
+  "source_semantic_hashes": {
+    "fixed_link_hash": "da1561b6a4059c3022c1a9d2d6324c7a37d9b4a1d81dab227518e768e71b43e2",
+    "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+    "operations_hash": "d02ecc1d2190f1c71961309340bf89516d4f94c524e0f10f1eaa3fcf702bcd04",
+    "addval_hash": "47ce4dbe3abe51237d33680c95d7773a62da15914b90bda666aef9e9038bbb19",
+    "matrix_hash": "80ca2a1bfe32ff9d5f4833a15291ac087025715c5078af61d04c133a6d309ecb",
+    "generation_hash": "5c0a4290a72fc62f109e9578da5388789837a2df6977c92624ff21e1aa68a92d",
+    "td_hash": "0d4d2e5333bb45d68e94a95101ae4a85ffa8a4d3cb39c807e29c5fff284d2433"
+  },
+  "semantic_before_after": {
+    "passes": true,
+    "mismatches": [],
+    "expected_semantic_state_hash": "aa03bde3a4203f2d698d50bd7562737ec641c31f3ca2a78198e90a8147f931bd",
+    "actual_semantic_state_hash": "aa03bde3a4203f2d698d50bd7562737ec641c31f3ca2a78198e90a8147f931bd",
+    "raw_ver_sha_compared": false
+  },
+  "perf2c_single_pass_parity": {
+    "status": "EXACT_PARITY_PASS",
+    "state_hash": "18b9ede29990ba041f9d504aa4ef0b8d8fd7784c73c0f327b480eb8a0f00e299",
+    "component_hashes": {
+      "addval_hash": "47ce4dbe3abe51237d33680c95d7773a62da15914b90bda666aef9e9038bbb19",
+      "fixed_link_hash": "da1561b6a4059c3022c1a9d2d6324c7a37d9b4a1d81dab227518e768e71b43e2",
+      "matrix_hash": "80ca2a1bfe32ff9d5f4833a15291ac087025715c5078af61d04c133a6d309ecb",
+      "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+      "generation_hash": "5c0a4290a72fc62f109e9578da5388789837a2df6977c92624ff21e1aa68a92d",
+      "td_hash": "0d4d2e5333bb45d68e94a95101ae4a85ffa8a4d3cb39c807e29c5fff284d2433",
+      "operations_hash": "d02ecc1d2190f1c71961309340bf89516d4f94c524e0f10f1eaa3fcf702bcd04",
+      "state_hash": "18b9ede29990ba041f9d504aa4ef0b8d8fd7784c73c0f327b480eb8a0f00e299"
+    },
+    "public_snapshot_schema_changed": false,
+    "cross_call_cache": false
+  },
+  "zone_order": {
+    "count": 681,
+    "sha256": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968",
+    "first": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "last": [
+      677,
+      678,
+      679,
+      680,
+      681
+    ]
+  },
+  "dist_km": {
+    "schema": "R1_15A2_V24916_PERF2C_SEALED_SKIM_V1",
+    "matrix_no": 9697,
+    "matrix_code": "R1_OSRM_DIST_KM",
+    "unit": "km",
+    "n_zones": 681,
+    "zone_order_hash": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968",
+    "values_hash": "8ae02c5c105db8b9fcdb6aa1d65347e9b8b58b8e4c264bd25fecfa357515fe87",
+    "role": "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION",
+    "identity_hash": "0bb067a3ea3d7c94cc22c525df33126f0bc05c012e11721c3eeaff776439208a"
+  },
+  "dynamic_assignment_skims": {
+    "schema": "R1_15A2_V24916_DYNAMIC_SKIM_STRUCTURE_AUTHORITY_V1",
+    "active_prt_skim_operation_positions": [
+      31,
+      32,
+      33,
+      34,
+      35,
+      36
+    ],
+    "active_prt_skim_operation_count": 6,
+    "required_native_dsegs": [
+      "NATIVE_CW",
+      "NATIVE_CW_NOT",
+      "NATIVE_CS",
+      "NATIVE_CS_NOT",
+      "NATIVE_CL",
+      "NATIVE_CF"
+    ],
+    "dis_matrices": {
+      "NATIVE_CW": {
+        "matrix_no": 9876,
+        "matrix_code": "DIS",
+        "dseg_code": "NATIVE_CW"
+      },
+      "NATIVE_CW_NOT": {
+        "matrix_no": 9884,
+        "matrix_code": "DIS",
+        "dseg_code": "NATIVE_CW_noT"
+      },
+      "NATIVE_CS": {
+        "matrix_no": 9860,
+        "matrix_code": "DIS",
+        "dseg_code": "NATIVE_CS"
+      },
+      "NATIVE_CS_NOT": {
+        "matrix_no": 9868,
+        "matrix_code": "DIS",
+        "dseg_code": "NATIVE_CS_noT"
+      },
+      "NATIVE_CL": {
+        "matrix_no": 9852,
+        "matrix_code": "DIS",
+        "dseg_code": "NATIVE_CL"
+      },
+      "NATIVE_CF": {
+        "matrix_no": 9844,
+        "matrix_code": "DIS",
+        "dseg_code": "NATIVE_CF"
+      }
+    },
+    "distance_semantics": "ASSIGNMENT_PATH_DISTANCE_KM",
+    "required_path_aggregation": "MEAN_OVER_PATH_VOLUME",
+    "refresh_policy": "EVERY_TD_FINECDF_EVALUATION_AND_EVERY_FRESH_ASSIGNMENT",
+    "static_r1_osrm_dist_km_role": "REFERENCE_ONLY_NOT_ACTIVE_CALIBRATION",
+    "procedure_sequence_executed_by_preflight": false,
+    "configuration_readback_note": "Operation count and exact resulting DIS DSeg matrix identities are sealed here; each live calibration refresh revalidates all six result matrices and assignment epoch.",
+    "authority_hash": "d9db78d2cca0e01405370bf16e0074ebefbd7a36dabed253d95a917a6412f7d3"
+  },
+  "dseg_role_authority": {
+    "schema": "R1_15A2_V24916_FRESH_DSEG_ROLE_AUTHORITY_V1",
+    "roles": {
+      "NATIVE_CW": "TARGET_NATIVE",
+      "NATIVE_CW_noT": "TARGET_NATIVE",
+      "NATIVE_CS": "TARGET_NATIVE",
+      "NATIVE_CS_noT": "TARGET_NATIVE"
+    },
+    "required_native_dsegs": [
+      "NATIVE_CW",
+      "NATIVE_CW_noT",
+      "NATIVE_CS",
+      "NATIVE_CS_noT"
+    ],
+    "authority_hash": "9cc4b9317b9dbe9234a11aedda4da97a26ce1b8fc5d53897823c0f6bd5a127ac"
+  },
+  "flowbundle_contract": {
+    "contract_id": "PTV_VISUM_2026_FLOWBUNDLE_LINK_DSEG_V24916_V1",
+    "demand_mode": "code",
+    "execution_method": "CreateCondition+ExecuteCurrentConditions",
+    "set_mode": "none",
+    "matrix_mode": "object"
+  },
+  "flowbundle_contract_sha256": "9910f1beed5a66ed58d976d2f616041e1fffead5d9b940a2b6d27bb3b53b0087",
+  "directed_sample": {
+    "passes": true,
+    "selected": {
+      "profile_id": "CSD2022_87012_A0EB9160_E4000774",
+      "countlocation_no": "920001",
+      "dseg_code": "NATIVE_CS",
+      "link": {
+        "link_no": 8000071,
+        "from_node_no": 9000222,
+        "to_node_no": 9000524
+      },
+      "n_zones": 681,
+      "total": 2407.1758566360572,
+      "retained_total": 783.9810888784248,
+      "tail_total": 1623.1947677576325,
+      "payload_hash": "e7559aa4ff593e0a146758bc2842ed2d15759a1172958481fed657edadaf814c",
+      "positive": true,
+      "status": "PASS"
+    },
+    "attempts": [
+      {
+        "profile_id": "CSD2022_87012_A0EB9160_E4000774",
+        "countlocation_no": "920001",
+        "dseg_code": "NATIVE_CS",
+        "link": {
+          "link_no": 8000071,
+          "from_node_no": 9000222,
+          "to_node_no": 9000524
+        },
+        "n_zones": 681,
+        "total": 2407.1758566360572,
+        "retained_total": 783.9810888784248,
+        "tail_total": 1623.1947677576325,
+        "payload_hash": "e7559aa4ff593e0a146758bc2842ed2d15759a1172958481fed657edadaf814c",
+        "positive": true,
+        "status": "PASS"
+      }
+    ]
+  },
+  "both_sample": {
+    "passes": true,
+    "status": "PASS",
+    "selected": {
+      "profile_id": "OBJ::TT_ECV_11",
+      "countlocation_no": "912001",
+      "dseg_code": "NATIVE_CS",
+      "forward_link": {
+        "link_no": 2002644,
+        "from_node_no": 1001594,
+        "to_node_no": 1003114
+      },
+      "reverse_link": {
+        "link_no": 2002644,
+        "from_node_no": 1003114,
+        "to_node_no": 1001594
+      },
+      "n_zones": 681,
+      "total": 6415.756244297531,
+      "retained_total": 2487.2916432817956,
+      "tail_total": 3928.4646010157358,
+      "payload_hash": "6d8831b6d1ad1b7e3ffc792c433955f6f68b84029b3ab2910894262373d28b38",
+      "status": "PASS"
+    },
+    "attempts": [
+      {
+        "profile_id": "OBJ::TT_ECV_11",
+        "countlocation_no": "912001",
+        "dseg_code": "NATIVE_CS",
+        "forward_link": {
+          "link_no": 2002644,
+          "from_node_no": 1001594,
+          "to_node_no": 1003114
+        },
+        "reverse_link": {
+          "link_no": 2002644,
+          "from_node_no": 1003114,
+          "to_node_no": 1001594
+        },
+        "n_zones": 681,
+        "total": 6415.756244297531,
+        "retained_total": 2487.2916432817956,
+        "tail_total": 3928.4646010157358,
+        "payload_hash": "6d8831b6d1ad1b7e3ffc792c433955f6f68b84029b3ab2910894262373d28b38",
+        "status": "PASS"
+      }
+    ]
+  },
+  "matrix_inventory_unchanged": true,
+  "parent_acceptance_authority_changed": false,
+  "assignment_executed": false,
+  "procedure_sequence_executed": false,
+  "coefficient_writes": 0,
+  "direct_od_writes": 0,
+  "preflight_path_cache_policy": {
+    "enabled": false,
+    "reason": "NO_RUN_ROOT_EXISTS_DURING_READ_ONLY_PREFLIGHT",
+    "calibration_policy_changed": false
+  },
+  "active_v24916_actuators": [],
+  "countlocation_authority": {
+    "rows": 248,
+    "calibration": 248,
+    "validation": 0,
+    "csd_rows": 196,
+    "city_rows": 52,
+    "source_xlsx": "authorities/R1_PROFILE_ROSTER_V24917_SOURCE.xlsx",
+    "source_xlsx_sha256": "0a33837129a2eaf64890052c12429a7d331ef6eb76bd5e9e77727222b5891684",
+    "csd_csv": "authorities/R1_PROFILE_ROSTER_V24917_CSD.csv",
+    "csd_sha256": "2761b69b7f76e73eb98fe191f7508c11089936566f64c92e60a7b8ae1cef9852",
+    "city_csv": "authorities/R1_PROFILE_ROSTER_V24917_CITY.csv",
+    "city_sha256": "36d94ddce1bb091e5410dbb498d851825a0e477a000e3edc08f750942e1d199c",
+    "roster": "R1_15A2_V24917_PROFILE_ROSTER_V1",
+    "zero_observation_rows": 1
+  },
+  "countlocation_live_compatibility": {
+    "schema": "R1_15A2_V24917_ROSTER_LIVE_COMPATIBILITY_V1",
+    "passes": true,
+    "checked_rows": 248,
+    "calibration_rows": 248,
+    "validation_rows": 0,
+    "source_model_mutated": false,
+    "roster": "R1_15A2_V24917_PROFILE_ROSTER_V1",
+    "other_countlocations_in_model_ignored": true
+  },
+  "fresh100_parent_contract": {
+    "profile_rows": 488,
+    "calibration_rows": 488,
+    "validation_rows": 0,
+    "outer_cycle_cap": 100,
+    "wall_clock_limit_disabled": true,
+    "cross_run_path_cache_restore": false
+  },
+  "fresh_lineage": {
+    "accepted_count_start": 0,
+    "outer_cycle_start": 1,
+    "historical_checkpoint_inherited": false,
+    "historical_path_cache_restore_allowed": false,
+    "fresh_path_epoch_required": true
+  },
+  "source_baseline_policy": {
+    "policy": "CURRENT_OPEN_VER_IS_DYNAMIC_BASELINE_PROVENANCE_ONLY",
+    "fixed_semantic_hash_required": false,
+    "captured_semantic_state_hash": "aa03bde3a4203f2d698d50bd7562737ec641c31f3ca2a78198e90a8147f931bd",
+    "current_open_ver_is_baseline": true,
+    "structural_preflight_required": true
+  },
+  "integrated_hotfixes": {
+    "com_busy_snapshot_retry": {
+      "active": true,
+      "release": "R1_15A2_V24916_COMBUSY_SNAPSHOT_RETRY_V1_20261023",
+      "idempotent": false,
+      "status": "ACTIVE",
+      "scope": "startup_snapshot_read",
+      "default_retry": {
+        "max_attempts": 64,
+        "initial_delay_seconds": 0.15,
+        "backoff_factor": 1.5,
+        "max_delay_seconds": 1.5,
+        "max_elapsed_seconds": 75.0
+      },
+      "execution": "READ_ONLY_TRANSIENT_COM_RPC_ONLY",
+      "patched_read_paths": [
+        "r1_15a2_supply_visum.VisumAdapter.read_links",
+        "r1_15a2_supply_visum.VisumAdapter.snapshot",
+        "r1_15a2_single_pass_snapshot_v24915p2c.single_pass_exact_snapshot",
+        "r1_15a2_trial_adapter_v24915p2c.single_pass_exact_snapshot"
+      ],
+      "calibration_math_changed": false,
+      "assignment_method_changed": false,
+      "visum_writes_added": false
+    },
+    "td09c_runtime_patch": {
+      "active": true,
+      "release": "R1_15A2_V24916_TD09C_16OR17_NATIVE_SCOPE_COMPAT_V1_20261023",
+      "idempotent": false,
+      "parent_init_sha256": "d31f106438c58e61dc3cd2f2ba18183570dee8c0885c6b52d55eff2b88a22165",
+      "status": "ACTIVE",
+      "allowed_source_scopes": [
+        "FULL17",
+        "NATIVE16_FOREIGN_SEPARATE"
+      ],
+      "foreign_dstratum": "4_FOREIGN",
+      "foreign_matrix": 9116,
+      "foreign_native_td_excluded_during_inner": true,
+      "foreign_matrix_hash_guarded": true,
+      "foreign_abc_must_be_independently_readable": true,
+      "dynamic_assignment_skims_preserved": true,
+      "calibration_math_changed": false,
+      "assignment_method_changed": false
+    },
+    "td09c_source_preflight": {
+      "status": "PASS",
+      "selected_operation_index": 6,
+      "scope": "NATIVE16_FOREIGN_SEPARATE",
+      "source_dstratset": "1_WORK_E_C,1_WORK_E_noC,1_WORK_noE_C,1_WORK_noE_noC,1_WORK_stud,2_SERV_E_C,2_SERV_E_noC,2_SERV_noE_C,2_SERV_noE_noC,2_SERV_stud,3_LONG_E_C,3_LONG_E_noC,3_LONG_noE_C,3_LONG_noE_noC,3_LONG_stud,5_SCHOOL",
+      "source_strata_count": 16,
+      "foreign_abc_readable": true,
+      "foreign_abc": {
+        "PARA_A": 1.0,
+        "PARA_B": 1.0,
+        "PARA_C": -1.0
+      },
+      "model_modified": false
+    },
+    "iofix4_import_decision": "CURRENT_V24916_IOFIX3_PATHFIX3_IS_STRICT_SUPERSET_NO_DOWNGRADE"
+  },
+  "parallel_isolation": {
+    "workspace": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS",
+    "shared_v24915_lock": false,
+    "shared_v24915_runs_root": false,
+    "external_cache_read_allowed": false,
+    "cross_run_cache_restore_allowed": false,
+    "legacy_cache_roots": [],
+    "persistent_path_cache_enabled": false,
+    "persistent_path_cache_reads_allowed": false,
+    "persistent_path_cache_writes_allowed": false,
+    "private_cache_location": "DISABLED",
+    "within_run_path_basis_reuse_allowed": true
+  },
+  "package_gates": {
+    "parent_deployment_passes": true,
+    "parent_fresh100_runtime_passes": true,
+    "v24916_runtime_manifest_passes": true,
+    "active_config_delta": {
+      "schema": "R1_15A2_V24916_PROFILE488_GATEFIX1_CONFIG_AUDIT_V1",
+      "passes": true,
+      "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+      "package_revision": "V24916_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+      "profile488_runtime_gate_correction": {
+        "expected_12d_rows": 488,
+        "expected_calibration_rows": 488,
+        "expected_validation_rows": 0
+      },
+      "run_12d_gate_fail_closed": true,
+      "11d_cross_gate_fail_closed": true,
+      "parent_fastcal1_validated": true,
+      "scientific_formulas_changed": false,
+      "search_policy_changed": false,
+      "integrated_hotfixes": {
+        "schema": "R1_15A2_V24916_COMBUSY_TD09C16_INTEGRATION_V1",
+        "com_busy_snapshot_retry": {
+          "status": "ACTIVE",
+          "release": "R1_15A2_V24916_COMBUSY_SNAPSHOT_RETRY_V1_20261023",
+          "scope": "startup_snapshot_read",
+          "default_retry": {
+            "max_attempts": 64,
+            "initial_delay_seconds": 0.15,
+            "backoff_factor": 1.5,
+            "max_delay_seconds": 1.5,
+            "max_elapsed_seconds": 75.0
+          },
+          "execution": "READ_ONLY_TRANSIENT_COM_RPC_ONLY",
+          "patched_read_paths": [
+            "r1_15a2_supply_visum.VisumAdapter.read_links",
+            "r1_15a2_supply_visum.VisumAdapter.snapshot",
+            "r1_15a2_single_pass_snapshot_v24915p2c.single_pass_exact_snapshot",
+            "r1_15a2_trial_adapter_v24915p2c.single_pass_exact_snapshot"
+          ],
+          "calibration_math_changed": false,
+          "assignment_method_changed": false,
+          "visum_writes_added": false
+        },
+        "td09c_16_or_17_native_scope": {
+          "status": "ACTIVE",
+          "release": "R1_15A2_V24916_TD09C_16OR17_NATIVE_SCOPE_COMPAT_V1_20261023",
+          "allowed_source_scopes": [
+            "FULL17",
+            "NATIVE16_FOREIGN_SEPARATE"
+          ],
+          "foreign_dstratum": "4_FOREIGN",
+          "foreign_matrix": 9116,
+          "foreign_native_td_excluded_during_inner": true,
+          "foreign_matrix_hash_guarded": true,
+          "foreign_abc_must_be_independently_readable": true,
+          "dynamic_assignment_skims_preserved": true,
+          "calibration_math_changed": false,
+          "assignment_method_changed": false
+        },
+        "iofix4_import_audit": {
+          "source_branch": "R1_15A2_PROFILE488_AGGRESSIVE_TGTD_V1_FIX1_IOFIX4_BASE_20261022",
+          "decision": "CURRENT_V24916_IOFIX3_PATHFIX3_IS_STRICT_SUPERSET_NO_DOWNGRADE",
+          "short_opaque_temp_names": true,
+          "windows_extended_length_path_io": true,
+          "critical_atomic_publication_retry": true,
+          "telemetry_fail_open": true,
+          "v24916_specific_evidence_writers_protected": true
+        },
+        "calibration_formulas_changed": false,
+        "assignment_method_changed": false,
+        "dynamic_skim_method_changed": false,
+        "flowbundle_targeting_changed": false,
+        "profile488_authority_changed": false
+      },
+      "safety_contract_hash": "6e2989e18e039326b9c09c2c82277788cbc71876426351132935d6546474b2d8",
+      "v24917": {
+        "passes": true,
+        "release": "R1_15A2_V24917_MOBILITYALLOC1_TDLONG1_LIVE_PENDING_20261027",
+        "policy_hash": "1479a769e0d4af62829cfaea6a9dcce59b8c686040e8f8d815c68d78464f763c",
+        "inherited_fields_unchanged_except_long_generation_scope": true,
+        "long_generation_scope": {
+          "dseg_codes": [
+            "NATIVE_CW",
+            "NATIVE_CW_noT",
+            "NATIVE_CS",
+            "NATIVE_CS_noT",
+            "NATIVE_CL"
+          ],
+          "matrix_nos": [
+            9101,
+            9102,
+            9103,
+            9104,
+            9105,
+            9106,
+            9107,
+            9108,
+            9109,
+            9110,
+            9111,
+            9112,
+            9113,
+            9114,
+            9115
+          ]
+        },
+        "profile_roster": {
+          "schema": "R1_15A2_V24917_PROFILE_ROSTER_V1",
+          "enabled": true,
+          "rows": 248,
+          "csd_rows": 196,
+          "city_rows": 52,
+          "csd_sha256": "2761b69b7f76e73eb98fe191f7508c11089936566f64c92e60a7b8ae1cef9852",
+          "city_sha256": "36d94ddce1bb091e5410dbb498d851825a0e477a000e3edc08f750942e1d199c",
+          "source_xlsx_sha256": "0a33837129a2eaf64890052c12429a7d331ef6eb76bd5e9e77727222b5891684",
+          "helper_sha256": "518b70b894dcd3156022fb60ff3933cfd04a955a9be890900a770585b741d9df",
+          "observed_sum": 1299058.404,
+          "weights": "UNCHANGED_FROM_PARENT_488_AUTHORITY",
+          "replaces": {
+            "expected_12d_rows": 488,
+            "expected_calibration_rows": 488,
+            "expected_validation_rows": 0
+          }
+        }
+      }
+    },
+    "com_busy_snapshot_retry_active": true,
+    "td09c_16_or_17_compat_active": true,
+    "td09c_source_preflight_passes": true
+  },
+  "authority_hash": "ab7be20290b336a649f2209c2505ecafce78c66a39410d0758846274d6a9fd4e"
+}

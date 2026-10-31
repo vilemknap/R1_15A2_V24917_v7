@@ -762,10 +762,11 @@ def test_callsig_wrapped_controller_functions_accept_live_call_shapes(monkeypatc
     # exact call shapes used by r1_15a2_overnight_controller_coupled_v24915p2_force100
     g1 = ctrl._generation_counts_cfg(cfg, outer_cycle=1)
     g2 = ctrl._generation_counts_cfg(cfg)
-    assert len(g1["backtracking_scales"]) <= 3 and g1["backtracking_scales"] == g2["backtracking_scales"]
-    assert ctrl._td_realization_scales(cfg)[0] == 1.0 and len(ctrl._td_realization_scales(cfg)) <= 3
+    limits = tb.options()
+    assert len(g1["backtracking_scales"]) <= limits["tg_max_trials"] and g1["backtracking_scales"] == g2["backtracking_scales"]
+    assert ctrl._td_realization_scales(cfg)[0] == 1.0 and len(ctrl._td_realization_scales(cfg)) <= limits["td_realization_max_trials"]
     b = ctrl._finecdf_budget_for_cycle(cfg, 3)
-    assert not b or int(b["max_td_evaluations"]) <= 60
+    assert not b or int(b["max_td_evaluations"]) <= limits["td_inner_max_evaluations"]
     # the V24916 dispatch calls its own module-level import of the inner search
     assert getattr(acp.targeted_run_finecdf_inner, "_v24917_iz", False)
     assert "r1_15a2_active_controller_patch_v24916p2c.targeted_run_finecdf_inner" in st["inner_dispatch_patched"]

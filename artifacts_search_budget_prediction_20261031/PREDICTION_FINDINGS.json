@@ -1,0 +1,36 @@
+{
+  "stored_run_arithmetic": {
+    "possible_parent_volumes": [
+      5700.355810411859,
+      5472.802867517015
+    ],
+    "possible_last_volumes": [
+      8752.15573424045,
+      3118.995699128656
+    ],
+    "minimum_absolute_actual_flow_change": 2353.8071683883595,
+    "minimum_magnitude_ratio_to_raw_prediction": 183.79690050349933,
+    "geh_from_raw_only_prediction": [
+      1.352575013516502,
+      1.6954923885896618
+    ],
+    "last_aggregate_prediction_error": 0.01504104137686113,
+    "exact_corrected_profile_prediction_available_in_old_logs": false
+  },
+  "analytical_symmetry_counterexample": {
+    "status": "MATHEMATICAL_DEMONSTRATION_NOT_LIVE_VISUM",
+    "person_OD_T12": 1000.0,
+    "person_OD_T21": 0.0,
+    "vehicle_OD_each_direction": 500.0,
+    "log_step_P1_and_A2": 0.01,
+    "current_surrogate_first_order_delta": [
+      7.5,
+      -2.5
+    ],
+    "symmetric_person_to_vehicle_first_order_delta": [
+      5.0,
+      5.0
+    ],
+    "demonstrates": "The directed vehicle-origin zonal surrogate need not preserve the sign of native purpose/symmetrization response."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "R1_15A2_V24916_FRESH0_ISOLATED_BOOTSTRAP_V2",
+  "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+  "bootstrapfix_revision": "BOOTSTRAPFIX2_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+  "updated_at": "2026-10-31T12:54:44.518516+01:00",
+  "status": "CALIBRATION_RETURNED",
+  "stage": "PARENT_MAIN_FULL",
+  "source_version": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\ACCEPTED_B_0002_c810a3269231.ver",
+  "isolated_workspace": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS",
+  "result": {
+    "status": "FULL_OVERNIGHT_FAILED",
+    "error": "[Errno 17] File exists: '\\\\\\\\?\\\\C:\\\\Users\\\\vilem_knap\\\\R1F_742748e4\\\\.R1_15A2_V16.lock'",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\R1_15A2_V24917_v7.4\\r1_15a2_fresh0_shortroot_parent_v24916.py\", line 850, in _main_impl\n    fd = os.open(runtime_io_hotfix._native_path(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)\nFileExistsError: [Errno 17] File exists: '\\\\\\\\?\\\\C:\\\\Users\\\\vilem_knap\\\\R1F_742748e4\\\\.R1_15A2_V16.lock'\n",
+    "production_apply": false,
+    "trial_writes": true,
+    "source_version": "C:\\Users\\vilem_knap\\Documents\\VISUM\\v45\\2022\\ACCEPTED_B_0002_c810a3269231.ver",
+    "source_sha256_before": "22a1e58040b305092f5664cb32eaccd46c4b129335e389d22d71aa9400dd433a",
+    "source_sha256_after": "22a1e58040b305092f5664cb32eaccd46c4b129335e389d22d71aa9400dd433a",
+    "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+    "raw_ver_sha_used_for_restart_acceptance": false,
+    "source_file_unchanged": true,
+    "release": "R1_15A2_V24916_PERF2C_FRESH0_DYNAMICSKIM1_FASTCAL1_PROFILE488FIX1_COMBUSY_TD09C16_20261023",
+    "load_version_called": false,
+    "run_directory": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125444_500947"
+  }
+}
