@@ -15,7 +15,7 @@ from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 import traceback
 
-RELEASE = "R1_V24917_FRESH_UNIVERSAL_TDPERF_ALLTD_PATHROOTFIX1_20261031"
+RELEASE = "R1_V24917_FRESH_UNIVERSAL_TG10_TD_EVERY2_20261101"
 SANDBOX_NAME = "R1FRESH17"  # reject recursive inputs from the former, too-deep sandbox
 COMPACT_SANDBOX_PREFIX = "R1F_"  # home-level path; stable 8-digit project key
 RUNS_NAME = "R1_15A2_V16_RUNS"
@@ -90,19 +90,19 @@ def validate_fresh_config(cfg, options):
             "CROSS_RUN_CACHE_ENABLED")
     require(options.get("td_joint_enabled") is True, "TDJOINT_DISABLED")
     require(options.get("td_inner_mode") == "DYNAMIC", "DYNAMIC_TD_DISABLED")
-    require(options.get("td_first_cycle") is True, "FIRST_CYCLE_TD_DISABLED")
-    require(options.get("td_policy") == "ALWAYS"
-            and options.get("td_every_n_cycles") == 1
-            and options.get("td_during_catchup") is True,
-            "TD_EVERY_CYCLE_POLICY_REQUIRED")
+    require(options.get("td_policy") == "EVERY_N"
+            and options.get("td_every_n_cycles") == 2
+            and options.get("td_first_cycle") is False
+            and options.get("td_when_generation_plateau") is False,
+            "TD_EVERY_TWO_CYCLES_POLICY_REQUIRED")
     require(options.get("school_td_enabled") is True
             and options.get("long_composite_td_enabled") is True,
             "SCHOOL_OR_LONG_TD_DISABLED")
     gen = cfg.get("v24917_targeted_generation") or {}
     require(options.get("tg_catchup_enabled") is False, "TG_CATCHUP_MUST_BE_DISABLED")
-    require(gen.get("refine_uses_stage_caps") is True
-            and math.isclose(float(gen.get("refine_max_log_up", 0)), math.log(1.05), abs_tol=1e-12)
-            and math.isclose(float(gen.get("refine_max_log_down", 0)), math.log(0.95), abs_tol=1e-12),
+    require(gen.get("refine_uses_stage_caps") is False
+            and math.isclose(float(gen.get("refine_max_log_up", 0)), math.log(1.10), abs_tol=1e-12)
+            and math.isclose(float(gen.get("refine_max_log_down", 0)), math.log(0.90), abs_tol=1e-12),
             "FINE_GENERATION_STEP_POLICY_MISMATCH")
     bands = gen.get("envelope") or {}
     hard = bands.get("domestic_hard_by_role") or {}
@@ -120,15 +120,17 @@ def validate_fresh_config(cfg, options):
     return {"fresh_lineage": True, "accepted_count_start": 0,
             "outer_cycle_start": 1, "fresh_native_paths": True,
             "td_optimizations_required": True,
-            "td_policy": "ALWAYS", "td_skipping_allowed": False,
+            "td_policy": "EVERY_N", "td_every_n_cycles": 2,
+            "td_first_cycle": False, "td_on_generation_plateau": False,
+            "td_skipping_allowed": True,
             "td_catchup_included": True,
             "generation_work_service_prod_bounds": [0.5, 3.0],
             "generation_work_service_att_bounds": [0.5, 5.0],
             "mobility2_ws_prod_min": 0.5,
             "mobility2_ws_prod_max": 3.0,
             "generation_mode": "REFINE_ONLY",
-            "generation_max_step_up": 0.05, "generation_max_step_down": 0.05,
-            "generation_stage_caps_preserved": True,
+            "generation_max_step_up": 0.10, "generation_max_step_down": 0.10,
+            "generation_stage_caps_preserved": False,
             "salary_long_school_zahr_policy_changed": False}
 
 
@@ -149,11 +151,11 @@ def verify_runtime_status(status):
     require(effective_demand.get("tg_catchup_enabled") is False,
             "EFFECTIVE_TG_CATCHUP_MUST_BE_DISABLED")
     require(demand.get("installed") is True
-            and effective_demand.get("td_policy") == "ALWAYS"
-            and effective_demand.get("td_every_n_cycles") == 1
-            and effective_demand.get("td_during_catchup") is True
-            and effective_demand.get("td_first_cycle") is True,
-            "EFFECTIVE_TD_EVERY_CYCLE_POLICY_MISMATCH")
+            and effective_demand.get("td_policy") == "EVERY_N"
+            and effective_demand.get("td_every_n_cycles") == 2
+            and effective_demand.get("td_first_cycle") is False
+            and effective_demand.get("td_when_generation_plateau") is False,
+            "EFFECTIVE_TD_EVERY_TWO_CYCLES_POLICY_MISMATCH")
     require(effective_demand.get("mg_enabled") is True
             and effective_demand.get("mg_min_ratio") == 0.5
             and effective_demand.get("mg_max_ratio") == 3.0,

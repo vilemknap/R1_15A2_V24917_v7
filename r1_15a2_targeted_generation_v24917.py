@@ -3,8 +3,8 @@
 
 * The delivered configuration disables CATCH_UP, including on restart.
   Legacy explicit opt-in remains available outside the strict fresh launcher.
-* REFINE uses at most +5 % / -5 % P/A effects and preserves smaller inherited
-  per-cycle stage caps (generation_step_schedule), with soft-band damping.
+* REFINE uses at most +10 % / -10 % P/A effects throughout the run, with
+  soft-band damping and native acceptance of each trial.
 * Coefficient envelope (both phases): WORK/SERVICE domestic ADD_PROD [0.5, 3.0],
   ADD_ATT [0.5, 5.0].  ZAHR run-start reference x [0.5, 10.0].
   Role-specific soft bands equal the corresponding hard bands.
@@ -23,7 +23,7 @@ import functools
 import math
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
-RELEASE = "R1_15A2_V24917_TARGETED_FINE_REFINE_ONLY_20261101"
+RELEASE = "R1_15A2_V24917_TARGETED_REFINE10_TD_EVERY2_20261101"
 POLICY_KEY = "v24917_targeted_generation"
 PHASE_KEY = "v24917_generation_phase"
 MODE_KEY = "v24917_generation_mode"
@@ -38,9 +38,9 @@ DEFAULT_POLICY: Dict[str, Any] = {
     "catchup_until_model_obs_ratio": 0.80,
     "catchup_max_log_up": math.log(1.5),
     "catchup_max_log_down": math.log(0.8),
-    "refine_uses_stage_caps": True,
-    "refine_max_log_up": math.log(1.05),
-    "refine_max_log_down": math.log(0.95),
+    "refine_uses_stage_caps": False,
+    "refine_max_log_up": math.log(1.10),
+    "refine_max_log_down": math.log(0.90),
     "refine_soft_outward_step_factor": 0.5,
     "envelope": {
         "domestic_hard": [0.75, 2.0],  # backward-compatible unknown-role query

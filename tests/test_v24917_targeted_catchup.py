@@ -133,7 +133,7 @@ def test_overlay_only_with_policy():
     out = tg.overlay_cfg(cfg, "CATCH_UP")
     assert out["max_add_log_up"] == pytest.approx(UP) and out["max_add_log_down"] == pytest.approx(-DN)
     assert out[tg.MODE_KEY] == tg.MODE and cfg["max_add_log_up"] == 0.1
-    assert tg.overlay_cfg(cfg, "REFINE")["max_add_log_up"] == pytest.approx(math.log(1.05))
+    assert tg.overlay_cfg(cfg, "REFINE")["max_add_log_up"] == pytest.approx(math.log(1.10))
 
 
 def test_delivered_phase_never_returns_to_catchup_on_restart_or_low_ratio(monkeypatch, tmp_path):
@@ -147,11 +147,11 @@ def test_delivered_phase_never_returns_to_catchup_on_restart_or_low_ratio(monkey
         assert tg.phase_for(rows, copy.deepcopy(tg.DEFAULT_POLICY))[0] == "REFINE"
 
 
-@pytest.mark.parametrize("cycle,up,down", [(1,math.log(1.05),-math.log(.95)),
-    (2,math.log(1.05),-math.log(.95)),(3,math.log(1.05),-math.log(.95)),
-    (4,math.log(1.05),-math.log(.95)),(5,.03,.03),(7,.03,.03),
-    (50,.03,.03),(100,.03,.03)])
-def test_refine_preserves_finer_real_controller_stage_limits(real_cfg, cycle, up, down):
+@pytest.mark.parametrize("cycle,up,down", [(1,math.log(1.10),-math.log(.90)),
+    (2,math.log(1.10),-math.log(.90)),(3,math.log(1.10),-math.log(.90)),
+    (4,math.log(1.10),-math.log(.90)),(5,math.log(1.10),-math.log(.90)),(7,math.log(1.10),-math.log(.90)),
+    (50,math.log(1.10),-math.log(.90)),(100,math.log(1.10),-math.log(.90))])
+def test_refine_ten_percent_caps_at_every_real_controller_stage(real_cfg, cycle, up, down):
     import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
     staged = ctrl._generation_counts_cfg(real_cfg, outer_cycle=cycle)
     out = tg.overlay_cfg(staged, "REFINE")
@@ -161,7 +161,7 @@ def test_refine_preserves_finer_real_controller_stage_limits(real_cfg, cycle, up
 
 @pytest.mark.parametrize("cycle", [1,7])
 @pytest.mark.parametrize("sign", [-1,1])
-def test_fine_limits_reach_real_pa_effects(mb, real_cfg, cycle, sign):
+def test_ten_percent_limits_reach_real_pa_effects(mb, real_cfg, cycle, sign):
     import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
     cfg = tg.overlay_cfg(ctrl._generation_counts_cfg(real_cfg, outer_cycle=cycle), "REFINE")
     cfg["salary"]["enabled"] = False
@@ -174,6 +174,45 @@ def test_fine_limits_reach_real_pa_effects(mb, real_cfg, cycle, sign):
     for r in design["candidate_rows"]:
         assert r["proposed"] == pytest.approx(math.exp(cap))
     assert all(abs(r["implemented_total_log_effect"]-cap)<1e-9 for r in design["effect_rows"])
+
+
+def test_td_schedule_is_even_only_on_start_restart_and_generation_plateau(tmp_path):
+    import r1_15a2_demand_policy_v1 as dp
+    opts = dp.load_options(tmp_path, environ={})
+    for changed in (True, False):
+        policy = dp.DemandPolicy(opts)
+        assert [c for c in range(1,9) if policy.td_due(c,changed)[0]] == [2,4,6,8]
+    restarted = dp.DemandPolicy(opts)
+    assert restarted.td_due(7,True) == (False,'NOT_DUE')
+    # An explicitly resumed pending TD stage still has to complete its transaction.
+    assert restarted.td_due(7,None) == (True,'NO_GENERATION_RESULT_THIS_RUN')
+
+
+def test_scheduled_td_gap_is_not_proof_and_only_preserves_existing_stationarity():
+    import r1_15a2_demand_policy_v1 as dp
+    policy = dp.DemandPolicy(dp.validate({}))
+    done = {'search_complete':True,'stationarity_confirmed':True}
+    td_done = {'inner':{'search_complete':True,'progress_continue':False}}
+    skipped = {'skip_policy_reason':'NOT_DUE','inner':{'search_complete':False,'progress_continue':True}}
+    policy.note_generation(False,done)
+    policy.note_td(1,False,False,skipped)
+    assert policy.streak == 0 and not policy.stop_due()
+    policy.note_td(2,True,False,td_done)
+    assert policy.streak == 1
+    policy.note_td(3,False,False,skipped)
+    assert policy.streak == 1 and not policy.records[-1]['stationary']
+    policy.note_td(4,True,False,td_done)
+    assert policy.streak == 2 and policy.stop_due()
+
+
+@pytest.mark.parametrize('changed,complete',[(True,True),(False,False)])
+def test_generation_progress_or_incomplete_evidence_breaks_streak_on_skipped_td(changed,complete):
+    import r1_15a2_demand_policy_v1 as dp
+    policy = dp.DemandPolicy(dp.validate({}))
+    policy.streak = 1
+    policy.note_generation(changed,{'search_complete':complete,'stationarity_confirmed':complete})
+    policy.note_td(3,False,False,{'skip_policy_reason':'NOT_DUE'})
+    assert policy.streak == 0 and not policy.stop_due()
 
 
 # --------------------------------------------------- multiblock integration
@@ -664,7 +703,7 @@ def test_td_every_n_skipped_during_catchup(monkeypatch, tmp_path, real_cfg):
     calls = []
     orig = lambda adapter, cfg, folder, control, state, diag, root, outer_cycle=None: (
         calls.append(outer_cycle) or (False, state, diag, {"inner": {"search_complete": True}}))
-    policy = dp.DemandPolicy(dp.validate({}))
+    policy = dp.DemandPolicy(dp.validate({"td_every_n_cycles":5,"td_when_generation_plateau":True}))
     policy.last_generation_changed = True
     policy.td_calls = 1                              # not the first cycle of the run
     td = dp.wrap_td(orig, policy, ctrl)
@@ -912,8 +951,8 @@ def test_run_options_td_blend_and_refine_relax(tmp_path):
         dp.validate({"td_inner_mode": "FAST"})
     p = tg.validate_policy(tg.DEFAULT_POLICY)
     out = tg.overlay_cfg({tg.POLICY_KEY: p, "max_add_log_up": 0.03, "max_add_log_down": 0.03}, "REFINE")
-    assert out["max_add_log_up"] == pytest.approx(0.03)
-    assert out["max_add_log_down"] == pytest.approx(0.03)
+    assert out["max_add_log_up"] == pytest.approx(math.log(1.10))
+    assert out["max_add_log_down"] == pytest.approx(-math.log(.90))
 
 
 def test_td_frozen_inner_execute_runs_td_only(monkeypatch):

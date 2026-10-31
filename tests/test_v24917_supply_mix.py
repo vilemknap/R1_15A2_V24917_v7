@@ -537,7 +537,7 @@ def test_options_validation_sp(tmp_path):
 
 def test_td_first_cycle_of_run_then_every_n(tmp_path):
     import r1_15a2_demand_policy_v1 as dp
-    o = dp.load_options(tmp_path / "none", environ={"R1_TD_EVERY_N": "3"})
+    o = dp.load_options(tmp_path / "none", environ={"R1_TD_EVERY_N": "3", "R1_TD_FIRST_CYCLE": "true"})
     assert o["td_first_cycle"] is True
     pol = dp.DemandPolicy(o)
     assert pol.td_due(1, True) == (True, "FIRST_CYCLE_OF_RUN")

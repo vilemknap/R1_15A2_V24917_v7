@@ -1,0 +1,49 @@
+.........F.....FF....................................................... [ 38%]
+........................................................................ [ 76%]
+.............................................                            [100%]
+=================================== FAILURES ===================================
+________________________ test_defaults_and_file_and_env ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-37/test_defaults_and_file_and_env0')
+
+    def test_defaults_and_file_and_env(tmp_path):
+        opts = dp.load_options(tmp_path, environ={})
+>       assert opts['td_policy'] == 'EVERY_N' and opts['td_every_n_cycles'] == 5
+E       AssertionError: assert ('EVERY_N' == 'EVERY_N'
+E
+E           EVERY_N and 2 == 5)
+
+diagfast_tests/test_demand_policy.py:16: AssertionError
+_________________________________ test_td_due __________________________________
+
+    def test_td_due():
+        p = dp.DemandPolicy(dp.validate({}))
+>       assert p.td_due(3, True) == (True, 'FIRST_CYCLE_OF_RUN')   # td_first_cycle (default true)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert (False, 'NOT_DUE') == (True, 'FIRST_CYCLE_OF_RUN')
+E
+E         At index 0 diff: False != True
+E         Use -v to get more diff
+
+diagfast_tests/test_demand_policy.py:37: AssertionError
+________________________ test_sparse_td_and_early_stop _________________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fbf35cbf360>
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-37/test_sparse_td_and_early_stop0')
+
+    def test_sparse_td_and_early_stop(monkeypatch, tmp_path):
+        result, td_calls, tg_calls, state = run_loop(monkeypatch, tmp_path, {})
+>       assert td_calls == [1, 5, 7, 8]                 # first cycle of the run + every 5th + TG plateau
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert [2, 4, 6, 8, 10] == [1, 5, 7, 8]
+E
+E         At index 0 diff: 2 != 1
+E         Left contains one more item: 10
+E         Use -v to get more diff
+
+diagfast_tests/test_demand_policy.py:94: AssertionError
+=========================== short test summary info ============================
+FAILED diagfast_tests/test_demand_policy.py::test_defaults_and_file_and_env
+FAILED diagfast_tests/test_demand_policy.py::test_td_due - AssertionError: as...
+FAILED diagfast_tests/test_demand_policy.py::test_sparse_td_and_early_stop - ...
+3 failed, 186 passed in 21.08s

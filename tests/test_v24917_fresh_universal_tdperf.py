@@ -30,9 +30,9 @@ def source(tmp_path, relative="BASE/original.ver"):
 
 def valid_options():
     return {"td_joint_enabled": True, "td_inner_mode": "DYNAMIC",
-            "td_first_cycle": True, "school_td_enabled": True,
+            "td_first_cycle": False, "td_when_generation_plateau": False, "school_td_enabled": True,
             "long_composite_td_enabled": True,
-            "td_policy": "ALWAYS", "td_every_n_cycles": 1,
+            "td_policy": "EVERY_N", "td_every_n_cycles": 2,
             "td_during_catchup": True, "tg_catchup_enabled": False,
             "mg_enabled": True, "mg_min_ratio": 0.5,
             "mg_max_ratio": 3.0}
@@ -60,7 +60,7 @@ def test_fresh_and_effective_runtime_reject_catchup_reenable():
 
 
 @pytest.mark.parametrize("key,value", [("refine_max_log_up",0.2),
-    ("refine_max_log_down",-0.2),("refine_uses_stage_caps",False)])
+    ("refine_max_log_down",-0.2),("refine_uses_stage_caps",True)])
 def test_fresh_rejects_nonfine_generation_policy(key,value):
     cfg = valid_cfg()
     cfg["v24917_targeted_generation"][key] = value
@@ -71,8 +71,8 @@ def test_fresh_rejects_nonfine_generation_policy(key,value):
 def runtime_status():
     return {"v24917": {
         "demand_policy": {"installed": True, "note": {
-            "options": {"td_policy": "ALWAYS", "td_every_n_cycles": 1,
-                        "td_during_catchup": True, "tg_catchup_enabled": False, "td_first_cycle": True,
+            "options": {"td_policy": "EVERY_N", "td_every_n_cycles": 2,
+                        "td_during_catchup": True, "tg_catchup_enabled": False, "td_first_cycle": False, "td_when_generation_plateau": False,
                         "mg_enabled": True, "mg_min_ratio": 0.5,
                         "mg_max_ratio": 3.0}}},
         "tdjoint1": {"installed": True, "release": "TDJOINT",
@@ -131,7 +131,7 @@ def test_start_is_not_resume(change):
 
 
 @pytest.mark.parametrize("name", [
-    "td_joint_enabled", "td_first_cycle", "school_td_enabled",
+    "td_joint_enabled", "school_td_enabled",
     "long_composite_td_enabled"])
 def test_requested_optimized_td_is_enabled(name):
     opts = valid_options(); opts[name] = False
@@ -155,42 +155,43 @@ def test_runtime_must_install_reviewed_restore_not_old_wrapper():
 
 
 @pytest.mark.parametrize("field,value", [
-    ("td_policy", "EVERY_N"), ("td_policy", "OFF"),
-    ("td_every_n_cycles", 3), ("td_during_catchup", False),
+    ("td_policy", "ALWAYS"), ("td_policy", "OFF"),
+    ("td_every_n_cycles", 3), ("td_when_generation_plateau", True),
+    ("td_first_cycle", True),
 ])
 def test_fresh_start_rejects_any_td_skip_setting(field, value):
     opts = valid_options()
     opts[field] = value
-    with pytest.raises(RuntimeError, match="TD_EVERY_CYCLE_POLICY_REQUIRED"):
+    with pytest.raises(RuntimeError, match="TD_EVERY_TWO_CYCLES_POLICY_REQUIRED"):
         fresh.validate_fresh_config(valid_cfg(), opts)
 
 
 @pytest.mark.parametrize("field,value", [
-    ("td_policy", "EVERY_N"), ("td_policy", "OFF"),
-    ("td_every_n_cycles", 3), ("td_during_catchup", False),
-    ("td_first_cycle", False),
+    ("td_policy", "ALWAYS"), ("td_policy", "OFF"),
+    ("td_every_n_cycles", 3), ("td_when_generation_plateau", True),
+    ("td_first_cycle", True),
 ])
 def test_runtime_rejects_effective_td_skip_overrides(field, value):
     status = runtime_status()
     status["v24917"]["demand_policy"]["note"]["options"][field] = value
-    with pytest.raises(RuntimeError, match="EFFECTIVE_TD_EVERY_CYCLE_POLICY_MISMATCH"):
+    with pytest.raises(RuntimeError, match="EFFECTIVE_TD_EVERY_TWO_CYCLES_POLICY_MISMATCH"):
         fresh.verify_runtime_status(status)
 
 
-def test_options_file_explicitly_schedules_native_td_every_cycle():
+def test_options_file_schedules_calibration_td_every_two_cycles():
     from r1_15a2_demand_policy_v1 import load_options
     options = load_options(root=Path(__file__).resolve().parents[1], environ={})
-    assert options["td_policy"] == "ALWAYS"
-    assert options["td_every_n_cycles"] == 1
+    assert options["td_policy"] == "EVERY_N"
+    assert options["td_every_n_cycles"] == 2
     assert options["td_during_catchup"] is True
-    assert options["td_first_cycle"] is True
+    assert options["td_first_cycle"] is False
     assert options["td_inner_mode"] == "DYNAMIC"
     assert options["td_count_weight"] == 0.6
     assert options["td_inner_max_evaluations"] == 180
     assert options["mg_max_ratio"] == 3.0
 
 
-def test_actual_demand_policy_runs_td_for_every_one_of_100_cycles_even_in_catchup(monkeypatch):
+def test_actual_demand_policy_runs_td_on_even_cycles_only_even_on_plateau(monkeypatch, tmp_path):
     import r1_15a2_demand_policy_v1 as dp
     options = dp.load_options(root=Path(__file__).resolve().parents[1], environ={})
     policy = dp.DemandPolicy(options)
@@ -204,7 +205,7 @@ def test_actual_demand_policy_runs_td_for_every_one_of_100_cycles_even_in_catchu
             "td_realization_complete": True,
         }
 
-    wrapped = dp.wrap_td(genuine_td, policy, NS())
+    wrapped = dp.wrap_td(genuine_td, policy, NS(diagnostic_hash=lambda d:"D", atomic_json=lambda *a:None))
     adapter = NS(v24917_status={})
     state, diag = {"state_hash": "accepted"}, {"d12": {"rows": []}}
     for outer in range(1, 101):
@@ -212,14 +213,18 @@ def test_actual_demand_policy_runs_td_for_every_one_of_100_cycles_even_in_catchu
         policy.note_generation(outer % 2 == 0,
                                {"search_complete": True, "stationarity_confirmed": True})
         changed, returned_state, returned_diag, rec = wrapped(
-            adapter, {}, Path("unused"), NS(), state, diag, Path("unused"),
+            adapter, {}, tmp_path, NS(), state, diag, tmp_path,
             outer_cycle=outer)
         assert changed is False
         assert returned_state is state and returned_diag is diag
-        assert rec["td_run_policy_reason"] == "ALWAYS"
-    assert actual_calls == list(range(1, 101))
+        if outer % 2 == 0:
+            assert rec["td_run_policy_reason"] == "EVERY_2"
+        else:
+            assert rec["skip_policy_reason"] == "NOT_DUE"
+            assert rec["inner"]["search_complete"] is False
+    assert actual_calls == list(range(2, 101, 2))
     assert policy.td_calls == 100
-    assert all(rec["td_ran"] for rec in policy.records)
+    assert sum(rec["td_ran"] for rec in policy.records) == 50
 
 
 def test_environment_overrides_cannot_silently_make_this_fresh_run_sparse():
@@ -231,7 +236,7 @@ def test_environment_overrides_cannot_silently_make_this_fresh_run_sparse():
     })
     status = runtime_status()
     status["v24917"]["demand_policy"]["note"]["options"] = effective
-    with pytest.raises(RuntimeError, match="EFFECTIVE_TD_EVERY_CYCLE_POLICY_MISMATCH"):
+    with pytest.raises(RuntimeError, match="EFFECTIVE_TD_EVERY_TWO_CYCLES_POLICY_MISMATCH"):
         fresh.verify_runtime_status(status)
 
 
@@ -383,8 +388,8 @@ def test_relocate_parent_lock_workspace_without_touching_source(tmp_path):
     assert v16._isolated_project_layout(original)["project_base"] == sandbox
     installed = v16._install_runtime(object(), {}, {}, workspace)
     assert installed["fresh_universal"]["fresh_contract"]["accepted_count_start"] == 0
-    assert installed["fresh_universal"]["fresh_contract"]["td_skipping_allowed"] is False
-    assert installed["fresh_universal"]["fresh_contract"]["td_policy"] == "ALWAYS"
+    assert installed["fresh_universal"]["fresh_contract"]["td_skipping_allowed"] is True
+    assert installed["fresh_universal"]["fresh_contract"]["td_policy"] == "EVERY_N"
     assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_prod_bounds"] == [0.5, 3.0]
     assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_att_bounds"] == [0.5, 5.0]
     assert installed["fresh_universal"]["path_epoch"]["native_export_only"]

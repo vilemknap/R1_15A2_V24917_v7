@@ -13,7 +13,8 @@ import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
 # ------------------------------------------------------------------ options
 def test_defaults_and_file_and_env(tmp_path):
     opts = dp.load_options(tmp_path, environ={})
-    assert opts['td_policy'] == 'EVERY_N' and opts['td_every_n_cycles'] == 5
+    assert opts['td_policy'] == 'EVERY_N' and opts['td_every_n_cycles'] == 2
+    assert not opts['td_first_cycle'] and not opts['td_when_generation_plateau']
     assert opts['stop_when_stationary_cycles'] == 2 and opts['generation_envelope_scale'] == 1.0
     (tmp_path / dp.OPTIONS_FILE).write_text(json.dumps(
         {'td_policy': 'off', 'generation_envelope_scale': 3.2}), encoding='utf-8')
@@ -34,9 +35,13 @@ def test_invalid_options(raw):
 
 def test_td_due():
     p = dp.DemandPolicy(dp.validate({}))
-    assert p.td_due(3, True) == (True, 'FIRST_CYCLE_OF_RUN')   # td_first_cycle (default true)
-    p = dp.DemandPolicy(dp.validate({'td_first_cycle': False}))
     assert p.td_due(3, True) == (False, 'NOT_DUE')
+    assert p.td_due(4, True) == (True, 'EVERY_2')
+    assert p.td_due(3, False) == (False, 'NOT_DUE')
+    p = dp.DemandPolicy(dp.validate({'td_first_cycle': True,'td_every_n_cycles':5,
+                                     'td_when_generation_plateau':True}))
+    assert p.td_due(3, True) == (True, 'FIRST_CYCLE_OF_RUN')  # explicit legacy opt-in
+    p.td_calls = 1
     assert p.td_due(5, True) == (True, 'EVERY_5')
     assert p.td_due(3, False) == (True, 'GENERATION_PLATEAU')
     assert p.td_due(3, None)[0] is True
@@ -91,16 +96,17 @@ def run_loop(monkeypatch, tmp_path, options, tg_changes_until=6, max_outer=12):
 
 def test_sparse_td_and_early_stop(monkeypatch, tmp_path):
     result, td_calls, tg_calls, state = run_loop(monkeypatch, tmp_path, {})
-    assert td_calls == [1, 5, 7, 8]                 # first cycle of the run + every 5th + TG plateau
-    assert tg_calls == [1, 2, 3, 4, 5, 6, 7, 8]     # cycle 9 stopped before TG
+    assert td_calls == [2, 4, 6, 8, 10]
+    assert tg_calls == list(range(1,11))             # cycle 11 stopped before TG
     assert result['status'].startswith('STOPPED_AT_LAST_VERIFIED_STATE:R1_DEMAND_STATIONARY_EARLY_STOP')
     assert result['final_state_verified'] is True
     statuses = {c['cycle']: c['status'] for c in result['demand_cycles']}
-    assert statuses[1] == 'COMPLETED' and statuses[2] == 'PROGRESS_CONTINUE_DEMAND'
-    assert statuses[5] == 'COMPLETED'
-    assert statuses[9] == 'INTERRUPTED'
+    assert statuses[1] == 'PROGRESS_CONTINUE_DEMAND' and statuses[2] == 'COMPLETED'
+    assert statuses[5] == 'PROGRESS_CONTINUE_DEMAND'
+    assert statuses[9] == 'PROGRESS_CONTINUE_DEMAND' and statuses[10] == 'COMPLETED'
+    assert statuses[11] == 'INTERRUPTED'
     assert result['accepted_count'] == 6
-    skipped = json.loads((tmp_path / 'DEMAND_CYCLE_02_TD_FINECDF' / 'TD_FINECDF_BLOCK_RESULT.json').read_text())
+    skipped = json.loads((tmp_path / 'DEMAND_CYCLE_01_TD_FINECDF' / 'TD_FINECDF_BLOCK_RESULT.json').read_text())
     assert skipped['status'] == dp.SKIP_REASON and skipped['skip_policy_reason'] == 'NOT_DUE'
     assert [r['streak'] for r in state['policy'].records][-2:] == [1, 2]
 

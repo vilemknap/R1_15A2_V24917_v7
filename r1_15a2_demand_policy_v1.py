@@ -7,7 +7,7 @@ are patched in memory only (same pattern as the TG gate hotfix).
 
 1. TD (FineCDF b/c re-calibration) no longer runs in every outer cycle.
    td_policy = ALWAYS   -> previous behaviour
-               EVERY_N  -> TD in cycles N, 2N, 3N ... (default N = 5) and,
+               EVERY_N  -> TD in cycles N, 2N, 3N ... (default N = 2) and,
                            if td_when_generation_plateau, in every cycle in
                            which TG accepted no change
                OFF      -> TD never runs
@@ -18,8 +18,9 @@ are patched in memory only (same pattern as the TG gate hotfix).
 2. Early stop. FRESH100 forces all 100 outer cycles even after the demand
    search is stationary. With stop_when_stationary_cycles = K > 0 the run ends
    (cooperative stop, last accepted state, normal final verification) after K
-   consecutive cycles in which TG accepted nothing AND TD actually ran,
-   completed its search and accepted nothing.
+   complete scheduled TD searches in which TG accepted nothing AND TD actually
+   ran, completed its search and accepted nothing. A scheduled gap adds no
+   proof; it retains a streak only if TG stayed complete and unchanged.
 
 3. generation_envelope_scale = s (written by R1_DEMAND_UPLIFT_TO_TARGET.py).
    The demand uplift multiplies ADD_PROD/ADD_ATT by s. The domestic hard
@@ -27,8 +28,8 @@ are patched in memory only (same pattern as the TG gate hotfix).
    absolute, so they are multiplied by the same s. ZAHR envelopes are already
    relative to the run-start values; salary is not scaled.
 
-3b. td_first_cycle = true (default): TD always runs in the first demand cycle of a
-   run (new start or restart), also during CATCH_UP.
+3b. td_first_cycle = false (default): no additional first-cycle TD fit.
+   Explicit true remains available outside the strict periodic fresh launcher.
 4. td_during_catchup = false (default): the periodic EVERY_N TD is skipped
    while the V24917 Generation phase is CATCH_UP (model/observed < 0.80);
    TD still runs on a TG plateau.  TD only redistributes trip lengths, and in
@@ -38,7 +39,7 @@ are patched in memory only (same pattern as the TG gate hotfix).
    60 % counts / 40 % survey), td_inner_mode FROZEN_PATHS|DYNAMIC,
    tg_max_trials, td_realization_max_trials, td_inner_max_evaluations.
 5. tg_catchup_enabled = false: the V24917 Generation never enters CATCH_UP
-   (no +50 %/cycle volume growth); it always runs REFINE with stage caps.
+   (no +50 %/cycle volume growth); it always runs the configured REFINE steps.
    Use when the total demand volume is already right.
 
 Options: R1_RUN_OPTIONS.json next to this file, overridden by environment
@@ -54,17 +55,17 @@ import math
 import os
 from pathlib import Path
 
-RELEASE = 'R1_15A2_DEMAND_POLICY_V1_20261025'
+RELEASE = 'R1_15A2_DEMAND_POLICY_TD_EVERY2_20261101'
 HERE = Path(__file__).resolve().parent
 OPTIONS_FILE = 'R1_RUN_OPTIONS.json'
 DEFAULTS = {
     'td_policy': 'EVERY_N',
-    'td_every_n_cycles': 5,
-    'td_when_generation_plateau': True,
+    'td_every_n_cycles': 2,
+    'td_when_generation_plateau': False,
     'stop_when_stationary_cycles': 2,
     'generation_envelope_scale': 1.0,
     'td_during_catchup': False,
-    'td_first_cycle': True,
+    'td_first_cycle': False,
     'tg_catchup_enabled': False,
     'td_count_weight': 0.60,
     'td_inner_mode': 'FROZEN_PATHS',
@@ -624,7 +625,12 @@ class DemandPolicy:
         stationary = bool(ran and complete and not changed
                           and self.last_generation_changed is False
                           and getattr(self, 'last_generation_complete', False))
-        self.streak = self.streak + 1 if stationary else 0
+        # A scheduled gap is not another stationary search. It may retain an
+        # already proved streak only while TG itself remains complete/unchanged.
+        scheduled_gap = (not ran and (rec or {}).get('skip_policy_reason') == 'NOT_DUE'
+                         and self.last_generation_changed is False
+                         and getattr(self, 'last_generation_complete', False))
+        self.streak = self.streak + 1 if stationary else (self.streak if scheduled_gap else 0)
         self.records.append({'cycle': outer_cycle, 'td_ran': bool(ran),
                              'td_changed': bool(changed), 'td_search_complete': complete,
                              'generation_changed': self.last_generation_changed,

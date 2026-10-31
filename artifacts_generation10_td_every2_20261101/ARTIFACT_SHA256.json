@@ -1,0 +1,13 @@
+{
+  "HANDOFF_CZ.md": "9057a96ae7499856b3499dca801ea00be700e80c33abad180f9d0feb02a8d0db",
+  "IMPLEMENTATION.patch.gz.b64": "118edfe72acfee583ca7fd6eb748e9bed8c5f194f9623adde4133d97517ee474",
+  "VALIDATION.json": "a8651076b5f7f8cac45d2eefee5b068a39b5dd48985341a045985c43ce9cfcee",
+  "checks/CHECKS.json": "65bde97d574e246347bec0207b6d83ef3d6ba219aa3d51c9f4e9fb50b7441dc4",
+  "checks/audit_genfix2.log": "5bebb4985c5a05b6a566fabb707c134cdb1241681042c55b8ebe3a3c286a11b8",
+  "checks/diagfast.log": "229b440274ef6ae5ab7e8132499929cb8386c616e5d7553852a2c9492dd80f44",
+  "checks/main.log": "2749eebdd207e375278edbd706ab81bdee527faaa107615b40081f55470ce1d2",
+  "checks_initial/CHECKS.json": "0a5b96967151000e9ed42805b278ddc0f4b9d1aa9b324b67e1b7c87836447a83",
+  "checks_initial/audit_genfix2.log": "5bebb4985c5a05b6a566fabb707c134cdb1241681042c55b8ebe3a3c286a11b8",
+  "checks_initial/diagfast.log": "5f504949c2fcae57e1dd38af00296f5d7fb8387b4819ae602effb3ddc8f75c9f",
+  "checks_initial/main.log": "9c771b3590e00240f24cff4ac21a7c7e3a7959f87537b80788e8c1f9d3cd57e5"
+}
