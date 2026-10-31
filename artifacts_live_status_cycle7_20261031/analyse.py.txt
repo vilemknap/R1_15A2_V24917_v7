@@ -1,0 +1,50 @@
+"""Read-only audit; no runtime or Visum imports."""
+import base64,gzip,hashlib,json,math
+from pathlib import Path
+ROOT=Path(__file__).resolve().parent
+
+def main():
+    d={}
+    for e in json.loads((ROOT/'INPUTS.json').read_text()):
+        raw=gzip.decompress(base64.b64decode((ROOT/'inputs'/e['backup']).read_bytes()))
+        assert len(raw)==e['size_bytes'] and hashlib.sha256(raw).hexdigest()==e['sha256']
+        d[e['label']]=json.loads(raw.decode('utf-8-sig'))
+    checks=[]
+    def check(k,v):
+        assert v,k
+        checks.append(k)
+    c,g,t=d['cycle'],d['generation'],d['td']
+    ga=g['attempts'][0];a=t['realization']['attempts'][0]['decision'];b=a['v24917_td_blend'];j=t['inner']['tdjoint']
+    prev=json.loads((ROOT.parent/'artifacts_live_status_cycle6_20261031/SUMMARY.json').read_text())
+    check('cycle7',c['cycle']==7)
+    check('previous_state_matches',c['state_hash_start']==prev['state_hash'])
+    check('embedded_generation_matches',c['generation']==g)
+    check('embedded_td_matches',c['td']==t)
+    check('target_plan_matches',t['td_target_plan']==d['target'])
+    check('both_accepted',g['status']=='ACCEPTED' and t['status']=='ACCEPTED_FINECDF_TD')
+    check('outer_realization_complete',t['td_realization_complete'] and t['td_outer_evidence_complete'])
+    check('outer_state_matches_cycle_end',c['state_hash_end']==t['state_hash'])
+    check('full_step',t['realization']['selected_scale']==1 and len(t['realization']['attempts'])==1)
+    check('blend_arithmetic',math.isclose(b['F'],.6*b['count_ratio']+.4*b['idp_ratio'],abs_tol=1e-12))
+    check('both_objectives_improve',b['count_ratio']<1 and b['idp_ratio']<1 and b['F']<=.999)
+    check('guards_pass',a['protected_guard']['passes'] and a['severity_transition_guard']['passes'])
+    check('school_accepted',any(r['component']=='SCHOOL' for r in t['changed_rows']))
+    check('long_unchanged',all(j['entry_abc'][str(n)]==j['final_abc'][str(n)] for n in range(9111,9116)) and not ga['decision']['longguard1']['changed_long'])
+    check('old_budget',g['planned_trials']==3 and j['td_evaluations']==60 and j['stop_reason']=='TD_EVALUATION_BUDGET')
+    check('plan_prediction_matches_attempt',math.isclose(d['plan']['objective_before']*(1-d['plan']['predicted_rel_improvement']),ga['predicted_objective']))
+    check('actual_generation_better_than_forecast',ga['measured_objective']<ga['predicted_objective'])
+    result={'cycle':7,'generation_before':ga['decision']['cal_before'],'generation_after':ga['decision']['cal_after'],
+       'outer_blend':b,'final_profiles':a['cal_after'],'changed_rows':t['changed_rows'],
+       'generation_forecast':ga['predicted_objective'],'generation_measured':ga['measured_objective'],
+       'rho_plan':ga['rho'],'rho_measured_clipped':ga['rho_measured'],
+       'ratio_of_geh_gains':(d['plan']['objective_before']-ga['measured_objective'])/(d['plan']['objective_before']-ga['predicted_objective']),
+       'geh_gain_from_run_start_percent':100*(1-b['cal_geh_after']/30.570246334395467),
+       'geh_gain_from_cycle6_percent':100*(1-b['cal_geh_after']/prev['final_profiles']['objective_geh_mean_weighted']),
+       'td_seconds':d['timing_td']['block']['td_stage']['seconds'],
+       'generation_design_seconds':d['timing_gen']['block']['generation_design']['seconds'],
+       'new_best_checkpoint_supplied':False,'live_visum_connected':False,'production_changed':False}
+    (ROOT/'SUMMARY.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    (ROOT/'CHECKS.json').write_text(json.dumps({'passed':True,'checks':checks,'count':len(checks),'upload_sha256_verified':7,'runtime_tests_run':False},indent=2)+'\n')
+    print(json.dumps({k:result[k] for k in ['geh_gain_from_run_start_percent','geh_gain_from_cycle6_percent','ratio_of_geh_gains','td_seconds','generation_design_seconds']}))
+
+if __name__=='__main__':main()

@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "checks": [
+    "cycle7",
+    "previous_state_matches",
+    "embedded_generation_matches",
+    "embedded_td_matches",
+    "target_plan_matches",
+    "both_accepted",
+    "outer_realization_complete",
+    "outer_state_matches_cycle_end",
+    "full_step",
+    "blend_arithmetic",
+    "both_objectives_improve",
+    "guards_pass",
+    "school_accepted",
+    "long_unchanged",
+    "old_budget",
+    "plan_prediction_matches_attempt",
+    "actual_generation_better_than_forecast"
+  ],
+  "count": 17,
+  "upload_sha256_verified": 7,
+  "runtime_tests_run": false
+}
