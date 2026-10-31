@@ -1,0 +1,130 @@
+[
+  {
+    "label": "step2",
+    "file_id": "file_00000000181c81f4b54a0f09d12a4a55",
+    "result": {
+      "path": "/workspace/attachments/c349f57d-f323-4724-a95f-7aa6418cf356/STEP1_PLAN_02.json",
+      "size_bytes": 4673
+    }
+  },
+  {
+    "label": "step1",
+    "file_id": "file_00000000b52881f48ab1adc6f3d38d2b",
+    "result": {
+      "path": "/workspace/attachments/6234e745-07bd-40a5-a27e-a2d421734ec3/STEP1_PLAN_01.json",
+      "size_bytes": 3463
+    }
+  },
+  {
+    "label": "step3",
+    "file_id": "file_00000000413881f4b86061e15b135266",
+    "result": {
+      "path": "/workspace/attachments/69aeced6-5d67-48bd-8eee-ad7e7676222b/STEP1_PLAN_03.json",
+      "size_bytes": 4269
+    }
+  },
+  {
+    "label": "timing_gen",
+    "file_id": "file_0000000027f081f4aa92cb9659903fb3",
+    "result": {
+      "path": "/workspace/attachments/3f406607-9572-4e68-a9fe-fdba1f1a87a0/V24917_TIMING.json",
+      "size_bytes": 2590
+    }
+  },
+  {
+    "label": "rollback",
+    "file_id": "file_0000000011dc81f497dc1856e117748d",
+    "result": {
+      "path": "/workspace/attachments/ad24cdba-1d77-4f71-a016-8fc484f0d2bf/ROLLBACK_SUMMARY.json",
+      "size_bytes": 1757
+    }
+  },
+  {
+    "label": "generation",
+    "file_id": "file_00000000139081f4bebbbc044cb6662c",
+    "result": {
+      "path": "/workspace/attachments/792af02a-68bf-4d0c-a3a0-c5f13a5e00c5/GENERATION_BLOCK_RESULT.json",
+      "size_bytes": 3183939
+    }
+  },
+  {
+    "label": "signed",
+    "file_id": "file_00000000c03c821082ceef61fc417ccc",
+    "result": {
+      "path": "/workspace/attachments/0425d31e-253a-4e4a-8734-ffe46692adfa/GENERATION_SIGNED_REFINEMENT_AUDIT.json",
+      "size_bytes": 1894
+    }
+  },
+  {
+    "label": "preview",
+    "file_id": "file_0000000014b8820a8f3d19667a0086ce",
+    "result": {
+      "path": "/workspace/attachments/2a557171-2624-4ae0-9055-b8c743a2e4bf/GENERATION_PREVIEW_0_115395.json",
+      "size_bytes": 3682753
+    }
+  },
+  {
+    "label": "prediction",
+    "file_id": "file_0000000053fc81f49523f7d6c9c829f8",
+    "result": {
+      "path": "/workspace/attachments/ffbe08d2-6622-44b8-ba36-c9d1fb68450a/GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json",
+      "size_bytes": 11904
+    }
+  },
+  {
+    "label": "design",
+    "file_id": "file_000000007c1881f4bb67a27637a589da",
+    "result": {
+      "path": "/workspace/attachments/d4a93768-ea10-4bd6-8d89-1acbe317dc02/GENERATION_DESIGN.json",
+      "size_bytes": 3597465
+    }
+  },
+  {
+    "label": "ls_rows",
+    "file_id": "file_000000005f7c8243936e83fa9035d4eb",
+    "result": {
+      "path": "/workspace/attachments/295c0d29-cf84-4f50-8a6b-656a0e053e4d/V24917_LONG_SCHOOL_ROWS.json",
+      "size_bytes": 74517
+    }
+  },
+  {
+    "label": "acceptance_copy",
+    "file_id": "file_00000000488081f4b1e9d2d416e99e61",
+    "result": {
+      "path": "/workspace/attachments/8693d739-6853-4a48-b551-921c3db9c9fa/ACCEPTANCE - kopie.json",
+      "size_bytes": 883129
+    }
+  },
+  {
+    "label": "acceptance",
+    "file_id": "file_000000002bcc81f4917e2f89ef5a163b",
+    "result": {
+      "path": "/workspace/attachments/9c9713c1-9192-46da-ab37-eafc97182b85/ACCEPTANCE.json",
+      "size_bytes": 883129
+    }
+  },
+  {
+    "label": "td_plan",
+    "file_id": "file_000000000edc81f48d48f5c9c7cf75d7",
+    "result": {
+      "path": "/workspace/attachments/eed66ee8-5fe7-41fe-abb8-fca1b89d2fee/TD_TARGET_PLAN.json",
+      "size_bytes": 6551
+    }
+  },
+  {
+    "label": "timing_td",
+    "file_id": "file_0000000020ec81f49260e9eec7683d40",
+    "result": {
+      "path": "/workspace/attachments/3bcc21d1-e903-488e-805e-4c091bf1e393/V24917_TIMING.json",
+      "size_bytes": 2385
+    }
+  },
+  {
+    "label": "td",
+    "file_id": "file_00000000fc4c81f499a57a9b04b0b19c",
+    "result": {
+      "path": "/workspace/attachments/c7f7d956-147d-408a-a219-348b1c794f32/TD_FINECDF_BLOCK_RESULT.json",
+      "size_bytes": 486036
+    }
+  }
+]

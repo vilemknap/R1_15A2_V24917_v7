@@ -1,0 +1,524 @@
+{
+  "status": "PASS",
+  "check_count": 66,
+  "checks": [
+    {
+      "check": "16 supplied files",
+      "passes": true
+    },
+    {
+      "check": "size: step2",
+      "passes": true
+    },
+    {
+      "check": "size: step1",
+      "passes": true
+    },
+    {
+      "check": "size: step3",
+      "passes": true
+    },
+    {
+      "check": "size: timing_gen",
+      "passes": true
+    },
+    {
+      "check": "size: rollback",
+      "passes": true
+    },
+    {
+      "check": "size: generation",
+      "passes": true
+    },
+    {
+      "check": "size: signed",
+      "passes": true
+    },
+    {
+      "check": "size: preview",
+      "passes": true
+    },
+    {
+      "check": "size: prediction",
+      "passes": true
+    },
+    {
+      "check": "size: design",
+      "passes": true
+    },
+    {
+      "check": "size: ls_rows",
+      "passes": true
+    },
+    {
+      "check": "size: acceptance_copy",
+      "passes": true
+    },
+    {
+      "check": "size: acceptance",
+      "passes": true
+    },
+    {
+      "check": "size: td_plan",
+      "passes": true
+    },
+    {
+      "check": "size: timing_td",
+      "passes": true
+    },
+    {
+      "check": "size: td",
+      "passes": true
+    },
+    {
+      "check": "acceptance copy is byte-identical",
+      "passes": true
+    },
+    {
+      "check": "TD belongs to cycle 1",
+      "passes": true
+    },
+    {
+      "check": "Generation belongs to cycle 2",
+      "passes": true
+    },
+    {
+      "check": "TD accepted",
+      "passes": true
+    },
+    {
+      "check": "TD realized",
+      "passes": true
+    },
+    {
+      "check": "TD planned active scope agrees",
+      "passes": true
+    },
+    {
+      "check": "LONG and SCHOOL active in TD",
+      "passes": true
+    },
+    {
+      "check": "native dynamic LONG readiness",
+      "passes": true
+    },
+    {
+      "check": "60/40 weights",
+      "passes": true
+    },
+    {
+      "check": "28 evaluations at EXPLORE budget",
+      "passes": true
+    },
+    {
+      "check": "inner stopped at evaluation budget",
+      "passes": true
+    },
+    {
+      "check": "LS deferred separately from TD budget",
+      "passes": true
+    },
+    {
+      "check": "only SERVICE adopted",
+      "passes": true
+    },
+    {
+      "check": "combined then isolated realization",
+      "passes": true
+    },
+    {
+      "check": "three combined scales rejected",
+      "passes": true
+    },
+    {
+      "check": "SERVICE isolation accepted",
+      "passes": true
+    },
+    {
+      "check": "target proposal distinct from accepted rows",
+      "passes": true
+    },
+    {
+      "check": "LONG and SCHOOL unchanged in inner best",
+      "passes": true
+    },
+    {
+      "check": "TD blend passes original thresholds",
+      "passes": true
+    },
+    {
+      "check": "TD GEH matches following Generation parent",
+      "passes": true
+    },
+    {
+      "check": "Generation exhausted configured search",
+      "passes": true
+    },
+    {
+      "check": "three Generation trials rejected",
+      "passes": true
+    },
+    {
+      "check": "all rejected despite aggregate GEH gain",
+      "passes": true
+    },
+    {
+      "check": "all preserve hard rejection causes",
+      "passes": true
+    },
+    {
+      "check": "step scale matches trial 1",
+      "passes": true
+    },
+    {
+      "check": "step scale matches trial 2",
+      "passes": true
+    },
+    {
+      "check": "step scale matches trial 3",
+      "passes": true
+    },
+    {
+      "check": "standalone acceptance is final rejected trial",
+      "passes": true
+    },
+    {
+      "check": "preview is final trial",
+      "passes": true
+    },
+    {
+      "check": "Generation global stationarity not certified",
+      "passes": true
+    },
+    {
+      "check": "local stationarity scope is explicit",
+      "passes": true
+    },
+    {
+      "check": "protected 920023 crosses hard threshold",
+      "passes": true
+    },
+    {
+      "check": "LONG guard passes but LONG unchanged",
+      "passes": true
+    },
+    {
+      "check": "parent LONG evidence verified",
+      "passes": true
+    },
+    {
+      "check": "no LONG or SCHOOL coefficient rows: design",
+      "passes": true
+    },
+    {
+      "check": "no LONG or SCHOOL coefficient rows: preview",
+      "passes": true
+    },
+    {
+      "check": "no LONG or SCHOOL coefficient rows: ls_rows",
+      "passes": true
+    },
+    {
+      "check": "preview includes 240 boundary extra rows",
+      "passes": true
+    },
+    {
+      "check": "rollback passed",
+      "passes": true
+    },
+    {
+      "check": "rollback restores TD accepted diagnostic hash",
+      "passes": true
+    },
+    {
+      "check": "rollback restores same GEH",
+      "passes": true
+    },
+    {
+      "check": "248 rollback profiles have zero drift",
+      "passes": true
+    },
+    {
+      "check": "rollback exact matrix fingerprint proof",
+      "passes": true
+    },
+    {
+      "check": "no LoadVersion or SaveVersion in rollback",
+      "passes": true
+    },
+    {
+      "check": "no direct OD writes reported in rollback",
+      "passes": true
+    },
+    {
+      "check": "timing labels agree",
+      "passes": true
+    },
+    {
+      "check": "one TD stage preceded Generation snapshot",
+      "passes": true
+    },
+    {
+      "check": "one new Generation design after TD snapshot",
+      "passes": true
+    },
+    {
+      "check": "new Generation timing delta agrees",
+      "passes": true
+    }
+  ],
+  "sources": [
+    {
+      "label": "step2",
+      "name": "STEP1_PLAN_02.json",
+      "upload_id": "file_00000000181c81f4b54a0f09d12a4a55",
+      "bytes": 4673,
+      "sha256": "156e4728102906bcbf95c89427d1fffd366ffa857ce354224ce53ca2753b5419"
+    },
+    {
+      "label": "step1",
+      "name": "STEP1_PLAN_01.json",
+      "upload_id": "file_00000000b52881f48ab1adc6f3d38d2b",
+      "bytes": 3463,
+      "sha256": "0d6d9d809cf9e6514cf737ec4723393288f0ac3e6ff4602db6981aadd26f81d0"
+    },
+    {
+      "label": "step3",
+      "name": "STEP1_PLAN_03.json",
+      "upload_id": "file_00000000413881f4b86061e15b135266",
+      "bytes": 4269,
+      "sha256": "1afe1b8fbcc2e424d2519806a6ce91636baa76494b6193bcedf86f44b5b1b01f"
+    },
+    {
+      "label": "timing_gen",
+      "name": "V24917_TIMING.json",
+      "upload_id": "file_0000000027f081f4aa92cb9659903fb3",
+      "bytes": 2590,
+      "sha256": "09fb04a2dc72423e68da72c52b39d0d484e162d66544717e2140b065969c01c0"
+    },
+    {
+      "label": "rollback",
+      "name": "ROLLBACK_SUMMARY.json",
+      "upload_id": "file_0000000011dc81f497dc1856e117748d",
+      "bytes": 1757,
+      "sha256": "9d582d82a35413a30cddd7b1e38ee36ff2ef8ef2fdaaf53775fcde21f10afaff"
+    },
+    {
+      "label": "generation",
+      "name": "GENERATION_BLOCK_RESULT.json",
+      "upload_id": "file_00000000139081f4bebbbc044cb6662c",
+      "bytes": 3183939,
+      "sha256": "56c1b0a7b6f04fe04ca0adeb9c423c6f41c7af89482ed808c38380cb9e208935"
+    },
+    {
+      "label": "signed",
+      "name": "GENERATION_SIGNED_REFINEMENT_AUDIT.json",
+      "upload_id": "file_00000000c03c821082ceef61fc417ccc",
+      "bytes": 1894,
+      "sha256": "b4179c87628ce1e41154c6745d3691e8952ba2c44b9403c316d40f9531faf24f"
+    },
+    {
+      "label": "preview",
+      "name": "GENERATION_PREVIEW_0_115395.json",
+      "upload_id": "file_0000000014b8820a8f3d19667a0086ce",
+      "bytes": 3682753,
+      "sha256": "44510389c2bcec95de0293766cb768663e8ad70142851a559035725ef92cbd89"
+    },
+    {
+      "label": "prediction",
+      "name": "GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json",
+      "upload_id": "file_0000000053fc81f49523f7d6c9c829f8",
+      "bytes": 11904,
+      "sha256": "c0de59aa07eb2c94bf11e626e32bca2f0d660edd9c7d85462750b6d9f0b534a5"
+    },
+    {
+      "label": "design",
+      "name": "GENERATION_DESIGN.json",
+      "upload_id": "file_000000007c1881f4bb67a27637a589da",
+      "bytes": 3597465,
+      "sha256": "f1b4514d8d8be4328dc12c99444b0bc763db7cfacfe871da46a9e7d73d9f6127"
+    },
+    {
+      "label": "ls_rows",
+      "name": "V24917_LONG_SCHOOL_ROWS.json",
+      "upload_id": "file_000000005f7c8243936e83fa9035d4eb",
+      "bytes": 74517,
+      "sha256": "761ac1d6ef4e4c1bdbe8922a47d75285960c0728e1b6d5dfc237e2022a1c795c"
+    },
+    {
+      "label": "acceptance_copy",
+      "name": "ACCEPTANCE - kopie.json",
+      "upload_id": "file_00000000488081f4b1e9d2d416e99e61",
+      "bytes": 883129,
+      "sha256": "81d612523e3630c1e9d56b50b02ad6db863d12681183c010d1c2dd6a48c1cc7c"
+    },
+    {
+      "label": "acceptance",
+      "name": "ACCEPTANCE.json",
+      "upload_id": "file_000000002bcc81f4917e2f89ef5a163b",
+      "bytes": 883129,
+      "sha256": "81d612523e3630c1e9d56b50b02ad6db863d12681183c010d1c2dd6a48c1cc7c"
+    },
+    {
+      "label": "td_plan",
+      "name": "TD_TARGET_PLAN.json",
+      "upload_id": "file_000000000edc81f48d48f5c9c7cf75d7",
+      "bytes": 6551,
+      "sha256": "b7f44503552bb0acab9e83cca75b64e25b5e0a58c790c24216b44bb96a4defc0"
+    },
+    {
+      "label": "timing_td",
+      "name": "V24917_TIMING.json",
+      "upload_id": "file_0000000020ec81f49260e9eec7683d40",
+      "bytes": 2385,
+      "sha256": "59dd57f85d32501c365b94fde25d5abcc1d501aea0ba9248f280bc5b1b9e0d85"
+    },
+    {
+      "label": "td",
+      "name": "TD_FINECDF_BLOCK_RESULT.json",
+      "upload_id": "file_00000000fc4c81f499a57a9b04b0b19c",
+      "bytes": 486036,
+      "sha256": "686f565336b0403b52f1b4cccbe7f914a8097c9585842154dc5fbc0cd7c8f593"
+    }
+  ],
+  "chronology": [
+    "TD cycle 1 accepted SERVICE-only isolation",
+    "Generation cycle 2 rejected all three trials",
+    "rollback restored accepted cycle-1 TD state"
+  ],
+  "td": {
+    "status": "ACCEPTED_FINECDF_TD",
+    "cycle": 1,
+    "changed_rows": [
+      {
+        "component": "SERV_noE_noC",
+        "candidate_b": 1.11398988923972,
+        "candidate_c": -1.75971450574142,
+        "realization_scale": 1.0,
+        "parent_b": 1.11398988923972,
+        "parent_c": -1.86529737608591,
+        "target_b": 1.11398988923972,
+        "target_c": -1.75971450574142,
+        "coordinate_system": "B_LINEAR_LOG_NEG_C"
+      }
+    ],
+    "blend": {
+      "schema": "R1_15A2_V24917_TD_COUNT_BLEND_V1",
+      "w_cnt": 0.6,
+      "w_idp": 0.4,
+      "F": 0.9968458296247732,
+      "cal_geh_before": 30.608496800572112,
+      "cal_geh_after": 30.570246334395467,
+      "count_ratio": 0.9987503317648735,
+      "idp_before": 0.5018454798365943,
+      "idp_after": 0.4988289250056296,
+      "idp_ratio": 0.9939890764146228,
+      "min_relative_improvement": 0.001,
+      "max_idp_ratio": 1.25,
+      "hard_reasons_kept": []
+    },
+    "selected_component_improvement_percent": 4.071576887000701,
+    "evaluations": 28,
+    "wall_seconds": 2923.096,
+    "inner_stop": "TD_EVALUATION_BUDGET",
+    "global_search_incomplete_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED",
+    "LONG_and_SCHOOL_active": true,
+    "LONG_or_SCHOOL_adopted_changes": false
+  },
+  "generation": {
+    "cycle": 2,
+    "status": "CONFIGURED_GENERATION_SEARCH_EXHAUSTED",
+    "parent_geh": 30.570246334395467,
+    "trials": [
+      {
+        "scale": 1.0,
+        "geh": 25.11192087017282,
+        "status": "REJECTED",
+        "reasons": [
+          "NEW_SEVERE_GEH_PROFILE",
+          "PROTECTED_PROFILE_GUARD_FAILED"
+        ]
+      },
+      {
+        "scale": 0.239474,
+        "geh": 28.966309729987163,
+        "status": "REJECTED",
+        "reasons": [
+          "NEW_SEVERE_GEH_PROFILE",
+          "PROTECTED_PROFILE_GUARD_FAILED"
+        ]
+      },
+      {
+        "scale": 0.115395,
+        "geh": 29.69636689307592,
+        "status": "REJECTED",
+        "reasons": [
+          "NEW_SEVERE_GEH_PROFILE",
+          "PROTECTED_PROFILE_GUARD_FAILED"
+        ]
+      }
+    ],
+    "protected_profile": {
+      "profile": "920023",
+      "before_geh": 1.522286391501216,
+      "after_geh": 37.393888093353084,
+      "classification": "PROTECTED_CATASTROPHIC"
+    },
+    "single_profile_violations": [
+      {
+        "profile": "920022",
+        "before_geh": 19.864191643570376,
+        "after_geh": 45.39473132380114,
+        "geh_increase": 25.530539680230763
+      },
+      {
+        "profile": "920023",
+        "before_geh": 1.522286391501216,
+        "after_geh": 37.393888093353084,
+        "geh_increase": 35.871601701851866
+      }
+    ],
+    "row_counts": {
+      "design": {
+        "total": 2753,
+        "families": {
+          "WORK": 1640,
+          "SERVICE": 1113
+        }
+      },
+      "preview": {
+        "total": 2993,
+        "families": {
+          "WORK": 1760,
+          "SERVICE": 1233
+        }
+      },
+      "ls_rows": {
+        "total": 240,
+        "families": {
+          "SERVICE": 120,
+          "WORK": 120
+        }
+      }
+    },
+    "LONG_coefficient_rows": 0,
+    "long_finecdf_verified": true,
+    "current_long_cache_deferral_reason_provided": false,
+    "convergence_confirmed": false,
+    "design_seconds": 179.189
+  },
+  "rollback": {
+    "passes": true,
+    "diagnostic_hash": "103d532f7cd16472333c0bc4d45860e7eceebdea6845e7ddcb5323424375c7f5",
+    "restored_geh": 30.570246334395467,
+    "profiles": 248,
+    "profile_drift": 0.0,
+    "seconds": 161.201
+  },
+  "scope": {
+    "live_model_modified": false,
+    "current_run_code_commit_verified": false,
+    "last_delivered_fix_commit": "67e6ab5540c15c56e0f5ed5f0f3152e8b397f4cf",
+    "uploaded_results_do_not_prove_live_installation_of_fix": true
+  }
+}

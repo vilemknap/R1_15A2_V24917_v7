@@ -1,0 +1,14 @@
+{
+  "DIAGFAST_V1_BASE_MANIFEST.json": {
+    "count": 1059,
+    "mismatches": []
+  },
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "count": 176,
+    "mismatches": []
+  },
+  "V24917_RUNTIME_MANIFEST.json": {
+    "count": 91,
+    "mismatches": []
+  }
+}

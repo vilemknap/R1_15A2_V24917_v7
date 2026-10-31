@@ -1,0 +1,154 @@
+"""Read-only audit: accepted cycle-1 TD followed by rejected cycle-2 Generation."""
+from pathlib import Path
+import collections
+import hashlib
+import json
+import math
+
+BASE = Path(__file__).resolve().parent
+uploads = json.loads((BASE / 'UPLOADS.json').read_text())
+paths = {item['label']: Path(item['result']['path']) for item in uploads}
+data = {label: json.loads(path.read_text(encoding='utf-8-sig')) for label, path in paths.items()}
+checks = []
+
+
+def check(label, condition):
+    checks.append({'check': label, 'passes': bool(condition)})
+    if not condition:
+        raise AssertionError(label)
+
+
+check('16 supplied files', len(paths) == len(uploads) == 16)
+sources = []
+for item in uploads:
+    path = paths[item['label']]
+    raw = path.read_bytes()
+    check('size: ' + item['label'], len(raw) == item['result']['size_bytes'])
+    sources.append({'label': item['label'], 'name': path.name, 'upload_id': item['file_id'],
+                    'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
+check('acceptance copy is byte-identical', paths['acceptance'].read_bytes() == paths['acceptance_copy'].read_bytes())
+
+gen, td, rb, acceptance = (data[key] for key in ('generation', 'td', 'rollback', 'acceptance'))
+inner, plan = td['inner'], data['td_plan']
+joint = inner['tdjoint']
+realization = td['realization']
+td_decision = realization['attempts'][-1]['decision']
+check('TD belongs to cycle 1', td_decision['early_exploration_policy']['outer_cycle'] == 1
+      and 'DEMAND_CYCLE_01_TD_FINECDF' in joint['inner_root'])
+check('Generation belongs to cycle 2', all(a['decision']['severity_transition_guard']['outer_cycle'] == 2
+      for a in gen['attempts']))
+check('TD accepted', td['status'] == 'ACCEPTED_FINECDF_TD' and td_decision['accepted'] is True)
+check('TD realized', td['td_realization_complete'] is True and realization['status'] == 'REALIZED')
+check('TD planned active scope agrees', set(plan['active_components']) == set(joint['component_pool']))
+check('LONG and SCHOOL active in TD', {'SCHOOL', 'LONG_COMPOSITE'} <= set(joint['component_pool']))
+check('native dynamic LONG readiness', joint['mode'] == 'DYNAMIC'
+      and joint['long_composite_live_readiness']['status'] == 'READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE')
+check('60/40 weights', joint['w_cnt'] == .6 and joint['w_idp'] == .4)
+check('28 evaluations at EXPLORE budget', joint['td_evaluations'] == inner['td_evaluations']
+      == td['progressive_budget']['max_td_evaluations'] == 28)
+check('inner stopped at evaluation budget', joint['stop_reason'] == 'TD_EVALUATION_BUDGET')
+check('LS deferred separately from TD budget', inner['stop_reason'] == 'LONG_SCHOOL_DESIGN_UNVERIFIED'
+      and td['incomplete_search_reasons'] == ['LONG_SCHOOL_DESIGN_UNVERIFIED'])
+check('only SERVICE adopted', len(td['changed_rows']) == 1
+      and td['changed_rows'][0]['component'] == 'SERV_noE_noC')
+groups = inner['realization']['tdjoint_attempt_groups']
+check('combined then isolated realization', [g['kind'] for g in groups] == ['COMBINED_WITH_BACKTRACK', 'ISOLATED'])
+combined = groups[0]['evidence']['attempts']
+check('three combined scales rejected', [a['scale'] for a in combined] == [1., .5, .25]
+      and all(a['decision']['accepted'] is False
+              and 'V24917_TD_BLEND_NOT_IMPROVED' in a['decision']['reasons'] for a in combined))
+check('SERVICE isolation accepted', groups[1]['component'] == 'SERV_noE_noC'
+      and groups[1]['evidence']['attempts'][-1]['decision']['accepted'] is True)
+check('target proposal distinct from accepted rows', {r['component'] for r in td['target_changed_rows']}
+      == {'WORK_noE_noC', 'SERV_noE_noC'})
+check('LONG and SCHOOL unchanged in inner best', all(joint['entry_abc'][str(no)] == joint['final_abc'][str(no)]
+      for no in [9111, 9112, 9113, 9114, 9115, 9117]))
+blend = td_decision['v24917_td_blend']
+check('TD blend passes original thresholds', blend['F'] <= 1-blend['min_relative_improvement']
+      and blend['idp_ratio'] <= blend['max_idp_ratio'])
+check('TD GEH matches following Generation parent', td_decision['cal_csd_objective_after']
+      == gen['objective_before']['raw_cal'])
+
+check('Generation exhausted configured search', gen['status'] == 'CONFIGURED_GENERATION_SEARCH_EXHAUSTED'
+      and gen['configured_search_exhausted'] is True)
+check('three Generation trials rejected', len(gen['attempts']) == 3
+      and all(a['status'] == 'REJECTED' and a['decision']['accepted'] is False for a in gen['attempts']))
+check('all rejected despite aggregate GEH gain', all(a['measured_objective'] < gen['objective_before']['raw_cal']
+      for a in gen['attempts']))
+check('all preserve hard rejection causes', all({'NEW_SEVERE_GEH_PROFILE', 'PROTECTED_PROFILE_GUARD_FAILED'}
+      <= set(a['decision']['reasons']) for a in gen['attempts']))
+for number, attempt in enumerate(gen['attempts'], 1):
+    check('step scale matches trial %d' % number, data['step%d' % number]['scale'] == attempt['candidate']['scale'])
+check('standalone acceptance is final rejected trial', acceptance == gen['attempts'][-1]['decision'])
+check('preview is final trial', data['preview']['summary']['backtracking_scale']
+      == gen['attempts'][-1]['candidate']['scale'] == data['ls_rows']['scale'] == .115395)
+check('Generation global stationarity not certified', gen['search_complete'] is False
+      and gen['stationarity_confirmed'] is False and gen['ls_search_incomplete'] is True)
+check('local stationarity scope is explicit', gen['stationarity_verified'] is True
+      and gen['stationarity_scope'] == 'CONVERGED_PROPOSAL_COMPLETE_CONFIGURED_REAL_SEARCH_NOT_GLOBAL_OPTIMALITY')
+protected = acceptance['protected_guard']
+critical = [row for row in protected['details'] if row['profile'] == '920023']
+check('protected 920023 crosses hard threshold', protected['passes'] is False and len(critical) == 1
+      and critical[0]['before_geh'] < protected['protected_before_geh']
+      and critical[0]['after_geh'] > protected['protected_after_hard_geh'])
+check('LONG guard passes but LONG unchanged', acceptance['longguard1']['passes'] is True
+      and acceptance['longguard1']['changed_long'] is False)
+check('parent LONG evidence verified', acceptance['longguard1_parent']['fine_cdf_verified'] is True
+      and acceptance['longguard1_parent']['long_generation_permitted'] is True
+      and acceptance['longguard1_parent']['below_min_km'] == 0.)
+row_counts = {}
+for label, key in [('design', 'candidate_rows'), ('preview', 'candidate_rows'), ('ls_rows', 'rows')]:
+    rows = data[label][key]
+    row_counts[label] = {'total': len(rows), 'families': dict(collections.Counter(r.get('family') for r in rows))}
+    check('no LONG or SCHOOL coefficient rows: ' + label,
+          not any(r.get('attr') in ('ADD_PROD_L', 'ADD_ATT_L', 'ADD_PROD_SCH', 'ADD_ATT_SCH') for r in rows))
+check('preview includes 240 boundary extra rows', len(data['preview']['candidate_rows'])
+      -len(data['design']['candidate_rows']) == len(data['ls_rows']['rows']) == 240)
+check('rollback passed', rb['passes'] is True and rb['snapshot_equal'] is True
+      and rb['diagnostic_equal'] is True and rb['diagnostic_equivalent'] is True)
+check('rollback restores TD accepted diagnostic hash', rb['diagnostic_hash'] == td['diagnostic_hash'])
+check('rollback restores same GEH', rb['genfix2_parent_proof']['diagnostics']['weighted_geh_before']
+      == rb['genfix2_parent_proof']['diagnostics']['weighted_geh_after'] == gen['objective_before']['raw_cal'])
+drift = rb['genfix2_parent_proof']['diagnostics']['profile_drift']
+check('248 rollback profiles have zero drift', drift['profiles'] == 248 and drift['violations'] == 0
+      and drift['max_abs_diff'] == 0. and drift['max_rel_diff'] == 0.)
+check('rollback exact matrix fingerprint proof', rb['genfix2_parent_proof']['matrix_proof']['mode']
+      == 'EXACT_MATRIX_FINGERPRINTS' and rb['genfix2_parent_proof']['matrix_proof']['passes'] is True)
+check('no LoadVersion or SaveVersion in rollback', rb['load_version_called'] is False
+      and rb['save_version_called'] is False)
+check('no direct OD writes reported in rollback', rb['direct_od_matrix_writes'] is False)
+tt, tg = data['timing_td'], data['timing_gen']
+check('timing labels agree', tt['label'] == 'TD' and tg['label'] == 'GENERATION')
+check('one TD stage preceded Generation snapshot', tt['cumulative']['td_stage'] == tg['cumulative']['td_stage'])
+check('one new Generation design after TD snapshot', tt['cumulative']['generation_design']['calls']+1
+      == tg['cumulative']['generation_design']['calls'])
+check('new Generation timing delta agrees', math.isclose(
+      tg['cumulative']['generation_design']['seconds']-tt['cumulative']['generation_design']['seconds'],
+      tg['block']['generation_design']['seconds'], abs_tol=.001))
+
+summary = {'status': 'PASS', 'check_count': len(checks), 'checks': checks, 'sources': sources,
+    'chronology': ['TD cycle 1 accepted SERVICE-only isolation', 'Generation cycle 2 rejected all three trials',
+                   'rollback restored accepted cycle-1 TD state'],
+    'td': {'status': td['status'], 'cycle': 1, 'changed_rows': td['changed_rows'], 'blend': blend,
+           'selected_component_improvement_percent': td_decision['selected_relative_improvement']*100,
+           'evaluations': 28, 'wall_seconds': tt['block']['td_stage']['seconds'],
+           'inner_stop': joint['stop_reason'], 'global_search_incomplete_reason': inner['stop_reason'],
+           'LONG_and_SCHOOL_active': True, 'LONG_or_SCHOOL_adopted_changes': False},
+    'generation': {'cycle': 2, 'status': gen['status'], 'parent_geh': gen['objective_before']['raw_cal'],
+        'trials': [{'scale': a['candidate']['scale'], 'geh': a['measured_objective'],
+                    'status': a['status'], 'reasons': a['decision']['reasons']} for a in gen['attempts']],
+        'protected_profile': critical[0], 'single_profile_violations':
+            acceptance['severity_transition_guard']['single_profile_geh_increase_violations'],
+        'row_counts': row_counts, 'LONG_coefficient_rows': 0, 'long_finecdf_verified': True,
+        'current_long_cache_deferral_reason_provided': False,
+        'convergence_confirmed': gen['stationarity_confirmed'],
+        'design_seconds': tg['block']['generation_design']['seconds']},
+    'rollback': {'passes': True, 'diagnostic_hash': rb['diagnostic_hash'], 'restored_geh':
+        rb['genfix2_parent_proof']['diagnostics']['weighted_geh_after'], 'profiles': 248, 'profile_drift': 0.,
+        'seconds': tg['block']['rollback']['seconds']},
+    'scope': {'live_model_modified': False, 'current_run_code_commit_verified': False,
+        'last_delivered_fix_commit': '67e6ab5540c15c56e0f5ed5f0f3152e8b397f4cf',
+        'uploaded_results_do_not_prove_live_installation_of_fix': True}}
+(BASE / 'SUMMARY.json').write_text(json.dumps(summary, indent=2) + '\n')
+print(json.dumps({'status': 'PASS', 'checks': len(checks), 'files': len(sources),
+                   'td_accepted': True, 'generation_accepted': False, 'rollback_verified': True}))
