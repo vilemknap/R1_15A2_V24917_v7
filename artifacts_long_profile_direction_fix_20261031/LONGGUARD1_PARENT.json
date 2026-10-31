@@ -1,0 +1,85 @@
+{
+  "above_200_km": 0.0006936740727959441,
+  "allowed_below_cdf_min_km": 5261.859015569616,
+  "below_100_km": 5261.8590155696165,
+  "below_min_km": 0.0,
+  "below_min_share": 0.0,
+  "by_matrix": [
+    {
+      "above_200_km": 0.0005397333530125142,
+      "allowed_below_cdf_min_km": 2992.2500410031826,
+      "below_100_km": 2992.2500410031826,
+      "below_min_km": 0.0,
+      "km_100_to_200": 2638.562051813893,
+      "matrix_no": 9111,
+      "total": 5630.812632550428
+    },
+    {
+      "above_200_km": 1.656545373263659e-05,
+      "allowed_below_cdf_min_km": 647.4300358176449,
+      "below_100_km": 647.4300358176449,
+      "below_min_km": 0.0,
+      "km_100_to_200": 577.895495760823,
+      "matrix_no": 9112,
+      "total": 1225.3255481439217
+    },
+    {
+      "above_200_km": 8.61954355459507e-05,
+      "allowed_below_cdf_min_km": 956.6279538599989,
+      "below_100_km": 956.6279538599988,
+      "below_min_km": 0.0,
+      "km_100_to_200": 1040.0759262424888,
+      "matrix_no": 9113,
+      "total": 1996.7039662979232
+    },
+    {
+      "above_200_km": 4.769499625820131e-05,
+      "allowed_below_cdf_min_km": 516.9460245012685,
+      "below_100_km": 516.9460245012685,
+      "below_min_km": 0.0,
+      "km_100_to_200": 582.3566168723727,
+      "matrix_no": 9114,
+      "total": 1099.3026890686374
+    },
+    {
+      "above_200_km": 3.484834246641246e-06,
+      "allowed_below_cdf_min_km": 148.60496038752103,
+      "below_100_km": 148.60496038752103,
+      "below_min_km": 0.0,
+      "km_100_to_200": 161.54876968239466,
+      "matrix_no": 9115,
+      "total": 310.15373355475
+    }
+  ],
+  "conditional_100_200_is_not_full_long_support": true,
+  "distance_basis": "FIXED_OSRM_DIST_KM_9697",
+  "epoch": {
+    "assignment_epoch": 1,
+    "finecdf_native_cl_values_sha256": "c5abf57b10ab212bc03858394e291ffc348ad7e8b6057b04cad4fbad486af3eb",
+    "skim_epoch": 1,
+    "skim_epoch_hash": "f00fb830bd2dec847f8aee7291a6e932ec1ac98101bd44c5ab453d906d3cc56e",
+    "zone_order_sha256": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968"
+  },
+  "fine_100_200_rmse": 0.050598093290813106,
+  "fine_cdf_anchor_rmse": 0.050598093290813106,
+  "fine_cdf_unverified_reason": null,
+  "fine_cdf_verified": true,
+  "km_100_to_200": 5000.438860371973,
+  "long_above_200_permitted": true,
+  "long_generation_permitted": true,
+  "minimum_km": 80.0,
+  "release": "R1_15A2_V24917_LONGGUARD1_20261027",
+  "status": "MEASURED",
+  "support_clean": true,
+  "support_distance_source": {
+    "assignment_dependent": false,
+    "distance_basis": "FIXED_OSRM_DIST_KM_9697",
+    "matrix_code": "R1_OSRM_DIST_KM",
+    "matrix_no": 9697,
+    "unit": "km",
+    "unit_authority": "USER_SELECTED_R1_OSRM_DIST_KM_CONTRACT",
+    "values_sha256": "8ae02c5c105db8b9fcdb6aa1d65347e9b8b58b8e4c264bd25fecfa357515fe87",
+    "zone_order_sha256": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968"
+  },
+  "total_volume": 10262.298569615661
+}

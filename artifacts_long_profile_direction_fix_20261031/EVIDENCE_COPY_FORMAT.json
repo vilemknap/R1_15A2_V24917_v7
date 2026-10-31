@@ -1,0 +1,7 @@
+{
+  "text_artifacts_line_endings": "LF",
+  "baseline_reproduction_log_trailing_spaces_removed": true,
+  "baseline_original_log_sha256": "4d29767f2aeaa74d242835a269080afa7949cbf3367493381a125d97321d584b",
+  "uploaded_source_original_hashes": "LIVE_EVIDENCE_CHECKS.json.sources",
+  "interpretation": "Formatting of evidence copies only; original inputs were not modified."
+}

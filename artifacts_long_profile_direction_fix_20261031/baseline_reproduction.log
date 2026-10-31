@@ -1,0 +1,344 @@
+FFF.....FFF                                                              [100%]
+=================================== FAILURES ===================================
+_____ test_actual_roster_loader_is_compatible_with_long_profile_authority ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feec67723f0>
+
+    def test_actual_roster_loader_is_compatible_with_long_profile_authority(monkeypatch):
+        roster = importlib.import_module('r1_15a2_profile_roster_v24917')
+        parent = importlib.import_module('r1_15a2_fresh0_shortroot_parent_v24916')
+        reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
+        meta = roster.load_meta(ROOT)
+        # Use the actual bootstrap loader with the same reduced-roster binding.
+        # Track its global constants so this read-only test restores them afterward.
+        for name in ('CURRENT_12D_HELPER', 'CURRENT_CSD_AUTH_REL', 'CURRENT_CITY_AUTH_REL',
+                     'CURRENT_COUNTLOCATION_SOURCE_REL', 'CURRENT_CSD_AUTH_SHA256',
+                     'CURRENT_CITY_AUTH_SHA256', 'CURRENT_COUNTLOCATION_SOURCE_SHA256',
+                     'CURRENT_PROFILE_COUNT'):
+            monkeypatch.setattr(parent, name, getattr(parent, name))
+        roster._patch_fresh0(meta)
+        observations = parent._load_current_profile_authority()
+        assert len(observations) == meta['rows']
+        assert sum(row['direction'] == 'DIRECTIONAL' for row in observations) == meta['csd_rows']
+        assert sum(row['direction'] == 'BOTH' for row in observations) == meta['city_rows']
+        profiles = []
+        for row in observations:
+            no, fr, to = row['edge_key']
+            profile = dict(countlocation_no=row['no'], link_no=no,
+                           from_node_no=fr, to_node_no=to, observation_direction='DIRECTED')
+            if row['direction'] == 'BOTH':
+                profile.update(observation_direction='BOTH', reverse_link_no=no,
+                               reverse_from_node_no=to, reverse_to_node_no=fr)
+            profiles.append(profile)
+        cfg = {'api_approved_observations': observations}
+        before = copy.deepcopy((cfg, profiles))
+>       assert reader._validate_profiles(profiles, cfg) == [str(row['no']) for row in observations]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_long_profile_authority_direction.py:43:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+profiles = [{'countlocation_no': 920001, 'from_node_no': 9000222, 'link_no': 8000071, 'observation_direction': 'DIRECTED', ...}, ...countlocation_no': 920006, 'from_node_no': 1002054, 'link_no': 2000544, 'observation_direction': 'DIRECTED', ...}, ...]
+cfg = {'api_approved_observations': [{'countlocation_code': 'CSD920001', 'direction': 'DIRECTIONAL', 'edge_key': [8000071, 9...tion_code': 'CSD920006', 'direction': 'DIRECTIONAL', 'edge_key': [2000544, 1002054, 1001216], 'no': 920006, ...}, ...]}
+
+    def _validate_profiles(profiles, cfg):
+        authority = {}
+        for row in cfg.get("api_approved_observations", ()):
+            if str(row.get("role", "CALIBRATION")).upper() != "CALIBRATION":
+                continue
+            no = com.exact_int(row["no"], "COUNTLOCATION_NO")
+            if no in authority:
+                raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_AUTHORITY")
+            key = tuple(com.exact_int(x, "PROFILE_EDGE") for x in row["edge_key"])
+            if len(key) != 3:
+                raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
+            direction = str(row.get("direction", "DIRECTED")).upper()
+            if direction not in ("DIRECTED", "BOTH"):
+>               raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
+E               ValueError: LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID
+
+r1_15a2_long_incidence_read_v24917.py:118: ValueError
+_____ test_directional_authority_reaches_shared_cache_and_nonzero_long_fit _____
+
+live = (namespace(visum=namespace(Net=namespace(Matrices=namespace(ItemByKey=<class 'test_v24917_long_incidence_read.harness.... 'to_node_no': 2}, {'countlocation_no': 9002, 'from_node_no': 2, 'link_no': 20, 'observation_direction': 'BOTH', ...}])
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feec6771940>
+
+    def test_directional_authority_reaches_shared_cache_and_nonzero_long_fit(live, monkeypatch):
+        adapter, state, _ = live
+        adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
+>       result, observed, _, _ = payload(live, monkeypatch)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_long_profile_authority_direction.py:50:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_v24917_long_cache_generation.py:62: in payload
+    observed = lc.capture(adapter)
+               ^^^^^^^^^^^^^^^^^^^
+r1_15a2_long_cache_generation_v24917.py:125: in capture
+    reads._validate_profiles(profiles, adapter.cfg)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+profiles = [{'countlocation_no': 9001, 'from_node_no': 1, 'link_no': 10, 'to_node_no': 2}, {'countlocation_no': 9002, 'from_node_no': 2, 'link_no': 20, 'observation_direction': 'BOTH', ...}]
+cfg = {'api_approved_observations': [{'direction': 'DIRECTIONAL', 'edge_key': [10, 1, 2], 'no': 9001, 'role': 'CALIBRATION'}...TION'}], 'com_resilience': {'enabled': False}, 'mutable_dsegs': ['NATIVE_CW'], 'path_export_dsegs': ['NATIVE_CW'], ...}
+
+    def _validate_profiles(profiles, cfg):
+        authority = {}
+        for row in cfg.get("api_approved_observations", ()):
+            if str(row.get("role", "CALIBRATION")).upper() != "CALIBRATION":
+                continue
+            no = com.exact_int(row["no"], "COUNTLOCATION_NO")
+            if no in authority:
+                raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_AUTHORITY")
+            key = tuple(com.exact_int(x, "PROFILE_EDGE") for x in row["edge_key"])
+            if len(key) != 3:
+                raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
+            direction = str(row.get("direction", "DIRECTED")).upper()
+            if direction not in ("DIRECTED", "BOTH"):
+>               raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
+E               ValueError: LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID
+
+r1_15a2_long_incidence_read_v24917.py:118: ValueError
+___________ test_directional_authority_reaches_read_only_long_export ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-14/test_directional_authority_rea0')
+
+    def test_directional_authority_reaches_read_only_long_export(tmp_path):
+        reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
+        adapter, state, profiles = harness()
+        adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
+>       result = reader.read_current(adapter, profiles, tmp_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_long_profile_authority_direction.py:64:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+r1_15a2_long_incidence_read_v24917.py:160: in read_current
+    ids = _validate_profiles(profiles, adapter.cfg)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+profiles = [{'countlocation_no': 9001, 'from_node_no': 1, 'link_no': 10, 'to_node_no': 2}, {'countlocation_no': 9002, 'from_node_no': 2, 'link_no': 20, 'observation_direction': 'BOTH', ...}]
+cfg = {'api_approved_observations': [{'direction': 'DIRECTIONAL', 'edge_key': [10, 1, 2], 'no': 9001, 'role': 'CALIBRATION'}...TION'}], 'com_resilience': {'enabled': False}, 'mutable_dsegs': ['NATIVE_CW'], 'path_export_dsegs': ['NATIVE_CW'], ...}
+
+    def _validate_profiles(profiles, cfg):
+        authority = {}
+        for row in cfg.get("api_approved_observations", ()):
+            if str(row.get("role", "CALIBRATION")).upper() != "CALIBRATION":
+                continue
+            no = com.exact_int(row["no"], "COUNTLOCATION_NO")
+            if no in authority:
+                raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_AUTHORITY")
+            key = tuple(com.exact_int(x, "PROFILE_EDGE") for x in row["edge_key"])
+            if len(key) != 3:
+                raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
+            direction = str(row.get("direction", "DIRECTED")).upper()
+            if direction not in ("DIRECTED", "BOTH"):
+>               raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
+E               ValueError: LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID
+
+r1_15a2_long_incidence_read_v24917.py:118: ValueError
+_ test_directional_alias_never_changes_physical_direction_scope[expand_directed] _
+
+change = 'expand_directed'
+
+    @pytest.mark.parametrize('change', ['expand_directed', 'collapse_both', 'reverse_directed'])
+    def test_directional_alias_never_changes_physical_direction_scope(change):
+        reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
+        adapter, state, profiles = harness()
+        adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
+        if change == 'expand_directed':
+            profiles[0].update(observation_direction='BOTH', reverse_link_no=10,
+                               reverse_from_node_no=2, reverse_to_node_no=1)
+        elif change == 'collapse_both':
+            profiles[1]['observation_direction'] = 'DIRECTED'
+        else:
+            profiles[0].update(from_node_no=2, to_node_no=1)
+        with pytest.raises(ValueError, match='LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'):
+>           reader._validate_profiles(profiles, adapter.cfg)
+
+tests/test_v24917_long_profile_authority_direction.py:93:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+profiles = [{'countlocation_no': 9001, 'from_node_no': 1, 'link_no': 10, 'observation_direction': 'BOTH', ...}, {'countlocation_no': 9002, 'from_node_no': 2, 'link_no': 20, 'observation_direction': 'BOTH', ...}]
+cfg = {'api_approved_observations': [{'direction': 'DIRECTIONAL', 'edge_key': [10, 1, 2], 'no': 9001, 'role': 'CALIBRATION'}...TION'}], 'com_resilience': {'enabled': False}, 'mutable_dsegs': ['NATIVE_CW'], 'path_export_dsegs': ['NATIVE_CW'], ...}
+
+    def _validate_profiles(profiles, cfg):
+        authority = {}
+        for row in cfg.get("api_approved_observations", ()):
+            if str(row.get("role", "CALIBRATION")).upper() != "CALIBRATION":
+                continue
+            no = com.exact_int(row["no"], "COUNTLOCATION_NO")
+            if no in authority:
+                raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_AUTHORITY")
+            key = tuple(com.exact_int(x, "PROFILE_EDGE") for x in row["edge_key"])
+            if len(key) != 3:
+                raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
+            direction = str(row.get("direction", "DIRECTED")).upper()
+            if direction not in ("DIRECTED", "BOTH"):
+>               raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
+E               ValueError: LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID
+
+r1_15a2_long_incidence_read_v24917.py:118: ValueError
+
+During handling of the above exception, another exception occurred:
+
+change = 'expand_directed'
+
+    @pytest.mark.parametrize('change', ['expand_directed', 'collapse_both', 'reverse_directed'])
+    def test_directional_alias_never_changes_physical_direction_scope(change):
+        reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
+        adapter, state, profiles = harness()
+        adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
+        if change == 'expand_directed':
+            profiles[0].update(observation_direction='BOTH', reverse_link_no=10,
+                               reverse_from_node_no=2, reverse_to_node_no=1)
+        elif change == 'collapse_both':
+            profiles[1]['observation_direction'] = 'DIRECTED'
+        else:
+            profiles[0].update(from_node_no=2, to_node_no=1)
+>       with pytest.raises(ValueError, match='LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'
+E        Input: 'LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID'
+
+tests/test_v24917_long_profile_authority_direction.py:92: AssertionError
+_ test_directional_alias_never_changes_physical_direction_scope[collapse_both] _
+
+change = 'collapse_both'
+
+    @pytest.mark.parametrize('change', ['expand_directed', 'collapse_both', 'reverse_directed'])
+    def test_directional_alias_never_changes_physical_direction_scope(change):
+        reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
+        adapter, state, profiles = harness()
+        adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
+        if change == 'expand_directed':
+            profiles[0].update(observation_direction='BOTH', reverse_link_no=10,
+                               reverse_from_node_no=2, reverse_to_node_no=1)
+        elif change == 'collapse_both':
+            profiles[1]['observation_direction'] = 'DIRECTED'
+        else:
+            profiles[0].update(from_node_no=2, to_node_no=1)
+        with pytest.raises(ValueError, match='LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'):
+>           reader._validate_profiles(profiles, adapter.cfg)
+
+tests/test_v24917_long_profile_authority_direction.py:93:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+profiles = [{'countlocation_no': 9001, 'from_node_no': 1, 'link_no': 10, 'to_node_no': 2}, {'countlocation_no': 9002, 'from_node_no': 2, 'link_no': 20, 'observation_direction': 'DIRECTED', ...}]
+cfg = {'api_approved_observations': [{'direction': 'DIRECTIONAL', 'edge_key': [10, 1, 2], 'no': 9001, 'role': 'CALIBRATION'}...TION'}], 'com_resilience': {'enabled': False}, 'mutable_dsegs': ['NATIVE_CW'], 'path_export_dsegs': ['NATIVE_CW'], ...}
+
+    def _validate_profiles(profiles, cfg):
+        authority = {}
+        for row in cfg.get("api_approved_observations", ()):
+            if str(row.get("role", "CALIBRATION")).upper() != "CALIBRATION":
+                continue
+            no = com.exact_int(row["no"], "COUNTLOCATION_NO")
+            if no in authority:
+                raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_AUTHORITY")
+            key = tuple(com.exact_int(x, "PROFILE_EDGE") for x in row["edge_key"])
+            if len(key) != 3:
+                raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
+            direction = str(row.get("direction", "DIRECTED")).upper()
+            if direction not in ("DIRECTED", "BOTH"):
+>               raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
+E               ValueError: LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID
+
+r1_15a2_long_incidence_read_v24917.py:118: ValueError
+
+During handling of the above exception, another exception occurred:
+
+change = 'collapse_both'
+
+    @pytest.mark.parametrize('change', ['expand_directed', 'collapse_both', 'reverse_directed'])
+    def test_directional_alias_never_changes_physical_direction_scope(change):
+        reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
+        adapter, state, profiles = harness()
+        adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
+        if change == 'expand_directed':
+            profiles[0].update(observation_direction='BOTH', reverse_link_no=10,
+                               reverse_from_node_no=2, reverse_to_node_no=1)
+        elif change == 'collapse_both':
+            profiles[1]['observation_direction'] = 'DIRECTED'
+        else:
+            profiles[0].update(from_node_no=2, to_node_no=1)
+>       with pytest.raises(ValueError, match='LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'
+E        Input: 'LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID'
+
+tests/test_v24917_long_profile_authority_direction.py:92: AssertionError
+_ test_directional_alias_never_changes_physical_direction_scope[reverse_directed] _
+
+change = 'reverse_directed'
+
+    @pytest.mark.parametrize('change', ['expand_directed', 'collapse_both', 'reverse_directed'])
+    def test_directional_alias_never_changes_physical_direction_scope(change):
+        reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
+        adapter, state, profiles = harness()
+        adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
+        if change == 'expand_directed':
+            profiles[0].update(observation_direction='BOTH', reverse_link_no=10,
+                               reverse_from_node_no=2, reverse_to_node_no=1)
+        elif change == 'collapse_both':
+            profiles[1]['observation_direction'] = 'DIRECTED'
+        else:
+            profiles[0].update(from_node_no=2, to_node_no=1)
+        with pytest.raises(ValueError, match='LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'):
+>           reader._validate_profiles(profiles, adapter.cfg)
+
+tests/test_v24917_long_profile_authority_direction.py:93:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+profiles = [{'countlocation_no': 9001, 'from_node_no': 2, 'link_no': 10, 'to_node_no': 1}, {'countlocation_no': 9002, 'from_node_no': 2, 'link_no': 20, 'observation_direction': 'BOTH', ...}]
+cfg = {'api_approved_observations': [{'direction': 'DIRECTIONAL', 'edge_key': [10, 1, 2], 'no': 9001, 'role': 'CALIBRATION'}...TION'}], 'com_resilience': {'enabled': False}, 'mutable_dsegs': ['NATIVE_CW'], 'path_export_dsegs': ['NATIVE_CW'], ...}
+
+    def _validate_profiles(profiles, cfg):
+        authority = {}
+        for row in cfg.get("api_approved_observations", ()):
+            if str(row.get("role", "CALIBRATION")).upper() != "CALIBRATION":
+                continue
+            no = com.exact_int(row["no"], "COUNTLOCATION_NO")
+            if no in authority:
+                raise ValueError("LONG_INCIDENCE_DUPLICATE_PROFILE_AUTHORITY")
+            key = tuple(com.exact_int(x, "PROFILE_EDGE") for x in row["edge_key"])
+            if len(key) != 3:
+                raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
+            direction = str(row.get("direction", "DIRECTED")).upper()
+            if direction not in ("DIRECTED", "BOTH"):
+>               raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
+E               ValueError: LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID
+
+r1_15a2_long_incidence_read_v24917.py:118: ValueError
+
+During handling of the above exception, another exception occurred:
+
+change = 'reverse_directed'
+
+    @pytest.mark.parametrize('change', ['expand_directed', 'collapse_both', 'reverse_directed'])
+    def test_directional_alias_never_changes_physical_direction_scope(change):
+        reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
+        adapter, state, profiles = harness()
+        adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
+        if change == 'expand_directed':
+            profiles[0].update(observation_direction='BOTH', reverse_link_no=10,
+                               reverse_from_node_no=2, reverse_to_node_no=1)
+        elif change == 'collapse_both':
+            profiles[1]['observation_direction'] = 'DIRECTED'
+        else:
+            profiles[0].update(from_node_no=2, to_node_no=1)
+>       with pytest.raises(ValueError, match='LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'
+E        Input: 'LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID'
+
+tests/test_v24917_long_profile_authority_direction.py:92: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_long_profile_authority_direction.py::test_actual_roster_loader_is_compatible_with_long_profile_authority
+FAILED tests/test_v24917_long_profile_authority_direction.py::test_directional_authority_reaches_shared_cache_and_nonzero_long_fit
+FAILED tests/test_v24917_long_profile_authority_direction.py::test_directional_authority_reaches_read_only_long_export
+FAILED tests/test_v24917_long_profile_authority_direction.py::test_directional_alias_never_changes_physical_direction_scope[expand_directed]
+FAILED tests/test_v24917_long_profile_authority_direction.py::test_directional_alias_never_changes_physical_direction_scope[collapse_both]
+FAILED tests/test_v24917_long_profile_authority_direction.py::test_directional_alias_never_changes_physical_direction_scope[reverse_directed]
+6 failed, 5 passed in 0.49s

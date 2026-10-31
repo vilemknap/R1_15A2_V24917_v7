@@ -1,0 +1,19 @@
+{
+  "DIAGFAST_V1_BASE_MANIFEST.json": {
+    "count": 1059,
+    "mismatches": []
+  },
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "count": 176,
+    "mismatches": []
+  },
+  "V24917_RUNTIME_MANIFEST.json": {
+    "count": 91,
+    "mismatches": []
+  },
+  "runtime_key_set_preserved": true,
+  "runtime_hash_changes": [
+    "r1_15a2_long_incidence_read_v24917.py",
+    "DIAGFAST_V1_RELEASE_MANIFEST.json"
+  ]
+}

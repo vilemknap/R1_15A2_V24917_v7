@@ -1,0 +1,193 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index cd2ea294bac2fd668b936e0e5e04f7dfdaf909bd..0b6ef66ae64a1a00f7e5a8a6fa477fababf0bff2 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -4,6 +4,7 @@
+   "scope": "IMMUTABLE_SOURCE_IDENTITY_TEST_STATUS_IS_SEPARATE",
+   "files": {
+     "01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py": "5d6901fa0ce9bf7f3aecafede2fd8ba1cc3bd5975405b640e3a3a7500d3f7172",
++    "01_SPUSTIT_V24917_FRESH_UNIVERSAL_TDPERF_SILENT.py": "b60c03b8a2ecfd2e454b21eb01deae69804bccfe8b9bd65bfe8f58bf5ff97390",
+     "01_SPUSTIT_V24917_GENFIX1.py": "17656e11f8a787e1bc7d98e2673054bb86c813fe0963b6a1e43fb2c7e2b9dfa4",
+     "01_SPUSTIT_V24917_GENFIX2.py": "52fd134309bf853ed074328ecfd9128527a646501fe05d004694a7be0cb0309b",
+     "01_SPUSTIT_V24917_PREFLIGHTIOFIX1.py": "da8953c4c4da056e092ed546a158ec13bce12590bdb230fd86122f809702f960",
+@@ -60,6 +61,7 @@
+     "r1_15a2_fast_trial_assignment_v24917.py": "2f223bc58ffebb5c5594d330cca3653b29b9ff75c037693b2832617502780c8d",
+     "r1_15a2_finecdf_bridge_v24916.py": "059a2a5b08003bb08f109911dad5dc42e3a21bcc7073f8005e686e279012141a",
+     "r1_15a2_finecdf_gapfix_v24917.py": "124e432fa38cbc628e541673355924817aa2f0751bc50cdeca56deac0acd5c3b",
++    "r1_15a2_fresh_universal_v24917.py": "817d5800b95edd14133b20126224f4ca7c9c6b1f28e9ddd36efd324a053bc9cb",
+     "r1_15a2_generation_gate_nonfatal_v1.py": "2ca13966ae4cdedcfee6f5076236ea4c2db97fc04d6cb2f612ffe899cadb6244",
+     "r1_15a2_generation_state_v24917.py": "27f3fdafb6f1ce595866455b5841cd78992a923dd59e5fc4e9ec29e56a1b7a93",
+     "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
+@@ -67,7 +69,7 @@
+     "r1_15a2_long_composite_diagnostic_v24917.py": "0378bfd4bbe245f4bc00e5c31f208b57632ce6ef5b26fd2b3fcbae57c1185ecb",
+     "r1_15a2_long_composite_td_v24917.py": "db65e11fc887d16d8f70198146597bac25bdb8fed2e8244e0f17e65f68b3408b",
+     "r1_15a2_long_distance_guard_v24917.py": "c98bcf5013eaab983ed8ac52f946d008e795f9ad05d9748918acef826c15bee6",
+-    "r1_15a2_long_incidence_read_v24917.py": "a6baead1427a273862affc2b01677e604f7143706a40030cb99bbb9fa978ea4b",
++    "r1_15a2_long_incidence_read_v24917.py": "29b0a59476cdd74d5b61b6dc1822d829957a2cd875305bd21159b0718f430fde",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+     "r1_15a2_long_post_td_mask_v24917.py": "ea50a146233dbb5f0d1d554effbef5574a5c84091d4afc334f50f4f8a6b276cd",
+     "r1_15a2_long_profile_incidence_v24917.py": "b86614ab75a8ccae40918a7028b2d7e0455b41a2aa2b9197ea550dc55d9329db",
+@@ -114,6 +116,7 @@
+     "tests/test_v24917_diagfast_td_abc_guard.py": "8faa8497524120589171af6ff53bfafc0c8231b0ddfd459ab184078ee2e6ad0b",
+     "tests/test_v24917_epoch_td_fairness_20261030.py": "f5fbc6f4f2ea85c2d5be9c5ab48ff2e2263b4f54484be8d113f792a1c5e3bf46",
+     "tests/test_v24917_fast_trial_assignment.py": "9338e030443bf51af70d7ef1572bc95d34622bdfcb7ebe59e72c7408ffb35c19",
++    "tests/test_v24917_fresh_universal_tdperf.py": "db0e4280ec93a49fb417194e1ed0d5bad412de1feff1e9cea9901ea96d43360b",
+     "tests/test_v24917_generation_perf.py": "1ebe11b0edd22a4e49038e1293ab45d4cb4c56b74d03a3026d8651dd96f6318f",
+     "tests/test_v24917_generation_state_genfix1.py": "a076bba31a1956bf265ed2fb4bf5b6cc187cfc26ce739cbb28c614b938fa299d",
+     "tests/test_v24917_generation_transaction_genfix1.py": "a3bedd7cc73f963887de33bd4845bf6afdc9add72c755638c763a4487023a0d1",
+@@ -129,6 +132,7 @@
+     "tests/test_v24917_long_incidence_read.py": "4d9d5be00c08776681335cee40d3d6008624748634eea6399499855f0a32a3bd",
+     "tests/test_v24917_long_osrm_support.py": "f52b15af47a756b0a1deda00fce921284a1820662e10157d67e87955832e803a",
+     "tests/test_v24917_long_post_td_mask.py": "2b1b8b0f519b54005c20e52018de490fa0bbc249ba0ad1c20947810450cbdc24",
++    "tests/test_v24917_long_profile_authority_direction.py": "bccd03776276fd8f1d5ba60dfe44b3f1dadc5c8466fd6be399b811227706643f",
+     "tests/test_v24917_long_profile_incidence.py": "6220c516d2f7c39e0b2ddf80101121714c7f22dfa6249dead14102df5e15d976",
+     "tests/test_v24917_long_tg_td_unlock.py": "2ec87aaecf7256ff174b822ce0c5f8f795c13829c42200ecc3011117c4403fce",
+     "tests/test_v24917_long_zonal_fit.py": "e26878643cd4062365f6f7e3b54067ce2c7bffe0dba6e71881afa26fafcba7a1",
+@@ -174,7 +178,6 @@
+     "tools/build_profile_roster_v24917.py": "661b2ee891e597b2264aa083e42b713a35ddcbb2648cbf8f7983ee2f4d210edb",
+     "tools/refresh_v24917_manifests.py": "a0923025005714f75b164deba8aa27f990a475d1dcc14f2e0632f6abc87137f6",
+     "tools/run_genfix2_checks.py": "059bfbf8556ab8a5d72414f8a0215b485d8123fc1442385d1c3e2a680f575e3d",
+-    "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec",
+-    "tests/test_v24917_fresh_universal_tdperf.py": "db0e4280ec93a49fb417194e1ed0d5bad412de1feff1e9cea9901ea96d43360b"
++    "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec"
+   }
+ }
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 348396577150f163058477b0640a454507c8d857..4471a56a41d11641be1c6064cc4288e6f1308c24 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -31,7 +31,7 @@
+     "r1_15a2_long_school_generation_v24917.py": "3710e3aeca5ca5f39881d25b6838dcbdb44f42a3eb1dd353e0f494d054eb17b8",
+     "r1_15a2_long_od_mask_v24917.py": "474b917731273db363b143c3d816bf269bdcb5d507163c9454264bbadfc7f0d4",
+     "r1_15a2_long_profile_incidence_v24917.py": "b86614ab75a8ccae40918a7028b2d7e0455b41a2aa2b9197ea550dc55d9329db",
+-    "r1_15a2_long_incidence_read_v24917.py": "a6baead1427a273862affc2b01677e604f7143706a40030cb99bbb9fa978ea4b",
++    "r1_15a2_long_incidence_read_v24917.py": "29b0a59476cdd74d5b61b6dc1822d829957a2cd875305bd21159b0718f430fde",
+     "r1_15a2_long_cache_generation_v24917.py": "b838acc3c12eda6a8c5420a42e901023a2368f049dfca78fc496372ade920637",
+     "r1_15a2_path_incidence_v24917.py": "3c4830a61fe3de9cb1a39a5ca8f203220a008585e1dd3f34d3dbd2dba787fb78",
+     "r1_15a2_long_zonal_fit_v24917.py": "961cea7f295c8cf13ebafe17de09a3bcb6b8720479f09d2fade73409aa1aa07c",
+@@ -79,7 +79,7 @@
+     "helpers/R1_11D_DIAGFAST_V1.py": "c9893d12a9dd48a3aa2bb51fd6101df50898d2faf52b416ff4b249a1ca4be3ad",
+     "V24916_PERF2C_RUNTIME_MANIFEST.json": "10fe3d1fb0affa5dad196cbf8471a0e14cff41f9061b25fef7ac44c21a08655e",
+     "DIAGFAST_V1_BASE_MANIFEST.json": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691",
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "1f5d3a3f64900d72bcc3739cb549b421d7c9670e8b4706e8079f77c22c2fc26e",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "3f520a32881df297ac0d0ab57080e554aa117bb5a51314893314802fb097cd67",
+     "v24917_silent_debug.py": "c7ac8048c3bb1f86515e47d7279a9a17d9f60c23d9eb89696ac38ca9b4fc61ec",
+     "01_SPUSTIT_V24917_TDJOINT1_SILENT.py": "dc9471950b5e3c3bb320902f3f260021e4ee4b438facfd884d550932f5566479",
+     "R1_RUN_OPTIONS.json": "b25f81a9701bb4b756e503614983515820ec17a9c2e73bd0291174f57afccae6",
+diff --git a/r1_15a2_long_incidence_read_v24917.py b/r1_15a2_long_incidence_read_v24917.py
+index 97578405b3f936137854da43357cde43d1a3a37e..bd5f3893d832a32a5852cef5104814abc23833d7 100644
+--- a/r1_15a2_long_incidence_read_v24917.py
++++ b/r1_15a2_long_incidence_read_v24917.py
+@@ -114,6 +114,12 @@ def _validate_profiles(profiles, cfg):
+         if len(key) != 3:
+             raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
+         direction = str(row.get("direction", "DIRECTED")).upper()
++        # The native bootstrap uses DIRECTIONAL for CSD rows whose CSV has
++        # no observation_direction field. It means the single authoritative
++        # edge_key, just like the DIRECTED scope of the diagnostic/path rows.
++        # Keep BOTH and every physical edge comparison strict.
++        if direction == "DIRECTIONAL":
++            direction = "DIRECTED"
+         if direction not in ("DIRECTED", "BOTH"):
+             raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
+         keys = (key, (key[0], key[2], key[1])) if direction == "BOTH" else (key,)
+diff --git a/tests/test_v24917_long_profile_authority_direction.py b/tests/test_v24917_long_profile_authority_direction.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..81f7b9f574cbcd59afa94ce83a53352b850d2453
+--- /dev/null
++++ b/tests/test_v24917_long_profile_authority_direction.py
+@@ -0,0 +1,94 @@
++"""The real CSD authority uses DIRECTIONAL; LONG must retain its exact edge."""
++import copy
++import importlib
++from pathlib import Path
++
++import pytest
++
++from test_v24917_long_cache_generation import live, payload
++from test_v24917_long_incidence_read import harness
++
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def test_actual_roster_loader_is_compatible_with_long_profile_authority(monkeypatch):
++    roster = importlib.import_module('r1_15a2_profile_roster_v24917')
++    parent = importlib.import_module('r1_15a2_fresh0_shortroot_parent_v24916')
++    reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
++    meta = roster.load_meta(ROOT)
++    # Use the actual bootstrap loader with the same reduced-roster binding.
++    # Track its global constants so this read-only test restores them afterward.
++    for name in ('CURRENT_12D_HELPER', 'CURRENT_CSD_AUTH_REL', 'CURRENT_CITY_AUTH_REL',
++                 'CURRENT_COUNTLOCATION_SOURCE_REL', 'CURRENT_CSD_AUTH_SHA256',
++                 'CURRENT_CITY_AUTH_SHA256', 'CURRENT_COUNTLOCATION_SOURCE_SHA256',
++                 'CURRENT_PROFILE_COUNT'):
++        monkeypatch.setattr(parent, name, getattr(parent, name))
++    roster._patch_fresh0(meta)
++    observations = parent._load_current_profile_authority()
++    assert len(observations) == meta['rows']
++    assert sum(row['direction'] == 'DIRECTIONAL' for row in observations) == meta['csd_rows']
++    assert sum(row['direction'] == 'BOTH' for row in observations) == meta['city_rows']
++    profiles = []
++    for row in observations:
++        no, fr, to = row['edge_key']
++        profile = dict(countlocation_no=row['no'], link_no=no,
++                       from_node_no=fr, to_node_no=to, observation_direction='DIRECTED')
++        if row['direction'] == 'BOTH':
++            profile.update(observation_direction='BOTH', reverse_link_no=no,
++                           reverse_from_node_no=to, reverse_to_node_no=fr)
++        profiles.append(profile)
++    cfg = {'api_approved_observations': observations}
++    before = copy.deepcopy((cfg, profiles))
++    assert reader._validate_profiles(profiles, cfg) == [str(row['no']) for row in observations]
++    assert (cfg, profiles) == before
++
++
++def test_directional_authority_reaches_shared_cache_and_nonzero_long_fit(live, monkeypatch):
++    adapter, state, _ = live
++    adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
++    result, observed, _, _ = payload(live, monkeypatch)
++    generation = importlib.import_module('r1_15a2_long_school_generation_v24917')
++    rows = generation.rows_at_scale(result, 1.)
++    assert observed['profile_long_vehicle_flow'] == pytest.approx([160., 150.])
++    assert result['summary']['long_generation_permitted'] is True
++    assert rows and any(row['proposed'] != row['current'] for row in rows)
++    assert {row['attr'] for row in rows} <= {'ADD_PROD_L', 'ADD_ATT_L'}
++    assert state.exports == 0 and state.writes == []
++
++
++def test_directional_authority_reaches_read_only_long_export(tmp_path):
++    reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
++    adapter, state, profiles = harness()
++    adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
++    result = reader.read_current(adapter, profiles, tmp_path)
++    assert state.exports == 1
++    assert result['profile_long_vehicle_flow'] == pytest.approx([160., 150.])
++    assert result['long_generation_permitted'] is False  # attribution alone never enables TG
++
++
++@pytest.mark.parametrize('direction', ['', 'SIDEWAYS', 'BIDIRECTIONAL', 'ONE_WAY', None])
++def test_unknown_authority_direction_remains_rejected(direction):
++    reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
++    adapter, state, profiles = harness()
++    adapter.cfg['api_approved_observations'][0]['direction'] = direction
++    with pytest.raises(ValueError, match='LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID'):
++        reader._validate_profiles(profiles, adapter.cfg)
++    assert state.exports == 0
++
++
++@pytest.mark.parametrize('change', ['expand_directed', 'collapse_both', 'reverse_directed'])
++def test_directional_alias_never_changes_physical_direction_scope(change):
++    reader = importlib.import_module('r1_15a2_long_incidence_read_v24917')
++    adapter, state, profiles = harness()
++    adapter.cfg['api_approved_observations'][0]['direction'] = 'DIRECTIONAL'
++    if change == 'expand_directed':
++        profiles[0].update(observation_direction='BOTH', reverse_link_no=10,
++                           reverse_from_node_no=2, reverse_to_node_no=1)
++    elif change == 'collapse_both':
++        profiles[1]['observation_direction'] = 'DIRECTED'
++    else:
++        profiles[0].update(from_node_no=2, to_node_no=1)
++    with pytest.raises(ValueError, match='LONG_INCIDENCE_PROFILE_DIRECTION_AUTHORITY_MISMATCH'):
++        reader._validate_profiles(profiles, adapter.cfg)
++    assert state.exports == 0

@@ -1,0 +1,146 @@
+[
+  {
+    "label": "step2",
+    "file_id": "file_00000000bb348243bc00033804444a11",
+    "result": {
+      "path": "/workspace/attachments/414924cd-fc00-48a3-8f5f-1158a684229e/STEP1_PLAN_02.json",
+      "size_bytes": 4308
+    }
+  },
+  {
+    "label": "step1",
+    "file_id": "file_00000000521881f4b0484647b32c78ec",
+    "result": {
+      "path": "/workspace/attachments/d81dee60-65ef-4cce-a192-a369b6cbd99a/STEP1_PLAN_01.json",
+      "size_bytes": 3447
+    }
+  },
+  {
+    "label": "generation",
+    "file_id": "file_00000000718881f4956300f745272401",
+    "result": {
+      "path": "/workspace/attachments/e9de86e1-7e41-461f-b218-ffe5f29ef92e/GENERATION_BLOCK_RESULT.json",
+      "size_bytes": 3176182
+    }
+  },
+  {
+    "label": "step3",
+    "file_id": "file_00000000f1cc81f48459c6ef593b767b",
+    "result": {
+      "path": "/workspace/attachments/89768f12-425b-4a9c-b961-8421a9954cb1/STEP1_PLAN_03.json",
+      "size_bytes": 4158
+    }
+  },
+  {
+    "label": "timing",
+    "file_id": "file_000000000d0481f49d5a781130c28d74",
+    "result": {
+      "path": "/workspace/attachments/686db38c-856d-41c5-9316-cb8d45743d28/V24917_TIMING.json",
+      "size_bytes": 2156
+    }
+  },
+  {
+    "label": "signed",
+    "file_id": "file_00000000f10081f4a4587a3d49ada930",
+    "result": {
+      "path": "/workspace/attachments/89636bd5-3855-4c19-8230-7cf2a86371a8/GENERATION_SIGNED_REFINEMENT_AUDIT.json",
+      "size_bytes": 1897
+    }
+  },
+  {
+    "label": "prediction",
+    "file_id": "file_00000000944481f4ba3b477cca2e61e1",
+    "result": {
+      "path": "/workspace/attachments/d0de36c2-b7ce-4372-91a4-34dafa7461ac/GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json",
+      "size_bytes": 11905
+    }
+  },
+  {
+    "label": "preview",
+    "file_id": "file_000000006d788246a101b1bcc573dddd",
+    "result": {
+      "path": "/workspace/attachments/b819123f-4ab8-499d-9ced-4954f4424403/GENERATION_PREVIEW_0_181579.json",
+      "size_bytes": 3669849
+    }
+  },
+  {
+    "label": "ls_rows",
+    "file_id": "file_00000000878081f4b269ee536d6feb9c",
+    "result": {
+      "path": "/workspace/attachments/632330b5-a79f-412b-8fcd-6b47da579e5a/V24917_LONG_SCHOOL_ROWS.json",
+      "size_bytes": 74685
+    }
+  },
+  {
+    "label": "acceptance",
+    "file_id": "file_00000000143481f4b54d3e822e4dcaff",
+    "result": {
+      "path": "/workspace/attachments/20da36ea-edc5-4711-9ced-7f8b24e4402a/ACCEPTANCE.json",
+      "size_bytes": 877687
+    }
+  },
+  {
+    "label": "design",
+    "file_id": "file_00000000d9f48246a8e64e5af38600dc",
+    "result": {
+      "path": "/workspace/attachments/ca32b24c-77f9-42a0-b584-3f4f627bbd00/GENERATION_DESIGN.json",
+      "size_bytes": 3584393
+    }
+  },
+  {
+    "label": "source_authority",
+    "file_id": "file_00000000b3308243bc0b02acc6686b9e",
+    "result": {
+      "path": "/workspace/attachments/127b6086-3986-4f3d-aa1c-f88873c4606a/TDLONG1_SOURCE_AUTHORITY.json",
+      "size_bytes": 1245
+    }
+  },
+  {
+    "label": "boundary",
+    "file_id": "file_00000000aa2081f4b05d8e4cb9f6319e",
+    "result": {
+      "path": "/workspace/attachments/1369e96f-486b-49bb-8f60-4e1b0c3bd9bf/V24917_BOUNDARY_STEPS.json",
+      "size_bytes": 13772
+    }
+  },
+  {
+    "label": "mobility",
+    "file_id": "file_00000000b54c81f485dc47c3066adac3",
+    "result": {
+      "path": "/workspace/attachments/d866386c-46ee-4af0-b31f-21dd2f4d7b78/MOBILITYZONE1_PARENT.json",
+      "size_bytes": 3891097
+    }
+  },
+  {
+    "label": "projection",
+    "file_id": "file_000000004c9c81f4b81fe9879481e5aa",
+    "result": {
+      "path": "/workspace/attachments/814ad452-55db-4c6c-88f0-7764f2082309/V24917_FIT_PROJECTION_ROWS.csv",
+      "size_bytes": 657284
+    }
+  },
+  {
+    "label": "fit",
+    "file_id": "file_00000000c56081f4b0cdc9bd78c12068",
+    "result": {
+      "path": "/workspace/attachments/b3bcfe93-f2e7-44b9-9db6-09b61fcf6166/V24917_FIT_SUMMARY.json",
+      "size_bytes": 252969
+    }
+  },
+  {
+    "label": "cache_deferred",
+    "file_id": "file_00000000c7f082438f195a42d4272aa6",
+    "result": {
+      "path": "/workspace/attachments/240d9e3d-d0df-4bc3-b80b-a79428b86f09/LONG_SHARED_CACHE_DEFERRED.json",
+      "size_bytes": 69
+    }
+  },
+  {
+    "label": "guard",
+    "file_id": "file_00000000b0688243b2b890dc61457bd3",
+    "result": {
+      "path": "/workspace/attachments/2a6e3783-ff37-4e28-ad04-d44964b902da/LONGGUARD1_PARENT.json",
+      "size_bytes": 3018
+    }
+  }
+]

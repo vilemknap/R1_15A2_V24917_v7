@@ -1,0 +1,404 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "18 supplied files",
+      "passes": true
+    },
+    {
+      "name": "download size: step2",
+      "passes": true
+    },
+    {
+      "name": "download size: step1",
+      "passes": true
+    },
+    {
+      "name": "download size: generation",
+      "passes": true
+    },
+    {
+      "name": "download size: step3",
+      "passes": true
+    },
+    {
+      "name": "download size: timing",
+      "passes": true
+    },
+    {
+      "name": "download size: signed",
+      "passes": true
+    },
+    {
+      "name": "download size: prediction",
+      "passes": true
+    },
+    {
+      "name": "download size: preview",
+      "passes": true
+    },
+    {
+      "name": "download size: ls_rows",
+      "passes": true
+    },
+    {
+      "name": "download size: acceptance",
+      "passes": true
+    },
+    {
+      "name": "download size: design",
+      "passes": true
+    },
+    {
+      "name": "download size: source_authority",
+      "passes": true
+    },
+    {
+      "name": "download size: boundary",
+      "passes": true
+    },
+    {
+      "name": "download size: mobility",
+      "passes": true
+    },
+    {
+      "name": "download size: projection",
+      "passes": true
+    },
+    {
+      "name": "download size: fit",
+      "passes": true
+    },
+    {
+      "name": "download size: cache_deferred",
+      "passes": true
+    },
+    {
+      "name": "download size: guard",
+      "passes": true
+    },
+    {
+      "name": "guard measured",
+      "passes": true
+    },
+    {
+      "name": "OSRM support clean",
+      "passes": true
+    },
+    {
+      "name": "FineCDF verified",
+      "passes": true
+    },
+    {
+      "name": "parent permits LONG",
+      "passes": true
+    },
+    {
+      "name": "parent proof propagated unchanged",
+      "passes": true
+    },
+    {
+      "name": "LONG requested",
+      "passes": true
+    },
+    {
+      "name": "LONG not candidate eligible",
+      "passes": true
+    },
+    {
+      "name": "cache precise failure",
+      "passes": true
+    },
+    {
+      "name": "fit carries precise failure",
+      "passes": true
+    },
+    {
+      "name": "LONG excluded",
+      "passes": true
+    },
+    {
+      "name": "mobility source available",
+      "passes": true
+    },
+    {
+      "name": "generation accepted in place",
+      "passes": true
+    },
+    {
+      "name": "three trials",
+      "passes": true
+    },
+    {
+      "name": "first two rejected",
+      "passes": true
+    },
+    {
+      "name": "final acceptance passed",
+      "passes": true
+    },
+    {
+      "name": "acceptance matches block",
+      "passes": true
+    },
+    {
+      "name": "no LONG changed at acceptance",
+      "passes": true
+    },
+    {
+      "name": "row count agrees",
+      "passes": true
+    },
+    {
+      "name": "scale agrees",
+      "passes": true
+    },
+    {
+      "name": "no LONG coefficients in design",
+      "passes": true
+    },
+    {
+      "name": "no LONG coefficients in preview",
+      "passes": true
+    },
+    {
+      "name": "no LONG coefficients in ls_rows",
+      "passes": true
+    },
+    {
+      "name": "projection has family schema",
+      "passes": true
+    },
+    {
+      "name": "no LONG fit projection",
+      "passes": true
+    },
+    {
+      "name": "LS genuinely incomplete",
+      "passes": true
+    },
+    {
+      "name": "GEH improved",
+      "passes": true
+    }
+  ],
+  "check_count": 45,
+  "long_blocker": "LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID",
+  "long_parent_permitted": true,
+  "long_candidate_eligible": false,
+  "generation": {
+    "status": "ACCEPTED",
+    "scale": 0.181579,
+    "geh_before": 31.7050954836247,
+    "geh_after": 30.331603748167616,
+    "geh_improvement_percent": 4.332085156994636,
+    "gap": 0.00396248,
+    "rows": 2991,
+    "long_rows": 0,
+    "model_observed_ratio_before": 0.6713434688845197,
+    "model_observed_ratio_after": 0.697908123346666,
+    "profile_count": 247,
+    "profile_sums_are_unique_trips": false
+  },
+  "guard": {
+    "fine_cdf_rmse": 0.050598093290813106,
+    "below_80_km": 0.0,
+    "total_person_volume": 10262.298569615661,
+    "fine_cdf_verified": true
+  },
+  "candidate_attributes": {
+    "design": {
+      "ADD_PROD_W": 638,
+      "ZAHR_PROD_WORK": 6,
+      "ADD_PROD_S": 638,
+      "ZAHR_PROD_SERV": 6,
+      "ADD_ATT_S": 463,
+      "ZAHR_ATR_SERV": 6,
+      "ADD_ATT_W": 494,
+      "ZAHR_ATR_WORK": 6,
+      "ADD_SALARY": 494
+    },
+    "preview": {
+      "ADD_PROD_W": 638,
+      "ZAHR_PROD_WORK": 6,
+      "ADD_PROD_S": 638,
+      "ZAHR_PROD_SERV": 6,
+      "ADD_ATT_S": 463,
+      "ZAHR_ATR_SERV": 6,
+      "ADD_ATT_W": 494,
+      "ZAHR_ATR_WORK": 6,
+      "ADD_SALARY": 494,
+      "P09F4_PER_PRE_SERV_E_C": 12,
+      "P09F4_PER_PRE_SERV_E_noC": 12,
+      "P09F4_PER_PRE_SERV_noE_C": 12,
+      "P09F4_PER_PRE_SERV_noE_noC": 12,
+      "P09F4_PER_PRE_SERV_stud": 12,
+      "A09F4_PER_PRE_SERV_E_C": 12,
+      "A09F4_PER_PRE_SERV_E_noC": 12,
+      "A09F4_PER_PRE_SERV_noE_C": 12,
+      "A09F4_PER_PRE_SERV_noE_noC": 12,
+      "A09F4_PER_PRE_SERV_stud": 12,
+      "P09F4_PER_PRE_WORK_E_C": 12,
+      "P09F4_PER_PRE_WORK_E_noC": 12,
+      "P09F4_PER_PRE_WORK_noE_C": 12,
+      "P09F4_PER_PRE_WORK_noE_noC": 12,
+      "P09F4_PER_PRE_WORK_stud": 12,
+      "A09F4_PER_PRE_WORK_E_C": 12,
+      "A09F4_PER_PRE_WORK_E_noC": 12,
+      "A09F4_PER_PRE_WORK_noE_C": 12,
+      "A09F4_PER_PRE_WORK_noE_noC": 12,
+      "A09F4_PER_PRE_WORK_stud": 12
+    },
+    "ls_rows": {
+      "P09F4_PER_PRE_SERV_E_C": 12,
+      "P09F4_PER_PRE_SERV_E_noC": 12,
+      "P09F4_PER_PRE_SERV_noE_C": 12,
+      "P09F4_PER_PRE_SERV_noE_noC": 12,
+      "P09F4_PER_PRE_SERV_stud": 12,
+      "A09F4_PER_PRE_SERV_E_C": 12,
+      "A09F4_PER_PRE_SERV_E_noC": 12,
+      "A09F4_PER_PRE_SERV_noE_C": 12,
+      "A09F4_PER_PRE_SERV_noE_noC": 12,
+      "A09F4_PER_PRE_SERV_stud": 12,
+      "P09F4_PER_PRE_WORK_E_C": 12,
+      "P09F4_PER_PRE_WORK_E_noC": 12,
+      "P09F4_PER_PRE_WORK_noE_C": 12,
+      "P09F4_PER_PRE_WORK_noE_noC": 12,
+      "P09F4_PER_PRE_WORK_stud": 12,
+      "A09F4_PER_PRE_WORK_E_C": 12,
+      "A09F4_PER_PRE_WORK_E_noC": 12,
+      "A09F4_PER_PRE_WORK_noE_C": 12,
+      "A09F4_PER_PRE_WORK_noE_noC": 12,
+      "A09F4_PER_PRE_WORK_stud": 12
+    }
+  },
+  "projection_rows": 2257,
+  "sources": [
+    {
+      "label": "step2",
+      "name": "STEP1_PLAN_02.json",
+      "upload_id": "file_00000000bb348243bc00033804444a11",
+      "bytes": 4308,
+      "sha256": "90d853b1bdf82feb22a1c5648fa0001cf2df76987dd915a348e586de23b48034"
+    },
+    {
+      "label": "step1",
+      "name": "STEP1_PLAN_01.json",
+      "upload_id": "file_00000000521881f4b0484647b32c78ec",
+      "bytes": 3447,
+      "sha256": "a393b7212f3649b95fe8d68c1e2a19aa00775b6ba895e533abce22c0a249a389"
+    },
+    {
+      "label": "generation",
+      "name": "GENERATION_BLOCK_RESULT.json",
+      "upload_id": "file_00000000718881f4956300f745272401",
+      "bytes": 3176182,
+      "sha256": "25d3172d1366405ae07b83bb6b01feb71b16665abf5e332b8410ff6be2d6c34f"
+    },
+    {
+      "label": "step3",
+      "name": "STEP1_PLAN_03.json",
+      "upload_id": "file_00000000f1cc81f48459c6ef593b767b",
+      "bytes": 4158,
+      "sha256": "a3c9239c22e1c8f482c0fca4b59282a5ed887bde36e22175c75ddba9e1dd1901"
+    },
+    {
+      "label": "timing",
+      "name": "V24917_TIMING.json",
+      "upload_id": "file_000000000d0481f49d5a781130c28d74",
+      "bytes": 2156,
+      "sha256": "15dc7349aeee8bc273de4e97a1ed1de8938a9160ea4c246dacc5576e1143d5d8"
+    },
+    {
+      "label": "signed",
+      "name": "GENERATION_SIGNED_REFINEMENT_AUDIT.json",
+      "upload_id": "file_00000000f10081f4a4587a3d49ada930",
+      "bytes": 1897,
+      "sha256": "08bb3e8a9dc886570b41a4e14a441861683fe2eebbd167b80731293d8bfc3130"
+    },
+    {
+      "label": "prediction",
+      "name": "GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json",
+      "upload_id": "file_00000000944481f4ba3b477cca2e61e1",
+      "bytes": 11905,
+      "sha256": "662a9cb0ec6ff55bae37b40e561270ac8b575f3a552108c24f784d1c86e17ba3"
+    },
+    {
+      "label": "preview",
+      "name": "GENERATION_PREVIEW_0_181579.json",
+      "upload_id": "file_000000006d788246a101b1bcc573dddd",
+      "bytes": 3669849,
+      "sha256": "483638a4cd44ea1cccadaf51698c06f94daae7c0e617216b0828172f7c6efd32"
+    },
+    {
+      "label": "ls_rows",
+      "name": "V24917_LONG_SCHOOL_ROWS.json",
+      "upload_id": "file_00000000878081f4b269ee536d6feb9c",
+      "bytes": 74685,
+      "sha256": "999c0ffc2c83c28b61d047f0be09a852a74f8718b8bea8200834ec3bdff5d192"
+    },
+    {
+      "label": "acceptance",
+      "name": "ACCEPTANCE.json",
+      "upload_id": "file_00000000143481f4b54d3e822e4dcaff",
+      "bytes": 877687,
+      "sha256": "696da8ce90c44a4c5c255b9cdb685a5980b97ed72a1417806853cfb739257e8a"
+    },
+    {
+      "label": "design",
+      "name": "GENERATION_DESIGN.json",
+      "upload_id": "file_00000000d9f48246a8e64e5af38600dc",
+      "bytes": 3584393,
+      "sha256": "5c329ae5a51af9d49d4c8cde73867f6e8a006ab923726acc4377bb7763e855e1"
+    },
+    {
+      "label": "source_authority",
+      "name": "TDLONG1_SOURCE_AUTHORITY.json",
+      "upload_id": "file_00000000b3308243bc0b02acc6686b9e",
+      "bytes": 1245,
+      "sha256": "64b8bde759e205c9555e543b670d7b2ad1208e288200b9303e24be26386fcf35"
+    },
+    {
+      "label": "boundary",
+      "name": "V24917_BOUNDARY_STEPS.json",
+      "upload_id": "file_00000000aa2081f4b05d8e4cb9f6319e",
+      "bytes": 13772,
+      "sha256": "4455dd93b17000032806e523c3a451b4514b4c0af66b4abf711bffedf6787a07"
+    },
+    {
+      "label": "mobility",
+      "name": "MOBILITYZONE1_PARENT.json",
+      "upload_id": "file_00000000b54c81f485dc47c3066adac3",
+      "bytes": 3891097,
+      "sha256": "29ab9fb0264a2fa3d8717fc112e179bf1c54fb31667c85bfa8997976b6643b4b"
+    },
+    {
+      "label": "projection",
+      "name": "V24917_FIT_PROJECTION_ROWS.csv",
+      "upload_id": "file_000000004c9c81f4b81fe9879481e5aa",
+      "bytes": 657284,
+      "sha256": "8a0f20c9222544b7db00d88961f9d20673c99aa59e76d938b19f90e6804383da"
+    },
+    {
+      "label": "fit",
+      "name": "V24917_FIT_SUMMARY.json",
+      "upload_id": "file_00000000c56081f4b0cdc9bd78c12068",
+      "bytes": 252969,
+      "sha256": "ec2b9f7dc40abb26a95f131d770cb37f8026e6dcbb1441ff729060123bec7d3c"
+    },
+    {
+      "label": "cache_deferred",
+      "name": "LONG_SHARED_CACHE_DEFERRED.json",
+      "upload_id": "file_00000000c7f082438f195a42d4272aa6",
+      "bytes": 69,
+      "sha256": "930e58a4c9c67d2ef9389182eb50c22e094a7aca9dea57890b57dffcb9f2c443"
+    },
+    {
+      "label": "guard",
+      "name": "LONGGUARD1_PARENT.json",
+      "upload_id": "file_00000000b0688243b2b890dc61457bd3",
+      "bytes": 3018,
+      "sha256": "bdf5f15dbc7ae05f1b1a822e352db3192dd878b26d1a254b0a2fbb3765ea62a5"
+    }
+  ]
+}

@@ -114,6 +114,12 @@ def _validate_profiles(profiles, cfg):
         if len(key) != 3:
             raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_EDGE_INVALID")
         direction = str(row.get("direction", "DIRECTED")).upper()
+        # The native bootstrap uses DIRECTIONAL for CSD rows whose CSV has
+        # no observation_direction field. It means the single authoritative
+        # edge_key, just like the DIRECTED scope of the diagnostic/path rows.
+        # Keep BOTH and every physical edge comparison strict.
+        if direction == "DIRECTIONAL":
+            direction = "DIRECTED"
         if direction not in ("DIRECTED", "BOTH"):
             raise ValueError("LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID")
         keys = (key, (key[0], key[2], key[1])) if direction == "BOTH" else (key,)

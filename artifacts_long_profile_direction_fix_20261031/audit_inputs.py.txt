@@ -1,0 +1,83 @@
+"""Read-only consistency checks for the 18 uploaded live Generation artifacts."""
+from pathlib import Path
+import collections
+import csv
+import hashlib
+import json
+import math
+
+BASE = Path(__file__).resolve().parent
+uploads = json.loads((BASE / 'UPLOADS.json').read_text())
+paths = {item['label']: Path(item['result']['path']) for item in uploads}
+data = {key: json.loads(path.read_text(encoding='utf-8-sig'))
+        for key, path in paths.items() if key != 'projection'}
+checks = []
+
+
+def check(name, condition):
+    checks.append({'name': name, 'passes': bool(condition)})
+    if not condition:
+        raise AssertionError(name)
+
+
+check('18 supplied files', len(uploads) == len(paths) == 18)
+sources = []
+for item in uploads:
+    path = paths[item['label']]
+    raw = path.read_bytes()
+    check('download size: ' + item['label'], len(raw) == item['result']['size_bytes'])
+    sources.append({'label': item['label'], 'name': path.name,
+                    'upload_id': item['file_id'], 'bytes': len(raw),
+                    'sha256': hashlib.sha256(raw).hexdigest()})
+guard, fit, gen = data['guard'], data['fit'], data['generation']
+ls, acceptance, preview = fit['long_school'], data['acceptance'], data['preview']
+reason = 'LONG_INCIDENCE_PROFILE_AUTHORITY_DIRECTION_INVALID'
+check('guard measured', guard['status'] == 'MEASURED')
+check('OSRM support clean', guard['support_clean'] is True and guard['below_min_km'] == 0)
+check('FineCDF verified', guard['fine_cdf_verified'] is True and guard['fine_cdf_unverified_reason'] is None)
+check('parent permits LONG', guard['long_generation_permitted'] is True)
+check('parent proof propagated unchanged', fit['longguard1_parent'] == guard)
+check('LONG requested', fit['long_generation_requested'] is True)
+check('LONG not candidate eligible', fit['long_generation_candidate_eligible'] is False)
+check('cache precise failure', data['cache_deferred'] == {'error': reason})
+check('fit carries precise failure', ls['long_deferred_reason'] == reason)
+check('LONG excluded', ls['long_generation_permitted'] is False and ls['long_zone_steps'] == 0)
+check('mobility source available', data['mobility']['status'] == 'VERIFIED' and not data['mobility']['unavailable'])
+check('generation accepted in place', gen['status'] == 'ACCEPTED' and gen['adopted_in_place'] is True)
+check('three trials', len(gen['attempts']) == 3 and gen['early_stop_trial'] == 3)
+check('first two rejected', all(a['status'] == 'REJECTED' and a['decision']['accepted'] is False for a in gen['attempts'][:2]))
+check('final acceptance passed', acceptance['accepted'] is True and acceptance['reasons'] == [])
+check('acceptance matches block', acceptance == gen['attempts'][-1]['decision'])
+check('no LONG changed at acceptance', acceptance['longguard1']['changed_long'] is False)
+check('row count agrees', gen['rows'] == len(preview['candidate_rows']) == 2991)
+check('scale agrees', gen['candidate']['scale'] == preview['summary']['backtracking_scale']
+      == data['step3']['scale'] == data['ls_rows']['scale'] == 0.181579)
+counts = {}
+for label, key in [('design', 'candidate_rows'), ('preview', 'candidate_rows'), ('ls_rows', 'rows')]:
+    rows = data[label][key]
+    counts[label] = dict(collections.Counter(row.get('attr') for row in rows))
+    check('no LONG coefficients in ' + label,
+          not any(row.get('attr') in ('ADD_PROD_L', 'ADD_ATT_L') for row in rows))
+with paths['projection'].open(encoding='utf-8-sig', newline='') as stream:
+    projection = list(csv.DictReader(stream, delimiter=';'))
+check('projection has family schema', bool(projection) and 'family' in projection[0])
+check('no LONG fit projection', not any(row['family'] == 'LONG' for row in projection))
+check('LS genuinely incomplete', gen['ls_search_incomplete'] is True
+      and gen['search_complete'] is False and gen['stationarity_confirmed'] is False)
+before, after = gen['objective_before']['raw_cal'], gen['objective_after']['raw_cal']
+check('GEH improved', math.isfinite(before) and 0 < after < before)
+summary = {'status': 'PASS', 'checks': checks, 'check_count': len(checks),
+    'long_blocker': reason, 'long_parent_permitted': True, 'long_candidate_eligible': False,
+    'generation': {'status': gen['status'], 'scale': gen['candidate']['scale'],
+        'geh_before': before, 'geh_after': after, 'geh_improvement_percent': (1-after/before)*100,
+        'gap': gen['gap'], 'rows': gen['rows'], 'long_rows': 0,
+        'model_observed_ratio_before': gen['objective_before']['cal_metrics']['model_obs_ratio'],
+        'model_observed_ratio_after': gen['objective_after']['cal_metrics']['model_obs_ratio'],
+        'profile_count': gen['objective_before']['cal_metrics']['n'],
+        'profile_sums_are_unique_trips': False},
+    'guard': {'fine_cdf_rmse': guard['fine_100_200_rmse'], 'below_80_km': guard['below_min_km'],
+        'total_person_volume': guard['total_volume'], 'fine_cdf_verified': True},
+    'candidate_attributes': counts, 'projection_rows': len(projection), 'sources': sources}
+(BASE / 'LIVE_EVIDENCE_CHECKS.json').write_text(json.dumps(summary, indent=2) + '\n')
+print(json.dumps({'status': 'PASS', 'checks': len(checks), 'long_blocker': reason,
+                  'generation_geh_improvement_percent': (1-after/before)*100}))
