@@ -696,3 +696,147 @@ def test_costfix1_does_not_repeat_identical_fallback_assignment(harness, monkeyp
     assert changed is False and len(rec["attempts"]) == 1
     assert rec["stop_reason"] == "DUPLICATE_COST_SAFE_CANDIDATE"
     assert len(h.ad.assignments) == 2  # one trial, one rollback recompute
+
+
+# ---------------------------------------------------------- expanded search
+def test_expanded_run_options_and_defaults_use_four_integer_attempts():
+    import r1_15a2_demand_policy_v1 as dp
+    configured = dp.load_options(ROOT, environ={})
+    defaults = dp.validate({})
+    for options in (configured, defaults):
+        assert options["sp_max_trials"] == 4
+        assert options["sp_step_units"] == [8, 6, 4, 2]
+        assert options["sp_max_groups"] == 24
+        assert options["sp_max_edges"] == 240
+    assert configured["sp_every_n_cycles"] == 2 and configured["sp_start_cycle"] == 2
+
+
+@pytest.mark.parametrize("max_groups,max_edges,expected", [(24, 240, 24), (24, 125, 12), (13, 240, 13)])
+def test_expanded_candidate_reaches_new_group_and_edge_limits(max_groups, max_edges, expected):
+    # Thirty disjoint ten-edge branches: sufficient support to exercise both
+    # budgets independently. Unit 2 is an integer, cost-safe proved amplitude.
+    candidates, table, keys = [], {}, []
+    for n in range(30):
+        branch = [(10000 + 10*n + j, 1000 + 11*n + j, 1001 + 11*n + j) for j in range(10)]
+        pid = str(950000 + n)
+        candidates.extend(ladder("WIDE_%s" % n, pid, branch, [1]*10, units=(2,), rank=n))
+        table[pid] = {"geh": 100.0-n, "sign": 1}
+        keys.extend(branch)
+    links, baseline, policy = _cost_basis(keys)
+    candidate, audit = sm.cost_safe_merged_candidate(
+        {"candidates": candidates, "authority": {"assignment_path_hash": "WIDE"}}, table,
+        dict(OPTS, max_groups=max_groups, max_edges=max_edges), "BOTH", 8,
+        "PARENT", links, baseline, policy, True)
+    assert len(candidate["members"]) == expected
+    assert len(candidate["changes"]) == 10*expected
+    assert len({tuple(row["key"]) for row in candidate["changes"]}) == 10*expected
+    assert audit["full_proved_branches_only"] is True
+
+
+def _expanded_ladder(h, monkeypatch, units=(8, 6, 4, 2)):
+    def source(diag, folder, snapshot):
+        h.ad.supply_path_proof = {"parent_hash": snapshot["state_hash"], "assignment_path_hash": "APH"}
+        return {"candidates": ladder("FOUR", 900001, ON + OFF, [1, 1, -1, -1], units=units),
+                "authority": {"assignment_path_hash": "APH"}}
+    monkeypatch.setattr(h.ad, "supply_design", source)
+    return dict(OPTS, max_trials=4, step_units=[8, 6, 4, 2], max_groups=24, max_edges=240)
+
+
+def test_expanded_block_can_accept_fourth_native_trial(harness, monkeypatch):
+    h = harness(shift=60.0)
+    opts = _expanded_ladder(h, monkeypatch)
+    gates = []
+
+    def gate(*args):
+        gates.append(h.ad.addval[kt(ON[0])])
+        return {"accepted": len(gates) == 4, "reasons": [] if len(gates) == 4 else ["TEST_REJECT"]}
+    monkeypatch.setattr(h.ad, "block_gate", gate)
+    changed, state, diag, value, record = h.run(opts=opts)
+    assert changed and record["accepted_trial"] == 4
+    assert gates == [4.0, 3.0, 2.0, 1.0]
+    assert len(h.ad.assignments) == 4
+    assert state["addval1"][kt(ON[0])] == 1.0
+    assert state["addval1"][kt(OFF[0])] == -1.0
+    assert state["generation_hash"] == h.state["generation_hash"]
+    assert state["td_hash"] == h.state["td_hash"]
+
+
+def test_expanded_block_rolls_back_parent_after_all_four_rejections(harness, monkeypatch):
+    h = harness(shift=60.0)
+    opts = _expanded_ladder(h, monkeypatch)
+    monkeypatch.setattr(h.ad, "block_gate", lambda *args: {"accepted": False, "reasons": ["TEST_REJECT"]})
+    changed, state, diag, value, record = h.run(opts=opts)
+    assert not changed and record["status"] == "NO_ACCEPTED_TRIAL"
+    assert len(record["attempts"]) == 4
+    assert len(h.ad.assignments) == 5  # four trials and one verified parent recompute
+    assert state == h.state and h.ad.snapshot() == h.state
+    assert diag == h.diag
+
+
+def test_duplicate_intermediate_limits_do_not_hide_later_smaller_trial(harness, monkeypatch):
+    h = harness(shift=60.0)
+    opts = _expanded_ladder(h, monkeypatch, units=(8, 4, 2))
+    h.ad.link_t0[OFF[0]] = h.ad.link_t0[OFF[1]] = 35.0
+    gates = []
+
+    def gate(*args):
+        gates.append(h.ad.addval[kt(ON[0])])
+        return {"accepted": len(gates) == 2, "reasons": [] if len(gates) == 2 else ["TEST_REJECT"]}
+    monkeypatch.setattr(h.ad, "block_gate", gate)
+    changed, state, diag, value, record = h.run(opts=opts)
+    assert changed and record["accepted_trial"] == 4
+    assert gates == [2.0, 1.0] and len(h.ad.assignments) == 2
+    assert [row.get("skip_reason") for row in record["costfix1"]["trials"]].count(
+        "DUPLICATE_COST_SAFE_CANDIDATE") == 2
+    assert "stop_reason" not in record
+
+
+@pytest.mark.parametrize("design_fails", [False, True])
+def test_expanded_source_gets_new_amplitude_and_budget_then_restores_scope(harness, monkeypatch, design_fails):
+    from r1_15a2_supply import SupplyPolicy
+    h = harness()
+    h.ad.policy = SupplyPolicy(lattice=0.5, max_step=8, max_cumulative=15, min_attribution_coverage=0.9)
+    original_cfg, original_policy = h.ad.cfg, h.ad.policy
+    original_bytes = json.dumps(original_cfg, sort_keys=True)
+    seen = {}
+
+    def source(diag, folder, snapshot):
+        seen["steps"] = h.ad.cfg["supply"]["sequence"]["step_units_schedule"]
+        seen["max_candidates"] = h.ad.policy.max_candidates
+        seen["coverage"] = h.ad.policy.min_attribution_coverage
+        if design_fails:
+            raise RuntimeError("DESIGN_FAILURE_WITH_SCOPED_CONFIG")
+        return {"candidates": []}
+    monkeypatch.setattr(h.ad, "supply_design", source)
+    changed, state, diag, value, record = h.run(opts=dict(
+        OPTS, max_trials=4, step_units=[8, 6, 4, 2], max_groups=24, max_edges=240,
+        min_attribution_coverage=0.5))
+    assert not changed
+    assert seen == {"steps": [16, 8, 6, 4, 2, 1], "max_candidates": 144, "coverage": 0.5}
+    assert h.ad.policy is original_policy and h.ad.cfg is original_cfg
+    assert json.dumps(h.ad.cfg, sort_keys=True) == original_bytes
+    assert h.ad.writes == 0
+    assert record["status"] == ("DESIGN_FAILED_NO_WRITE" if design_fails else "NO_DRIVER_BRANCH")
+
+
+def test_new_three_addval_step_is_generated_from_exact_saved_routes():
+    from test_supply_v22 import links, profile, route_rows
+    from r1_15a2_sequence_v23 import ActualSequenceRouteCollector, propose_sequence_supply
+    from r1_15a2_supply import SupplyPolicy
+    policy = SupplyPolicy(lattice=0.5, max_step=8, max_cumulative=15,
+                          min_geh=1, min_residual=1, max_candidates=144)
+    # Startup tests reload runtime modules; construct both ends of the exact
+    # collector contract from the currently imported module, not an old fixture.
+    collector = ActualSequenceRouteCollector([profile()], policy, "parent", links())
+    try:
+        pp, ll = route_rows()
+        collector.consume(pp, ll, {"code": "NATIVE_CW"})
+        design = propose_sequence_supply(collector, links(), {k: 0.0 for k in links()}, policy,
+                                         step_units=(16, 8, 6, 4, 2, 1))
+        new_steps = [row for row in design["candidates"] if row["step_units"] == 6]
+        assert new_steps
+        assert all(row["bundles"] and row["assignment_path_hash"] for row in new_steps)
+        assert all(abs(change["delta"]) == 3.0 for row in new_steps for change in row["changes"])
+        assert all(row["all_path_impact"]["max_abs_path_seconds"] <= 360 for row in new_steps)
+    finally:
+        collector.close()

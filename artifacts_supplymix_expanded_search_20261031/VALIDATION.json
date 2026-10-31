@@ -1,0 +1,125 @@
+{
+  "baseline_remote_commit": "b59e05959c23a72b8b614de8b17cc9cb51a7a5ea",
+  "baseline_local_commit": "fc009126ee163fc8d8b5d872400e7db9b81242c2",
+  "live_visum_tested": false,
+  "targeted": {
+    "passed": 113,
+    "returncode": 0
+  },
+  "compile_returncode": 0,
+  "diff_check_returncode": 0,
+  "DIAGFAST_V1_BASE_MANIFEST.json": {
+    "files": 1059,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "files": 180,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "V24917_RUNTIME_MANIFEST.json": {
+    "files": 91,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "option_changes": {
+    "sp_max_trials": {
+      "before": 2,
+      "after": 4
+    },
+    "sp_step_units": {
+      "before": [
+        8,
+        4
+      ],
+      "after": [
+        8,
+        6,
+        4,
+        2
+      ]
+    },
+    "sp_max_groups": {
+      "before": 12,
+      "after": 24
+    },
+    "sp_max_edges": {
+      "before": 120,
+      "after": 240
+    }
+  },
+  "suites": {
+    "release": "GENFIX2",
+    "offline_only": true,
+    "live_visum_tested": false,
+    "suites": [
+      {
+        "suite": "main",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/supplymix_expanded_search_20261031/source/tests"
+        ],
+        "returncode": 0,
+        "seconds": 42.682
+      },
+      {
+        "suite": "diagfast",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/supplymix_expanded_search_20261031/source/diagfast_tests"
+        ],
+        "returncode": 0,
+        "seconds": 20.768
+      },
+      {
+        "suite": "audit_genfix2",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/supplymix_expanded_search_20261031/source/genfix2_audit_tests"
+        ],
+        "returncode": 0,
+        "seconds": 0.766
+      }
+    ],
+    "all_passed": true,
+    "output": "/workspace/work/supplymix_expanded_search_20261031/checks_verified",
+    "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+  },
+  "suite_summaries": {
+    "main": "2438 passed, 4 skipped in 42.18s",
+    "diagfast": "189 passed in 20.53s",
+    "audit_genfix2": "18 passed in 0.55s"
+  },
+  "patch": {
+    "format": "gzip+base64",
+    "decoded_sha256": "c4af4998b0029698cc46c8faf334ac04010f89e0ffc67c14e1cd43c93349504a",
+    "gzip_sha256": "080c45c0dd4864d7b55d3d67d10fce57c11855d1e445a722a4e17f06a64e455a",
+    "decoded_bytes": 24286
+  },
+  "implementation_sha256": {
+    "R1_RUN_OPTIONS.json": "16ee2f417a9ddfc4fb21611d97fcc0c2e809ca13e4dfc2978ba1dec50d91744a",
+    "r1_15a2_demand_policy_v1.py": "9ac7202b04613367ce9e43bb9fe0578ba2d2161a25be186c4d690b765b0f905b",
+    "r1_15a2_supply_mix_v24917.py": "e9b51daf800cf7d7ee3ede4384ce2c085099d700c23347798fd891daed51b50d",
+    "tests/test_v24917_supply_mix.py": "a8c2711df528123650fedbcedfc7880e2e268360b65186b4cb87efc2e6446bfa",
+    "tools/refresh_v24917_manifests.py": "cf1399884de4590ce0b3df4715d05bfed860ed1a3d6e0449e550108e32993018",
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "150ad514fcd829bac074396e84ffcc3995a14c987ceecad49cb9569d1054799e",
+    "V24917_RUNTIME_MANIFEST.json": "741d9cf4c000ed514c661bd1a0d2cb8633ac0ac43a4f45829b3a4c27888a9030"
+  },
+  "archived_log_normalization": "Trailing whitespace removed from archived text logs only; numeric results unchanged."
+}

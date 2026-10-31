@@ -26,7 +26,7 @@ saved Visum paths.  SUPPLYMIX1 adds:
   recompute is therefore deterministic (hash-equal diagnostics);
 * acceptance = the reviewed Supply route-choice policy (block gate scope
   SUPPLY_ADDVAL1 + shared counts objective must improve); the eligible trial is
-  kept in place (no re-apply), a rejected one is retried once at a smaller step
+  kept in place (no re-apply), rejected ones are retried at configured smaller steps
   without the branches whose driver profile got worse, then rolled back;
 * fail-safe: any error before a write -> recorded, demand cycle continues; any
   error after a write -> verified rollback, demand cycle continues; a rollback
@@ -43,7 +43,7 @@ import traceback
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
-RELEASE = "R1_15A2_V24917_SUPPLYMIX_COSTFIX1_TG_COMPLETION_ISOLATION_20261030"
+RELEASE = "R1_15A2_V24917_SUPPLYMIX_EXPANDED_SEARCH1_20261031"
 BLOCK = "SUPPLY_ADDVAL1"
 RESET_TYPE = 9
 GROUP_TYPE = 75
@@ -61,10 +61,10 @@ def options() -> Dict[str, Any]:
         "enabled": bool(o.get("sp_enabled", True)),
         "every_n": int(o.get("sp_every_n_cycles", 1)),
         "start_cycle": int(o.get("sp_start_cycle", 1)),
-        "max_trials": int(o.get("sp_max_trials", 2)),
-        "step_units": [int(x) for x in o.get("sp_step_units", [8, 4])],
-        "max_groups": int(o.get("sp_max_groups", 12)),
-        "max_edges": int(o.get("sp_max_edges", 120)),
+        "max_trials": int(o.get("sp_max_trials", 4)),
+        "step_units": [int(x) for x in o.get("sp_step_units", [8, 6, 4, 2])],
+        "max_groups": int(o.get("sp_max_groups", 24)),
+        "max_edges": int(o.get("sp_max_edges", 240)),
         "min_driver_geh": float(o.get("sp_min_driver_geh", 10.0)),
         "drivers": str(o.get("sp_drivers", "AUTO")).upper(),
         "reset_position": int(o.get("sp_cold_reset_position", 15)),
@@ -543,23 +543,36 @@ def _supply_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state, dia
                 # live model).  Inside the demand loop the proposal accepts a lower coverage;
                 # every candidate is still judged by a fresh Visum assignment.
                 old_policy = getattr(adapter, "policy", None)
+                old_design_cfg = adapter.cfg
                 cov = float(opts.get("min_attribution_coverage", 0.5))
-                # max_candidates counts ladder members (up to 5 steps per branch): the reviewed
-                # 40 leaves only ~8 branches, so one block could never see sp_max_groups profiles.
-                if old_policy is not None and hasattr(old_policy, "min_attribution_coverage"):
-                    import dataclasses
-                    repl = {}
-                    if cov < float(old_policy.min_attribution_coverage):
-                        repl["min_attribution_coverage"] = cov
-                    want = min(200, 5 * int(opts.get("max_groups", 12)))
-                    if int(getattr(old_policy, "max_candidates", want)) < want:
-                        repl["max_candidates"] = want
-                    if repl:
-                        adapter.policy = dataclasses.replace(old_policy, **repl)
-                        rec["design_policy_override"] = repl
                 try:
+                    # Generate every configured amplitude from actual saved paths.
+                    # Unit 6 (=3 ADDVAL1) is absent from the sealed legacy ladder;
+                    # it cannot be manufactured by scaling an already proved row.
+                    design_cfg = copy.deepcopy(old_design_cfg)
+                    seq = design_cfg.setdefault("supply", {}).setdefault("sequence", {})
+                    trial_steps = opts["step_units"][:int(opts["max_trials"])]
+                    design_steps = sorted(set(seq.get("step_units_schedule", [1])) |
+                                          set(trial_steps), reverse=True)
+                    seq["step_units_schedule"] = design_steps
+                    adapter.cfg = design_cfg
+                    rec["design_step_units"] = design_steps
+                    # The source budget counts ladder members, not profiles.
+                    # Keep complete ladders for the enlarged group budget.
+                    if old_policy is not None and hasattr(old_policy, "min_attribution_coverage"):
+                        import dataclasses
+                        repl = {}
+                        if cov < float(old_policy.min_attribution_coverage):
+                            repl["min_attribution_coverage"] = cov
+                        want = min(200, len(design_steps) * int(opts["max_groups"]))
+                        if int(getattr(old_policy, "max_candidates", want)) < want:
+                            repl["max_candidates"] = want
+                        if repl:
+                            adapter.policy = dataclasses.replace(old_policy, **repl)
+                            rec["design_policy_override"] = repl
                     design = adapter.supply_design(diag, folder / "DESIGN", state)
                 finally:
+                    adapter.cfg = old_design_cfg
                     if old_policy is not None:
                         adapter.policy = old_policy
                 # CostFix1: read the SAME live link t0/ADDVAL1 values which the
@@ -614,7 +627,9 @@ def _supply_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state, dia
                     break
                 if cand["candidate_id"] in attempted_candidate_ids:
                     rec["stop_reason"] = "DUPLICATE_COST_SAFE_CANDIDATE"
-                    break
+                    cost_audit["skip_reason"] = "DUPLICATE_COST_SAFE_CANDIDATE"
+                    continue  # A later, smaller limit may still produce a new candidate.
+                rec.pop("stop_reason", None)
                 attempted_candidate_ids.add(cand["candidate_id"])
                 tfolder = folder / ("TRY_%02d" % ordinal)
                 tfolder.mkdir(parents=True, exist_ok=True)
@@ -936,7 +951,7 @@ def install(print_fn=print) -> Dict[str, Any]:
         ctrl._generation_update_once = _wrap_generation(ctrl._generation_update_once, ctrl, base, tx)
     _STATE["installed"] = True
     _STATE["options"] = o
-    print_fn("V24917 SUPPLYMIX_COSTFIX1: %s; ADDVAL1 route choice every %d cycle(s) after Generation, steps %s x0.5, "
+    print_fn("V24917 SUPPLYMIX_EXPANDED_SEARCH1: %s; ADDVAL1 route choice every %d cycle(s) after Generation, steps %s x0.5, "
              "drivers %s (GEH>=%.0f), cold op%d..assignment"
              % ("ON" if o["enabled"] else "OFF", o["every_n"], o["step_units"], o["drivers"],
                 o["min_driver_geh"], o["reset_position"]))

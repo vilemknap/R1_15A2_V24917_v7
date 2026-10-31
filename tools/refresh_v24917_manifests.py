@@ -95,6 +95,8 @@ RUNTIME = [
     "01_SPUSTIT_V24917_B0002_PATH_EPOCH_SMOKE_SILENT.py",
     "B0002_CYCLE2_RESUME_AUTHORITY.json",
     "r1_15a2_school_td_v24917.py",
+    "r1_15a2_fresh_universal_v24917.py",
+    "01_SPUSTIT_V24917_FRESH_UNIVERSAL_TDPERF_SILENT.py",
 ]
 
 
