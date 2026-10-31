@@ -957,6 +957,51 @@ def _inner_with_penalty(orig_inner, adapter, cfg, folder, control, package_root,
     return inner
 
 
+def _unchanged_failure_td_audit(adapter, before, rows, folder):
+    """Prove b/c need no writes; the caller still restores impedance and runs TD.
+
+    Only the failed-TD recovery path may use this optimization. A live strict
+    snapshot is mandatory; a cached pre-mutation proof is never sufficient.
+    This does not certify the rest of the model or skip downstream verification.
+    """
+    if folder is None or Path(folder).name != "ROLLBACK_AFTER_TD_FAILURE" or not rows:
+        return None
+    reader = getattr(adapter, "generation_guard_snapshot", None)
+    if not callable(reader):
+        return None
+    live = reader()  # preserves transient COM errors and the existing retry lease
+    for key in ("td_hash", "operations_hash"):
+        value = before.get(key)
+        if (not isinstance(value, str) or len(value) != 64
+                or any(c not in "0123456789abcdef" for c in value)
+                or live.get(key) != value):
+            return None
+    old_values = before.get("td_values") or []
+    current = live.get("td_values") or []
+    if current != old_values:
+        return None
+    for values in (old_values, current):
+        by_component = {}
+        for row in values:
+            comp = row.get("component")
+            if not comp or comp in by_component or row.get("status") != "OK":
+                return None
+            for attr in ("current_b", "current_c"):
+                value = row.get(attr)
+                if type(value) not in (int, float) or not math.isfinite(value):
+                    return None
+            by_component[comp] = row
+    components = [row.get("component") for row in rows]
+    if len(set(components)) != len(components) or any(c not in by_component for c in components):
+        return None
+    return [{"component": comp, "candidate_b": by_component[comp]["current_b"],
+             "candidate_c": by_component[comp]["current_c"],
+             "readback_b": by_component[comp]["current_b"],
+             "readback_c": by_component[comp]["current_c"], "status": "OK",
+             "write_skipped": True, "proof": "UNCACHED_LIVE_TD_AND_OPERATIONS_MATCH_PARENT"}
+            for comp in components]
+
+
 def install(print_fn=print) -> Dict[str, Any]:
     if _INSTALLED.get("installed"):
         return dict(_INSTALLED["installed"])
@@ -968,7 +1013,13 @@ def install(print_fn=print) -> Dict[str, Any]:
 
     @functools.wraps(orig_restore)
     def restore_td_parameters(adapter, before_snapshot, candidate_rows, folder=None):
-        audit = orig_restore(adapter, before_snapshot, candidate_rows, folder)
+        audit = _unchanged_failure_td_audit(adapter, before_snapshot, candidate_rows, folder)
+        if audit is None:
+            audit = orig_restore(adapter, before_snapshot, candidate_rows, folder)
+        else:
+            # Critical evidence: unlike optional IZ search reports, failure to
+            # write this readback must propagate to the recovery owner.
+            tx.atomic_json(Path(folder) / "ROLLBACK_PARAMETER_READBACK.json", audit)
         restore_from_snapshot(adapter.visum, before_snapshot, adapter)
         return audit
     restore_td_parameters._v24917_iz = True

@@ -1,0 +1,16 @@
+{
+  "text_copies": "LF; trailing whitespace removed from log copies only",
+  "raw_source_sha256": {
+    "baseline_verified_reproductions.log": "88a447ae4a711e55825e7137f6b77e64f842136d9fec7d1520a221035d532f45",
+    "focused_verified.log": "29b6046e32ddfe7ec175dbac17ca4d60d33c9f024388f94c437162909b4ca839",
+    "path_test_short_temp.log": "99a24796443a1d07f66a424f8116a06a2079063af758e7d3c87801c191ad2ecd",
+    "final_full/CHECKS.json": "b058625f865d61550bb6fda137e2e8eb424af0b15a740cdfe7b71ee1122ba6de",
+    "final_full/audit_genfix2.log": "cb78442d1f7c6f44cecb96e05740a23c518fd8a8572acceb2be233b9a150b987",
+    "final_full/diagfast.log": "9bbe786d1f34618a6c06cdc413337a69c475cfecf5c13d158bc2e7ff13b21b01",
+    "final_full/main.log": "f72be3a9658cabe54315e66ab61033c876380410a6bfad248904354fe76f9f44",
+    "first_full/CHECKS.json": "ee23ebdc324e3da1218229e79c2bced2d9ddd4f615b1e75a9647857bcd01d54f",
+    "first_full/audit_genfix2.log": "13044bacc6307829903f6644f6acc927db932aea5040256690ae58aee2d982ed",
+    "first_full/diagfast.log": "437bedf2ce931ba69b76d1021c4db117d10a7c5bde76936f778f05a3c3b7a041",
+    "first_full/main.log": "d91c95666226e49e512c0e5789fe526eba5d95e3628abae21e16685bc1beb02e"
+  }
+}

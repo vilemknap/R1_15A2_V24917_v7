@@ -1,0 +1,41 @@
+{
+  "generation_status": "CONFIGURED_GENERATION_SEARCH_EXHAUSTED",
+  "generation_changed": false,
+  "supplymix_status": "NO_ACCEPTED_TRIAL",
+  "supplymix_attempts": [
+    {
+      "trial": 1,
+      "status": "REJECTED",
+      "decision_reasons": [
+        "CAL_GEH_OBJECTIVE_NOT_IMPROVED",
+        "SHARED_OBJECTIVE_NOT_IMPROVED"
+      ]
+    },
+    {
+      "trial": 2,
+      "status": "REJECTED",
+      "decision_reasons": [
+        "CAL_GEH_OBJECTIVE_NOT_IMPROVED",
+        "SHARED_OBJECTIVE_NOT_IMPROVED"
+      ]
+    }
+  ],
+  "hashes_match_accepted_B0002": {
+    "generation_hash": true,
+    "td_hash": true,
+    "addval_hash": true
+  },
+  "checkpoint_hashes": {
+    "generation_hash": "5c0a4290a72fc62f109e9578da5388789837a2df6977c92624ff21e1aa68a92d",
+    "td_hash": "0d4d2e5333bb45d68e94a95101ae4a85ffa8a4d3cb39c807e29c5fff284d2433",
+    "addval_hash": "47ce4dbe3abe51237d33680c95d7773a62da15914b90bda666aef9e9038bbb19"
+  },
+  "parent_proof_status": "CAPTURED_BEFORE_MUTATION",
+  "snapshot_format_replay": {
+    "native_mutable_components": 16,
+    "status": "PASS",
+    "new_live_read_proof": false
+  },
+  "live_failure_status": "ROLLBACK_FAILED_MANUAL_REOPEN_REQUIRED",
+  "live_visum": "NOT_RUN"
+}

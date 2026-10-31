@@ -27,7 +27,7 @@ import functools
 import time
 from typing import Any, Dict
 
-RELEASE = "R1_15A2_V24917_COMBUSY2_20261025"
+RELEASE = "R1_15A2_V24917_COMBUSY2_TDRECOVERY1_20261031"
 _STATE: Dict[str, Any] = {"installed": False, "message_filter": None, "budget_floor": None,
                           "rollback_retries": 0, "block_retries": 0, "events": []}
 
@@ -42,6 +42,56 @@ def options() -> Dict[str, Any]:
 def _event(kind, **kw):
     _STATE["events"].append(dict(kind=kind, t=time.time(), **kw))
     del _STATE["events"][:-100]
+
+
+def _manual_recovery_required(exc):
+    """An explicit failed-recovery verdict overrides a transient inner cause."""
+    seen = set()
+    while exc is not None and id(exc) not in seen:
+        seen.add(id(exc))
+        text = str(exc).upper()
+        if any(code in text for code in ("MANUAL_REOPEN", "MANUAL_RECOVERY_REQUIRED",
+                                         "REOPEN_LATEST_ACCEPTED_REQUIRED")):
+            return True
+        exc = getattr(exc, "__cause__", None) or getattr(exc, "__context__", None)
+    return False
+
+
+def install_td_constructor_retry(bridge):
+    """Retry the approved, read-only TD09C constructor; never native execution.
+
+    It reads operations, parameters, zones and matrices and writes diagnostic
+    files only. A retry starts that complete capture again. Other constructors
+    are left untouched rather than assuming they are safe to repeat.
+    """
+    cls = bridge.NoDirectMatrixWriteTDAdapter
+    original = cls.__init__
+    if getattr(original, "_v24917_td_constructor_retry", False):
+        return
+    if not getattr(original, "_v24916_td09c_compat", False):
+        return
+    # The compatibility marker can be copied by arbitrary wrappers. Repeat
+    # only the actual protected constructor, whose body has no model writes.
+    # Its module is already loaded when compatibility activation has occurred.
+    from r1_15a2_td09c_16or17_hotfix_v24916 import _compatible_init
+    if original is not _compatible_init:
+        return
+    import r1_15a2_com_compat as com
+
+    @functools.wraps(original)
+    def initialize(self, visum, ref, root, control=None, telemetry=None, outer_adapter=None):
+        policy = getattr(outer_adapter, "com_retry_policy", None)
+        if policy is None:
+            policy = (getattr(outer_adapter, "cfg", {}) or {}).get("com_resilience")
+        return com.com_call_with_retry(
+            lambda: original(self, visum, ref, root, control=control,
+                             telemetry=telemetry, outer_adapter=outer_adapter),
+            label="V24917_TD09C_READ_ONLY_CONSTRUCTOR", retry_policy=policy,
+            sleep_fn=_pump_sleep,
+            on_retry=lambda event: _event("TD_CONSTRUCTOR_READ_RETRY", **event))
+
+    initialize._v24917_td_constructor_retry = True
+    cls.__init__ = initialize
 
 
 def _pump_sleep(seconds: float) -> None:
@@ -130,7 +180,8 @@ def _wrap_rollback(orig, com, max_wait):
             try:
                 return orig(*args, **kwargs)
             except Exception as exc:
-                if not com.is_retryable_com_error(exc) or time.monotonic() - started > max_wait:
+                if (_manual_recovery_required(exc) or not com.is_retryable_com_error(exc)
+                        or time.monotonic() - started > max_wait):
                     raise
                 _STATE["rollback_retries"] += 1
                 _event("ROLLBACK_RETRY", error=str(exc)[:300], wait=delay)
@@ -161,6 +212,10 @@ def _wrap_block(orig, com, label, state_pos, retries):
             try:
                 return orig(adapter, cfg, folder, *args, **kwargs)
             except Exception as exc:
+                # Do not spend up to twenty snapshot leases (or restart a
+                # block) after the recovery owner explicitly required reopening.
+                if _manual_recovery_required(exc):
+                    raise
                 state = args[state_pos] if len(args) > state_pos else kwargs.get("state")
                 if (attempt >= retries or not com.is_retryable_com_error(exc) or state is None
                         or not _parent_unchanged(adapter, state)):

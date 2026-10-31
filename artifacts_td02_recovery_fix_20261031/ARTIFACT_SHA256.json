@@ -1,0 +1,18 @@
+{
+  "EVIDENCE_COPY_FORMAT.json": "733695cee7c0e4af6697458f93f93c4a489f97bd1c89debeed6c04d9023720ec",
+  "HANDOFF_CZ.md": "f8061642f1582e9b4d987e85074630654e406e309f6f52939a89b4085886f3c2",
+  "IMPLEMENTATION.patch": "31f798cd2b7344349100e20b233f2ca78cab3203f8013eedbe05012449f246e7",
+  "LIVE_DATA_LINKAGE.json": "f523b755e9d7300df84747aea7528b74401b1c536602c87a14c89ecd82c9db41",
+  "RELEASE_INTEGRITY.json": "7dac3fee6d50dd83566da803eb98ce3ebe8c70439e76bbf51ef95d31a4fc2e08",
+  "baseline_verified_reproductions.log": "a1f7839b66932c8633e04f151a10e114206326f911ec0507d7f0c57627234daa",
+  "final_full/CHECKS.json": "40560c58dfc6f46e961b98dffe744198425b7422e0a6d503dc626cdb0d0155fa",
+  "final_full/audit_genfix2.log": "cb78442d1f7c6f44cecb96e05740a23c518fd8a8572acceb2be233b9a150b987",
+  "final_full/diagfast.log": "9bbe786d1f34618a6c06cdc413337a69c475cfecf5c13d158bc2e7ff13b21b01",
+  "final_full/main.log": "f72be3a9658cabe54315e66ab61033c876380410a6bfad248904354fe76f9f44",
+  "first_full/CHECKS.json": "7ddbe7e36f3e499eaa4c2feb0ed18d6b96138e2702d7c0378cd20c6982038116",
+  "first_full/audit_genfix2.log": "13044bacc6307829903f6644f6acc927db932aea5040256690ae58aee2d982ed",
+  "first_full/diagfast.log": "437bedf2ce931ba69b76d1021c4db117d10a7c5bde76936f778f05a3c3b7a041",
+  "first_full/main.log": "d6083c789e455c58d32173987e85678b4299241824998b05f7157db3f1a5a7cf",
+  "focused_verified.log": "29b6046e32ddfe7ec175dbac17ca4d60d33c9f024388f94c437162909b4ca839",
+  "path_test_short_temp.log": "99a24796443a1d07f66a424f8116a06a2079063af758e7d3c87801c191ad2ecd"
+}

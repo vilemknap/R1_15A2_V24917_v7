@@ -1,0 +1,401 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index 0b6ef66ae64a1a00f7e5a8a6fa477fababf0bff2..309e90be6b900366cf311f63e29b80bc13bd915d 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -52 +52 @@
+-    "r1_15a2_combusy2_v24917.py": "21cfa0e83e99853268e3ec4777d583537eac58a80f1efc655ea2617109ab4f0f",
++    "r1_15a2_combusy2_v24917.py": "ae63f5927b98acb6e18feeb40206de59dc5078c1085bf89a6b0dcb16c764c2b7",
+@@ -67 +67 @@
+-    "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
++    "r1_15a2_intrazonal_penalty_v24917.py": "5ea86cbb84cd4ba0a613e6c98dd229c26c7190445c538cb6087b4a58f760ed79",
+@@ -101 +101 @@
+-    "r1_15a2_td_joint_runtime_v24917.py": "853a27529a2782c61c5a275b804d9731cf60b8dd4d8af6ad743d24045d54777e",
++    "r1_15a2_td_joint_runtime_v24917.py": "681dd674ee767a23457de6f733ccc602aba97ca4aaa9d5faa496e58f0c266f8a",
+@@ -165,0 +166 @@
++    "tests/test_v24917_td02_recovery.py": "0386c84184452cfdd0fcafdb76be45ee7851ca91e8804c02308320f3b26ce37a",
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 4471a56a41d11641be1c6064cc4288e6f1308c24..2a28736784003a0fce2e93e4423bb902f7169e3f 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -10 +10 @@
+-    "r1_15a2_td_joint_runtime_v24917.py": "853a27529a2782c61c5a275b804d9731cf60b8dd4d8af6ad743d24045d54777e",
++    "r1_15a2_td_joint_runtime_v24917.py": "681dd674ee767a23457de6f733ccc602aba97ca4aaa9d5faa496e58f0c266f8a",
+@@ -39 +39 @@
+-    "r1_15a2_intrazonal_penalty_v24917.py": "80a2ac6b025141c6cb62279e4c79f17470fd5c1b177e71ef7975869a4e662638",
++    "r1_15a2_intrazonal_penalty_v24917.py": "5ea86cbb84cd4ba0a613e6c98dd229c26c7190445c538cb6087b4a58f760ed79",
+@@ -44 +44 @@
+-    "r1_15a2_combusy2_v24917.py": "21cfa0e83e99853268e3ec4777d583537eac58a80f1efc655ea2617109ab4f0f",
++    "r1_15a2_combusy2_v24917.py": "ae63f5927b98acb6e18feeb40206de59dc5078c1085bf89a6b0dcb16c764c2b7",
+@@ -82 +82 @@
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "3f520a32881df297ac0d0ab57080e554aa117bb5a51314893314802fb097cd67",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "2a397e023998491389dbea1236bf51e33e5ba516a39dc9580f56bb757ec9f443",
+diff --git a/r1_15a2_combusy2_v24917.py b/r1_15a2_combusy2_v24917.py
+index adbe09a02f3418fdc133468e1c4bf164978072fb..7948c4939e2d537812852e23518c1708018d9845 100644
+--- a/r1_15a2_combusy2_v24917.py
++++ b/r1_15a2_combusy2_v24917.py
+@@ -30 +30 @@ from typing import Any, Dict
+-RELEASE = "R1_15A2_V24917_COMBUSY2_20261025"
++RELEASE = "R1_15A2_V24917_COMBUSY2_TDRECOVERY1_20261031"
+@@ -46,0 +47,50 @@ def _event(kind, **kw):
++def _manual_recovery_required(exc):
++    """An explicit failed-recovery verdict overrides a transient inner cause."""
++    seen = set()
++    while exc is not None and id(exc) not in seen:
++        seen.add(id(exc))
++        text = str(exc).upper()
++        if any(code in text for code in ("MANUAL_REOPEN", "MANUAL_RECOVERY_REQUIRED",
++                                         "REOPEN_LATEST_ACCEPTED_REQUIRED")):
++            return True
++        exc = getattr(exc, "__cause__", None) or getattr(exc, "__context__", None)
++    return False
++
++
++def install_td_constructor_retry(bridge):
++    """Retry the approved, read-only TD09C constructor; never native execution.
++
++    It reads operations, parameters, zones and matrices and writes diagnostic
++    files only. A retry starts that complete capture again. Other constructors
++    are left untouched rather than assuming they are safe to repeat.
++    """
++    cls = bridge.NoDirectMatrixWriteTDAdapter
++    original = cls.__init__
++    if getattr(original, "_v24917_td_constructor_retry", False):
++        return
++    if not getattr(original, "_v24916_td09c_compat", False):
++        return
++    # The compatibility marker can be copied by arbitrary wrappers. Repeat
++    # only the actual protected constructor, whose body has no model writes.
++    # Its module is already loaded when compatibility activation has occurred.
++    from r1_15a2_td09c_16or17_hotfix_v24916 import _compatible_init
++    if original is not _compatible_init:
++        return
++    import r1_15a2_com_compat as com
++
++    @functools.wraps(original)
++    def initialize(self, visum, ref, root, control=None, telemetry=None, outer_adapter=None):
++        policy = getattr(outer_adapter, "com_retry_policy", None)
++        if policy is None:
++            policy = (getattr(outer_adapter, "cfg", {}) or {}).get("com_resilience")
++        return com.com_call_with_retry(
++            lambda: original(self, visum, ref, root, control=control,
++                             telemetry=telemetry, outer_adapter=outer_adapter),
++            label="V24917_TD09C_READ_ONLY_CONSTRUCTOR", retry_policy=policy,
++            sleep_fn=_pump_sleep,
++            on_retry=lambda event: _event("TD_CONSTRUCTOR_READ_RETRY", **event))
++
++    initialize._v24917_td_constructor_retry = True
++    cls.__init__ = initialize
++
++
+@@ -133 +183,2 @@ def _wrap_rollback(orig, com, max_wait):
+-                if not com.is_retryable_com_error(exc) or time.monotonic() - started > max_wait:
++                if (_manual_recovery_required(exc) or not com.is_retryable_com_error(exc)
++                        or time.monotonic() - started > max_wait):
+@@ -163,0 +215,4 @@ def _wrap_block(orig, com, label, state_pos, retries):
++                # Do not spend up to twenty snapshot leases (or restart a
++                # block) after the recovery owner explicitly required reopening.
++                if _manual_recovery_required(exc):
++                    raise
+diff --git a/r1_15a2_intrazonal_penalty_v24917.py b/r1_15a2_intrazonal_penalty_v24917.py
+index 1996055cbb45cff892393dcf9736b8d3da1c3f31..bd5112d3ef1423c2742d27fab20bd1d5eaf24457 100644
+--- a/r1_15a2_intrazonal_penalty_v24917.py
++++ b/r1_15a2_intrazonal_penalty_v24917.py
+@@ -959,0 +960,45 @@ def _inner_with_penalty(orig_inner, adapter, cfg, folder, control, package_root,
++def _unchanged_failure_td_audit(adapter, before, rows, folder):
++    """Prove b/c need no writes; the caller still restores impedance and runs TD.
++
++    Only the failed-TD recovery path may use this optimization. A live strict
++    snapshot is mandatory; a cached pre-mutation proof is never sufficient.
++    This does not certify the rest of the model or skip downstream verification.
++    """
++    if folder is None or Path(folder).name != "ROLLBACK_AFTER_TD_FAILURE" or not rows:
++        return None
++    reader = getattr(adapter, "generation_guard_snapshot", None)
++    if not callable(reader):
++        return None
++    live = reader()  # preserves transient COM errors and the existing retry lease
++    for key in ("td_hash", "operations_hash"):
++        value = before.get(key)
++        if (not isinstance(value, str) or len(value) != 64
++                or any(c not in "0123456789abcdef" for c in value)
++                or live.get(key) != value):
++            return None
++    old_values = before.get("td_values") or []
++    current = live.get("td_values") or []
++    if current != old_values:
++        return None
++    for values in (old_values, current):
++        by_component = {}
++        for row in values:
++            comp = row.get("component")
++            if not comp or comp in by_component or row.get("status") != "OK":
++                return None
++            for attr in ("current_b", "current_c"):
++                value = row.get(attr)
++                if type(value) not in (int, float) or not math.isfinite(value):
++                    return None
++            by_component[comp] = row
++    components = [row.get("component") for row in rows]
++    if len(set(components)) != len(components) or any(c not in by_component for c in components):
++        return None
++    return [{"component": comp, "candidate_b": by_component[comp]["current_b"],
++             "candidate_c": by_component[comp]["current_c"],
++             "readback_b": by_component[comp]["current_b"],
++             "readback_c": by_component[comp]["current_c"], "status": "OK",
++             "write_skipped": True, "proof": "UNCACHED_LIVE_TD_AND_OPERATIONS_MATCH_PARENT"}
++            for comp in components]
++
++
+@@ -971 +1016,7 @@ def install(print_fn=print) -> Dict[str, Any]:
+-        audit = orig_restore(adapter, before_snapshot, candidate_rows, folder)
++        audit = _unchanged_failure_td_audit(adapter, before_snapshot, candidate_rows, folder)
++        if audit is None:
++            audit = orig_restore(adapter, before_snapshot, candidate_rows, folder)
++        else:
++            # Critical evidence: unlike optional IZ search reports, failure to
++            # write this readback must propagate to the recovery owner.
++            tx.atomic_json(Path(folder) / "ROLLBACK_PARAMETER_READBACK.json", audit)
+diff --git a/r1_15a2_td_joint_runtime_v24917.py b/r1_15a2_td_joint_runtime_v24917.py
+index a6fe7120918d1a086d5f2a52478536bceb719eeb..3b092b3da36338c1e5737b5d945db22bb5023df7 100644
+--- a/r1_15a2_td_joint_runtime_v24917.py
++++ b/r1_15a2_td_joint_runtime_v24917.py
+@@ -12,0 +13,2 @@ import r1_15a2_school_td_v24917 as school_td
++import r1_15a2_combusy2_v24917 as combusy
++import r1_15a2_finecdf_bridge_v24916 as finecdf_bridge
+@@ -54,0 +57,4 @@ def wrap_inner(original):
++        # Compatibility activation can precede this call at different launcher
++        # stages. Bind here to the approved current constructor before it reads
++        # visum.Procedures, without retrying any native TD/assignment writes.
++        combusy.install_td_constructor_retry(finecdf_bridge)
+diff --git a/tests/test_v24917_td02_recovery.py b/tests/test_v24917_td02_recovery.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..5ed4f63ccf420289681948860e31d7084f228e4a
+--- /dev/null
++++ b/tests/test_v24917_td02_recovery.py
+@@ -0,0 +1,226 @@
++"""COM-shaped reproductions of TD startup/recovery after rejected TG/SupplyMix."""
++import copy
++import importlib
++import inspect
++import json
++from pathlib import Path
++from types import SimpleNamespace as NS
++
++import pytest
++
++
++class Rejected(Exception):
++    hresult = -2147418111
++
++    def __init__(self):
++        super().__init__(-2147418111, 'Volaný odmítl volání.', None, None)
++
++
++@pytest.mark.parametrize('rejections', [1, 2])
++def test_real_readonly_native16_constructor_retries_procedures_getter(tmp_path, monkeypatch, rejections):
++    runtime = importlib.import_module('r1_15a2_td_joint_runtime_v24917')
++    bridge = importlib.import_module('r1_15a2_finecdf_bridge_v24916')
++    fix = importlib.import_module('r1_15a2_td09c_16or17_hotfix_v24916')
++    com = importlib.import_module('r1_15a2_com_compat')
++    cb = importlib.import_module('r1_15a2_combusy2_v24917')
++    from test_v245_native_bridge import fixture
++    ref, _, _, visum, cfg, control, _, matrices, executions = fixture(tmp_path)
++    params = visum.Procedures.Operations.items[1].TripDistributionParameters
++    params.SetAttValue('DSTRATSET', params.AttValue('DSTRATSET').replace('4_FOREIGN,', '').replace(',4_FOREIGN', ''))
++    original = params.AttValue('DSTRATSET')
++    before = {no: matrix.values.copy() for no, matrix in matrices.items()}
++    class BusyVisum:
++        rejected = 0
++        def __getattr__(self, name):
++            if name == 'Procedures' and self.rejected < rejections:
++                self.rejected += 1
++                raise Rejected()
++            return getattr(visum, name)
++    host = BusyVisum()
++    monkeypatch.setattr(bridge.NoDirectMatrixWriteTDAdapter, '__init__', fix._compatible_init)
++    monkeypatch.setattr(com, '_retry_budget', lambda p: (3 if p.get('enabled') else 1, 0., 1., 0., 10.))
++    monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
++    monkeypatch.setattr(runtime.joint, 'options', lambda: {'enabled': False})
++    outer = NS(com_retry_policy={'enabled': True}, cfg=cfg)
++    def inner(adapter, scoped, folder, ctl, root):
++        obj = bridge.NoDirectMatrixWriteTDAdapter(host, ref, folder, ctl, outer_adapter=adapter)
++        return {'scope': obj.td09c_scope, 'owner_preserved': obj.v is host}
++    target = tmp_path/'inner'; target.mkdir()
++    result = runtime.wrap_inner(inner)(outer, {}, target, control, tmp_path)
++    assert result == {'scope': 'NATIVE16_FOREIGN_SEPARATE', 'owner_preserved': True}
++    assert host.rejected == rejections and executions == []
++    assert params.AttValue('DSTRATSET') == original
++    for no, values in before.items():
++        assert (matrices[no].values == values).all()
++
++
++@pytest.mark.parametrize('kind', ['disabled', 'exhausted', 'structural'])
++def test_constructor_retry_is_bounded_and_does_not_retry_structural_error(tmp_path, monkeypatch, kind):
++    runtime = importlib.import_module('r1_15a2_td_joint_runtime_v24917')
++    bridge = importlib.import_module('r1_15a2_finecdf_bridge_v24916')
++    fix = importlib.import_module('r1_15a2_td09c_16or17_hotfix_v24916')
++    com = importlib.import_module('r1_15a2_com_compat')
++    cb = importlib.import_module('r1_15a2_combusy2_v24917')
++    calls = []
++    class Busy:
++        @property
++        def Procedures(self):
++            calls.append(1)
++            if kind == 'structural': raise ValueError('MISSING_PROCEDURE_COLLECTION')
++            raise Rejected()
++    monkeypatch.setattr(bridge.NoDirectMatrixWriteTDAdapter, '__init__', fix._compatible_init)
++    monkeypatch.setattr(com, '_retry_budget', lambda p: (3 if p.get('enabled') else 1, 0., 1., 0., 10.))
++    monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
++    monkeypatch.setattr(runtime.joint, 'options', lambda: {'enabled': False})
++    def inner(adapter, cfg, folder, control, root):
++        bridge.NoDirectMatrixWriteTDAdapter(Busy(), NS(CONFIG={'expected_zone_count': 681}),
++                                           folder, outer_adapter=adapter)
++    outer = NS(com_retry_policy={'enabled': kind != 'disabled'})
++    with pytest.raises(ValueError if kind == 'structural' else Rejected):
++        runtime.wrap_inner(inner)(outer, {}, tmp_path, None, tmp_path)
++    assert len(calls) == (3 if kind == 'exhausted' else 1)
++
++
++def test_unknown_constructor_with_copied_readonly_marker_is_not_wrapped():
++    cb = importlib.import_module('r1_15a2_combusy2_v24917')
++    def unknown(*a, **k): raise Rejected()
++    unknown._v24916_td09c_compat = True
++    cls = type('UnknownTD', (), {'__init__': unknown})
++    cb.install_td_constructor_retry(NS(NoDirectMatrixWriteTDAdapter=cls))
++    assert cls.__init__ is unknown
++
++
++@pytest.mark.parametrize('same_parent', [True, False])
++def test_manual_reopen_error_never_retries_or_reads_parent(monkeypatch, same_parent):
++    cb = importlib.import_module('r1_15a2_combusy2_v24917')
++    com = importlib.import_module('r1_15a2_com_compat')
++    from r1_15a2_supply import SupplyContractError
++    calls, snapshots = [], []
++    def block(*args):
++        calls.append(1)
++        if len(calls) > 1: return 'UNSAFE_RETRY'
++        try: raise Rejected()
++        except Rejected as exc:
++            raise SupplyContractError('V24916_FINECDF_ROLLBACK_FAILED_MANUAL_REOPEN') from exc
++    def snapshot():
++        snapshots.append(1)
++        return {'parent': 1} if same_parent else {'other': 2}
++    monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
++    with pytest.raises(SupplyContractError, match='MANUAL_REOPEN'):
++        cb._wrap_block(block, com, 'TD', 1, 3)(NS(snapshot=snapshot), {}, Path('TD'),
++                                             None, {'parent': 1})
++    assert calls == [1] and snapshots == []
++
++
++def test_manual_reopen_error_is_not_repeated_inside_rollback_wrapper(monkeypatch):
++    cb = importlib.import_module('r1_15a2_combusy2_v24917')
++    com = importlib.import_module('r1_15a2_com_compat')
++    from r1_15a2_supply import SupplyContractError
++    calls = []
++    def restore():
++        calls.append(1)
++        if len(calls) > 1: return 'UNSAFE_RETRY'
++        try: raise Rejected()
++        except Rejected as exc:
++            raise SupplyContractError('FAILED_MANUAL_RECOVERY_REQUIRED') from exc
++    monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
++    with pytest.raises(SupplyContractError, match='MANUAL_RECOVERY'):
++        cb._wrap_rollback(restore, com, 900.)()
++    assert calls == [1]
++
++
++def install_restore_fixture(monkeypatch):
++    iz = importlib.import_module('r1_15a2_intrazonal_penalty_v24917')
++    tx = importlib.import_module('r1_15a2_inplace_transaction_v24915p2')
++    ctrl = importlib.import_module('r1_15a2_overnight_controller_coupled_v24915p2_force100')
++    acp = importlib.import_module('r1_15a2_active_controller_patch_v24916p2c')
++    for module, name in [(ctrl, 'run_finecdf_inner'), (ctrl, '_realize_finecdf_td'),
++                         (ctrl, '_finecdf_td_once'), (acp, 'targeted_run_finecdf_inner')]:
++        monkeypatch.setattr(module, name, getattr(module, name))
++    writes, impedance = [], []
++    def restore(adapter, before, rows, folder=None):
++        writes.append(copy.deepcopy(rows))
++        return [{'component': r['component'], 'status': 'OK'} for r in rows]
++    monkeypatch.setattr(tx, 'restore_td_parameters', restore)
++    monkeypatch.setattr(ctrl, 'restore_td_parameters', restore)
++    monkeypatch.setattr(iz, '_INSTALLED', {})
++    monkeypatch.setattr(iz, 'restore_from_snapshot', lambda *a: impedance.append(a))
++    iz.install(print_fn=lambda *a: None)
++    before = {'td_values': [{'component': 'WORK_E_C', 'current_b': 1., 'current_c': -.5, 'status': 'OK'}],
++              'td_hash': 'a'*64, 'operations_hash': 'b'*64, iz.BASE_KEY: 'parent-utility'}
++    live = copy.deepcopy(before)
++    reads = []
++    def snapshot(): reads.append(1); return copy.deepcopy(live)
++    adapter = NS(visum=object(), generation_guard_snapshot=snapshot)
++    return tx, ctrl, before, live, adapter, writes, impedance, reads
++
++
++def test_failed_startup_unchanged_bc_still_restores_impedance_and_recomputes(tmp_path, monkeypatch):
++    tx, ctrl, before, live, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
++    folder = tmp_path/'ROLLBACK_AFTER_TD_FAILURE'
++    diag = {'proof': 'parent'}
++    recomputes = []
++    monkeypatch.setattr(ctrl, '_assign_candidate', lambda *a: recomputes.append(a) or .001)
++    monkeypatch.setattr(ctrl, '_td_parent_state_equivalent', lambda *a: True)
++    monkeypatch.setattr(ctrl, 'diagnostic_hash', lambda d: d['proof'])
++    adapter.snapshot = lambda: copy.deepcopy(before)
++    adapter.diagnostics = lambda *a: copy.deepcopy(diag)
++    result = inspect.unwrap(ctrl._rollback_td_all)(adapter, before, diag, folder, {})
++    assert result == (before, diag)
++    assert writes == [] and reads == [1] and len(impedance) == len(recomputes) == 1
++    audit = json.loads((folder/'ROLLBACK_PARAMETER_READBACK.json').read_text())
++    assert audit[0]['status'] == 'OK' and audit[0]['write_skipped'] is True
++    assert json.loads((folder/'ROLLBACK_ALL_TD_RESULT.json').read_text())['passes'] is True
++
++
++@pytest.mark.parametrize('damage', ['b', 'scope', 'hash', 'status', 'nan'])
++def test_bc_skip_requires_fresh_complete_same_scope_readback(tmp_path, monkeypatch, damage):
++    tx, _, before, live, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
++    if damage == 'b': live['td_values'][0]['current_b'] = 2.
++    elif damage == 'scope': live['operations_hash'] = 'changed'
++    elif damage == 'hash': live['td_hash'] = 'changed'
++    elif damage == 'status': live['td_values'][0]['status'] = 'UNREADABLE'
++    else: live['td_values'][0]['current_c'] = float('nan')
++    tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
++    assert len(writes) == len(impedance) == 1 and reads == [1]
++
++
++def test_other_restore_scopes_keep_original_parameter_writes(tmp_path, monkeypatch):
++    tx, _, before, _, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
++    tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'NORMAL_BACKTRACK')
++    assert len(writes) == len(impedance) == 1 and reads == []
++
++
++def test_failed_live_read_never_claims_unchanged_td(tmp_path, monkeypatch):
++    tx, _, before, _, adapter, writes, impedance, _ = install_restore_fixture(monkeypatch)
++    def busy(): raise Rejected()
++    adapter.generation_guard_snapshot = busy
++    with pytest.raises(Rejected):
++        tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
++    assert writes == impedance == []
++
++
++def test_missing_readback_audit_is_not_reported_as_verified_skip(tmp_path, monkeypatch):
++    tx, _, before, _, adapter, writes, impedance, _ = install_restore_fixture(monkeypatch)
++    def fail(*a): raise OSError('READBACK_AUDIT_DISK_FULL')
++    monkeypatch.setattr(tx, 'atomic_json', fail)
++    with pytest.raises(OSError, match='DISK_FULL'):
++        tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
++    assert writes == impedance == []
++
++
++@pytest.mark.parametrize('damage', ['duplicate', 'missing', 'bool', 'parent_bool', 'hash_bool'])
++def test_invalid_parent_parameter_evidence_cannot_skip_writes(tmp_path, monkeypatch, damage):
++    tx, _, before, live, adapter, writes, impedance, _ = install_restore_fixture(monkeypatch)
++    if damage == 'duplicate':
++        before['td_values'].append(copy.deepcopy(before['td_values'][0]));live.update(copy.deepcopy(before))
++    elif damage == 'missing':
++        del before['operations_hash'];del live['operations_hash']
++    elif damage == 'parent_bool':
++        before['td_values'][0]['current_b'] = True
++    elif damage == 'hash_bool':
++        before['operations_hash'] = live['operations_hash'] = True
++    else:
++        before['td_values'][0]['current_b'] = True;live.update(copy.deepcopy(before))
++    tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
++    assert len(writes) == len(impedance) == 1

@@ -1,0 +1,441 @@
+FF.F.FFFFFFFFFF.FF.....                                                  [100%]
+=================================== FAILURES ===================================
+_____ test_real_readonly_native16_constructor_retries_procedures_getter[1] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_real_readonly_native16_co0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa234729810>
+rejections = 1
+
+    @pytest.mark.parametrize('rejections', [1, 2])
+    def test_real_readonly_native16_constructor_retries_procedures_getter(tmp_path, monkeypatch, rejections):
+        runtime = importlib.import_module('r1_15a2_td_joint_runtime_v24917')
+        bridge = importlib.import_module('r1_15a2_finecdf_bridge_v24916')
+        fix = importlib.import_module('r1_15a2_td09c_16or17_hotfix_v24916')
+        com = importlib.import_module('r1_15a2_com_compat')
+        cb = importlib.import_module('r1_15a2_combusy2_v24917')
+        from test_v245_native_bridge import fixture
+        ref, _, _, visum, cfg, control, _, matrices, executions = fixture(tmp_path)
+        params = visum.Procedures.Operations.items[1].TripDistributionParameters
+        params.SetAttValue('DSTRATSET', params.AttValue('DSTRATSET').replace('4_FOREIGN,', '').replace(',4_FOREIGN', ''))
+        original = params.AttValue('DSTRATSET')
+        before = {no: matrix.values.copy() for no, matrix in matrices.items()}
+        class BusyVisum:
+            rejected = 0
+            def __getattr__(self, name):
+                if name == 'Procedures' and self.rejected < rejections:
+                    self.rejected += 1
+                    raise Rejected()
+                return getattr(visum, name)
+        host = BusyVisum()
+        monkeypatch.setattr(bridge.NoDirectMatrixWriteTDAdapter, '__init__', fix._compatible_init)
+        monkeypatch.setattr(com, '_retry_budget', lambda p: (3 if p.get('enabled') else 1, 0., 1., 0., 10.))
+        monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
+        monkeypatch.setattr(runtime.joint, 'options', lambda: {'enabled': False})
+        outer = NS(com_retry_policy={'enabled': True}, cfg=cfg)
+        def inner(adapter, scoped, folder, ctl, root):
+            obj = bridge.NoDirectMatrixWriteTDAdapter(host, ref, folder, ctl, outer_adapter=adapter)
+            return {'scope': obj.td09c_scope, 'owner_preserved': obj.v is host}
+        target = tmp_path/'inner'; target.mkdir()
+>       result = runtime.wrap_inner(inner)(outer, {}, target, control, tmp_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_td02_recovery.py:49:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+r1_15a2_td_joint_runtime_v24917.py:59: in inner
+    result = original(adapter, scoped_cfg, folder, control, package_root, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_td02_recovery.py:46: in inner
+    obj = bridge.NoDirectMatrixWriteTDAdapter(host, ref, folder, ctl, outer_adapter=adapter)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td09c_16or17_hotfix_v24916.py:95: in _compatible_init
+    self.ops = rt.get_all(self.v.Procedures.Operations)
+                          ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_v24917_td02_recovery.test_real_readonly_native16_constructor_retries_procedures_getter.<locals>.BusyVisum object at 0x7fa22f4ed550>
+name = 'Procedures'
+
+    def __getattr__(self, name):
+        if name == 'Procedures' and self.rejected < rejections:
+            self.rejected += 1
+>           raise Rejected()
+E           test_v24917_td02_recovery.Rejected: (-2147418111, 'Volaný odmítl volání.', None, None)
+
+tests/test_v24917_td02_recovery.py:37: Rejected
+_____ test_real_readonly_native16_constructor_retries_procedures_getter[2] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_real_readonly_native16_co1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa2347288a0>
+rejections = 2
+
+    @pytest.mark.parametrize('rejections', [1, 2])
+    def test_real_readonly_native16_constructor_retries_procedures_getter(tmp_path, monkeypatch, rejections):
+        runtime = importlib.import_module('r1_15a2_td_joint_runtime_v24917')
+        bridge = importlib.import_module('r1_15a2_finecdf_bridge_v24916')
+        fix = importlib.import_module('r1_15a2_td09c_16or17_hotfix_v24916')
+        com = importlib.import_module('r1_15a2_com_compat')
+        cb = importlib.import_module('r1_15a2_combusy2_v24917')
+        from test_v245_native_bridge import fixture
+        ref, _, _, visum, cfg, control, _, matrices, executions = fixture(tmp_path)
+        params = visum.Procedures.Operations.items[1].TripDistributionParameters
+        params.SetAttValue('DSTRATSET', params.AttValue('DSTRATSET').replace('4_FOREIGN,', '').replace(',4_FOREIGN', ''))
+        original = params.AttValue('DSTRATSET')
+        before = {no: matrix.values.copy() for no, matrix in matrices.items()}
+        class BusyVisum:
+            rejected = 0
+            def __getattr__(self, name):
+                if name == 'Procedures' and self.rejected < rejections:
+                    self.rejected += 1
+                    raise Rejected()
+                return getattr(visum, name)
+        host = BusyVisum()
+        monkeypatch.setattr(bridge.NoDirectMatrixWriteTDAdapter, '__init__', fix._compatible_init)
+        monkeypatch.setattr(com, '_retry_budget', lambda p: (3 if p.get('enabled') else 1, 0., 1., 0., 10.))
+        monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
+        monkeypatch.setattr(runtime.joint, 'options', lambda: {'enabled': False})
+        outer = NS(com_retry_policy={'enabled': True}, cfg=cfg)
+        def inner(adapter, scoped, folder, ctl, root):
+            obj = bridge.NoDirectMatrixWriteTDAdapter(host, ref, folder, ctl, outer_adapter=adapter)
+            return {'scope': obj.td09c_scope, 'owner_preserved': obj.v is host}
+        target = tmp_path/'inner'; target.mkdir()
+>       result = runtime.wrap_inner(inner)(outer, {}, target, control, tmp_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v24917_td02_recovery.py:49:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+r1_15a2_td_joint_runtime_v24917.py:59: in inner
+    result = original(adapter, scoped_cfg, folder, control, package_root, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v24917_td02_recovery.py:46: in inner
+    obj = bridge.NoDirectMatrixWriteTDAdapter(host, ref, folder, ctl, outer_adapter=adapter)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+r1_15a2_td09c_16or17_hotfix_v24916.py:95: in _compatible_init
+    self.ops = rt.get_all(self.v.Procedures.Operations)
+                          ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_v24917_td02_recovery.test_real_readonly_native16_constructor_retries_procedures_getter.<locals>.BusyVisum object at 0x7fa22f4ee510>
+name = 'Procedures'
+
+    def __getattr__(self, name):
+        if name == 'Procedures' and self.rejected < rejections:
+            self.rejected += 1
+>           raise Rejected()
+E           test_v24917_td02_recovery.Rejected: (-2147418111, 'Volaný odmítl volání.', None, None)
+
+tests/test_v24917_td02_recovery.py:37: Rejected
+_ test_constructor_retry_is_bounded_and_does_not_retry_structural_error[exhausted] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_constructor_retry_is_boun1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f52c8d0>
+kind = 'exhausted'
+
+    @pytest.mark.parametrize('kind', ['disabled', 'exhausted', 'structural'])
+    def test_constructor_retry_is_bounded_and_does_not_retry_structural_error(tmp_path, monkeypatch, kind):
+        runtime = importlib.import_module('r1_15a2_td_joint_runtime_v24917')
+        bridge = importlib.import_module('r1_15a2_finecdf_bridge_v24916')
+        fix = importlib.import_module('r1_15a2_td09c_16or17_hotfix_v24916')
+        com = importlib.import_module('r1_15a2_com_compat')
+        cb = importlib.import_module('r1_15a2_combusy2_v24917')
+        calls = []
+        class Busy:
+            @property
+            def Procedures(self):
+                calls.append(1)
+                if kind == 'structural': raise ValueError('MISSING_PROCEDURE_COLLECTION')
+                raise Rejected()
+        monkeypatch.setattr(bridge.NoDirectMatrixWriteTDAdapter, '__init__', fix._compatible_init)
+        monkeypatch.setattr(com, '_retry_budget', lambda p: (3 if p.get('enabled') else 1, 0., 1., 0., 10.))
+        monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
+        monkeypatch.setattr(runtime.joint, 'options', lambda: {'enabled': False})
+        def inner(adapter, cfg, folder, control, root):
+            bridge.NoDirectMatrixWriteTDAdapter(Busy(), NS(CONFIG={'expected_zone_count': 681}),
+                                               folder, outer_adapter=adapter)
+        outer = NS(com_retry_policy={'enabled': kind != 'disabled'})
+        with pytest.raises(ValueError if kind == 'structural' else Rejected):
+            runtime.wrap_inner(inner)(outer, {}, tmp_path, None, tmp_path)
+>       assert len(calls) == (3 if kind == 'exhausted' else 1)
+E       assert 1 == 3
+E        +  where 1 = len([1])
+
+tests/test_v24917_td02_recovery.py:81: AssertionError
+_____ test_unknown_constructor_with_copied_readonly_marker_is_not_wrapped ______
+
+    def test_unknown_constructor_with_copied_readonly_marker_is_not_wrapped():
+        cb = importlib.import_module('r1_15a2_combusy2_v24917')
+        def unknown(*a, **k): raise Rejected()
+        unknown._v24916_td09c_compat = True
+        cls = type('UnknownTD', (), {'__init__': unknown})
+>       cb.install_td_constructor_retry(NS(NoDirectMatrixWriteTDAdapter=cls))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'r1_15a2_combusy2_v24917' has no attribute 'install_td_constructor_retry'
+
+tests/test_v24917_td02_recovery.py:89: AttributeError
+_________ test_manual_reopen_error_never_retries_or_reads_parent[True] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa2348da150>
+same_parent = True
+
+    @pytest.mark.parametrize('same_parent', [True, False])
+    def test_manual_reopen_error_never_retries_or_reads_parent(monkeypatch, same_parent):
+        cb = importlib.import_module('r1_15a2_combusy2_v24917')
+        com = importlib.import_module('r1_15a2_com_compat')
+        from r1_15a2_supply import SupplyContractError
+        calls, snapshots = [], []
+        def block(*args):
+            calls.append(1)
+            if len(calls) > 1: return 'UNSAFE_RETRY'
+            try: raise Rejected()
+            except Rejected as exc:
+                raise SupplyContractError('V24916_FINECDF_ROLLBACK_FAILED_MANUAL_REOPEN') from exc
+        def snapshot():
+            snapshots.append(1)
+            return {'parent': 1} if same_parent else {'other': 2}
+        monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
+>       with pytest.raises(SupplyContractError, match='MANUAL_REOPEN'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'r1_15a2_supply.SupplyContractError'>
+
+tests/test_v24917_td02_recovery.py:109: Failed
+----------------------------- Captured stdout call -----------------------------
+R1 V24917 COMBUSY2: TD failed on a rejected Visum call, parent state intact; repeating the block in 30 s (attempt 1/3)
+________ test_manual_reopen_error_never_retries_or_reads_parent[False] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f18d350>
+same_parent = False
+
+    @pytest.mark.parametrize('same_parent', [True, False])
+    def test_manual_reopen_error_never_retries_or_reads_parent(monkeypatch, same_parent):
+        cb = importlib.import_module('r1_15a2_combusy2_v24917')
+        com = importlib.import_module('r1_15a2_com_compat')
+        from r1_15a2_supply import SupplyContractError
+        calls, snapshots = [], []
+        def block(*args):
+            calls.append(1)
+            if len(calls) > 1: return 'UNSAFE_RETRY'
+            try: raise Rejected()
+            except Rejected as exc:
+                raise SupplyContractError('V24916_FINECDF_ROLLBACK_FAILED_MANUAL_REOPEN') from exc
+        def snapshot():
+            snapshots.append(1)
+            return {'parent': 1} if same_parent else {'other': 2}
+        monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
+        with pytest.raises(SupplyContractError, match='MANUAL_REOPEN'):
+            cb._wrap_block(block, com, 'TD', 1, 3)(NS(snapshot=snapshot), {}, Path('TD'),
+                                                 None, {'parent': 1})
+>       assert calls == [1] and snapshots == []
+E       assert ([1] == [1]
+E
+E         Use -v to get more diff and [1] == []
+E
+E         Left contains one more item: 1
+E         Use -v to get more diff)
+
+tests/test_v24917_td02_recovery.py:112: AssertionError
+_______ test_manual_reopen_error_is_not_repeated_inside_rollback_wrapper _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f510aa0>
+
+    def test_manual_reopen_error_is_not_repeated_inside_rollback_wrapper(monkeypatch):
+        cb = importlib.import_module('r1_15a2_combusy2_v24917')
+        com = importlib.import_module('r1_15a2_com_compat')
+        from r1_15a2_supply import SupplyContractError
+        calls = []
+        def restore():
+            calls.append(1)
+            if len(calls) > 1: return 'UNSAFE_RETRY'
+            try: raise Rejected()
+            except Rejected as exc:
+                raise SupplyContractError('FAILED_MANUAL_RECOVERY_REQUIRED') from exc
+        monkeypatch.setattr(cb, '_pump_sleep', lambda s: None)
+>       with pytest.raises(SupplyContractError, match='MANUAL_RECOVERY'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'r1_15a2_supply.SupplyContractError'>
+
+tests/test_v24917_td02_recovery.py:127: Failed
+----------------------------- Captured stdout call -----------------------------
+R1 V24917 COMBUSY2: Visum rejected a call during rollback; retry in 5 s
+___ test_failed_startup_unchanged_bc_still_restores_impedance_and_recomputes ___
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_failed_startup_unchanged_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f5117c0>
+
+    def test_failed_startup_unchanged_bc_still_restores_impedance_and_recomputes(tmp_path, monkeypatch):
+        tx, ctrl, before, live, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
+        folder = tmp_path/'ROLLBACK_AFTER_TD_FAILURE'
+        diag = {'proof': 'parent'}
+        recomputes = []
+        monkeypatch.setattr(ctrl, '_assign_candidate', lambda *a: recomputes.append(a) or .001)
+        monkeypatch.setattr(ctrl, '_td_parent_state_equivalent', lambda *a: True)
+        monkeypatch.setattr(ctrl, 'diagnostic_hash', lambda d: d['proof'])
+        adapter.snapshot = lambda: copy.deepcopy(before)
+        adapter.diagnostics = lambda *a: copy.deepcopy(diag)
+        result = inspect.unwrap(ctrl._rollback_td_all)(adapter, before, diag, folder, {})
+        assert result == (before, diag)
+>       assert writes == [] and reads == [1] and len(impedance) == len(recomputes) == 1
+E       AssertionError: assert ([[{'component': 'WORK_E_C'}]] == []
+E
+E         Left contains one more item: [{'component': 'WORK_E_C'}]
+E         Use -v to get more diff)
+
+tests/test_v24917_td02_recovery.py:170: AssertionError
+_________ test_bc_skip_requires_fresh_complete_same_scope_readback[b] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_bc_skip_requires_fresh_co0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f5d2970>
+damage = 'b'
+
+    @pytest.mark.parametrize('damage', ['b', 'scope', 'hash', 'status', 'nan'])
+    def test_bc_skip_requires_fresh_complete_same_scope_readback(tmp_path, monkeypatch, damage):
+        tx, _, before, live, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
+        if damage == 'b': live['td_values'][0]['current_b'] = 2.
+        elif damage == 'scope': live['operations_hash'] = 'changed'
+        elif damage == 'hash': live['td_hash'] = 'changed'
+        elif damage == 'status': live['td_values'][0]['status'] = 'UNREADABLE'
+        else: live['td_values'][0]['current_c'] = float('nan')
+        tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
+>       assert len(writes) == len(impedance) == 1 and reads == [1]
+E       AssertionError: assert (1 == 1 and [] == [1]
+E        +  where 1 = len([(<object object at 0x7fa2354aaae0>, {'operations_hash': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...at 0x7fa2354aaae0>, generation_guard_snapshot=<function install_restore_fixture.<locals>.snapshot at 0x7fa22f572a20>))])
+E
+E         Right contains one more item: 1
+E         Use -v to get more diff)
+
+tests/test_v24917_td02_recovery.py:185: AssertionError
+_______ test_bc_skip_requires_fresh_complete_same_scope_readback[scope] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_bc_skip_requires_fresh_co1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f5d2f90>
+damage = 'scope'
+
+    @pytest.mark.parametrize('damage', ['b', 'scope', 'hash', 'status', 'nan'])
+    def test_bc_skip_requires_fresh_complete_same_scope_readback(tmp_path, monkeypatch, damage):
+        tx, _, before, live, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
+        if damage == 'b': live['td_values'][0]['current_b'] = 2.
+        elif damage == 'scope': live['operations_hash'] = 'changed'
+        elif damage == 'hash': live['td_hash'] = 'changed'
+        elif damage == 'status': live['td_values'][0]['status'] = 'UNREADABLE'
+        else: live['td_values'][0]['current_c'] = float('nan')
+        tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
+>       assert len(writes) == len(impedance) == 1 and reads == [1]
+E       AssertionError: assert (1 == 1 and [] == [1]
+E        +  where 1 = len([(<object object at 0x7fa2354aab70>, {'operations_hash': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...at 0x7fa2354aab70>, generation_guard_snapshot=<function install_restore_fixture.<locals>.snapshot at 0x7fa22f571a80>))])
+E
+E         Right contains one more item: 1
+E         Use -v to get more diff)
+
+tests/test_v24917_td02_recovery.py:185: AssertionError
+________ test_bc_skip_requires_fresh_complete_same_scope_readback[hash] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_bc_skip_requires_fresh_co2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa234664fc0>
+damage = 'hash'
+
+    @pytest.mark.parametrize('damage', ['b', 'scope', 'hash', 'status', 'nan'])
+    def test_bc_skip_requires_fresh_complete_same_scope_readback(tmp_path, monkeypatch, damage):
+        tx, _, before, live, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
+        if damage == 'b': live['td_values'][0]['current_b'] = 2.
+        elif damage == 'scope': live['operations_hash'] = 'changed'
+        elif damage == 'hash': live['td_hash'] = 'changed'
+        elif damage == 'status': live['td_values'][0]['status'] = 'UNREADABLE'
+        else: live['td_values'][0]['current_c'] = float('nan')
+        tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
+>       assert len(writes) == len(impedance) == 1 and reads == [1]
+E       AssertionError: assert (1 == 1 and [] == [1]
+E        +  where 1 = len([(<object object at 0x7fa2354aacd0>, {'operations_hash': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...at 0x7fa2354aacd0>, generation_guard_snapshot=<function install_restore_fixture.<locals>.snapshot at 0x7fa22f571580>))])
+E
+E         Right contains one more item: 1
+E         Use -v to get more diff)
+
+tests/test_v24917_td02_recovery.py:185: AssertionError
+_______ test_bc_skip_requires_fresh_complete_same_scope_readback[status] _______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_bc_skip_requires_fresh_co3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f6c6990>
+damage = 'status'
+
+    @pytest.mark.parametrize('damage', ['b', 'scope', 'hash', 'status', 'nan'])
+    def test_bc_skip_requires_fresh_complete_same_scope_readback(tmp_path, monkeypatch, damage):
+        tx, _, before, live, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
+        if damage == 'b': live['td_values'][0]['current_b'] = 2.
+        elif damage == 'scope': live['operations_hash'] = 'changed'
+        elif damage == 'hash': live['td_hash'] = 'changed'
+        elif damage == 'status': live['td_values'][0]['status'] = 'UNREADABLE'
+        else: live['td_values'][0]['current_c'] = float('nan')
+        tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
+>       assert len(writes) == len(impedance) == 1 and reads == [1]
+E       AssertionError: assert (1 == 1 and [] == [1]
+E        +  where 1 = len([(<object object at 0x7fa2354aad40>, {'operations_hash': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...at 0x7fa2354aad40>, generation_guard_snapshot=<function install_restore_fixture.<locals>.snapshot at 0x7fa22f573420>))])
+E
+E         Right contains one more item: 1
+E         Use -v to get more diff)
+
+tests/test_v24917_td02_recovery.py:185: AssertionError
+________ test_bc_skip_requires_fresh_complete_same_scope_readback[nan] _________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_bc_skip_requires_fresh_co4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f6c65d0>
+damage = 'nan'
+
+    @pytest.mark.parametrize('damage', ['b', 'scope', 'hash', 'status', 'nan'])
+    def test_bc_skip_requires_fresh_complete_same_scope_readback(tmp_path, monkeypatch, damage):
+        tx, _, before, live, adapter, writes, impedance, reads = install_restore_fixture(monkeypatch)
+        if damage == 'b': live['td_values'][0]['current_b'] = 2.
+        elif damage == 'scope': live['operations_hash'] = 'changed'
+        elif damage == 'hash': live['td_hash'] = 'changed'
+        elif damage == 'status': live['td_values'][0]['status'] = 'UNREADABLE'
+        else: live['td_values'][0]['current_c'] = float('nan')
+        tx.restore_td_parameters(adapter, before, [{'component': 'WORK_E_C'}], tmp_path/'ROLLBACK_AFTER_TD_FAILURE')
+>       assert len(writes) == len(impedance) == 1 and reads == [1]
+E       AssertionError: assert (1 == 1 and [] == [1]
+E        +  where 1 = len([(<object object at 0x7fa2354aaed0>, {'operations_hash': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...at 0x7fa2354aaed0>, generation_guard_snapshot=<function install_restore_fixture.<locals>.snapshot at 0x7fa22f572f20>))])
+E
+E         Right contains one more item: 1
+E         Use -v to get more diff)
+
+tests/test_v24917_td02_recovery.py:185: AssertionError
+_______________ test_failed_live_read_never_claims_unchanged_td ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_failed_live_read_never_cl0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f469f40>
+
+    def test_failed_live_read_never_claims_unchanged_td(tmp_path, monkeypatch):
+        tx, _, before, _, adapter, writes, impedance, _ = install_restore_fixture(monkeypatch)
+        def busy(): raise Rejected()
+        adapter.generation_guard_snapshot = busy
+>       with pytest.raises(Rejected):
+             ^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'test_v24917_td02_recovery.Rejected'>
+
+tests/test_v24917_td02_recovery.py:198: Failed
+_________ test_missing_readback_audit_is_not_reported_as_verified_skip _________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-22/test_missing_readback_audit_is0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa22f573cf0>
+
+    def test_missing_readback_audit_is_not_reported_as_verified_skip(tmp_path, monkeypatch):
+        tx, _, before, _, adapter, writes, impedance, _ = install_restore_fixture(monkeypatch)
+        def fail(*a): raise OSError('READBACK_AUDIT_DISK_FULL')
+        monkeypatch.setattr(tx, 'atomic_json', fail)
+>       with pytest.raises(OSError, match='DISK_FULL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'OSError'>
+
+tests/test_v24917_td02_recovery.py:207: Failed
+=========================== short test summary info ============================
+FAILED tests/test_v24917_td02_recovery.py::test_real_readonly_native16_constructor_retries_procedures_getter[1]
+FAILED tests/test_v24917_td02_recovery.py::test_real_readonly_native16_constructor_retries_procedures_getter[2]
+FAILED tests/test_v24917_td02_recovery.py::test_constructor_retry_is_bounded_and_does_not_retry_structural_error[exhausted]
+FAILED tests/test_v24917_td02_recovery.py::test_unknown_constructor_with_copied_readonly_marker_is_not_wrapped
+FAILED tests/test_v24917_td02_recovery.py::test_manual_reopen_error_never_retries_or_reads_parent[True]
+FAILED tests/test_v24917_td02_recovery.py::test_manual_reopen_error_never_retries_or_reads_parent[False]
+FAILED tests/test_v24917_td02_recovery.py::test_manual_reopen_error_is_not_repeated_inside_rollback_wrapper
+FAILED tests/test_v24917_td02_recovery.py::test_failed_startup_unchanged_bc_still_restores_impedance_and_recomputes
+FAILED tests/test_v24917_td02_recovery.py::test_bc_skip_requires_fresh_complete_same_scope_readback[b]
+FAILED tests/test_v24917_td02_recovery.py::test_bc_skip_requires_fresh_complete_same_scope_readback[scope]
+FAILED tests/test_v24917_td02_recovery.py::test_bc_skip_requires_fresh_complete_same_scope_readback[hash]
+FAILED tests/test_v24917_td02_recovery.py::test_bc_skip_requires_fresh_complete_same_scope_readback[status]
+FAILED tests/test_v24917_td02_recovery.py::test_bc_skip_requires_fresh_complete_same_scope_readback[nan]
+FAILED tests/test_v24917_td02_recovery.py::test_failed_live_read_never_claims_unchanged_td
+FAILED tests/test_v24917_td02_recovery.py::test_missing_readback_audit_is_not_reported_as_verified_skip
+15 failed, 8 passed in 0.51s

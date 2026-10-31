@@ -10,6 +10,8 @@ from pathlib import Path
 import r1_15a2_td_joint_v24917 as joint
 import r1_15a2_long_composite_td_v24917 as long_td
 import r1_15a2_school_td_v24917 as school_td
+import r1_15a2_combusy2_v24917 as combusy
+import r1_15a2_finecdf_bridge_v24916 as finecdf_bridge
 
 # The sealed V24916 FineCDF bridge explicitly forbids LONG in its *caller*
 # active_components. Preserve that source exactly. The V24917 layer binds
@@ -52,6 +54,10 @@ def _scope_long_target(cfg):
 def wrap_inner(original):
     @functools.wraps(original)
     def inner(adapter, cfg, folder, control, package_root, *args, **kwargs):
+        # Compatibility activation can precede this call at different launcher
+        # stages. Bind here to the approved current constructor before it reads
+        # visum.Procedures, without retrying any native TD/assignment writes.
+        combusy.install_td_constructor_retry(finecdf_bridge)
         enabled = joint.options()["enabled"]
         adapter._tdjoint_stage = None
         scoped_cfg, selected, token = _scope_long_target(cfg)
