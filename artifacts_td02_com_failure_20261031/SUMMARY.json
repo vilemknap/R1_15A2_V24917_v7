@@ -1,0 +1,313 @@
+{
+  "status": "PASS",
+  "check_count": 36,
+  "checks": [
+    {
+      "check": "14 supplied files",
+      "passes": true
+    },
+    {
+      "check": "size: generation_reference",
+      "passes": true
+    },
+    {
+      "check": "size: effective_config",
+      "passes": true
+    },
+    {
+      "check": "size: latest_checkpoint",
+      "passes": true
+    },
+    {
+      "check": "size: best_checkpoint",
+      "passes": true
+    },
+    {
+      "check": "size: run_status",
+      "passes": true
+    },
+    {
+      "check": "size: cycle1",
+      "passes": true
+    },
+    {
+      "check": "size: td_plan",
+      "passes": true
+    },
+    {
+      "check": "size: timing",
+      "passes": true
+    },
+    {
+      "check": "size: td",
+      "passes": true
+    },
+    {
+      "check": "size: parent_proof",
+      "passes": true
+    },
+    {
+      "check": "size: status_txt",
+      "passes": true
+    },
+    {
+      "check": "size: master",
+      "passes": true
+    },
+    {
+      "check": "size: component_mask",
+      "passes": true
+    },
+    {
+      "check": "size: profile_rebind",
+      "passes": true
+    },
+    {
+      "check": "explicit failed rollback",
+      "passes": true
+    },
+    {
+      "check": "no next Generation allowed",
+      "passes": true
+    },
+    {
+      "check": "primary rejected COM call",
+      "passes": true
+    },
+    {
+      "check": "startup failed on Procedures getter",
+      "passes": true
+    },
+    {
+      "check": "rollback failed resolving TD parameters",
+      "passes": true
+    },
+    {
+      "check": "exception path is rollback-after-TD-failure",
+      "passes": true
+    },
+    {
+      "check": "targeting also reported COM rejection",
+      "passes": true
+    },
+    {
+      "check": "master contains only startup phase",
+      "passes": true
+    },
+    {
+      "check": "master belongs to cycle 2",
+      "passes": true
+    },
+    {
+      "check": "outer status not terminal proof",
+      "passes": true
+    },
+    {
+      "check": "cycle 2 remained running in outer snapshot",
+      "passes": true
+    },
+    {
+      "check": "accepted cycle-1 record matches standalone",
+      "passes": true
+    },
+    {
+      "check": "prior TD cycle 1 accepted",
+      "passes": true
+    },
+    {
+      "check": "checkpoint manifest accepted count is 2",
+      "passes": true
+    },
+    {
+      "check": "latest manifest matches outer pointer",
+      "passes": true
+    },
+    {
+      "check": "expected accepted B0002 filename",
+      "passes": true
+    },
+    {
+      "check": "expected checkpoint metadata",
+      "passes": true
+    },
+    {
+      "check": "best-so-far is older accepted 1",
+      "passes": true
+    },
+    {
+      "check": "latest checkpoint tracks accepted cycle-1 state",
+      "passes": true
+    },
+    {
+      "check": "retained proof is pre-mutation only",
+      "passes": true
+    },
+    {
+      "check": "retained proof is not checkpoint state identity",
+      "passes": true
+    }
+  ],
+  "sources": [
+    {
+      "label": "generation_reference",
+      "name": "GENERATION_COUNTS_REFERENCE.json",
+      "bytes": 1102,
+      "upload_id": "file_00000000304481f4af89c8d7469afc67",
+      "sha256": "4620f1f1603958a9aff016222eb1d5f9891b307458062bae40ff9282704fa091"
+    },
+    {
+      "label": "effective_config",
+      "name": "EFFECTIVE_CONFIG.json",
+      "bytes": 246978,
+      "upload_id": "file_00000000fc5482438d3e3ee27805b359",
+      "sha256": "3de46bba3c06004f3257f6ea8df96f33c5fe756c48868a3147f36205de2a9cc9"
+    },
+    {
+      "label": "latest_checkpoint",
+      "name": "LATEST_ACCEPTED_CHECKPOINT.json",
+      "bytes": 2060,
+      "upload_id": "file_00000000f41881f4a0c83e6696ff2c8f",
+      "sha256": "37596755358f14898d73d4b5dd55169b590f65e54e2e5072f522186ee4556baf"
+    },
+    {
+      "label": "best_checkpoint",
+      "name": "BEST_SO_FAR_CHECKPOINT.json",
+      "bytes": 3336,
+      "upload_id": "file_000000004ba481f4bead6a1a87919a0f",
+      "sha256": "3d561f435b17285fccfee5c47bb761ac8f781941295b4c7a264f74f49d5a0d0c"
+    },
+    {
+      "label": "run_status",
+      "name": "RUN_STATUS.json",
+      "bytes": 8040209,
+      "upload_id": "file_0000000018bc8210bb10e033168412ac",
+      "sha256": "c677d7256d5f55e43b0aa35a598ade4ba6c383016ebaff27755125177ef0c9b0"
+    },
+    {
+      "label": "cycle1",
+      "name": "DEMAND_CYCLE_01_RESULT.json",
+      "bytes": 3861954,
+      "upload_id": "file_000000004e3081f49cc8c14aad7af103",
+      "sha256": "a7acd6efa4028a32ae98f5e16d4df4b864239e90557ab4a0588c2e5d87ed8e7c"
+    },
+    {
+      "label": "td_plan",
+      "name": "TD_TARGET_PLAN.json",
+      "bytes": 491,
+      "upload_id": "file_00000000720481f491fbf715a8fc0011",
+      "sha256": "bda1592654292d884cd79fd42aec8a79ef75a5f891bb02ede0e031d0ce0060eb"
+    },
+    {
+      "label": "timing",
+      "name": "V24917_TIMING.json",
+      "bytes": 2489,
+      "upload_id": "file_00000000298081f4adf6c9663002d012",
+      "sha256": "c32cd3584f0a558b322137ab88219c1719d0000812880b6c63a0ff96a9100d73"
+    },
+    {
+      "label": "td",
+      "name": "TD_FINECDF_BLOCK_RESULT.json",
+      "bytes": 4691,
+      "upload_id": "file_00000000a3108243b673b241eeacbe0b",
+      "sha256": "24751e527ade7764b5462f74bee54e230aa1a5eb144394b6902e4134d0f0d833"
+    },
+    {
+      "label": "parent_proof",
+      "name": "GENFIX2_PARENT_PROOF_RETAINED.json",
+      "bytes": 884461,
+      "upload_id": "file_00000000361881f4972a412dee6262bb",
+      "sha256": "0d61ebe60ae7ed5ef2f1e9b9ced07ba235c4781bd07c85f2927d3f472ddc5188"
+    },
+    {
+      "label": "status_txt",
+      "name": "00_STATUS.txt",
+      "bytes": 69,
+      "upload_id": "file_00000000cb1081f4b7bc6eb55ad4dbc4",
+      "sha256": "8e0db7664c6913ea120d6333bf0a09ea78b955b085498890aa5db396be779890"
+    },
+    {
+      "label": "master",
+      "name": "00_MASTER_SUMMARY.json",
+      "bytes": 2279,
+      "upload_id": "file_000000009b0881f49c95cfda5bff8c52",
+      "sha256": "85a157eb453a22070697449d45912fd100f0cee3c6d95072e6e7edc3debe7676"
+    },
+    {
+      "label": "component_mask",
+      "name": "TD_ACTIVE_COMPONENT_MASK.json",
+      "bytes": 204,
+      "upload_id": "file_0000000016e881f48da5ab452dc0f83c",
+      "sha256": "c13580ac0497f5ae78a90e3d272d2263adc58a7da3cd1e974ee4fbe57ce0f1c3"
+    },
+    {
+      "label": "profile_rebind",
+      "name": "PATH_EPOCH_PROFILE_REBIND.json",
+      "bytes": 167,
+      "upload_id": "file_0000000084e881f4ada3de38e95d1ddb",
+      "sha256": "aa4be2704182d41529259e1c2da6785dd770029d0258eb5fb39c826ad01a28d2"
+    }
+  ],
+  "diagnosis": {
+    "td_status": "ROLLBACK_FAILED_MANUAL_REOPEN_REQUIRED",
+    "primary_error": "Volan\u00fd odm\u00edtl vol\u00e1n\u00ed.",
+    "rollback_error": "Could not locate readable Trip Distribution operation",
+    "next_generation_permitted": false,
+    "empty_rollback_folder_reported_by_user": true,
+    "folder_creation_precedes_parameter_restore_and_first_audit": true,
+    "current_process_state_observed": false,
+    "current_live_model_verified": false,
+    "startup_status_files_do_not_override_failed_TD_result": true
+  },
+  "recovery_checkpoint_metadata": {
+    "accepted_count": 2,
+    "slot": "B",
+    "checkpoint": {
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_010656_550362\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0002_c810a3269231.ver",
+      "sha256": "22a1e58040b305092f5664cb32eaccd46c4b129335e389d22d71aa9400dd433a",
+      "size": 534913169
+    },
+    "semantic_restart_authority": {
+      "schema": "R1_15A2_SEMANTIC_RESTART_AUTHORITY_V2494",
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_010656_550362\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0002_c810a3269231.ver.semantic.json",
+      "semantic_state_hash": "aa03bde3a4203f2d698d50bd7562737ec641c31f3ca2a78198e90a8147f931bd",
+      "semantic_hashes": {
+        "fixed_link_hash": "da1561b6a4059c3022c1a9d2d6324c7a37d9b4a1d81dab227518e768e71b43e2",
+        "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+        "operations_hash": "d02ecc1d2190f1c71961309340bf89516d4f94c524e0f10f1eaa3fcf702bcd04",
+        "addval_hash": "47ce4dbe3abe51237d33680c95d7773a62da15914b90bda666aef9e9038bbb19",
+        "matrix_hash": "80ca2a1bfe32ff9d5f4833a15291ac087025715c5078af61d04c133a6d309ecb",
+        "generation_hash": "5c0a4290a72fc62f109e9578da5388789837a2df6977c92624ff21e1aa68a92d",
+        "td_hash": "0d4d2e5333bb45d68e94a95101ae4a85ffa8a4d3cb39c807e29c5fff284d2433"
+      },
+      "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+      "raw_ver_sha_used_for_restart_acceptance": false
+    },
+    "path_epoch_checkpoint": {
+      "enabled": true,
+      "epoch": 1,
+      "epoch_origin_state_hash": "f0366efb984f7c066d00318fc73dc2dc88c996f84bf667b6c9b6377f2c9223af",
+      "live_state_hash": "18b9ede29990ba041f9d504aa4ef0b8d8fd7784c73c0f327b480eb8a0f00e299",
+      "basis_hash": "d4b9dcc0e34e454c60c8a1379b0963f8f72983f873eaf6ad15e412a42b7c48e5",
+      "comparison_basis_hash": "975d0c47e6ed7fff2b7ae5d37540da9718aa1d499db8d018505dfd3b44f63f14",
+      "persistent_cache_id": null,
+      "persistent_cache_dir": null
+    }
+  },
+  "checkpoint_ver_file_provided": false,
+  "physical_checkpoint_existence_or_sha_independently_verified": false,
+  "older_best_so_far": {
+    "accepted_count": 1,
+    "checkpoint": {
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_010656_550362\\CALIBRATION\\CHECKPOINTS\\BEST_SO_FAR_0001_fdc123035603.ver",
+      "sha256": "e466298db99d7cee300e542d41688f7b59eed60ba4bc94b5ed7bbd24d084cec9",
+      "size": 534872370
+    },
+    "geh": 30.331603748167616
+  },
+  "retained_parent_status": "CAPTURED_BEFORE_MUTATION",
+  "last_inner_update": "2026-10-31T03:11:35+01:00",
+  "td_recorded_seconds": 193.067,
+  "runtime_modified": false,
+  "live_visum_run": false,
+  "repair_implemented_in_this_diagnostic_task": false
+}

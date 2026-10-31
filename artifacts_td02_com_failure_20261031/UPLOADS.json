@@ -1,0 +1,114 @@
+[
+  {
+    "label": "generation_reference",
+    "file_id": "file_00000000304481f4af89c8d7469afc67",
+    "result": {
+      "path": "/workspace/attachments/ce75101c-5edd-494a-b11f-3b559038df01/GENERATION_COUNTS_REFERENCE.json",
+      "size_bytes": 1102
+    }
+  },
+  {
+    "label": "effective_config",
+    "file_id": "file_00000000fc5482438d3e3ee27805b359",
+    "result": {
+      "path": "/workspace/attachments/d74d9841-ac5a-4532-a649-b7e929300d18/EFFECTIVE_CONFIG.json",
+      "size_bytes": 246978
+    }
+  },
+  {
+    "label": "latest_checkpoint",
+    "file_id": "file_00000000f41881f4a0c83e6696ff2c8f",
+    "result": {
+      "path": "/workspace/attachments/11e6d8d4-497b-4081-804c-761403b36b01/LATEST_ACCEPTED_CHECKPOINT.json",
+      "size_bytes": 2060
+    }
+  },
+  {
+    "label": "best_checkpoint",
+    "file_id": "file_000000004ba481f4bead6a1a87919a0f",
+    "result": {
+      "path": "/workspace/attachments/fb3c1fdb-0362-4e8d-8914-caa5a60a6f92/BEST_SO_FAR_CHECKPOINT.json",
+      "size_bytes": 3336
+    }
+  },
+  {
+    "label": "run_status",
+    "file_id": "file_0000000018bc8210bb10e033168412ac",
+    "result": {
+      "path": "/workspace/attachments/a5d0307f-5fe0-4267-ab0d-08c83688e26a/RUN_STATUS.json",
+      "size_bytes": 8040209
+    }
+  },
+  {
+    "label": "cycle1",
+    "file_id": "file_000000004e3081f49cc8c14aad7af103",
+    "result": {
+      "path": "/workspace/attachments/4f5af96d-cc9a-4d0b-986f-5484da94ab0f/DEMAND_CYCLE_01_RESULT.json",
+      "size_bytes": 3861954
+    }
+  },
+  {
+    "label": "td_plan",
+    "file_id": "file_00000000720481f491fbf715a8fc0011",
+    "result": {
+      "path": "/workspace/attachments/215428e2-4739-4ece-9db1-76aaa4d402aa/TD_TARGET_PLAN.json",
+      "size_bytes": 491
+    }
+  },
+  {
+    "label": "timing",
+    "file_id": "file_00000000298081f4adf6c9663002d012",
+    "result": {
+      "path": "/workspace/attachments/c1209544-57d9-4052-b2db-c24fb434e79d/V24917_TIMING.json",
+      "size_bytes": 2489
+    }
+  },
+  {
+    "label": "td",
+    "file_id": "file_00000000a3108243b673b241eeacbe0b",
+    "result": {
+      "path": "/workspace/attachments/8a298d71-6c09-4a53-8523-6008a6e018bd/TD_FINECDF_BLOCK_RESULT.json",
+      "size_bytes": 4691
+    }
+  },
+  {
+    "label": "parent_proof",
+    "file_id": "file_00000000361881f4972a412dee6262bb",
+    "result": {
+      "path": "/workspace/attachments/77c64359-ed0a-43c5-b0c9-862b32d1ea8d/GENFIX2_PARENT_PROOF_RETAINED.json",
+      "size_bytes": 884461
+    }
+  },
+  {
+    "label": "status_txt",
+    "file_id": "file_00000000cb1081f4b7bc6eb55ad4dbc4",
+    "result": {
+      "path": "/workspace/attachments/7b5d0f3f-e04f-42a9-88e1-423d164d00d4/00_STATUS.txt",
+      "size_bytes": 69
+    }
+  },
+  {
+    "label": "master",
+    "file_id": "file_000000009b0881f49c95cfda5bff8c52",
+    "result": {
+      "path": "/workspace/attachments/426dfb08-0576-4d28-89f3-b5ce46b6e735/00_MASTER_SUMMARY.json",
+      "size_bytes": 2279
+    }
+  },
+  {
+    "label": "component_mask",
+    "file_id": "file_0000000016e881f48da5ab452dc0f83c",
+    "result": {
+      "path": "/workspace/attachments/6f2139dd-da8c-4e5d-8773-c82046596496/TD_ACTIVE_COMPONENT_MASK.json",
+      "size_bytes": 204
+    }
+  },
+  {
+    "label": "profile_rebind",
+    "file_id": "file_0000000084e881f4ada3de38e95d1ddb",
+    "result": {
+      "path": "/workspace/attachments/0bc16d87-da2c-4bca-af0e-1446d8c070c1/PATH_EPOCH_PROFILE_REBIND.json",
+      "size_bytes": 167
+    }
+  }
+]

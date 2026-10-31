@@ -1,0 +1,83 @@
+"""Read-only diagnosis of a failed TD startup and unverified rollback."""
+from pathlib import Path
+import hashlib
+import json
+
+BASE = Path(__file__).resolve().parent
+uploads = json.loads((BASE/'UPLOADS.json').read_text())
+paths = {item['label']: Path(item['result']['path']) for item in uploads}
+data = {key: json.loads(path.read_text(encoding='utf-8-sig')) for key, path in paths.items()
+        if key != 'status_txt'}
+checks = []
+
+
+def check(label, value):
+    checks.append({'check': label, 'passes': bool(value)})
+    if not value:
+        raise AssertionError(label)
+
+
+check('14 supplied files', len(paths) == len(uploads) == 14)
+sources = []
+for item in uploads:
+    raw = paths[item['label']].read_bytes()
+    check('size: '+item['label'], len(raw) == item['result']['size_bytes'])
+    sources.append({'label': item['label'], 'name': paths[item['label']].name,
+        'bytes': len(raw), 'upload_id': item['file_id'], 'sha256': hashlib.sha256(raw).hexdigest()})
+td, run, latest, best = (data[key] for key in ('td', 'run_status', 'latest_checkpoint', 'best_checkpoint'))
+master, plan, mask = (data[key] for key in ('master', 'td_plan', 'component_mask'))
+check('explicit failed rollback', td['status'] == 'ROLLBACK_FAILED_MANUAL_REOPEN_REQUIRED')
+check('no next Generation allowed', td['next_generation_permitted'] is False
+      and td['td_realization_complete'] is False)
+check('primary rejected COM call', td['error'] == 'Volaný odmítl volání.')
+trace = td['traceback']
+check('startup failed on Procedures getter', '_compatible_init' in trace
+      and 'self.ops = rt.get_all(self.v.Procedures.Operations)' in trace)
+check('rollback failed resolving TD parameters', td['rollback_error']
+      == 'Could not locate readable Trip Distribution operation'
+      and 'read_td_parameter_state' in trace and 'restore_td_parameters' in trace)
+check('exception path is rollback-after-TD-failure', 'ROLLBACK_AFTER_TD_FAILURE' in trace)
+check('targeting also reported COM rejection', plan['status'] == mask['status'] == 'GLOBAL_IDP_FALLBACK'
+      and plan['reason'] == mask['reason'] == 'com_error:Volaný odmítl volání.')
+check('master contains only startup phase', master['status'] == 'RUNNING' and master['last_phase'] == 'START'
+      and master['started'] == master['updated'])
+check('master belongs to cycle 2', 'DEMAND_CYCLE_02_TD_FINECDF' in master['result_dir'])
+check('outer status not terminal proof', run['status'] == 'STARTED' and run['td_realization_pending'] is True
+      and run['final_state_verified'] is False and run['calibration_complete'] is False)
+check('cycle 2 remained running in outer snapshot', run['demand_cycles'][-1]['cycle'] == 2
+      and run['demand_cycles'][-1]['status'] == 'TD_RUNNING')
+check('accepted cycle-1 record matches standalone', run['demand_cycles'][0] == data['cycle1'])
+check('prior TD cycle 1 accepted', data['cycle1']['td']['status'] == 'ACCEPTED_FINECDF_TD')
+check('checkpoint manifest accepted count is 2', latest['accepted_count'] == run['accepted_count'] == 2)
+check('latest manifest matches outer pointer', latest['checkpoint'] == run['current_exploratory_checkpoint'])
+check('expected accepted B0002 filename', latest['checkpoint']['path'].endswith('ACCEPTED_B_0002_c810a3269231.ver'))
+check('expected checkpoint metadata', latest['checkpoint']['size'] == 534913169
+      and latest['checkpoint']['sha256'] == '22a1e58040b305092f5664cb32eaccd46c4b129335e389d22d71aa9400dd433a')
+check('best-so-far is older accepted 1', best['accepted_count'] == 1
+      and best['checkpoint']['path'] != latest['checkpoint']['path'])
+check('latest checkpoint tracks accepted cycle-1 state', latest['path_epoch_checkpoint']['live_state_hash']
+      == data['cycle1']['state_hash_end'])
+check('retained proof is pre-mutation only', data['parent_proof']['status'] == 'CAPTURED_BEFORE_MUTATION')
+check('retained proof is not checkpoint state identity', data['parent_proof']['snapshot']['state_hash']
+      != latest['path_epoch_checkpoint']['live_state_hash'])
+
+report = {'status': 'PASS', 'check_count': len(checks), 'checks': checks, 'sources': sources,
+    'diagnosis': {'td_status': td['status'], 'primary_error': td['error'],
+        'rollback_error': td['rollback_error'], 'next_generation_permitted': False,
+        'empty_rollback_folder_reported_by_user': True,
+        'folder_creation_precedes_parameter_restore_and_first_audit': True,
+        'current_process_state_observed': False, 'current_live_model_verified': False,
+        'startup_status_files_do_not_override_failed_TD_result': True},
+    'recovery_checkpoint_metadata': latest,
+    'checkpoint_ver_file_provided': False,
+    'physical_checkpoint_existence_or_sha_independently_verified': False,
+    'older_best_so_far': {'accepted_count': best['accepted_count'], 'checkpoint': best['checkpoint'],
+        'geh': best['objective']['raw_cal']},
+    'retained_parent_status': data['parent_proof']['status'],
+    'last_inner_update': master['updated'],
+    'td_recorded_seconds': data['timing']['block']['td_stage']['seconds'],
+    'runtime_modified': False, 'live_visum_run': False,
+    'repair_implemented_in_this_diagnostic_task': False}
+(BASE/'SUMMARY.json').write_text(json.dumps(report, indent=2)+'\n')
+print(json.dumps({'status': 'PASS', 'checks': len(checks), 'td_failed': True,
+                  'rollback_verified': False, 'next_generation_permitted': False}))
