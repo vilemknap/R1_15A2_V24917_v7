@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "cycle_1_accepted_generation_td_and_state_lineage",
+    "cycle_2_accepted_generation_td_and_state_lineage",
+    "cycle_3_accepted_generation_td_and_state_lineage",
+    "cycle_4_accepted_generation_td_and_state_lineage",
+    "best_matches_cycle4_state",
+    "best_and_accepted_file_hashes_match_in_metadata",
+    "later_generation_parent_metrics_match_best",
+    "step_plan_matches_later_generation_parent"
+  ],
+  "input_sha256_verified": 8,
+  "production_code_changed": false,
+  "live_visum_connected": false
+}

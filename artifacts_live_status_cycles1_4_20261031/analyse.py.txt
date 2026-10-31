@@ -1,0 +1,86 @@
+"""Read uploaded run artifacts only. No COM, model changes, or test execution."""
+from pathlib import Path
+import base64,gzip,hashlib,json
+OUT=Path(__file__).resolve().parent
+meta=json.loads((OUT/'INPUTS.json').read_text())
+data={}
+for x in meta:
+    raw=gzip.decompress(base64.b64decode((OUT/'inputs'/x['backup']).read_text()))
+    assert hashlib.sha256(raw).hexdigest()==x['sha256']
+    data[x['label']]=json.loads(raw)
+cycles=[data['cycle'+str(i)] for i in range(1,5)]
+best=data['best']; gen=data['generation']; checks=[]
+for i,c in enumerate(cycles):
+    assert c['cycle']==i+1
+    assert c['generation']['status']=='ACCEPTED' and c['td']['status']=='ACCEPTED_FINECDF_TD'
+    assert c['td_realization_complete'] is True
+    if i:assert c['state_hash_start']==cycles[i-1]['state_hash_end']
+    checks.append('cycle_%d_accepted_generation_td_and_state_lineage'%c['cycle'])
+assert best['state_hash']==cycles[-1]['state_hash_end']
+assert best['checkpoint']['sha256']==best['source_accepted_checkpoint']['sha256']
+assert gen['objective_before']['cal_metrics']==best['objective']['cal_metrics']
+assert gen['objective_before']['raw_component_idp']==best['objective']['raw_component_idp']
+assert data['plan']['objective_before']==gen['objective_before']['raw_cal']
+checks+=['best_matches_cycle4_state','best_and_accepted_file_hashes_match_in_metadata',
+         'later_generation_parent_metrics_match_best','step_plan_matches_later_generation_parent']
+rows=[]
+for c in cycles:
+    g=c['generation']; td=c['td']; inner=td['inner']; joint=inner['tdjoint']; real=td['realization']; decision=real['attempts'][-1]['decision']; blend=decision['v24917_td_blend']
+    assert decision['accepted'] is True and blend['F']<=.999
+    assert blend['cal_geh_after']==(best['objective']['raw_cal'] if c['cycle']==4 else cycles[c['cycle']]['generation']['objective_before']['raw_cal'])
+    same=all(joint['entry_abc'][str(n)]==joint['final_abc'][str(n)] for n in range(9111,9116))
+    supplied_mix=g.get('v24917_supplymix',{})
+    rows.append({'cycle':c['cycle'],'generation_before_geh':g['objective_before']['raw_cal'],
+        'generation_after_geh':g['objective_after']['raw_cal'],'end_geh':blend['cal_geh_after'],
+        'generation_trials':len(g['attempts']),'generation_budget':g['planned_trials'],
+        'generation_selected_mode':g['attempts'][-1]['plan_mode'],
+        'generation_changed_long':g['attempts'][-1]['decision']['longguard1']['changed_long'],
+        'long_guard_permitted':g['attempts'][-1]['decision']['longguard1_parent']['long_generation_permitted'],
+        'td_evaluations':joint['td_evaluations'],'td_native_stop_reason':joint['stop_reason'],
+        'td_outer_stop_reason':inner['stop_reason'],'td_blend_F':blend['F'],
+        'td_selected_scale':real['selected_scale'],'td_changed_components':[r['component'] for r in td['changed_rows']],
+        'long_td_native_parameters_unchanged':same,
+        'long_td_readiness':joint['long_composite_live_readiness']['status'],
+        'supply_status':supplied_mix.get('status','NOT_SCHEDULED'),
+        'supply_addval1_changes':supplied_mix.get('addval1_changes',0),
+        'progress_continue_reason':c['progress_continue_reason']})
+start=cycles[0]['generation']['objective_before']; end=best['objective']; later=gen['objective_after']
+timing=data['timing']
+idp_weight=end['terms']['COMPONENT_IDP']/end['raw_component_idp']
+later_full_estimate=sum(later['terms'].values())-later['terms']['COMPONENT_IDP']+idp_weight*later['raw_component_idp']
+report={'scope':'READ_ONLY_AUDIT_OF_USER_UPLOADED_RUNNING_CALIBRATION',
+    'run':'RUN_20261031_125929_863675','cycles':rows,
+    'start_geh':start['raw_cal'],'best_checkpoint_geh':end['raw_cal'],
+    'best_improvement_percent':100*(start['raw_cal']-end['raw_cal'])/start['raw_cal'],
+    'start_profile_model_obs_ratio':start['cal_metrics']['model_obs_ratio'],
+    'best_profile_model_obs_ratio':end['cal_metrics']['model_obs_ratio'],
+    'start_checkpoint_component_idp':start['raw_component_idp'],
+    'best_checkpoint_component_idp':end['raw_component_idp'],
+    'idp_improvement_percent':100*(start['raw_component_idp']-end['raw_component_idp'])/start['raw_component_idp'],
+    'best_profile_counts':{k:[start['cal_metrics'][k],end['cal_metrics'][k]] for k in ['geh_lt5','geh_lt10','geh_ge20','geh_ge30']},
+    'best_checkpoint':best['checkpoint'],'accepted_checkpoint':best['source_accepted_checkpoint'],
+    'best_accepted_count':best['accepted_count'],
+    'later_generation':{'status':gen['status'],'parent_geh':gen['objective_before']['raw_cal'],
+        'after_geh':later['raw_cal'],'improvement_percent_from_run_start':100*(start['raw_cal']-later['raw_cal'])/start['raw_cal'],
+        'profile_model_obs_ratio':later['cal_metrics']['model_obs_ratio'],
+        'component_idp':later['raw_component_idp'],'rows':gen['rows'],'scale':gen['candidate']['scale'],
+        'idp_change_percent_from_parent':100*(later['raw_component_idp']/gen['objective_before']['raw_component_idp']-1),
+        'estimated_full_ledger_same_weights':later_full_estimate,
+        'best_full_ledger':end['total'],
+        'estimate_is_not_a_new_native_acceptance':True,
+        'long_changed':gen['attempts'][-1]['decision']['longguard1']['changed_long'],
+        'following_td_result_supplied':False,'updated_checkpoint_supplied':False},
+    'timing':{'td_total_seconds':timing['cumulative']['td_stage']['seconds'],
+        'td_mean_seconds':timing['cumulative']['td_stage']['seconds']/timing['cumulative']['td_stage']['calls'],
+        'last_generation_design_seconds':timing['block']['generation_design']['seconds'],
+        'warning':'Inclusive nested stage times overlap; do not sum to infer total elapsed time.'},
+    'uncertainties':['Exact cause of LONG Generation deferral requires DESIGN/V24917_TARGETED_GENERATION/V24917_FIT_SUMMARY.json and any LONG_SHARED_CACHE_DEFERRED.json.',
+                     'No inference that active LONG TD has adopted parameters: 9111..9115 entry/final ABC are equal in all four inner stages and no LONG rows were adopted.',
+                     'Later Generation matches cycle4 parent; its exact outer-cycle number is not recorded in the standalone block file.',
+                     'A profile-flow sum ratio is not a unique-trip or total-demand estimate.',
+                     'Checkpoint metadata are cross-checked; .ver bytes were not provided and were not independently read.',
+                     'Code was not changed and no live Visum connection was made.'],
+    'validation_checks':checks}
+(OUT/'SUMMARY.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+(OUT/'CHECKS.json').write_text(json.dumps({'passed':True,'checks':checks,'input_sha256_verified':len(meta),'production_code_changed':False,'live_visum_connected':False},indent=2)+'\n')
+print(json.dumps({'best_geh':report['best_checkpoint_geh'],'later_gen_geh':later['raw_cal'],'improvement_percent':report['best_improvement_percent'],'long_tg_changes':sum(r['generation_changed_long'] for r in rows),'checks_passed':len(checks)},ensure_ascii=False))

@@ -1,0 +1,185 @@
+{
+  "scope": "READ_ONLY_AUDIT_OF_USER_UPLOADED_RUNNING_CALIBRATION",
+  "run": "RUN_20261031_125929_863675",
+  "cycles": [
+    {
+      "cycle": 1,
+      "generation_before_geh": 30.570246334395467,
+      "generation_after_geh": 27.39190250023255,
+      "end_geh": 27.521000181561067,
+      "generation_trials": 2,
+      "generation_budget": 3,
+      "generation_selected_mode": "MEASURED_ZONAL_REFIT",
+      "generation_changed_long": false,
+      "long_guard_permitted": true,
+      "td_evaluations": 28,
+      "td_native_stop_reason": "TD_EVALUATION_BUDGET",
+      "td_outer_stop_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED",
+      "td_blend_F": 0.9973226412931565,
+      "td_selected_scale": 0.5,
+      "td_changed_components": [
+        "WORK_noE_noC",
+        "SCHOOL"
+      ],
+      "long_td_native_parameters_unchanged": true,
+      "long_td_readiness": "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE",
+      "supply_status": "NOT_SCHEDULED",
+      "supply_addval1_changes": 0,
+      "progress_continue_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED"
+    },
+    {
+      "cycle": 2,
+      "generation_before_geh": 27.521000181561067,
+      "generation_after_geh": 23.539486010326044,
+      "end_geh": 23.452864605483523,
+      "generation_trials": 1,
+      "generation_budget": 3,
+      "generation_selected_mode": "LINEAR_FIT",
+      "generation_changed_long": false,
+      "long_guard_permitted": true,
+      "td_evaluations": 28,
+      "td_native_stop_reason": "TD_EVALUATION_BUDGET",
+      "td_outer_stop_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED",
+      "td_blend_F": 0.9947675078036325,
+      "td_selected_scale": 1.0,
+      "td_changed_components": [
+        "WORK_noE_noC",
+        "SERV_stud"
+      ],
+      "long_td_native_parameters_unchanged": true,
+      "long_td_readiness": "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE",
+      "supply_status": "NO_ACCEPTED_TRIAL",
+      "supply_addval1_changes": 0,
+      "progress_continue_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED"
+    },
+    {
+      "cycle": 3,
+      "generation_before_geh": 23.452864605483523,
+      "generation_after_geh": 22.770118682016097,
+      "end_geh": 22.865011075639973,
+      "generation_trials": 1,
+      "generation_budget": 3,
+      "generation_selected_mode": "LINEAR_FIT",
+      "generation_changed_long": false,
+      "long_guard_permitted": true,
+      "td_evaluations": 60,
+      "td_native_stop_reason": "TD_EVALUATION_BUDGET",
+      "td_outer_stop_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED",
+      "td_blend_F": 0.9985365960854355,
+      "td_selected_scale": 0.25,
+      "td_changed_components": [
+        "SERV_E_C",
+        "SERV_stud"
+      ],
+      "long_td_native_parameters_unchanged": true,
+      "long_td_readiness": "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE",
+      "supply_status": "NOT_SCHEDULED",
+      "supply_addval1_changes": 0,
+      "progress_continue_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED"
+    },
+    {
+      "cycle": 4,
+      "generation_before_geh": 22.865011075639973,
+      "generation_after_geh": 22.543713528081593,
+      "end_geh": 22.840160355686578,
+      "generation_trials": 1,
+      "generation_budget": 3,
+      "generation_selected_mode": "LINEAR_FIT",
+      "generation_changed_long": false,
+      "long_guard_permitted": true,
+      "td_evaluations": 60,
+      "td_native_stop_reason": "TD_EVALUATION_BUDGET",
+      "td_outer_stop_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED",
+      "td_blend_F": 0.9870591101732659,
+      "td_selected_scale": 1.0,
+      "td_changed_components": [
+        "SERV_E_C",
+        "SERV_noE_noC",
+        "SCHOOL"
+      ],
+      "long_td_native_parameters_unchanged": true,
+      "long_td_readiness": "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE",
+      "supply_status": "ACCEPTED",
+      "supply_addval1_changes": 29,
+      "progress_continue_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED"
+    }
+  ],
+  "start_geh": 30.570246334395467,
+  "best_checkpoint_geh": 22.840160355686578,
+  "best_improvement_percent": 25.28630582217961,
+  "start_profile_model_obs_ratio": 0.6984120834118047,
+  "best_profile_model_obs_ratio": 0.8586652244551684,
+  "start_checkpoint_component_idp": 0.4988289250056296,
+  "best_checkpoint_component_idp": 0.4718755775106446,
+  "idp_improvement_percent": 5.403324896342133,
+  "best_profile_counts": {
+    "geh_lt5": [
+      27,
+      56
+    ],
+    "geh_lt10": [
+      47,
+      91
+    ],
+    "geh_ge20": [
+      135,
+      109
+    ],
+    "geh_ge30": [
+      92,
+      73
+    ]
+  },
+  "best_checkpoint": {
+    "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125929_863675\\CALIBRATION\\CHECKPOINTS\\BEST_SO_FAR_0008_22bdb5563733.ver",
+    "sha256": "43bd21e48c5a91251817954a7c1c9495d209ec6b92b21846bfce68149e457f0f",
+    "size": 535267380
+  },
+  "accepted_checkpoint": {
+    "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261031_125929_863675\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_B_0008_e84f405c9e20.ver",
+    "sha256": "43bd21e48c5a91251817954a7c1c9495d209ec6b92b21846bfce68149e457f0f",
+    "size": 535267380
+  },
+  "best_accepted_count": 8,
+  "later_generation": {
+    "status": "ACCEPTED",
+    "parent_geh": 22.840160355686578,
+    "after_geh": 22.582594386273236,
+    "improvement_percent_from_run_start": 26.128843911653707,
+    "profile_model_obs_ratio": 0.8513956527061621,
+    "component_idp": 0.4818562928097472,
+    "rows": 2171,
+    "scale": 1.0,
+    "idp_change_percent_from_parent": 2.1151158853686347,
+    "estimated_full_ledger_same_weights": 1.2233178536932101,
+    "best_full_ledger": 1.2217625192888484,
+    "estimate_is_not_a_new_native_acceptance": true,
+    "long_changed": false,
+    "following_td_result_supplied": false,
+    "updated_checkpoint_supplied": false
+  },
+  "timing": {
+    "td_total_seconds": 11835.359177300008,
+    "td_mean_seconds": 2958.839794325002,
+    "last_generation_design_seconds": 845.174,
+    "warning": "Inclusive nested stage times overlap; do not sum to infer total elapsed time."
+  },
+  "uncertainties": [
+    "Exact cause of LONG Generation deferral requires DESIGN/V24917_TARGETED_GENERATION/V24917_FIT_SUMMARY.json and any LONG_SHARED_CACHE_DEFERRED.json.",
+    "No inference that active LONG TD has adopted parameters: 9111..9115 entry/final ABC are equal in all four inner stages and no LONG rows were adopted.",
+    "Later Generation matches cycle4 parent; its exact outer-cycle number is not recorded in the standalone block file.",
+    "A profile-flow sum ratio is not a unique-trip or total-demand estimate.",
+    "Checkpoint metadata are cross-checked; .ver bytes were not provided and were not independently read.",
+    "Code was not changed and no live Visum connection was made."
+  ],
+  "validation_checks": [
+    "cycle_1_accepted_generation_td_and_state_lineage",
+    "cycle_2_accepted_generation_td_and_state_lineage",
+    "cycle_3_accepted_generation_td_and_state_lineage",
+    "cycle_4_accepted_generation_td_and_state_lineage",
+    "best_matches_cycle4_state",
+    "best_and_accepted_file_hashes_match_in_metadata",
+    "later_generation_parent_metrics_match_best",
+    "step_plan_matches_later_generation_parent"
+  ]
+}
