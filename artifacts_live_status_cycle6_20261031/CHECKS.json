@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "checks": [
+    "cycle6_native_accepted",
+    "native_summary_identity",
+    "state_hash_lineage",
+    "single_full_outer_realization",
+    "blend_arithmetic",
+    "blend_passes",
+    "profile_guards_pass",
+    "four_ws_c_rows",
+    "long_and_school_parameters_unchanged",
+    "old_live_supply_budget",
+    "inner_budget_exhausted",
+    "long_probed_safe",
+    "long_gain_below_inner_gate",
+    "school_probed_safe",
+    "first_two_polls_cover_all_coordinates",
+    "final_poll_incomplete",
+    "consecutive_restore_reuse",
+    "best_is_inner_npz60_metadata"
+  ],
+  "count": 18,
+  "available_inputs_sha256_verified": 14,
+  "npz_verified": false,
+  "runtime_tests_run": false
+}

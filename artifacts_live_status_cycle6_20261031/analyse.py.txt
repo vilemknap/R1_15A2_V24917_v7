@@ -1,0 +1,65 @@
+"""Read-only audit of exact uploaded cycle-6 JSON; no Visum imports."""
+import base64
+import gzip
+import hashlib
+import json
+import math
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+
+def main():
+    files = {}
+    manifest = json.loads((ROOT / 'INPUTS.json').read_text())
+    for e in manifest:
+        if 'backup' not in e:
+            continue
+        raw = gzip.decompress(base64.b64decode((ROOT / 'inputs' / e['backup']).read_bytes()))
+        assert hashlib.sha256(raw).hexdigest() == e['sha256']
+        assert len(raw) == e['size_bytes']
+        if e['original_name'].endswith('.json'):
+            files[e['label']] = json.loads(raw.decode('utf-8-sig'))
+    checks = []
+    def check(name, condition):
+        assert condition, name
+        checks.append(name)
+    c, j, s = files['cycle'], files['joint'], files['search']
+    td = c['td']
+    check('cycle6_native_accepted', c['cycle'] == 6 and td['status'] == 'ACCEPTED_FINECDF_TD' and c['td_realization_complete'])
+    check('native_summary_identity', files['inner']['tdjoint'] == j)
+    check('state_hash_lineage', td['state_hash'] == c['state_hash_end'])
+    check('single_full_outer_realization', len(td['realization']['attempts']) == 1 and td['realization']['selected_scale'] == 1.0)
+    a = td['realization']['attempts'][0]['decision']
+    b = a['v24917_td_blend']
+    check('blend_arithmetic', math.isclose(b['F'], b['w_cnt']*b['count_ratio'] + b['w_idp']*b['idp_ratio'], abs_tol=1e-12))
+    check('blend_passes', b['F'] <= 1-b['min_relative_improvement'] and b['idp_ratio'] <= b['max_idp_ratio'] and a['accepted'])
+    check('profile_guards_pass', a['protected_guard']['passes'] and a['severity_transition_guard']['passes'])
+    check('four_ws_c_rows', len(td['changed_rows']) == 4 and all(r['candidate_b'] == r['parent_b'] and r['component'].startswith(('WORK_', 'SERV_')) for r in td['changed_rows']))
+    check('long_and_school_parameters_unchanged', all(j['entry_abc'][str(n)] == j['final_abc'][str(n)] for n in [9111,9112,9113,9114,9115,9117]))
+    check('old_live_supply_budget', c['generation']['v24917_supplymix']['options']['max_trials'] == 2)
+    check('inner_budget_exhausted', j['td_evaluations'] == 60 and j['stop_reason'] == 'TD_EVALUATION_BUDGET')
+    long_trials = [t for p in s['polls'] for t in p['trials'] if t.get('component') == 'LONG_COMPOSITE']
+    school_trials = [t for p in s['polls'] for t in p['trials'] if t.get('component') == 'SCHOOL']
+    check('long_probed_safe', len(long_trials) == 9 and all(t['status'] == 'SAFE' and not t['guard_reasons'] for t in long_trials))
+    check('long_gain_below_inner_gate', max(t['relative_improvement'] for t in long_trials) < files['master']['config']['minimum_relative_objective_improvement'])
+    check('school_probed_safe', len(school_trials) == 10 and all(t['status'] == 'SAFE' and not t['guard_reasons'] for t in school_trials))
+    check('first_two_polls_cover_all_coordinates', all(p['complete_poll'] and all(v == [0,1] for v in p['coordinate_coverage'].values()) for p in s['polls'][:2]))
+    check('final_poll_incomplete', not s['polls'][-1]['complete_poll'])
+    check('consecutive_restore_reuse', files['restore']['native_restores'] == 3 and files['restore']['verified_reuses'] == 1 and not files['restore']['outer_acceptance_skipped'])
+    check('best_is_inner_npz60_metadata', files['best']['matrix_file'] == 'ACCEPTED_060.npz' and files['best']['evaluation'] == 60)
+    summary = {'cycle':6,'state_hash':c['state_hash_end'],'outer_blend':b,'final_profiles':a['cal_after'],
+               'generation_after':c['generation']['attempts'][-1]['decision']['cal_after'],
+               'supply_status':c['generation']['v24917_supplymix']['status'],
+               'changed_rows':td['changed_rows'],'long_probes':long_trials,'school_probes':school_trials,
+               'long_best_relative_gain':max(t['relative_improvement'] for t in long_trials),
+               'inner_gate':files['master']['config']['minimum_relative_objective_improvement'],
+               'inner_objective_final':j['objective_final'],'inner_stop_reason':j['stop_reason'],
+               'restore':files['restore'],'new_best_so_far_checkpoint_supplied':False,
+               'npz_contents_verified':False,'live_visum_connected':False,'production_code_changed':False}
+    (ROOT/'SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
+    result={'passed':True,'checks':checks,'count':len(checks),'available_inputs_sha256_verified':sum('backup' in e for e in manifest),'npz_verified':False,'runtime_tests_run':False}
+    (ROOT/'CHECKS.json').write_text(json.dumps(result,indent=2)+'\n')
+    print(json.dumps({'checks':len(checks),'final_geh':b['cal_geh_after'],'F':b['F'],'long_probes':len(long_trials),'school_probes':len(school_trials)}))
+
+if __name__ == '__main__':
+    main()

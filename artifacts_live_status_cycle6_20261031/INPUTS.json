@@ -1,0 +1,124 @@
+[
+  {
+    "label": "cycle",
+    "file_id": "file_00000000f91c81f484c5020d8feb7254",
+    "original_name": "DEMAND_CYCLE_06_RESULT.json",
+    "size_bytes": 1250293,
+    "sha256": "e72ca70f5c95ad3ddb66fde139d90369958ea23acb9f2e0825cd50822d2674bc",
+    "backup": "DEMAND_CYCLE_06_RESULT.json.gz.b64"
+  },
+  {
+    "label": "search",
+    "file_id": "file_00000000fba4820abbdd0236526f2538",
+    "original_name": "TDJOINT_SEARCH.json",
+    "size_bytes": 50340,
+    "sha256": "ffe0326f2eac8a6c4f7e5d045262f657732a3ee846cb3a35ad7016d902f81554",
+    "backup": "TDJOINT_SEARCH.json.gz.b64"
+  },
+  {
+    "label": "contract",
+    "file_id": "file_0000000057c082469fc8524bd9aecc6b",
+    "original_name": "TD09C_NATIVE_SCOPE_CONTRACT.json",
+    "size_bytes": 867,
+    "sha256": "7a434121e34e5602bb144865001e51fa1dac19b63fcfc1e85aa4310685983814",
+    "backup": "TD09C_NATIVE_SCOPE_CONTRACT.json.gz.b64"
+  },
+  {
+    "label": "joint",
+    "file_id": "file_00000000912481f4bbc21ce9a053e9af",
+    "original_name": "TDJOINT_SUMMARY.json",
+    "size_bytes": 8161,
+    "sha256": "0cdc87eccbff519b4faf7e4a5d538041240fd04502832d1c0bcc559afc17baa3",
+    "backup": "TDJOINT_SUMMARY.json.gz.b64"
+  },
+  {
+    "label": "inner",
+    "file_id": "file_00000000f9108210a3c039210be5d0cd",
+    "original_name": "V24916_FINECDF_INNER_RESULT.json",
+    "size_bytes": 18077,
+    "sha256": "9e729c0694623e84af22ba41cfb7254a321d8e584d14573f8b6daeb10e6049b4",
+    "backup": "V24916_FINECDF_INNER_RESULT.json.gz.b64"
+  },
+  {
+    "label": "long",
+    "file_id": "file_00000000778c820aa1b19d39968d6158",
+    "original_name": "TDLONG_COMPOSITE_TARGET_SCOPE.json",
+    "size_bytes": 1027,
+    "sha256": "599b19988bdf0a3cc4086a26dee954a1e6f018f0a4eb46d9e4367c88ca21d8e2",
+    "backup": "TDLONG_COMPOSITE_TARGET_SCOPE.json.gz.b64"
+  },
+  {
+    "label": "school",
+    "file_id": "file_00000000108c81f4ad559fd4a62f650f",
+    "original_name": "TDSCHOOL_TARGET_SCOPE.json",
+    "size_bytes": 964,
+    "sha256": "bd91b8fb21976ed2cf4b6c38bdf5b0f2d3a2f7893db66c7b232d6f45a065a31c",
+    "backup": "TDSCHOOL_TARGET_SCOPE.json.gz.b64"
+  },
+  {
+    "label": "master",
+    "file_id": "file_000000008b5881f4baf5f55fffbdbde1",
+    "original_name": "00_MASTER_SUMMARY.json",
+    "size_bytes": 4066,
+    "sha256": "b09feaff8e23bf22a92c87f3faa86ac522c8df675292b54d0d24758bf5f7fccc",
+    "backup": "00_MASTER_SUMMARY.json.gz.b64"
+  },
+  {
+    "label": "status",
+    "file_id": "file_0000000089e482468143f262ecb7cda5",
+    "original_name": "00_STATUS.txt",
+    "size_bytes": 14863,
+    "sha256": "01548d1b6428f5fe033068a430df53d61ad19d7ce3b950ee25306a063f369ea9",
+    "backup": "00_STATUS.txt.gz.b64"
+  },
+  {
+    "label": "space",
+    "file_id": "file_00000000618081f49774fca1ab55acec",
+    "original_name": "03_PARAMETER_SPACE.json",
+    "size_bytes": 4679,
+    "sha256": "b64355001460a2947fe57ffcecc26a37379ed4d0d544777875fc6428664d6aae",
+    "backup": "03_PARAMETER_SPACE.json.gz.b64"
+  },
+  {
+    "label": "best",
+    "file_id": "file_00000000010c81f490a26f70d4556781",
+    "original_name": "BEST_STATE.json",
+    "size_bytes": 2983,
+    "sha256": "8dd56f5de271e1832d1b38f34641f7c4fb923f80091c9d3f5d16738957fa744b",
+    "backup": "BEST_STATE.json.gz.b64"
+  },
+  {
+    "label": "preflight",
+    "file_id": "file_000000001ee481f48b2b396875090e10",
+    "original_name": "PATCHED_INPUT_PREFLIGHT.json",
+    "size_bytes": 1167,
+    "sha256": "d6c064551a8ab4d8a485836922cde1666eb6c0cb34468523d0c30b2795b30210",
+    "backup": "PATCHED_INPUT_PREFLIGHT.json.gz.b64"
+  },
+  {
+    "label": "restore",
+    "file_id": "file_00000000929081f49899f905abc4380f",
+    "original_name": "TD_PERF_RESTORE_AUDIT.json",
+    "size_bytes": 703,
+    "sha256": "826f3875d915b8767ec7ab34fdc4c80b1969660a837d20f29a075b0410d5824c",
+    "backup": "TD_PERF_RESTORE_AUDIT.json.gz.b64"
+  },
+  {
+    "label": "inventory",
+    "file_id": "file_000000003b8481f48d0a0f1467e3a62e",
+    "original_name": "TD_PROCEDURE_INVENTORY.csv",
+    "size_bytes": 2120,
+    "sha256": "62c9038ef377363174566d1a6ed84b0dcbee36f955e64212a237111d825c93b2",
+    "backup": "TD_PROCEDURE_INVENTORY.csv.gz.b64"
+  },
+  {
+    "label": "npz51",
+    "file_id": "file_0000000024cc81f4bc9ce3e09b57ab4c",
+    "error": "file exceeds the executor transfer limit of 32 MiB"
+  },
+  {
+    "label": "npz60",
+    "file_id": "file_00000000e08881f48ec98cc28579baf1",
+    "error": "file exceeds the executor transfer limit of 32 MiB"
+  }
+]
