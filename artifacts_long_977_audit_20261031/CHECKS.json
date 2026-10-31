@@ -1,0 +1,45 @@
+{
+  "baseline_commit": "977cef4e77ab67f159bbe392edc8d3d485dc72ee",
+  "baseline_local_mirror": "92dd9589edd90ce43486e3a4125799ffaf789328",
+  "baseline_tree": "46b7e1d6fae3f513edfc521d1b8d302dc1f0236d",
+  "baseline_remote_local_tree_equal": true,
+  "runtime_changes": false,
+  "live_visum": "NOT_RUN",
+  "current_run_results_provided": false,
+  "tests": [
+    {
+      "passed": 134,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "stdout": "134 passed in 1.92s",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_composite_diagnostic.py tests/test_v24917_long_cache_generation.py tests/test_v24917_long_incidence_read.py tests/test_v24917_longguard1.py tests/test_v24917_fresh_universal_tdperf.py"
+    },
+    {
+      "passed": 176,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "stdout_file": "additional_tests.log",
+      "command": "PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_long_chain_review.py tests/test_v24917_long_diagnostics_epoch_fix.py tests/test_v24917_long_zonal_fit.py tests/test_v24917_mobilityzone1.py tests/test_v24917_long_tg_td_unlock.py tests/test_v24917_long_post_td_mask.py tests/test_v24917_long_osrm_support.py tests/test_v24917_long_profile_incidence.py tests/test_v24917_aligned_bounds.py"
+    }
+  ],
+  "manifest_checks": {
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "checked": 1059,
+      "mismatches": []
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "checked": 173,
+      "mismatches": []
+    },
+    "V24917_RUNTIME_MANIFEST.json": {
+      "checked": 91,
+      "mismatches": []
+    }
+  },
+  "next_evidence": [
+    "V24917_TARGETED_GENERATION/V24917_FIT_SUMMARY.json",
+    "GENERATION_BLOCK_RESULT.json"
+  ]
+}

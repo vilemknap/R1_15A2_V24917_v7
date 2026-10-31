@@ -1,0 +1,83 @@
+Prověření LONG Generation v přesné verzi 977cef4
+
+Baseline: 977cef4e77ab67f159bbe392edc8d3d485dc72ee, strom
+46b7e1d6fae3f513edfc521d1b8d302dc1f0236d. Samostatná větev auditu:
+codex/long-977-review-20261031. Datum auditu: 2026-10-31.
+
+Závěr
+
+V této verzi je LONG Generation konfiguračně zapnutá a oprava předávání
+LONG_COMPOSITE FineCDF již existuje. Není správné na tuto verzi automaticky
+přenést příčinu z dříve nahraných výsledků cyklů 3–5 jiného běhu.
+Nová data ze skutečně běžícího 977cef4 nebyla k tomuto hlášení přiložena.
+Konkrétní současný důvod nezměněných ADD_PROD_L/ADD_ATT_L proto nelze určit.
+Nebylo nalezeno a reprodukováno nové plošné zmrazení vyžadující změnu kódu.
+
+Potvrzená návaznost v přesném zdroji
+
+1. R1_RUN_OPTIONS.json: long_generation_enabled=true,
+   long_composite_td_enabled=true, school_td_enabled=true, TD DYNAMIC.
+   TD politika je v této verzi ALWAYS, nikoli EVERY_N=3 ze staršího běhu.
+2. r1_15a2_dynamic_11d_files_v24917.py publikuje samostatný
+   long_composite_dynamic a DYNAMIC_LONG_COMPOSITE.json. Počet původních
+   atomických 11D komponent se nemění.
+3. r1_15a2_long_composite_diagnostic_v24917.py váže důkaz na aktuální
+   assignment/skim epochu, NATIVE_CL DIS, referenci, zóny a živé matice
+   9111–9115. LONGGUARD1 jej ověřuje; pouhé verified=True nestačí.
+4. r1_15a2_trial_adapter_v24917.py po platné bráně čte sdílenou NATIVE_CL
+   incidenci, případně jednou obnoví sdílenou cache a W/S kontext.
+5. r1_15a2_long_cache_generation_v24917.py připravuje per-zone ADD_PROD_L
+   i ADD_ATT_L; reálný adapter je zahrnuje do preview/aplikace kandidáta.
+   Nativní odezva M9305, čerstvá diagnostika a původní akceptační brány
+   musí projít, jinak se kandidát odmítne a obnoví rodič.
+
+Co může vysvětlit stejné koeficienty
+
+- Běh dosud nevytvořil a nepřijal LONG Generation kandidáta; samotná LONG TD
+  mění b/c, nikoli zónové ADD_PROD_L/ADD_ATT_L.
+- Nastavení prostředí R1_LONG_ZONAL_TG_ENABLED může přepsat soubor options.
+  Fresh launcher kontroluje efektivní zapnutí TD; nekontroluje tím automaticky
+  LONG Generation. Toto je možnost, nikoli zjištěné nastavení uživatelova PC.
+- Chybějící atributy/deaktivace LS, neověřená LONG_COMPOSITE diagnostika,
+  neplatná assignment vazba, nedostatečné OD/profile podklady nebo parita cache.
+- Nedostupné FP/mobility podklady, nulové/přípustnými mezemi omezené aktuátory,
+  nulový výsledný krok, fallback numerického fitu nebo zamítnutí živého pokusu.
+- Zobrazení s nízkou přesností může skrýt menší změnu. Přesné hodnoty a řádky
+  kandidáta jsou lepším důkazem než zaokrouhlená tabulka ve Visumu.
+
+LONG produkce má pevnou referenci 0,3 a vlastní pásmo [0,15; 0,45].
+Atraktivita má [0,5; 1,5] × neměnnou počáteční hodnotu. Jednotlivý LONG krok
+má nejvýše ±10 %, dále omezený aktuálním cfg. Výchozí 0,3 a 1 nejsou samy
+o sobě blokující hranicí. OSRM maska je >=80 km, bez horní meze; nativní
+FineCDF 100–200 km je samostatná podmíněná diagnostika.
+
+Nejmenší potřebný důkaz z aktuálního běhu
+
+Z posledního DOKONČENÉHO kroku DEMAND_CYCLE_XX_GENERATION:
+- V24917_TARGETED_GENERATION/V24917_FIT_SUMMARY.json
+- GENERATION_BLOCK_RESULT.json
+
+První obsahuje long_generation_requested, long_generation_candidate_eligible,
+longguard1_parent, long_school.long_deferred_reason a diagnostiku fitu/mobility.
+Druhý rozlišuje vytvořený, zamítnutý a skutečně přijatý/adoptovaný pokus.
+Podle konkrétního důvodu lze vyžádat LONGGUARD1_PARENT.json,
+LONG_SHARED_CACHE_DEFERRED.json či DYNAMIC_LONG_COMPOSITE.json. Není potřeba
+kvůli čtení těchto již dokončených souborů přerušovat výpočet.
+
+Offline ověření
+
+134 cílených testů: samostatná kompozitní diagnostika, sdílená LONG cache,
+aktuální incidence, LONGGUARD1 a fresh launcher. Návratový kód 0.
+176 dalších testů: návaznost řetězce, diagnostická assignment vazba, zónový
+fit, mobilita, aktivace TG/TD, maskování, OSRM support, incidence a meze.
+Návratový kód 0; přesný výstup v additional_tests.log.
+Celkem 310 prošlo, žádné selhání ani přeskočení v těchto dvou výběrech.
+Zahrnuty jsou skutečné produkční metody s offline Visum fixtures, včetně
+nenulového LONG návrhu a jeho cesty do preview/aplikace. To neprokazuje
+správnost aktuálních nativních FP/FA formulí nebo přijetí změny v živém modelu.
+
+Všech 1059 základních, 173 release a 91 runtime hashů odpovídá zdrojům.
+Celý lokální výchozí strom se přesně shodoval se stromem GitHub commitu.
+Runtime, manifesty, kalibrační meze a akceptační ochrany nebyly upraveny.
+Tato větev přidává pouze důkazy auditu. LIVE_VISUM_NOT_RUN: žádný COM zápis,
+nasazení, změna souborů běžícího procesu ani zastavení modelu.
