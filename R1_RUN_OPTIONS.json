@@ -6,7 +6,7 @@
   "generation_envelope_scale": 1,
   "td_during_catchup": true,
   "td_first_cycle": true,
-  "tg_catchup_enabled": true,
+  "tg_catchup_enabled": false,
   "td_count_weight": 0.6,
   "td_inner_mode": "DYNAMIC",
   "long_generation_enabled": true,

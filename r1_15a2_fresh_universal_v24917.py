@@ -10,6 +10,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import math
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 import traceback
@@ -98,6 +99,11 @@ def validate_fresh_config(cfg, options):
             and options.get("long_composite_td_enabled") is True,
             "SCHOOL_OR_LONG_TD_DISABLED")
     gen = cfg.get("v24917_targeted_generation") or {}
+    require(options.get("tg_catchup_enabled") is False, "TG_CATCHUP_MUST_BE_DISABLED")
+    require(gen.get("refine_uses_stage_caps") is True
+            and math.isclose(float(gen.get("refine_max_log_up", 0)), math.log(1.05), abs_tol=1e-12)
+            and math.isclose(float(gen.get("refine_max_log_down", 0)), math.log(0.95), abs_tol=1e-12),
+            "FINE_GENERATION_STEP_POLICY_MISMATCH")
     bands = gen.get("envelope") or {}
     hard = bands.get("domestic_hard_by_role") or {}
     soft = bands.get("refine_domestic_soft_by_role") or {}
@@ -120,6 +126,9 @@ def validate_fresh_config(cfg, options):
             "generation_work_service_att_bounds": [0.5, 5.0],
             "mobility2_ws_prod_min": 0.5,
             "mobility2_ws_prod_max": 3.0,
+            "generation_mode": "REFINE_ONLY",
+            "generation_max_step_up": 0.05, "generation_max_step_down": 0.05,
+            "generation_stage_caps_preserved": True,
             "salary_long_school_zahr_policy_changed": False}
 
 
@@ -137,6 +146,8 @@ def verify_runtime_status(status):
     # overrides are permitted by the shared loader, so reject them HERE.
     demand = optimized.get("demand_policy") or {}
     effective_demand = (demand.get("note") or {}).get("options") or {}
+    require(effective_demand.get("tg_catchup_enabled") is False,
+            "EFFECTIVE_TG_CATCHUP_MUST_BE_DISABLED")
     require(demand.get("installed") is True
             and effective_demand.get("td_policy") == "ALWAYS"
             and effective_demand.get("td_every_n_cycles") == 1

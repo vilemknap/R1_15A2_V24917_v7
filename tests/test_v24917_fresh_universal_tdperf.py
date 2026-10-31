@@ -33,7 +33,7 @@ def valid_options():
             "td_first_cycle": True, "school_td_enabled": True,
             "long_composite_td_enabled": True,
             "td_policy": "ALWAYS", "td_every_n_cycles": 1,
-            "td_during_catchup": True,
+            "td_during_catchup": True, "tg_catchup_enabled": False,
             "mg_enabled": True, "mg_min_ratio": 0.5,
             "mg_max_ratio": 3.0}
 
@@ -48,11 +48,31 @@ def valid_cfg():
         "legacy_path_cache_import": False}}
 
 
+def test_fresh_and_effective_runtime_reject_catchup_reenable():
+    opts = valid_options()
+    opts["tg_catchup_enabled"] = True
+    with pytest.raises(RuntimeError, match="TG_CATCHUP_MUST_BE_DISABLED"):
+        fresh.validate_fresh_config(valid_cfg(), opts)
+    status = runtime_status()
+    status["v24917"]["demand_policy"]["note"]["options"]["tg_catchup_enabled"] = True
+    with pytest.raises(RuntimeError, match="EFFECTIVE_TG_CATCHUP_MUST_BE_DISABLED"):
+        fresh.verify_runtime_status(status)
+
+
+@pytest.mark.parametrize("key,value", [("refine_max_log_up",0.2),
+    ("refine_max_log_down",-0.2),("refine_uses_stage_caps",False)])
+def test_fresh_rejects_nonfine_generation_policy(key,value):
+    cfg = valid_cfg()
+    cfg["v24917_targeted_generation"][key] = value
+    with pytest.raises(RuntimeError, match="FINE_GENERATION_STEP_POLICY_MISMATCH"):
+        fresh.validate_fresh_config(cfg, valid_options())
+
+
 def runtime_status():
     return {"v24917": {
         "demand_policy": {"installed": True, "note": {
             "options": {"td_policy": "ALWAYS", "td_every_n_cycles": 1,
-                        "td_during_catchup": True, "td_first_cycle": True,
+                        "td_during_catchup": True, "tg_catchup_enabled": False, "td_first_cycle": True,
                         "mg_enabled": True, "mg_min_ratio": 0.5,
                         "mg_max_ratio": 3.0}}},
         "tdjoint1": {"installed": True, "release": "TDJOINT",

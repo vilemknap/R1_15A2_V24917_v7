@@ -1,0 +1,103 @@
+{
+  "baseline_remote_commit": "e264314a8b5a9a4cfa9695438b6ffce3ca777aeb",
+  "baseline_local_commit": "00d5e0dab295f1887a8987744e71feed597ebbc0",
+  "baseline_tree": "e09c4b7292db77bdc98fa65eb765cd661a00ba3b",
+  "targeted_passed": 132,
+  "live_visum_tested": false,
+  "compile_returncode": 0,
+  "DIAGFAST_V1_BASE_MANIFEST.json": {
+    "files": 1059,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "files": 180,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "V24917_RUNTIME_MANIFEST.json": {
+    "files": 91,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "option_changes": {
+    "tg_catchup_enabled": {
+      "before": true,
+      "after": false
+    }
+  },
+  "suites": {
+    "release": "GENFIX2",
+    "offline_only": true,
+    "live_visum_tested": false,
+    "suites": [
+      {
+        "suite": "main",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/generation_fine_no_catchup_20261101/source/tests"
+        ],
+        "returncode": 0,
+        "seconds": 44.729
+      },
+      {
+        "suite": "diagfast",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/generation_fine_no_catchup_20261101/source/diagfast_tests"
+        ],
+        "returncode": 0,
+        "seconds": 21.069
+      },
+      {
+        "suite": "audit_genfix2",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/generation_fine_no_catchup_20261101/source/genfix2_audit_tests"
+        ],
+        "returncode": 0,
+        "seconds": 0.766
+      }
+    ],
+    "all_passed": true,
+    "output": "/workspace/work/generation_fine_no_catchup_20261101/checks_final",
+    "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+  },
+  "suite_summaries": {
+    "main": "2475 passed, 4 skipped in 44.25s",
+    "diagfast": "189 passed in 20.85s",
+    "audit_genfix2": "18 passed in 0.56s"
+  },
+  "patch": {
+    "decoded_sha256": "a373bbe8ed54c6ce8de2f22bfe4c359cc96d099163887f481843e1e27a63f772",
+    "gzip_sha256": "9ea4dd792e4735d4981a7c5577f1131931d8c7ab2e2c68e573f542acabd60465",
+    "decoded_bytes": 22378
+  },
+  "implementation_sha256": {
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "c6354b9b000c4e6a663a7c1f373c8f40f790c063d23b32ff1075b2bf1cd03669",
+    "R1_RUN_OPTIONS.json": "566e024fbab728b823681c8c2547ed39fd7f0b856f49e91cca7eccbbb757e28b",
+    "V24917_RUNTIME_MANIFEST.json": "db920927033ad78c321cd8347b49b453a950863e03dfc198689079d0361459df",
+    "r1_15a2_demand_policy_v1.py": "028894298d628c80f7dece561059c8619614aeeea07da41bf4aa443d75ec6b5e",
+    "r1_15a2_fresh_universal_v24917.py": "1b582dd14c83374e2a09055a033a3d1863c2a4427448be27b412dcd3a539b2a8",
+    "r1_15a2_targeted_generation_v24917.py": "3d9dc53d5f33d633c3319608bdad58f7aa25a0bfa02cebfc5a5ba854bc0d778d",
+    "tests/test_v24917_fresh_universal_tdperf.py": "7927d07d1730be551dbf4c158ee2bf80086a471368f327e98d56d86301a7a23a",
+    "tests/test_v24917_targeted_catchup.py": "f8b7d635fc867c13b71d496e253963ec957823073150bd8866f2a93875899dde"
+  },
+  "patch_reverse_check": "PASS",
+  "diff_check": "PASS"
+}

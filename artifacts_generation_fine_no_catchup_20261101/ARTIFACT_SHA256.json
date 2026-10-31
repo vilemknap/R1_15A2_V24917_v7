@@ -1,0 +1,9 @@
+{
+  "HANDOFF_CZ.md": "4b4feb60a5b18ae49b4795c83eacca026e0993ee3058b4f7b6c66c3ce54c08f1",
+  "IMPLEMENTATION.patch.gz.b64": "e6e6e64bd1a267505676a4a29606ae8a61c7a44900135d61d8531a92345eb1a1",
+  "VALIDATION.json": "b3bfe24f69821b530b3268d611ec700da196e86e931b0521b827cb61f08f17dc",
+  "checks/CHECKS.json": "842e3b793614a5de8d61de4db406db90da871a1e17531eb7848d264a59a7e3f6",
+  "checks/audit_genfix2.log": "5bebb4985c5a05b6a566fabb707c134cdb1241681042c55b8ebe3a3c286a11b8",
+  "checks/diagfast.log": "3395129df517ce90af34dc28fac1fcfa202ed8cf7519695d5f6f286174f550de",
+  "checks/main.log": "822f0795e4d2762278109bedfae961f42c3bc586ebc983112c3a9361c850c8f6"
+}

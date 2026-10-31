@@ -65,7 +65,7 @@ DEFAULTS = {
     'generation_envelope_scale': 1.0,
     'td_during_catchup': False,
     'td_first_cycle': True,
-    'tg_catchup_enabled': True,
+    'tg_catchup_enabled': False,
     'td_count_weight': 0.60,
     'td_inner_mode': 'FROZEN_PATHS',
     'td_joint_enabled': False,

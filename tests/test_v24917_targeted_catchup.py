@@ -133,7 +133,47 @@ def test_overlay_only_with_policy():
     out = tg.overlay_cfg(cfg, "CATCH_UP")
     assert out["max_add_log_up"] == pytest.approx(UP) and out["max_add_log_down"] == pytest.approx(-DN)
     assert out[tg.MODE_KEY] == tg.MODE and cfg["max_add_log_up"] == 0.1
-    assert tg.overlay_cfg(cfg, "REFINE")["max_add_log_up"] == pytest.approx(math.log(1.25))
+    assert tg.overlay_cfg(cfg, "REFINE")["max_add_log_up"] == pytest.approx(math.log(1.05))
+
+
+def test_delivered_phase_never_returns_to_catchup_on_restart_or_low_ratio(monkeypatch, tmp_path):
+    import r1_15a2_demand_policy_v1 as dp
+    from pathlib import Path
+    monkeypatch.delenv("R1_TG_CATCHUP", raising=False)
+    assert dp.load_options(Path(__file__).resolve().parents[1], environ={})["tg_catchup_enabled"] is False
+    assert dp.load_options(tmp_path, environ={})["tg_catchup_enabled"] is False
+    for model in (20., 90., 30.):
+        rows = [{"role": "CALIBRATION", "observed": 100., "model": model}]
+        assert tg.phase_for(rows, copy.deepcopy(tg.DEFAULT_POLICY))[0] == "REFINE"
+
+
+@pytest.mark.parametrize("cycle,up,down", [(1,math.log(1.05),-math.log(.95)),
+    (2,math.log(1.05),-math.log(.95)),(3,math.log(1.05),-math.log(.95)),
+    (4,math.log(1.05),-math.log(.95)),(5,.03,.03),(7,.03,.03),
+    (50,.03,.03),(100,.03,.03)])
+def test_refine_preserves_finer_real_controller_stage_limits(real_cfg, cycle, up, down):
+    import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+    staged = ctrl._generation_counts_cfg(real_cfg, outer_cycle=cycle)
+    out = tg.overlay_cfg(staged, "REFINE")
+    assert out["max_add_log_up"] == pytest.approx(up)
+    assert out["max_add_log_down"] == pytest.approx(down)
+
+
+@pytest.mark.parametrize("cycle", [1,7])
+@pytest.mark.parametrize("sign", [-1,1])
+def test_fine_limits_reach_real_pa_effects(mb, real_cfg, cycle, sign):
+    import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+    cfg = tg.overlay_cfg(ctrl._generation_counts_cfg(real_cfg, outer_cycle=cycle), "REFINE")
+    cfg["salary"]["enabled"] = False
+    projection = [{"zone_no":1,"family":fam,"role":role,
+                   "log_step":float(sign),"base_margin_volume":1000.}
+                  for fam in ("WORK","SERVICE") for role in ("PROD","ATT")]
+    design = mb.design_generation_candidates(projection, zone_rows([1],1.), cfg, scale=1.)
+    cap = cfg["max_add_log_up"] if sign>0 else -cfg["max_add_log_down"]
+    assert len(design["candidate_rows"]) == 4
+    for r in design["candidate_rows"]:
+        assert r["proposed"] == pytest.approx(math.exp(cap))
+    assert all(abs(r["implemented_total_log_effect"]-cap)<1e-9 for r in design["effect_rows"])
 
 
 # --------------------------------------------------- multiblock integration
@@ -279,7 +319,7 @@ def test_new_ws_band_reaches_actual_coefficients_without_legacy_clamp(mb, real_c
     assert len(design["candidate_rows"]) == 4
     for row in design["candidate_rows"]:
         if step < 0:
-            assert row["proposed"] == pytest.approx(0.5)
+            assert 0.5 - 1e-9 <= row["proposed"] < 0.6
         elif row["attr"].startswith("ADD_PROD"):
             assert 2.5 < row["proposed"] <= 3.0 + 1e-9
         else:
@@ -872,8 +912,8 @@ def test_run_options_td_blend_and_refine_relax(tmp_path):
         dp.validate({"td_inner_mode": "FAST"})
     p = tg.validate_policy(tg.DEFAULT_POLICY)
     out = tg.overlay_cfg({tg.POLICY_KEY: p, "max_add_log_up": 0.03, "max_add_log_down": 0.03}, "REFINE")
-    assert out["max_add_log_up"] == pytest.approx(math.log(1.25))
-    assert out["max_add_log_down"] == pytest.approx(-math.log(0.8))
+    assert out["max_add_log_up"] == pytest.approx(0.03)
+    assert out["max_add_log_down"] == pytest.approx(0.03)
 
 
 def test_td_frozen_inner_execute_runs_td_only(monkeypatch):
