@@ -1,0 +1,48 @@
+"""Reproduce a read-only Generation-7 audit; no native model or runtime imports."""
+import base64, collections, gzip, hashlib, json, math
+from pathlib import Path
+ROOT = Path(__file__).resolve().parent
+
+def main():
+    d = {}
+    for e in json.loads((ROOT/'INPUTS.json').read_text()):
+        raw = gzip.decompress(base64.b64decode((ROOT/'inputs'/e['backup']).read_bytes()))
+        assert len(raw) == e['size_bytes'] and hashlib.sha256(raw).hexdigest() == e['sha256']
+        d[e['label']] = json.loads(raw.decode('utf-8-sig'))
+    a, p, b = d['acceptance'], d['preview'], d['rows']
+    checks = []
+    def check(n, ok):
+        assert ok, n
+        checks.append(n)
+    previous = json.loads((ROOT.parent/'artifacts_live_status_cycle6_20261031/SUMMARY.json').read_text())
+    check('cycle7', a['severity_transition_guard']['outer_cycle'] == 7)
+    check('accepted_without_reasons', a['accepted'] and not a['reasons'])
+    check('parent_matches_cycle6_metrics', a['cal_before'] == previous['final_profiles'])
+    check('scale1', p['summary']['backtracking_scale'] == b['scale'] == 1.0)
+    check('positive_geh_improvement', a['cal_objective_after'] < a['cal_objective_before'])
+    check('reported_gain_recomputed', math.isclose(a['cal_objective_relative_improvement'], 1-a['cal_objective_after']/a['cal_objective_before']))
+    check('profile_guards_pass', a['protected_guard']['passes'] and a['severity_transition_guard']['passes'])
+    check('native_mobility_and_support_pass', a['mobility_guard_live']['passes'] and a['candidate_support_risk']['eligible'])
+    check('longguard_permits_parent', a['longguard1_parent']['long_generation_permitted'] and a['longguard1_parent']['fine_cdf_verified'])
+    counts = collections.Counter(r['attr'] for r in p['candidate_rows'])
+    check('no_long_coefficient_rows', counts['ADD_PROD_L'] == counts['ADD_ATT_L'] == 0 and not a['longguard1']['changed_long'])
+    check('sixty_boundary_rows_only', len(b['rows']) == 60 and all(r['branch'] == 'BOUNDARY' and r['family'] in ['WORK','SERVICE'] for r in b['rows']))
+    check('preview_count_includes_boundary', len(p['candidate_rows']) == len(d['design']['candidate_rows']) + len(b['rows']) == 1929)
+    check('source_prediction_matches_preview', d['prediction']['prediction'] == p['genfix2_prediction'])
+    check('prediction_axis_247', len(d['prediction']['prediction']['keys']) == len(d['prediction']['prediction']['delta']) == 247)
+    check('ledger_reference_unchanged', a['shared_ledger_before']['reference_hash'] == a['shared_ledger_after']['reference_hash'])
+    check('counts_first_idp_deferred', a['shared_ledger_before']['terms']['COMPONENT_IDP'] == a['shared_ledger_after']['terms']['COMPONENT_IDP'] == 0)
+    x,y = (a[k]['raw_component_idp'] for k in ['shared_ledger_before','shared_ledger_after'])
+    result = {'cycle':7,'accepted':a['accepted'],'cal_before':a['cal_before'],'cal_after':a['cal_after'],
+              'geh_relative_gain':a['cal_objective_relative_improvement'],'candidate_count':len(p['candidate_rows']),
+              'summary_candidate_count':p['summary']['candidate_count'],'attribute_counts':dict(counts),
+              'longguard':a['longguard1'],'long_generation_permitted':a['longguard1_parent']['long_generation_permitted'],
+              'raw_idp_before':x,'raw_idp_after':y,'raw_idp_relative_change':y/x-1,
+              'prediction_axis_count':247,'global_prediction_gain_ratio_reproducible':False,
+              'exact_long_design_deferral_reason_supplied':False,'live_visum_connected':False,'production_code_changed':False}
+    (ROOT/'SUMMARY.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    (ROOT/'CHECKS.json').write_text(json.dumps({'passed':True,'count':len(checks),'checks':checks,'input_hashes_verified':6,'runtime_tests_run':False},indent=2)+'\n')
+    print(json.dumps({'checks':len(checks),'cycle':7,'geh_after':a['cal_objective_after'],'rows':len(p['candidate_rows']),'long_rows':0,'idp_change_percent':100*(y/x-1)}))
+
+if __name__ == '__main__':
+    main()

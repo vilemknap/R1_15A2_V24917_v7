@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "count": 16,
+  "checks": [
+    "cycle7",
+    "accepted_without_reasons",
+    "parent_matches_cycle6_metrics",
+    "scale1",
+    "positive_geh_improvement",
+    "reported_gain_recomputed",
+    "profile_guards_pass",
+    "native_mobility_and_support_pass",
+    "longguard_permits_parent",
+    "no_long_coefficient_rows",
+    "sixty_boundary_rows_only",
+    "preview_count_includes_boundary",
+    "source_prediction_matches_preview",
+    "prediction_axis_247",
+    "ledger_reference_unchanged",
+    "counts_first_idp_deferred"
+  ],
+  "input_hashes_verified": 6,
+  "runtime_tests_run": false
+}

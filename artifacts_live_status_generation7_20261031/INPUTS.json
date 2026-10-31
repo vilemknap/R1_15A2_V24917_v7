@@ -1,0 +1,50 @@
+[
+  {
+    "label": "prediction",
+    "file_id": "file_000000003de08246811c7a4655199687",
+    "original_name": "GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json",
+    "size_bytes": 11982,
+    "sha256": "702de207c4539b761988476275e834c5f560d99acdc1e5e249ba8cb76666ca72",
+    "backup": "GENFIX2_FINAL_MOBILITY_AND_PREDICTION.json.gz.b64"
+  },
+  {
+    "label": "refinement",
+    "file_id": "file_00000000e8908243b1cf9edf76730794",
+    "original_name": "GENERATION_SIGNED_REFINEMENT_AUDIT.json",
+    "size_bytes": 1897,
+    "sha256": "6a0aff159be46a5c89b2edf3f5db4e5b35cb6b5164588cc507fd6276e7791c88",
+    "backup": "GENERATION_SIGNED_REFINEMENT_AUDIT.json.gz.b64"
+  },
+  {
+    "label": "preview",
+    "file_id": "file_00000000a53081f4be85f184ea93dba6",
+    "original_name": "GENERATION_PREVIEW_1_0.json",
+    "size_bytes": 2270625,
+    "sha256": "df8da6b99d635eca26a9ab4eac939abcc7c3b0d864a8f88292abbdfd824de6dc",
+    "backup": "GENERATION_PREVIEW_1_0.json.gz.b64"
+  },
+  {
+    "label": "rows",
+    "file_id": "file_0000000008c481f4acab98e54044999f",
+    "original_name": "V24917_LONG_SCHOOL_ROWS.json",
+    "size_bytes": 18597,
+    "sha256": "6aeb653721846af97fc8c30edec82813c060c1b0e6446f458bd08a0e63e4806b",
+    "backup": "V24917_LONG_SCHOOL_ROWS.json.gz.b64"
+  },
+  {
+    "label": "acceptance",
+    "file_id": "file_00000000972081f4876b28a9b953e9a6",
+    "original_name": "ACCEPTANCE.json",
+    "size_bytes": 869207,
+    "sha256": "3dbce3cd1f018c5c7725444af419623f7f24a76caffa66d204d40a6d8c5d3940",
+    "backup": "ACCEPTANCE.json.gz.b64"
+  },
+  {
+    "label": "design",
+    "file_id": "file_00000000df9c81f4aae28f66a7e6a446",
+    "original_name": "GENERATION_DESIGN.json",
+    "size_bytes": 2241173,
+    "sha256": "c9fc797f3be3ca79565da35064b93f5736d43db82ebed9dbe446c9eb738f3329",
+    "backup": "GENERATION_DESIGN.json.gz.b64"
+  }
+]
