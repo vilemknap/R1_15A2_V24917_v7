@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "checks": [
+    "cycle5_identified_from_native_inner_path",
+    "accepted_and_realization_complete",
+    "standalone_plan_matches_embedded_plan",
+    "trial_1_blend_arithmetic",
+    "trial_1_score_gate_agrees_with_decision",
+    "trial_2_blend_arithmetic",
+    "trial_2_score_gate_agrees_with_decision",
+    "trial_3_blend_arithmetic",
+    "trial_3_score_gate_agrees_with_decision",
+    "third_quarter_scale_is_only_accepted_realization",
+    "realized_log_c_interpolation_WORK_noE_C",
+    "realized_log_c_interpolation_SERV_E_C",
+    "realized_log_c_interpolation_SERV_noE_noC",
+    "long_9111_9115_unchanged_in_inner_best",
+    "school_9117_unchanged_in_inner_best",
+    "no_long_or_school_rows_in_outer_realization",
+    "long_and_school_generation_fixed_inside_td",
+    "sixty_evaluations_hit_unchanged_budget",
+    "path_epoch_origin_links_to_previous_checkpoint",
+    "icong_input_profile_ratio_matches_previous_generation"
+  ],
+  "checks_count": 20,
+  "new_input_sha256_verified": 3,
+  "previous_input_sha256_verified": 8,
+  "runtime_tests_run": false,
+  "live_visum_connected": false
+}

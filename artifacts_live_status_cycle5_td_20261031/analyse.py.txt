@@ -1,0 +1,92 @@
+"""Read-only audit of the uploaded cycle-5 TD result; no Visum or runtime imports."""
+import base64
+import gzip
+import hashlib
+import json
+import math
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+PREVIOUS = ROOT.parent / "artifacts_live_status_cycles1_4_20261031"
+
+def dump(name, value):
+    (ROOT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+def load_inputs(root):
+    result = {}
+    for entry in json.loads((root / "INPUTS.json").read_text(encoding="utf-8")):
+        raw = gzip.decompress(base64.b64decode((root / "inputs" / entry["backup"]).read_bytes()))
+        assert len(raw) == entry["size_bytes"], entry["original_name"]
+        assert hashlib.sha256(raw).hexdigest() == entry["sha256"], entry["original_name"]
+        result[entry["label"]] = json.loads(raw.decode("utf-8-sig"))
+    return result
+
+def close(a, b):
+    return math.isclose(a, b, rel_tol=1e-12, abs_tol=1e-12)
+
+def main():
+    files = load_inputs(ROOT)
+    prior = load_inputs(PREVIOUS)
+    td, timing, plan = (files[k] for k in ("td", "timing", "plan"))
+    inner = td["inner"]
+    joint = inner["tdjoint"]
+    checks = []
+
+    def check(name, condition):
+        assert condition, name
+        checks.append(name)
+
+    check("cycle5_identified_from_native_inner_path", "DEMAND_CYCLE_05_TD_FINECDF" in joint["inner_root"])
+    check("accepted_and_realization_complete", td["status"] == "ACCEPTED_FINECDF_TD" and td["td_realization_complete"])
+    check("standalone_plan_matches_embedded_plan", plan == td["td_target_plan"])
+    attempts = []
+    for a in td["realization"]["attempts"]:
+        decision = a["decision"]
+        blend = decision["v24917_td_blend"]
+        check("trial_%s_blend_arithmetic" % a["trial"], close(blend["F"], blend["w_cnt"] * blend["count_ratio"] + blend["w_idp"] * blend["idp_ratio"]) and close(blend["count_ratio"], blend["cal_geh_after"] / blend["cal_geh_before"]) and close(blend["idp_ratio"], blend["idp_after"] / blend["idp_before"]))
+        gate = blend["F"] <= 1 - blend["min_relative_improvement"] and blend["idp_ratio"] <= blend["max_idp_ratio"]
+        check("trial_%s_score_gate_agrees_with_decision" % a["trial"], decision["accepted"] == gate)
+        attempts.append({"trial": a["trial"], "scale": a["scale"], "status": a["status"], "reasons": decision["reasons"], "blend": blend, "protected_guard_passes": decision["protected_guard"]["passes"], "severity_guard_passes": decision["severity_transition_guard"]["passes"]})
+    check("third_quarter_scale_is_only_accepted_realization", [a["scale"] for a in td["realization"]["attempts"] if a["decision"]["accepted"]] == [0.25])
+    for row in td["changed_rows"]:
+        expected = -math.exp(math.log(-row["parent_c"]) + row["realization_scale"] * (math.log(-row["target_c"]) - math.log(-row["parent_c"])))
+        check("realized_log_c_interpolation_" + row["component"], close(row["candidate_c"], expected) and row["candidate_b"] == row["parent_b"])
+    check("long_9111_9115_unchanged_in_inner_best", all(joint["entry_abc"][str(n)] == joint["final_abc"][str(n)] for n in range(9111, 9116)))
+    check("school_9117_unchanged_in_inner_best", joint["entry_abc"]["9117"] == joint["final_abc"]["9117"])
+    check("no_long_or_school_rows_in_outer_realization", all(r["component"] not in ("SCHOOL", "LONG_COMPOSITE") and not r["component"].startswith("LONG_") for r in td["changed_rows"]))
+    check("long_and_school_generation_fixed_inside_td", all(joint[k]["source_values_hash"] == joint[k]["readback_values_hash"] for k in ("school_generation_freeze", "long_generation_freeze")))
+    check("sixty_evaluations_hit_unchanged_budget", joint["td_evaluations"] == td["progressive_budget"]["max_td_evaluations"] == 60 and joint["stop_reason"] == "TD_EVALUATION_BUDGET")
+    check("path_epoch_origin_links_to_previous_checkpoint", td["path_epoch_transition"]["epoch_origin_state_hash"] == prior["best"]["state_hash"])
+    previous_ratio = prior["generation"]["attempts"][-1]["decision"]["cal_after"]["model_obs_ratio"]
+    check("icong_input_profile_ratio_matches_previous_generation", close(td["v24917_congested_impedance"]["model_obs_ratio"], previous_ratio))
+    final = td["realization"]["attempts"][-1]["decision"]
+    blend = final["v24917_td_blend"]
+    start_geh = 30.570246334395467
+    previous_cycle_geh = 22.840160355686578
+    summary = {
+        "cycle": 5, "status": td["status"], "state_hash": td["state_hash"],
+        "attempts": attempts, "changed_rows": td["changed_rows"],
+        "final_cal_metrics": final["cal_after"],
+        "geh_improvement_from_run_start_percent": 100 * (1 - blend["cal_geh_after"] / start_geh),
+        "geh_improvement_from_cycle4_percent": 100 * (1 - blend["cal_geh_after"] / previous_cycle_geh),
+        "td_geh_change_percent": 100 * (blend["count_ratio"] - 1),
+        "td_idp_change_percent": 100 * (blend["idp_ratio"] - 1),
+        "F_threshold_margin": 0.999 - blend["F"],
+        "td_seconds": timing["block"]["td_stage"]["seconds"],
+        "procedure_sequence_seconds": timing["block"]["procedure_sequence"]["seconds"],
+        "diagnostics_seconds": timing["block"]["diagnostics_total"]["seconds"],
+        "td_evaluations": joint["td_evaluations"], "stop_reason": joint["stop_reason"],
+        "incomplete_search_reasons": td["incomplete_search_reasons"],
+        "school_parameter_changed": False, "long_parameter_changed": False,
+        "long_readiness": joint["long_composite_live_readiness"]["status"],
+        "plan_active_frozen_overlap": sorted(set(plan["active_components"]) & set(plan["frozen_components"])),
+        "inner_active_frozen_overlap": sorted(set(inner["active_components"]) & set(inner["frozen_components"])),
+        "new_best_checkpoint_supplied": False,
+        "live_visum_connected": False, "production_code_changed": False,
+    }
+    dump("SUMMARY.json", summary)
+    dump("CHECKS.json", {"passed": True, "checks": checks, "checks_count": len(checks), "new_input_sha256_verified": len(files), "previous_input_sha256_verified": len(prior), "runtime_tests_run": False, "live_visum_connected": False})
+    print(json.dumps({"checks_passed": len(checks), "status": td["status"], "final_geh": blend["cal_geh_after"], "final_idp": blend["idp_after"], "F": blend["F"], "td_seconds": summary["td_seconds"]}))
+
+if __name__ == "__main__":
+    main()
