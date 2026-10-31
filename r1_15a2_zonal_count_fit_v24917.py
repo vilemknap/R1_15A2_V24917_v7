@@ -36,6 +36,7 @@ Pure numpy; no COM access.
 """
 from __future__ import annotations
 
+import copy
 import math
 from collections import defaultdict
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
@@ -486,6 +487,44 @@ def projection_rows(problem: FitProblem, solution: Mapping[str, Any],
     return rows
 
 
+def measured_refit_problem(problem: FitProblem, implemented: np.ndarray,
+                           measured_delta: np.ndarray, trust_fraction: float):
+    """A local proposal model, corrected along ONE actually measured direction.
+
+    The minimum-Frobenius (Broyden) update satisfies G_new @ implemented =
+    measured_delta. It does not identify individual native TG derivatives.
+    Re-solve from the same parent, inside a smaller box; native acceptance
+    remains mandatory. Never mutate the original operator or its bounds.
+    """
+    x = np.asarray(implemented, dtype=float)
+    delta = np.asarray(measured_delta, dtype=float)
+    G = np.asarray(problem.G, dtype=float)
+    fraction = float(trust_fraction)
+    if (G.ndim != 2 or x.shape != (G.shape[1],) or delta.shape != (G.shape[0],)
+            or not np.isfinite(G).all() or not np.isfinite(x).all()
+            or not np.isfinite(delta).all() or not math.isfinite(fraction)
+            or not 0 < fraction <= 0.5):
+        raise ValueError("V24917_REFIT_INVALID_MEASUREMENT")
+    den = float(x @ x)
+    if den <= EPS:
+        raise ValueError("V24917_REFIT_NO_MEASURED_PARAMETER_DIRECTION")
+    if (np.any(x < problem.lower - 1e-9) or np.any(x > problem.upper + 1e-9)):
+        raise ValueError("V24917_REFIT_MEASURED_DIRECTION_OUTSIDE_ORIGINAL_BOX")
+    residual = delta - G @ x
+    out = copy.copy(problem)
+    out.G = G + np.outer(residual, x / den)
+    out.lower = np.array(problem.lower, copy=True) * fraction
+    out.upper = np.array(problem.upper, copy=True) * fraction
+    if not np.isfinite(out.G).all():
+        raise ValueError("V24917_REFIT_NONFINITE_OPERATOR")
+    return out, {"method": "MINIMUM_CHANGE_SECANT_OPERATOR",
+                 "authority": "LOCAL_PROPOSAL_ONLY_NOT_NATIVE_ZONAL_JACOBIAN",
+                 "trust_fraction_of_original_box": fraction,
+                 "measured_direction_norm": math.sqrt(den),
+                 "prediction_error_l2_before": float(np.linalg.norm(residual)),
+                 "prediction_error_l2_after": float(np.linalg.norm(delta - out.G @ x))}
+
+
 def summary(problem: FitProblem, solution: Mapping[str, Any], rows: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
     pred = solution["predicted_change"]
     before = [r["geh"] for r in problem.profile_rows]
@@ -539,4 +578,4 @@ def fit(incidence: Mapping[str, Any], zones: Sequence[int],
 
 
 __all__ = ["RELEASE", "METHOD", "build_problem", "solve", "repair_nonlinear_pa",
-           "projection_rows", "summary", "fit", "geh"]
+           "projection_rows", "measured_refit_problem", "summary", "fit", "geh"]

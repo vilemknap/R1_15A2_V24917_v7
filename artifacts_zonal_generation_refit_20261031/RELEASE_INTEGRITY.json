@@ -1,0 +1,24 @@
+{
+  "DIAGFAST_V1_BASE_MANIFEST.json": {
+    "files": 1059,
+    "mismatches": []
+  },
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "files": 178,
+    "mismatches": []
+  },
+  "V24917_RUNTIME_MANIFEST.json": {
+    "files": 91,
+    "mismatches": []
+  },
+  "runtime_keys_preserved": 91,
+  "compiled": [
+    "r1_15a2_step_search_v24917.py",
+    "r1_15a2_trial_adapter_v24917.py",
+    "r1_15a2_zonal_count_fit_v24917.py",
+    "tests/test_v24917_measured_zonal_refit.py"
+  ],
+  "baseline_local_commit": "df1c186e4be985b99b4cfcc0c6efe6f2a8128197",
+  "baseline_remote_commit": "dd175ee07af1ae328789df92f87afb26fea53b84",
+  "live_visum_tested": false
+}

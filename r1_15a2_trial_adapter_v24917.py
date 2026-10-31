@@ -599,18 +599,23 @@ class VisumAdapter(_V24916ActiveAdapter):
         except Exception as exc:
             return {"keys": [], "delta_full": [], "available": False, "error": repr(exc)}
 
+    @staticmethod
+    def _implemented_fit_vector(problem, design, scale, bd):
+        import numpy as np
+        effects = {(r["family"], r["role"], int(r["zone_no"])): float(r["implemented_total_log_effect"])
+                   for r in design.get("effect_rows", [])}
+        for key, value in ((bd or {}).get("steps") or {}).items():
+            fam, z = key.split("|")
+            effects[(fam, "PA", int(z))] = float(scale)*float(value)
+        return np.array([effects.get(tuple(k), 0.0) for k in problem.var_keys])
+
     def _final_step_prediction(self, context, design, scale):
         import numpy as np
         model = context.get("_genfix2_effect_model") or {}
         problem = model.get("problem")
         if problem is None or not hasattr(problem, "G"):
             return {"keys": [], "delta": [], "available": False, "reason": "NO_FINAL_EFFECT_OPERATOR"}
-        effects = {(r["family"], r["role"], int(r["zone_no"])): float(r["implemented_total_log_effect"])
-                   for r in design.get("effect_rows", [])}
-        for key, value in ((model.get("bd") or {}).get("steps") or {}).items():
-            fam, z = key.split("|")
-            effects[(fam, "PA", int(z))] = float(scale)*float(value)
-        x = np.array([effects.get(tuple(k), 0.0) for k in problem.var_keys])
+        x = self._implemented_fit_vector(problem, design, scale, model.get("bd"))
         delta = np.asarray(problem.G @ x, dtype=float)
         if (model.get("ls") or {}).get("prediction_unavailable_after_guard"):
             return {"keys": [], "delta": [], "available": False,
@@ -626,6 +631,80 @@ class VisumAdapter(_V24916ActiveAdapter):
         return {"keys": [cl_key(r.get("countlocation_no")) for r in problem.profile_rows],
                 "delta": delta.tolist(), "available": True, "scale": float(scale),
                 "source": "GENFIX2_FINAL_EFFECT_ROWS_INCLUDING_SALARY_BOUNDARY_LS"}
+
+    def refine_generation_design(self, context, scale, preview, before, after, folder):
+        """One pure zonal re-solve after a rejected, fully measured native trial.
+
+        Uses the retained parent incidence and actual implemented log effects.
+        Does not read the rejected model as a new parent or refresh any cache.
+        Mixed LONG actuators are deferred: one measurement cannot separate
+        their response from the W/S operator. Ordinary secant search continues.
+        """
+        import numpy as np
+        from r1_15a2_td_count_blend_v24917 import cl_key
+        policy = tg.policy_of(self.cfg)
+        model = context.get("_genfix2_effect_model") or {}
+        problem, ls, bd = model.get("problem"), model.get("ls"), model.get("bd")
+        if policy is None or problem is None:
+            return None, {"status": "NO_ZONAL_EFFECT_OPERATOR"}
+        if ((ls or {}).get("prediction_unavailable_after_guard")
+                or any(float(v) != 0.0 for by_zone in ((ls or {}).get("steps") or {}).values()
+                for v in by_zone.values()) or np.any((ls or {}).get("predicted_change", []))):
+            return None, {"status": "DEFERRED_MIXED_LONG_SCHOOL_ACTUATORS"}
+        guard = core.observation_set_guard(before["d12"]["rows"], after["d12"]["rows"])
+        if not guard["passes"]:
+            raise ValueError("V24917_REFIT_OBSERVATION_AUTHORITY_CHANGED")
+        def indexed(rows):
+            by = {}
+            for r in rows:
+                key = cl_key(r.get("countlocation_no", r.get("obs_id", r.get("code"))))
+                if not key or key in by:
+                    raise ValueError("V24917_REFIT_PROFILE_IDENTITY_INVALID")
+                by[key] = r
+            return by
+        pre, post = indexed(before["d12"]["rows"]), indexed(after["d12"]["rows"])
+        delta = []
+        for row in problem.profile_rows:
+            key = cl_key(row["countlocation_no"])
+            b, a = pre[key], post[key]
+            if (not math.isclose(float(b["model"]), float(row["model"]), rel_tol=1e-12, abs_tol=1e-9)
+                    or float(b["observed"]) != float(row["observed"])):
+                raise ValueError("V24917_REFIT_PARENT_DIAGNOSTICS_MISMATCH")
+            delta.append(float(a["model"]) - float(b["model"]))
+        implemented = self._implemented_fit_vector(problem, preview, scale, bd)
+        refined, audit = zf.measured_refit_problem(problem, implemented, np.array(delta),
+                                                 min(0.5, 0.5*float(scale)))
+        fit_cfg = dict(policy.get("fit", {}), nonlinear_pa_repair=True)
+        solution = zf.solve(refined, fit_cfg)
+        audit["solver_converged"] = bool(solution["converged"])
+        if not solution["converged"]:
+            return None, dict(audit, status="REFIT_SOLVER_NOT_CONVERGED")
+        rows = zf.projection_rows(refined, solution, float(self.cfg.get("min_add_log_step", 1e-5)))
+        rows, steps = bdgen.split_rows(rows)
+        new_bd = None
+        if bd is not None:
+            new_bd = bdgen.design_payload(steps, bd["current"])
+            new_bd["margins"] = copy.deepcopy(bd.get("margins", {}))
+        phase = self._phase_of(context)
+        masked = self._apply_flowbundle_mask(rows, context, policy, phase)
+        rows, _ = zguard.guard_projection(masked["rows"], context["_mobilityzone1"])
+        authority = context["_genfix2_mobility"]
+        rows, mobility = mguard.guard(rows, authority["zone_rows"], authority["options"])
+        if not mobility.get("passes", mobility.get("status") == "DISABLED"):
+            return None, dict(audit, status="REFIT_MOBILITY_REJECTED")
+        if not rows and not steps:
+            return None, dict(audit, status="REFIT_NO_PARAMETER_DIRECTION")
+        out = dict(context)
+        out["projection"] = core.ProjectionResult(rows=rows, family_summaries=[
+            {"family": f, "method": zf.METHOD, "converged": True} for f in zf.FAMILIES], weighted_rmse=0.0)
+        out["v24917_bd"] = new_bd
+        out["_genfix2_effect_model"] = {"problem": refined, "ls": ls, "bd": new_bd}
+        out["v24917_step_model"] = self._step_model(refined, solution, ls, rows=rows, bd=new_bd)
+        audit.update(status="ZONAL_DIRECTION_REFITTED", fit=zf.summary(refined, solution, rows))
+        out["v24917"] = dict(context["v24917"], measured_zonal_refit=audit)
+        rt.write_json(Path(folder) / "MEASURED_ZONAL_REFIT.json", audit)
+        rt.write_csv(Path(folder) / "MEASURED_ZONAL_REFIT_ROWS.csv", rows)
+        return out, audit
 
     # ---------------------------------------------------------- TD acceptance
     def block_gate(self, block, before, after, rows):

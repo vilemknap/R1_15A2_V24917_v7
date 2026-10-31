@@ -1,0 +1,26 @@
+{
+  "baseline_new_tests": {
+    "failed": 24,
+    "passed": 0,
+    "interpretation": "New functionality is absent in the baseline; this is not 24 independent production bugs."
+  },
+  "focused": {
+    "passed": 278
+  },
+  "main": {
+    "passed": 2359,
+    "skipped": 4
+  },
+  "diagfast": {
+    "passed": 189
+  },
+  "audit_genfix2": {
+    "passed": 18
+  },
+  "live_visum": "NOT_RUN",
+  "native_assignment_benchmark": "NOT_RUN",
+  "final_identity_checks": {
+    "passed": 33,
+    "note": "After removing a trailing blank test-file line and refreshing its release SHA."
+  }
+}

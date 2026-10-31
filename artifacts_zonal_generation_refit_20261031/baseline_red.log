@@ -1,0 +1,443 @@
+FFFFFFFFFFFFFFFFFFFFFFFF                                                 [100%]
+=================================== FAILURES ===================================
+______ test_secant_operator_matches_measurement_without_mutating_original ______
+
+    def test_secant_operator_matches_measurement_without_mutating_original():
+        p = problem()
+        original = p.G.copy(), p.lower.copy(), p.upper.copy()
+        x = np.ones(4)*.4
+        delta = np.array([150., 300.])
+>       new, audit = zf.measured_refit_problem(p, x, delta, .5)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:30: AttributeError
+____ test_measured_fit_can_leave_a_saturated_common_direction_with_exact_pa ____
+
+    def test_measured_fit_can_leave_a_saturated_common_direction_with_exact_pa():
+        p = problem()
+        original = zf.solve(p, {"ridge_relative": .01})
+        np.testing.assert_allclose(original["x"], .4, atol=1e-8)
+>       new, _ = zf.measured_refit_problem(p, original["x"], np.array([150., 300.]), .5)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:47: AttributeError
+_______ test_indistinguishable_zones_are_not_differentiated_artificially _______
+
+    def test_indistinguishable_zones_are_not_differentiated_artificially():
+        p = problem()
+        p.G[:, :] = np.array([[100.], [2.]])
+>       corrected, _ = zf.measured_refit_problem(p, np.ones(4)*.4, np.array([200., 80.]), .5)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:60: AttributeError
+______ test_invalid_or_unmeasured_directions_cannot_refit[x0-delta0-0.5] _______
+
+x = array([0., 0., 0., 0.]), delta = array([1., 1.]), fraction = 0.5
+
+    @pytest.mark.parametrize("x,delta,fraction", [
+        (np.zeros(4), np.ones(2), .5),
+        (np.ones(3), np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(3), .5),
+        (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
+        (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
+        (np.ones(4)*.41, np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(2), 0),
+        (np.ones(4)*.2, np.ones(2), .51),
+    ])
+    def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           zf.measured_refit_problem(problem(), x, delta, fraction)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:77: AttributeError
+______ test_invalid_or_unmeasured_directions_cannot_refit[x1-delta1-0.5] _______
+
+x = array([1., 1., 1.]), delta = array([1., 1.]), fraction = 0.5
+
+    @pytest.mark.parametrize("x,delta,fraction", [
+        (np.zeros(4), np.ones(2), .5),
+        (np.ones(3), np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(3), .5),
+        (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
+        (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
+        (np.ones(4)*.41, np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(2), 0),
+        (np.ones(4)*.2, np.ones(2), .51),
+    ])
+    def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           zf.measured_refit_problem(problem(), x, delta, fraction)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:77: AttributeError
+______ test_invalid_or_unmeasured_directions_cannot_refit[x2-delta2-0.5] _______
+
+x = array([0.2, 0.2, 0.2, 0.2]), delta = array([1., 1., 1.]), fraction = 0.5
+
+    @pytest.mark.parametrize("x,delta,fraction", [
+        (np.zeros(4), np.ones(2), .5),
+        (np.ones(3), np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(3), .5),
+        (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
+        (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
+        (np.ones(4)*.41, np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(2), 0),
+        (np.ones(4)*.2, np.ones(2), .51),
+    ])
+    def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           zf.measured_refit_problem(problem(), x, delta, fraction)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:77: AttributeError
+______ test_invalid_or_unmeasured_directions_cannot_refit[x3-delta3-0.5] _______
+
+x = array([nan, 0.1, 0.1, 0.1]), delta = array([1., 1.]), fraction = 0.5
+
+    @pytest.mark.parametrize("x,delta,fraction", [
+        (np.zeros(4), np.ones(2), .5),
+        (np.ones(3), np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(3), .5),
+        (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
+        (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
+        (np.ones(4)*.41, np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(2), 0),
+        (np.ones(4)*.2, np.ones(2), .51),
+    ])
+    def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           zf.measured_refit_problem(problem(), x, delta, fraction)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:77: AttributeError
+______ test_invalid_or_unmeasured_directions_cannot_refit[x4-delta4-0.5] _______
+
+x = array([0.2, 0.2, 0.2, 0.2]), delta = array([inf,  1.]), fraction = 0.5
+
+    @pytest.mark.parametrize("x,delta,fraction", [
+        (np.zeros(4), np.ones(2), .5),
+        (np.ones(3), np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(3), .5),
+        (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
+        (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
+        (np.ones(4)*.41, np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(2), 0),
+        (np.ones(4)*.2, np.ones(2), .51),
+    ])
+    def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           zf.measured_refit_problem(problem(), x, delta, fraction)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:77: AttributeError
+______ test_invalid_or_unmeasured_directions_cannot_refit[x5-delta5-0.5] _______
+
+x = array([0.41, 0.41, 0.41, 0.41]), delta = array([1., 1.]), fraction = 0.5
+
+    @pytest.mark.parametrize("x,delta,fraction", [
+        (np.zeros(4), np.ones(2), .5),
+        (np.ones(3), np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(3), .5),
+        (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
+        (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
+        (np.ones(4)*.41, np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(2), 0),
+        (np.ones(4)*.2, np.ones(2), .51),
+    ])
+    def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           zf.measured_refit_problem(problem(), x, delta, fraction)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:77: AttributeError
+_______ test_invalid_or_unmeasured_directions_cannot_refit[x6-delta6-0] ________
+
+x = array([0.2, 0.2, 0.2, 0.2]), delta = array([1., 1.]), fraction = 0
+
+    @pytest.mark.parametrize("x,delta,fraction", [
+        (np.zeros(4), np.ones(2), .5),
+        (np.ones(3), np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(3), .5),
+        (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
+        (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
+        (np.ones(4)*.41, np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(2), 0),
+        (np.ones(4)*.2, np.ones(2), .51),
+    ])
+    def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           zf.measured_refit_problem(problem(), x, delta, fraction)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:77: AttributeError
+______ test_invalid_or_unmeasured_directions_cannot_refit[x7-delta7-0.51] ______
+
+x = array([0.2, 0.2, 0.2, 0.2]), delta = array([1., 1.]), fraction = 0.51
+
+    @pytest.mark.parametrize("x,delta,fraction", [
+        (np.zeros(4), np.ones(2), .5),
+        (np.ones(3), np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(3), .5),
+        (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
+        (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
+        (np.ones(4)*.41, np.ones(2), .5),
+        (np.ones(4)*.2, np.ones(2), 0),
+        (np.ones(4)*.2, np.ones(2), .51),
+    ])
+    def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           zf.measured_refit_problem(problem(), x, delta, fraction)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'r1_15a2_zonal_count_fit_v24917' has no attribute 'measured_refit_problem'
+
+tests/test_v24917_measured_zonal_refit.py:77: AttributeError
+_______ test_real_adapter_refits_without_visum_access_and_retains_parent _______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-2/test_real_adapter_refits_witho0')
+
+    def test_real_adapter_refits_without_visum_access_and_retains_parent(tmp_path):
+        ad, ctx, preview, before, after = adapter_context()
+>       new, audit = ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VisumAdapter' object has no attribute 'refine_generation_design'. Did you mean: 'generation_design'?
+
+tests/test_v24917_measured_zonal_refit.py:100: AttributeError
+____________ test_adapter_rejects_unbound_measurements[observation] ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-2/test_adapter_rejects_unbound_m0')
+change = 'observation'
+
+    @pytest.mark.parametrize("change", ["observation", "missing", "duplicate", "parent", "nan"])
+    def test_adapter_rejects_unbound_measurements(tmp_path, change):
+        ad, ctx, preview, before, after = adapter_context()
+        if change == "observation": after["d12"]["rows"][0]["observed"] += 1
+        if change == "missing": after["d12"]["rows"].pop()
+        if change == "duplicate": after["d12"]["rows"].append(dict(after["d12"]["rows"][0]))
+        if change == "parent": before["d12"]["rows"][0]["model"] += 1
+        if change == "nan": after["d12"]["rows"][0]["model"] = float("nan")
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'VisumAdapter' object has no attribute 'refine_generation_design'. Did you mean: 'generation_design'?
+
+tests/test_v24917_measured_zonal_refit.py:121: AttributeError
+______________ test_adapter_rejects_unbound_measurements[missing] ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-2/test_adapter_rejects_unbound_m1')
+change = 'missing'
+
+    @pytest.mark.parametrize("change", ["observation", "missing", "duplicate", "parent", "nan"])
+    def test_adapter_rejects_unbound_measurements(tmp_path, change):
+        ad, ctx, preview, before, after = adapter_context()
+        if change == "observation": after["d12"]["rows"][0]["observed"] += 1
+        if change == "missing": after["d12"]["rows"].pop()
+        if change == "duplicate": after["d12"]["rows"].append(dict(after["d12"]["rows"][0]))
+        if change == "parent": before["d12"]["rows"][0]["model"] += 1
+        if change == "nan": after["d12"]["rows"][0]["model"] = float("nan")
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'VisumAdapter' object has no attribute 'refine_generation_design'. Did you mean: 'generation_design'?
+
+tests/test_v24917_measured_zonal_refit.py:121: AttributeError
+_____________ test_adapter_rejects_unbound_measurements[duplicate] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-2/test_adapter_rejects_unbound_m2')
+change = 'duplicate'
+
+    @pytest.mark.parametrize("change", ["observation", "missing", "duplicate", "parent", "nan"])
+    def test_adapter_rejects_unbound_measurements(tmp_path, change):
+        ad, ctx, preview, before, after = adapter_context()
+        if change == "observation": after["d12"]["rows"][0]["observed"] += 1
+        if change == "missing": after["d12"]["rows"].pop()
+        if change == "duplicate": after["d12"]["rows"].append(dict(after["d12"]["rows"][0]))
+        if change == "parent": before["d12"]["rows"][0]["model"] += 1
+        if change == "nan": after["d12"]["rows"][0]["model"] = float("nan")
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'VisumAdapter' object has no attribute 'refine_generation_design'. Did you mean: 'generation_design'?
+
+tests/test_v24917_measured_zonal_refit.py:121: AttributeError
+______________ test_adapter_rejects_unbound_measurements[parent] _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-2/test_adapter_rejects_unbound_m3')
+change = 'parent'
+
+    @pytest.mark.parametrize("change", ["observation", "missing", "duplicate", "parent", "nan"])
+    def test_adapter_rejects_unbound_measurements(tmp_path, change):
+        ad, ctx, preview, before, after = adapter_context()
+        if change == "observation": after["d12"]["rows"][0]["observed"] += 1
+        if change == "missing": after["d12"]["rows"].pop()
+        if change == "duplicate": after["d12"]["rows"].append(dict(after["d12"]["rows"][0]))
+        if change == "parent": before["d12"]["rows"][0]["model"] += 1
+        if change == "nan": after["d12"]["rows"][0]["model"] = float("nan")
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'VisumAdapter' object has no attribute 'refine_generation_design'. Did you mean: 'generation_design'?
+
+tests/test_v24917_measured_zonal_refit.py:121: AttributeError
+________________ test_adapter_rejects_unbound_measurements[nan] ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-2/test_adapter_rejects_unbound_m4')
+change = 'nan'
+
+    @pytest.mark.parametrize("change", ["observation", "missing", "duplicate", "parent", "nan"])
+    def test_adapter_rejects_unbound_measurements(tmp_path, change):
+        ad, ctx, preview, before, after = adapter_context()
+        if change == "observation": after["d12"]["rows"][0]["observed"] += 1
+        if change == "missing": after["d12"]["rows"].pop()
+        if change == "duplicate": after["d12"]["rows"].append(dict(after["d12"]["rows"][0]))
+        if change == "parent": before["d12"]["rows"][0]["model"] += 1
+        if change == "nan": after["d12"]["rows"][0]["model"] = float("nan")
+        with pytest.raises(ValueError, match="V24917_REFIT_"):
+>           ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'VisumAdapter' object has no attribute 'refine_generation_design'. Did you mean: 'generation_design'?
+
+tests/test_v24917_measured_zonal_refit.py:121: AttributeError
+_ test_mixed_long_response_is_not_assigned_to_ws_columns[by_zone0-predicted0] __
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-2/test_mixed_long_response_is_no0')
+by_zone = {1: 0.01}, predicted = [0.0, 0.0]
+
+    @pytest.mark.parametrize("by_zone, predicted", [({1: .01}, [0., 0.]), ({}, [1., 0.])])
+    def test_mixed_long_response_is_not_assigned_to_ws_columns(tmp_path, by_zone, predicted):
+        ad, ctx, preview, before, after = adapter_context()
+        ctx["_genfix2_effect_model"]["ls"] = {"steps": {"ADD_PROD_L": by_zone}, "predicted_change": predicted}
+>       new, audit = ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VisumAdapter' object has no attribute 'refine_generation_design'. Did you mean: 'generation_design'?
+
+tests/test_v24917_measured_zonal_refit.py:128: AttributeError
+_ test_mixed_long_response_is_not_assigned_to_ws_columns[by_zone1-predicted1] __
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-2/test_mixed_long_response_is_no1')
+by_zone = {}, predicted = [1.0, 0.0]
+
+    @pytest.mark.parametrize("by_zone, predicted", [({1: .01}, [0., 0.]), ({}, [1., 0.])])
+    def test_mixed_long_response_is_not_assigned_to_ws_columns(tmp_path, by_zone, predicted):
+        ad, ctx, preview, before, after = adapter_context()
+        ctx["_genfix2_effect_model"]["ls"] = {"steps": {"ADD_PROD_L": by_zone}, "predicted_change": predicted}
+>       new, audit = ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VisumAdapter' object has no attribute 'refine_generation_design'. Did you mean: 'generation_design'?
+
+tests/test_v24917_measured_zonal_refit.py:128: AttributeError
+__________________ test_boundary_uses_actual_joint_pa_column ___________________
+
+    def test_boundary_uses_actual_joint_pa_column():
+        p = SimpleNamespace(var_keys=[("WORK", "PROD", 1), ("WORK", "PA", 99)])
+        preview = {"effect_rows": [{"family": "WORK", "role": "PROD", "zone_no": 1,
+                                   "implemented_total_log_effect": .017}]}
+>       x = adapter_mod.VisumAdapter._implemented_fit_vector(p, preview, .2, {"steps": {"WORK|99": .3}})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: type object 'VisumAdapter' has no attribute '_implemented_fit_vector'
+
+tests/test_v24917_measured_zonal_refit.py:136: AttributeError
+_________ test_controller_refits_once_and_adopts_new_spatial_direction _________
+
+harness = namespace(ad=<test_v24917_step_search.FakeAdapter object at 0x7fe5f496e120>, run=<function harness.<locals>.run at 0x7...rnight_controller_v24915p2.py'>, folder=PosixPath('/tmp/pytest-of-agent/pytest-2/test_controller_refits_once_an0/GEN'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe5f4694150>
+
+    def test_controller_refits_once_and_adopts_new_spatial_direction(harness, monkeypatch):
+        ad, calls = _refining_adapter(harness, monkeypatch)
+        changed, state, diag, value, rec = harness.run()
+        assert changed and rec["adopted_in_place"]
+>       assert calls == [0]
+E       assert [] == [0]
+E
+E         Right contains one more item: 0
+E         Use -v to get more diff
+
+tests/test_v24917_measured_zonal_refit.py:168: AssertionError
+________ test_refit_unavailable_retains_existing_measured_secant_search ________
+
+harness = namespace(ad=<test_v24917_step_search.FakeAdapter object at 0x7fe5f483b250>, run=<function harness.<locals>.run at 0x7...rnight_controller_v24915p2.py'>, folder=PosixPath('/tmp/pytest-of-agent/pytest-2/test_refit_unavailable_retains0/GEN'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe5f46e6b30>
+
+    def test_refit_unavailable_retains_existing_measured_secant_search(harness, monkeypatch):
+        def unavailable(*args): raise ValueError("invalid evidence")
+        monkeypatch.setattr(harness.ad, "refine_generation_design", unavailable, raising=False)
+        changed, state, diag, value, rec = harness.run()
+        assert changed
+>       assert rec["measured_zonal_refit"]["status"] == "REFIT_UNAVAILABLE"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'measured_zonal_refit'
+
+tests/test_v24917_measured_zonal_refit.py:180: KeyError
+_________ test_error_in_new_direction_retains_recovery_for_both_trials _________
+
+harness = namespace(ad=<test_v24917_step_search.FakeAdapter object at 0x7fe5f483b390>, run=<function harness.<locals>.run at 0x7...rnight_controller_v24915p2.py'>, folder=PosixPath('/tmp/pytest-of-agent/pytest-2/test_error_in_new_direction_re0/GEN'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe5f46e7230>
+
+    def test_error_in_new_direction_retains_recovery_for_both_trials(harness, monkeypatch):
+        ad, calls = _refining_adapter(harness, monkeypatch)
+        original = ad.assign_for_block
+        def fail_second(folder, block):
+            if len(ad.assignments) == 1 and "ROLLBACK" not in str(folder):
+                raise RuntimeError("second native assignment failed")
+            return original(folder, block)
+        monkeypatch.setattr(ad, "assign_for_block", fail_second)
+        with pytest.raises(Exception, match="second native assignment failed"):
+            harness.run()
+>       assert calls == [0]
+E       assert [] == [0]
+E
+E         Right contains one more item: 0
+E         Use -v to get more diff
+
+tests/test_v24917_measured_zonal_refit.py:194: AssertionError
+____ test_native_rejection_cannot_be_overridden_and_trial_budget_is_shared _____
+
+harness = namespace(ad=<test_v24917_step_search.FakeAdapter object at 0x7fe5f4644640>, run=<function harness.<locals>.run at 0x7...rnight_controller_v24915p2.py'>, folder=PosixPath('/tmp/pytest-of-agent/pytest-2/test_native_rejection_cannot_b0/GEN'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe5f46e7930>
+
+    def test_native_rejection_cannot_be_overridden_and_trial_budget_is_shared(harness, monkeypatch):
+        ad, calls = _refining_adapter(harness, monkeypatch)
+        monkeypatch.setattr(ad, "block_gate", lambda *args: {"accepted": False, "reasons": ["NATIVE_REJECTED"]})
+        changed, state, diag, value, rec = harness.run()
+>       assert not changed and calls == [0]
+E       assert (not False and [] == [0]
+E
+E         Right contains one more item: 0
+E         Use -v to get more diff)
+
+tests/test_v24917_measured_zonal_refit.py:203: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_v24917_measured_zonal_refit.py::test_secant_operator_matches_measurement_without_mutating_original
+FAILED tests/test_v24917_measured_zonal_refit.py::test_measured_fit_can_leave_a_saturated_common_direction_with_exact_pa
+FAILED tests/test_v24917_measured_zonal_refit.py::test_indistinguishable_zones_are_not_differentiated_artificially
+FAILED tests/test_v24917_measured_zonal_refit.py::test_invalid_or_unmeasured_directions_cannot_refit[x0-delta0-0.5]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_invalid_or_unmeasured_directions_cannot_refit[x1-delta1-0.5]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_invalid_or_unmeasured_directions_cannot_refit[x2-delta2-0.5]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_invalid_or_unmeasured_directions_cannot_refit[x3-delta3-0.5]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_invalid_or_unmeasured_directions_cannot_refit[x4-delta4-0.5]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_invalid_or_unmeasured_directions_cannot_refit[x5-delta5-0.5]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_invalid_or_unmeasured_directions_cannot_refit[x6-delta6-0]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_invalid_or_unmeasured_directions_cannot_refit[x7-delta7-0.51]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_real_adapter_refits_without_visum_access_and_retains_parent
+FAILED tests/test_v24917_measured_zonal_refit.py::test_adapter_rejects_unbound_measurements[observation]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_adapter_rejects_unbound_measurements[missing]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_adapter_rejects_unbound_measurements[duplicate]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_adapter_rejects_unbound_measurements[parent]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_adapter_rejects_unbound_measurements[nan]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_mixed_long_response_is_not_assigned_to_ws_columns[by_zone0-predicted0]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_mixed_long_response_is_not_assigned_to_ws_columns[by_zone1-predicted1]
+FAILED tests/test_v24917_measured_zonal_refit.py::test_boundary_uses_actual_joint_pa_column
+FAILED tests/test_v24917_measured_zonal_refit.py::test_controller_refits_once_and_adopts_new_spatial_direction
+FAILED tests/test_v24917_measured_zonal_refit.py::test_refit_unavailable_retains_existing_measured_secant_search
+FAILED tests/test_v24917_measured_zonal_refit.py::test_error_in_new_direction_retains_recovery_for_both_trials
+FAILED tests/test_v24917_measured_zonal_refit.py::test_native_rejection_cannot_be_overridden_and_trial_budget_is_shared
+24 failed in 1.34s

@@ -1,0 +1,78 @@
+"""Read-only OOXML audit; run with workbook, accepted Gen1 preview and retained parent JSON."""
+import argparse
+import csv
+import hashlib
+import json
+import math
+from collections import Counter
+from pathlib import Path
+from xml.etree import ElementTree as E
+from zipfile import ZipFile
+
+COEFF = ('ADD_PROD_W', 'ADD_ATT_W', 'ADD_PROD_S', 'ADD_ATT_S')
+NS = {'m': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+
+
+def rows_from_xlsx(path):
+    with ZipFile(path) as archive:
+        shared = [''.join(t.text or '' for t in si.findall('.//m:t', NS))
+                  for si in E.fromstring(archive.read('xl/sharedStrings.xml')).findall('m:si', NS)]
+        def values(row):
+            result = {}
+            for cell in row.findall('m:c', NS):
+                value = cell.find('m:v', NS)
+                text = (value.text or '') if value is not None else ''.join(cell.itertext())
+                if cell.get('t') == 's':
+                    text = shared[int(text)]
+                result[''.join(x for x in cell.get('r') if x.isalpha())] = text
+            return result
+        raw = E.fromstring(archive.read('xl/worksheets/sheet1.xml')).findall('m:sheetData/m:row', NS)
+        headers = values(raw[0])
+        return [{headers[k]: v for k,v in values(row).items()} for row in raw[1:]]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for key in ('workbook', 'preview', 'parent', 'output'):
+        parser.add_argument('--'+key, type=Path, required=True)
+    args = parser.parse_args()
+    rows = rows_from_xlsx(args.workbook)
+    parent = json.loads(args.parent.read_text())['snapshot']['generation_values']
+    preview = json.loads(args.preview.read_text())['candidate_rows']
+    by = {(r['attr'],str(r['zone_no'])): r for r in preview}
+    result = {'zones': len(rows), 'comparison_relative_tolerance': 1e-12,
+              'comparison_absolute_tolerance': 1e-12, 'cluster_rounding_digits': 10, 'coefficients': {},
+              'inputs': {k: {'name': p.name, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
+                         for k,p in [('workbook',args.workbook), ('preview',args.preview), ('parent',args.parent)]}}
+    export = []
+    for row in rows:
+        rec = {k: row[k] for k in ('No', 'Name', 'NOT_ZAHR')}
+        for attr in COEFF:
+            value = float(row[attr])
+            previous = by.get((attr, row['No']), {}).get('current', value)
+            rec[attr+'_before_Gen1'] = previous
+            rec[attr+'_export'] = value
+        export.append(rec)
+    for attr in COEFF:
+        current = [float(row[attr]) for row in rows]
+        previous = [r[attr+'_before_Gen1'] for r in export]
+        old = Counter(round(v,10) for v in previous)
+        new = Counter(round(v,10) for v in current)
+        exact = Counter(row[attr] for row in rows)
+        result['coefficients'][attr] = {
+            'unique_exact_export':len(exact), 'exact_export_clusters': exact.most_common(),
+            'unique_before_rounded':len(old), 'unique_after_rounded':len(new),
+            'largest_before_clusters_rounded':old.most_common(8), 'largest_after_clusters_rounded':new.most_common(8),
+            'changed_in_Gen1':sum(abs(a-b)>1e-10 for a,b in zip(current,previous)),
+            'matches_retained_parent':sum(math.isclose(float(r[attr]),parent[attr][r['No']],
+                rel_tol=1e-12,abs_tol=1e-12) for r in rows)}
+    args.output.mkdir(parents=True, exist_ok=True)
+    (args.output/'ZONE_EXPORT_AUDIT.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    with (args.output/'ZONE_BEFORE_AFTER.csv').open('w',newline='',encoding='utf-8') as stream:
+        writer=csv.DictWriter(stream,fieldnames=list(export[0]));writer.writeheader();writer.writerows(export)
+    print(json.dumps({k:{x:v[x] for x in ['changed_in_Gen1','matches_retained_parent','unique_before_rounded','unique_after_rounded']}
+                      for k,v in result['coefficients'].items()},ensure_ascii=False))
+
+
+if __name__ == '__main__':
+    main()

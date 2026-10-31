@@ -18,7 +18,10 @@ assigned, rolled back, the winner re-applied and re-assigned) by:
    rollback, no re-apply, no second assignment).
 3. A rejected trial is not rolled back by a recompute: the parent parameters are
    re-written (COM only) and the next trial s is computed from the measured
-   secant.  Only when the search ends without an eligible trial is the full
+   secant. Once per block the V24917 adapter can instead re-solve the zonal
+   direction using the measured response, inside a smaller proposal box.
+   The existing real-trial budget is shared by both directions. Only when
+   the search ends without an eligible trial is the full
    rollback (recompute + diagnostic verification) executed.
 
 The acceptance decision itself (gate, shared objective, IDP, support risk) is
@@ -37,7 +40,7 @@ import numpy as np
 
 import r1_15a2_generation_state_v24917 as genstate
 
-RELEASE = "R1_15A2_V24917_STEP1_GENFIX2_20261027"
+RELEASE = "R1_15A2_V24917_STEP1_MEASURED_ZONAL_REFIT_20261031"
 _STATE: Dict[str, Any] = {"installed": False, "rho": None, "rho_history": [], "blocks": 0,
                           "trials": 0, "kept": 0, "exhausted": 0}
 
@@ -227,7 +230,7 @@ def choose_scale(model: StepModel, gate, min_improvement: float, opts: Mapping[s
     return {"scale": None if best is None else best[0],
             "predicted_rel_improvement": None if best is None else best[1],
             "objective_before": obj0, "grid": table,
-            "mode": "SECANT_MEASURED" if model.measured is not None else "LINEAR_FIT",
+            "mode": "SECANT_MEASURED" if model.measured is not None else getattr(model, "origin_mode", "LINEAR_FIT"),
             "rho": model.rho, "mapped_profiles": model.mapped}
 
 
@@ -364,6 +367,7 @@ def _generation_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state,
     demand_dirty = False
     rollback_started = False
     upper = float(opts["max_scale"])
+    refit_attempted = False
     _STATE["blocks"] += 1
 
     def own_recovery(rows, candidate):
@@ -571,6 +575,29 @@ def _generation_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state,
                 demand_dirty = False
                 _STATE["kept"] += 1
                 return True, after, after_diag, after_value, rec
+            if (not refit_attempted and ordinal < max_trials
+                    and callable(getattr(adapter, "refine_generation_design", None))):
+                refit_attempted = True
+                # Full native diagnostics describe this rejected trial. Only
+                # the proposal operator changes; the original parent and the
+                # transaction's recovery ownership remain intact.
+                try:
+                    refined, audit = adapter.refine_generation_design(
+                        context, float(scale), preview, diag, after_diag, folder / "MEASURED_REFIT")
+                except Exception as exc:
+                    refined, audit = None, {"status": "REFIT_UNAVAILABLE", "error": repr(exc)}
+                rec["measured_zonal_refit"] = audit
+                base.atomic_json(folder / "MEASURED_ZONAL_REFIT.json", audit)
+                if refined is not None:
+                    context = refined
+                    # A secant from the old direction cannot be applied to a
+                    # different zonal vector. Start a fresh model/cache; its
+                    # operator already incorporates the measured correction.
+                    model = StepModel(diag["d12"]["rows"], context.get("v24917_step_model"), 1.0,
+                        predictor=final_preview if context.get("_genfix2_mobility") else None)
+                    model.origin_mode = "MEASURED_ZONAL_REFIT"
+                    upper = float(opts["max_scale"])
+                    continue
             model.set_measured(float(scale), after_diag["d12"]["rows"])
             upper = float(scale) * 0.95
             if upper < float(opts["min_scale"]):

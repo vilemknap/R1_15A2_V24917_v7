@@ -1,0 +1,432 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index 309e90be6b900366cf311f63e29b80bc13bd915d..f30753be073c2c20a03680829570bcb1353f814a 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -97 +97 @@
+-    "r1_15a2_step_search_v24917.py": "0876b10c65c6b6b44e49c13418677cdeb170b0f090053b916bc8b15d8c3d9f07",
++    "r1_15a2_step_search_v24917.py": "41d7a443c343bcb3ed92046a37f528b7d2c5fb8bfeb59b93b8c09dc7c94f016d",
+@@ -107 +107 @@
+-    "r1_15a2_trial_adapter_v24917.py": "ec0600e6719fd9b2be3fd93b81808b6d8c35b3b1e69f22f29367fe64afb22fed",
++    "r1_15a2_trial_adapter_v24917.py": "106ed0b2e51309f5212db2a897d0dd2e7b62d0e404d226837020ebadf9c724fb",
+@@ -109 +109 @@
+-    "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
++    "r1_15a2_zonal_count_fit_v24917.py": "43f49a80ebe807daf6b1c9d44e4894a7e50dbe1d100c58214f37eadb6299b08a",
+@@ -140,0 +141 @@
++    "tests/test_v24917_measured_zonal_refit.py": "26454e633213cb65d8028fa2932ae2a081b415093d3e733f4bcf13ed90e4e7c8",
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 2a28736784003a0fce2e93e4423bb902f7169e3f..42a7511719d9f2dac555b565dc0d7136f634fb66 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -20 +20 @@
+-    "r1_15a2_zonal_count_fit_v24917.py": "c05b60996c495343b3dc855ad58bf1683b0da61c1cd4205e66bb95632ce8b9fd",
++    "r1_15a2_zonal_count_fit_v24917.py": "43f49a80ebe807daf6b1c9d44e4894a7e50dbe1d100c58214f37eadb6299b08a",
+@@ -22 +22 @@
+-    "r1_15a2_trial_adapter_v24917.py": "ec0600e6719fd9b2be3fd93b81808b6d8c35b3b1e69f22f29367fe64afb22fed",
++    "r1_15a2_trial_adapter_v24917.py": "106ed0b2e51309f5212db2a897d0dd2e7b62d0e404d226837020ebadf9c724fb",
+@@ -41 +41 @@
+-    "r1_15a2_step_search_v24917.py": "0876b10c65c6b6b44e49c13418677cdeb170b0f090053b916bc8b15d8c3d9f07",
++    "r1_15a2_step_search_v24917.py": "41d7a443c343bcb3ed92046a37f528b7d2c5fb8bfeb59b93b8c09dc7c94f016d",
+@@ -82 +82 @@
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "2a397e023998491389dbea1236bf51e33e5ba516a39dc9580f56bb757ec9f443",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "4a2706373e130a37c3768bc6e1355658d1c9b56f9830c2b8d6667f1f2411f1c4",
+diff --git a/r1_15a2_step_search_v24917.py b/r1_15a2_step_search_v24917.py
+index 3c0daf3399d43f030da859f9deed23ce6037abb0..93beb42a10e3bae7a82bde16934c3879567e1f2d 100644
+--- a/r1_15a2_step_search_v24917.py
++++ b/r1_15a2_step_search_v24917.py
+@@ -21 +21,4 @@ assigned, rolled back, the winner re-applied and re-assigned) by:
+-   secant.  Only when the search ends without an eligible trial is the full
++   secant. Once per block the V24917 adapter can instead re-solve the zonal
++   direction using the measured response, inside a smaller proposal box.
++   The existing real-trial budget is shared by both directions. Only when
++   the search ends without an eligible trial is the full
+@@ -40 +43 @@ import r1_15a2_generation_state_v24917 as genstate
+-RELEASE = "R1_15A2_V24917_STEP1_GENFIX2_20261027"
++RELEASE = "R1_15A2_V24917_STEP1_MEASURED_ZONAL_REFIT_20261031"
+@@ -230 +233 @@ def choose_scale(model: StepModel, gate, min_improvement: float, opts: Mapping[s
+-            "mode": "SECANT_MEASURED" if model.measured is not None else "LINEAR_FIT",
++            "mode": "SECANT_MEASURED" if model.measured is not None else getattr(model, "origin_mode", "LINEAR_FIT"),
+@@ -366,0 +370 @@ def _generation_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state,
++    refit_attempted = False
+@@ -573,0 +578,23 @@ def _generation_block_impl(ctrl, base, tx, adapter, cfg, folder, control, state,
++            if (not refit_attempted and ordinal < max_trials
++                    and callable(getattr(adapter, "refine_generation_design", None))):
++                refit_attempted = True
++                # Full native diagnostics describe this rejected trial. Only
++                # the proposal operator changes; the original parent and the
++                # transaction's recovery ownership remain intact.
++                try:
++                    refined, audit = adapter.refine_generation_design(
++                        context, float(scale), preview, diag, after_diag, folder / "MEASURED_REFIT")
++                except Exception as exc:
++                    refined, audit = None, {"status": "REFIT_UNAVAILABLE", "error": repr(exc)}
++                rec["measured_zonal_refit"] = audit
++                base.atomic_json(folder / "MEASURED_ZONAL_REFIT.json", audit)
++                if refined is not None:
++                    context = refined
++                    # A secant from the old direction cannot be applied to a
++                    # different zonal vector. Start a fresh model/cache; its
++                    # operator already incorporates the measured correction.
++                    model = StepModel(diag["d12"]["rows"], context.get("v24917_step_model"), 1.0,
++                        predictor=final_preview if context.get("_genfix2_mobility") else None)
++                    model.origin_mode = "MEASURED_ZONAL_REFIT"
++                    upper = float(opts["max_scale"])
++                    continue
+diff --git a/r1_15a2_trial_adapter_v24917.py b/r1_15a2_trial_adapter_v24917.py
+index 2b79301cd907b5e53288fb9fc5b676cd7a853b71..f92f35004b04e3d38f344bc1c03ae04953663d25 100644
+--- a/r1_15a2_trial_adapter_v24917.py
++++ b/r1_15a2_trial_adapter_v24917.py
+@@ -601,0 +602,10 @@ class VisumAdapter(_V24916ActiveAdapter):
++    @staticmethod
++    def _implemented_fit_vector(problem, design, scale, bd):
++        import numpy as np
++        effects = {(r["family"], r["role"], int(r["zone_no"])): float(r["implemented_total_log_effect"])
++                   for r in design.get("effect_rows", [])}
++        for key, value in ((bd or {}).get("steps") or {}).items():
++            fam, z = key.split("|")
++            effects[(fam, "PA", int(z))] = float(scale)*float(value)
++        return np.array([effects.get(tuple(k), 0.0) for k in problem.var_keys])
++
+@@ -608,6 +618 @@ class VisumAdapter(_V24916ActiveAdapter):
+-        effects = {(r["family"], r["role"], int(r["zone_no"])): float(r["implemented_total_log_effect"])
+-                   for r in design.get("effect_rows", [])}
+-        for key, value in ((model.get("bd") or {}).get("steps") or {}).items():
+-            fam, z = key.split("|")
+-            effects[(fam, "PA", int(z))] = float(scale)*float(value)
+-        x = np.array([effects.get(tuple(k), 0.0) for k in problem.var_keys])
++        x = self._implemented_fit_vector(problem, design, scale, model.get("bd"))
+@@ -629,0 +635,74 @@ class VisumAdapter(_V24916ActiveAdapter):
++    def refine_generation_design(self, context, scale, preview, before, after, folder):
++        """One pure zonal re-solve after a rejected, fully measured native trial.
++
++        Uses the retained parent incidence and actual implemented log effects.
++        Does not read the rejected model as a new parent or refresh any cache.
++        Mixed LONG actuators are deferred: one measurement cannot separate
++        their response from the W/S operator. Ordinary secant search continues.
++        """
++        import numpy as np
++        from r1_15a2_td_count_blend_v24917 import cl_key
++        policy = tg.policy_of(self.cfg)
++        model = context.get("_genfix2_effect_model") or {}
++        problem, ls, bd = model.get("problem"), model.get("ls"), model.get("bd")
++        if policy is None or problem is None:
++            return None, {"status": "NO_ZONAL_EFFECT_OPERATOR"}
++        if ((ls or {}).get("prediction_unavailable_after_guard")
++                or any(float(v) != 0.0 for by_zone in ((ls or {}).get("steps") or {}).values()
++                for v in by_zone.values()) or np.any((ls or {}).get("predicted_change", []))):
++            return None, {"status": "DEFERRED_MIXED_LONG_SCHOOL_ACTUATORS"}
++        guard = core.observation_set_guard(before["d12"]["rows"], after["d12"]["rows"])
++        if not guard["passes"]:
++            raise ValueError("V24917_REFIT_OBSERVATION_AUTHORITY_CHANGED")
++        def indexed(rows):
++            by = {}
++            for r in rows:
++                key = cl_key(r.get("countlocation_no", r.get("obs_id", r.get("code"))))
++                if not key or key in by:
++                    raise ValueError("V24917_REFIT_PROFILE_IDENTITY_INVALID")
++                by[key] = r
++            return by
++        pre, post = indexed(before["d12"]["rows"]), indexed(after["d12"]["rows"])
++        delta = []
++        for row in problem.profile_rows:
++            key = cl_key(row["countlocation_no"])
++            b, a = pre[key], post[key]
++            if (not math.isclose(float(b["model"]), float(row["model"]), rel_tol=1e-12, abs_tol=1e-9)
++                    or float(b["observed"]) != float(row["observed"])):
++                raise ValueError("V24917_REFIT_PARENT_DIAGNOSTICS_MISMATCH")
++            delta.append(float(a["model"]) - float(b["model"]))
++        implemented = self._implemented_fit_vector(problem, preview, scale, bd)
++        refined, audit = zf.measured_refit_problem(problem, implemented, np.array(delta),
++                                                 min(0.5, 0.5*float(scale)))
++        fit_cfg = dict(policy.get("fit", {}), nonlinear_pa_repair=True)
++        solution = zf.solve(refined, fit_cfg)
++        audit["solver_converged"] = bool(solution["converged"])
++        if not solution["converged"]:
++            return None, dict(audit, status="REFIT_SOLVER_NOT_CONVERGED")
++        rows = zf.projection_rows(refined, solution, float(self.cfg.get("min_add_log_step", 1e-5)))
++        rows, steps = bdgen.split_rows(rows)
++        new_bd = None
++        if bd is not None:
++            new_bd = bdgen.design_payload(steps, bd["current"])
++            new_bd["margins"] = copy.deepcopy(bd.get("margins", {}))
++        phase = self._phase_of(context)
++        masked = self._apply_flowbundle_mask(rows, context, policy, phase)
++        rows, _ = zguard.guard_projection(masked["rows"], context["_mobilityzone1"])
++        authority = context["_genfix2_mobility"]
++        rows, mobility = mguard.guard(rows, authority["zone_rows"], authority["options"])
++        if not mobility.get("passes", mobility.get("status") == "DISABLED"):
++            return None, dict(audit, status="REFIT_MOBILITY_REJECTED")
++        if not rows and not steps:
++            return None, dict(audit, status="REFIT_NO_PARAMETER_DIRECTION")
++        out = dict(context)
++        out["projection"] = core.ProjectionResult(rows=rows, family_summaries=[
++            {"family": f, "method": zf.METHOD, "converged": True} for f in zf.FAMILIES], weighted_rmse=0.0)
++        out["v24917_bd"] = new_bd
++        out["_genfix2_effect_model"] = {"problem": refined, "ls": ls, "bd": new_bd}
++        out["v24917_step_model"] = self._step_model(refined, solution, ls, rows=rows, bd=new_bd)
++        audit.update(status="ZONAL_DIRECTION_REFITTED", fit=zf.summary(refined, solution, rows))
++        out["v24917"] = dict(context["v24917"], measured_zonal_refit=audit)
++        rt.write_json(Path(folder) / "MEASURED_ZONAL_REFIT.json", audit)
++        rt.write_csv(Path(folder) / "MEASURED_ZONAL_REFIT_ROWS.csv", rows)
++        return out, audit
++
+diff --git a/r1_15a2_zonal_count_fit_v24917.py b/r1_15a2_zonal_count_fit_v24917.py
+index 1ff297b7be17a99059c481b1bce543c7072789af..b516031b8a82ec7f4b5e281722913e70617d2a83 100644
+--- a/r1_15a2_zonal_count_fit_v24917.py
++++ b/r1_15a2_zonal_count_fit_v24917.py
+@@ -38,0 +39 @@ from __future__ import annotations
++import copy
+@@ -488,0 +490,38 @@ def projection_rows(problem: FitProblem, solution: Mapping[str, Any],
++def measured_refit_problem(problem: FitProblem, implemented: np.ndarray,
++                           measured_delta: np.ndarray, trust_fraction: float):
++    """A local proposal model, corrected along ONE actually measured direction.
++
++    The minimum-Frobenius (Broyden) update satisfies G_new @ implemented =
++    measured_delta. It does not identify individual native TG derivatives.
++    Re-solve from the same parent, inside a smaller box; native acceptance
++    remains mandatory. Never mutate the original operator or its bounds.
++    """
++    x = np.asarray(implemented, dtype=float)
++    delta = np.asarray(measured_delta, dtype=float)
++    G = np.asarray(problem.G, dtype=float)
++    fraction = float(trust_fraction)
++    if (G.ndim != 2 or x.shape != (G.shape[1],) or delta.shape != (G.shape[0],)
++            or not np.isfinite(G).all() or not np.isfinite(x).all()
++            or not np.isfinite(delta).all() or not math.isfinite(fraction)
++            or not 0 < fraction <= 0.5):
++        raise ValueError("V24917_REFIT_INVALID_MEASUREMENT")
++    den = float(x @ x)
++    if den <= EPS:
++        raise ValueError("V24917_REFIT_NO_MEASURED_PARAMETER_DIRECTION")
++    if (np.any(x < problem.lower - 1e-9) or np.any(x > problem.upper + 1e-9)):
++        raise ValueError("V24917_REFIT_MEASURED_DIRECTION_OUTSIDE_ORIGINAL_BOX")
++    residual = delta - G @ x
++    out = copy.copy(problem)
++    out.G = G + np.outer(residual, x / den)
++    out.lower = np.array(problem.lower, copy=True) * fraction
++    out.upper = np.array(problem.upper, copy=True) * fraction
++    if not np.isfinite(out.G).all():
++        raise ValueError("V24917_REFIT_NONFINITE_OPERATOR")
++    return out, {"method": "MINIMUM_CHANGE_SECANT_OPERATOR",
++                 "authority": "LOCAL_PROPOSAL_ONLY_NOT_NATIVE_ZONAL_JACOBIAN",
++                 "trust_fraction_of_original_box": fraction,
++                 "measured_direction_norm": math.sqrt(den),
++                 "prediction_error_l2_before": float(np.linalg.norm(residual)),
++                 "prediction_error_l2_after": float(np.linalg.norm(delta - out.G @ x))}
++
++
+@@ -542 +581 @@ __all__ = ["RELEASE", "METHOD", "build_problem", "solve", "repair_nonlinear_pa",
+-           "projection_rows", "summary", "fit", "geh"]
++           "projection_rows", "measured_refit_problem", "summary", "fit", "geh"]
+diff --git a/tests/test_v24917_measured_zonal_refit.py b/tests/test_v24917_measured_zonal_refit.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..a152158e923bb66bb0417a26a7fc593516338dab
+--- /dev/null
++++ b/tests/test_v24917_measured_zonal_refit.py
+@@ -0,0 +1,207 @@
++"""A rejected spatial direction may be re-solved, never merely relabelled accepted."""
++import copy
++import math
++from types import SimpleNamespace
++
++import numpy as np
++import pytest
++
++import r1_15a2_zonal_count_fit_v24917 as zf
++import r1_15a2_trial_adapter_v24917 as adapter_mod
++from test_v24917_step_search import harness, opts, linear_model, STEP  # noqa: F401
++
++
++def problem():
++    rows = [{"countlocation_no": str(920001+i), "observed": 1000.0,
++             "model": 600.0 if i == 0 else 1000.0, "geh": 10.0 if i == 0 else 0.0}
++            for i in range(2)]
++    return zf.FitProblem([1, 2], rows, np.array([[100., 60., 100., 60.], [3., -3., 3., -3.]]),
++        np.array([400., 0.]), np.array([1., 3.]),
++        [("WORK", role, z) for role in ("PROD", "ATT") for z in (1, 2)],
++        np.ones(4)*1000, np.ones(4)*-.22, np.ones(4)*.4,
++        {"WORK": (np.array([1000., 1000., -1000., -1000.]), 2000.)})
++
++
++def test_secant_operator_matches_measurement_without_mutating_original():
++    p = problem()
++    original = p.G.copy(), p.lower.copy(), p.upper.copy()
++    x = np.ones(4)*.4
++    delta = np.array([150., 300.])
++    new, audit = zf.measured_refit_problem(p, x, delta, .5)
++    np.testing.assert_allclose(new.G @ x, delta, atol=1e-12)
++    for actual, before in zip((p.G, p.lower, p.upper), original):
++        np.testing.assert_array_equal(actual, before)
++    np.testing.assert_allclose(new.lower, p.lower*.5)
++    np.testing.assert_allclose(new.upper, p.upper*.5)
++    assert audit["authority"] == "LOCAL_PROPOSAL_ONLY_NOT_NATIVE_ZONAL_JACOBIAN"
++    assert audit["prediction_error_l2_after"] < 1e-12
++    # Information orthogonal to the measured vector is preserved, not invented.
++    orthogonal = np.array([1., -1., 0., 0.])
++    np.testing.assert_allclose(new.G @ orthogonal, p.G @ orthogonal)
++
++
++def test_measured_fit_can_leave_a_saturated_common_direction_with_exact_pa():
++    p = problem()
++    original = zf.solve(p, {"ridge_relative": .01})
++    np.testing.assert_allclose(original["x"], .4, atol=1e-8)
++    new, _ = zf.measured_refit_problem(p, original["x"], np.array([150., 300.]), .5)
++    result = zf.solve(new, {"ridge_relative": .01, "nonlinear_pa_repair": True})
++    assert result["converged"]
++    assert np.ptp(result["x"]) > .05  # different zones, not a common shrunken scale
++    assert np.all(result["x"] >= new.lower-1e-10)
++    assert np.all(result["x"] <= new.upper+1e-10)
++    b = result["nonlinear_pa_repair"]["WORK"]
++    assert abs(b["nonlinear_pa_gap"]) <= b["allowed_gap"]
++
++
++def test_indistinguishable_zones_are_not_differentiated_artificially():
++    p = problem()
++    p.G[:, :] = np.array([[100.], [2.]])
++    corrected, _ = zf.measured_refit_problem(p, np.ones(4)*.4, np.array([200., 80.]), .5)
++    fit = zf.solve(corrected, {"ridge_relative": .01, "nonlinear_pa_repair": True})
++    assert np.ptp(fit["x"]) < 1e-9
++
++
++@pytest.mark.parametrize("x,delta,fraction", [
++    (np.zeros(4), np.ones(2), .5),
++    (np.ones(3), np.ones(2), .5),
++    (np.ones(4)*.2, np.ones(3), .5),
++    (np.array([np.nan, .1, .1, .1]), np.ones(2), .5),
++    (np.ones(4)*.2, np.array([np.inf, 1.]), .5),
++    (np.ones(4)*.41, np.ones(2), .5),
++    (np.ones(4)*.2, np.ones(2), 0),
++    (np.ones(4)*.2, np.ones(2), .51),
++])
++def test_invalid_or_unmeasured_directions_cannot_refit(x, delta, fraction):
++    with pytest.raises(ValueError, match="V24917_REFIT_"):
++        zf.measured_refit_problem(problem(), x, delta, fraction)
++
++
++def adapter_context():
++    import r1_15a2_targeted_generation_v24917 as tg
++    ad = adapter_mod.VisumAdapter.__new__(adapter_mod.VisumAdapter)
++    ad.cfg = {tg.POLICY_KEY: copy.deepcopy(tg.DEFAULT_POLICY)}
++    p = problem()
++    ls = {"steps": {"ADD_PROD_L": {}, "ADD_ATT_L": {}}, "predicted_change": [0., 0.]}
++    ctx = {"_genfix2_effect_model": {"problem": p, "ls": ls, "bd": None},
++           "_mobilityzone1": {"enabled": False},
++           "_genfix2_mobility": {"zone_rows": [], "options": {"enabled": False, "lo": .75, "hi": 2.5}},
++           "v24917": {"overlay_phase": "CATCH_UP"}}
++    rows = [dict(r, role="CALIBRATION") for r in p.profile_rows]
++    before = {"d12": {"rows": rows}}
++    after = {"d12": {"rows": [dict(r, model=r["model"]+d) for r,d in zip(rows, [150., 300.])]}}
++    preview = {"effect_rows": [{"family": f, "role": r, "zone_no": z,
++                               "implemented_total_log_effect": .4} for f,r,z in p.var_keys]}
++    return ad, ctx, preview, before, after
++
++
++def test_real_adapter_refits_without_visum_access_and_retains_parent(tmp_path):
++    ad, ctx, preview, before, after = adapter_context()
++    new, audit = ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
++    assert new is not None and audit["status"] == "ZONAL_DIRECTION_REFITTED"
++    assert new["_genfix2_mobility"] is ctx["_genfix2_mobility"]
++    assert new["_mobilityzone1"] is ctx["_mobilityzone1"]
++    assert ctx["_genfix2_effect_model"]["problem"].G[0, 0] == 100.
++    assert "measured_zonal_refit" not in ctx["v24917"]
++    assert (tmp_path / "MEASURED_ZONAL_REFIT.json").is_file()
++    # The preview operator must use the revised model, not stale fit output.
++    prediction = ad._final_step_prediction(new, preview, 1.)
++    np.testing.assert_allclose(prediction["delta"], [150., 300.])
++
++
++@pytest.mark.parametrize("change", ["observation", "missing", "duplicate", "parent", "nan"])
++def test_adapter_rejects_unbound_measurements(tmp_path, change):
++    ad, ctx, preview, before, after = adapter_context()
++    if change == "observation": after["d12"]["rows"][0]["observed"] += 1
++    if change == "missing": after["d12"]["rows"].pop()
++    if change == "duplicate": after["d12"]["rows"].append(dict(after["d12"]["rows"][0]))
++    if change == "parent": before["d12"]["rows"][0]["model"] += 1
++    if change == "nan": after["d12"]["rows"][0]["model"] = float("nan")
++    with pytest.raises(ValueError, match="V24917_REFIT_"):
++        ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
++
++
++@pytest.mark.parametrize("by_zone, predicted", [({1: .01}, [0., 0.]), ({}, [1., 0.])])
++def test_mixed_long_response_is_not_assigned_to_ws_columns(tmp_path, by_zone, predicted):
++    ad, ctx, preview, before, after = adapter_context()
++    ctx["_genfix2_effect_model"]["ls"] = {"steps": {"ADD_PROD_L": by_zone}, "predicted_change": predicted}
++    new, audit = ad.refine_generation_design(ctx, 1., preview, before, after, tmp_path)
++    assert new is None and audit["status"] == "DEFERRED_MIXED_LONG_SCHOOL_ACTUATORS"
++
++
++def test_boundary_uses_actual_joint_pa_column():
++    p = SimpleNamespace(var_keys=[("WORK", "PROD", 1), ("WORK", "PA", 99)])
++    preview = {"effect_rows": [{"family": "WORK", "role": "PROD", "zone_no": 1,
++                               "implemented_total_log_effect": .017}]}
++    x = adapter_mod.VisumAdapter._implemented_fit_vector(p, preview, .2, {"steps": {"WORK|99": .3}})
++    np.testing.assert_allclose(x, [.017, .06])
++
++
++def _refining_adapter(harness, monkeypatch):
++    ad = harness.ad
++    preview0, design0 = ad.generation_preview, ad.generation_design
++    monkeypatch.setattr(ad, "generation_design", lambda d, f: dict(design0(d, f), revision=0))
++    def preview(ctx, scale):
++        rows = preview0(ctx, scale)["candidate_rows"]
++        if ctx["revision"] == 1:
++            for r in rows:
++                z = str(r["zone_no"])
++                r["current"] = ad.g0[z]
++                r["proposed"] = ad.g0[z]*math.exp(0. if z == "1" else scale*STEP*.5)
++        return {"candidate_rows": rows}
++    monkeypatch.setattr(ad, "generation_preview", preview)
++    calls = []
++    def refine(ctx, scale, preview, before, after, folder):
++        calls.append(ctx["revision"])
++        assert before == harness.diag  # never promote rejected diagnostics to parent
++        lin = linear_model()
++        lin["delta_full"] = [0.] + [v*.5 for v in lin["delta_full"][1:]]
++        return dict(ctx, revision=1, v24917_step_model=lin), {"status": "ZONAL_DIRECTION_REFITTED"}
++    monkeypatch.setattr(ad, "refine_generation_design", refine, raising=False)
++    return ad, calls
++
++
++def test_controller_refits_once_and_adopts_new_spatial_direction(harness, monkeypatch):
++    ad, calls = _refining_adapter(harness, monkeypatch)
++    changed, state, diag, value, rec = harness.run()
++    assert changed and rec["adopted_in_place"]
++    assert calls == [0]
++    assert [a["plan_mode"] for a in rec["attempts"]] == ["LINEAR_FIT", "MEASURED_ZONAL_REFIT"]
++    assert ad.g["1"] == 1. and ad.g["2"] > 1.
++    assert len(ad.assignments) == 2  # same budget; no extra assignment for the refit
++    assert rec["measured_zonal_refit"]["status"] == "ZONAL_DIRECTION_REFITTED"
++
++
++def test_refit_unavailable_retains_existing_measured_secant_search(harness, monkeypatch):
++    def unavailable(*args): raise ValueError("invalid evidence")
++    monkeypatch.setattr(harness.ad, "refine_generation_design", unavailable, raising=False)
++    changed, state, diag, value, rec = harness.run()
++    assert changed
++    assert rec["measured_zonal_refit"]["status"] == "REFIT_UNAVAILABLE"
++    assert rec["attempts"][1]["plan_mode"] == "SECANT_MEASURED"
++
++
++def test_error_in_new_direction_retains_recovery_for_both_trials(harness, monkeypatch):
++    ad, calls = _refining_adapter(harness, monkeypatch)
++    original = ad.assign_for_block
++    def fail_second(folder, block):
++        if len(ad.assignments) == 1 and "ROLLBACK" not in str(folder):
++            raise RuntimeError("second native assignment failed")
++        return original(folder, block)
++    monkeypatch.setattr(ad, "assign_for_block", fail_second)
++    with pytest.raises(Exception, match="second native assignment failed"):
++        harness.run()
++    assert calls == [0]
++    assert ad.snapshot() == harness.state
++    assert ad.diags[-1] == "ROLLBACK"
++
++
++def test_native_rejection_cannot_be_overridden_and_trial_budget_is_shared(harness, monkeypatch):
++    ad, calls = _refining_adapter(harness, monkeypatch)
++    monkeypatch.setattr(ad, "block_gate", lambda *args: {"accepted": False, "reasons": ["NATIVE_REJECTED"]})
++    changed, state, diag, value, rec = harness.run()
++    assert not changed and calls == [0]
++    assert len(rec["attempts"]) == rec["planned_trials"] == 3
++    assert all(a["status"] == "REJECTED" for a in rec["attempts"])
++    assert len(ad.assignments) == 4  # three trials + the one verified rollback
++    assert ad.snapshot() == harness.state
