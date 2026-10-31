@@ -1,0 +1,67 @@
+{
+  "status": "READ_ONLY_REPLAY_OF_STORED_GEH_GUARDS",
+  "native_model_read": false,
+  "candidate_accepted_or_checkpoint_published": false,
+  "input_sha256": "32bd7965187c36d88f6a33633cefa62d63e6f1ffc00bb5fdf8e80ac8939cba70",
+  "original_input_sha256": "81d612523e3630c1e9d56b50b02ad6db863d12681183c010d1c2dd6a48c1cc7c",
+  "approved_options": {
+    "single": 50.0,
+    "high": 30.0,
+    "extend_horizon": true,
+    "protected_hard": 40.0,
+    "scope_budgets": {
+      "generation": {
+        "max_severity20_relative_degradation": 0.2,
+        "max_severity30_relative_degradation": 0.25,
+        "max_geh40_net_count_increase": 10
+      },
+      "td": {
+        "max_severity20_relative_degradation": 0.4,
+        "max_severity30_relative_degradation": 0.5,
+        "max_geh40_net_count_increase": 25
+      },
+      "supply": {
+        "max_severity20_relative_degradation": 0.35,
+        "max_severity30_relative_degradation": 0.45,
+        "max_geh40_net_count_increase": 30
+      }
+    }
+  },
+  "original_reasons": [
+    "NEW_SEVERE_GEH_PROFILE",
+    "PROTECTED_PROFILE_GUARD_FAILED"
+  ],
+  "reasons_after_rechecking_only_geh": [],
+  "original_protected_failures": [
+    {
+      "profile": "920023",
+      "before_geh": 1.522286391501216,
+      "after_geh": 37.393888093353084,
+      "classification": "PROTECTED_CATASTROPHIC"
+    }
+  ],
+  "new_protected_failures": [],
+  "new_protected_passes": true,
+  "new_severity_passes": true,
+  "new_severity_violation_codes": [],
+  "new_severity_policy": {
+    "policy_id": "V24912_BASELINE_RELATIVE_SEVERITY_BUDGET",
+    "policy_level": "BASELINE_RELATIVE_BUDGET_V24912",
+    "implementation_owner": "r1_15a2_core.py",
+    "runtime_external_policy_import_required": false,
+    "baseline_relative": true,
+    "threshold_crossing_is_not_automatic_reject": true,
+    "severity20_relative_degradation": 0.0,
+    "severity20_budget": 0.2,
+    "severity30_relative_degradation": 0.0,
+    "severity30_budget": 0.25,
+    "geh40_net_count_increase": 0,
+    "geh40_net_count_budget": 10,
+    "high_geh_threshold": 60.0,
+    "max_high_geh_increase": 30.0,
+    "high_geh_delta_violation_count": 0,
+    "new_high_threshold_crossing_count": 1,
+    "max_single_profile_geh_increase": 50.0
+  },
+  "limitation": "No fresh TG/TD/assignment, technical gate rerun, or acceptance authority."
+}

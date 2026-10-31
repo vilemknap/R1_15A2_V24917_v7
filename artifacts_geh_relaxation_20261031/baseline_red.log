@@ -1,0 +1,722 @@
+FFFFFFFFFFFFFFFFFFFFFF......F..FFFFFFFFFFFFFF                            [100%]
+=================================== FAILURES ===================================
+________________ test_defaults_file_and_validated_options_agree ________________
+
+    def test_defaults_file_and_validated_options_agree():
+        actual = dp.load_options(root=ROOT, environ={})
+>       assert actual['sev_max_single_profile_geh_increase'] == dp.DEFAULTS['sev_max_single_profile_geh_increase'] == 50.
+E       assert 25.0 == 50.0
+
+tests/test_v24917_geh_relaxation.py:46: AssertionError
+__ test_real_builders_apply_all_budgets_without_mutating_parent[1-GENERATION] __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6748bf16e0>
+scope = 'GENERATION', cycle = 1
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.08, 0.1, 5) == (0.2, 0.25, 10)
+E
+E         At index 0 diff: 0.08 != 0.2
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+______ test_real_builders_apply_all_budgets_without_mutating_parent[1-TD] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f67461002b0>
+scope = 'TD', cycle = 1
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.25, 0.3, 15) == (0.4, 0.5, 25)
+E
+E         At index 0 diff: 0.25 != 0.4
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+_ test_real_builders_apply_all_budgets_without_mutating_parent[1-SUPPLY_ADDVAL1] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6748555c70>
+scope = 'SUPPLY_ADDVAL1', cycle = 1
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.2, 0.25, 20) == (0.35, 0.45, 30)
+E
+E         At index 0 diff: 0.2 != 0.35
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+_ test_real_builders_apply_all_budgets_without_mutating_parent[13-GENERATION] __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f67485f1150>
+scope = 'GENERATION', cycle = 13
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.08, 0.1, 5) == (0.2, 0.25, 10)
+E
+E         At index 0 diff: 0.08 != 0.2
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+_____ test_real_builders_apply_all_budgets_without_mutating_parent[13-TD] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6748baa690>
+scope = 'TD', cycle = 13
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.25, 0.3, 15) == (0.4, 0.5, 25)
+E
+E         At index 0 diff: 0.25 != 0.4
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+_ test_real_builders_apply_all_budgets_without_mutating_parent[13-SUPPLY_ADDVAL1] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f67485e3750>
+scope = 'SUPPLY_ADDVAL1', cycle = 13
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.2, 0.25, 20) == (0.35, 0.45, 30)
+E
+E         At index 0 diff: 0.2 != 0.35
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+_ test_real_builders_apply_all_budgets_without_mutating_parent[100-GENERATION] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f67485e3250>
+scope = 'GENERATION', cycle = 100
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.08, 0.1, 5) == (0.2, 0.25, 10)
+E
+E         At index 0 diff: 0.08 != 0.2
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+_____ test_real_builders_apply_all_budgets_without_mutating_parent[100-TD] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f67485fb980>
+scope = 'TD', cycle = 100
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.25, 0.3, 15) == (0.4, 0.5, 25)
+E
+E         At index 0 diff: 0.25 != 0.4
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+_ test_real_builders_apply_all_budgets_without_mutating_parent[100-SUPPLY_ADDVAL1] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f67485fae40>
+scope = 'SUPPLY_ADDVAL1', cycle = 100
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    @pytest.mark.parametrize('cycle', [1, 13, 100])
+    def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
+        import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
+        original = copy.deepcopy(CFG)
+        builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
+        cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
+        cfg['runtime_acceptance_supply_cycle'] = cycle
+        policy = core.early_exploration_policy(cfg, scope)
+        assert policy is not None
+        key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
+        expected = EXPECTED[key]
+>       assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
+            'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
+E       assert (0.2, 0.25, 20) == (0.35, 0.45, 30)
+E
+E         At index 0 diff: 0.2 != 0.35
+E         Use -v to get more diff
+
+tests/test_v24917_geh_relaxation.py:64: AssertionError
+_ test_old_protected_failure_37_39_is_allowed_but_40_remains_hard[GENERATION] __
+
+scope = 'GENERATION'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_old_protected_failure_37_39_is_allowed_but_40_remains_hard(scope):
+        before = background(g=50.) + [row('920023', 1.522286391501216)]
+        after = background(g=48.) + [row('920023', 37.393888093353084)]
+        cfg = config(scope)
+        historical = copy.deepcopy(CFG)
+        historical['runtime_acceptance_outer_cycle'] = historical['runtime_acceptance_supply_cycle'] = 2
+        assert not core.protected_profile_guard(before, after, historical, scope)['passes']
+>       assert core.protected_profile_guard(before, after, cfg, scope)['passes']
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:80: AssertionError
+_____ test_old_protected_failure_37_39_is_allowed_but_40_remains_hard[TD] ______
+
+scope = 'TD'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_old_protected_failure_37_39_is_allowed_but_40_remains_hard(scope):
+        before = background(g=50.) + [row('920023', 1.522286391501216)]
+        after = background(g=48.) + [row('920023', 37.393888093353084)]
+        cfg = config(scope)
+        historical = copy.deepcopy(CFG)
+        historical['runtime_acceptance_outer_cycle'] = historical['runtime_acceptance_supply_cycle'] = 2
+        assert not core.protected_profile_guard(before, after, historical, scope)['passes']
+>       assert core.protected_profile_guard(before, after, cfg, scope)['passes']
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:80: AssertionError
+_ test_old_protected_failure_37_39_is_allowed_but_40_remains_hard[SUPPLY_ADDVAL1] _
+
+scope = 'SUPPLY_ADDVAL1'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_old_protected_failure_37_39_is_allowed_but_40_remains_hard(scope):
+        before = background(g=50.) + [row('920023', 1.522286391501216)]
+        after = background(g=48.) + [row('920023', 37.393888093353084)]
+        cfg = config(scope)
+        historical = copy.deepcopy(CFG)
+        historical['runtime_acceptance_outer_cycle'] = historical['runtime_acceptance_supply_cycle'] = 2
+        assert not core.protected_profile_guard(before, after, historical, scope)['passes']
+>       assert core.protected_profile_guard(before, after, cfg, scope)['passes']
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:80: AssertionError
+______ test_individual_increase_50_has_a_real_upper_boundary[GENERATION] _______
+
+scope = 'GENERATION'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_individual_increase_50_has_a_real_upper_boundary(scope):
+        before = background() + [row('X', 5.1)]
+        cfg = config(scope)
+        accepted = core.severity_transition_guard(before, background()+[row('X', 55.1)], cfg, scope)
+        rejected = core.severity_transition_guard(before, background()+[row('X', 55.10001)], cfg, scope)
+>       assert accepted['passes']
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:92: AssertionError
+__________ test_individual_increase_50_has_a_real_upper_boundary[TD] ___________
+
+scope = 'TD'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_individual_increase_50_has_a_real_upper_boundary(scope):
+        before = background() + [row('X', 5.1)]
+        cfg = config(scope)
+        accepted = core.severity_transition_guard(before, background()+[row('X', 55.1)], cfg, scope)
+        rejected = core.severity_transition_guard(before, background()+[row('X', 55.10001)], cfg, scope)
+>       assert accepted['passes']
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:92: AssertionError
+____ test_individual_increase_50_has_a_real_upper_boundary[SUPPLY_ADDVAL1] _____
+
+scope = 'SUPPLY_ADDVAL1'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_individual_increase_50_has_a_real_upper_boundary(scope):
+        before = background() + [row('X', 5.1)]
+        cfg = config(scope)
+        accepted = core.severity_transition_guard(before, background()+[row('X', 55.1)], cfg, scope)
+        rejected = core.severity_transition_guard(before, background()+[row('X', 55.10001)], cfg, scope)
+>       assert accepted['passes']
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:92: AssertionError
+______ test_already_high_profiles_keep_the_separate_30_limit[GENERATION] _______
+
+scope = 'GENERATION'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_already_high_profiles_keep_the_separate_30_limit(scope):
+        cfg = config(scope)
+        before = background(g=120.) + [row('X', 70.)]
+        accepted = core.severity_transition_guard(before, background(g=120.)+[row('X', 100.)], cfg, scope)
+        rejected = core.severity_transition_guard(before, background(g=120.)+[row('X', 100.00001)], cfg, scope)
+>       assert accepted['passes']  # GEH60 is diagnostic, not a new absolute cap.
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:102: AssertionError
+__________ test_already_high_profiles_keep_the_separate_30_limit[TD] ___________
+
+scope = 'TD'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_already_high_profiles_keep_the_separate_30_limit(scope):
+        cfg = config(scope)
+        before = background(g=120.) + [row('X', 70.)]
+        accepted = core.severity_transition_guard(before, background(g=120.)+[row('X', 100.)], cfg, scope)
+        rejected = core.severity_transition_guard(before, background(g=120.)+[row('X', 100.00001)], cfg, scope)
+>       assert accepted['passes']  # GEH60 is diagnostic, not a new absolute cap.
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:102: AssertionError
+____ test_already_high_profiles_keep_the_separate_30_limit[SUPPLY_ADDVAL1] _____
+
+scope = 'SUPPLY_ADDVAL1'
+
+    @pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
+    def test_already_high_profiles_keep_the_separate_30_limit(scope):
+        cfg = config(scope)
+        before = background(g=120.) + [row('X', 70.)]
+        accepted = core.severity_transition_guard(before, background(g=120.)+[row('X', 100.)], cfg, scope)
+        rejected = core.severity_transition_guard(before, background(g=120.)+[row('X', 100.00001)], cfg, scope)
+>       assert accepted['passes']  # GEH60 is diagnostic, not a new absolute cap.
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert False
+
+tests/test_v24917_geh_relaxation.py:102: AssertionError
+__________ test_net_geh40_budget_is_scoped_and_finite[GENERATION-10] ___________
+
+scope = 'GENERATION', limit = 10
+
+    @pytest.mark.parametrize('scope,limit', [('GENERATION', 10), ('TD', 25), ('SUPPLY_ADDVAL1', 30)])
+    def test_net_geh40_budget_is_scoped_and_finite(scope, limit):
+        cfg = config(scope)
+        for n in (limit, limit+1):
+            before = background(g=50.) + [row('N%d'%i,39.9) for i in range(n)]
+            after = background(g=50.) + [row('N%d'%i,40.1) for i in range(n)]
+            actual = core.severity_transition_guard(before, after, cfg, scope)
+            assert actual['geh40_net_count_increase'] == n
+>           assert actual['passes'] is (n == limit)
+E           assert False is (10 == 10)
+
+tests/test_v24917_geh_relaxation.py:114: AssertionError
+______________ test_net_geh40_budget_is_scoped_and_finite[TD-25] _______________
+
+scope = 'TD', limit = 25
+
+    @pytest.mark.parametrize('scope,limit', [('GENERATION', 10), ('TD', 25), ('SUPPLY_ADDVAL1', 30)])
+    def test_net_geh40_budget_is_scoped_and_finite(scope, limit):
+        cfg = config(scope)
+        for n in (limit, limit+1):
+            before = background(g=50.) + [row('N%d'%i,39.9) for i in range(n)]
+            after = background(g=50.) + [row('N%d'%i,40.1) for i in range(n)]
+            actual = core.severity_transition_guard(before, after, cfg, scope)
+            assert actual['geh40_net_count_increase'] == n
+>           assert actual['passes'] is (n == limit)
+E           assert False is (25 == 25)
+
+tests/test_v24917_geh_relaxation.py:114: AssertionError
+________ test_net_geh40_budget_is_scoped_and_finite[SUPPLY_ADDVAL1-30] _________
+
+scope = 'SUPPLY_ADDVAL1', limit = 30
+
+    @pytest.mark.parametrize('scope,limit', [('GENERATION', 10), ('TD', 25), ('SUPPLY_ADDVAL1', 30)])
+    def test_net_geh40_budget_is_scoped_and_finite(scope, limit):
+        cfg = config(scope)
+        for n in (limit, limit+1):
+            before = background(g=50.) + [row('N%d'%i,39.9) for i in range(n)]
+            after = background(g=50.) + [row('N%d'%i,40.1) for i in range(n)]
+            actual = core.severity_transition_guard(before, after, cfg, scope)
+            assert actual['geh40_net_count_increase'] == n
+>           assert actual['passes'] is (n == limit)
+E           assert False is (30 == 30)
+
+tests/test_v24917_geh_relaxation.py:114: AssertionError
+__ test_step_planning_and_final_core_gate_use_the_same_relaxed_profile_policy __
+
+    def test_step_planning_and_final_core_gate_use_the_same_relaxed_profile_policy():
+        from r1_15a2_safety_v245 import adapter_config_scope
+        before = background(g=50.) + [row('920023', 1.522286391501216)]
+        after = background(g=48.) + [row('920023', 37.393888093353084)]
+        adapter = SimpleNamespace(cfg=copy.deepcopy(CFG))
+        old = adapter.cfg
+        with adapter_config_scope(adapter, config()):
+            gate, holder = step._gate_fn(adapter)
+            holder['before'] = {}
+            planned = gate(before, after)
+            final = core.acceptance_decision(before, after, {}, {}, adapter.cfg, 'GENERATION')
+            assert planned == final
+>           assert final['accepted']
+E           assert False
+
+tests/test_v24917_geh_relaxation.py:148: AssertionError
+______ test_partial_scope_override_and_environment_do_not_mutate_defaults ______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_partial_scope_override_an0')
+
+    def test_partial_scope_override_and_environment_do_not_mutate_defaults(tmp_path):
+        original = copy.deepcopy(dp.DEFAULTS)
+        override = {'generation': {'max_severity20_relative_degradation':.3}}
+        o = dp.load_options(root=tmp_path,environ={'R1_SEV_SCOPE_BUDGETS':json.dumps(override)})
+>       assert o['sev_scope_budgets']['generation']['max_severity20_relative_degradation'] == .3
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'sev_scope_budgets'
+
+tests/test_v24917_geh_relaxation.py:178: KeyError
+_________________ test_invalid_scope_budgets_fail_closed[None] _________________
+
+raw = None
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw1] _________________
+
+raw = []
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw2] _________________
+
+raw = {'invalid': {}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw3] _________________
+
+raw = {'td': []}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw4] _________________
+
+raw = {'td': {'wrong': 1}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw5] _________________
+
+raw = {'td': {'max_severity20_relative_degradation': nan}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw6] _________________
+
+raw = {'td': {'max_severity30_relative_degradation': inf}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw7] _________________
+
+raw = {'td': {'max_severity20_relative_degradation': -0.1}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw8] _________________
+
+raw = {'td': {'max_severity30_relative_degradation': 3.1}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_________________ test_invalid_scope_budgets_fail_closed[raw9] _________________
+
+raw = {'td': {'max_geh40_net_count_increase': -1}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+________________ test_invalid_scope_budgets_fail_closed[raw10] _________________
+
+raw = {'td': {'max_geh40_net_count_increase': 2.5}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+________________ test_invalid_scope_budgets_fail_closed[raw11] _________________
+
+raw = {'td': {'max_geh40_net_count_increase': True}}
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+_______________ test_invalid_scope_budgets_fail_closed[{broken] ________________
+
+raw = '{broken'
+
+    @pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
+        {'td':{'max_severity20_relative_degradation':float('nan')}},
+        {'td':{'max_severity30_relative_degradation':float('inf')}},
+        {'td':{'max_severity20_relative_degradation':-.1}},
+        {'td':{'max_severity30_relative_degradation':3.1}},
+        {'td':{'max_geh40_net_count_increase':-1}},
+        {'td':{'max_geh40_net_count_increase':2.5}},
+        {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
+    def test_invalid_scope_budgets_fail_closed(raw):
+>       with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_v24917_geh_relaxation.py:194: Failed
+=========================== short test summary info ============================
+FAILED tests/test_v24917_geh_relaxation.py::test_defaults_file_and_validated_options_agree
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[1-GENERATION]
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[1-TD]
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[1-SUPPLY_ADDVAL1]
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[13-GENERATION]
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[13-TD]
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[13-SUPPLY_ADDVAL1]
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[100-GENERATION]
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[100-TD]
+FAILED tests/test_v24917_geh_relaxation.py::test_real_builders_apply_all_budgets_without_mutating_parent[100-SUPPLY_ADDVAL1]
+FAILED tests/test_v24917_geh_relaxation.py::test_old_protected_failure_37_39_is_allowed_but_40_remains_hard[GENERATION]
+FAILED tests/test_v24917_geh_relaxation.py::test_old_protected_failure_37_39_is_allowed_but_40_remains_hard[TD]
+FAILED tests/test_v24917_geh_relaxation.py::test_old_protected_failure_37_39_is_allowed_but_40_remains_hard[SUPPLY_ADDVAL1]
+FAILED tests/test_v24917_geh_relaxation.py::test_individual_increase_50_has_a_real_upper_boundary[GENERATION]
+FAILED tests/test_v24917_geh_relaxation.py::test_individual_increase_50_has_a_real_upper_boundary[TD]
+FAILED tests/test_v24917_geh_relaxation.py::test_individual_increase_50_has_a_real_upper_boundary[SUPPLY_ADDVAL1]
+FAILED tests/test_v24917_geh_relaxation.py::test_already_high_profiles_keep_the_separate_30_limit[GENERATION]
+FAILED tests/test_v24917_geh_relaxation.py::test_already_high_profiles_keep_the_separate_30_limit[TD]
+FAILED tests/test_v24917_geh_relaxation.py::test_already_high_profiles_keep_the_separate_30_limit[SUPPLY_ADDVAL1]
+FAILED tests/test_v24917_geh_relaxation.py::test_net_geh40_budget_is_scoped_and_finite[GENERATION-10]
+FAILED tests/test_v24917_geh_relaxation.py::test_net_geh40_budget_is_scoped_and_finite[TD-25]
+FAILED tests/test_v24917_geh_relaxation.py::test_net_geh40_budget_is_scoped_and_finite[SUPPLY_ADDVAL1-30]
+FAILED tests/test_v24917_geh_relaxation.py::test_step_planning_and_final_core_gate_use_the_same_relaxed_profile_policy
+FAILED tests/test_v24917_geh_relaxation.py::test_partial_scope_override_and_environment_do_not_mutate_defaults
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[None]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw1]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw2]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw3]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw4]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw5]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw6]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw7]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw8]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw9]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw10]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[raw11]
+FAILED tests/test_v24917_geh_relaxation.py::test_invalid_scope_budgets_fail_closed[{broken]
+37 failed, 8 passed in 0.53s

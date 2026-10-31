@@ -1,0 +1,52 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/geh_relaxation_20261031/source/tests"
+      ],
+      "returncode": 1,
+      "seconds": 44.325
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/geh_relaxation_20261031/source/diagfast_tests"
+      ],
+      "returncode": 1,
+      "seconds": 21.119
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/geh_relaxation_20261031/source/genfix2_audit_tests"
+      ],
+      "returncode": 1,
+      "seconds": 0.866
+    }
+  ],
+  "all_passed": false,
+  "output": "/workspace/work/geh_relaxation_20261031/checks",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+}

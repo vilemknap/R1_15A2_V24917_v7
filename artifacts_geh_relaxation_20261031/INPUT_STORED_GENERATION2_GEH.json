@@ -1,0 +1,741 @@
+{
+  "early_exploration_policy": {
+    "enabled": true,
+    "mode": "BASELINE_RELATIVE_NONMONOTONIC_PARETO_WITH_BEST_SO_FAR",
+    "outer_cycle": 2,
+    "through_outer_cycle": 100,
+    "scope": "GENERATION",
+    "scoped": {
+      "max_cal_relative_degradation_for_severity_tradeoff": 0.02,
+      "max_geh40_net_count_increase": 5,
+      "max_severity20_relative_degradation": 0.08,
+      "max_severity30_relative_degradation": 0.1,
+      "min_geh20_count_reduction": 3,
+      "min_geh30_count_reduction": 1,
+      "min_severity20_relative_improvement": 0.01,
+      "min_severity30_relative_improvement": 0.01,
+      "minimum_positive_relative_improvement": 0.0,
+      "positive_improvement_epsilon": 1e-12
+    },
+    "severity": {
+      "absolute_geh_ceiling": 60.0,
+      "absolute_geh_ceiling_role": "DIAGNOSTIC_THRESHOLD_NOT_STATE_VETO",
+      "geh20_role": "DIAGNOSTIC_CONTINUOUS_PENALTY",
+      "geh30_role": "DIAGNOSTIC_CONTINUOUS_PENALTY",
+      "geh35_role": "WARNING",
+      "geh40_role": "SOFT_NET_COUNT_BUDGET",
+      "high_geh_threshold": 60.0,
+      "max_high_geh_increase": 15.0,
+      "max_new_geh40": 0,
+      "max_protected_catastrophic": 0,
+      "max_single_profile_geh_increase": 25.0,
+      "policy_level": "BASELINE_RELATIVE_BUDGET_V24912",
+      "protected_after_hard_geh": 20.0,
+      "protected_before_geh": 5.0,
+      "runtime_external_policy_import_required": false,
+      "runtime_policy_implementation_owner": "r1_15a2_core.py",
+      "severity_score_power": 2.0
+    },
+    "best_so_far": {
+      "enabled": true,
+      "metric": "FIXED_REFERENCE_SHARED_OBJECTIVE",
+      "minimum_improvement": 1e-08,
+      "publish_dedicated_checkpoint": true
+    }
+  },
+  "severity_transition_guard": {
+    "passes": false,
+    "mode": "EARLY_EXPLORATION_BASELINE_RELATIVE_SEVERITY_V24912",
+    "policy_scope": "GENERATION",
+    "outer_cycle": 2,
+    "new_geh20": [
+      {
+        "profile": "920022",
+        "before_geh": 19.864191643570376,
+        "after_geh": 45.39473132380114,
+        "geh_increase": 25.530539680230763,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920023",
+        "before_geh": 1.522286391501216,
+        "after_geh": 37.393888093353084,
+        "geh_increase": 35.871601701851866,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920024",
+        "before_geh": 13.350034724392922,
+        "after_geh": 27.977753361352594,
+        "geh_increase": 14.627718636959672,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920066",
+        "before_geh": 13.13193784564175,
+        "after_geh": 25.156937612074426,
+        "geh_increase": 12.024999766432677,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920088",
+        "before_geh": 17.622586814741254,
+        "after_geh": 22.238415741208563,
+        "geh_increase": 4.615828926467309,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920143",
+        "before_geh": 19.84729543021935,
+        "after_geh": 20.035717860370802,
+        "geh_increase": 0.18842243015145144,
+        "threshold": 20.0
+      }
+    ],
+    "new_geh30": [
+      {
+        "profile": "912083",
+        "before_geh": 29.33891806514789,
+        "after_geh": 31.084013041505372,
+        "geh_increase": 1.745094976357482,
+        "threshold": 30.0
+      },
+      {
+        "profile": "920022",
+        "before_geh": 19.864191643570376,
+        "after_geh": 45.39473132380114,
+        "geh_increase": 25.530539680230763,
+        "threshold": 30.0
+      },
+      {
+        "profile": "920023",
+        "before_geh": 1.522286391501216,
+        "after_geh": 37.393888093353084,
+        "geh_increase": 35.871601701851866,
+        "threshold": 30.0
+      },
+      {
+        "profile": "920036",
+        "before_geh": 28.24005527456227,
+        "after_geh": 33.06715414971592,
+        "geh_increase": 4.8270988751536485,
+        "threshold": 30.0
+      },
+      {
+        "profile": "920173",
+        "before_geh": 29.262570255814925,
+        "after_geh": 30.202888265949422,
+        "geh_increase": 0.9403180101344972,
+        "threshold": 30.0
+      },
+      {
+        "profile": "920266",
+        "before_geh": 25.194636162856384,
+        "after_geh": 30.851720684031473,
+        "geh_increase": 5.65708452117509,
+        "threshold": 30.0
+      },
+      {
+        "profile": "920419",
+        "before_geh": 25.503531746851763,
+        "after_geh": 32.16487538803592,
+        "geh_increase": 6.661343641184153,
+        "threshold": 30.0
+      },
+      {
+        "profile": "920432",
+        "before_geh": 26.301548811346937,
+        "after_geh": 33.034857934190505,
+        "geh_increase": 6.733309122843568,
+        "threshold": 30.0
+      }
+    ],
+    "new_geh35_warning": [
+      {
+        "profile": "920022",
+        "before_geh": 19.864191643570376,
+        "after_geh": 45.39473132380114,
+        "geh_increase": 25.530539680230763,
+        "threshold": 35.0
+      },
+      {
+        "profile": "920023",
+        "before_geh": 1.522286391501216,
+        "after_geh": 37.393888093353084,
+        "geh_increase": 35.871601701851866,
+        "threshold": 35.0
+      },
+      {
+        "profile": "920031",
+        "before_geh": 34.06960146413119,
+        "after_geh": 40.78359093540811,
+        "geh_increase": 6.713989471276918,
+        "threshold": 35.0
+      }
+    ],
+    "new_geh40": [
+      {
+        "profile": "920022",
+        "before_geh": 19.864191643570376,
+        "after_geh": 45.39473132380114,
+        "geh_increase": 25.530539680230763,
+        "threshold": 40.0
+      },
+      {
+        "profile": "920031",
+        "before_geh": 34.06960146413119,
+        "after_geh": 40.78359093540811,
+        "geh_increase": 6.713989471276918,
+        "threshold": 40.0
+      },
+      {
+        "profile": "920090",
+        "before_geh": 36.86687077309796,
+        "after_geh": 41.534342153089625,
+        "geh_increase": 4.667471379991667,
+        "threshold": 40.0
+      }
+    ],
+    "material_new_geh20": [
+      {
+        "profile": "920022",
+        "before_geh": 19.864191643570376,
+        "after_geh": 45.39473132380114,
+        "geh_increase": 25.530539680230763,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920023",
+        "before_geh": 1.522286391501216,
+        "after_geh": 37.393888093353084,
+        "geh_increase": 35.871601701851866,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920024",
+        "before_geh": 13.350034724392922,
+        "after_geh": 27.977753361352594,
+        "geh_increase": 14.627718636959672,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920066",
+        "before_geh": 13.13193784564175,
+        "after_geh": 25.156937612074426,
+        "geh_increase": 12.024999766432677,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920088",
+        "before_geh": 17.622586814741254,
+        "after_geh": 22.238415741208563,
+        "geh_increase": 4.615828926467309,
+        "threshold": 20.0
+      },
+      {
+        "profile": "920143",
+        "before_geh": 19.84729543021935,
+        "after_geh": 20.035717860370802,
+        "geh_increase": 0.18842243015145144,
+        "threshold": 20.0
+      }
+    ],
+    "hysteresis_geh20": [],
+    "before_severity": {
+      "n": 247,
+      "weight_sum": 241.8,
+      "geh_ge20": 135,
+      "geh_ge30": 92,
+      "geh_ge35": 74,
+      "geh_ge40": 63,
+      "max_geh": 172.78776747569862,
+      "severity20": 782.2146999416543,
+      "severity30": 535.7126248660855,
+      "power": 2.0
+    },
+    "after_severity": {
+      "n": 247,
+      "weight_sum": 241.8,
+      "geh_ge20": 125,
+      "geh_ge30": 91,
+      "geh_ge35": 73,
+      "geh_ge40": 62,
+      "max_geh": 171.36346420713053,
+      "severity20": 750.9349667301309,
+      "severity30": 512.6599386982105,
+      "power": 2.0
+    },
+    "severity20_relative_improvement": 0.03998867985203626,
+    "severity30_relative_improvement": 0.04303181425608119,
+    "geh20_count_reduction": 10,
+    "geh30_count_reduction": 1,
+    "max_new_geh40": 0,
+    "max_single_profile_geh_increase": 25.0,
+    "absolute_geh_ceiling": 60.0,
+    "single_profile_geh_increase_violations": [
+      {
+        "profile": "920022",
+        "before_geh": 19.864191643570376,
+        "after_geh": 45.39473132380114,
+        "geh_increase": 25.530539680230763
+      },
+      {
+        "profile": "920023",
+        "before_geh": 1.522286391501216,
+        "after_geh": 37.393888093353084,
+        "geh_increase": 35.871601701851866
+      }
+    ],
+    "absolute_geh_ceiling_violations": [
+      {
+        "profile": "912040",
+        "before_geh": 63.15396283399417,
+        "after_geh": 61.592893338087514,
+        "geh_increase": -1.5610694959066578
+      },
+      {
+        "profile": "912043",
+        "before_geh": 80.26854139487824,
+        "after_geh": 90.65631552710688,
+        "geh_increase": 10.387774132228643
+      },
+      {
+        "profile": "912045",
+        "before_geh": 93.1319802594375,
+        "after_geh": 86.58739075492251,
+        "geh_increase": -6.544589504514988
+      },
+      {
+        "profile": "912051",
+        "before_geh": 69.6743070435289,
+        "after_geh": 70.41172944811814,
+        "geh_increase": 0.737422404589239
+      },
+      {
+        "profile": "912055",
+        "before_geh": 172.78776747569862,
+        "after_geh": 171.36346420713053,
+        "geh_increase": -1.4243032685680816
+      },
+      {
+        "profile": "912074",
+        "before_geh": 136.06353774370143,
+        "after_geh": 135.19166966219535,
+        "geh_increase": -0.8718680815060793
+      },
+      {
+        "profile": "912093",
+        "before_geh": 92.08589920319365,
+        "after_geh": 87.71031840278368,
+        "geh_increase": -4.3755808004099634
+      },
+      {
+        "profile": "912133",
+        "before_geh": 97.58277709214752,
+        "after_geh": 96.50106604988657,
+        "geh_increase": -1.0817110422609488
+      },
+      {
+        "profile": "912135",
+        "before_geh": 92.2502676752269,
+        "after_geh": 100.9586676966378,
+        "geh_increase": 8.70840002141091
+      },
+      {
+        "profile": "912139",
+        "before_geh": 110.65224260964794,
+        "after_geh": 115.83824887165923,
+        "geh_increase": 5.18600626201129
+      },
+      {
+        "profile": "912142",
+        "before_geh": 60.20361482706058,
+        "after_geh": 61.21769342402702,
+        "geh_increase": 1.014078596966435
+      },
+      {
+        "profile": "920001",
+        "before_geh": 87.62226720123014,
+        "after_geh": 85.41937868454676,
+        "geh_increase": -2.2028885166833874
+      },
+      {
+        "profile": "920012",
+        "before_geh": 74.15660107765818,
+        "after_geh": 73.4817595197546,
+        "geh_increase": -0.6748415579035765
+      },
+      {
+        "profile": "920013",
+        "before_geh": 64.47171586255953,
+        "after_geh": 63.92078528221747,
+        "geh_increase": -0.5509305803420617
+      },
+      {
+        "profile": "920030",
+        "before_geh": 92.92339845611397,
+        "after_geh": 92.65613033484551,
+        "geh_increase": -0.267268121268458
+      },
+      {
+        "profile": "920032",
+        "before_geh": 75.98913387805501,
+        "after_geh": 78.15230894937366,
+        "geh_increase": 2.1631750713186477
+      },
+      {
+        "profile": "920033",
+        "before_geh": 85.88892910592988,
+        "after_geh": 85.88853709517224,
+        "geh_increase": -0.00039201075763628523
+      },
+      {
+        "profile": "920059",
+        "before_geh": 60.09383990876566,
+        "after_geh": 60.32570932287717,
+        "geh_increase": 0.2318694141115074
+      },
+      {
+        "profile": "920060",
+        "before_geh": 62.25001739943097,
+        "after_geh": 61.638870088778496,
+        "geh_increase": -0.611147310652477
+      },
+      {
+        "profile": "920105",
+        "before_geh": 77.40000327833023,
+        "after_geh": 75.33979000958188,
+        "geh_increase": -2.060213268748356
+      },
+      {
+        "profile": "920106",
+        "before_geh": 77.23117940317084,
+        "after_geh": 76.41208520902697,
+        "geh_increase": -0.8190941941438723
+      },
+      {
+        "profile": "920123",
+        "before_geh": 61.98499623494066,
+        "after_geh": 61.85612747269586,
+        "geh_increase": -0.12886876224479948
+      },
+      {
+        "profile": "920124",
+        "before_geh": 62.29520765453671,
+        "after_geh": 61.068971709786176,
+        "geh_increase": -1.2262359447505347
+      },
+      {
+        "profile": "920425",
+        "before_geh": 68.02611479171036,
+        "after_geh": 69.12562025242713,
+        "geh_increase": 1.0995054607167702
+      },
+      {
+        "profile": "920426",
+        "before_geh": 98.8557848400195,
+        "after_geh": 91.83169313210608,
+        "geh_increase": -7.0240917079134135
+      },
+      {
+        "profile": "920428",
+        "before_geh": 58.28128565001627,
+        "after_geh": 61.71438463559167,
+        "geh_increase": 3.4330989855753984
+      },
+      {
+        "profile": "920429",
+        "before_geh": 94.36550716305203,
+        "after_geh": 93.62434344814103,
+        "geh_increase": -0.7411637149109964
+      },
+      {
+        "profile": "920430",
+        "before_geh": 115.4342528147111,
+        "after_geh": 111.29308472397291,
+        "geh_increase": -4.141168090738191
+      },
+      {
+        "profile": "920434",
+        "before_geh": 115.4838753583929,
+        "after_geh": 109.10043248721986,
+        "geh_increase": -6.383442871173031
+      },
+      {
+        "profile": "920435",
+        "before_geh": 102.37937926994584,
+        "after_geh": 97.54549456150015,
+        "geh_increase": -4.833884708445694
+      },
+      {
+        "profile": "920436",
+        "before_geh": 84.30007584424334,
+        "after_geh": 77.1207036030211,
+        "geh_increase": -7.179372241222239
+      },
+      {
+        "profile": "920437",
+        "before_geh": 83.7869822427665,
+        "after_geh": 80.49177600261265,
+        "geh_increase": -3.2952062401538456
+      }
+    ],
+    "warning_codes": [
+      "NEW_GEH35_WARNING",
+      "V24912_EXISTING_HIGH_GEH_BASELINE_RELATIVE",
+      "V24912_GEH40_TRANSITION_WITHIN_NET_BUDGET",
+      "V24912_GEH60_THRESHOLD_CROSSING_DIAGNOSTIC_ONLY"
+    ],
+    "violation_codes": [
+      "SINGLE_PROFILE_GEH_INCREASE_EXCEEDED"
+    ],
+    "severity20_relative_degradation": 0.0,
+    "severity30_relative_degradation": 0.0,
+    "geh40_net_count_increase": 0,
+    "new_geh60": [
+      {
+        "profile": "920428",
+        "before_geh": 58.28128565001627,
+        "after_geh": 61.71438463559167,
+        "geh_increase": 3.4330989855753984
+      }
+    ],
+    "high_geh_rows": [
+      {
+        "profile": "912040",
+        "before_geh": 63.15396283399417,
+        "after_geh": 61.592893338087514,
+        "geh_increase": -1.5610694959066578
+      },
+      {
+        "profile": "912043",
+        "before_geh": 80.26854139487824,
+        "after_geh": 90.65631552710688,
+        "geh_increase": 10.387774132228643
+      },
+      {
+        "profile": "912045",
+        "before_geh": 93.1319802594375,
+        "after_geh": 86.58739075492251,
+        "geh_increase": -6.544589504514988
+      },
+      {
+        "profile": "912051",
+        "before_geh": 69.6743070435289,
+        "after_geh": 70.41172944811814,
+        "geh_increase": 0.737422404589239
+      },
+      {
+        "profile": "912055",
+        "before_geh": 172.78776747569862,
+        "after_geh": 171.36346420713053,
+        "geh_increase": -1.4243032685680816
+      },
+      {
+        "profile": "912074",
+        "before_geh": 136.06353774370143,
+        "after_geh": 135.19166966219535,
+        "geh_increase": -0.8718680815060793
+      },
+      {
+        "profile": "912093",
+        "before_geh": 92.08589920319365,
+        "after_geh": 87.71031840278368,
+        "geh_increase": -4.3755808004099634
+      },
+      {
+        "profile": "912133",
+        "before_geh": 97.58277709214752,
+        "after_geh": 96.50106604988657,
+        "geh_increase": -1.0817110422609488
+      },
+      {
+        "profile": "912135",
+        "before_geh": 92.2502676752269,
+        "after_geh": 100.9586676966378,
+        "geh_increase": 8.70840002141091
+      },
+      {
+        "profile": "912139",
+        "before_geh": 110.65224260964794,
+        "after_geh": 115.83824887165923,
+        "geh_increase": 5.18600626201129
+      },
+      {
+        "profile": "912142",
+        "before_geh": 60.20361482706058,
+        "after_geh": 61.21769342402702,
+        "geh_increase": 1.014078596966435
+      },
+      {
+        "profile": "920001",
+        "before_geh": 87.62226720123014,
+        "after_geh": 85.41937868454676,
+        "geh_increase": -2.2028885166833874
+      },
+      {
+        "profile": "920012",
+        "before_geh": 74.15660107765818,
+        "after_geh": 73.4817595197546,
+        "geh_increase": -0.6748415579035765
+      },
+      {
+        "profile": "920013",
+        "before_geh": 64.47171586255953,
+        "after_geh": 63.92078528221747,
+        "geh_increase": -0.5509305803420617
+      },
+      {
+        "profile": "920030",
+        "before_geh": 92.92339845611397,
+        "after_geh": 92.65613033484551,
+        "geh_increase": -0.267268121268458
+      },
+      {
+        "profile": "920032",
+        "before_geh": 75.98913387805501,
+        "after_geh": 78.15230894937366,
+        "geh_increase": 2.1631750713186477
+      },
+      {
+        "profile": "920033",
+        "before_geh": 85.88892910592988,
+        "after_geh": 85.88853709517224,
+        "geh_increase": -0.00039201075763628523
+      },
+      {
+        "profile": "920059",
+        "before_geh": 60.09383990876566,
+        "after_geh": 60.32570932287717,
+        "geh_increase": 0.2318694141115074
+      },
+      {
+        "profile": "920060",
+        "before_geh": 62.25001739943097,
+        "after_geh": 61.638870088778496,
+        "geh_increase": -0.611147310652477
+      },
+      {
+        "profile": "920105",
+        "before_geh": 77.40000327833023,
+        "after_geh": 75.33979000958188,
+        "geh_increase": -2.060213268748356
+      },
+      {
+        "profile": "920106",
+        "before_geh": 77.23117940317084,
+        "after_geh": 76.41208520902697,
+        "geh_increase": -0.8190941941438723
+      },
+      {
+        "profile": "920123",
+        "before_geh": 61.98499623494066,
+        "after_geh": 61.85612747269586,
+        "geh_increase": -0.12886876224479948
+      },
+      {
+        "profile": "920124",
+        "before_geh": 62.29520765453671,
+        "after_geh": 61.068971709786176,
+        "geh_increase": -1.2262359447505347
+      },
+      {
+        "profile": "920425",
+        "before_geh": 68.02611479171036,
+        "after_geh": 69.12562025242713,
+        "geh_increase": 1.0995054607167702
+      },
+      {
+        "profile": "920426",
+        "before_geh": 98.8557848400195,
+        "after_geh": 91.83169313210608,
+        "geh_increase": -7.0240917079134135
+      },
+      {
+        "profile": "920428",
+        "before_geh": 58.28128565001627,
+        "after_geh": 61.71438463559167,
+        "geh_increase": 3.4330989855753984
+      },
+      {
+        "profile": "920429",
+        "before_geh": 94.36550716305203,
+        "after_geh": 93.62434344814103,
+        "geh_increase": -0.7411637149109964
+      },
+      {
+        "profile": "920430",
+        "before_geh": 115.4342528147111,
+        "after_geh": 111.29308472397291,
+        "geh_increase": -4.141168090738191
+      },
+      {
+        "profile": "920434",
+        "before_geh": 115.4838753583929,
+        "after_geh": 109.10043248721986,
+        "geh_increase": -6.383442871173031
+      },
+      {
+        "profile": "920435",
+        "before_geh": 102.37937926994584,
+        "after_geh": 97.54549456150015,
+        "geh_increase": -4.833884708445694
+      },
+      {
+        "profile": "920436",
+        "before_geh": 84.30007584424334,
+        "after_geh": 77.1207036030211,
+        "geh_increase": -7.179372241222239
+      },
+      {
+        "profile": "920437",
+        "before_geh": 83.7869822427665,
+        "after_geh": 80.49177600261265,
+        "geh_increase": -3.2952062401538456
+      }
+    ],
+    "high_geh_delta_violations": [],
+    "v24912_policy": {
+      "policy_id": "V24912_BASELINE_RELATIVE_SEVERITY_BUDGET",
+      "policy_level": "BASELINE_RELATIVE_BUDGET_V24912",
+      "implementation_owner": "r1_15a2_core.py",
+      "runtime_external_policy_import_required": false,
+      "baseline_relative": true,
+      "threshold_crossing_is_not_automatic_reject": true,
+      "severity20_relative_degradation": 0.0,
+      "severity20_budget": 0.08,
+      "severity30_relative_degradation": 0.0,
+      "severity30_budget": 0.1,
+      "geh40_net_count_increase": 0,
+      "geh40_net_count_budget": 5,
+      "high_geh_threshold": 60.0,
+      "max_high_geh_increase": 15.0,
+      "high_geh_delta_violation_count": 0,
+      "new_high_threshold_crossing_count": 1,
+      "max_single_profile_geh_increase": 25.0
+    }
+  },
+  "protected_guard": {
+    "passes": false,
+    "mode": "EARLY_EXPLORATION_CATASTROPHIC_ONLY",
+    "policy_scope": "GENERATION",
+    "protected_before_geh": 5.0,
+    "protected_after_hard_geh": 20.0,
+    "protected_to_warn": 0,
+    "protected_to_hard": 1,
+    "max_protected_catastrophic": 0,
+    "details": [
+      {
+        "profile": "920023",
+        "before_geh": 1.522286391501216,
+        "after_geh": 37.393888093353084,
+        "classification": "PROTECTED_CATASTROPHIC"
+      }
+    ]
+  },
+  "reasons": [
+    "NEW_SEVERE_GEH_PROFILE",
+    "PROTECTED_PROFILE_GUARD_FAILED"
+  ],
+  "original_input_sha256": "81d612523e3630c1e9d56b50b02ad6db863d12681183c010d1c2dd6a48c1cc7c"
+}

@@ -1,0 +1,73 @@
+"""Re-evaluate only stored GEH guards under approved relaxed budgets; never adopt a model."""
+import argparse
+import copy
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+import r1_15a2_core as core
+import r1_15a2_severity_relax_v24917 as relax
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('input', type=Path)
+    parser.add_argument('output', type=Path)
+    args = parser.parse_args()
+    source = json.loads(args.input.read_text(encoding='utf-8'))
+    old = source['early_exploration_policy']
+    if old['scope'] != 'GENERATION':
+        raise ValueError('REPLAY_ONLY_SCOPED_GENERATION_SUPPORTED')
+    cfg = {'early_exploration_acceptance': {'enabled': True,
+           'severity': copy.deepcopy(old['severity']), 'generation': copy.deepcopy(old['scoped'])}}
+    opts = relax.options()
+    relax.relax(cfg, opts)
+    sev, scoped = cfg['early_exploration_acceptance']['severity'], cfg['early_exploration_acceptance']['generation']
+    previous = source['severity_transition_guard']
+    if (sev['max_single_profile_geh_increase'] < previous['v24912_policy']['max_single_profile_geh_increase']
+            or sev['high_geh_threshold'] != previous['v24912_policy']['high_geh_threshold']
+            or sev['max_high_geh_increase'] < previous['v24912_policy']['max_high_geh_increase']):
+        raise ValueError('REPLAY_INCOMPLETE_STORED_EVIDENCE_FOR_TIGHTENING_OR_DIFFERENT_THRESHOLD')
+    known = {'SINGLE_PROFILE_GEH_INCREASE_EXCEEDED', 'V24912_SEVERITY20_BUDGET_EXCEEDED',
+             'V24912_SEVERITY30_BUDGET_EXCEEDED', 'V24912_GEH40_NET_COUNT_BUDGET_EXCEEDED',
+             'V24912_HIGH_GEH_DELTA_BUDGET_EXCEEDED'}
+    if set(previous['violation_codes']) - known:
+        raise ValueError('REPLAY_UNSUPPORTED_OLD_VIOLATION')
+    # Stored lists cover ALL old violations; increasing limits can only remove
+    # entries. Rebuild the raw pre-rebase jump code with the new limit first.
+    raw = copy.deepcopy(previous)
+    raw['single_profile_geh_increase_violations'] = [r for r in raw['single_profile_geh_increase_violations']
+        if r['geh_increase'] > sev['max_single_profile_geh_increase'] + core.EPS]
+    raw['violation_codes'] = ['SINGLE_PROFILE_GEH_INCREASE_EXCEEDED'] if raw['single_profile_geh_increase_violations'] else []
+    raw['max_single_profile_geh_increase'] = sev['max_single_profile_geh_increase']
+    severity = core.rebase_severity_guard_v24912(raw, sev, scoped)
+    protected = source['protected_guard']
+    if sev['protected_after_hard_geh'] < protected['protected_after_hard_geh']:
+        raise ValueError('REPLAY_INCOMPLETE_PROTECTED_EVIDENCE_FOR_TIGHTENING')
+    failures = [r for r in protected['details'] if r['after_geh'] >= sev['protected_after_hard_geh']]
+    protected_passes = len(failures) <= sev['max_protected_catastrophic']
+    reasons = [r for r in source['reasons'] if r not in ('NEW_SEVERE_GEH_PROFILE','PROTECTED_PROFILE_GUARD_FAILED')]
+    if not severity['passes']: reasons.append('NEW_SEVERE_GEH_PROFILE')
+    if not protected_passes: reasons.append('PROTECTED_PROFILE_GUARD_FAILED')
+    report = {'status': 'READ_ONLY_REPLAY_OF_STORED_GEH_GUARDS',
+              'native_model_read': False, 'candidate_accepted_or_checkpoint_published': False,
+              'input_sha256': hashlib.sha256(args.input.read_bytes()).hexdigest(),
+              'original_input_sha256': source.get('original_input_sha256'),
+              'approved_options': opts, 'original_reasons': source['reasons'],
+              'reasons_after_rechecking_only_geh': reasons,
+              'original_protected_failures': protected['details'],
+              'new_protected_failures': failures,
+              'new_protected_passes': protected_passes,
+              'new_severity_passes': severity['passes'],
+              'new_severity_violation_codes': severity['violation_codes'],
+              'new_severity_policy': severity['v24912_policy'],
+              'limitation': 'No fresh TG/TD/assignment, technical gate rerun, or acceptance authority.'}
+    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+    print(json.dumps({k:report[k] for k in ('new_protected_passes','new_severity_passes','reasons_after_rechecking_only_geh') }))
+
+
+if __name__ == '__main__':
+    main()

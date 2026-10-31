@@ -1,0 +1,30 @@
+{
+  "main": {
+    "passed": 2404,
+    "skipped": 4
+  },
+  "diagfast": {
+    "passed": 189
+  },
+  "audit_genfix2": {
+    "passed": 18
+  },
+  "focused": {
+    "passed": 203,
+    "skipped": 1
+  },
+  "new_tests": 45,
+  "baseline_new_tests": {
+    "failed": 37,
+    "passed": 8,
+    "note": "Expected behavioral differences from the approved policy change, not 37 independent production bugs."
+  },
+  "initial_failed_validation_run": {
+    "cause": "Local raw was the fa_blocks list in _validate_iz; calling raw.get raised AttributeError. Fixed by validating the new setting from normalized out and handling explicit null in validate.",
+    "main_failed": 125,
+    "diagfast_failed": 7,
+    "audit_failed": 3,
+    "fixed_and_final_all_suites_pass": true
+  },
+  "live_visum_tested": false
+}

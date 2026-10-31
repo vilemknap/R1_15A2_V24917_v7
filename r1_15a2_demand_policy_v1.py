@@ -128,10 +128,21 @@ DEFAULTS = {
     'sp_drivers': 'AUTO',
     'sp_cold_reset_position': 15,
     'sp_min_attribution_coverage': 0.5,
-    'sev_max_single_profile_geh_increase': 25.0,
-    'sev_max_high_geh_increase': 15.0,
+    'sev_max_single_profile_geh_increase': 50.0,
+    'sev_max_high_geh_increase': 30.0,
     'sev_extend_early_horizon': True,
-    'sev_protected_after_hard_geh': 0.0,
+    'sev_protected_after_hard_geh': 40.0,
+    'sev_scope_budgets': {
+        'generation': {'max_severity20_relative_degradation': 0.20,
+                       'max_severity30_relative_degradation': 0.25,
+                       'max_geh40_net_count_increase': 10},
+        'td': {'max_severity20_relative_degradation': 0.40,
+               'max_severity30_relative_degradation': 0.50,
+               'max_geh40_net_count_increase': 25},
+        'supply': {'max_severity20_relative_degradation': 0.35,
+                   'max_severity30_relative_degradation': 0.45,
+                   'max_geh40_net_count_increase': 30},
+    },
     'rb_tolerant_diagnostics': True,
     'rb_roster_reuse_proof': True,
     'td_max_survey_degradation': 1.25,
@@ -214,6 +225,7 @@ ENV = {
     'sev_max_high_geh_increase': 'R1_SEV_MAX_HIGH_GEH_INCREASE',
     'sev_extend_early_horizon': 'R1_SEV_EXTEND_EARLY_HORIZON',
     'sev_protected_after_hard_geh': 'R1_SEV_PROTECTED_AFTER_HARD_GEH',
+    'sev_scope_budgets': 'R1_SEV_SCOPE_BUDGETS',
     'rb_tolerant_diagnostics': 'R1_RB_TOLERANT_DIAGNOSTICS',
     'rb_roster_reuse_proof': 'R1_RB_ROSTER_REUSE_PROOF',
     'td_max_survey_degradation': 'R1_TD_MAX_SURVEY_DEGRADATION',
@@ -236,10 +248,40 @@ def _bool(value, name):
     raise RuntimeError('R1_RUN_OPTION_INVALID_BOOL:%s=%r' % (name, value))
 
 
+def _severity_scope_budgets(raw):
+    """Validate partial JSON overrides without mutating nested defaults."""
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except ValueError as exc:
+            raise RuntimeError('R1_RUN_OPTION_INVALID:sev_scope_budgets') from exc
+    defaults = DEFAULTS['sev_scope_budgets']
+    if not isinstance(raw, dict) or set(raw) - set(defaults):
+        raise RuntimeError('R1_RUN_OPTION_INVALID:sev_scope_budgets.scopes')
+    out = copy.deepcopy(defaults)
+    for scope, values in raw.items():
+        if not isinstance(values, dict) or set(values) - set(defaults[scope]):
+            raise RuntimeError('R1_RUN_OPTION_INVALID:sev_scope_budgets.' + scope)
+        for key, value in values.items():
+            try:
+                if key == 'max_geh40_net_count_increase':
+                    parsed = int(str(value))
+                    valid = 0 <= parsed <= 5000
+                else:
+                    parsed = float(str(value).replace(',', '.'))
+                    valid = math.isfinite(parsed) and 0 <= parsed <= 3.0
+            except (ValueError, TypeError, OverflowError):
+                valid = False
+            if not valid:
+                raise RuntimeError('R1_RUN_OPTION_INVALID:sev_scope_budgets.' + scope + '.' + key)
+            out[scope][key] = parsed
+    return out
+
+
 def validate(raw):
     out = dict(DEFAULTS)
     for key in DEFAULTS:
-        if key in raw and raw[key] is not None:
+        if key in raw and (raw[key] is not None or key == 'sev_scope_budgets'):
             out[key] = raw[key]
     policy = str(out['td_policy']).strip().upper()
     if policy not in ('ALWAYS', 'EVERY_N', 'OFF'):
@@ -499,6 +541,7 @@ def _validate_iz(out):
     v['sev_max_high_geh_increase'] = _float_opt(out, 'sev_max_high_geh_increase', 0.0, 200.0)
     v['sev_extend_early_horizon'] = _bool(out['sev_extend_early_horizon'], 'sev_extend_early_horizon')
     v['sev_protected_after_hard_geh'] = _float_opt(out, 'sev_protected_after_hard_geh', 0.0, 200.0)
+    v['sev_scope_budgets'] = _severity_scope_budgets(out['sev_scope_budgets'])
     # RBCONS1: rollback verification
     v['rb_tolerant_diagnostics'] = _bool(out['rb_tolerant_diagnostics'], 'rb_tolerant_diagnostics')
     v['rb_roster_reuse_proof'] = _bool(out['rb_roster_reuse_proof'], 'rb_roster_reuse_proof')

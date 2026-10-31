@@ -1,0 +1,18 @@
+{
+  "initial_focused_failed.log.gz.b64": {
+    "original_bytes": 663591,
+    "original_sha256": "038f58e23db43790e40f1d91af7be29a772326dcc987e1105aa134c1266c6c6a"
+  },
+  "initial_main_failed.log.gz.b64": {
+    "original_bytes": 1151308,
+    "original_sha256": "f93a597f94c5734c23cd1a46ad9d5bf7f13b5820ea1674826862c899ec5b41cb"
+  },
+  "initial_diagfast_failed.log.gz.b64": {
+    "original_bytes": 64498,
+    "original_sha256": "85b59fae2e2a7b5c554331f394d91423aaeb3ce518623b678bb5c8cb802621df"
+  },
+  "initial_audit_failed.log.gz.b64": {
+    "original_bytes": 29004,
+    "original_sha256": "653a932efc50e4909e1d74281c196bc1091c9feefa5eaf1d70c6d816d28cc8f6"
+  }
+}

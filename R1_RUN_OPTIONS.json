@@ -83,10 +83,27 @@
   "sp_drivers": "BOTH",
   "sp_cold_reset_position": 15,
   "sp_min_attribution_coverage": 0.5,
-  "sev_max_single_profile_geh_increase": 25,
-  "sev_max_high_geh_increase": 15,
+  "sev_max_single_profile_geh_increase": 50,
+  "sev_max_high_geh_increase": 30,
   "sev_extend_early_horizon": true,
-  "sev_protected_after_hard_geh": 0,
+  "sev_protected_after_hard_geh": 40,
+  "sev_scope_budgets": {
+    "generation": {
+      "max_severity20_relative_degradation": 0.2,
+      "max_severity30_relative_degradation": 0.25,
+      "max_geh40_net_count_increase": 10
+    },
+    "td": {
+      "max_severity20_relative_degradation": 0.4,
+      "max_severity30_relative_degradation": 0.5,
+      "max_geh40_net_count_increase": 25
+    },
+    "supply": {
+      "max_severity20_relative_degradation": 0.35,
+      "max_severity30_relative_degradation": 0.45,
+      "max_geh40_net_count_increase": 30
+    }
+  },
   "rb_tolerant_diagnostics": true,
   "rb_roster_reuse_proof": true,
   "td_max_survey_degradation": 1.25,

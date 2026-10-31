@@ -1,0 +1,411 @@
+diff --git a/DIAGFAST_V1_RELEASE_MANIFEST.json b/DIAGFAST_V1_RELEASE_MANIFEST.json
+index f30753be073c2c20a03680829570bcb1353f814a..541e54228e8bfd8b0f728138ad69c77978ba4fa4 100644
+--- a/DIAGFAST_V1_RELEASE_MANIFEST.json
++++ b/DIAGFAST_V1_RELEASE_MANIFEST.json
+@@ -24 +24 @@
+-    "R1_RUN_OPTIONS.json": "b25f81a9701bb4b756e503614983515820ec17a9c2e73bd0291174f57afccae6",
++    "R1_RUN_OPTIONS.json": "97583c0a233f592c260d66b060721f6ec710c42c425758a50672e87ceec077e5",
+@@ -53 +53 @@
+-    "r1_15a2_demand_policy_v1.py": "27d3b80da57cc92281ef74afb099523897114bbc84287c07b9e08312322a58a5",
++    "r1_15a2_demand_policy_v1.py": "3cb49ecac8e432fd0f1c42aba98c7ce742db0ee45a71f843afdf722702b3e46b",
+@@ -94 +94 @@
+-    "r1_15a2_severity_relax_v24917.py": "40624acbfc7d981b4c0286789eb2d99797fd566217a136c81a43798370617549",
++    "r1_15a2_severity_relax_v24917.py": "52adb720b040ab9c02d8c887b6f91f59055b4989931f7081d9dc242b0f9b66fd",
+@@ -119,0 +120 @@
++    "tests/test_v24917_geh_relaxation.py": "88dd0d49960a3106b17e456821cd2b5644be2bf052a072343cd723a66fc2da4d",
+@@ -152 +153 @@
+-    "tests/test_v24917_rbcons_audit.py": "482aee6cfd341610d271a811e76df0dfcc955015383726afbb82c4dde0385528",
++    "tests/test_v24917_rbcons_audit.py": "00fc3c1ab7eb5742fc04c8e1643ddd7753a617cae803b47afa74bdbb76df36a2",
+diff --git a/R1_RUN_OPTIONS.json b/R1_RUN_OPTIONS.json
+index dfc2d37343d8cf588115703ac7740b224ae1d739..702a274a912815c26d2c75ffb709269dc9c4fb8b 100644
+--- a/R1_RUN_OPTIONS.json
++++ b/R1_RUN_OPTIONS.json
+@@ -86,2 +86,2 @@
+-  "sev_max_single_profile_geh_increase": 25,
+-  "sev_max_high_geh_increase": 15,
++  "sev_max_single_profile_geh_increase": 50,
++  "sev_max_high_geh_increase": 30,
+@@ -89 +89,18 @@
+-  "sev_protected_after_hard_geh": 0,
++  "sev_protected_after_hard_geh": 40,
++  "sev_scope_budgets": {
++    "generation": {
++      "max_severity20_relative_degradation": 0.2,
++      "max_severity30_relative_degradation": 0.25,
++      "max_geh40_net_count_increase": 10
++    },
++    "td": {
++      "max_severity20_relative_degradation": 0.4,
++      "max_severity30_relative_degradation": 0.5,
++      "max_geh40_net_count_increase": 25
++    },
++    "supply": {
++      "max_severity20_relative_degradation": 0.35,
++      "max_severity30_relative_degradation": 0.45,
++      "max_geh40_net_count_increase": 30
++    }
++  },
+diff --git a/V24917_RUNTIME_MANIFEST.json b/V24917_RUNTIME_MANIFEST.json
+index 42a7511719d9f2dac555b565dc0d7136f634fb66..dfa426d8a7f06067ad592f0585b0cb405bf2f690 100644
+--- a/V24917_RUNTIME_MANIFEST.json
++++ b/V24917_RUNTIME_MANIFEST.json
+@@ -49 +49 @@
+-    "r1_15a2_severity_relax_v24917.py": "40624acbfc7d981b4c0286789eb2d99797fd566217a136c81a43798370617549",
++    "r1_15a2_severity_relax_v24917.py": "52adb720b040ab9c02d8c887b6f91f59055b4989931f7081d9dc242b0f9b66fd",
+@@ -67 +67 @@
+-    "r1_15a2_demand_policy_v1.py": "27d3b80da57cc92281ef74afb099523897114bbc84287c07b9e08312322a58a5",
++    "r1_15a2_demand_policy_v1.py": "3cb49ecac8e432fd0f1c42aba98c7ce742db0ee45a71f843afdf722702b3e46b",
+@@ -82 +82 @@
+-    "DIAGFAST_V1_RELEASE_MANIFEST.json": "4a2706373e130a37c3768bc6e1355658d1c9b56f9830c2b8d6667f1f2411f1c4",
++    "DIAGFAST_V1_RELEASE_MANIFEST.json": "dc0df892d6f9eeac03c17b8d4fe49c49f8945b3a6eeb56f60b0dd756c64e04ec",
+@@ -85 +85 @@
+-    "R1_RUN_OPTIONS.json": "b25f81a9701bb4b756e503614983515820ec17a9c2e73bd0291174f57afccae6",
++    "R1_RUN_OPTIONS.json": "97583c0a233f592c260d66b060721f6ec710c42c425758a50672e87ceec077e5",
+diff --git a/r1_15a2_demand_policy_v1.py b/r1_15a2_demand_policy_v1.py
+index 7f4857176ff6a6a6a3e0fddfd7db15eb805325a5..9890bf56a9c679a4412d3fec534e84af38b9c970 100644
+--- a/r1_15a2_demand_policy_v1.py
++++ b/r1_15a2_demand_policy_v1.py
+@@ -131,2 +131,2 @@ DEFAULTS = {
+-    'sev_max_single_profile_geh_increase': 25.0,
+-    'sev_max_high_geh_increase': 15.0,
++    'sev_max_single_profile_geh_increase': 50.0,
++    'sev_max_high_geh_increase': 30.0,
+@@ -134 +134,12 @@ DEFAULTS = {
+-    'sev_protected_after_hard_geh': 0.0,
++    'sev_protected_after_hard_geh': 40.0,
++    'sev_scope_budgets': {
++        'generation': {'max_severity20_relative_degradation': 0.20,
++                       'max_severity30_relative_degradation': 0.25,
++                       'max_geh40_net_count_increase': 10},
++        'td': {'max_severity20_relative_degradation': 0.40,
++               'max_severity30_relative_degradation': 0.50,
++               'max_geh40_net_count_increase': 25},
++        'supply': {'max_severity20_relative_degradation': 0.35,
++                   'max_severity30_relative_degradation': 0.45,
++                   'max_geh40_net_count_increase': 30},
++    },
+@@ -216,0 +228 @@ ENV = {
++    'sev_scope_budgets': 'R1_SEV_SCOPE_BUDGETS',
+@@ -238,0 +251,30 @@ def _bool(value, name):
++def _severity_scope_budgets(raw):
++    """Validate partial JSON overrides without mutating nested defaults."""
++    if isinstance(raw, str):
++        try:
++            raw = json.loads(raw)
++        except ValueError as exc:
++            raise RuntimeError('R1_RUN_OPTION_INVALID:sev_scope_budgets') from exc
++    defaults = DEFAULTS['sev_scope_budgets']
++    if not isinstance(raw, dict) or set(raw) - set(defaults):
++        raise RuntimeError('R1_RUN_OPTION_INVALID:sev_scope_budgets.scopes')
++    out = copy.deepcopy(defaults)
++    for scope, values in raw.items():
++        if not isinstance(values, dict) or set(values) - set(defaults[scope]):
++            raise RuntimeError('R1_RUN_OPTION_INVALID:sev_scope_budgets.' + scope)
++        for key, value in values.items():
++            try:
++                if key == 'max_geh40_net_count_increase':
++                    parsed = int(str(value))
++                    valid = 0 <= parsed <= 5000
++                else:
++                    parsed = float(str(value).replace(',', '.'))
++                    valid = math.isfinite(parsed) and 0 <= parsed <= 3.0
++            except (ValueError, TypeError, OverflowError):
++                valid = False
++            if not valid:
++                raise RuntimeError('R1_RUN_OPTION_INVALID:sev_scope_budgets.' + scope + '.' + key)
++            out[scope][key] = parsed
++    return out
++
++
+@@ -242 +284 @@ def validate(raw):
+-        if key in raw and raw[key] is not None:
++        if key in raw and (raw[key] is not None or key == 'sev_scope_budgets'):
+@@ -501,0 +544 @@ def _validate_iz(out):
++    v['sev_scope_budgets'] = _severity_scope_budgets(out['sev_scope_budgets'])
+diff --git a/r1_15a2_severity_relax_v24917.py b/r1_15a2_severity_relax_v24917.py
+index 0fb2b13cddcd078bd686a3204a00bfb9e27622ad..a50bb2c89d78cbb0111721889536a3feaa6c4687 100644
+--- a/r1_15a2_severity_relax_v24917.py
++++ b/r1_15a2_severity_relax_v24917.py
+@@ -2,25 +2,10 @@
+-"""SEVRELAX1: relaxed baseline-relative GEH-jump budgets for TG, TD and ADDVAL1.
+-
+-User decision 2026-10-26: the single-profile and high-GEH jump budgets block steps that
+-improve the calibration as a whole (TG cycle 1: 912135 +10.1 at limit 10; TD cycle 1:
+-four profiles +22..24 at limit 15).  The sealed configuration keeps its values (the
+-start-up safety validators check them); the per-call acceptance configurations of
+-Generation, TD and the in-loop ADDVAL1 block get
+-
+-    max_single_profile_geh_increase = max(sealed, sev_max_single_profile_geh_increase)
+-    max_high_geh_increase           = max(sealed, sev_max_high_geh_increase)
+-
+-(R1_RUN_OPTIONS.json; values only ever relax, never tighten).  All other guards
+-(new GEH40 budget, severity20/30 budgets, protected profiles, shared objective) are
+-unchanged.
+-
+-SEVRELAX2 (audit 2026-10-26): the early-exploration acceptance policy of TG and TD ends
+-at ``early_exploration_acceptance.through_outer_cycle`` (12).  From cycle 13 on core
+-silently falls back to the inherited V2.4.9.5 hysteresis contract (max single GEH
+-increase 2.0, at most 3 material new GEH20, TD 1.0) - the relaxed budgets above would
+-vanish and practically every step would be rejected (seen live in cycles 13-18 of an
+-earlier run: MATERIAL_NEW_GEH20_COUNT_EXCEEDED).  With ``sev_extend_early_horizon``
+-(default true) the per-call configuration extends the horizon to
+-``coupled_demand.max_outer_cycles`` so the same budgets apply in every cycle of the run.
+-``sev_protected_after_hard_geh`` (default 0 = unchanged 20) optionally relaxes the
+-protected-profile guard (profile with GEH < 5 must not end at GEH >= 20).
++"""SEVRELAX3: user-approved GEH tradeoff budgets for TG, TD and ADDVAL1.
++
++User decision 2026-10-31: protected profiles may end below GEH40, individual
++jumps up to +50, jumps ending above GEH60 up to +30. Independent scoped
++severity20/30 and net GEH40 budgets are taken from validated run options.
++Only per-call copies are relaxed, by max(sealed, requested). Historical config
++files and GEH diagnostic buckets stay unchanged. A zero protected threshold
++retains the historical limit. Shared objectives, IDP and technical guards are
++unchanged. The earlier horizon extension to coupled_demand.max_outer_cycles
++is retained, avoiding an unintended return to strict legacy gates at cycle 13.
+@@ -33 +18 @@ from typing import Any, Dict, Mapping
+-RELEASE = "R1_15A2_V24917_SEVRELAX2_20261026"
++RELEASE = "R1_15A2_V24917_SEVRELAX3_GEH40_20261031"
+@@ -37 +22 @@ _STATE: Dict[str, Any] = {"installed": False, "applied": 0}
+-def options() -> Dict[str, float]:
++def options() -> Dict[str, Any]:
+@@ -43 +28,2 @@ def options() -> Dict[str, float]:
+-            "protected_hard": float(o.get("sev_protected_after_hard_geh", 0.0) or 0.0)}
++            "protected_hard": float(o.get("sev_protected_after_hard_geh", 0.0) or 0.0),
++            "scope_budgets": o["sev_scope_budgets"]}
+@@ -46 +32 @@ def options() -> Dict[str, float]:
+-def relax(cfg: Dict[str, Any], opts: Mapping[str, float]) -> Dict[str, Any]:
++def relax(cfg: Dict[str, Any], opts: Mapping[str, Any]) -> Dict[str, Any]:
+@@ -63,0 +50,16 @@ def relax(cfg: Dict[str, Any], opts: Mapping[str, float]) -> Dict[str, Any]:
++    for scope, budget in (opts.get("scope_budgets") or {}).items():
++        section = ("supply_route_choice_acceptance" if scope == "supply"
++                   else "early_exploration_acceptance")
++        sec = cfg.get(section)
++        if not isinstance(sec, dict) or sec.get("enabled") is not True:
++            continue
++        scoped = sec.get(scope)
++        if not isinstance(scoped, dict):
++            continue  # An absent policy is not authority to create a new acceptance path.
++        for key, value in budget.items():
++            cur = scoped.get(key)
++            if cur is None:
++                raise ValueError("SEVRELAX3_SCOPED_BUDGET_MISSING:" + scope + "." + key)
++            if value > cur:
++                scoped[key] = value
++                rec[section + "." + scope + "." + key] = [cur, value]
+@@ -102,3 +104,5 @@ def install(print_fn=print) -> Dict[str, Any]:
+-    print_fn("V24917 SEVRELAX2: single-profile GEH jump <= %.0f, high-GEH (>60) jump <= %.0f "
+-             "(TG, TD, ADDVAL1; sealed values only relaxed); early-exploration horizon %s"
+-             % (o["single"], o["high"], "extended to all cycles" if o.get("extend_horizon") else "sealed (12)"))
++    print_fn("V24917 SEVRELAX3: protected after GEH < %.0f, single-profile jump <= %.0f, "
++             "high-GEH (>60) jump <= %.0f (TG, TD, ADDVAL1); horizon %s; scoped budgets %s"
++             % (o.get("protected_hard", 0.0), o["single"], o["high"],
++                "extended to all demand cycles" if o.get("extend_horizon") else "sealed (12)",
++                o.get("scope_budgets", {})))
+diff --git a/tests/test_v24917_geh_relaxation.py b/tests/test_v24917_geh_relaxation.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..0a6ed531831339d09a5b918ef526d0f225755a0f
+--- /dev/null
++++ b/tests/test_v24917_geh_relaxation.py
+@@ -0,0 +1,195 @@
++"""Approved GEH relaxation must reach real guards in every active block/cycle."""
++import copy
++import json
++import math
++from pathlib import Path
++from types import SimpleNamespace
++
++import pytest
++
++import r1_15a2_core as core
++import r1_15a2_demand_policy_v1 as dp
++import r1_15a2_severity_relax_v24917 as sr
++import r1_15a2_step_search_v24917 as step
++
++ROOT = Path(__file__).resolve().parents[1]
++CFG = json.loads((ROOT/'tests/data/EFFECTIVE_CONFIG_RUN_20261025_175302.json').read_text())
++EXPECTED = {'generation': (.20, .25, 10), 'td': (.40, .50, 25), 'supply': (.35, .45, 30)}
++
++
++def approved():
++    return sr.options()
++
++
++def config(scope='GENERATION', cycle=2):
++    cfg = copy.deepcopy(CFG)
++    cfg['runtime_acceptance_outer_cycle'] = cycle
++    cfg['runtime_acceptance_supply_cycle'] = cycle
++    sr.relax(cfg, approved())
++    return cfg
++
++
++def row(key, g):
++    # Positive root of the definition of GEH, preserving the target GEH exactly.
++    obs = 1000.
++    d = (g*g + math.sqrt(g**4 + 16*g*g*obs))/4
++    return {'countlocation_no': key, 'role': 'CALIBRATION', 'observed': obs,
++            'model': obs+d, 'profile_weight': 1.}
++
++
++def background(n=200, g=59.):
++    return [row('B%d'%i, g) for i in range(n)]
++
++
++def test_defaults_file_and_validated_options_agree():
++    actual = dp.load_options(root=ROOT, environ={})
++    assert actual['sev_max_single_profile_geh_increase'] == dp.DEFAULTS['sev_max_single_profile_geh_increase'] == 50.
++    assert actual['sev_max_high_geh_increase'] == dp.DEFAULTS['sev_max_high_geh_increase'] == 30.
++    assert actual['sev_protected_after_hard_geh'] == dp.DEFAULTS['sev_protected_after_hard_geh'] == 40.
++    assert actual['sev_scope_budgets'] == dp.DEFAULTS['sev_scope_budgets']
++
++
++@pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
++@pytest.mark.parametrize('cycle', [1, 13, 100])
++def test_real_builders_apply_all_budgets_without_mutating_parent(monkeypatch, scope, cycle):
++    import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
++    original = copy.deepcopy(CFG)
++    builder = ctrl._td_acceptance_cfg_for_cycle if scope == 'TD' else ctrl._generation_counts_cfg
++    cfg = sr._wrap(builder)(CFG, outer_cycle=cycle)
++    cfg['runtime_acceptance_supply_cycle'] = cycle
++    policy = core.early_exploration_policy(cfg, scope)
++    assert policy is not None
++    key = 'supply' if scope.startswith('SUPPLY') else scope.lower()
++    expected = EXPECTED[key]
++    assert tuple(policy['scoped'][k] for k in ('max_severity20_relative_degradation',
++        'max_severity30_relative_degradation','max_geh40_net_count_increase')) == expected
++    assert policy['severity']['max_single_profile_geh_increase'] == 50.
++    assert policy['severity']['max_high_geh_increase'] == 30.
++    assert policy['severity']['protected_after_hard_geh'] == 40.
++    assert CFG == original
++
++
++@pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
++def test_old_protected_failure_37_39_is_allowed_but_40_remains_hard(scope):
++    before = background(g=50.) + [row('920023', 1.522286391501216)]
++    after = background(g=48.) + [row('920023', 37.393888093353084)]
++    cfg = config(scope)
++    historical = copy.deepcopy(CFG)
++    historical['runtime_acceptance_outer_cycle'] = historical['runtime_acceptance_supply_cycle'] = 2
++    assert not core.protected_profile_guard(before, after, historical, scope)['passes']
++    assert core.protected_profile_guard(before, after, cfg, scope)['passes']
++    assert core.severity_transition_guard(before, after, cfg, scope)['passes']
++    after[-1] = row('920023', 40.000001)
++    assert not core.protected_profile_guard(before, after, cfg, scope)['passes']
++
++
++@pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
++def test_individual_increase_50_has_a_real_upper_boundary(scope):
++    before = background() + [row('X', 5.1)]
++    cfg = config(scope)
++    accepted = core.severity_transition_guard(before, background()+[row('X', 55.1)], cfg, scope)
++    rejected = core.severity_transition_guard(before, background()+[row('X', 55.10001)], cfg, scope)
++    assert accepted['passes']
++    assert 'SINGLE_PROFILE_GEH_INCREASE_EXCEEDED' in rejected['violation_codes']
++
++
++@pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
++def test_already_high_profiles_keep_the_separate_30_limit(scope):
++    cfg = config(scope)
++    before = background(g=120.) + [row('X', 70.)]
++    accepted = core.severity_transition_guard(before, background(g=120.)+[row('X', 100.)], cfg, scope)
++    rejected = core.severity_transition_guard(before, background(g=120.)+[row('X', 100.00001)], cfg, scope)
++    assert accepted['passes']  # GEH60 is diagnostic, not a new absolute cap.
++    assert 'V24912_HIGH_GEH_DELTA_BUDGET_EXCEEDED' in rejected['violation_codes']
++
++
++@pytest.mark.parametrize('scope,limit', [('GENERATION', 10), ('TD', 25), ('SUPPLY_ADDVAL1', 30)])
++def test_net_geh40_budget_is_scoped_and_finite(scope, limit):
++    cfg = config(scope)
++    for n in (limit, limit+1):
++        before = background(g=50.) + [row('N%d'%i,39.9) for i in range(n)]
++        after = background(g=50.) + [row('N%d'%i,40.1) for i in range(n)]
++        actual = core.severity_transition_guard(before, after, cfg, scope)
++        assert actual['geh40_net_count_increase'] == n
++        assert actual['passes'] is (n == limit)
++        assert actual['v24912_policy']['geh40_net_count_budget'] == limit
++
++
++@pytest.mark.parametrize('scope', ['GENERATION', 'TD', 'SUPPLY_ADDVAL1'])
++@pytest.mark.parametrize('metric', ['severity20', 'severity30'])
++def test_each_relative_severity_budget_has_a_real_boundary(scope, metric):
++    cfg = config(scope)
++    policy = core.early_exploration_policy(cfg, scope)
++    limit = policy['scoped']['max_'+metric+'_relative_degradation']
++    # Feed the production rebasing function its raw pre-rebase metrics. This
++    # isolates each budget from the other severity metric's separate limit.
++    for extra in (0., 1e-6):
++        raw = {'before_severity': {'severity20':100.,'severity30':100.,'geh_ge40':10},
++               'after_severity': {'severity20':100.,'severity30':100.,'geh_ge40':10},
++               'violation_codes': [], 'single_profile_geh_increase_violations': [],
++               'absolute_geh_ceiling_violations': []}
++        raw['after_severity'][metric] = 100.*(1.+limit+extra)
++        result = core.rebase_severity_guard_v24912(raw, policy['severity'], policy['scoped'])
++        assert result['passes'] is (extra == 0.)
++
++
++def test_step_planning_and_final_core_gate_use_the_same_relaxed_profile_policy():
++    from r1_15a2_safety_v245 import adapter_config_scope
++    before = background(g=50.) + [row('920023', 1.522286391501216)]
++    after = background(g=48.) + [row('920023', 37.393888093353084)]
++    adapter = SimpleNamespace(cfg=copy.deepcopy(CFG))
++    old = adapter.cfg
++    with adapter_config_scope(adapter, config()):
++        gate, holder = step._gate_fn(adapter)
++        holder['before'] = {}
++        planned = gate(before, after)
++        final = core.acceptance_decision(before, after, {}, {}, adapter.cfg, 'GENERATION')
++        assert planned == final
++        assert final['accepted']
++    assert adapter.cfg is old
++
++
++def test_global_objective_and_observation_authority_remain_required():
++    cfg = config('SUPPLY_ADDVAL1')
++    before = background(40,g=50.)
++    worse = background(40,g=51.)
++    decision = core.acceptance_decision(before,worse,{},{},cfg,'SUPPLY_ADDVAL1')
++    assert not decision['accepted']
++    assert 'CAL_GEH_OBJECTIVE_NOT_IMPROVED' in decision['reasons']
++    improved = background(40,g=48.)
++    improved[0]['observed'] += 1
++    decision = core.acceptance_decision(before,improved,{},{},cfg,'SUPPLY_ADDVAL1')
++    assert 'OBSERVATION_AUTHORITY_CHANGED' in decision['reasons']
++
++
++def test_relaxation_never_tightens_explicitly_more_permissive_parent():
++    cfg = config()
++    cfg['early_exploration_acceptance']['severity']['max_single_profile_geh_increase'] = 80.
++    cfg['early_exploration_acceptance']['generation']['max_severity20_relative_degradation'] = .70
++    sr.relax(cfg, approved())
++    assert cfg['early_exploration_acceptance']['severity']['max_single_profile_geh_increase'] == 80.
++    assert cfg['early_exploration_acceptance']['generation']['max_severity20_relative_degradation'] == .70
++
++
++def test_partial_scope_override_and_environment_do_not_mutate_defaults(tmp_path):
++    original = copy.deepcopy(dp.DEFAULTS)
++    override = {'generation': {'max_severity20_relative_degradation':.3}}
++    o = dp.load_options(root=tmp_path,environ={'R1_SEV_SCOPE_BUDGETS':json.dumps(override)})
++    assert o['sev_scope_budgets']['generation']['max_severity20_relative_degradation'] == .3
++    assert o['sev_scope_budgets']['td'] == dp.DEFAULTS['sev_scope_budgets']['td']
++    o['sev_scope_budgets']['td']['max_geh40_net_count_increase'] = 999
++    assert dp.DEFAULTS == original
++    assert override == {'generation': {'max_severity20_relative_degradation':.3}}
++
++
++@pytest.mark.parametrize('raw', [None, [], {'invalid':{}}, {'td':[]}, {'td':{'wrong':1}},
++    {'td':{'max_severity20_relative_degradation':float('nan')}},
++    {'td':{'max_severity30_relative_degradation':float('inf')}},
++    {'td':{'max_severity20_relative_degradation':-.1}},
++    {'td':{'max_severity30_relative_degradation':3.1}},
++    {'td':{'max_geh40_net_count_increase':-1}},
++    {'td':{'max_geh40_net_count_increase':2.5}},
++    {'td':{'max_geh40_net_count_increase':True}}, '{broken'])
++def test_invalid_scope_budgets_fail_closed(raw):
++    with pytest.raises(RuntimeError,match='R1_RUN_OPTION_INVALID:sev_scope_budgets'):
++        dp.validate({'sev_scope_budgets':raw})
+diff --git a/tests/test_v24917_rbcons_audit.py b/tests/test_v24917_rbcons_audit.py
+index 22727c663a2c3e2bb13cdea75fa2c970299cef12..cdbea01e3b53b5ace4ffb3a7a6007c7c38094775 100644
+--- a/tests/test_v24917_rbcons_audit.py
++++ b/tests/test_v24917_rbcons_audit.py
+@@ -83 +83 @@ def test_run_options_validate_new_keys():
+-    assert o["sev_protected_after_hard_geh"] == 0.0
++    assert o["sev_protected_after_hard_geh"] == 40.0

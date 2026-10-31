@@ -80,7 +80,7 @@ def test_run_options_validate_new_keys():
     import r1_15a2_demand_policy_v1 as dp
     o = dp.load_options(root=ROOT)
     assert o["sev_extend_early_horizon"] is True
-    assert o["sev_protected_after_hard_geh"] == 0.0
+    assert o["sev_protected_after_hard_geh"] == 40.0
     assert o["rb_tolerant_diagnostics"] is True and o["rb_roster_reuse_proof"] is True
 
 
