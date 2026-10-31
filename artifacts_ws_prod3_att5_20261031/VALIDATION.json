@@ -1,0 +1,151 @@
+{
+  "baseline_remote_commit": "1dc217e7205e840b71377a3a0ae4fcebbcb80e09",
+  "baseline_local_commit": "c0099ede6e5ccee059dac7cde8986813ecfa6c93",
+  "baseline_tree": "1b68c37f1e36d104a6d5a64fd92c2aa7530816ab",
+  "targeted": {
+    "passed": 134,
+    "additional_end_to_end_passed": 4
+  },
+  "live_visum_tested": false,
+  "DIAGFAST_V1_BASE_MANIFEST.json": {
+    "files": 1059,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+    "files": 180,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "V24917_RUNTIME_MANIFEST.json": {
+    "files": 91,
+    "all_hashes_match": true,
+    "baseline_coverage_preserved": true
+  },
+  "option_changes": {
+    "mg_min_ratio": {
+      "before": 0.75,
+      "after": 0.5
+    },
+    "mg_max_ratio": {
+      "before": 2.5,
+      "after": 3.0
+    }
+  },
+  "work_service_role_bands": {
+    "PROD": [
+      0.5,
+      3.0
+    ],
+    "ATT": [
+      0.5,
+      5.0
+    ]
+  },
+  "supplymix_retained": {
+    "groups": 24,
+    "edges": 240,
+    "trials": 4
+  },
+  "suites": {
+    "release": "GENFIX2",
+    "offline_only": true,
+    "live_visum_tested": false,
+    "suites": [
+      {
+        "suite": "main",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/ws_prod3_att5_20261031/source/tests"
+        ],
+        "returncode": 0,
+        "seconds": 43.524
+      },
+      {
+        "suite": "diagfast",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/ws_prod3_att5_20261031/source/diagfast_tests"
+        ],
+        "returncode": 0,
+        "seconds": 21.165
+      },
+      {
+        "suite": "audit_genfix2",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/ws_prod3_att5_20261031/source/genfix2_audit_tests"
+        ],
+        "returncode": 0,
+        "seconds": 0.766
+      }
+    ],
+    "all_passed": true,
+    "output": "/workspace/work/ws_prod3_att5_20261031/checks_verified",
+    "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+  },
+  "suite_summaries": {
+    "main": "2458 passed, 4 skipped in 42.99s",
+    "diagfast": "189 passed in 20.92s",
+    "audit_genfix2": "18 passed in 0.57s"
+  },
+  "compile": {
+    "command": [
+      "/workspace/.venvs/r1/bin/python",
+      "-m",
+      "py_compile",
+      "r1_15a2_demand_policy_v1.py",
+      "r1_15a2_fresh_universal_v24917.py",
+      "r1_15a2_mobility_guard_v24917.py",
+      "r1_15a2_mobility_zone_v24917.py",
+      "r1_15a2_targeted_generation_v24917.py",
+      "r1_15a2_v24917_runtime.py",
+      "tests/test_v24917_aligned_bounds.py",
+      "tests/test_v24917_fresh_universal_tdperf.py",
+      "tests/test_v24917_mobility_guard.py",
+      "tests/test_v24917_targeted_catchup.py",
+      "genfix2_audit_tests/test_audit_regressions.py"
+    ],
+    "returncode": 0,
+    "output": ""
+  },
+  "patch": {
+    "decoded_sha256": "e5abb60171548cd51f1bbc131ff19c435f6fdf194cc7a34e3fcea416b8d37af2",
+    "gzip_sha256": "25bb1b37fd4c572307f28ad1548be9d5e9870f80a6a1cc2569cd60dfee4a0d6c",
+    "decoded_bytes": 51553
+  },
+  "implementation_sha256": {
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "3c019ccceec3ac35edd22e61dee5e4ea7316229bbbdef48420cc587df2153f21",
+    "R1_RUN_OPTIONS.json": "7131aa629eb511f02e957bd1c161a2cd2002025304fba96e8997c3a387680b7e",
+    "V24917_RUNTIME_MANIFEST.json": "90e15d03a42f84eeba1fae9b8376c74314cd39c195d7257b62d1b35010dac5a8",
+    "genfix2_audit_tests/test_audit_regressions.py": "45afc0e0113b14b8c3e4eda5a520a3ccf768f048bfc3e5262bb1f23a61dd5b3d",
+    "r1_15a2_demand_policy_v1.py": "3770c01e89b47fae60c6119eb41aa3b89a2445c547d73ce6c473810cd906454b",
+    "r1_15a2_fresh_universal_v24917.py": "588b96b2dfe2ef3e174f8121c4f56f35d3dc09e14c8677b26f4499b4cdb00b2e",
+    "r1_15a2_mobility_guard_v24917.py": "e079d63af6cafe7dc371689e769de0924d4c68d090ee08743a6e03803b2e5120",
+    "r1_15a2_mobility_zone_v24917.py": "7d664e8022ba6e95c3a11a458edd046b412ee1b0b460ec9e05cfdd1f3b7372f4",
+    "r1_15a2_targeted_generation_v24917.py": "13f4fd2529671f663836db9ed43e9ab5fc88cd0cbaa97e5c4cc1b8c2049aec85",
+    "r1_15a2_v24917_runtime.py": "50c5e53619b6d223fb33e673065e52daf176ee545c7f1f2f8f4784e760ac44a2",
+    "tests/test_v24917_aligned_bounds.py": "f60172909984016af32785ff7285e42a5da42ca65ce5102ab9ac4b830d6b9e95",
+    "tests/test_v24917_fresh_universal_tdperf.py": "b1640c8ccb681729ad05e4a2a138df68ae2233458db03f5b38afbf0979504ab2",
+    "tests/test_v24917_mobility_guard.py": "ba024c5f5e47b720ce3299d7025ee1c66e666c610c2b2041482756c6474c7254",
+    "tests/test_v24917_targeted_catchup.py": "e3d9f5815f0dde604e6ea7a90175fb67627748fc4412d7484db384035bcab1ba"
+  },
+  "archived_log_normalization": "Trailing whitespace removed from archived text logs; numeric outputs unchanged.",
+  "patch_reverse_check": "PASS",
+  "diff_check": "PASS"
+}

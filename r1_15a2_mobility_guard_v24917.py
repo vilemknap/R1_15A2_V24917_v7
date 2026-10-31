@@ -2,9 +2,9 @@
 """MOBILITY2 / GENFIX2: explicit production envelope, before and after realization.
 
 The existing reference R = sum(FP)/sum(FP/ADD_PROD) is retained.
-The WORK/SERVICE production band is configured [0.75,2.5] in the universal
+The WORK/SERVICE production band is configured [0.5,3.0] in the universal
 fresh release. It is NOT an independent survey coefficient validation.
-The separate final W/S domestic ADD_ATT coefficient fence [0.75,4.0]
+The separate final W/S domestic ADD_ATT coefficient fence [0.5,5.0]
 checks zonal write/readback, NEVER the production/survey mobility ratio.
 For mixed-sign log steps R(s) is convex, not monotone: test its interior minimum
 as well as both endpoints. Every final candidate is checked again after masks,
@@ -15,13 +15,13 @@ from __future__ import annotations
 import math
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
-RELEASE = "R1_15A2_V24917_MOBILITY2_W_S_ATTR_FINAL_GATE_V2_20261030"
+RELEASE = "R1_15A2_V24917_MOBILITY2_WS_P05_3_A05_5_20261031"
 GROUPS = ("E_C", "E_noC", "noE_C", "noE_noC", "stud")
 FP_ATTRS = {"WORK": ["FP_1_WORK_%s" % g for g in GROUPS],
             "SERVICE": ["FP_2_SERVICE_%s" % g for g in GROUPS]}
 MULT_ATTR = {"WORK": "ADD_PROD_W", "SERVICE": "ADD_PROD_S"}
 ATTRACTION_ATTR = {"WORK": "ADD_ATT_W", "SERVICE": "ADD_ATT_S"}
-ATTRACTION_BAND = (0.75, 4.0)
+ATTRACTION_BAND = (0.5, 5.0)
 EPS = 1.0e-12
 CERT = "v24917_mobility2_certificate"
 
@@ -30,8 +30,8 @@ def options():
     import r1_15a2_demand_policy_v1 as dp
     o = dp.load_options()
     return {"enabled": bool(o.get("mg_enabled", True)),
-            "lo": float(o.get("mg_min_ratio", .75)),
-            "hi": float(o.get("mg_max_ratio", 2.0)),
+            "lo": float(o.get("mg_min_ratio", .5)),
+            "hi": float(o.get("mg_max_ratio", 3.0)),
             "ws_attraction_coefficient_band": list(ATTRACTION_BAND)}
 
 

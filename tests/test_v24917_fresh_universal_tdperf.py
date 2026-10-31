@@ -34,8 +34,8 @@ def valid_options():
             "long_composite_td_enabled": True,
             "td_policy": "ALWAYS", "td_every_n_cycles": 1,
             "td_during_catchup": True,
-            "mg_enabled": True, "mg_min_ratio": 0.75,
-            "mg_max_ratio": 2.5}
+            "mg_enabled": True, "mg_min_ratio": 0.5,
+            "mg_max_ratio": 3.0}
 
 
 def valid_cfg():
@@ -53,8 +53,8 @@ def runtime_status():
         "demand_policy": {"installed": True, "note": {
             "options": {"td_policy": "ALWAYS", "td_every_n_cycles": 1,
                         "td_during_catchup": True, "td_first_cycle": True,
-                        "mg_enabled": True, "mg_min_ratio": 0.75,
-                        "mg_max_ratio": 2.5}}},
+                        "mg_enabled": True, "mg_min_ratio": 0.5,
+                        "mg_max_ratio": 3.0}}},
         "tdjoint1": {"installed": True, "release": "TDJOINT",
                      "options": {"enabled": True, "long_enabled": True,
                                  "school_enabled": True, "inner_mode": "DYNAMIC"}},
@@ -167,7 +167,7 @@ def test_options_file_explicitly_schedules_native_td_every_cycle():
     assert options["td_inner_mode"] == "DYNAMIC"
     assert options["td_count_weight"] == 0.6
     assert options["td_inner_max_evaluations"] == 180
-    assert options["mg_max_ratio"] == 2.5
+    assert options["mg_max_ratio"] == 3.0
 
 
 def test_actual_demand_policy_runs_td_for_every_one_of_100_cycles_even_in_catchup(monkeypatch):
@@ -217,7 +217,8 @@ def test_environment_overrides_cannot_silently_make_this_fresh_run_sparse():
 
 
 @pytest.mark.parametrize("field,value", [
-    ("mg_max_ratio", 2.0), ("mg_min_ratio", 0.6),
+    ("mg_max_ratio", 2.0), ("mg_max_ratio", 2.5),
+    ("mg_min_ratio", 0.6), ("mg_min_ratio", 0.75),
     ("mg_enabled", False),
 ])
 def test_fresh_start_rejects_inconsistent_ws_production_mobility_band(field, value):
@@ -227,7 +228,8 @@ def test_fresh_start_rejects_inconsistent_ws_production_mobility_band(field, val
         fresh.validate_fresh_config(valid_cfg(), opts)
 
 
-@pytest.mark.parametrize("role,upper", [("PROD", 2.0), ("ATT", 2.0)])
+@pytest.mark.parametrize("role,upper", [("PROD", 2.0), ("ATT", 2.0),
+                                        ("PROD", 2.5), ("ATT", 4.0)])
 def test_fresh_start_rejects_old_generation_upper_bounds(role, upper):
     cfg = valid_cfg()
     cfg["v24917_targeted_generation"]["envelope"]["domestic_hard_by_role"][role][1] = upper
@@ -240,6 +242,15 @@ def test_runtime_rejects_environment_override_of_ws_mobility_band():
     status["v24917"]["demand_policy"]["note"]["options"]["mg_max_ratio"] = 2.0
     with pytest.raises(RuntimeError, match="EFFECTIVE_MOBILITY2_WS_PRODUCTION_BAND_MISMATCH"):
         fresh.verify_runtime_status(status)
+
+
+@pytest.mark.parametrize("role", ["PROD", "ATT"])
+@pytest.mark.parametrize("band", ["domestic_hard_by_role", "refine_domestic_soft_by_role"])
+def test_fresh_start_rejects_old_ws_floor(role, band):
+    cfg = valid_cfg()
+    cfg["v24917_targeted_generation"]["envelope"][band][role][0] = 0.75
+    with pytest.raises(RuntimeError, match="WORK_SERVICE_PA_BOUNDS_NOT_INSTALLED"):
+        fresh.validate_fresh_config(cfg, valid_options())
 
 
 def native_adapter(runs, *, native_fails=False):
@@ -354,8 +365,8 @@ def test_relocate_parent_lock_workspace_without_touching_source(tmp_path):
     assert installed["fresh_universal"]["fresh_contract"]["accepted_count_start"] == 0
     assert installed["fresh_universal"]["fresh_contract"]["td_skipping_allowed"] is False
     assert installed["fresh_universal"]["fresh_contract"]["td_policy"] == "ALWAYS"
-    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_prod_bounds"] == [0.75, 2.5]
-    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_att_bounds"] == [0.75, 4.0]
+    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_prod_bounds"] == [0.5, 3.0]
+    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_att_bounds"] == [0.5, 5.0]
     assert installed["fresh_universal"]["path_epoch"]["native_export_only"]
     assert (workspace / "FRESH_UNIVERSAL_BOOTSTRAP_AUTHORITY.json").exists()
     assert not (original.parent/".R1_15A2_V16.lock").exists()

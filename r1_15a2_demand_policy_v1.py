@@ -148,8 +148,8 @@ DEFAULTS = {
     'rb_roster_reuse_proof': True,
     'td_max_survey_degradation': 1.25,
     'mg_enabled': True,
-    'mg_min_ratio': 0.75,
-    'mg_max_ratio': 2.0,
+    'mg_min_ratio': 0.5,
+    'mg_max_ratio': 3.0,
 }
 ENV = {
     'td_policy': 'R1_TD_POLICY',

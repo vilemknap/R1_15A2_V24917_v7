@@ -206,11 +206,14 @@ def test_A11_enabled_mobility_guard_error_must_block_candidate(monkeypatch,tmp_p
 
 def test_A12_parent_fallback_must_also_enforce_mobility(monkeypatch,tmp_path):
     ad,diag,context,zr=_design_fixture(monkeypatch,fit_raises=True)
+    # The fallback proposes +50%; start high enough to cross the new cap.
+    zr[:] = zones(2.4)
     result=ad.generation_design(diag,tmp_path)
     r_after=mg.ratio(mg.zone_productions(zr,'WORK'),{r['zone_no']:r['log_step'] for r in result['projection'].rows})
     record('A12_fallback_bypasses_mobility',{'v24917':result['v24917'],'ratio_of_returned_proposal':r_after})
-    # Universal fresh WORK/SERVICE mobility ceiling is 2.5, including fallback.
-    assert r_after <= 2.5+1e-12
+    # Raw 2.4 * 1.5 = 3.6 must be attenuated even after the fitted design fails.
+    assert r_after <= 3.0+1e-12
+    assert r_after == pytest.approx(3.0)
 
 
 def test_A13_step_prediction_must_describe_guarded_candidate(monkeypatch,tmp_path):
