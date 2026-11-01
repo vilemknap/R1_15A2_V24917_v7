@@ -1,0 +1,38 @@
+{
+  "sources": [
+    {
+      "label": "population_students",
+      "filename": "Prognozy_počty obyvatel a žáků a studentů.xlsx",
+      "file_id": "file_0000000040b881f481b4d9fae6a741a5",
+      "size_bytes": 8824114,
+      "sha256": "8d98bf4a900d8b246bbfa219388b76d857c654fe68f912e13874e1c872ff044e"
+    },
+    {
+      "label": "jobs",
+      "filename": "Prognozy_pracovni mista.xlsx",
+      "file_id": "file_00000000aa28820aa8d53ce1b2a9bb45",
+      "size_bytes": 8481272,
+      "sha256": "3d11d35324618a205eddd958baa1f6f9236f6fc4812a767f594e985f3737b92d"
+    },
+    {
+      "label": "overnights",
+      "filename": "Prognoza_PRENOC.xlsx",
+      "file_id": "file_00000000c4048246ae1e334c8fa12526",
+      "size_bytes": 8326906,
+      "sha256": "0d26dc3653c7327c4979b0729723cd5054a5d944756178581a316c7401c0e0d0"
+    },
+    {
+      "label": "economic_activity",
+      "filename": "Prognozy_ekonomicka aktivita.xlsx",
+      "file_id": "file_000000008b58821083495557632ed147",
+      "size_bytes": 9573364,
+      "sha256": "23fa229d8dc947434d0a1a3b50cbb2aadcc7e1a80945022593560b7c4e869056"
+    }
+  ],
+  "master_source": {
+    "filename": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2040_v4.xlsx",
+    "file_id": "file_0000000060e481f4ac458b6406cf43b6",
+    "sha256": "e7e4e9fe6b1780b223c99444800ff56694a18b0041f853e00cfa0ce0610e6035"
+  },
+  "normalized_payload_sha256": "c3b69cf24b22f2aa1fb4bab63b0c981ad9bbf6ad12bea9cfa4d45c4b90761082"
+}

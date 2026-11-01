@@ -1,0 +1,23 @@
+{
+  "status": "PASS_AUDIT_REPRODUCIBILITY",
+  "source_quality_status": "COMPLETED_WITH_SOURCE_WARNINGS",
+  "integrity_checks_passed": 13,
+  "source_quality_checks_failed": [
+    "names_agree_with_master:economic_activity:opr_Prog E_C, E_nC, nE_C, nE_nC"
+  ],
+  "source_warning_not_hidden": true,
+  "replay_command": [
+    "python",
+    "artifacts_forecast_source_coverage_20261101/audit.py.txt",
+    "--package",
+    "artifacts_forecast_source_coverage_20261101"
+  ],
+  "replay_exit_code": 0,
+  "replay_byte_identical_reports": true,
+  "original_tracked_files_unchanged": true,
+  "scenario_and_runtime_manifest_files_unchanged": true,
+  "no_scenario_input_changes": true,
+  "live_visum": "NOT_RUN",
+  "runtime_tests": "NOT_RUN_READ_ONLY_AUDIT",
+  "base_remote_commit": "0d99b3e419b9584d55ce488c65ce7da670e57834"
+}

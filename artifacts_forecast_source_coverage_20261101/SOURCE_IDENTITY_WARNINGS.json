@@ -1,0 +1,32 @@
+[
+  {
+    "label": "economic_activity",
+    "sheet": "opr_Prog E_C, E_nC, nE_C, nE_nC",
+    "name_variants": [
+      {
+        "No": 624,
+        "master_name": "Neusiedl am See",
+        "source_name": "Burgenland"
+      }
+    ],
+    "ambiguous_zone_rows_excluded": {},
+    "unmapped_rows_excluded": [],
+    "unavailable_zone_nos": []
+  },
+  {
+    "label": "economic_activity",
+    "sheet": "Prognoza EA + EN",
+    "name_variants": [],
+    "ambiguous_zone_rows_excluded": {
+      "220": [
+        405,
+        678
+      ]
+    },
+    "unmapped_rows_excluded": [],
+    "unavailable_zone_nos": [
+      220,
+      624
+    ]
+  }
+]

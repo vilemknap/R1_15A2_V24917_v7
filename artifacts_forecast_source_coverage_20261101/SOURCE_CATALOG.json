@@ -1,0 +1,1330 @@
+[
+  {
+    "label": "population_students",
+    "source_filename": "Prognozy_počty obyvatel a žáků a studentů.xlsx",
+    "source_file_id": "file_0000000040b881f481b4d9fae6a741a5",
+    "source_sha256": "8d98bf4a900d8b246bbfa219388b76d857c654fe68f912e13874e1c872ff044e",
+    "sheet": "Prognoza",
+    "header_row": 1,
+    "key_mode": "SOURCE_ID",
+    "columns": [
+      {
+        "index": 59,
+        "column": "BH",
+        "header": "NUM_PM_SMEAR",
+        "field": "NUM_PM_SMEAR"
+      },
+      {
+        "index": 60,
+        "column": "BI",
+        "header": "NUM_PM",
+        "field": "NUM_PM"
+      },
+      {
+        "index": 61,
+        "column": "BJ",
+        "header": "NUM_PUP_PLACES",
+        "field": "NUM_PUP_PLACES"
+      },
+      {
+        "index": 62,
+        "column": "BK",
+        "header": "NUM_STUD_VS_PLACES",
+        "field": "NUM_STUD_VS_PLACES"
+      },
+      {
+        "index": 65,
+        "column": "BN",
+        "header": "NUM_VS",
+        "field": "NUM_VS"
+      },
+      {
+        "index": 67,
+        "column": "BP",
+        "header": "NUM_PUP",
+        "field": "NUM_PUP"
+      },
+      {
+        "index": 68,
+        "column": "BQ",
+        "header": "POP_ZP",
+        "field": "POP_ZP"
+      },
+      {
+        "index": 90,
+        "column": "CM",
+        "header": "AV_INCOME",
+        "field": "AV_INCOME"
+      },
+      {
+        "index": 108,
+        "column": "DE",
+        "header": "E_C_2040",
+        "field": "E_C_2040"
+      },
+      {
+        "index": 109,
+        "column": "DF",
+        "header": "E_C_2050",
+        "field": "E_C_2050"
+      },
+      {
+        "index": 112,
+        "column": "DI",
+        "header": "E_NOC_2040",
+        "field": "E_NC_2040"
+      },
+      {
+        "index": 113,
+        "column": "DJ",
+        "header": "E_NOC_2050",
+        "field": "E_NC_2050"
+      },
+      {
+        "index": 135,
+        "column": "EF",
+        "header": "NOE_C_2040",
+        "field": "NE_C_2040"
+      },
+      {
+        "index": 136,
+        "column": "EG",
+        "header": "NOE_C_2050",
+        "field": "NE_C_2050"
+      },
+      {
+        "index": 224,
+        "column": "HQ",
+        "header": "NOE_NOC_2040",
+        "field": "NE_NC_2040"
+      },
+      {
+        "index": 225,
+        "column": "HR",
+        "header": "NOE_NOC_2050",
+        "field": "NE_NC_2050"
+      },
+      {
+        "index": 231,
+        "column": "HX",
+        "header": "NUM_PUP_2040",
+        "field": "NUM_PUP_2040"
+      },
+      {
+        "index": 232,
+        "column": "HY",
+        "header": "NUM_PUP_2050",
+        "field": "NUM_PUP_2050"
+      },
+      {
+        "index": 247,
+        "column": "IN",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 248,
+        "column": "IO",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 308,
+        "column": "KW",
+        "header": "E_C",
+        "field": "E_C"
+      },
+      {
+        "index": 309,
+        "column": "KX",
+        "header": "E_nC",
+        "field": "E_NC"
+      },
+      {
+        "index": 310,
+        "column": "KY",
+        "header": "nE_C",
+        "field": "NE_C"
+      },
+      {
+        "index": 311,
+        "column": "KZ",
+        "header": "nE_nC",
+        "field": "NE_NC"
+      },
+      {
+        "index": 319,
+        "column": "LH",
+        "header": "POP_ZP_2025",
+        "field": "POP_ZP_2025"
+      },
+      {
+        "index": 323,
+        "column": "LL",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 325,
+        "column": "LN",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 327,
+        "column": "LP",
+        "header": "POP_ZP_2060",
+        "field": "POP_ZP_2060"
+      },
+      {
+        "index": 329,
+        "column": "LR",
+        "header": "POP_ZP_2070",
+        "field": "POP_ZP_2070"
+      },
+      {
+        "index": 330,
+        "column": "LS",
+        "header": "NUM_PUP",
+        "field": "NUM_PUP"
+      },
+      {
+        "index": 331,
+        "column": "LT",
+        "header": "NUM_VS",
+        "field": "NUM_VS"
+      },
+      {
+        "index": 332,
+        "column": "LU",
+        "header": "NUM_PUP_2025",
+        "field": "NUM_PUP_2025"
+      },
+      {
+        "index": 335,
+        "column": "LX",
+        "header": "NUM_PUP_2040",
+        "field": "NUM_PUP_2040"
+      },
+      {
+        "index": 336,
+        "column": "LY",
+        "header": "NUM_PUP_2050",
+        "field": "NUM_PUP_2050"
+      },
+      {
+        "index": 337,
+        "column": "LZ",
+        "header": "NUM_PUP_2060",
+        "field": "NUM_PUP_2060"
+      },
+      {
+        "index": 338,
+        "column": "MA",
+        "header": "NUM_PUP_2070",
+        "field": "NUM_PUP_2070"
+      },
+      {
+        "index": 339,
+        "column": "MB",
+        "header": "NUM_VS_2025",
+        "field": "NUM_VS_2025"
+      },
+      {
+        "index": 342,
+        "column": "ME",
+        "header": "NUM_VS_2040",
+        "field": "NUM_VS_2040"
+      },
+      {
+        "index": 343,
+        "column": "MF",
+        "header": "NUM_VS_2050",
+        "field": "NUM_VS_2050"
+      },
+      {
+        "index": 344,
+        "column": "MG",
+        "header": "NUM_VS_2060",
+        "field": "NUM_VS_2060"
+      },
+      {
+        "index": 345,
+        "column": "MH",
+        "header": "NUM_VS_2070",
+        "field": "NUM_VS_2070"
+      },
+      {
+        "index": 348,
+        "column": "MK",
+        "header": "POP_CENTRALITY_TERM_2025",
+        "field": "POP_CENTRALITY_TERM_2025"
+      },
+      {
+        "index": 351,
+        "column": "MN",
+        "header": "POP_CENTRALITY_TERM_2040",
+        "field": "POP_CENTRALITY_TERM_2040"
+      },
+      {
+        "index": 352,
+        "column": "MO",
+        "header": "POP_CENTRALITY_TERM_2050",
+        "field": "POP_CENTRALITY_TERM_2050"
+      },
+      {
+        "index": 353,
+        "column": "MP",
+        "header": "POP_CENTRALITY_TERM_2060",
+        "field": "POP_CENTRALITY_TERM_2060"
+      },
+      {
+        "index": 354,
+        "column": "MQ",
+        "header": "POP_CENTRALITY_TERM_2070",
+        "field": "POP_CENTRALITY_TERM_2070"
+      }
+    ],
+    "name_variants": [],
+    "ambiguous_zone_rows_excluded": {},
+    "unmapped_rows_excluded": [],
+    "unavailable_zone_nos": []
+  },
+  {
+    "label": "jobs",
+    "source_filename": "Prognozy_pracovni mista.xlsx",
+    "source_file_id": "file_00000000aa28820aa8d53ce1b2a9bb45",
+    "source_sha256": "3d11d35324618a205eddd958baa1f6f9236f6fc4812a767f594e985f3737b92d",
+    "sheet": "PROGNOZA zde",
+    "header_row": 2,
+    "key_mode": "SOURCE_ID",
+    "columns": [
+      {
+        "index": 59,
+        "column": "BH",
+        "header": "NUM_PM_SMEAR",
+        "field": "NUM_PM_SMEAR"
+      },
+      {
+        "index": 60,
+        "column": "BI",
+        "header": "NUM_PM",
+        "field": "NUM_PM"
+      },
+      {
+        "index": 61,
+        "column": "BJ",
+        "header": "NUM_PUP_PLACES",
+        "field": "NUM_PUP_PLACES"
+      },
+      {
+        "index": 62,
+        "column": "BK",
+        "header": "NUM_STUD_VS_PLACES",
+        "field": "NUM_STUD_VS_PLACES"
+      },
+      {
+        "index": 65,
+        "column": "BN",
+        "header": "NUM_VS",
+        "field": "NUM_VS"
+      },
+      {
+        "index": 67,
+        "column": "BP",
+        "header": "NUM_PUP",
+        "field": "NUM_PUP"
+      },
+      {
+        "index": 68,
+        "column": "BQ",
+        "header": "POP_ZP",
+        "field": "POP_ZP"
+      },
+      {
+        "index": 90,
+        "column": "CM",
+        "header": "AV_INCOME",
+        "field": "AV_INCOME"
+      },
+      {
+        "index": 108,
+        "column": "DE",
+        "header": "E_C_2040",
+        "field": "E_C_2040"
+      },
+      {
+        "index": 109,
+        "column": "DF",
+        "header": "E_C_2050",
+        "field": "E_C_2050"
+      },
+      {
+        "index": 112,
+        "column": "DI",
+        "header": "E_NOC_2040",
+        "field": "E_NC_2040"
+      },
+      {
+        "index": 113,
+        "column": "DJ",
+        "header": "E_NOC_2050",
+        "field": "E_NC_2050"
+      },
+      {
+        "index": 135,
+        "column": "EF",
+        "header": "NOE_C_2040",
+        "field": "NE_C_2040"
+      },
+      {
+        "index": 136,
+        "column": "EG",
+        "header": "NOE_C_2050",
+        "field": "NE_C_2050"
+      },
+      {
+        "index": 224,
+        "column": "HQ",
+        "header": "NOE_NOC_2040",
+        "field": "NE_NC_2040"
+      },
+      {
+        "index": 225,
+        "column": "HR",
+        "header": "NOE_NOC_2050",
+        "field": "NE_NC_2050"
+      },
+      {
+        "index": 231,
+        "column": "HX",
+        "header": "NUM_PUP_2040",
+        "field": "NUM_PUP_2040"
+      },
+      {
+        "index": 232,
+        "column": "HY",
+        "header": "NUM_PUP_2050",
+        "field": "NUM_PUP_2050"
+      },
+      {
+        "index": 247,
+        "column": "IN",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 248,
+        "column": "IO",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 308,
+        "column": "KW",
+        "header": "E_C",
+        "field": "E_C"
+      },
+      {
+        "index": 309,
+        "column": "KX",
+        "header": "E_nC",
+        "field": "E_NC"
+      },
+      {
+        "index": 310,
+        "column": "KY",
+        "header": "nE_C",
+        "field": "NE_C"
+      },
+      {
+        "index": 311,
+        "column": "KZ",
+        "header": "nE_nC",
+        "field": "NE_NC"
+      },
+      {
+        "index": 318,
+        "column": "LG",
+        "header": "POP_ZP_2025",
+        "field": "POP_ZP_2025"
+      },
+      {
+        "index": 322,
+        "column": "LK",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 324,
+        "column": "LM",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 326,
+        "column": "LO",
+        "header": "POP_ZP_2060",
+        "field": "POP_ZP_2060"
+      },
+      {
+        "index": 349,
+        "column": "ML",
+        "header": "NUM_PM_SMEAR_2025",
+        "field": "NUM_PM_SMEAR_2025"
+      },
+      {
+        "index": 352,
+        "column": "MO",
+        "header": "NUM_PM_SMEAR_2040",
+        "field": "NUM_PM_SMEAR_2040"
+      },
+      {
+        "index": 353,
+        "column": "MP",
+        "header": "NUM_PM_SMEAR_2050",
+        "field": "NUM_PM_SMEAR_2050"
+      },
+      {
+        "index": 354,
+        "column": "MQ",
+        "header": "NUM_PM_SMEAR_2060",
+        "field": "NUM_PM_SMEAR_2060"
+      },
+      {
+        "index": 355,
+        "column": "MR",
+        "header": "NUM_PM_SMEAR_2070",
+        "field": "NUM_PM_SMEAR_2070"
+      },
+      {
+        "index": 356,
+        "column": "MS",
+        "header": "NUM_PM_2025",
+        "field": "NUM_PM_2025"
+      },
+      {
+        "index": 359,
+        "column": "MV",
+        "header": "NUM_PM_2040",
+        "field": "NUM_PM_2040"
+      },
+      {
+        "index": 360,
+        "column": "MW",
+        "header": "NUM_PM_2050",
+        "field": "NUM_PM_2050"
+      },
+      {
+        "index": 361,
+        "column": "MX",
+        "header": "NUM_PM_2060",
+        "field": "NUM_PM_2060"
+      },
+      {
+        "index": 362,
+        "column": "MY",
+        "header": "NUM_PM_2070",
+        "field": "NUM_PM_2070"
+      }
+    ],
+    "name_variants": [],
+    "ambiguous_zone_rows_excluded": {},
+    "unmapped_rows_excluded": [],
+    "unavailable_zone_nos": []
+  },
+  {
+    "label": "overnights",
+    "source_filename": "Prognoza_PRENOC.xlsx",
+    "source_file_id": "file_00000000c4048246ae1e334c8fa12526",
+    "source_sha256": "0d26dc3653c7327c4979b0729723cd5054a5d944756178581a316c7401c0e0d0",
+    "sheet": "opravaPRENOCOVANI",
+    "header_row": 1,
+    "key_mode": "OSRM_ID",
+    "columns": [
+      {
+        "index": 59,
+        "column": "BH",
+        "header": "NUM_PM_SMEAR",
+        "field": "NUM_PM_SMEAR"
+      },
+      {
+        "index": 60,
+        "column": "BI",
+        "header": "NUM_PM",
+        "field": "NUM_PM"
+      },
+      {
+        "index": 61,
+        "column": "BJ",
+        "header": "NUM_PUP_PLACES",
+        "field": "NUM_PUP_PLACES"
+      },
+      {
+        "index": 62,
+        "column": "BK",
+        "header": "NUM_STUD_VS_PLACES",
+        "field": "NUM_STUD_VS_PLACES"
+      },
+      {
+        "index": 65,
+        "column": "BN",
+        "header": "NUM_VS",
+        "field": "NUM_VS"
+      },
+      {
+        "index": 67,
+        "column": "BP",
+        "header": "NUM_PUP",
+        "field": "NUM_PUP"
+      },
+      {
+        "index": 68,
+        "column": "BQ",
+        "header": "POP_ZP",
+        "field": "POP_ZP"
+      },
+      {
+        "index": 90,
+        "column": "CM",
+        "header": "AV_INCOME",
+        "field": "AV_INCOME"
+      },
+      {
+        "index": 108,
+        "column": "DE",
+        "header": "E_C_2040",
+        "field": "E_C_2040"
+      },
+      {
+        "index": 109,
+        "column": "DF",
+        "header": "E_C_2050",
+        "field": "E_C_2050"
+      },
+      {
+        "index": 112,
+        "column": "DI",
+        "header": "E_NOC_2040",
+        "field": "E_NC_2040"
+      },
+      {
+        "index": 113,
+        "column": "DJ",
+        "header": "E_NOC_2050",
+        "field": "E_NC_2050"
+      },
+      {
+        "index": 135,
+        "column": "EF",
+        "header": "NOE_C_2040",
+        "field": "NE_C_2040"
+      },
+      {
+        "index": 136,
+        "column": "EG",
+        "header": "NOE_C_2050",
+        "field": "NE_C_2050"
+      },
+      {
+        "index": 224,
+        "column": "HQ",
+        "header": "NOE_NOC_2040",
+        "field": "NE_NC_2040"
+      },
+      {
+        "index": 225,
+        "column": "HR",
+        "header": "NOE_NOC_2050",
+        "field": "NE_NC_2050"
+      },
+      {
+        "index": 231,
+        "column": "HX",
+        "header": "NUM_PUP_2040",
+        "field": "NUM_PUP_2040"
+      },
+      {
+        "index": 232,
+        "column": "HY",
+        "header": "NUM_PUP_2050",
+        "field": "NUM_PUP_2050"
+      },
+      {
+        "index": 247,
+        "column": "IN",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 248,
+        "column": "IO",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 308,
+        "column": "KW",
+        "header": "E_C",
+        "field": "E_C"
+      },
+      {
+        "index": 309,
+        "column": "KX",
+        "header": "E_nC",
+        "field": "E_NC"
+      },
+      {
+        "index": 310,
+        "column": "KY",
+        "header": "nE_C",
+        "field": "NE_C"
+      },
+      {
+        "index": 311,
+        "column": "KZ",
+        "header": "nE_nC",
+        "field": "NE_NC"
+      },
+      {
+        "index": 322,
+        "column": "LK",
+        "header": "PRENOC_SVK",
+        "field": "PRENOC_SVK"
+      },
+      {
+        "index": 338,
+        "column": "MA",
+        "header": "POP_CENTRALITY_TERM",
+        "field": "POP_CENTRALITY_TERM"
+      },
+      {
+        "index": 349,
+        "column": "ML",
+        "header": "POP_ZP_2025",
+        "field": "POP_ZP_2025"
+      },
+      {
+        "index": 353,
+        "column": "MP",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 355,
+        "column": "MR",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 357,
+        "column": "MT",
+        "header": "POP_ZP_2060",
+        "field": "POP_ZP_2060"
+      },
+      {
+        "index": 359,
+        "column": "MV",
+        "header": "POP_ZP_2070",
+        "field": "POP_ZP_2070"
+      },
+      {
+        "index": 360,
+        "column": "MW",
+        "header": "PRENOC_SVK_2025",
+        "field": "PRENOC_SVK_2025"
+      },
+      {
+        "index": 363,
+        "column": "MZ",
+        "header": "PRENOC_SVK_2040",
+        "field": "PRENOC_SVK_2040"
+      },
+      {
+        "index": 364,
+        "column": "NA",
+        "header": "PRENOC_SVK_2050",
+        "field": "PRENOC_SVK_2050"
+      },
+      {
+        "index": 365,
+        "column": "NB",
+        "header": "PRENOC_SVK_2060",
+        "field": "PRENOC_SVK_2060"
+      },
+      {
+        "index": 366,
+        "column": "NC",
+        "header": "PRENOC_SVK_2070",
+        "field": "PRENOC_SVK_2070"
+      }
+    ],
+    "name_variants": [],
+    "ambiguous_zone_rows_excluded": {},
+    "unmapped_rows_excluded": [],
+    "unavailable_zone_nos": []
+  },
+  {
+    "label": "economic_activity",
+    "source_filename": "Prognozy_ekonomicka aktivita.xlsx",
+    "source_file_id": "file_000000008b58821083495557632ed147",
+    "source_sha256": "23fa229d8dc947434d0a1a3b50cbb2aadcc7e1a80945022593560b7c4e869056",
+    "sheet": "opr_Prog E_C, E_nC, nE_C, nE_nC",
+    "header_row": 18,
+    "key_mode": "MODEL_NO",
+    "columns": [
+      {
+        "index": 29,
+        "column": "AD",
+        "header": "E_C_2025",
+        "field": "E_C_2025"
+      },
+      {
+        "index": 30,
+        "column": "AE",
+        "header": "E_nC_2025",
+        "field": "E_NC_2025"
+      },
+      {
+        "index": 31,
+        "column": "AF",
+        "header": "nE_C_2025",
+        "field": "NE_C_2025"
+      },
+      {
+        "index": 32,
+        "column": "AG",
+        "header": "nE_nC_2025",
+        "field": "NE_NC_2025"
+      },
+      {
+        "index": 41,
+        "column": "AP",
+        "header": "E_C_2040",
+        "field": "E_C_2040"
+      },
+      {
+        "index": 42,
+        "column": "AQ",
+        "header": "E_nC_2040",
+        "field": "E_NC_2040"
+      },
+      {
+        "index": 43,
+        "column": "AR",
+        "header": "nE_C_2040",
+        "field": "NE_C_2040"
+      },
+      {
+        "index": 44,
+        "column": "AS",
+        "header": "nE_nC_2040",
+        "field": "NE_NC_2040"
+      },
+      {
+        "index": 45,
+        "column": "AT",
+        "header": "E_C_2050",
+        "field": "E_C_2050"
+      },
+      {
+        "index": 46,
+        "column": "AU",
+        "header": "E_nC_2050",
+        "field": "E_NC_2050"
+      },
+      {
+        "index": 47,
+        "column": "AV",
+        "header": "nE_C_2050",
+        "field": "NE_C_2050"
+      },
+      {
+        "index": 48,
+        "column": "AW",
+        "header": "nE_nC_2050",
+        "field": "NE_NC_2050"
+      },
+      {
+        "index": 49,
+        "column": "AX",
+        "header": "E_C_2060",
+        "field": "E_C_2060"
+      },
+      {
+        "index": 50,
+        "column": "AY",
+        "header": "E_nC_2060",
+        "field": "E_NC_2060"
+      },
+      {
+        "index": 51,
+        "column": "AZ",
+        "header": "nE_C_2060",
+        "field": "NE_C_2060"
+      },
+      {
+        "index": 52,
+        "column": "BA",
+        "header": "nE_nC_2060",
+        "field": "NE_NC_2060"
+      },
+      {
+        "index": 53,
+        "column": "BB",
+        "header": "E_C_2070",
+        "field": "E_C_2070"
+      },
+      {
+        "index": 54,
+        "column": "BC",
+        "header": "E_nC_2070",
+        "field": "E_NC_2070"
+      },
+      {
+        "index": 55,
+        "column": "BD",
+        "header": "nE_C_2070",
+        "field": "NE_C_2070"
+      },
+      {
+        "index": 56,
+        "column": "BE",
+        "header": "nE_nC_2070",
+        "field": "NE_NC_2070"
+      }
+    ],
+    "name_variants": [
+      {
+        "No": 624,
+        "master_name": "Neusiedl am See",
+        "source_name": "Burgenland"
+      }
+    ],
+    "ambiguous_zone_rows_excluded": {},
+    "unmapped_rows_excluded": [],
+    "unavailable_zone_nos": []
+  },
+  {
+    "label": "economic_activity",
+    "source_filename": "Prognozy_ekonomicka aktivita.xlsx",
+    "source_file_id": "file_000000008b58821083495557632ed147",
+    "source_sha256": "23fa229d8dc947434d0a1a3b50cbb2aadcc7e1a80945022593560b7c4e869056",
+    "sheet": "Prognoza EA + EN",
+    "header_row": 1,
+    "key_mode": "SOURCE_ID",
+    "columns": [
+      {
+        "index": 59,
+        "column": "BH",
+        "header": "NUM_PM_SMEAR",
+        "field": "NUM_PM_SMEAR"
+      },
+      {
+        "index": 60,
+        "column": "BI",
+        "header": "NUM_PM",
+        "field": "NUM_PM"
+      },
+      {
+        "index": 61,
+        "column": "BJ",
+        "header": "NUM_PUP_PLACES",
+        "field": "NUM_PUP_PLACES"
+      },
+      {
+        "index": 62,
+        "column": "BK",
+        "header": "NUM_STUD_VS_PLACES",
+        "field": "NUM_STUD_VS_PLACES"
+      },
+      {
+        "index": 65,
+        "column": "BN",
+        "header": "NUM_VS",
+        "field": "NUM_VS"
+      },
+      {
+        "index": 67,
+        "column": "BP",
+        "header": "NUM_PUP",
+        "field": "NUM_PUP"
+      },
+      {
+        "index": 68,
+        "column": "BQ",
+        "header": "POP_ZP",
+        "field": "POP_ZP"
+      },
+      {
+        "index": 90,
+        "column": "CM",
+        "header": "AV_INCOME",
+        "field": "AV_INCOME"
+      },
+      {
+        "index": 108,
+        "column": "DE",
+        "header": "E_C_2040",
+        "field": "E_C_2040"
+      },
+      {
+        "index": 109,
+        "column": "DF",
+        "header": "E_C_2050",
+        "field": "E_C_2050"
+      },
+      {
+        "index": 112,
+        "column": "DI",
+        "header": "E_NOC_2040",
+        "field": "E_NC_2040"
+      },
+      {
+        "index": 113,
+        "column": "DJ",
+        "header": "E_NOC_2050",
+        "field": "E_NC_2050"
+      },
+      {
+        "index": 135,
+        "column": "EF",
+        "header": "NOE_C_2040",
+        "field": "NE_C_2040"
+      },
+      {
+        "index": 136,
+        "column": "EG",
+        "header": "NOE_C_2050",
+        "field": "NE_C_2050"
+      },
+      {
+        "index": 224,
+        "column": "HQ",
+        "header": "NOE_NOC_2040",
+        "field": "NE_NC_2040"
+      },
+      {
+        "index": 225,
+        "column": "HR",
+        "header": "NOE_NOC_2050",
+        "field": "NE_NC_2050"
+      },
+      {
+        "index": 231,
+        "column": "HX",
+        "header": "NUM_PUP_2040",
+        "field": "NUM_PUP_2040"
+      },
+      {
+        "index": 232,
+        "column": "HY",
+        "header": "NUM_PUP_2050",
+        "field": "NUM_PUP_2050"
+      },
+      {
+        "index": 247,
+        "column": "IN",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 248,
+        "column": "IO",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 308,
+        "column": "KW",
+        "header": "E_C",
+        "field": "E_C"
+      },
+      {
+        "index": 309,
+        "column": "KX",
+        "header": "E_nC",
+        "field": "E_NC"
+      },
+      {
+        "index": 310,
+        "column": "KY",
+        "header": "nE_C",
+        "field": "NE_C"
+      },
+      {
+        "index": 311,
+        "column": "KZ",
+        "header": "nE_nC",
+        "field": "NE_NC"
+      },
+      {
+        "index": 318,
+        "column": "LG",
+        "header": "POP_ZP_2025",
+        "field": "POP_ZP_2025"
+      },
+      {
+        "index": 319,
+        "column": "LH",
+        "header": "POP_ZP_2025",
+        "field": "POP_ZP_2025"
+      },
+      {
+        "index": 323,
+        "column": "LL",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 325,
+        "column": "LN",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 327,
+        "column": "LP",
+        "header": "POP_ZP_2060",
+        "field": "POP_ZP_2060"
+      }
+    ],
+    "name_variants": [],
+    "ambiguous_zone_rows_excluded": {
+      "220": [
+        405,
+        678
+      ]
+    },
+    "unmapped_rows_excluded": [],
+    "unavailable_zone_nos": [
+      220,
+      624
+    ]
+  },
+  {
+    "label": "overnights",
+    "source_filename": "Prognoza_PRENOC.xlsx",
+    "source_file_id": "file_00000000c4048246ae1e334c8fa12526",
+    "source_sha256": "0d26dc3653c7327c4979b0729723cd5054a5d944756178581a316c7401c0e0d0",
+    "sheet": "xxxPRENOCOVANI",
+    "header_row": 1,
+    "key_mode": "OSRM_ID",
+    "columns": [
+      {
+        "index": 59,
+        "column": "BH",
+        "header": "NUM_PM_SMEAR",
+        "field": "NUM_PM_SMEAR"
+      },
+      {
+        "index": 60,
+        "column": "BI",
+        "header": "NUM_PM",
+        "field": "NUM_PM"
+      },
+      {
+        "index": 61,
+        "column": "BJ",
+        "header": "NUM_PUP_PLACES",
+        "field": "NUM_PUP_PLACES"
+      },
+      {
+        "index": 62,
+        "column": "BK",
+        "header": "NUM_STUD_VS_PLACES",
+        "field": "NUM_STUD_VS_PLACES"
+      },
+      {
+        "index": 65,
+        "column": "BN",
+        "header": "NUM_VS",
+        "field": "NUM_VS"
+      },
+      {
+        "index": 67,
+        "column": "BP",
+        "header": "NUM_PUP",
+        "field": "NUM_PUP"
+      },
+      {
+        "index": 68,
+        "column": "BQ",
+        "header": "POP_ZP",
+        "field": "POP_ZP"
+      },
+      {
+        "index": 90,
+        "column": "CM",
+        "header": "AV_INCOME",
+        "field": "AV_INCOME"
+      },
+      {
+        "index": 108,
+        "column": "DE",
+        "header": "E_C_2040",
+        "field": "E_C_2040"
+      },
+      {
+        "index": 109,
+        "column": "DF",
+        "header": "E_C_2050",
+        "field": "E_C_2050"
+      },
+      {
+        "index": 112,
+        "column": "DI",
+        "header": "E_NOC_2040",
+        "field": "E_NC_2040"
+      },
+      {
+        "index": 113,
+        "column": "DJ",
+        "header": "E_NOC_2050",
+        "field": "E_NC_2050"
+      },
+      {
+        "index": 135,
+        "column": "EF",
+        "header": "NOE_C_2040",
+        "field": "NE_C_2040"
+      },
+      {
+        "index": 136,
+        "column": "EG",
+        "header": "NOE_C_2050",
+        "field": "NE_C_2050"
+      },
+      {
+        "index": 224,
+        "column": "HQ",
+        "header": "NOE_NOC_2040",
+        "field": "NE_NC_2040"
+      },
+      {
+        "index": 225,
+        "column": "HR",
+        "header": "NOE_NOC_2050",
+        "field": "NE_NC_2050"
+      },
+      {
+        "index": 231,
+        "column": "HX",
+        "header": "NUM_PUP_2040",
+        "field": "NUM_PUP_2040"
+      },
+      {
+        "index": 232,
+        "column": "HY",
+        "header": "NUM_PUP_2050",
+        "field": "NUM_PUP_2050"
+      },
+      {
+        "index": 247,
+        "column": "IN",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 248,
+        "column": "IO",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 308,
+        "column": "KW",
+        "header": "E_C",
+        "field": "E_C"
+      },
+      {
+        "index": 309,
+        "column": "KX",
+        "header": "E_nC",
+        "field": "E_NC"
+      },
+      {
+        "index": 310,
+        "column": "KY",
+        "header": "nE_C",
+        "field": "NE_C"
+      },
+      {
+        "index": 311,
+        "column": "KZ",
+        "header": "nE_nC",
+        "field": "NE_NC"
+      },
+      {
+        "index": 322,
+        "column": "LK",
+        "header": "PRENOC_SVK",
+        "field": "PRENOC_SVK"
+      },
+      {
+        "index": 338,
+        "column": "MA",
+        "header": "POP_CENTRALITY_TERM",
+        "field": "POP_CENTRALITY_TERM"
+      },
+      {
+        "index": 348,
+        "column": "MK",
+        "header": "POP_ZP_2025",
+        "field": "POP_ZP_2025"
+      },
+      {
+        "index": 352,
+        "column": "MO",
+        "header": "POP_ZP_2040",
+        "field": "POP_ZP_2040"
+      },
+      {
+        "index": 354,
+        "column": "MQ",
+        "header": "POP_ZP_2050",
+        "field": "POP_ZP_2050"
+      },
+      {
+        "index": 356,
+        "column": "MS",
+        "header": "POP_ZP_2060",
+        "field": "POP_ZP_2060"
+      },
+      {
+        "index": 357,
+        "column": "MT",
+        "header": "PRENOC_SVK_2025",
+        "field": "PRENOC_SVK_2025"
+      },
+      {
+        "index": 360,
+        "column": "MW",
+        "header": "PRENOC_SVK_2040",
+        "field": "PRENOC_SVK_2040"
+      },
+      {
+        "index": 361,
+        "column": "MX",
+        "header": "PRENOC_SVK_2050",
+        "field": "PRENOC_SVK_2050"
+      },
+      {
+        "index": 362,
+        "column": "MY",
+        "header": "PRENOC_SVK_2060",
+        "field": "PRENOC_SVK_2060"
+      },
+      {
+        "index": 363,
+        "column": "MZ",
+        "header": "PRENOC_SVK_2070",
+        "field": "PRENOC_SVK_2070"
+      }
+    ],
+    "name_variants": [],
+    "ambiguous_zone_rows_excluded": {},
+    "unmapped_rows_excluded": [],
+    "unavailable_zone_nos": []
+  }
+]

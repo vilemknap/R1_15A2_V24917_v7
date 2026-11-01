@@ -1,0 +1,105 @@
+{
+  "status": "COMPLETED_WITH_SOURCE_WARNINGS",
+  "integrity_pass": true,
+  "source_quality_failures": [
+    "names_agree_with_master:economic_activity:opr_Prog E_C, E_nC, nE_C, nE_nC"
+  ],
+  "checks_count": 19,
+  "checks": [
+    {
+      "name": "normalized_payload_integrity",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "681_unique_primary_source_zones:population_students:Prognoza",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "names_agree_with_master:population_students:Prognoza",
+      "status": "PASS",
+      "kind": "SOURCE_QUALITY"
+    },
+    {
+      "name": "681_unique_primary_source_zones:jobs:PROGNOZA zde",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "names_agree_with_master:jobs:PROGNOZA zde",
+      "status": "PASS",
+      "kind": "SOURCE_QUALITY"
+    },
+    {
+      "name": "681_unique_primary_source_zones:overnights:opravaPRENOCOVANI",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "names_agree_with_master:overnights:opravaPRENOCOVANI",
+      "status": "PASS",
+      "kind": "SOURCE_QUALITY"
+    },
+    {
+      "name": "681_unique_primary_source_zones:economic_activity:opr_Prog E_C, E_nC, nE_C, nE_nC",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "names_agree_with_master:economic_activity:opr_Prog E_C, E_nC, nE_C, nE_nC",
+      "status": "FAIL",
+      "kind": "SOURCE_QUALITY"
+    },
+    {
+      "name": "supplemental_ambiguous_zones_quarantined:economic_activity:Prognoza EA + EN",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "names_agree_with_master:economic_activity:Prognoza EA + EN",
+      "status": "PASS",
+      "kind": "SOURCE_QUALITY"
+    },
+    {
+      "name": "supplemental_ambiguous_zones_quarantined:overnights:xxxPRENOCOVANI",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "names_agree_with_master:overnights:xxxPRENOCOVANI",
+      "status": "PASS",
+      "kind": "SOURCE_QUALITY"
+    },
+    {
+      "name": "fallback_cells_unique",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "all_4493_fallback_cells_checked",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "status_counts_partition_coverage",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "numeric_403_distinct_from_ZONE403",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "no_undated_value_marked_as_direct_forecast",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    },
+    {
+      "name": "no_identity_conflict_marked_as_direct_forecast",
+      "status": "PASS",
+      "kind": "INTEGRITY"
+    }
+  ]
+}

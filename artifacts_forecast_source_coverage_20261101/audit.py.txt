@@ -1,0 +1,182 @@
+"""Read-only coverage audit. Workbook formulas/external links are never executed."""
+import argparse,base64,collections,csv,gzip,hashlib,json,math,re,unicodedata
+from pathlib import Path
+
+ATTRS=['NUM_VS','NUM_PUP','POP_ZP','E_C','E_NC','NE_C','NE_NC','PRENOC_SVK','AV_INCOME',
+       'NUM_PM','NUM_PM_SMEAR','NUM_PUP_PLACES','NUM_STUD_VS_PLACES','POP_CENTRALITY_TERM']
+SPECS=[('population_students','Prognoza',1,'SOURCE_ID'),('jobs','PROGNOZA zde',2,'SOURCE_ID'),
+       ('overnights','opravaPRENOCOVANI',1,'OSRM_ID'),
+       ('economic_activity','opr_Prog E_C, E_nC, nE_C, nE_nC',18,'MODEL_NO'),
+       ('economic_activity','Prognoza EA + EN',1,'SOURCE_ID'),
+       ('overnights','xxxPRENOCOVANI',1,'OSRM_ID')]
+OWNERS={**{a:0 for a in ['NUM_VS','NUM_PUP','POP_ZP','NUM_PUP_PLACES','NUM_STUD_VS_PLACES']},
+        **{a:1 for a in ['NUM_PM','NUM_PM_SMEAR']},'PRENOC_SVK':2,
+        **{a:3 for a in ['E_C','E_NC','NE_C','NE_NC']},'POP_CENTRALITY_TERM':0,'AV_INCOME':1}
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def num(x):
+    if x is None or str(x).strip()=='' or isinstance(x,bool):return None
+    try:v=float(str(x).replace(',','.'))
+    except (TypeError,ValueError):return None
+    return v if math.isfinite(v) and v>=0 else None
+def key(x):
+    if x is None:return ''
+    s=' '.join(str(x).strip().upper().split());m=re.fullmatch(r'ZONE\s*(\d+)',s)
+    if m:return 'ZONE '+str(int(m[1]))
+    v=num(s)
+    return str(int(v)) if v is not None and int(v)==v else s
+def name_key(x):return re.sub('[^a-z0-9]','',unicodedata.normalize('NFKD',str(x)).encode('ascii','ignore').decode().lower())
+def field(x):
+    s=str(x or '').strip().upper();s=re.sub('^NOE_','NE_',s);s=s.replace('E_NOC','E_NC')
+    return s
+def write_csv(path,rows,fields):
+    with path.open('w',encoding='utf-8',newline='') as stream:
+        w=csv.DictWriter(stream,fieldnames=fields,delimiter=';',lineterminator='\n');w.writeheader();w.writerows(rows)
+
+def prepare(args,out):
+    import openpyxl
+    sources={f['label']:f for f in json.loads(args.uploads.read_text())}
+    model={f['label']:f for f in json.loads(args.model_sources.read_text())}['gravity2040']
+    book=openpyxl.load_workbook(model['path'],read_only=True,data_only=True)
+    try:
+        rows=book['vstupy_prod_att_R1'].iter_rows(values_only=True);headers=next(rows);ix={str(v).upper():i for i,v in enumerate(headers) if v is not None};master={};aliases={}
+        for row in rows:
+            if row[ix['OSRM_MATRIX_ID']] is None:continue
+            no=int(row[ix['OSRM_MATRIX_ID']]);alias=key(row[ix['ID']])
+            if alias in aliases or no in master:raise ValueError('Duplicate master key')
+            master[no]={'name':row[ix['NAME']],'source_id':alias};aliases[alias]=no
+    finally:book.close()
+    if set(master)!=set(range(1,682)):raise ValueError('Master zones do not match 1..681')
+    tables=[];catalog=[]
+    for table_index,(label,sheet,header_row,mode) in enumerate(SPECS):
+        source=sources[label];book=openpyxl.load_workbook(source['path'],read_only=True,data_only=True)
+        try:
+            ws=book[sheet];it=ws.iter_rows(min_row=header_row,values_only=True);header=next(it)
+            columns=[]
+            for i,raw in enumerate(header):
+                canonical=field(raw)
+                if canonical in ATTRS or any(canonical==a+'_'+str(year) for a in ATTRS for year in [2025,2040,2050,2060,2070]):
+                    columns.append({'index':i,'column':openpyxl.utils.get_column_letter(i+1),'header':str(raw),'field':canonical})
+            hi={str(v).strip().upper():i for i,v in enumerate(header) if v is not None};records={};identity=[];ambiguous={};unmapped=[]
+            for rownum,row in enumerate(it,header_row+1):
+                raw_id=row[hi['ID']]
+                if raw_id is None:continue
+                source_id=key(raw_id);via_id=aliases.get(source_id)
+                if mode=='MODEL_NO':
+                    v=num(raw_id);no=int(v) if v is not None and v==int(v) else via_id
+                    basis='MODEL_ZONE_NO' if v is not None else 'EXPLICIT_TEXT_SOURCE_ID'
+                elif mode=='OSRM_ID':
+                    v=num(row[hi['OSRM_MATRIX_ID']]);no=int(v) if v is not None and v==int(v) else via_id;basis='OSRM_MATRIX_ID' if v is not None else 'SOURCE_ID_FALLBACK'
+                    if via_id is not None and no!=via_id:raise ValueError('Conflicting OSRM and source ID')
+                else:no=via_id;basis='MASTER_SOURCE_ID'
+                supplemental=table_index>=4
+                if no not in master:
+                    if supplemental:unmapped.append({'excel_row':rownum,'source_id':source_id});continue
+                    raise ValueError('Unmapped source zone: '+label+':'+sheet+':'+str(raw_id))
+                if no in records or no in ambiguous:
+                    if supplemental:
+                        if no in records:ambiguous[no]=[records.pop(no)['excel_row']]
+                        ambiguous[no].append(rownum);continue
+                    raise ValueError('Duplicate source zone: '+label+':'+sheet+':'+str(raw_id))
+                record={'No':no,'source_id':source_id,'source_name':row[hi['NAME']],'excel_row':rownum,'key_basis':basis,
+                        'identity_verified':name_key(row[hi['NAME']])==name_key(master[no]['name']),
+                        'values':{c['column']:row[c['index']] for c in columns}}
+                records[no]=record
+                if name_key(record['source_name'])!=name_key(master[no]['name']):identity.append({'No':no,'master_name':master[no]['name'],'source_name':record['source_name']})
+            if set(records)!=set(master) and table_index<4:raise ValueError('Source does not cover all 681 zones: '+sheet)
+            tables.append({'label':label,'source_filename':Path(source['path']).name,'source_file_id':source['file_id'],
+                           'source_sha256':sha(Path(source['path']).read_bytes()),'sheet':sheet,'header_row':header_row,
+                           'key_mode':mode,'columns':columns,'records':records,'name_variants':identity,
+                           'ambiguous_zone_rows_excluded':ambiguous,'unmapped_rows_excluded':unmapped,
+                           'unavailable_zone_nos':sorted(set(master)-set(records))})
+            catalog.append({k:v for k,v in tables[-1].items() if k!='records'})
+        finally:book.close()
+    payload=json.dumps({'master':master,'tables':tables},ensure_ascii=False,separators=(',',':')).encode('utf-8')
+    (out/'SOURCE_TABLES.json.gz.b64').write_text(base64.b64encode(gzip.compress(payload,mtime=0)).decode()+'\n')
+    (out/'SOURCE_CATALOG.json').write_text(json.dumps(catalog,indent=2,ensure_ascii=False)+'\n')
+    (out/'INPUTS.json').write_text(json.dumps({'sources':[{'label':label,'filename':Path(f['path']).name,'file_id':f['file_id'],
+        'size_bytes':Path(f['path']).stat().st_size,'sha256':sha(Path(f['path']).read_bytes())} for label,f in sources.items()],
+        'master_source':{'filename':Path(model['path']).name,'file_id':model['file_id'],'sha256':sha(Path(model['path']).read_bytes())},
+        'normalized_payload_sha256':sha(payload)},indent=2,ensure_ascii=False)+'\n')
+
+def main():
+    p=argparse.ArgumentParser();p.add_argument('--package',type=Path,required=True);p.add_argument('--uploads',type=Path);p.add_argument('--model-sources',type=Path)
+    args=p.parse_args();out=args.package;out.mkdir(exist_ok=True,parents=True)
+    if args.uploads:prepare(args,out)
+    payload=gzip.decompress(base64.b64decode((out/'SOURCE_TABLES.json.gz.b64').read_bytes()));doc=json.loads(payload)
+    checks=[]
+    def check(name,condition,kind='INTEGRITY'):checks.append({'name':name,'status':'PASS' if condition else 'FAIL','kind':kind})
+    check('normalized_payload_integrity',sha(payload)==json.loads((out/'INPUTS.json').read_text())['normalized_payload_sha256'])
+    tables=doc['tables'];master={int(k):v for k,v in doc['master'].items()}
+    for ti,t in enumerate(tables):
+        t['records']={int(k):v for k,v in t['records'].items()}
+        if ti<4:check('681_unique_primary_source_zones:'+t['label']+':'+t['sheet'],set(t['records'])==set(master))
+        else:check('supplemental_ambiguous_zones_quarantined:'+t['label']+':'+t['sheet'],set(t['records'])<=set(master) and not(set(map(int,t['ambiguous_zone_rows_excluded']))&set(t['records'])))
+        check('names_agree_with_master:'+t['label']+':'+t['sheet'],not t['name_variants'],'SOURCE_QUALITY')
+    project=out.parent;fallback_path=project/'scenario_tools/validation/FALLBACK_2022_PREVIEW.csv'
+    with fallback_path.open(encoding='utf-8',newline='') as stream:fallback=list(csv.DictReader(stream,delimiter=';'))
+    check('fallback_cells_unique',len(fallback)==len({(r['Year'],r['No'],r['attribute']) for r in fallback}))
+    coverage=[];alternatives=[];base_candidates=[]
+    for row in fallback:
+        year=int(row['Year']);no=int(row['No']);attr=row['attribute'];table_index=OWNERS[attr];table=tables[table_index]
+        columns=[c for c in table['columns'] if c['field']==attr+'_'+str(year)]
+        # Repeated historic headers exist in wide sheets; the appended rightmost forecast block is primary.
+        col=max(columns,key=lambda c:c['index']) if columns else None
+        rec=table['records'][no];raw=rec['values'].get(col['column']) if col else None;value=num(raw)
+        status='SOURCE_ZONE_IDENTITY_CONFLICT' if not rec['identity_verified'] else ('NO_YEAR_SPECIFIC_COLUMN' if col is None else
+                ('VALID_POSITIVE_FORECAST' if value is not None and value>0 else
+                (('ZERO_FORECAST_KEEP_FALLBACK' if num(row['reference_2022_value'])>0 else 'VALID_ZERO_CONFIRMS_REFERENCE_ZERO')
+                if value==0 else 'INVALID_OR_MISSING_FORECAST')))
+        common={'Year':year,'No':no,'Name':master[no]['name'],'Attribute':attr,'Reference2022':row['reference_2022_value']}
+        record={**common,'Status':status,'SourceFile':table['source_filename'],'SourceSheet':table['sheet'],
+                'SourceCell':col['column']+str(rec['excel_row']) if col else '',
+                'SourceHeader':col['header'] if col else '', 'SourceValue':raw,
+                'KeyBasis':rec['key_basis'],'SourceID':rec['source_id']}
+        coverage.append(record)
+        if status!='VALID_POSITIVE_FORECAST':
+            for ti,other in enumerate(tables):
+                rr=other['records'].get(no)
+                if rr is None or not rr['identity_verified']:continue
+                for cc in other['columns']:
+                    x=num(rr['values'][cc['column']])
+                    if x is None or x<=0:continue
+                    details={**common,'SourceFile':other['source_filename'],'SourceSheet':other['sheet'],
+                        'SourceCell':cc['column']+str(rr['excel_row']),'SourceHeader':cc['header'],'SourceValue':x,
+                        'PrimaryStatus':status}
+                    if cc['field']==attr+'_'+str(year) and not(ti==table_index and col and cc['column']==col['column']):
+                        alternatives.append({**details,'Role':'ALTERNATIVE_YEAR_COLUMN_REQUIRES_METHOD_REVIEW'})
+                    if cc['field']==attr:base_candidates.append({**details,'Role':'UNDATED_BASE_ONLY_NOT_VERIFIED_AS_FORECAST'})
+    fields=['Year','No','Name','Attribute','Reference2022','Status','SourceFile','SourceSheet','SourceCell','SourceHeader','SourceValue','KeyBasis','SourceID']
+    write_csv(out/'FALLBACK_SOURCE_COVERAGE.csv',coverage,fields)
+    write_csv(out/'DIRECT_POSITIVE_FORECASTS.csv',[r for r in coverage if r['Status']=='VALID_POSITIVE_FORECAST'],fields)
+    alt_fields=['Year','No','Name','Attribute','Reference2022','SourceFile','SourceSheet','SourceCell','SourceHeader','SourceValue','PrimaryStatus','Role']
+    write_csv(out/'ALTERNATIVE_YEAR_COLUMNS.csv',alternatives,alt_fields)
+    write_csv(out/'UNDATED_BASE_VALUES.csv',base_candidates,alt_fields)
+    statuses=dict(collections.Counter(r['Status'] for r in coverage));by_year=[]
+    for year in [2025,2040,2050,2060,2070]:
+        r=[r for r in coverage if r['Year']==year]
+        by_year.append({'year':year,'fallback_cells_checked':len(r),'status_counts':dict(collections.Counter(v['Status'] for v in r)),
+            'direct_positive_by_attribute':dict(collections.Counter(v['Attribute'] for v in r if v['Status']=='VALID_POSITIVE_FORECAST')),
+            'direct_positive_different_from_2022':sum(not math.isclose(num(v['SourceValue']),num(v['Reference2022']),rel_tol=1e-10,abs_tol=1e-8) for v in r if v['Status']=='VALID_POSITIVE_FORECAST'),
+            'alternative_year_candidate_cells':len({(v['No'],v['Attribute']) for v in alternatives if v['Year']==year})})
+    check('all_4493_fallback_cells_checked',len(coverage)==4493)
+    check('status_counts_partition_coverage',sum(statuses.values())==len(coverage))
+    check('numeric_403_distinct_from_ZONE403',key(403)!=key('ZONE 403') and master[615]['source_id']=='ZONE 403')
+    check('no_undated_value_marked_as_direct_forecast',all(r['SourceHeader'].upper().endswith('_'+str(r['Year'])) for r in coverage if r['Status']=='VALID_POSITIVE_FORECAST'))
+    check('no_identity_conflict_marked_as_direct_forecast',all(tables[OWNERS[r['Attribute']]]['records'][r['No']]['identity_verified'] for r in coverage if r['Status']=='VALID_POSITIVE_FORECAST'))
+    integrity_pass=all(c['status']=='PASS' for c in checks if c['kind']=='INTEGRITY')
+    quality_failures=[c['name'] for c in checks if c['kind']=='SOURCE_QUALITY' and c['status']=='FAIL']
+    status='FAILED_INTEGRITY_CHECKS' if not integrity_pass else ('COMPLETED_WITH_SOURCE_WARNINGS' if quality_failures else 'PASS')
+    result={'status':status,'scope':'READ_ONLY_SOURCE_COVERAGE_AUDIT',
+        'fallback_reference':'Earlier 2022 export used by V2 preview, not new live COM read','fallback_preview_sha256':sha(fallback_path.read_bytes()),
+        'total_cells':len(coverage),'status_counts':statuses,'years':by_year,
+        'direct_positive_candidate_zones':len({r['No'] for r in coverage if r['Status']=='VALID_POSITIVE_FORECAST'}),
+        'direct_positive_different_from_2022':sum(r['direct_positive_different_from_2022'] for r in by_year),
+        'alternate_values_are_not_automatically_approved':True,'source_quality_failures':quality_failures,
+        'runtime_or_import_changes':False,'live_visum':'NOT_RUN'}
+    (out/'SUMMARY.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
+    (out/'CHECKS.json').write_text(json.dumps({'status':result['status'],'integrity_pass':integrity_pass,'source_quality_failures':quality_failures,'checks_count':len(checks),'checks':checks},indent=2)+'\n')
+    print(json.dumps(result))
+    if not integrity_pass:raise SystemExit(1)
+
+if __name__=='__main__':main()

@@ -1,0 +1,87 @@
+{
+  "status": "COMPLETED_WITH_SOURCE_WARNINGS",
+  "scope": "READ_ONLY_SOURCE_COVERAGE_AUDIT",
+  "fallback_reference": "Earlier 2022 export used by V2 preview, not new live COM read",
+  "fallback_preview_sha256": "3c3fc687f9ee72a6e1f9081ce9f93eaf6087fbef531133f02cc0575f1ec35170",
+  "total_cells": 4493,
+  "status_counts": {
+    "INVALID_OR_MISSING_FORECAST": 999,
+    "VALID_POSITIVE_FORECAST": 1873,
+    "NO_YEAR_SPECIFIC_COLUMN": 1528,
+    "VALID_ZERO_CONFIRMS_REFERENCE_ZERO": 93
+  },
+  "years": [
+    {
+      "year": 2025,
+      "fallback_cells_checked": 3904,
+      "status_counts": {
+        "INVALID_OR_MISSING_FORECAST": 575,
+        "VALID_POSITIVE_FORECAST": 1873,
+        "NO_YEAR_SPECIFIC_COLUMN": 1363,
+        "VALID_ZERO_CONFIRMS_REFERENCE_ZERO": 93
+      },
+      "direct_positive_by_attribute": {
+        "NUM_VS": 4,
+        "NUM_PUP": 1,
+        "PRENOC_SVK": 1,
+        "NUM_PM": 638,
+        "NUM_PM_SMEAR": 638,
+        "POP_CENTRALITY_TERM": 591
+      },
+      "direct_positive_different_from_2022": 1757,
+      "alternative_year_candidate_cells": 0
+    },
+    {
+      "year": 2040,
+      "fallback_cells_checked": 117,
+      "status_counts": {
+        "INVALID_OR_MISSING_FORECAST": 106,
+        "NO_YEAR_SPECIFIC_COLUMN": 11
+      },
+      "direct_positive_by_attribute": {},
+      "direct_positive_different_from_2022": 0,
+      "alternative_year_candidate_cells": 55
+    },
+    {
+      "year": 2050,
+      "fallback_cells_checked": 158,
+      "status_counts": {
+        "INVALID_OR_MISSING_FORECAST": 106,
+        "NO_YEAR_SPECIFIC_COLUMN": 52
+      },
+      "direct_positive_by_attribute": {},
+      "direct_positive_different_from_2022": 0,
+      "alternative_year_candidate_cells": 55
+    },
+    {
+      "year": 2060,
+      "fallback_cells_checked": 157,
+      "status_counts": {
+        "INVALID_OR_MISSING_FORECAST": 106,
+        "NO_YEAR_SPECIFIC_COLUMN": 51
+      },
+      "direct_positive_by_attribute": {},
+      "direct_positive_different_from_2022": 0,
+      "alternative_year_candidate_cells": 0
+    },
+    {
+      "year": 2070,
+      "fallback_cells_checked": 157,
+      "status_counts": {
+        "INVALID_OR_MISSING_FORECAST": 106,
+        "NO_YEAR_SPECIFIC_COLUMN": 51
+      },
+      "direct_positive_by_attribute": {},
+      "direct_positive_different_from_2022": 0,
+      "alternative_year_candidate_cells": 0
+    }
+  ],
+  "direct_positive_candidate_zones": 639,
+  "direct_positive_different_from_2022": 1757,
+  "alternate_values_are_not_automatically_approved": true,
+  "source_quality_failures": [
+    "names_agree_with_master:economic_activity:opr_Prog E_C, E_nC, nE_C, nE_nC"
+  ],
+  "runtime_or_import_changes": false,
+  "live_visum": "NOT_RUN"
+}
