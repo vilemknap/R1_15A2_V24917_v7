@@ -1,0 +1,72 @@
+{
+  "schema": "R1_SCENARIO_IO_20261101",
+  "year": 2050,
+  "zone_count": 681,
+  "zone_attributes": [
+    "NUM_VS",
+    "NUM_PUP",
+    "POP_ZP",
+    "E_C",
+    "E_NC",
+    "NE_C",
+    "NE_NC",
+    "PRENOC_SVK",
+    "AV_INCOME",
+    "NUM_PM",
+    "NUM_PM_SMEAR",
+    "NUM_PUP_PLACES",
+    "NUM_STUD_VS_PLACES",
+    "POP_CENTRALITY_TERM"
+  ],
+  "zone_file": "ZONE_RAW_ATTRS.csv",
+  "zone_sha256": "64d39adc71cc1e9137ec5a50cfce3b54ee1d6914b4102427ea229b10c73ac84a",
+  "freight_variant": "MC_MEAN_ROUNDED_HALF_UP",
+  "zone_source": {
+    "label": "gravity2050",
+    "sheet": "vstupy_prod_att_R1",
+    "key": "OSRM_MATRIX_ID",
+    "fallback_policy": "KEEP_OPENED_2022_COPY_VALUE"
+  },
+  "freight": {
+    "LNV": {
+      "file": "LNV_MC_MEAN_ROUNDED.csv",
+      "sha256": "6448e2fa60a32dee4ee22c872cef6e5129f4ae49438ae79c0becab26cfbde29b",
+      "source_file": "R1_V14_LNV_OD_2050_MC_MEAN.csv",
+      "source_sha256": "105e866644bd563d1579cf33022853998b9bca13c16bd834c683a3f3e8261bd0",
+      "source_total": "33053.607574",
+      "rounded_total": 32951,
+      "rounded_diagonal": 184,
+      "rounded_nonzero_od": 3139,
+      "rounding_total_delta": "-102.607574",
+      "maximum_cell_rounding_delta": "0.499939",
+      "renormalized": false
+    },
+    "NV": {
+      "file": "NV_MC_MEAN_ROUNDED.csv",
+      "sha256": "57ffcc96a3ecda0f9a68251dc3f80d48966b176a8e9c4d6f7eab859e4df38bf4",
+      "source_file": "R1_V14_NV_OD_2050_MC_MEAN.csv",
+      "source_sha256": "0cffe5ac4f19bf9cea7d159e8b704edb141163042c732c939fb11d6780ac020d",
+      "source_total": "46627.557606",
+      "rounded_total": 46530,
+      "rounded_diagonal": 58,
+      "rounded_nonzero_od": 2438,
+      "rounding_total_delta": "-97.557606",
+      "maximum_cell_rounding_delta": "0.499947",
+      "renormalized": false
+    }
+  },
+  "passenger_dsegs": [
+    "EXOG_EE_CF",
+    "EXOG_EE_CL",
+    "EXOG_EE_CS",
+    "EXOG_EE_CS_noT",
+    "EXOG_EE_CW",
+    "EXOG_EE_CW_noT",
+    "NATIVE_CF",
+    "NATIVE_CL",
+    "NATIVE_CS",
+    "NATIVE_CS_noT",
+    "NATIVE_CW",
+    "NATIVE_CW_noT"
+  ]
+}

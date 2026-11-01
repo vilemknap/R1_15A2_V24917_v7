@@ -1,0 +1,122 @@
+{
+  "raw2040": {
+    "file_id": "file_0000000031188210a608e5ddd12f36ee",
+    "filename": "R1_2040_ZONE_RAW_ATTR_IMPORT_WITH_2022_FALLBACK.csv",
+    "size_bytes": 103823,
+    "sha256": "e57100911f6eaa0d490dfd2df070db730dc506c7f9268c1944d04184921d4b9c"
+  },
+  "oa2070": {
+    "file_id": "file_000000004ec4821080270ab33228c6db",
+    "filename": "R1_17_2070_CREATE_OA_SUM_AND_CAL_DATA_MATRIX.py",
+    "size_bytes": 21788,
+    "sha256": "80b778f31893f157e22f10bba712c3e72655027e1c8f73569f416330edd656e9"
+  },
+  "oa2040_a": {
+    "file_id": "file_00000000569481f488089300d33bd6fe",
+    "filename": "R1_17_2040_CREATE_OA_SUM_AND_CAL_DATA_MATRIX.py",
+    "size_bytes": 21788,
+    "sha256": "e774e1027e25347945802c1d47db85d13d89fc1aa970d1a6d56ca0d50b832e03"
+  },
+  "zonal2025": {
+    "file_id": "file_000000005f0c81f4bde375feb8d840f4",
+    "filename": "2025_zonalni_atributy.xlsx",
+    "size_bytes": 97150,
+    "sha256": "bc32fc79075e52384daafcb76a84702b8ec191225122785ee2771e7fdda8d6d7"
+  },
+  "raw_import2040_a": {
+    "file_id": "file_000000002e7081f4a08d98b596e972f4",
+    "filename": "R1_09H_IMPORT_2040_ZONE_RAW_ATTRS_WITH_2022_FALLBACK.py",
+    "size_bytes": 6493,
+    "sha256": "aa7210a3b80e0c954ce69c3ef28f6f3b1c8167222334a043af10413ccee8784d"
+  },
+  "zonal2070": {
+    "file_id": "file_00000000e11481f4bc7788d819439d18",
+    "filename": "2070_zonalni_atributy.xlsx",
+    "size_bytes": 138170,
+    "sha256": "d8822f95efcb6a5c2b41b4329fb8c3a0d240378952e5b9611bde6c92f4e1366b"
+  },
+  "lnv2070": {
+    "file_id": "file_00000000253882439a8d82c125eb46ee",
+    "filename": "R1_V14_LNV_OD_2070_MC_MEAN.csv",
+    "size_bytes": 53575,
+    "sha256": "a915f6bd26c27016c3af36edc1f342d2f78485010c2dcc8f61de0c12cae12b2c"
+  },
+  "nv2070": {
+    "file_id": "file_00000000f37481f4b4918fff1c51094e",
+    "filename": "R1_V14_NV_OD_2070_MC_MEAN.csv",
+    "size_bytes": 41515,
+    "sha256": "f6a2bb368cd4c0135030a3c9e015747a5ca7674a9fb203d8ce76386240a6cb15"
+  },
+  "freight_zip": {
+    "file_id": "file_000000007e6481f4927c4dea9fbb8424",
+    "filename": "R1_freight_OD_forecast_2025_2070_MONTE_CARLO.zip",
+    "size_bytes": 1652547,
+    "sha256": "8060cb9de07d71bbfdcb8d45f53f04913ac2e9633a24c56735079b21a6dd5abc"
+  },
+  "raw_import2040_b": {
+    "file_id": "file_0000000048b481f498fcce2af5f925cf",
+    "filename": "R1_09H_IMPORT_2040_ZONE_RAW_ATTRS_WITH_2022_FALLBACK.py",
+    "size_bytes": 6493,
+    "sha256": "aa7210a3b80e0c954ce69c3ef28f6f3b1c8167222334a043af10413ccee8784d"
+  },
+  "freight_import2040": {
+    "file_id": "file_00000000d0d881f4bc36ea238e044287",
+    "filename": "R1_IMPORT_FREIGHT_V14_2040_ROUNDED.py",
+    "size_bytes": 17932,
+    "sha256": "26163ac312f9fe9977e6b24b2d334b307ac5eded2188a45248bc16181e52a191"
+  },
+  "exporter": {
+    "file_id": "file_000000002e388211868a74d15efd8ed8",
+    "filename": "R1_EXPORT_MATRICES_FOR_SCENARIO_MANAGER.py",
+    "size_bytes": 22329,
+    "sha256": "ecd29c989c674dfbb7518eaea203e52bdcd12840ebea102c1044f64b07549eb1"
+  },
+  "oa2040_b": {
+    "file_id": "file_00000000127c8211a567af3defecb046",
+    "filename": "R1_17_2040_CREATE_OA_SUM_AND_CAL_DATA_MATRIX.py",
+    "size_bytes": 21788,
+    "sha256": "e774e1027e25347945802c1d47db85d13d89fc1aa970d1a6d56ca0d50b832e03"
+  },
+  "lnv2040": {
+    "file_id": "file_00000000253481f4b4eb5411c55cd835",
+    "filename": "R1_V14_LNV_OD_2040_ROUNDED.csv",
+    "size_bytes": 30722,
+    "sha256": "7e62ea17fee693e6a16cd929889bbd60c0d7046152edc602bf924cf526455a8e"
+  },
+  "nv2040": {
+    "file_id": "file_0000000055388246bd17e449f05d3acd",
+    "filename": "R1_V14_NV_OD_2040_ROUNDED.csv",
+    "size_bytes": 24317,
+    "sha256": "ee2ae8ab4a4ae6ab2c2d1f417e562c85c6fef7004ab593f91e0a9e83dc295a6c"
+  },
+  "gravity2025": {
+    "file_id": "file_0000000040e88210ab426423cd69c156",
+    "filename": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2025_v3.xlsx",
+    "size_bytes": 11522029,
+    "sha256": "476f76881fc479c1393447ab7b28c992229662a7a5c37deb1699e3e675209a93"
+  },
+  "gravity2060": {
+    "file_id": "file_000000009b1c81f4a74d1aaa027742dc",
+    "filename": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2060_v4.xlsx",
+    "size_bytes": 14219638,
+    "sha256": "6b2323d567eac1378dbcc587d5376b1c91ea1ab891e2437f9be5624e4a220a9b"
+  },
+  "gravity2040": {
+    "file_id": "file_000000007d1881f4a4e92dcaa87c3a0b",
+    "filename": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2040_v4.xlsx",
+    "size_bytes": 13552841,
+    "sha256": "362007e1c425e8d72c2c95fa9635fd11fd8be10c93c2bf0cc558e1c16b0e80a1"
+  },
+  "gravity2050": {
+    "file_id": "file_000000007f1881f4bbe6fca12b365a4b",
+    "filename": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2050_v5.xlsx",
+    "size_bytes": 14169525,
+    "sha256": "7e0c7724fd24d98c23cf01c87daec193a95b5881ebf141e338b8f6c44b51cc0a"
+  },
+  "gravity2070": {
+    "file_id": "file_000000004ab482118c1ffae14c9408d1",
+    "filename": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2070_v4.xlsx",
+    "size_bytes": 14306021,
+    "sha256": "c776e749931fb066dc11dd0e7374b30de6d6c03b5ab8e5c9879045cc47dabfa8"
+  }
+}
