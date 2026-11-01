@@ -1,0 +1,128 @@
+{
+  "status": "PASS",
+  "checks_count": 30,
+  "checks": [
+    {
+      "name": "exact_input_sha256:cycle2",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_sha256:target",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_sha256:timing",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_sha256:td",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_sha256:current_cycle1",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_sha256:current_supply_cycle2",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_sha256:current_generation_cycle2",
+      "status": "PASS"
+    },
+    {
+      "name": "td_block_exactly_matches_cycle_record",
+      "status": "PASS"
+    },
+    {
+      "name": "target_plan_exact_match",
+      "status": "PASS"
+    },
+    {
+      "name": "same_new_run",
+      "status": "PASS"
+    },
+    {
+      "name": "cycle1_to_cycle2_state_chain",
+      "status": "PASS"
+    },
+    {
+      "name": "generation_unchanged_from_previous_upload",
+      "status": "PASS"
+    },
+    {
+      "name": "supply_objectives_and_attempts_unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "td_accepted_and_realized",
+      "status": "PASS"
+    },
+    {
+      "name": "cycle_td_hash_identity",
+      "status": "PASS"
+    },
+    {
+      "name": "full_scale_first_realization",
+      "status": "PASS"
+    },
+    {
+      "name": "native_gap_below_limit",
+      "status": "PASS"
+    },
+    {
+      "name": "hard_guards_pass",
+      "status": "PASS"
+    },
+    {
+      "name": "blend_weights_and_f_formula",
+      "status": "PASS"
+    },
+    {
+      "name": "blend_acceptance_limits",
+      "status": "PASS"
+    },
+    {
+      "name": "cal_geh_matches_blend",
+      "status": "PASS"
+    },
+    {
+      "name": "td_changed_expected_components",
+      "status": "PASS"
+    },
+    {
+      "name": "long_active_but_no_accepted_parameter_changes",
+      "status": "PASS"
+    },
+    {
+      "name": "long_measured_readiness_current",
+      "status": "PASS"
+    },
+    {
+      "name": "native_ipf_tolerance_preserved",
+      "status": "PASS"
+    },
+    {
+      "name": "no_convergence_claim",
+      "status": "PASS"
+    },
+    {
+      "name": "td_every_two_policy_observed",
+      "status": "PASS"
+    },
+    {
+      "name": "fifty_six_evaluations_observed",
+      "status": "PASS"
+    },
+    {
+      "name": "congested_impedance_update_measured",
+      "status": "PASS"
+    },
+    {
+      "name": "count_roster_stable",
+      "status": "PASS"
+    }
+  ],
+  "runtime_tests": "NOT_RUN_READ_ONLY_AUDIT",
+  "live_visum": "NOT_RUN"
+}

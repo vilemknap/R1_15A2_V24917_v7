@@ -1,0 +1,147 @@
+{
+  "scope": "READ_ONLY_TD02_AND_DELIVERY_HANDOFF",
+  "run_id": "RUN_20261101_113344_232959",
+  "status": "ACCEPTED_FINECDF_TD",
+  "accepted_state_hash": "3b7afe0b9ced0c93a679dcffe9a088c8a3107f95acf59cab182b928ffbe3c58e",
+  "diagnostic_hash": "ea61aade0301ba74c650d64389e648facabfdfefe630e5f684001546559b0e38",
+  "checkpoint_filename": "NOT_SUPPLIED; resolve CALIBRATION/LATEST_ACCEPTED_CHECKPOINT.json for TD02 boundary",
+  "checkpoint_file_bytes_verified_here": false,
+  "native_assignment_gap": 0.00080873,
+  "realization_scale": 1.0,
+  "td_evaluations": 56,
+  "td_seconds": 3972.283,
+  "geh_stages": {
+    "new_run_baseline": 19.32032021379468,
+    "after_tg_c1": 19.630521701012643,
+    "after_tg_c2": 19.087238253656174,
+    "after_supply_c2": 18.837540161154966,
+    "after_congested_impedance_update": 18.95509517329935,
+    "after_td_c2": 19.027285181369137
+  },
+  "net_geh_improvement_vs_new_run_start_percent": 1.5167193358229913,
+  "final_cal_metrics": {
+    "role": "CALIBRATION",
+    "n": 247,
+    "obs_sum": 1299058.4035403342,
+    "model_sum": 1158603.3270049666,
+    "model_obs_ratio": 0.8918793210893488,
+    "profile_sum_role": "DIAGNOSTIC_ONLY_PROFILE_PASSAGE_CHECKSUM",
+    "profile_sum_unique_trip_interpretation_allowed": false,
+    "profile_sum_note": "A trip may cross multiple observed profiles; sums are not unique-trip or total-demand estimates.",
+    "rmse": 2405.9054081202944,
+    "mae": 1341.7426293622698,
+    "objective_geh_mean_weighted": 19.027285181369137,
+    "objective_geh2_mean": 718.1926217506392,
+    "objective_weight_sum": 241.8,
+    "geh_mean": 19.13545596875359,
+    "geh_lt5": 65,
+    "geh_lt10": 95,
+    "geh_ge20": 85,
+    "geh_ge30": 61
+  },
+  "blend": {
+    "schema": "R1_15A2_V24917_TD_COUNT_BLEND_V1",
+    "w_cnt": 0.6,
+    "w_idp": 0.4,
+    "F": 0.9868561943047274,
+    "cal_geh_before": 18.95509517329935,
+    "cal_geh_after": 19.027285181369137,
+    "count_ratio": 1.0038084751044394,
+    "idp_before": 0.4651259631555444,
+    "idp_after": 0.44718501897002744,
+    "idp_ratio": 0.9614277731051594,
+    "min_relative_improvement": 0.001,
+    "max_idp_ratio": 1.25,
+    "hard_reasons_kept": []
+  },
+  "idp_metric_warning": "The blend IDP metric is distinct from unweighted mean_primary_error and selected-component weighted objective",
+  "changed_rows": [
+    {
+      "component": "WORK_noE_noC",
+      "candidate_b": 2.70296317049111,
+      "candidate_c": -2.78688535785477,
+      "realization_scale": 1.0,
+      "parent_b": 2.75296317049111,
+      "parent_c": -2.78688535785477,
+      "target_b": 2.70296317049111,
+      "target_c": -2.78688535785477,
+      "coordinate_system": "B_LINEAR_LOG_NEG_C"
+    },
+    {
+      "component": "SERV_E_C",
+      "candidate_b": 0.0359375,
+      "candidate_c": -0.261166688405323,
+      "realization_scale": 1.0,
+      "parent_b": 0.0359375,
+      "parent_c": -0.232437422931046,
+      "target_b": 0.0359375,
+      "target_c": -0.261166688405323,
+      "coordinate_system": "B_LINEAR_LOG_NEG_C"
+    },
+    {
+      "component": "SCHOOL",
+      "candidate_b": 0.0,
+      "candidate_c": -0.322044265505231,
+      "realization_scale": 1.0,
+      "parent_b": 0.0,
+      "parent_c": -0.361848936721678,
+      "target_b": 0.0,
+      "target_c": -0.322044265505231,
+      "coordinate_system": "B_LINEAR_LOG_NEG_C"
+    }
+  ],
+  "long_readiness": {
+    "status": "READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE",
+    "group": "LONG_COMPOSITE",
+    "component_matrix_nos": [
+      9111,
+      9112,
+      9113,
+      9114,
+      9115
+    ],
+    "vehicle_component_matrix_nos": [
+      9291,
+      9292,
+      9293,
+      9294,
+      9295
+    ],
+    "final_vehicle_matrix_no": 9305,
+    "count_response_method": "MEASURED_NATIVE_ASSIGNMENT_EVERY_TD_EVALUATION",
+    "assignment_epoch": 67,
+    "assignment_binding": {
+      "assignment_epoch": 67,
+      "mutation_epoch": 725,
+      "skim_epoch_hash": "4b552a46fb5031858f259ae0489b6367ad8316d1cd37be73ad47f9bd16c2602b",
+      "assignment_token": "419a6dfd7fe8744ca3018294a768bdf0e75af88f474540c19121b31b73a0e510",
+      "zone_order_sha256": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968"
+    },
+    "skim_epoch_hash": "4b552a46fb5031858f259ae0489b6367ad8316d1cd37be73ad47f9bd16c2602b",
+    "support_basis": {
+      "distance_basis": "FIXED_OSRM_DIST_KM_9697",
+      "matrix_no": 9697,
+      "matrix_code": "R1_OSRM_DIST_KM",
+      "unit": "km",
+      "unit_authority": "USER_SELECTED_R1_OSRM_DIST_KM_CONTRACT",
+      "values_sha256": "8ae02c5c105db8b9fcdb6aa1d65347e9b8b58b8e4c264bd25fecfa357515fe87",
+      "zone_order_sha256": "6d36c5bdce085b2032fe3be29c0bded479a5496d82db54a4610d239bee6e9968",
+      "assignment_dependent": false
+    },
+    "minimum_km": 80.0,
+    "finecdf_conditional_km": [
+      100.0,
+      200.0
+    ],
+    "above_200_km_permitted": true,
+    "aggregate_target_count": 1,
+    "vehicle_volume": 4568.370232333619,
+    "source_model_modified": false
+  },
+  "converged": false,
+  "continuation_reason": "LONG_SCHOOL_DESIGN_UNVERIFIED",
+  "inner_joint_stop_reason": "TD_EVALUATION_BUDGET",
+  "delivery_status": "WORKING_PARTIAL_RESULTS; scenario .ver files, period conversion authority, units and export formats still required",
+  "runtime_changes": [],
+  "live_visum": "NOT_RUN"
+}

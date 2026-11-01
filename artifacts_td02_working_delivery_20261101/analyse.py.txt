@@ -1,0 +1,76 @@
+import argparse, base64, gzip, hashlib, json, math, re
+from pathlib import Path
+
+p = argparse.ArgumentParser()
+p.add_argument('--package', type=Path, required=True)
+p.add_argument('--manifest', type=Path)
+a = p.parse_args(); out = a.package; out.mkdir(parents=True, exist_ok=True)
+if a.manifest:
+    inputs = []
+    for f in json.loads(a.manifest.read_text()):
+        raw = Path(f['path']).read_bytes(); name = f['label'] + '__' + Path(f['path']).name + '.gz.b64'
+        (out/name).write_text(base64.b64encode(gzip.compress(raw, mtime=0)).decode('ascii')+'\n')
+        inputs.append({'label': f['label'], 'file_id': f['file_id'], 'original_filename': Path(f['path']).name,
+                       'archive': name, 'size_bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
+    (out/'INPUTS.json').write_text(json.dumps(inputs, indent=2)+'\n')
+checks = []; data = {}
+def check(name, ok): checks.append({'name': name, 'status': 'PASS' if ok else 'FAIL'})
+def close(x, y): return math.isclose(float(x), float(y), rel_tol=1e-12, abs_tol=1e-12)
+def decode(package, item):
+    raw = gzip.decompress(base64.b64decode((package/item['archive']).read_bytes()))
+    check('exact_input_sha256:'+item['label'],len(raw)==item['size_bytes'] and hashlib.sha256(raw).hexdigest()==item['sha256'])
+    return json.loads(raw)
+for f in json.loads((out/'INPUTS.json').read_text()): data[f['label']] = decode(out,f)
+previous = out.parent/'artifacts_new_run_after_td2_20261101'
+prior = {}
+for f in json.loads((previous/'INPUTS.json').read_text()):
+    if f['label'] in ['current_generation_cycle2', 'current_supply_cycle2', 'current_cycle1']:
+        prior[f['label']] = decode(previous,f)
+c = data['cycle2']; t = data['td']; d = t['realization']['attempts'][0]['decision']; b = d['v24917_td_blend']
+g = c['generation']; supply = g['v24917_supplymix']; inner = t['inner']; joint = inner['tdjoint']
+cal_before = d['cal_before']; cal_after = d['cal_after']
+check('td_block_exactly_matches_cycle_record',c['td']==t)
+check('target_plan_exact_match',t['td_target_plan']==data['target'])
+check('same_new_run',set(re.findall(r'RUN_\d{8}_\d{6}_\d+',json.dumps(data)))=={'RUN_20261101_113344_232959'})
+check('cycle1_to_cycle2_state_chain',c['state_hash_start']==prior['current_cycle1']['state_hash_end'])
+check('generation_unchanged_from_previous_upload',all(g[k]==v for k,v in prior['current_generation_cycle2'].items()))
+check('supply_objectives_and_attempts_unchanged',all(supply[k]==prior['current_supply_cycle2'][k] for k in ['status','attempts','objective_before','objective_after','accepted_trial','addval1_changes']))
+check('td_accepted_and_realized',t['status']=='ACCEPTED_FINECDF_TD' and t['td_realization_complete'] is True and c['td_completed'] is True and c['td_changed'] is True)
+check('cycle_td_hash_identity',c['state_hash_end']==t['state_hash'] and c['diagnostic_hash_end']==t['diagnostic_hash'])
+check('full_scale_first_realization',len(t['realization']['attempts'])==1 and t['realization']['selected_scale']==1.0 and d['accepted'] is True)
+check('native_gap_below_limit',t['gap']==t['realization']['attempts'][0]['gap'] and 0<t['gap']<=0.005)
+check('hard_guards_pass',not d['reasons'] and d['protected_guard']['passes'] is True and d['observation_set_guard']['passes'] is True and d['severity_transition_guard']['passes'] is True)
+check('blend_weights_and_f_formula',b['w_cnt']==0.6 and b['w_idp']==0.4 and close(b['F'],0.6*b['count_ratio']+0.4*b['idp_ratio']))
+check('blend_acceptance_limits',b['F']<=1-b['min_relative_improvement'] and b['idp_ratio']<=b['max_idp_ratio'] and not b['hard_reasons_kept'])
+check('cal_geh_matches_blend',close(cal_before['objective_geh_mean_weighted'],b['cal_geh_before']) and close(cal_after['objective_geh_mean_weighted'],b['cal_geh_after']))
+check('td_changed_expected_components',{r['component'] for r in t['changed_rows']}=={'WORK_noE_noC','SERV_E_C','SCHOOL'})
+check('long_active_but_no_accepted_parameter_changes','LONG_COMPOSITE' in inner['active_components'] and not any(r['component'].startswith('LONG') for r in t['changed_rows']))
+check('long_measured_readiness_current',joint['long_composite_live_readiness']['status']=='READY_CURRENT_NATIVE_DYNAMIC_COUNT_RESPONSE')
+check('native_ipf_tolerance_preserved',t['realization']['ipf_tolerance_relaxed'] is False and inner['ipf_tolerance_changed'] is False)
+check('no_convergence_claim',inner['search_complete'] is False and inner['stationarity_confirmed'] is False and c['joint_stationary'] is False)
+check('td_every_two_policy_observed',t['td_run_policy_reason']=='EVERY_2' and prior['current_cycle1']['td']['skip_policy_reason']=='NOT_DUE')
+check('fifty_six_evaluations_observed',inner['td_evaluations']==joint['td_evaluations']==56)
+check('congested_impedance_update_measured',t['v24917_congested_impedance']['applied'] is True and t['v24917_congested_impedance']['status']=='APPLIED')
+check('count_roster_stable',cal_before['n']==cal_after['n']==247 and close(cal_before['obs_sum'],cal_after['obs_sum']))
+start=prior['current_cycle1']['generation']['objective_before']['raw_cal']
+summary={'scope':'READ_ONLY_TD02_AND_DELIVERY_HANDOFF','run_id':'RUN_20261101_113344_232959',
+ 'status':t['status'],'accepted_state_hash':t['state_hash'],'diagnostic_hash':t['diagnostic_hash'],
+ 'checkpoint_filename':'NOT_SUPPLIED; resolve CALIBRATION/LATEST_ACCEPTED_CHECKPOINT.json for TD02 boundary',
+ 'checkpoint_file_bytes_verified_here':False,'native_assignment_gap':t['gap'],
+ 'realization_scale':t['realization']['selected_scale'],'td_evaluations':inner['td_evaluations'],
+ 'td_seconds':data['timing']['block']['td_stage']['seconds'],
+ 'geh_stages':{'new_run_baseline':start,'after_tg_c1':prior['current_cycle1']['generation']['objective_after']['raw_cal'],
+  'after_tg_c2':g['objective_after']['raw_cal'],'after_supply_c2':supply['objective_after']['raw_cal'],
+  'after_congested_impedance_update':cal_before['objective_geh_mean_weighted'],
+  'after_td_c2':cal_after['objective_geh_mean_weighted']},
+ 'net_geh_improvement_vs_new_run_start_percent':100*(1-cal_after['objective_geh_mean_weighted']/start),
+ 'final_cal_metrics':cal_after,'blend':b,'idp_metric_warning':'The blend IDP metric is distinct from unweighted mean_primary_error and selected-component weighted objective',
+ 'changed_rows':t['changed_rows'],'long_readiness':joint['long_composite_live_readiness'],
+ 'converged':False,'continuation_reason':c['progress_continue_reason'],'inner_joint_stop_reason':joint['stop_reason'],
+ 'delivery_status':'WORKING_PARTIAL_RESULTS; scenario .ver files, period conversion authority, units and export formats still required',
+ 'runtime_changes':[],'live_visum':'NOT_RUN'}
+(out/'SUMMARY.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False)+'\n')
+result={'status':'PASS' if all(v['status']=='PASS' for v in checks) else 'FAIL','checks_count':len(checks),'checks':checks,'runtime_tests':'NOT_RUN_READ_ONLY_AUDIT','live_visum':'NOT_RUN'}
+(out/'CHECKS.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'status':result['status'],'checks':len(checks),'final_geh':cal_after['objective_geh_mean_weighted'],'td_seconds':summary['td_seconds']}))
+if result['status']!='PASS': raise SystemExit(1)
