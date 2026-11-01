@@ -1,0 +1,43 @@
+"""Inspect only supplied workbook formulas/cached headers; do not follow links."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import zipfile
+import xml.etree.ElementTree as ET
+
+import openpyxl
+
+def probe(manifest):
+    files={r['label']:r for r in json.loads(Path(manifest).read_text())}
+    ns={'x':'http://schemas.openxmlformats.org/spreadsheetml/2006/main'};results=[]
+    for year,index,col_smear,col_jobs in [(2040,3,'MF','MM'),(2050,4,'MG','MN'),(2060,5,'MH','MO'),(2070,6,'MI','MP')]:
+        source=files['gravity'+str(year)];path=Path(source['path'])
+        book=openpyxl.load_workbook(path,read_only=True,data_only=False)
+        try:
+            sheet=book['Zony_sloucene_43_amdy_koeficien'];headers=next(sheet.iter_rows(min_row=1,max_row=1,values_only=True))
+            mapped={c:headers[openpyxl.utils.column_index_from_string(c)-1] for c in ['BH','BI']}
+            formulas=next(sheet.iter_rows(min_row=616,max_row=616,min_col=60,max_col=61,values_only=True))
+            exported=next(book['vstupy_prod_att_R1'].iter_rows(min_row=616,max_row=616,min_col=7,max_col=8,values_only=True))
+        finally:book.close()
+        with zipfile.ZipFile(path) as archive:
+            part=f'xl/externalLinks/externalLink{index}.xml';tree=ET.fromstring(archive.read(part))
+            names=[n.get('val') for n in tree.findall('.//x:sheetName',ns)]
+            sheet=next(s for s in tree.findall('.//x:sheetData',ns) if int(s.get('sheetId'))==names.index('PROGNOZA zde'))
+            cache={c.get('r'):''.join(c.itertext()) for c in sheet.findall('.//x:cell',ns)}
+            matches=[ref[1:] for ref,value in cache.items() if ref.startswith('E') and ref[1:].isdigit() and value=='ZONE 403']
+            findings={name:{'column':col,'cached_header_cell':col+'2','cached_header':cache.get(col+'2'),
+                'nitra_lookup_key':'ZONE 403','nitra_lookup_found_in_cached_source':bool(matches),
+                'nitra_cached_source_values':[cache.get(col+row) for row in matches]}
+                for name,col in [('NUM_PM_SMEAR',col_smear),('NUM_PM',col_jobs)]}
+            results.append({'year':year,'source_file':path.name,'source_file_id':source['file_id'],
+                'source_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'source_target_sheet':'Zony_sloucene_43_amdy_koeficien',
+                'target_headers':mapped,'target_formula_cells':{'BH616':formulas[0],'BI616':formulas[1]},
+                'raw_export_mapping':{'G616_NUM_PM':exported[0],'H616_NUM_PM_SMEAR':exported[1]},
+                'external_link_part':part,'external_cached_sheet':'PROGNOZA zde','findings':findings,
+                'external_workbook_not_opened_or_recalculated':True})
+    return results
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--manifest',required=True);parser.add_argument('--output',required=True)
+    args=parser.parse_args();Path(args.output).write_text(json.dumps(probe(args.manifest),indent=2,ensure_ascii=False)+'\n',encoding='utf-8')

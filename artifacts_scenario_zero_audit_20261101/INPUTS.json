@@ -1,0 +1,47 @@
+[
+  {
+    "normalized_file": "REFERENCE_2022_RAW.csv",
+    "normalized_sha256": "f912400d76de9292b4283bca4a78c62fd31ff65d13283871f58e65a3fbb27bb8",
+    "source_filename": "ZONE-2026-10-31-03-39-29.xlsx",
+    "source_sha256": "edbccbcd3f2172e85038ba92619321d2222ee089234b5b37d25b918a57f42876",
+    "source_sheet": "Zones",
+    "key": "NO",
+    "source_file_id": "file_0000000026688243ab4bf7bf22eb2172"
+  },
+  {
+    "normalized_file": "FUTURE_2040_RAW.csv",
+    "normalized_sha256": "b7f1d34b44febef498e39040c3fcc0328432730869a9a77098809705120fab27",
+    "source_filename": "vstupy_prod_att_R1_hodnoty.xlsx",
+    "source_sha256": "e86b5ba545d341f5e9157445ae07faf0997b69142b2749bc97034a4b1a987a32",
+    "source_sheet": "vstupy_prod_att_R1_2040",
+    "key": "OSRM_MATRIX_ID",
+    "source_file_id": "file_0000000006d481f4903534264df2ce9e"
+  },
+  {
+    "normalized_file": "FUTURE_2050_RAW.csv",
+    "normalized_sha256": "9aa37769ae2c234ea0ea19805c06466bc0dbcaace84531e4a2361b99023067e1",
+    "source_filename": "vstupy_prod_att_R1_hodnoty.xlsx",
+    "source_sha256": "e86b5ba545d341f5e9157445ae07faf0997b69142b2749bc97034a4b1a987a32",
+    "source_sheet": "vstupy_prod_att_R1_2050",
+    "key": "OSRM_MATRIX_ID",
+    "source_file_id": "file_0000000006d481f4903534264df2ce9e"
+  },
+  {
+    "normalized_file": "FUTURE_2060_RAW.csv",
+    "normalized_sha256": "6b8fd17af60b60248e7846feb176aa6ababcfeb23506d4b37519e1aab22b70e6",
+    "source_filename": "vstupy_prod_att_R1_hodnoty.xlsx",
+    "source_sha256": "e86b5ba545d341f5e9157445ae07faf0997b69142b2749bc97034a4b1a987a32",
+    "source_sheet": "vstupy_prod_att_R1_2060",
+    "key": "OSRM_MATRIX_ID",
+    "source_file_id": "file_0000000006d481f4903534264df2ce9e"
+  },
+  {
+    "normalized_file": "FUTURE_2070_RAW.csv",
+    "normalized_sha256": "a3b7262d005531644ab923755bcdc4ac41d372cf2a440aafcfb0f45c898b09af",
+    "source_filename": "vstupy_prod_att_R1_hodnoty.xlsx",
+    "source_sha256": "e86b5ba545d341f5e9157445ae07faf0997b69142b2749bc97034a4b1a987a32",
+    "source_sheet": "vstupy_prod_att_R1_2070",
+    "key": "OSRM_MATRIX_ID",
+    "source_file_id": "file_0000000006d481f4903534264df2ce9e"
+  }
+]

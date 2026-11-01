@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "checks_count": 25,
+  "checks": [
+    {
+      "name": "normalized_input_sha:REFERENCE_2022_RAW.csv",
+      "status": "PASS"
+    },
+    {
+      "name": "normalized_input_sha:FUTURE_2040_RAW.csv",
+      "status": "PASS"
+    },
+    {
+      "name": "normalized_input_sha:FUTURE_2050_RAW.csv",
+      "status": "PASS"
+    },
+    {
+      "name": "normalized_input_sha:FUTURE_2060_RAW.csv",
+      "status": "PASS"
+    },
+    {
+      "name": "normalized_input_sha:FUTURE_2070_RAW.csv",
+      "status": "PASS"
+    },
+    {
+      "name": "reference_681_unique_zones",
+      "status": "PASS"
+    },
+    {
+      "name": "future_and_package_zone_keys:2040",
+      "status": "PASS"
+    },
+    {
+      "name": "all_compared_14_attributes:2040",
+      "status": "PASS"
+    },
+    {
+      "name": "zeros_are_all_domestic_by_reference_flag:2040",
+      "status": "PASS"
+    },
+    {
+      "name": "new_values_match_published_import:2040",
+      "status": "PASS"
+    },
+    {
+      "name": "future_and_package_zone_keys:2050",
+      "status": "PASS"
+    },
+    {
+      "name": "all_compared_14_attributes:2050",
+      "status": "PASS"
+    },
+    {
+      "name": "zeros_are_all_domestic_by_reference_flag:2050",
+      "status": "PASS"
+    },
+    {
+      "name": "new_values_match_published_import:2050",
+      "status": "PASS"
+    },
+    {
+      "name": "future_and_package_zone_keys:2060",
+      "status": "PASS"
+    },
+    {
+      "name": "all_compared_14_attributes:2060",
+      "status": "PASS"
+    },
+    {
+      "name": "zeros_are_all_domestic_by_reference_flag:2060",
+      "status": "PASS"
+    },
+    {
+      "name": "new_values_match_published_import:2060",
+      "status": "PASS"
+    },
+    {
+      "name": "future_and_package_zone_keys:2070",
+      "status": "PASS"
+    },
+    {
+      "name": "all_compared_14_attributes:2070",
+      "status": "PASS"
+    },
+    {
+      "name": "zeros_are_all_domestic_by_reference_flag:2070",
+      "status": "PASS"
+    },
+    {
+      "name": "new_values_match_published_import:2070",
+      "status": "PASS"
+    },
+    {
+      "name": "total_raw_cells_compared",
+      "status": "PASS"
+    },
+    {
+      "name": "flagged_cells_unique",
+      "status": "PASS"
+    },
+    {
+      "name": "zero_and_missing_categories_disjoint",
+      "status": "PASS"
+    }
+  ]
+}

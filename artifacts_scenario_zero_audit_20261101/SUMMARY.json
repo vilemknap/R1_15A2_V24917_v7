@@ -1,0 +1,119 @@
+{
+  "status": "PASS",
+  "scope": "READ_ONLY_RAW_INPUT_AUDIT",
+  "reference": "ZONE-2026-10-31-03-39-29.xlsx, earlier user-supplied 2022 model export; not a fresh read of TD02 .ver",
+  "years": [
+    {
+      "year": 2040,
+      "compared_cells": 9534,
+      "zero_over_positive_cells": 160,
+      "zero_over_positive_zones": 66,
+      "zero_counts_by_attribute": {
+        "NUM_PM_SMEAR": 55,
+        "NUM_VS": 11,
+        "NUM_PUP": 11,
+        "E_C": 12,
+        "E_NC": 12,
+        "NE_C": 12,
+        "NE_NC": 12,
+        "PRENOC_SVK": 12,
+        "NUM_PM": 11,
+        "NUM_PUP_PLACES": 11,
+        "POP_ZP": 1
+      },
+      "baseline_positive_missing_future_cells": 0,
+      "missing_counts_by_attribute": {},
+      "low_num_pm_smear_scale_candidates": 545,
+      "zero_flags_by_domestic_indicator": {
+        "1": 160
+      },
+      "differences_vs_published_import": 0
+    },
+    {
+      "year": 2050,
+      "compared_cells": 9534,
+      "zero_over_positive_cells": 160,
+      "zero_over_positive_zones": 66,
+      "zero_counts_by_attribute": {
+        "NUM_PM_SMEAR": 66,
+        "NUM_VS": 11,
+        "NUM_PUP": 11,
+        "E_C": 12,
+        "E_NC": 12,
+        "NE_C": 12,
+        "NE_NC": 12,
+        "PRENOC_SVK": 12,
+        "NUM_PM": 11,
+        "POP_ZP": 1
+      },
+      "baseline_positive_missing_future_cells": 11,
+      "missing_counts_by_attribute": {
+        "NUM_PUP_PLACES": 11
+      },
+      "low_num_pm_smear_scale_candidates": 534,
+      "zero_flags_by_domestic_indicator": {
+        "1": 160
+      },
+      "differences_vs_published_import": 0
+    },
+    {
+      "year": 2060,
+      "compared_cells": 9534,
+      "zero_over_positive_cells": 160,
+      "zero_over_positive_zones": 66,
+      "zero_counts_by_attribute": {
+        "NUM_PM_SMEAR": 66,
+        "NUM_VS": 11,
+        "NUM_PUP": 11,
+        "E_C": 12,
+        "E_NC": 12,
+        "NE_C": 12,
+        "NE_NC": 12,
+        "PRENOC_SVK": 12,
+        "NUM_PM": 11,
+        "POP_ZP": 1
+      },
+      "baseline_positive_missing_future_cells": 10,
+      "missing_counts_by_attribute": {
+        "NUM_PUP_PLACES": 10
+      },
+      "low_num_pm_smear_scale_candidates": 534,
+      "zero_flags_by_domestic_indicator": {
+        "1": 160
+      },
+      "differences_vs_published_import": 0
+    },
+    {
+      "year": 2070,
+      "compared_cells": 9534,
+      "zero_over_positive_cells": 160,
+      "zero_over_positive_zones": 66,
+      "zero_counts_by_attribute": {
+        "NUM_PM_SMEAR": 66,
+        "NUM_VS": 11,
+        "NUM_PUP": 11,
+        "E_C": 12,
+        "E_NC": 12,
+        "NE_C": 12,
+        "NE_NC": 12,
+        "PRENOC_SVK": 12,
+        "NUM_PM": 11,
+        "POP_ZP": 1
+      },
+      "baseline_positive_missing_future_cells": 10,
+      "missing_counts_by_attribute": {
+        "NUM_PUP_PLACES": 10
+      },
+      "low_num_pm_smear_scale_candidates": 534,
+      "zero_flags_by_domestic_indicator": {
+        "1": 160
+      },
+      "differences_vs_published_import": 0
+    }
+  ],
+  "total_zero_over_positive_cells": 640,
+  "total_missing_over_positive_cells": 31,
+  "scale_threshold": "NUM_PM_SMEAR reference >=100 and future strictly between 0 and 2; flag only, not proof of error",
+  "source_or_import_modifications": false,
+  "live_visum": "NOT_RUN"
+}

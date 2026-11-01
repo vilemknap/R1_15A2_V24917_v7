@@ -1,0 +1,178 @@
+[
+  {
+    "year": 2040,
+    "source_file": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2040_v4.xlsx",
+    "source_file_id": "file_000000007d1881f4a4e92dcaa87c3a0b",
+    "source_sha256": "362007e1c425e8d72c2c95fa9635fd11fd8be10c93c2bf0cc558e1c16b0e80a1",
+    "source_target_sheet": "Zony_sloucene_43_amdy_koeficien",
+    "target_headers": {
+      "BH": "NUM_PM_SMEAR_2040",
+      "BI": "NUM_PM_2040"
+    },
+    "target_formula_cells": {
+      "BH616": "=IFERROR(_xlfn.XLOOKUP(E616,'[3]PROGNOZA zde'!$E:$E,'[3]PROGNOZA zde'!$MF:$MF),0)",
+      "BI616": "=IFERROR(_xlfn.XLOOKUP(E616,'[3]PROGNOZA zde'!$E:$E,'[3]PROGNOZA zde'!$MM:$MM),0)"
+    },
+    "raw_export_mapping": {
+      "G616_NUM_PM": "=Zony_sloucene_43_amdy_koeficien!BI616",
+      "H616_NUM_PM_SMEAR": "=Zony_sloucene_43_amdy_koeficien!BH616"
+    },
+    "external_link_part": "xl/externalLinks/externalLink3.xml",
+    "external_cached_sheet": "PROGNOZA zde",
+    "findings": {
+      "NUM_PM_SMEAR": {
+        "column": "MF",
+        "cached_header_cell": "MF2",
+        "cached_header": "K_2025",
+        "nitra_lookup_key": "ZONE 403",
+        "nitra_lookup_found_in_cached_source": true,
+        "nitra_cached_source_values": [
+          "0.90614986824998767"
+        ]
+      },
+      "NUM_PM": {
+        "column": "MM",
+        "cached_header_cell": "MM2",
+        "cached_header": "NUM_PM_SMEAR_2026",
+        "nitra_lookup_key": "ZONE 403",
+        "nitra_lookup_found_in_cached_source": true,
+        "nitra_cached_source_values": [
+          "#N/A"
+        ]
+      }
+    },
+    "external_workbook_not_opened_or_recalculated": true
+  },
+  {
+    "year": 2050,
+    "source_file": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2050_v5.xlsx",
+    "source_file_id": "file_000000007f1881f4bbe6fca12b365a4b",
+    "source_sha256": "7e0c7724fd24d98c23cf01c87daec193a95b5881ebf141e338b8f6c44b51cc0a",
+    "source_target_sheet": "Zony_sloucene_43_amdy_koeficien",
+    "target_headers": {
+      "BH": "NUM_PM_SMEAR_2050",
+      "BI": "NUM_PM_2050"
+    },
+    "target_formula_cells": {
+      "BH616": "=IFERROR(_xlfn.XLOOKUP(E616,'[4]PROGNOZA zde'!$E:$E,'[4]PROGNOZA zde'!$MG:$MG),0)",
+      "BI616": "=IFERROR(_xlfn.XLOOKUP(E616,'[4]PROGNOZA zde'!$E:$E,'[4]PROGNOZA zde'!$MN:$MN),0)"
+    },
+    "raw_export_mapping": {
+      "G616_NUM_PM": "=Zony_sloucene_43_amdy_koeficien!BI616",
+      "H616_NUM_PM_SMEAR": "=Zony_sloucene_43_amdy_koeficien!BH616"
+    },
+    "external_link_part": "xl/externalLinks/externalLink4.xml",
+    "external_cached_sheet": "PROGNOZA zde",
+    "findings": {
+      "NUM_PM_SMEAR": {
+        "column": "MG",
+        "cached_header_cell": "MG2",
+        "cached_header": "K_2026",
+        "nitra_lookup_key": "ZONE 403",
+        "nitra_lookup_found_in_cached_source": true,
+        "nitra_cached_source_values": [
+          "#N/A"
+        ]
+      },
+      "NUM_PM": {
+        "column": "MN",
+        "cached_header_cell": "MN2",
+        "cached_header": "NUM_PM_SMEAR_2030",
+        "nitra_lookup_key": "ZONE 403",
+        "nitra_lookup_found_in_cached_source": true,
+        "nitra_cached_source_values": [
+          "#N/A"
+        ]
+      }
+    },
+    "external_workbook_not_opened_or_recalculated": true
+  },
+  {
+    "year": 2060,
+    "source_file": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2060_v4.xlsx",
+    "source_file_id": "file_000000009b1c81f4a74d1aaa027742dc",
+    "source_sha256": "6b2323d567eac1378dbcc587d5376b1c91ea1ab891e2437f9be5624e4a220a9b",
+    "source_target_sheet": "Zony_sloucene_43_amdy_koeficien",
+    "target_headers": {
+      "BH": "NUM_PM_SMEAR_2060",
+      "BI": "NUM_PM_2060"
+    },
+    "target_formula_cells": {
+      "BH616": "=IFERROR(_xlfn.XLOOKUP(E616,'[5]PROGNOZA zde'!$E:$E,'[5]PROGNOZA zde'!$MH:$MH),0)",
+      "BI616": "=IFERROR(_xlfn.XLOOKUP(E616,'[5]PROGNOZA zde'!$E:$E,'[5]PROGNOZA zde'!$MO:$MO),0)"
+    },
+    "raw_export_mapping": {
+      "G616_NUM_PM": "=Zony_sloucene_43_amdy_koeficien!BI616",
+      "H616_NUM_PM_SMEAR": "=Zony_sloucene_43_amdy_koeficien!BH616"
+    },
+    "external_link_part": "xl/externalLinks/externalLink5.xml",
+    "external_cached_sheet": "PROGNOZA zde",
+    "findings": {
+      "NUM_PM_SMEAR": {
+        "column": "MH",
+        "cached_header_cell": "MH2",
+        "cached_header": "K_2030",
+        "nitra_lookup_key": "ZONE 403",
+        "nitra_lookup_found_in_cached_source": true,
+        "nitra_cached_source_values": [
+          "#N/A"
+        ]
+      },
+      "NUM_PM": {
+        "column": "MO",
+        "cached_header_cell": "MO2",
+        "cached_header": "NUM_PM_SMEAR_2040",
+        "nitra_lookup_key": "ZONE 403",
+        "nitra_lookup_found_in_cached_source": true,
+        "nitra_cached_source_values": [
+          "#N/A"
+        ]
+      }
+    },
+    "external_workbook_not_opened_or_recalculated": true
+  },
+  {
+    "year": 2070,
+    "source_file": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2070_v4.xlsx",
+    "source_file_id": "file_000000004ab482118c1ffae14c9408d1",
+    "source_sha256": "c776e749931fb066dc11dd0e7374b30de6d6c03b5ab8e5c9879045cc47dabfa8",
+    "source_target_sheet": "Zony_sloucene_43_amdy_koeficien",
+    "target_headers": {
+      "BH": "NUM_PM_SMEAR_2070",
+      "BI": "NUM_PM_2070"
+    },
+    "target_formula_cells": {
+      "BH616": "=IFERROR(_xlfn.XLOOKUP(E616,'[6]PROGNOZA zde'!$E:$E,'[6]PROGNOZA zde'!$MI:$MI),0)",
+      "BI616": "=IFERROR(_xlfn.XLOOKUP(E616,'[6]PROGNOZA zde'!$E:$E,'[6]PROGNOZA zde'!$MP:$MP),0)"
+    },
+    "raw_export_mapping": {
+      "G616_NUM_PM": "=Zony_sloucene_43_amdy_koeficien!BI616",
+      "H616_NUM_PM_SMEAR": "=Zony_sloucene_43_amdy_koeficien!BH616"
+    },
+    "external_link_part": "xl/externalLinks/externalLink6.xml",
+    "external_cached_sheet": "PROGNOZA zde",
+    "findings": {
+      "NUM_PM_SMEAR": {
+        "column": "MI",
+        "cached_header_cell": "MI2",
+        "cached_header": "K_2040",
+        "nitra_lookup_key": "ZONE 403",
+        "nitra_lookup_found_in_cached_source": true,
+        "nitra_cached_source_values": [
+          "#N/A"
+        ]
+      },
+      "NUM_PM": {
+        "column": "MP",
+        "cached_header_cell": "MP2",
+        "cached_header": "NUM_PM_SMEAR_2050",
+        "nitra_lookup_key": "ZONE 403",
+        "nitra_lookup_found_in_cached_source": true,
+        "nitra_cached_source_values": [
+          "#N/A"
+        ]
+      }
+    },
+    "external_workbook_not_opened_or_recalculated": true
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "audit_data_checks": 25,
+  "replay_exit_code": 0,
+  "replay_byte_identical_reports": true,
+  "original_tracked_files_unchanged": true,
+  "runtime_and_scenario_manifests_unchanged": true,
+  "cached_formula_headers_and_raw_mappings_verified": true,
+  "no_runtime_or_forecast_input_modifications": true,
+  "live_visum": "NOT_RUN",
+  "runtime_tests": "NOT_RUN_READ_ONLY_AUDIT",
+  "baseline_remote_commit": "20faadb99aba0a8201ce300dd61c33f1a1946d55",
+  "replay_command": [
+    "python",
+    "artifacts_scenario_zero_audit_20261101/analyse.py.txt",
+    "--package",
+    "artifacts_scenario_zero_audit_20261101"
+  ],
+  "formula_probe_command": [
+    "python",
+    "artifacts_scenario_zero_audit_20261101/source_formula_probe.py.txt",
+    "--manifest",
+    "/workspace/work/SCENARIO_UPLOADS_20261101.json",
+    "--output",
+    "artifacts_scenario_zero_audit_20261101/SOURCE_FORMULA_EVIDENCE.json"
+  ]
+}

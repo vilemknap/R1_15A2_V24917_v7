@@ -1,0 +1,124 @@
+"""Read-only audit of future raw zonal inputs against an explicit 2022 export."""
+import argparse
+import collections
+import csv
+import hashlib
+import json
+import math
+from pathlib import Path
+
+ATTRS=['NUM_VS','NUM_PUP','POP_ZP','E_C','E_NC','NE_C','NE_NC','PRENOC_SVK','AV_INCOME',
+       'NUM_PM','NUM_PM_SMEAR','NUM_PUP_PLACES','NUM_STUD_VS_PLACES','POP_CENTRALITY_TERM']
+YEARS=(2040,2050,2060,2070)
+META=['NAME','NOT_ZAHR','AMDY_EXTERNI_ZONA','AMDY_NO']
+
+def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def number(value):
+    if value is None or str(value).strip()=='' or isinstance(value,bool):return None
+    try:out=float(str(value).strip().replace(',','.'))
+    except (ValueError,TypeError):return None
+    return out if math.isfinite(out) else None
+
+def read_xlsx(path,sheet,key):
+    import openpyxl
+    book=openpyxl.load_workbook(path,read_only=True,data_only=True)
+    try:
+        rows=book[sheet].iter_rows(values_only=True);header=next(rows)
+        names=[str(v).strip().upper() if v is not None else '' for v in header]
+        required=[key]+ATTRS+META
+        if any(names.count(name)!=1 for name in required):raise ValueError('Required source columns not unique or missing')
+        ix={name:names.index(name) for name in required};out={}
+        for row in rows:
+            raw=row[ix[key]]
+            if raw is None:continue
+            numeric=number(raw)
+            if numeric is None or numeric!=int(numeric):raise ValueError('Noninteger source zone')
+            no=int(numeric)
+            if no in out:raise ValueError('Duplicate source zone')
+            if 'OSRM_MATRIX_ID' in names and key=='NO' and int(row[names.index('OSRM_MATRIX_ID')])!=no:
+                raise ValueError('2022 No and OSRM_MATRIX_ID disagree')
+            out[no]={name:row[ix[name]] for name in ATTRS+META}
+        if set(out)!=set(range(1,682)):raise ValueError('Expected all 681 zones')
+        return out
+    finally:book.close()
+
+def write_csv(path,fields,rows,delimiter=','):
+    with Path(path).open('w',encoding='utf-8',newline='') as stream:
+        writer=csv.DictWriter(stream,fieldnames=fields,delimiter=delimiter,lineterminator='\n');writer.writeheader();writer.writerows(rows)
+
+def read_csv(path):
+    with Path(path).open(encoding='utf-8-sig',newline='') as stream:
+        out={}
+        for row in csv.DictReader(stream):
+            no=int(row.pop('No'))
+            if no in out:raise ValueError('Duplicate normalized source zone')
+            out[no]=row
+        return out
+
+def main():
+    parser=argparse.ArgumentParser();parser.add_argument('--package',type=Path,required=True)
+    parser.add_argument('--future-xlsx',type=Path);parser.add_argument('--reference-xlsx',type=Path);args=parser.parse_args()
+    out=args.package;out.mkdir(parents=True,exist_ok=True);project=out.parent
+    if bool(args.future_xlsx)!=bool(args.reference_xlsx):raise ValueError('Supply both source XLSX paths or neither')
+    if args.future_xlsx:
+        sources=[('REFERENCE_2022_RAW.csv',args.reference_xlsx,'Zones','NO')]+[
+            (f'FUTURE_{year}_RAW.csv',args.future_xlsx,f'vstupy_prod_att_R1_{year}','OSRM_MATRIX_ID') for year in YEARS]
+        records=[]
+        for name,path,sheet,key in sources:
+            data=read_xlsx(path,sheet,key)
+            write_csv(out/name,['No']+META+ATTRS,[{'No':no,**data[no]} for no in sorted(data)])
+            records.append({'normalized_file':name,'normalized_sha256':sha(out/name),'source_filename':path.name,
+                'source_sha256':sha(path),'source_sheet':sheet,'key':key,
+                'source_file_id':'file_0000000026688243ab4bf7bf22eb2172' if key=='NO' else 'file_0000000006d481f4903534264df2ce9e'})
+        (out/'INPUTS.json').write_text(json.dumps(records,indent=2)+'\n')
+    checks=[]
+    def check(name,ok):checks.append({'name':name,'status':'PASS' if ok else 'FAIL'})
+    for item in json.loads((out/'INPUTS.json').read_text()):
+        check('normalized_input_sha:'+item['normalized_file'],sha(out/item['normalized_file'])==item['normalized_sha256'])
+    base=read_csv(out/'REFERENCE_2022_RAW.csv');check('reference_681_unique_zones',set(base)==set(range(1,682)))
+    zeros=[];missing=[];low=[];differences=[];summary=[]
+    for year in YEARS:
+        future=read_csv(out/f'FUTURE_{year}_RAW.csv');published=read_csv(project/f'scenario_tools/{year}/ZONE_RAW_ATTRS.csv')
+        check('future_and_package_zone_keys:'+str(year),set(future)==set(base)==set(published))
+        for no,row in future.items():
+            for attr in ATTRS:
+                b=number(base[no][attr]);v=number(row[attr]);old=number(published[no][attr])
+                common={'Year':year,'No':no,'Name':row['NAME'],'Attribute':attr,'Reference2022':b,
+                        'FutureValue':row[attr],'NOT_ZAHR_2022':base[no]['NOT_ZAHR'],
+                        'AMDY_EXTERNI_ZONA_2022':base[no]['AMDY_EXTERNI_ZONA'],'PublishedImportValue':published[no][attr]}
+                if b is not None and b>0 and v==0:zeros.append(common)
+                if b is not None and b>0 and (v is None or v<0):missing.append(common)
+                if attr=='NUM_PM_SMEAR' and b is not None and b>=100 and v is not None and 0<v<2:
+                    low.append({**common,'FutureReferenceRatio':v/b,'FutureNUM_PM':row['NUM_PM'],'FuturePOP_ZP':row['POP_ZP']})
+                same=(v is not None and v>=0 and old is not None and math.isclose(v,old,rel_tol=1e-10,abs_tol=1e-8))
+                same=same or ((v is None or v<0) and published[no][attr]=='KEEP_2022')
+                if not same:differences.append(common)
+        hits=[r for r in zeros if r['Year']==year];invalid=[r for r in missing if r['Year']==year];scales=[r for r in low if r['Year']==year]
+        summary.append({'year':year,'compared_cells':len(future)*len(ATTRS),'zero_over_positive_cells':len(hits),
+            'zero_over_positive_zones':len({r['No'] for r in hits}),'zero_counts_by_attribute':dict(collections.Counter(r['Attribute'] for r in hits)),
+            'baseline_positive_missing_future_cells':len(invalid),'missing_counts_by_attribute':dict(collections.Counter(r['Attribute'] for r in invalid)),
+            'low_num_pm_smear_scale_candidates':len(scales),
+            'zero_flags_by_domestic_indicator':dict(collections.Counter(r['NOT_ZAHR_2022'] for r in hits)),
+            'differences_vs_published_import':sum(r['Year']==year for r in differences)})
+        check('all_compared_14_attributes:'+str(year),len(future)*len(ATTRS)==9534)
+        check('zeros_are_all_domestic_by_reference_flag:'+str(year),all(number(r['NOT_ZAHR_2022'])==1 for r in hits))
+        check('new_values_match_published_import:'+str(year),not any(r['Year']==year for r in differences))
+    fields=['Year','No','Name','Attribute','Reference2022','FutureValue','NOT_ZAHR_2022','AMDY_EXTERNI_ZONA_2022','PublishedImportValue']
+    for name,data in [('ZERO_OVER_POSITIVE_2022.csv',zeros),('MISSING_OVER_POSITIVE_2022.csv',missing),('DIFFERENCES_VS_PUBLISHED_IMPORT.csv',differences)]:
+        write_csv(out/name,fields,data,delimiter=';')
+    write_csv(out/'LOW_NUM_PM_SMEAR_SCALE.csv',fields+['FutureReferenceRatio','FutureNUM_PM','FuturePOP_ZP'],low,delimiter=';')
+    check('total_raw_cells_compared',sum(r['compared_cells'] for r in summary)==38136)
+    check('flagged_cells_unique',len({(r['Year'],r['No'],r['Attribute']) for r in zeros})==len(zeros))
+    check('zero_and_missing_categories_disjoint',not({(r['Year'],r['No'],r['Attribute']) for r in zeros}&{(r['Year'],r['No'],r['Attribute']) for r in missing}))
+    result={'status':'PASS' if all(r['status']=='PASS' for r in checks) else 'FAIL','scope':'READ_ONLY_RAW_INPUT_AUDIT',
+            'reference':'ZONE-2026-10-31-03-39-29.xlsx, earlier user-supplied 2022 model export; not a fresh read of TD02 .ver',
+            'years':summary,'total_zero_over_positive_cells':len(zeros),'total_missing_over_positive_cells':len(missing),
+            'scale_threshold':'NUM_PM_SMEAR reference >=100 and future strictly between 0 and 2; flag only, not proof of error',
+            'source_or_import_modifications':False,'live_visum':'NOT_RUN'}
+    (out/'SUMMARY.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
+    (out/'CHECKS.json').write_text(json.dumps({'status':result['status'],'checks_count':len(checks),'checks':checks},indent=2)+'\n')
+    print(json.dumps({'status':result['status'],'checks':len(checks),'years':summary,'total_zero_cells':len(zeros)}))
+    if result['status']!='PASS':raise SystemExit(1)
+
+if __name__=='__main__':main()
