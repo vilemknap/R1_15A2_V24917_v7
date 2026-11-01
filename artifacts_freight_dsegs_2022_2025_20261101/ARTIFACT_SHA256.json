@@ -1,0 +1,10 @@
+{
+  "R1_2022_2025_CREATE_BIND_FREIGHT_DSEGS.py": "475c6c107f411e3c3af3763851df92f309f06c3530f42eb105b97cc60aa228f3",
+  "scenario_tools/tests/test_freight_dseg_references.py": "087307178551e63be4c4f3cc35fcaa43be4f350e6b2438cbd90917f6d2a9271a",
+  "scenario_tools/README_CZ.md": "abc355d456d9e36d3e48cf8cf29f72f1c67c4b0a60b3fa8609a4ef23b6f9279c",
+  "scenario_tools/SCENARIO_TOOLS_SHA256.json": "fad61aa1b7646f0877ce0ad8e10d3df4e1744f3659771ae576e760656ef344a8",
+  "artifacts_freight_dsegs_2022_2025_20261101/CHECKS.json": "cb8d3bc5220317cd2e09a4f4432a94dc3071e188fffb83784a729772cdddda3a",
+  "artifacts_freight_dsegs_2022_2025_20261101/FREIGHT_DSEGS_2022_2025.patch.gz.b64": "69f27eccfc37dfbb0f24e43f436ecb4e4a5860fb026adce315efa00327f10187",
+  "artifacts_freight_dsegs_2022_2025_20261101/INPUTS.json": "f849afabfcd030a2203aa31c6c557b3cad72bcc2dde1d028f86c46b09a4f0051",
+  "artifacts_freight_dsegs_2022_2025_20261101/scenario_tests.log": "927f89758318873fb384e211b647e99a4e156e2879eae9a5c5d94d4cc747bd4e"
+}

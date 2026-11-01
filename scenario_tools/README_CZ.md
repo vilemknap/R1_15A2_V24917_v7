@@ -57,6 +57,53 @@ necertifikuje; exportuj až dokončený kalibrovaný stav. Název uloženého ch
 nemusí obsahovat 2022, ale explicitní názvy ostatních prognózních roků jsou
 odmítnuty. Zachovej celý rozbalený balíček kvůli sdílenému kódu a SHA kontrole.
 
+## Nákladní reference a demand segmenty 2022/2025 ve Scenario Manageru
+
+Pro projekt `R1_VARIANTY` je přidaný samostatný skript v kořeni balíčku:
+**`R1_2022_2025_CREATE_BIND_FREIGHT_DSEGS.py`**. Je soběstačný (pouze standardní
+Python, žádný další modul balíčku) a použije právě otevřený objekt `Visum`/`COM`.
+
+1. Zavři dialog výběru demand segmentů a dokonči editaci `PR_2022` tlačítkem
+   **Finish**. V projektu zvol **Basic settings → Edit base version**.
+2. V Base version spusť skript přes **Scripts → Run script file**.
+   Vytvoří a ověří následující vazby:
+
+   | Demand segment | Datová matice | Soubor k samostatnému načtení |
+   | --- | --- | --- |
+   | `LNV_2022` | `R1_LNV_2022_WORK` | `R1_2022_LNV.mtx` |
+   | `NV_2022` | `R1_NV_2022_WORK` | `R1_2022_NV.mtx` |
+   | `LNV_2025` | `R1_LNV_2025_WORK` | `R1_2025_LNV.mtx` |
+   | `NV_2025` | `R1_NV_2025_WORK` | `R1_2025_NV.mtx` |
+
+3. Po `PASS_CREATED_AND_VERIFIED` dokonči editaci Base version přes **Finish**.
+   Znovu otevři nastavení příslušného procedurního balíčku. Čísla matic jsou
+   automatická; skutečná NO a režimy jsou v protokolu vedle skriptu:
+   `R1_FREIGHT_2022_2025_AUDIT/RUN_*/MATRIX_DSEG_MAPPING.csv`.
+4. V `PR_2022` nastav nákladní **Open matrix** na obě reference 2022 a příslušné
+   exportované MTX. Do výsledného assignmentu vyber `R1_OA_CAL_2022`,
+   `LNV_2022`, `NV_2022`. Pro `PR_2025` použij odpovídající reference/soubory
+   2025 a segmenty `R1_OA_CAL_2025`, `LNV_2025`, `NV_2025`. Pokud tento krok
+   již obsahuje agregované OA, nepřidávej zároveň jeho komponentní segmenty.
+
+Zdroj režimu pro LNV je existující segment **`LNV`**, pro NV segment **`NV`**.
+Režimy se nepřevádějí na osobní `C`. Existující generické segmenty, OA,
+2040/2070 reference, OD hodnoty a procedury skript nepřepisuje. Existující
+správné vazby ponechá; u nevyplněné vazby provede připojení, konfliktní vazbu
+nebo jiný režim odmítne ještě před zápisem. Chybějící datové matice vytvoří
+**prázdné** s volnými čísly; jejich naplnění pomocí **Open matrix** je samostatný
+krok a je nutné před assignmentem. Samotný vznik segmentu nenačítá MTX.
+
+Kontroluje se 681 zón NO 1–681. Typy matic mohou být numerické enumy nebo
+symbolické hodnoty Visum 2026. Veškerý preflight proběhne před prvním zápisem.
+Při chybě se obnovují jen změněné původně prázdné vazby a odstraňují vlastní
+nové segmenty/matice; následně se ověří návrat. Pokud nelze návrat ověřit
+(`FAILED_ROLLBACK_UNVERIFIED_CANCEL_BASE_EDIT`), editaci Base version neukládej
+a zruš ji přes **Cancel**. Skript sám .ver neukládá ani nespouští výpočet.
+Volby `DRY_RUN=True` a `CREATE_MISSING_MATRICES=False` dovolují náhled a režim,
+který vyžaduje již existující čtyři matice. Kontext Base version vybírá uživatel;
+automatické rozpoznání editoru projektu skript neprovádí. Živý Visum zde nebyl
+ověřen; regresní testy používají COM simulaci.
+
 ## Zónové vstupy a protokoly
 
 Mapuje se podle **OSRM_MATRIX_ID/NO**, nikoli názvu nebo pořadí. Vyžadováno je přesně 681 zón NO 1..681. Zápis používá jejich skutečné COM klíče. Allowlist raw atributů:

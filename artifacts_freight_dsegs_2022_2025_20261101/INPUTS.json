@@ -1,0 +1,53 @@
+{
+  "inputs": [
+    {
+      "file_id": "file_0000000020988246b678f8816b3ce3d9",
+      "filename": "R1_2070_CREATE_BIND_OA_DSEG.py",
+      "bytes": 11592,
+      "sha256": "03af1ea6c313bcb7ea763f5b9e0f75b745bacadfc1dbe94a7c4acc787bb03bd7"
+    },
+    {
+      "file_id": "file_00000000346081f48c0ad8e542151fb8",
+      "filename": "R1_2070_CREATE_REFERENCE_OBJECTS.py",
+      "bytes": 15155,
+      "sha256": "92147273a87b938942ca90bd5f5c748c1f92eed5bb234e785279518e6723d6ea"
+    },
+    {
+      "file_id": "file_00000000364481f499d856b81f8cd0f6",
+      "filename": "README_REFERENCE_OBJECTS_2070.md",
+      "bytes": 5255,
+      "sha256": "f27eb9c418c1574e9ff23b299434a2eced822d64042ddd1a0b980c1883497115"
+    },
+    {
+      "file_id": "file_0000000045b081f4a798c0aad99284de",
+      "filename": "PR_2070_MATRIX_REFERENCE_MAPPING.csv",
+      "bytes": 552,
+      "sha256": "f18190a43f36e00c3a31da8a93f7de2ba0706c5b586efb070435582d2c51518f"
+    },
+    {
+      "file_id": "file_00000000746c81f4b161fec5578a0832",
+      "filename": "R1_2070_CREATE_REFERENCE_OBJECTS.py",
+      "bytes": 13289,
+      "sha256": "4c898cf86554536017a66c810d3ab512354371f64a74b486b9792a327ae00b87"
+    },
+    {
+      "file_id": "file_00000000257c81f4980047b659711d81",
+      "filename": "RELEASE_STATUS.json",
+      "bytes": 775,
+      "sha256": "bf8083ff6eafd12f3d32e16a51970678655f1464d2a300d3955a6045901af15b"
+    },
+    {
+      "file_id": "file_00000000b9848243894ead99b9a52784",
+      "filename": "SHA256SUMS.txt",
+      "bytes": 765,
+      "sha256": "e777f48667fb1b205798df1df5594ce6efe2fbe0e22e919afe5c26fbb0e1e3dc"
+    },
+    {
+      "file_id": "file_000000009d2081f4ad46b28d6d768ce8",
+      "filename": "OFFLINE_TEST_RESULTS.txt",
+      "bytes": 10046,
+      "sha256": "da0fa0cbff82461213ebd7ff5b4dd74cb501501fc1a0cb7a95f4e4b34ca78e6b"
+    }
+  ],
+  "note": "User 2070 files are reference material, not a request to alter 2070. Two reference-creator versions were supplied; symbolic enum handling follows V2. Old uploaded test logs are not counted as new validation."
+}

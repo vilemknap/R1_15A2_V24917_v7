@@ -1,0 +1,72 @@
+{
+  "status": "PASS_OFFLINE",
+  "task": "FREIGHT_DSEG_REFERENCES_2022_2025",
+  "base_local_commit": "9575927d4d2d54ffa27e2537594a903e47e2c530",
+  "base_remote_commit": "6d67cd9b532d20651b7383cc3d0547d63679510a",
+  "branch": "codex/freight-dsegs-2022-2025-20261101",
+  "test_command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider scenario_tools/tests",
+  "test_exit_code": 0,
+  "passed": 88,
+  "failed": 0,
+  "skipped": 0,
+  "new_reference_test_cases": 25,
+  "existing_scenario_test_cases": 63,
+  "syntax": "PASS",
+  "git_diff_check": "PASS",
+  "scenario_package_entries_verified": 60,
+  "native_manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files_verified": 91,
+      "manifest_and_all_files_unchanged": true,
+      "sha256": "d9451b3204a71e82c50a0b913b46fc82218196cfcd2fc9562cf3f7c880450699"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files_verified": 180,
+      "manifest_and_all_files_unchanged": true,
+      "sha256": "4ad4930bd964ee6fff9d4e5a9ce141639aecb51fe04de32c0ecae0952cc2c4bc"
+    }
+  },
+  "native_code_and_forecast_inputs_unchanged": true,
+  "source_dsegs": [
+    "LNV",
+    "NV"
+  ],
+  "creates_dsegs": [
+    "LNV_2022",
+    "NV_2022",
+    "LNV_2025",
+    "NV_2025"
+  ],
+  "target_matrix_codes": [
+    "R1_LNV_2022_WORK",
+    "R1_NV_2022_WORK",
+    "R1_LNV_2025_WORK",
+    "R1_NV_2025_WORK"
+  ],
+  "new_matrix_values": "EMPTY_UNTIL_USER_LOADS_MATCHING_MTX",
+  "matrix_value_reads_and_writes": "NONE",
+  "procedure_edits": "NONE",
+  "native_calculation": "NOT_RUN",
+  "version_save": "NONE",
+  "context": "USER_SELECTS_PROJECT_BASE_VERSION; automatic editor detection is not implemented",
+  "live_visum": "NOT_RUN",
+  "validated": [
+    "fresh creation and idempotent rerun",
+    "reuse existing matrices without value access",
+    "numeric and symbolic Visum enums",
+    "preserve source modes and generic LNV/NV bindings",
+    "fail all-target preflight before writes on conflicts or unreadable ODMatrix",
+    "dry run and disallow missing-matrix creation",
+    "restore initially empty bindings after partially failing setter",
+    "remove owned newly created objects and verify inventory/state",
+    "do not delete existing/wrong API-return objects or unrelated new DSegs",
+    "mark unverified rollback on COM read/remove failures or unreturned created matrix",
+    "run with existing COM host only"
+  ],
+  "official_api_references": [
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~INet~AddMatrix.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~INet~AddDemandSegment.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~INet~RemoveDemandSegment.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~INet~RemoveMatrix.html"
+  ]
+}
