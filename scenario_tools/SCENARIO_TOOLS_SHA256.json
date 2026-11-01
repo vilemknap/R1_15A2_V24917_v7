@@ -1,4 +1,5 @@
 {
+  "scenario_tools/2022/03_EXPORT_MATRICES_2022.py": "7626cec0d53f13c38b5c49ad74580fbc4bc16607399084c5f69cfa90ba4d3d92",
   "scenario_tools/2025/01_IMPORT_ZONES_AND_FREIGHT_2025.py": "e74a9bf3b1d7e3f0ca2ff214461a8f015090c07c8e4655adfe7fcd465f252391",
   "scenario_tools/2025/02_RECOMPUTE_TG_TD_AND_ASSIGNMENT_2025.py": "586266a2d906486f11646dec0aaa356d396cdfbb7c2a85d9b4e2e1bcfcbbc061",
   "scenario_tools/2025/03_EXPORT_MATRICES_2025.py": "f7420fa21f65a22304d93e674a79a7a2a0153dad930a16122ca7aece5b71eaa4",
@@ -41,8 +42,10 @@
   "scenario_tools/2070/ZONE_SOURCE_FALLBACKS.csv": "cbedb4d011632037491a89c9c7b6a00e81d7545f6176004af9ebc13277ff376f",
   "scenario_tools/INPUT_PREPARATION_REPORT.json": "10ea3181e2e46a716c4818a68ceae599bd8a572fdb0745f771585e22221c26c8",
   "scenario_tools/INPUT_SOURCES.json": "437aa2bc194b53fad69dac886dc4ab187e70407bcffb0b75fd3e78f2e391fd43",
-  "scenario_tools/README_CZ.md": "7c24b5f07d6d731d84db2859eced6e178371df8b34e609b5aa35acad1234d44a",
+  "scenario_tools/README_CZ.md": "e20ed88a5ef923fbb8bdd9477a85ac7bd96063c642c8fa9f95e22a01a3c85a71",
+  "scenario_tools/export_2022.py": "c2cb868b41d7eab283aca824c45dc603d137e976ecd00d0883c298ece4526d09",
   "scenario_tools/scenario_io.py": "eaf5384056628f5c95cea2eb6971dc0ecaf09accc1c27efd4fffa6d74d274b44",
+  "scenario_tools/tests/test_export_2022.py": "df7cfd2ee65889ee327efeb31ef9697dc2b121e7d56d86521ae3ec00847f6575",
   "scenario_tools/tests/test_scenario_io.py": "2a90ff849538d5afed07097e39ca2352979e4f75583e98c709f8d5cb32775ac8",
   "scenario_tools/validation/CHECKS.json": "8f82f5984a1edf1e2af8e2398ae85fbc895bd415ecc13c298d599e4d21ced728",
   "scenario_tools/validation/CORRECTED_WORKPLACES_EVIDENCE.json": "5aec1a8a0802f2fc1a2337692a780a1bf00233d291e989c83d5b3cc966617238",

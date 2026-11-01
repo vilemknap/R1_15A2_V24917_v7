@@ -31,6 +31,32 @@ Místo ROK zvol 2025, 2040, 2050, 2060 nebo 2070. Například pro 2040 se použ�
 
 Když Visum drží Python moduly jiné kopie balíčku, přepočet ohlásí `PRELOADED_MODULE_FROM_OTHER_PACKAGE`. Ulož scénář po importu, znovu spusť Visum a otevři tuto uloženou scénářovou kopii. Staré moduly se za běhu nemažou. Launchery kontrolují vlastní SHA, přepočet také původní runtime manifest.
 
+## Export původní kalibrované verze 2022
+
+Otevři dokončený kalibrovaný model 2022 (případně jeho poslední ověřený přijatý
+checkpoint). Počkej na ukončení kalibrace a ve Visumu přes **Scripts → Run script
+file** spusť **`scenario_tools/2022/03_EXPORT_MATRICES_2022.py`**.
+Pro 2022 se nespouští prognózní import ani nový přepočet. Exportér pouze čte
+současné matice; nemění koeficienty, matice ani .ver a nevytváří další Visum.
+
+Výsledky budou ve **`scenario_tools/2022/EXPORT_<datum_čas>/`**:
+`R1_2022_OA_CAL_WORK.mtx`, `R1_2022_LNV.mtx`, `R1_2022_NV.mtx`
+a `EXPORT_MANIFEST.json`. Úplnou cestu vypíše konzole za `PASS_EXPORT`.
+OA je součet stejných 12 osobních vozidlových segmentů jako u prognóz,
+s šesti desetinnými místy. LNV/NV se ve výstupních souborech zaokrouhlí po OD
+buňkách na celá vozidla (0,5 nahoru), bez přerozdělení rozdílu; původní modelové
+hodnoty zůstanou zachovány. Manifest uvádí i rozdíl součtů po zaokrouhlení.
+Všechny tři matice jsou celodenní; převod na den/večer/noc se neprovádí.
+
+Součástí exportu je kontrola 681 zón, odlišných zdrojových matic, LONG masky
+OSRM ≥80 km bez horní meze a shody M9305 se součtem komponent M9291–9295.
+Druhé čtení před zveřejněním ověří, že se model, pořadí zón ani kontrolované
+matice během exportu nezměnily. Chyba nezveřejní částečný export ani nepřepíše
+předchozí export. Čerstvost nativního assignmentu tento čtecí nástroj
+necertifikuje; exportuj až dokončený kalibrovaný stav. Název uloženého checkpointu
+nemusí obsahovat 2022, ale explicitní názvy ostatních prognózních roků jsou
+odmítnuty. Zachovej celý rozbalený balíček kvůli sdílenému kódu a SHA kontrole.
+
 ## Zónové vstupy a protokoly
 
 Mapuje se podle **OSRM_MATRIX_ID/NO**, nikoli názvu nebo pořadí. Vyžadováno je přesně 681 zón NO 1..681. Zápis používá jejich skutečné COM klíče. Allowlist raw atributů:

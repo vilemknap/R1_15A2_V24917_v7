@@ -1,0 +1,49 @@
+{
+  "status": "PASS_OFFLINE",
+  "task": "READ_ONLY_2022_DAILY_MATRIX_EXPORT",
+  "base_local_commit": "bf4dd28883c7456e86e39b3ef1bd1ab418829699",
+  "base_remote_commit": "dcbbd1366501b88a3d397eb1b07f97537b544229",
+  "test_command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider scenario_tools/tests",
+  "test_exit_code": 0,
+  "passed": 63,
+  "failed": 0,
+  "new_export_test_cases": 23,
+  "existing_scenario_test_cases": 40,
+  "syntax": "PASS",
+  "scenario_package_files_verified": 60,
+  "native_manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "manifest_sha256": "d9451b3204a71e82c50a0b913b46fc82218196cfcd2fc9562cf3f7c880450699",
+      "files_verified": 91,
+      "all_authority_files_unchanged": true
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "manifest_sha256": "4ad4930bd964ee6fff9d4e5a9ce141639aecb51fe04de32c0ecae0952cc2c4bc",
+      "files_verified": 180,
+      "all_authority_files_unchanged": true
+    }
+  },
+  "shared_scenario_io_unchanged": true,
+  "validated": [
+    "12 distinct OA vehicle segments",
+    "cellwise half-up freight output without COM writes",
+    "checkpoint filename without 2022",
+    "681 zone identities and reversed order",
+    "reject invalid source matrix scope and LONG mask/parity failures",
+    "reject changed model/zone order/matrices during export",
+    "atomic complete-set publication and staging cleanup",
+    "preserve previous exports",
+    "existing COM/Visum host and package checks"
+  ],
+  "live_visum": "NOT_RUN",
+  "assignment_freshness": "NOT_CERTIFIED_BY_EXPORTER",
+  "native_recalculation": "NOT_RUN_READ_ONLY_TASK",
+  "period_conversion": "NOT_APPLIED_DAILY_MATRICES",
+  "forecast_inputs_and_exporters_unchanged": true,
+  "git_diff_check": "PASS",
+  "patch": {
+    "file": "EXPORT_2022.patch.gz.b64",
+    "format": "BASE64_GZIP_COMPLETE_UNIFIED_DIFF",
+    "reverse_apply_check_exit_code": 0
+  }
+}
