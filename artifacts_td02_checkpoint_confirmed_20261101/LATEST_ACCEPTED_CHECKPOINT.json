@@ -1,0 +1,35 @@
+{
+  "accepted_count": 3,
+  "slot": "A",
+  "checkpoint": {
+    "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261101_113344_232959\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_A_0003_d18f2c796ad6.ver",
+    "sha256": "57f394374213b80946fb693ce527f567de41589e08eaf999f1910ae65a746d00",
+    "size": 535329519
+  },
+  "semantic_restart_authority": {
+    "schema": "R1_15A2_SEMANTIC_RESTART_AUTHORITY_V2494",
+    "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261101_113344_232959\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_A_0003_d18f2c796ad6.ver.semantic.json",
+    "semantic_state_hash": "267ada8759f785141876b1f5a9d850633a76e9d516bcd4adbe2898b5719ef68c",
+    "semantic_hashes": {
+      "fixed_link_hash": "f3a1bc2143f9dd802fa3f6cc036b482bab435b004e6c562dc0e0c53d0385c766",
+      "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+      "operations_hash": "80ff29f8a67d3889ad8e413dbf2482aeb355adf4ba528211a3c044a2b5bb7fee",
+      "addval_hash": "5f130385d04b84516e7327d69d7522ef3f4d89156082e278af06af409f5b0741",
+      "matrix_hash": "af64f445055cb5b444bb65a5bba65db9cf28761eef633c9bd2408c286c4cf8e1",
+      "generation_hash": "377242aed153a091b5322a24500186965767d38ec5a4f33115f26d48e43bce81",
+      "td_hash": "2d5b0e24b50659c104a914bb661b2075112c9261e99480a3b66121e06fb633e8"
+    },
+    "raw_ver_sha_role": "PROVENANCE_AND_WITHIN_RUN_SOURCE_MUTATION_SENTINEL_ONLY_NOT_CROSS_RUN_RESTART_ACCEPTANCE",
+    "raw_ver_sha_used_for_restart_acceptance": false
+  },
+  "path_epoch_checkpoint": {
+    "enabled": true,
+    "epoch": 3,
+    "epoch_origin_state_hash": "c122a66886db27f3f908ce5425d098f2f20a5fd32cac63fc8385cb32f68dce15",
+    "live_state_hash": "3b7afe0b9ced0c93a679dcffe9a088c8a3107f95acf59cab182b928ffbe3c58e",
+    "basis_hash": "86f0b9631a9a3c2f269a96d9fa0d4c333e9b340813c98f1dcc1a021f57368e34",
+    "comparison_basis_hash": "48d0625a2f2bc4b2abd12fdd6b5153991aa1452dce01c655ca00c2552591a6fd",
+    "persistent_cache_id": null,
+    "persistent_cache_dir": null
+  }
+}

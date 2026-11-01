@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "scope": "CHECKPOINT_METADATA_LINKAGE_ONLY",
+  "checks": {
+    "checkpoint_run_matches_td02": true,
+    "checkpoint_live_hash_matches_accepted_td02": true,
+    "checkpoint_epoch_matches_td02_origin": true,
+    "checkpoint_slot_matches_counter": true,
+    "checkpoint_positive_payload_size": true,
+    "checkpoint_sha256_syntactically_valid": true,
+    "sidecar_belongs_to_checkpoint": true,
+    "semantic_authority_hashes_complete": true,
+    "semantic_hash_is_distinct_contract_from_raw_ver_sha": true
+  },
+  "input": {
+    "file_id": "file_0000000050a882438233b96b2fc8de7d",
+    "filename": "LATEST_ACCEPTED_CHECKPOINT.json",
+    "size_bytes": 2060,
+    "sha256": "70ac112d4b7b693cb75c5100546ea259fd6ab2edbc24d9130b9cf9aa16b300ce"
+  },
+  "accepted_td02_state_hash": "3b7afe0b9ced0c93a679dcffe9a088c8a3107f95acf59cab182b928ffbe3c58e",
+  "checkpoint": {
+    "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261101_113344_232959\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_A_0003_d18f2c796ad6.ver",
+    "sha256": "57f394374213b80946fb693ce527f567de41589e08eaf999f1910ae65a746d00",
+    "size": 535329519
+  },
+  "semantic_sidecar": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261101_113344_232959\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_A_0003_d18f2c796ad6.ver.semantic.json",
+  "ver_payload_available_here": false,
+  "ver_payload_sha256_recomputed_here": false,
+  "scenario_matrices_created": false,
+  "runtime_changes": [],
+  "live_visum": "NOT_RUN"
+}
