@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "replay_exit_zero",
+      "status": "PASS"
+    },
+    {
+      "name": "replay_byte_identical_summary_and_checks",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_manifest:V24917_RUNTIME_MANIFEST.json",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged_manifest:DIAGFAST_V1_RELEASE_MANIFEST.json",
+      "status": "PASS"
+    },
+    {
+      "name": "git_diff_check_exit_zero",
+      "status": "PASS"
+    },
+    {
+      "name": "only_task_artifacts_changed",
+      "status": "PASS"
+    },
+    {
+      "name": "no_unstaged_tracked_changes",
+      "status": "PASS"
+    },
+    {
+      "name": "upload_audit_32_pass",
+      "status": "PASS"
+    }
+  ],
+  "replay_stdout": "{\"status\": \"PASS\", \"checks\": 32, \"new_run_latest_geh\": 18.837540161154966, \"improvement_percent\": 2.498820140128999}",
+  "replay_stderr": "",
+  "runtime_tests": "NOT_RUN_READ_ONLY",
+  "live_visum": "NOT_RUN",
+  "base_commit_remote": "dd140a065c02675ad1b00e96fb917e66954af581",
+  "base_commit_local": "223481303e17737cc68eb96afc5e8cd50606636c"
+}

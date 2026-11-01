@@ -1,0 +1,171 @@
+"""Read-only audit. Run with --package to replay from the archived exact inputs."""
+import argparse
+import base64
+import gzip
+import hashlib
+import json
+import math
+from pathlib import Path
+import re
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--package', type=Path, required=True)
+parser.add_argument('--manifest', type=Path)
+args = parser.parse_args()
+root = args.package
+root.mkdir(parents=True, exist_ok=True)
+renames = {'old_cycle2': 'previous_cycle2', 'cycle1_a': 'previous_cycle1',
+           'cycle3': 'previous_cycle3', 'cycle4': 'previous_cycle4',
+           'status': 'previous_run_status', 'cycle1_b': 'current_cycle1',
+           'supply': 'current_supply_cycle2', 'plan': 'current_plan_cycle2',
+           'timing': 'current_generation_timing', 'generation': 'current_generation_cycle2'}
+if args.manifest:
+    records = []
+    for item in json.loads(args.manifest.read_text()):
+        raw = Path(item['path']).read_bytes()
+        label = renames[item['label']]
+        name = label + '__' + Path(item['path']).name + '.gz.b64'
+        encoded = base64.b64encode(gzip.compress(raw, mtime=0)).decode('ascii')
+        (root / name).write_text(encoded + '\n', encoding='ascii')
+        records.append({'label': label, 'file_id': item['file_id'],
+                        'original_filename': Path(item['path']).name,
+                        'archive': name, 'size_bytes': len(raw),
+                        'sha256': hashlib.sha256(raw).hexdigest()})
+    (root / 'INPUTS.json').write_text(json.dumps(records, indent=2) + '\n')
+records = json.loads((root / 'INPUTS.json').read_text())
+data, checks = {}, []
+
+def check(name, condition):
+    checks.append({'name': name, 'status': 'PASS' if condition else 'FAIL'})
+
+def close(a, b):
+    return math.isclose(float(a), float(b), rel_tol=1e-12, abs_tol=1e-12)
+
+for item in records:
+    raw = gzip.decompress(base64.b64decode((root / item['archive']).read_bytes(), validate=False))
+    check('exact_input_integrity:' + item['label'],
+          len(raw) == item['size_bytes'] and hashlib.sha256(raw).hexdigest() == item['sha256'])
+    data[item['label']] = json.loads(raw)
+
+def run_ids(value):
+    return sorted(set(re.findall(r'RUN_\d{8}_\d{6}_\d+', json.dumps(value))))
+
+def objective(obj):
+    m = obj['cal_metrics']
+    return {k: obj[k] for k in ('raw_cal', 'raw_component_idp', 'total', 'reference_hash')} | {
+        k: m[k] for k in ('n', 'model_obs_ratio', 'geh_lt5', 'geh_lt10', 'geh_ge20', 'geh_ge30')}
+
+previous = [data['previous_cycle' + str(i)] for i in range(1, 5)]
+status = data['previous_run_status']
+c1 = data['current_cycle1']
+g1 = c1['generation']
+g2 = data['current_generation_cycle2']
+s2 = data['current_supply_cycle2']
+check('previous_status_embeds_exact_four_cycle_records', status['demand_cycles'] == previous)
+check('previous_cycle_state_chain', all(a['state_hash_end'] == b['state_hash_start']
+                                      for a, b in zip(previous, previous[1:])))
+check('separate_run_identity', run_ids(status) == ['RUN_20261101_012423_535520'] and
+      run_ids(c1) == run_ids(g2) == ['RUN_20261101_113344_232959'])
+check('previous_run_failed_c4_long_binding', status['status'] == 'FAILED_MANUAL_REOPEN_LATEST_ACCEPTED_REQUIRED'
+      and previous[3]['status'] == 'FAILED'
+      and status['error'] == previous[3]['error'] == 'LONG_INCIDENCE_ASSIGNMENT_BINDING_STALE_OR_MISSING')
+check('previous_live_final_unverified', status['live_matches_last_accepted'] is False and
+      status['manual_reopen_required'] is True and status['final_state_verified'] is False)
+check('current_c1_td_correctly_skipped', c1['td']['status'] == 'TD_SKIPPED_BY_RUN_POLICY'
+      and c1['td']['skip_policy_reason'] == 'NOT_DUE' and c1['td_changed'] is False)
+check('current_c1_to_c2_objective_chain', g1['objective_after'] == g2['objective_before'])
+check('current_c2_generation_to_supply_chain', g2['objective_after'] == s2['objective_before'])
+check('current_c2_path_epoch_origin_links_c1',
+      g2['path_epoch_transition']['epoch_origin_state_hash'] == c1['state_hash_end'] ==
+      s2['path_epoch_transition']['epoch_origin_state_hash'])
+check('same_fixed_count_objective_reference', len({g1['objective_before']['reference_hash'],
+      g1['objective_after']['reference_hash'], g2['objective_after']['reference_hash'],
+      s2['objective_after']['reference_hash']}) == 1)
+a2 = g1['attempts'][1]['decision']
+check('c1_accepted_under_explicit_nonmonotonic_policy', a2['accepted'] is True and
+      a2['acceptance_path'] == 'EARLY_EXPLORATION_NONMONOTONIC_SEVERITY_TRADEOFF' and
+      a2['exploration_nonmonotonic_accepted'] is True and a2['shared_objective_monotonicity_bypassed'] is True)
+check('c1_worsening_within_recorded_two_percent_budget', 0 <
+      g1['objective_after']['raw_cal'] / g1['objective_before']['raw_cal'] - 1 <=
+      a2['early_exploration_policy']['scoped']['max_cal_relative_degradation_for_severity_tradeoff'])
+check('c1_accepted_severity_and_protection_pass', a2['severity_transition_guard']['passes'] is True
+      and a2['protected_guard']['passes'] is True)
+check('generation_and_supply_live_assignment_gaps_below_point005',
+      max(g1['gap'], g2['gap'], s2['attempts'][2]['gap']) <= 0.005)
+check('c2_generation_first_accepted_trial', len(g2['attempts']) == 1 and g2['attempts'][0]['decision']['accepted'] is True)
+check('c2_supply_third_trial_accepted', s2['status'] == 'ACCEPTED' and s2['accepted_trial'] == 3
+      and [a['status'] for a in s2['attempts']] == ['REJECTED', 'REJECTED', 'ELIGIBLE'])
+check('c2_supply_exact_nineteen_edges', s2['addval1_changes'] == s2['attempts'][2]['edges'] == 19)
+check('expanded_supply_policy_active', s2['options']['max_trials'] == 4 and
+      s2['options']['max_groups'] == 24 and s2['options']['max_edges'] == 240)
+check('six_generation_attempt_budget_active', g1['planned_trials'] == g2['planned_trials'] == 6)
+check('c2_plan_matches_native_attempt', close(data['current_plan_cycle2']['objective_before'],
+      g2['objective_before']['raw_cal']) and close(data['current_plan_cycle2']['predicted_rel_improvement'],
+      g2['attempts'][0]['predicted_rel_improvement']))
+check('c2_long_guard_passes_but_no_long_change',
+      g2['attempts'][0]['decision']['longguard1']['passes'] is True and
+      g2['attempts'][0]['decision']['longguard1']['changed_long'] is False and
+      g2['attempts'][0]['decision']['longguard1_parent']['long_generation_permitted'] is True)
+check('current_count_roster_same_247_cal', all(x['cal_metrics']['n'] == 247 for x in
+      [g1['objective_before'], g1['objective_after'], g2['objective_after'], s2['objective_after']]))
+
+start = g1['objective_before']['raw_cal']
+end = s2['objective_after']['raw_cal']
+severity = a2['severity_transition_guard']
+summary = {
+    'scope': 'READ_ONLY_UPLOAD_AUDIT; no runtime or live-model writes',
+    'code_packaging_baseline': 'dd140a065c02675ad1b00e96fb917e66954af581',
+    'baseline_does_not_identify_actual_installed_live_release': True,
+    'previous_run': {'run_id': run_ids(status)[0], 'status': status['status'],
+        'failed_outer_cycle': 4, 'error': status['error'],
+        'last_accepted_checkpoint': status['latest_accepted_checkpoint'],
+        'last_accepted_objective': objective(status['best_so_far_checkpoint']['objective']),
+        'last_accepted_semantic_hashes': status['best_so_far_checkpoint']['semantic_restart_authority']['semantic_hashes'],
+        'manually_reopened_checkpoint_in_new_run_not_proven_by_uploads': True,
+        'cycle_statuses': [{'cycle': c['cycle'], 'status': c['status'],
+            'generation_geh_before': c['generation']['objective_before']['raw_cal'],
+            'generation_geh_after': c['generation']['objective_after']['raw_cal'],
+            'supply_status': c['generation'].get('v24917_supplymix', {}).get('status'),
+            'supply_geh_after': c['generation'].get('v24917_supplymix', {}).get('objective_after', {}).get('raw_cal'),
+            'td_status': c.get('td', {}).get('status'), 'error': c.get('error')}
+            for c in previous]},
+    'current_run': {'run_id': run_ids(c1)[0],
+        'latest_supplied_stage': 'CYCLE_02_SUPPLYMIX_ACCEPTED; TD_02_RESULT_NOT_SUPPLIED',
+        'stages': [dict(stage='BASELINE', **objective(g1['objective_before'])),
+            dict(stage='AFTER_TG_C1', **objective(g1['objective_after'])),
+            dict(stage='AFTER_TG_C2', **objective(g2['objective_after'])),
+            dict(stage='AFTER_SUPPLY_C2', **objective(s2['objective_after']))],
+        'geh_improvement_vs_new_run_baseline_percent': (1 - end / start) * 100,
+        'c1_geh_degradation_percent': (g1['objective_after']['raw_cal'] / start - 1) * 100,
+        'c1_acceptance_path': a2['acceptance_path'],
+        'c1_severity_scalars': {k: v for k, v in severity.items() if not isinstance(v, (dict, list))},
+        'c1_severity_before': severity['before_severity'],
+        'c1_severity_after': severity['after_severity'],
+        'c2_tg_geh_improvement_percent': (1 - g2['objective_after']['raw_cal'] /
+                                              g2['objective_before']['raw_cal']) * 100,
+        'c2_tg_rows': g2['rows'], 'c2_tg_assignment_gap': g2['gap'],
+        'c2_supply_improvement_percent': (1 - end / s2['objective_before']['raw_cal']) * 100,
+        'c2_supply_seconds': s2['elapsed_s'], 'c2_supply_options': s2['options'],
+        'c2_supply_attempts': [{k: a[k] for k in ('trial', 'status', 'edges', 'addval1_step',
+            'generalized_seconds_step', 'decision_reasons')} | {'weighted_geh': a['objective_after']['raw_cal']}
+            for a in s2['attempts']],
+        'c2_generation_design_seconds': data['current_generation_timing']['block']['generation_design']['seconds'],
+        'long_generation_changed': g2['attempts'][0]['decision']['longguard1']['changed_long'],
+        'long_generation_permitted_by_guard': g2['attempts'][0]['decision']['longguard1_parent']['long_generation_permitted'],
+        'long_school_search_incomplete': g2['ls_search_incomplete'],
+        'unknowns': ['Exact installed release and effective full options not supplied',
+            'No current-run RUN_STATUS or TD cycle 02 result supplied',
+            'No proof of exact accepted checkpoint loaded after interruption',
+            'Underlying assignment-binding mismatch cause not determined from logs alone',
+            'Stage metadata does not prove actual maximum implemented coefficient changes']},
+    'runtime_changes': [], 'live_visum': 'NOT_RUN',
+}
+(root / 'SUMMARY.json').write_text(json.dumps(summary, indent=2, ensure_ascii=False) + '\n')
+result = {'status': 'PASS' if all(c['status'] == 'PASS' for c in checks) else 'FAIL',
+          'checks_count': len(checks), 'checks': checks, 'runtime_tests': 'NOT_RUN_READ_ONLY_AUDIT',
+          'live_visum': 'NOT_RUN'}
+(root / 'CHECKS.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'status': result['status'], 'checks': len(checks),
+                  'new_run_latest_geh': end, 'improvement_percent': (1-end/start)*100}))
+if result['status'] != 'PASS':
+    raise SystemExit(1)

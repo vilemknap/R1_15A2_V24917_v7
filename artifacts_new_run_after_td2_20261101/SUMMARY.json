@@ -1,0 +1,253 @@
+{
+  "scope": "READ_ONLY_UPLOAD_AUDIT; no runtime or live-model writes",
+  "code_packaging_baseline": "dd140a065c02675ad1b00e96fb917e66954af581",
+  "baseline_does_not_identify_actual_installed_live_release": true,
+  "previous_run": {
+    "run_id": "RUN_20261101_012423_535520",
+    "status": "FAILED_MANUAL_REOPEN_LATEST_ACCEPTED_REQUIRED",
+    "failed_outer_cycle": 4,
+    "error": "LONG_INCIDENCE_ASSIGNMENT_BINDING_STALE_OR_MISSING",
+    "last_accepted_checkpoint": {
+      "path": "C:\\Users\\vilem_knap\\R1F_742748e4\\R1_15A2_V16_RUNS\\RUN_20261101_012423_535520\\CALIBRATION\\CHECKPOINTS\\ACCEPTED_A_0005_87d938018db7.ver",
+      "sha256": "bb5d95d1ea4ffcababd198ba23d445f86fe3f9fbd5c7b43e7985915bb59801f2",
+      "size": 535317904
+    },
+    "last_accepted_objective": {
+      "raw_cal": 19.24247856066397,
+      "raw_component_idp": 0.4715137494405972,
+      "total": 1.34387891271757,
+      "reference_hash": "6ed4a7ec9343c4e084849f36d4d9e562d7c8091523c4564e77062e0d6f284ba3",
+      "n": 247,
+      "model_obs_ratio": 0.9405691365069513,
+      "geh_lt5": 61,
+      "geh_lt10": 100,
+      "geh_ge20": 86,
+      "geh_ge30": 58
+    },
+    "last_accepted_semantic_hashes": {
+      "fixed_link_hash": "f3a1bc2143f9dd802fa3f6cc036b482bab435b004e6c562dc0e0c53d0385c766",
+      "dseg_hash": "c0856f69457d5e80ad1e9d9978e33fd9cce15ba9e5459dd6c7b8704c672976e4",
+      "operations_hash": "80ff29f8a67d3889ad8e413dbf2482aeb355adf4ba528211a3c044a2b5bb7fee",
+      "addval_hash": "61a4f1b8261fce5adb9f10a25e771ad9c46b6c0e231f0d6188b7d14bb6bc8b1e",
+      "matrix_hash": "321859bd36cf508fc75b1ceefeb2a6fe490d66cc856a88a0180103aba07368d7",
+      "generation_hash": "3de790d0ee55a915a6214cacf144b937c9b5b8d1464cd2c0c8716e13c258ee46",
+      "td_hash": "29006cb2b68cdb87a7e37e4eb431d7de5d0cddb4cd13b030a15be6980e179b73"
+    },
+    "manually_reopened_checkpoint_in_new_run_not_proven_by_uploads": true,
+    "cycle_statuses": [
+      {
+        "cycle": 1,
+        "status": "PROGRESS_CONTINUE_DEMAND",
+        "generation_geh_before": 22.18945667920139,
+        "generation_geh_after": 21.077796878491373,
+        "supply_status": null,
+        "supply_geh_after": null,
+        "td_status": "TD_SKIPPED_BY_RUN_POLICY",
+        "error": null
+      },
+      {
+        "cycle": 2,
+        "status": "PROGRESS_CONTINUE_DEMAND",
+        "generation_geh_before": 21.077796878491373,
+        "generation_geh_after": 20.19309931540732,
+        "supply_status": "ACCEPTED",
+        "supply_geh_after": 19.930965001168623,
+        "td_status": "ACCEPTED_FINECDF_TD",
+        "error": null
+      },
+      {
+        "cycle": 3,
+        "status": "PROGRESS_CONTINUE_DEMAND",
+        "generation_geh_before": 20.146116789118256,
+        "generation_geh_after": 19.894078260727408,
+        "supply_status": null,
+        "supply_geh_after": null,
+        "td_status": "TD_SKIPPED_BY_RUN_POLICY",
+        "error": null
+      },
+      {
+        "cycle": 4,
+        "status": "FAILED",
+        "generation_geh_before": 19.894078260727408,
+        "generation_geh_after": 19.640835876851426,
+        "supply_status": "ACCEPTED",
+        "supply_geh_after": 19.24247856066397,
+        "td_status": null,
+        "error": "LONG_INCIDENCE_ASSIGNMENT_BINDING_STALE_OR_MISSING"
+      }
+    ]
+  },
+  "current_run": {
+    "run_id": "RUN_20261101_113344_232959",
+    "latest_supplied_stage": "CYCLE_02_SUPPLYMIX_ACCEPTED; TD_02_RESULT_NOT_SUPPLIED",
+    "stages": [
+      {
+        "stage": "BASELINE",
+        "raw_cal": 19.32032021379468,
+        "raw_component_idp": 0.46974946776647813,
+        "total": 1.0,
+        "reference_hash": "4cdc6c58c6f3792ca1bda6c61c37228594f4e93a7a5e200840d982bd76c9d0c8",
+        "n": 247,
+        "model_obs_ratio": 0.9359827501784034,
+        "geh_lt5": 59,
+        "geh_lt10": 102,
+        "geh_ge20": 88,
+        "geh_ge30": 59
+      },
+      {
+        "stage": "AFTER_TG_C1",
+        "raw_cal": 19.630521701012643,
+        "raw_component_idp": 0.4744272251194878,
+        "total": 1.0160557114884918,
+        "reference_hash": "4cdc6c58c6f3792ca1bda6c61c37228594f4e93a7a5e200840d982bd76c9d0c8",
+        "n": 247,
+        "model_obs_ratio": 0.9570583844208237,
+        "geh_lt5": 62,
+        "geh_lt10": 101,
+        "geh_ge20": 88,
+        "geh_ge30": 58
+      },
+      {
+        "stage": "AFTER_TG_C2",
+        "raw_cal": 19.087238253656174,
+        "raw_component_idp": 0.4673047655257958,
+        "total": 0.9879359163016311,
+        "reference_hash": "4cdc6c58c6f3792ca1bda6c61c37228594f4e93a7a5e200840d982bd76c9d0c8",
+        "n": 247,
+        "model_obs_ratio": 0.9391096083468904,
+        "geh_lt5": 69,
+        "geh_lt10": 102,
+        "geh_ge20": 91,
+        "geh_ge30": 57
+      },
+      {
+        "stage": "AFTER_SUPPLY_C2",
+        "raw_cal": 18.837540161154966,
+        "raw_component_idp": 0.46761846557861264,
+        "total": 0.97631179859871,
+        "reference_hash": "4cdc6c58c6f3792ca1bda6c61c37228594f4e93a7a5e200840d982bd76c9d0c8",
+        "n": 247,
+        "model_obs_ratio": 0.9409661137185179,
+        "geh_lt5": 68,
+        "geh_lt10": 103,
+        "geh_ge20": 90,
+        "geh_ge30": 56
+      }
+    ],
+    "geh_improvement_vs_new_run_baseline_percent": 2.498820140128999,
+    "c1_geh_degradation_percent": 1.605571148849183,
+    "c1_acceptance_path": "EARLY_EXPLORATION_NONMONOTONIC_SEVERITY_TRADEOFF",
+    "c1_severity_scalars": {
+      "passes": true,
+      "mode": "EARLY_EXPLORATION_BASELINE_RELATIVE_SEVERITY_V24912",
+      "policy_scope": "GENERATION",
+      "outer_cycle": 1,
+      "severity20_relative_improvement": -0.041876210938698574,
+      "severity30_relative_improvement": -0.04451776271860551,
+      "geh20_count_reduction": 0,
+      "geh30_count_reduction": 1,
+      "max_new_geh40": 0,
+      "max_single_profile_geh_increase": 50.0,
+      "absolute_geh_ceiling": 60.0,
+      "severity20_relative_degradation": 0.041876210938698574,
+      "severity30_relative_degradation": 0.04451776271860551,
+      "geh40_net_count_increase": 3
+    },
+    "c1_severity_before": {
+      "n": 247,
+      "weight_sum": 241.8,
+      "geh_ge20": 88,
+      "geh_ge30": 59,
+      "geh_ge35": 44,
+      "geh_ge40": 32,
+      "max_geh": 132.70625449838928,
+      "severity20": 245.9534398249809,
+      "severity30": 137.0327887486825,
+      "power": 2.0
+    },
+    "c1_severity_after": {
+      "n": 247,
+      "weight_sum": 241.8,
+      "geh_ge20": 88,
+      "geh_ge30": 58,
+      "geh_ge35": 45,
+      "geh_ge40": 35,
+      "max_geh": 131.92600863575584,
+      "severity20": 256.2530379521903,
+      "severity30": 143.13318192286513,
+      "power": 2.0
+    },
+    "c2_tg_geh_improvement_percent": 2.7675446207241827,
+    "c2_tg_rows": 2693,
+    "c2_tg_assignment_gap": 0.00147436,
+    "c2_supply_improvement_percent": 1.3081939313739022,
+    "c2_supply_seconds": 1483.0,
+    "c2_supply_options": {
+      "enabled": true,
+      "every_n": 2,
+      "start_cycle": 2,
+      "max_trials": 4,
+      "step_units": [
+        8,
+        6,
+        4,
+        2
+      ],
+      "max_groups": 24,
+      "max_edges": 240,
+      "min_driver_geh": 10.0,
+      "drivers": "BOTH",
+      "reset_position": 15,
+      "min_attribution_coverage": 0.5
+    },
+    "c2_supply_attempts": [
+      {
+        "trial": 1,
+        "status": "REJECTED",
+        "edges": 36,
+        "addval1_step": 4.0,
+        "generalized_seconds_step": 40.0,
+        "decision_reasons": [
+          "NEW_SEVERE_GEH_PROFILE",
+          "PROTECTED_PROFILE_GUARD_FAILED",
+          "SHARED_OBJECTIVE_NOT_IMPROVED"
+        ],
+        "weighted_geh": 19.01808025087438
+      },
+      {
+        "trial": 2,
+        "status": "REJECTED",
+        "edges": 31,
+        "addval1_step": 3.0,
+        "generalized_seconds_step": 30.0,
+        "decision_reasons": [
+          "NEW_SEVERE_GEH_PROFILE",
+          "PROTECTED_PROFILE_GUARD_FAILED"
+        ],
+        "weighted_geh": 18.97725787062006
+      },
+      {
+        "trial": 3,
+        "status": "ELIGIBLE",
+        "edges": 19,
+        "addval1_step": 2.0,
+        "generalized_seconds_step": 20.0,
+        "decision_reasons": [],
+        "weighted_geh": 18.837540161154966
+      }
+    ],
+    "c2_generation_design_seconds": 816.162,
+    "long_generation_changed": false,
+    "long_generation_permitted_by_guard": true,
+    "long_school_search_incomplete": true,
+    "unknowns": [
+      "Exact installed release and effective full options not supplied",
+      "No current-run RUN_STATUS or TD cycle 02 result supplied",
+      "No proof of exact accepted checkpoint loaded after interruption",
+      "Underlying assignment-binding mismatch cause not determined from logs alone",
+      "Stage metadata does not prove actual maximum implemented coefficient changes"
+    ]
+  },
+  "runtime_changes": [],
+  "live_visum": "NOT_RUN"
+}

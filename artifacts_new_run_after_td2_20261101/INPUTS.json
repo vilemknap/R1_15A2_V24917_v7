@@ -1,0 +1,82 @@
+[
+  {
+    "label": "previous_cycle2",
+    "file_id": "file_00000000093481f4b3610f0c0a3e21fd",
+    "original_filename": "DEMAND_CYCLE_02_RESULT.json",
+    "archive": "previous_cycle2__DEMAND_CYCLE_02_RESULT.json.gz.b64",
+    "size_bytes": 1225044,
+    "sha256": "75b081b9fdfaaef95fd39b725aabc1d57948727db3f9a71e0f1252883c53f959"
+  },
+  {
+    "label": "previous_cycle1",
+    "file_id": "file_00000000868c8246b2d275178650a67f",
+    "original_filename": "DEMAND_CYCLE_01_RESULT.json",
+    "archive": "previous_cycle1__DEMAND_CYCLE_01_RESULT.json.gz.b64",
+    "size_bytes": 1113027,
+    "sha256": "3bb00dc9e575cd4429454c3795442cdcca87f491a15f858e2ea6b96ee8c34179"
+  },
+  {
+    "label": "previous_cycle3",
+    "file_id": "file_0000000082088243966be6aa0ad42b06",
+    "original_filename": "DEMAND_CYCLE_03_RESULT.json",
+    "archive": "previous_cycle3__DEMAND_CYCLE_03_RESULT.json.gz.b64",
+    "size_bytes": 2222338,
+    "sha256": "96b9fe7a3f1a6d3621a4e2df5076f4750e089d9d1131adf35ccfb7835e6c50ce"
+  },
+  {
+    "label": "previous_cycle4",
+    "file_id": "file_00000000b25881f4b3e367bdcc81d5a8",
+    "original_filename": "DEMAND_CYCLE_04_RESULT.json",
+    "archive": "previous_cycle4__DEMAND_CYCLE_04_RESULT.json.gz.b64",
+    "size_bytes": 1169527,
+    "sha256": "85cd4a69b1689be5f1c32b547892ff2e8798ca064eb9243f533e06faa4340ba5"
+  },
+  {
+    "label": "previous_run_status",
+    "file_id": "file_0000000095e081f4970744dfcfc05958",
+    "original_filename": "RUN_STATUS.json",
+    "archive": "previous_run_status__RUN_STATUS.json.gz.b64",
+    "size_bytes": 6383102,
+    "sha256": "b1ff1db24bd08441e9b10d71ef1427506943a2f20cbeb874764852ce437d2e1e"
+  },
+  {
+    "label": "current_cycle1",
+    "file_id": "file_00000000021081f4bb4099e3a8424244",
+    "original_filename": "DEMAND_CYCLE_01_RESULT.json",
+    "archive": "current_cycle1__DEMAND_CYCLE_01_RESULT.json.gz.b64",
+    "size_bytes": 2230868,
+    "sha256": "feacb1b84191e213029adb4274c38ac4cfedb638ac550e21cf7e996bce71e396"
+  },
+  {
+    "label": "current_supply_cycle2",
+    "file_id": "file_00000000ae3c81f48eb66aef56b49e45",
+    "original_filename": "SUPPLYMIX_BLOCK_RESULT.json",
+    "archive": "current_supply_cycle2__SUPPLYMIX_BLOCK_RESULT.json.gz.b64",
+    "size_bytes": 41383,
+    "sha256": "9ca6d714448c2bd043e306a34ee537992ad2229dcefac40762245a734778c19d"
+  },
+  {
+    "label": "current_plan_cycle2",
+    "file_id": "file_00000000803881f4bb5e6e4e6799d4c3",
+    "original_filename": "STEP1_PLAN_01.json",
+    "archive": "current_plan_cycle2__STEP1_PLAN_01.json.gz.b64",
+    "size_bytes": 3476,
+    "sha256": "3aa985c7024a171cdc06983487e9056171ecef7b5e60491d5a947aa40b427f9a"
+  },
+  {
+    "label": "current_generation_timing",
+    "file_id": "file_00000000aa9c81f4b66f868f1ee2ad1f",
+    "original_filename": "V24917_TIMING.json",
+    "archive": "current_generation_timing__V24917_TIMING.json.gz.b64",
+    "size_bytes": 2394,
+    "sha256": "a8b39f429546241dd272aa2bd98a511353722b0ad4b16a26144d3c34b67ec63c"
+  },
+  {
+    "label": "current_generation_cycle2",
+    "file_id": "file_0000000071b88243902535dc148d53bb",
+    "original_filename": "GENERATION_BLOCK_RESULT.json",
+    "archive": "current_generation_cycle2__GENERATION_BLOCK_RESULT.json.gz.b64",
+    "size_bytes": 1049183,
+    "sha256": "ede02225f4cb151ef68979e143d1c4facdeb4b2a265b888002abec2c486bb49a"
+  }
+]

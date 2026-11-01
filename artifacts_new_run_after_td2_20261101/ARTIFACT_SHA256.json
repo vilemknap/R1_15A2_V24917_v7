@@ -1,0 +1,18 @@
+{
+  "CHECKS.json": "eae9d8aed190de712d538a49e5875faaa85a3e76d96e98c7ff5dd0cd954d417e",
+  "INPUTS.json": "1350cf3a7419b91e6969d073b3e17fc0de498a828f5f668fdfc433e397909c22",
+  "PACKAGE_CHECKS.json": "6589a7c799fe09bd70a194f1ba569687762e9ebffcad0ee7e65a4cf38065f525",
+  "REPORT_CZ.md": "1a22444f098a29ab7f7bbe8708e0f8536c1b7ecda55decd82e7584d6321ba943",
+  "SUMMARY.json": "bb0cb9edf31dcb4e689963e4c6d47776ca421fb6a7794ee9ab249f63c30e8364",
+  "analyse.py.txt": "7b6b51c0309a6b2625657b7bfbdb9c6e1e84596bd53c8592d4bdb60a0e6bb2bc",
+  "current_cycle1__DEMAND_CYCLE_01_RESULT.json.gz.b64": "b0f2f6879c3870783a07f401fe6683f4312e385072ac2104a72627326b4f6501",
+  "current_generation_cycle2__GENERATION_BLOCK_RESULT.json.gz.b64": "2b2ad3c3114d5af6e80803c0394b7e3e5aecea199a3365112fbc265e4e5067a8",
+  "current_generation_timing__V24917_TIMING.json.gz.b64": "629d3ccb2a6b2fbd595941e83af005786fe40b26bd30690cd5d6fa770d38db6d",
+  "current_plan_cycle2__STEP1_PLAN_01.json.gz.b64": "f173be8f2ebddcfeb3fe138cd2a06b0d509907ddbe86d7326a795f03df8d8d8d",
+  "current_supply_cycle2__SUPPLYMIX_BLOCK_RESULT.json.gz.b64": "76161e25b667dcd8f8746d45914d0ad11d205fdd59448e9b074b275c8e18fc22",
+  "previous_cycle1__DEMAND_CYCLE_01_RESULT.json.gz.b64": "116c556506658878719eae35ef58870f47421a4f5338346815ac0efceb122b13",
+  "previous_cycle2__DEMAND_CYCLE_02_RESULT.json.gz.b64": "32a5f6833c2f299ba9d43639a39471b25de8c33aec7b928ac00598e5fd16b259",
+  "previous_cycle3__DEMAND_CYCLE_03_RESULT.json.gz.b64": "b461c1f9d9f6e82c94da44df4ca54f6e248be7cd5f31f8413d1da92f1e0022c8",
+  "previous_cycle4__DEMAND_CYCLE_04_RESULT.json.gz.b64": "4e58d527eb4eb87e92e4a5307d635adc434edcc87a37b5a120049a4c7d7ac093",
+  "previous_run_status__RUN_STATUS.json.gz.b64": "5f9f351eb366b06647fb138002a7e08017bfcdd55cfa523b0156d6d44416646d"
+}

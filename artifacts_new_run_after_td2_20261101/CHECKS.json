@@ -1,0 +1,136 @@
+{
+  "status": "PASS",
+  "checks_count": 32,
+  "checks": [
+    {
+      "name": "exact_input_integrity:previous_cycle2",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:previous_cycle1",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:previous_cycle3",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:previous_cycle4",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:previous_run_status",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:current_cycle1",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:current_supply_cycle2",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:current_plan_cycle2",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:current_generation_timing",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_input_integrity:current_generation_cycle2",
+      "status": "PASS"
+    },
+    {
+      "name": "previous_status_embeds_exact_four_cycle_records",
+      "status": "PASS"
+    },
+    {
+      "name": "previous_cycle_state_chain",
+      "status": "PASS"
+    },
+    {
+      "name": "separate_run_identity",
+      "status": "PASS"
+    },
+    {
+      "name": "previous_run_failed_c4_long_binding",
+      "status": "PASS"
+    },
+    {
+      "name": "previous_live_final_unverified",
+      "status": "PASS"
+    },
+    {
+      "name": "current_c1_td_correctly_skipped",
+      "status": "PASS"
+    },
+    {
+      "name": "current_c1_to_c2_objective_chain",
+      "status": "PASS"
+    },
+    {
+      "name": "current_c2_generation_to_supply_chain",
+      "status": "PASS"
+    },
+    {
+      "name": "current_c2_path_epoch_origin_links_c1",
+      "status": "PASS"
+    },
+    {
+      "name": "same_fixed_count_objective_reference",
+      "status": "PASS"
+    },
+    {
+      "name": "c1_accepted_under_explicit_nonmonotonic_policy",
+      "status": "PASS"
+    },
+    {
+      "name": "c1_worsening_within_recorded_two_percent_budget",
+      "status": "PASS"
+    },
+    {
+      "name": "c1_accepted_severity_and_protection_pass",
+      "status": "PASS"
+    },
+    {
+      "name": "generation_and_supply_live_assignment_gaps_below_point005",
+      "status": "PASS"
+    },
+    {
+      "name": "c2_generation_first_accepted_trial",
+      "status": "PASS"
+    },
+    {
+      "name": "c2_supply_third_trial_accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "c2_supply_exact_nineteen_edges",
+      "status": "PASS"
+    },
+    {
+      "name": "expanded_supply_policy_active",
+      "status": "PASS"
+    },
+    {
+      "name": "six_generation_attempt_budget_active",
+      "status": "PASS"
+    },
+    {
+      "name": "c2_plan_matches_native_attempt",
+      "status": "PASS"
+    },
+    {
+      "name": "c2_long_guard_passes_but_no_long_change",
+      "status": "PASS"
+    },
+    {
+      "name": "current_count_roster_same_247_cal",
+      "status": "PASS"
+    }
+  ],
+  "runtime_tests": "NOT_RUN_READ_ONLY_AUDIT",
+  "live_visum": "NOT_RUN"
+}
