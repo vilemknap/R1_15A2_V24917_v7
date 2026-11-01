@@ -1,0 +1,38 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_live_2026_interface_without_mode_property_creates_and_verifies_all_targets _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-62/test_live_2026_interface_witho0')
+
+    def test_live_2026_interface_without_mode_property_creates_and_verifies_all_targets(tmp_path):
+        v = host()
+        assert not hasattr(v.Net.DemandSegments.items[0], 'Mode')
+>       result = ref.run(v, tmp_path / 'run')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scenario_tools/tests/test_freight_dseg_references.py:314:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+R1_2022_2025_CREATE_BIND_FREIGHT_DSEGS.py:197: in run
+    rows, mats, dsegs, sources = preflight(visum, create_missing)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+R1_2022_2025_CREATE_BIND_FREIGHT_DSEGS.py:125: in preflight
+    state = dseg_state(ds)
+            ^^^^^^^^^^^^^^
+R1_2022_2025_CREATE_BIND_FREIGHT_DSEGS.py:87: in dseg_state
+    return {'code': code(ds), 'mode': mode_code(ds), 'matrix_no': matrix_no(ds.ODMatrix),
+                                      ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ds = <test_freight_dseg_references.DSeg object at 0x7f92841523c0>
+
+    def mode_code(ds):
+>       value = ds.Mode
+                ^^^^^^^
+E       AttributeError: 'DSeg' object has no attribute 'Mode'
+
+R1_2022_2025_CREATE_BIND_FREIGHT_DSEGS.py:79: AttributeError
+----------------------------- Captured stdout call -----------------------------
+FAILED_PREFLIGHT_NO_CHANGES /tmp/pytest-of-agent/pytest-62/test_live_2026_interface_witho0/run
+=========================== short test summary info ============================
+FAILED scenario_tools/tests/test_freight_dseg_references.py::test_live_2026_interface_without_mode_property_creates_and_verifies_all_targets
+1 failed in 0.09s

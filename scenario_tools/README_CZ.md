@@ -86,7 +86,12 @@ Python, žádný další modul balíčku) a použije právě otevřený objekt `
    již obsahuje agregované OA, nepřidávej zároveň jeho komponentní segmenty.
 
 Zdroj režimu pro LNV je existující segment **`LNV`**, pro NV segment **`NV`**.
-Režimy se nepřevádějí na osobní `C`. Existující generické segmenty, OA,
+Režimy se nepřevádějí na osobní `C`.
+Verze skriptu **V2_MODEATTRFIX** čte režim přes atribut `MODE\CODE`, případně
+referenční atribut `MODE`. Vlastnost `ds.Mode` není v COM rozhraní Visum 2026
+dostupná. Režim se následně musí nalézt v `Net.Modes`; při chybě čtení se
+žádný režim neodhaduje a nevytvářejí se objekty.
+Existující generické segmenty, OA,
 2040/2070 reference, OD hodnoty a procedury skript nepřepisuje. Existující
 správné vazby ponechá; u nevyplněné vazby provede připojení, konfliktní vazbu
 nebo jiný režim odmítne ještě před zápisem. Chybějící datové matice vytvoří

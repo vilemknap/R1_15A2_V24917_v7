@@ -19,7 +19,7 @@ CREATE_MISSING_MATRICES = True
 SOURCE_DSEGS = {'LNV': 'LNV', 'NV': 'NV'}
 YEARS = (2022, 2025)
 EXPECTED_ZONES = 681
-SCRIPT_ID = 'R1_FREIGHT_DSEGS_2022_2025_V1'
+SCRIPT_ID = 'R1_FREIGHT_DSEGS_2022_2025_V2_MODEATTRFIX'
 
 
 class ReferenceError(RuntimeError):
@@ -76,10 +76,22 @@ def matrix_no(mat):
 
 
 def mode_code(ds):
-    value = ds.Mode
-    if value is None or not code(value):
-        raise ReferenceError('DSEG_MODE_UNREADABLE:' + code(ds))
-    return code(value)
+    # Mode is a network attribute/relation, not an IDemandSegment COM
+    # property. Visum 2026's generated wrapper therefore has no ds.Mode.
+    errors = []
+    for attribute in (r'MODE\CODE', 'MODE'):
+        try:
+            value = ds.AttValue(attribute)
+            # Attribute references may return the referenced object rather
+            # than its code. Never turn a COM object's repr into a mode code.
+            if value is not None and not isinstance(value, str):
+                value = value.AttValue('CODE')
+            result = text(value).upper()
+            if result:
+                return result
+        except Exception as exc:
+            errors.append(attribute + ': ' + str(exc))
+    raise ReferenceError('DSEG_MODE_UNREADABLE:' + code(ds) + '; ' + '; '.join(errors))
 
 
 def dseg_state(ds):

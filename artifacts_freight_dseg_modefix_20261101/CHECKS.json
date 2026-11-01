@@ -1,0 +1,43 @@
+{
+  "status": "PASS_OFFLINE",
+  "base_local_commit": "819d0b263e2de982917764848728a4856abdcdca",
+  "base_remote_commit": "aade1ebc29af9d56b4fb08547e185694bef5616a",
+  "script_id": "R1_FREIGHT_DSEGS_2022_2025_V2_MODEATTRFIX",
+  "root_cause": "IDemandSegment has no .Mode COM property; original mock incorrectly supplied it",
+  "fix": "Read documented network attribute/relation MODE via AttValue(MODE\\CODE) or AttValue(MODE); resolve code through existing Net.Modes",
+  "before_fix_reproduction": {
+    "exit_code": 1,
+    "failed": 1,
+    "expected_failure": "AttributeError: DSeg has no attribute Mode",
+    "model_writes_before_failure": false
+  },
+  "test_command": "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider scenario_tools/tests",
+  "test_exit_code": 0,
+  "passed": 92,
+  "failed": 0,
+  "new_regression_cases": 4,
+  "mode_property_removed_from_all_freight_dseg_mocks": true,
+  "native_manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files_verified": 91,
+      "all_unchanged": true
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files_verified": 180,
+      "all_unchanged": true
+    }
+  },
+  "scenario_package_entries_verified": 60,
+  "syntax": "PASS",
+  "git_diff_check": "PASS",
+  "matrix_values_and_procedures_unchanged": true,
+  "live_visum": "NOT_RUN",
+  "official_api_sources": [
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IDemandSegment_members.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IDemandSegment_attributes.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IDemandSegment_relations.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IDemandSegment~ODMatrix.html"
+  ],
+  "reproduction_log_normalization": "TRAILING_WHITESPACE_STRIPPED",
+  "raw_reproduction_log_sha256": "d7f7232934f7d5f6c1eeb88b18b1699fdcc446ba9d2378be86147ca529ecbd0e"
+}

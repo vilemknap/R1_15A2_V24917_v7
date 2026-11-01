@@ -51,11 +51,18 @@ class Matrix(Obj):
 class DSeg(Obj):
     def __init__(self, code, mode, matrix=None):
         super().__init__(CODE=code, NAME='original ' + code)
-        self.Mode = mode
+        # Visum 2026 IDemandSegment has a Mode attribute/relation, but no
+        # Python/COM .Mode property. Keep the mock on that actual interface.
+        self._mode = mode
         self.matrix = matrix
         self.fail_get = False
         self.fail_set = False
         self.corrupt_set = False
+
+    def AttValue(self, field):
+        if field in (r'MODE\CODE', 'MODE'):
+            return self._mode.AttValue('CODE')
+        return super().AttValue(field)
 
     @property
     def ODMatrix(self):
@@ -299,3 +306,39 @@ def test_com_getter_failure_during_recovery_still_records_unverified_rollback(tm
         ref.run(v, tmp_path / 'run')
     status = json.loads((tmp_path / 'run/00_STATUS.json').read_text())
     assert status['status'] == 'FAILED_ROLLBACK_UNVERIFIED_CANCEL_BASE_EDIT'
+
+
+def test_live_2026_interface_without_mode_property_creates_and_verifies_all_targets(tmp_path):
+    v = host()
+    assert not hasattr(v.Net.DemandSegments.items[0], 'Mode')
+    result = ref.run(v, tmp_path / 'run')
+    assert result['status'] == 'PASS_CREATED_AND_VERIFIED'
+    assert [r['mode'] for r in result['plan']] == ['L', 'N', 'L', 'N']
+
+
+@pytest.mark.parametrize('reference_object', [False, True])
+def test_direct_mode_attribute_when_qualified_attribute_is_unavailable(tmp_path, reference_object):
+    v = host()
+    for ds in v.Net.DemandSegments.items:
+        original = ds.AttValue
+        def read(field, original=original, source_mode=ds._mode):
+            if field == r'MODE\CODE':
+                raise AttributeError('Qualified attribute not exposed')
+            if field == 'MODE' and reference_object:
+                return source_mode
+            return original(field)
+        ds.AttValue = read
+    assert ref.run(v, tmp_path / 'run')['status'] == 'PASS_CREATED_AND_VERIFIED'
+
+
+def test_unreadable_mode_attributes_never_guess_a_mode_or_create_objects(tmp_path):
+    v = host(); ds = v.Net.DemandSegments.items[0]; original = ds.AttValue
+    def read(field):
+        if field in (r'MODE\CODE', 'MODE'):
+            raise RuntimeError('Mode attributes unavailable')
+        return original(field)
+    ds.AttValue = read
+    with pytest.raises(ref.ReferenceError, match='DSEG_MODE_UNREADABLE'):
+        ref.run(v, tmp_path / 'run')
+    assert not v.Net.calls
+    assert json.loads((tmp_path / 'run/00_STATUS.json').read_text())['status'] == 'FAILED_PREFLIGHT_NO_CHANGES'
