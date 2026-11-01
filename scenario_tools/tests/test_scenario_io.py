@@ -84,7 +84,7 @@ def test_import_keys_rounding_and_calibrated_parameters(year_folder):
     arr=v.Net.Matrices.items[7001].arr
     assert np.array_equal(arr,np.rint(arr))
     cfg=io.read_config(year_folder);order,keys=io.zone_order(v);target,freight=io.input_data(year_folder,cfg,order)
-    assert all(v.Net.Zones.data[a][no]==val for a in target for no,val in target[a].items())
+    assert all(v.Net.Zones.data[a][no]==(1. if val==0 else val) for a in target for no,val in target[a].items())
     assert np.array_equal(arr,freight['LNV'])
     assert list(keys.values())[0]!=order[0]  # COM row key differs from zone NO.
 
@@ -158,7 +158,7 @@ def test_missing_excel_value_keeps_parent_not_zero(tmp_path):
     stamp=io.run_import(v,folder)
     assert v.Net.Zones.data['NUM_PM'][11]==7654.
     fallbacks=json.loads((Path(stamp['log_folder'])/'FALLBACKS_KEPT_2022.json').read_text())
-    assert {'No':11,'attribute':'NUM_PM','kept_2022_value':7654.} in fallbacks
+    assert any(r['No']==11 and r['attribute']=='NUM_PM' and r['kept_2022_value']==7654. for r in fallbacks)
 
 def test_mask_no_upper_bound_and_component_parity():
     v=fake(2);cfg={'passenger_dsegs':io.PASSENGER_DSEGS}
@@ -229,3 +229,73 @@ def test_package_hash_verification(tmp_path,monkeypatch,tampered):
         payload.write_text('changed\n')
         with pytest.raises(io.ScenarioError,match='PACKAGE_SHA256'):io.validate_package()
     else:io.validate_package()
+
+def test_zero_or_error_falls_back_only_to_nonzero_reference():
+    reference={a:{1:12.,2:0.,3:9.,4:20.,5:5.} for a in io.RAW_ATTRS}
+    target={a:{1:0.,2:0.,3:0.00000001,4:30.} for a in io.RAW_ATTRS}
+    effective,log=io.resolve_zonal_fallback(target,reference,[1,2,3,4,5])
+    assert effective['POP_ZP']=={1:12.,2:0.,3:0.00000001,4:30.,5:5.}
+    assert not any(r['No'] in [2,3,4] for r in log)
+    assert {r['reason'] for r in log}=={'ZERO_FORECAST_REFERENCE_POSITIVE','INVALID_OR_MISSING_FORECAST'}
+
+def test_nitra_and_small_population_zero_use_2022_values(year_folder):
+    v=fake();v.Net.Zones.data['NUM_PM'][615]=62866.;v.Net.Zones.data['NUM_PM_SMEAR'][615]=81148.
+    v.Net.Zones.data['POP_ZP'][641]=4.;v.Net.Zones.data['POP_ZP'][1]=0.
+    stamp=io.run_import(v,year_folder)
+    assert v.Net.Zones.data['NUM_PM'][615]==62866. and v.Net.Zones.data['NUM_PM_SMEAR'][615]==81148.
+    assert v.Net.Zones.data['POP_ZP'][641]==4. and v.Net.Zones.data['POP_ZP'][1]==0.
+    assert stamp['zero_fallback_cells']>0
+    log=json.loads((Path(stamp['log_folder'])/'FALLBACKS_KEPT_2022.json').read_text())
+    assert any(r['No']==641 and r['attribute']=='POP_ZP' and r['reason']=='ZERO_FORECAST_REFERENCE_POSITIVE' for r in log)
+
+def test_repeated_import_never_reanchors_reference_to_forecast(year_folder):
+    v=fake();v.Net.Zones.data['NUM_PM'][615]=62866.
+    first=io.run_import(v,year_folder);ref=year_folder/first['reference_2022_file'];sealed=ref.read_bytes()
+    v.Net.Zones.data['NUM_PM'][615]=12345.
+    second=io.run_import(v,year_folder)
+    assert v.Net.Zones.data['NUM_PM'][615]==62866.
+    assert ref.read_bytes()==sealed and first['reference_2022_sha256']==second['reference_2022_sha256']
+
+def test_v1_upgrade_uses_first_original_backup(year_folder):
+    v=fake();v.Net.Zones.data['NUM_PM'][615]=62866.;first=io.run_import(v,year_folder)
+    (year_folder/first['reference_2022_file']).unlink()
+    old=json.loads((year_folder/'IMPORT_CURRENT.json').read_text())
+    for key in ['schema','reference_2022_file','reference_2022_sha256']:old.pop(key)
+    (year_folder/'IMPORT_CURRENT.json').write_text(json.dumps(old))
+    (Path(first['log_folder'])/'RESULT.json').write_text(json.dumps(old))
+    v.Net.Zones.data['NUM_PM'][615]=12345.
+    second=io.run_import(v,year_folder)
+    assert v.Net.Zones.data['NUM_PM'][615]==62866.
+    ref=json.loads((year_folder/second['reference_2022_file']).read_text())
+    assert ref['capture_basis']=='EARLIEST_SUCCESSFUL_V1_PREIMPORT_BACKUP'
+
+def test_v1_upgrade_without_original_backup_fails_before_writes(year_folder):
+    v=fake();(year_folder/'IMPORT_CURRENT.json').write_text(json.dumps({'status':'PASS_IMPORTED','model_path':io.model_path(v,2040)}))
+    with pytest.raises(io.ScenarioError,match='REFERENCE_2022_MISSING'):io.run_import(v,year_folder)
+    assert not v.Net.Zones.calls and not v.Net.Matrices.items[7001].calls
+
+def test_modified_reference_blocks_import_and_recompute(year_folder):
+    v=fake();first=io.run_import(v,year_folder);ref=year_folder/first['reference_2022_file']
+    data=json.loads(ref.read_text());data['values']['NUM_PM']['615']=0;ref.write_text(json.dumps(data))
+    calls=len(v.Net.Zones.calls)
+    with pytest.raises(io.ScenarioError,match='REFERENCE_2022_INTEGRITY'):io.run_import(v,year_folder)
+    assert len(v.Net.Zones.calls)==calls
+    with pytest.raises(io.ScenarioError,match='REFERENCE_2022_CHANGED'):io.run_recompute(v,year_folder)
+
+@pytest.mark.parametrize('year',[2040,2050,2060,2070])
+def test_corrected_workbooks_are_the_source_and_jobs_have_count_scale(year):
+    cfg=io.read_config(ROOT/str(year));target,_=io.input_data(ROOT/str(year),cfg,list(range(1,682)))
+    assert cfg['zone_source']['label']=='gravity'+str(year)
+    assert target['NUM_PM_SMEAR'][11]>100 and target['NUM_PM'][11]>100
+
+def test_rounded_to_zero_reference_readback_is_not_tolerated(year_folder):
+    v=fake();v.Net.Zones.data['POP_ZP'][641]=1e-10;original=v.Net.Zones.GetMultiAttValues
+    def read(attr,active):
+        rows=original(attr,active)
+        if attr=='POP_ZP' and v.Net.Zones.calls:
+            for row in rows:
+                if row[0]==v.Net.Zones.key[641]:row[1]=0.
+        return rows
+    v.Net.Zones.GetMultiAttValues=read
+    with pytest.raises(io.ScenarioError):io.run_import(v,year_folder)
+    assert not (year_folder/'IMPORT_CURRENT.json').exists()

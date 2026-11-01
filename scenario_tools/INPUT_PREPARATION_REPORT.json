@@ -246,7 +246,7 @@
         "renormalized": false
       }
     },
-    "primary_zone_source": "zonal2070",
-    "source_sheet": "List1"
+    "primary_zone_source": "gravity2070",
+    "source_sheet": "vstupy_prod_att_R1"
   }
 ]

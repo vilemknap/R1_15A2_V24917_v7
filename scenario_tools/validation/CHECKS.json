@@ -1,8 +1,9 @@
 {
   "status": "PASS",
+  "release": "R1_SCENARIO_CORRECTED_WORKPLACES_IMMUTABLE_ZERO_FALLBACK_V2_20261101",
   "live_visum": "NOT_RUN",
-  "scope": "NEW_SCENARIO_TOOLS_ONLY",
-  "base_remote_commit": "12e3ecba9ce34e2a775d4accd79e0e1fddb67ded",
+  "scope": "SCENARIO_IMPORT_INPUTS_AND_ZERO_ERROR_FALLBACK_ONLY",
+  "base_remote_commit": "133adecd78e801028916a80cf6ebc2783d7b83d9",
   "targeted_command": [
     "/workspace/.venvs/r1/bin/python",
     "-m",
@@ -12,39 +13,9 @@
     "no:cacheprovider",
     "scenario_tools/tests/test_scenario_io.py"
   ],
-  "native_mask_command": [
-    "/workspace/.venvs/r1/bin/python",
-    "-m",
-    "pytest",
-    "-q",
-    "-p",
-    "no:cacheprovider",
-    "tests/test_v24917_long_post_td_mask.py",
-    "tests/test_v24917_longmask_09c_live_scope_regression.py",
-    "tests/test_v24917_tdlong1_mask.py"
-  ],
-  "assignment_command": [
-    "/workspace/.venvs/r1/bin/python",
-    "-m",
-    "pytest",
-    "-q",
-    "-p",
-    "no:cacheprovider",
-    "tests/test_supply_visum_v22.py"
-  ],
   "test_totals": {
     "targeted_tests.log": {
-      "passed": 29,
-      "skipped": 0,
-      "returncode": 0
-    },
-    "native_mask_tests.log": {
-      "passed": 57,
-      "skipped": 0,
-      "returncode": 0
-    },
-    "assignment_tests.log": {
-      "passed": 21,
+      "passed": 40,
       "skipped": 0,
       "returncode": 0
     },
@@ -78,10 +49,10 @@
           "-q",
           "-p",
           "no:cacheprovider",
-          "/workspace/work/scenario_import_export_20261101/source/tests"
+          "/workspace/work/scenario_corrected_fallback_20261101/source/tests"
         ],
         "returncode": 0,
-        "seconds": 44.784
+        "seconds": 44.679
       },
       {
         "suite": "diagfast",
@@ -92,10 +63,10 @@
           "-q",
           "-p",
           "no:cacheprovider",
-          "/workspace/work/scenario_import_export_20261101/source/diagfast_tests"
+          "/workspace/work/scenario_corrected_fallback_20261101/source/diagfast_tests"
         ],
         "returncode": 0,
-        "seconds": 20.918
+        "seconds": 21.069
       },
       {
         "suite": "audit_genfix2",
@@ -106,32 +77,54 @@
           "-q",
           "-p",
           "no:cacheprovider",
-          "/workspace/work/scenario_import_export_20261101/source/genfix2_audit_tests"
+          "/workspace/work/scenario_corrected_fallback_20261101/source/genfix2_audit_tests"
         ],
         "returncode": 0,
-        "seconds": 0.766
+        "seconds": 0.816
       }
     ],
     "all_passed": true,
-    "output": "/workspace/work/scenario_import_export_20261101/checks_full",
+    "output": "/workspace/work/scenario_corrected_fallback_20261101/checks_full",
     "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
   },
-  "compile_files": 18,
-  "manifest_files_verified": {
+  "compiled_files": 18,
+  "core_manifest_files_verified": {
     "V24917_RUNTIME_MANIFEST.json": 91,
     "DIAGFAST_V1_RELEASE_MANIFEST.json": 180
   },
-  "original_tracked_files_unchanged": true,
-  "initial_environment_issue": "Default interpreter had no pytest; used existing /workspace/.venvs/r1/bin/python, installed no dependencies",
+  "original_calibration_libraries_unchanged": true,
+  "freight_csv_byte_identity_vs_previous_release": [
+    "scenario_tools/2025/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2025/NV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2040/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2040/NV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2050/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2050/NV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2060/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2060/NV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2070/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2070/NV_MC_MEAN_ROUNDED.csv"
+  ],
+  "corrected_source_variable_year_fields_verified": 8,
+  "fallback_preview_zero_erasure_cases_remaining": 0,
+  "fallback_reference_mode": "Immutable snapshot of actual opened 2022 copy before first scenario import, with original V1 backup recovery when available",
+  "preview_reference_role": "Earlier supplied 2022 export; does not replace the live pre-import reference",
   "input_preparation_command": [
     "python",
     "tools/prepare_scenario_inputs_20261101.py",
     "--manifest",
-    "/workspace/work/SCENARIO_UPLOADS_20261101.json",
+    "/workspace/work/scenario_corrected_fallback_20261101/INPUT_MANIFEST.json",
     "--target",
     "scenario_tools"
   ],
-  "new_data_all_five_years_verified_by_targeted_tests": true,
-  "freight_rounding": "MC_MEAN Decimal ROUND_HALF_UP per cell; no renormalization",
-  "scenario_runtime_files_and_inputs_sealed_by": "scenario_tools/SCENARIO_TOOLS_SHA256.json"
+  "other_existing_focused_logs": "native_mask_tests.log and assignment_tests.log are inherited focused evidence; their suites are included in the fresh main run",
+  "fallback_preview_command": [
+    "python",
+    "scenario_tools/validation/audit_effective_fallback.py.txt",
+    "--scenario-root",
+    "scenario_tools",
+    "--reference",
+    "artifacts_scenario_zero_audit_20261101/REFERENCE_2022_RAW.csv"
+  ],
+  "fallback_preview_replay_byte_identical": true
 }

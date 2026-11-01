@@ -1,5 +1,5 @@
 {
-  "schema": "R1_SCENARIO_IO_20261101",
+  "schema": "R1_SCENARIO_IO_20261101_ZERO_FALLBACK_V2",
   "year": 2070,
   "zone_count": 681,
   "zone_attributes": [
@@ -19,13 +19,13 @@
     "POP_CENTRALITY_TERM"
   ],
   "zone_file": "ZONE_RAW_ATTRS.csv",
-  "zone_sha256": "fcd8719812dba55ec2a4aafabad2caed9e84d03397f3169f4a9f59cea169fe8e",
+  "zone_sha256": "cd6d0e11ef905fb43ad856a0e069efbb74addb956f437c41b6c4a719c34d6478",
   "freight_variant": "MC_MEAN_ROUNDED_HALF_UP",
   "zone_source": {
-    "label": "zonal2070",
-    "sheet": "List1",
+    "label": "gravity2070",
+    "sheet": "vstupy_prod_att_R1",
     "key": "OSRM_MATRIX_ID",
-    "fallback_policy": "KEEP_OPENED_2022_COPY_VALUE"
+    "fallback_policy": "IMMUTABLE_2022_NONZERO_IF_FORECAST_ZERO_OR_INVALID"
   },
   "freight": {
     "LNV": {

@@ -1,5 +1,5 @@
 {
-  "schema": "R1_SCENARIO_IO_20261101",
+  "schema": "R1_SCENARIO_IO_20261101_ZERO_FALLBACK_V2",
   "year": 2025,
   "zone_count": 681,
   "zone_attributes": [
@@ -25,7 +25,7 @@
     "label": "zonal2025",
     "sheet": "List1",
     "key": "OSRM_MATRIX_ID",
-    "fallback_policy": "KEEP_OPENED_2022_COPY_VALUE",
+    "fallback_policy": "IMMUTABLE_2022_NONZERO_IF_FORECAST_ZERO_OR_INVALID",
     "income_supplement": "gravity2025:vstupy_prod_att:AV_INCOME; five absent additional attributes retain 2022"
   },
   "freight": {

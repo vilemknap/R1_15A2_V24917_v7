@@ -1,0 +1,160 @@
+{
+  "status": "PASS",
+  "preview_reference": "Earlier 2022 export 2026-10-31; actual live fallback uses immutable pre-import copy of the user model",
+  "live_visum": "NOT_RUN",
+  "source_reference_sha256": "f912400d76de9292b4283bca4a78c62fd31ff65d13283871f58e65a3fbb27bb8",
+  "years": [
+    {
+      "year": 2025,
+      "source": "zonal2025",
+      "zero_fallback_cells": 6,
+      "error_or_missing_fallback_cells": 3898,
+      "fallback_counts_by_attribute": {
+        "NUM_VS": 44,
+        "NUM_PUP": 41,
+        "POP_ZP": 9,
+        "E_C": 75,
+        "E_NC": 75,
+        "NE_C": 75,
+        "NE_NC": 75,
+        "PRENOC_SVK": 104,
+        "AV_INCOME": 1,
+        "NUM_PM": 681,
+        "NUM_PM_SMEAR": 681,
+        "NUM_PUP_PLACES": 681,
+        "NUM_STUD_VS_PLACES": 681,
+        "POP_CENTRALITY_TERM": 681
+      },
+      "total_fallback_cells": 3904,
+      "effective_zero_over_positive_2022_cells": 0,
+      "unchanged_positive_forecast_cells": 5230,
+      "remaining_low_smear_scale_candidates": 0,
+      "Nitra_NUM_PM_effective": 62866.0,
+      "Nitra_NUM_PM_SMEAR_effective": 81148.0,
+      "freight_totals": {
+        "LNV": 25769,
+        "NV": 35769
+      }
+    },
+    {
+      "year": 2040,
+      "source": "gravity2040",
+      "zero_fallback_cells": 116,
+      "error_or_missing_fallback_cells": 1,
+      "fallback_counts_by_attribute": {
+        "NUM_VS": 11,
+        "NUM_PUP": 11,
+        "POP_ZP": 1,
+        "E_C": 12,
+        "E_NC": 12,
+        "NE_C": 12,
+        "NE_NC": 12,
+        "PRENOC_SVK": 12,
+        "NUM_PM": 11,
+        "NUM_PM_SMEAR": 11,
+        "NUM_PUP_PLACES": 11,
+        "POP_CENTRALITY_TERM": 1
+      },
+      "total_fallback_cells": 117,
+      "effective_zero_over_positive_2022_cells": 0,
+      "unchanged_positive_forecast_cells": 7666,
+      "remaining_low_smear_scale_candidates": 0,
+      "Nitra_NUM_PM_effective": 62866.0,
+      "Nitra_NUM_PM_SMEAR_effective": 81148.0,
+      "freight_totals": {
+        "LNV": 30922,
+        "NV": 43560
+      }
+    },
+    {
+      "year": 2050,
+      "source": "gravity2050",
+      "zero_fallback_cells": 105,
+      "error_or_missing_fallback_cells": 53,
+      "fallback_counts_by_attribute": {
+        "NUM_VS": 11,
+        "NUM_PUP": 11,
+        "POP_ZP": 1,
+        "E_C": 12,
+        "E_NC": 12,
+        "NE_C": 12,
+        "NE_NC": 12,
+        "PRENOC_SVK": 12,
+        "NUM_PM": 11,
+        "NUM_PM_SMEAR": 11,
+        "NUM_PUP_PLACES": 52,
+        "POP_CENTRALITY_TERM": 1
+      },
+      "total_fallback_cells": 158,
+      "effective_zero_over_positive_2022_cells": 0,
+      "unchanged_positive_forecast_cells": 7494,
+      "remaining_low_smear_scale_candidates": 0,
+      "Nitra_NUM_PM_effective": 62866.0,
+      "Nitra_NUM_PM_SMEAR_effective": 81148.0,
+      "freight_totals": {
+        "LNV": 32951,
+        "NV": 46530
+      }
+    },
+    {
+      "year": 2060,
+      "source": "gravity2060",
+      "zero_fallback_cells": 105,
+      "error_or_missing_fallback_cells": 52,
+      "fallback_counts_by_attribute": {
+        "NUM_VS": 11,
+        "NUM_PUP": 11,
+        "POP_ZP": 1,
+        "E_C": 12,
+        "E_NC": 12,
+        "NE_C": 12,
+        "NE_NC": 12,
+        "PRENOC_SVK": 12,
+        "NUM_PM": 11,
+        "NUM_PM_SMEAR": 11,
+        "NUM_PUP_PLACES": 51,
+        "POP_CENTRALITY_TERM": 1
+      },
+      "total_fallback_cells": 157,
+      "effective_zero_over_positive_2022_cells": 0,
+      "unchanged_positive_forecast_cells": 7495,
+      "remaining_low_smear_scale_candidates": 0,
+      "Nitra_NUM_PM_effective": 62866.0,
+      "Nitra_NUM_PM_SMEAR_effective": 81148.0,
+      "freight_totals": {
+        "LNV": 35996,
+        "NV": 50848
+      }
+    },
+    {
+      "year": 2070,
+      "source": "gravity2070",
+      "zero_fallback_cells": 105,
+      "error_or_missing_fallback_cells": 52,
+      "fallback_counts_by_attribute": {
+        "NUM_VS": 11,
+        "NUM_PUP": 11,
+        "POP_ZP": 1,
+        "E_C": 12,
+        "E_NC": 12,
+        "NE_C": 12,
+        "NE_NC": 12,
+        "PRENOC_SVK": 12,
+        "NUM_PM": 11,
+        "NUM_PM_SMEAR": 11,
+        "NUM_PUP_PLACES": 51,
+        "POP_CENTRALITY_TERM": 1
+      },
+      "total_fallback_cells": 157,
+      "effective_zero_over_positive_2022_cells": 0,
+      "unchanged_positive_forecast_cells": 7495,
+      "remaining_low_smear_scale_candidates": 0,
+      "Nitra_NUM_PM_effective": 62866.0,
+      "Nitra_NUM_PM_SMEAR_effective": 81148.0,
+      "freight_totals": {
+        "LNV": 40046,
+        "NV": 56498
+      }
+    }
+  ]
+}

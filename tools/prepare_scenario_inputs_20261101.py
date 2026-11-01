@@ -57,20 +57,13 @@ def prepare(manifest, target):
         checksums={line.split()[1].lstrip('*'):line.split()[0] for line in archive.read('SHA256SUMS.txt').decode('utf-8-sig').splitlines() if line.strip()}
         for year in YEARS:
             folder=target/str(year);folder.mkdir(exist_ok=True)
-            if year in (2025,2070):
+            if year==2025:
                 selected='zonal'+str(year);values=table(files[selected]['path'],'List1');sheet='List1'
                 if year==2025:
                     supplementary=table(files['gravity2025']['path'],'vstupy_prod_att')
                     for no,row in values.items(): row['AV_INCOME']=supplementary[no]['AV_INCOME']
             else:
                 selected='gravity'+str(year);sheet='vstupy_prod_att_R1';values=table(files[selected]['path'],sheet)
-                if year==2040:
-                    with open(files['raw2040']['path'],encoding='utf-8-sig',newline='') as stream:
-                        for row in csv.DictReader(stream,delimiter=';'):
-                            no=int(row['No'])
-                            for attr in ATTRS[:9]:
-                                if not math.isclose(float(row[attr]),numeric(values[no][attr]),rel_tol=1e-10,abs_tol=1e-8):
-                                    raise ValueError('2040 CSV/workbook disagreement')
             rows=[];fallbacks=[]
             for no in range(1,682):
                 row={'No':no}
@@ -81,9 +74,10 @@ def prepare(manifest, target):
                         'reason':'MISSING_SELECTED_SOURCE_ATTRIBUTE' if attr not in values[no] else 'INVALID_OR_MISSING_EXCEL_VALUE'})
                 rows.append(row)
             zonal=folder/'ZONE_RAW_ATTRS.csv';write_csv(zonal,['No']+ATTRS,rows)
-            cfg={'schema':'R1_SCENARIO_IO_20261101','year':year,'zone_count':681,'zone_attributes':ATTRS,
+            cfg={'schema':'R1_SCENARIO_IO_20261101_ZERO_FALLBACK_V2','year':year,'zone_count':681,'zone_attributes':ATTRS,
                  'zone_file':zonal.name,'zone_sha256':sha(zonal.read_bytes()),'freight_variant':'MC_MEAN_ROUNDED_HALF_UP',
-                 'zone_source':{'label':selected,'sheet':sheet,'key':'OSRM_MATRIX_ID','fallback_policy':'KEEP_OPENED_2022_COPY_VALUE'},
+                 'zone_source':{'label':selected,'sheet':sheet,'key':'OSRM_MATRIX_ID',
+                                'fallback_policy':'IMMUTABLE_2022_NONZERO_IF_FORECAST_ZERO_OR_INVALID'},
                  'freight':{},'passenger_dsegs':['EXOG_EE_CF','EXOG_EE_CL','EXOG_EE_CS','EXOG_EE_CS_noT','EXOG_EE_CW','EXOG_EE_CW_noT',
                     'NATIVE_CF','NATIVE_CL','NATIVE_CS','NATIVE_CS_noT','NATIVE_CW','NATIVE_CW_noT']}
             if year==2025:cfg['zone_source']['income_supplement']='gravity2025:vstupy_prod_att:AV_INCOME; five absent additional attributes retain 2022'

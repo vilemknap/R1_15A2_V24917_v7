@@ -21,6 +21,8 @@ import csv
 import numpy as np
 
 YEARS=(2025,2040,2050,2060,2070)
+SCHEMA='R1_SCENARIO_IO_20261101_ZERO_FALLBACK_V2'
+FALLBACK_POLICY='IMMUTABLE_2022_NONZERO_IF_FORECAST_ZERO_OR_INVALID'
 RAW_ATTRS=('NUM_VS','NUM_PUP','POP_ZP','E_C','E_NC','NE_C','NE_NC','PRENOC_SVK','AV_INCOME',
            'NUM_PM','NUM_PM_SMEAR','NUM_PUP_PLACES','NUM_STUD_VS_PLACES','POP_CENTRALITY_TERM')
 CAL_ATTRS=('ADD_PROD_W','ADD_ATT_W','ADD_PROD_S','ADD_ATT_S','ADD_PROD_L','ADD_ATT_L','ADD_SALARY',
@@ -72,11 +74,12 @@ def validate_package():
 
 def read_config(folder):
     folder=Path(folder);cfg=json.loads((folder/'SCENARIO.json').read_text(encoding='utf-8'))
-    if cfg.get('schema')!='R1_SCENARIO_IO_20261101' or cfg.get('year') not in YEARS or cfg.get('zone_count')!=681:
+    if cfg.get('schema')!=SCHEMA or cfg.get('year') not in YEARS or cfg.get('zone_count')!=681:
         raise ScenarioError('INVALID_SCENARIO_CONFIG')
     if cfg['zone_attributes']!=list(RAW_ATTRS) or cfg['freight_variant']!='MC_MEAN_ROUNDED_HALF_UP':
         raise ScenarioError('INVALID_SCENARIO_SCOPE')
     if cfg['passenger_dsegs']!=PASSENGER_DSEGS:raise ScenarioError('INVALID_PASSENGER_SCOPE')
+    if cfg['zone_source'].get('fallback_policy')!=FALLBACK_POLICY:raise ScenarioError('INVALID_FALLBACK_POLICY')
     # No arbitrary paths supplied by the input configuration.
     for key in ['zone_file']:
         if Path(cfg[key]).name!=cfg[key]:raise ScenarioError('INPUT_PATH_OUTSIDE_YEAR_FOLDER')
@@ -198,8 +201,60 @@ def run_folder(folder,label):
     p=Path(folder)/'logs'/(datetime.now().strftime('%Y%m%d_%H%M%S_%f')+'_'+label)
     p.mkdir(parents=True);return p
 
+def reference_values(record,version,year,order):
+    body={k:v for k,v in record.items() if k!='content_sha256'}
+    actual=digest(json.dumps(body,sort_keys=True,separators=(',',':'),allow_nan=False).encode('utf-8'))
+    if record.get('schema')!='R1_IMMUTABLE_SCENARIO_REFERENCE_2022_V1' or record.get('content_sha256')!=actual:
+        raise ScenarioError('REFERENCE_2022_INTEGRITY_MISMATCH')
+    if record.get('model_path')!=version or record.get('scenario_year')!=year or record.get('zone_nos')!=sorted(order):
+        raise ScenarioError('REFERENCE_2022_MODEL_OR_ZONE_MISMATCH')
+    if set(record.get('values',{}))!=set(RAW_ATTRS):raise ScenarioError('REFERENCE_2022_ATTRIBUTE_SCOPE')
+    result={a:{integer(no,'reference zone'):number(v,a) for no,v in record['values'][a].items()} for a in RAW_ATTRS}
+    if any(set(rows)!=set(order) for rows in result.values()):raise ScenarioError('REFERENCE_2022_ZONE_SCOPE')
+    return result
+
+def reference_2022(folder,cfg,version,order,before):
+    """Capture only before the first import; never turn a forecast into a new baseline."""
+    folder=Path(folder);relative='reference_2022/'+digest(version.encode('utf-8'))+'.json';path=folder/relative
+    if not path.exists():
+        source={a:before[a] for a in RAW_ATTRS};origin='FIRST_OPENED_CALIBRATED_2022_COPY_BEFORE_ANY_IMPORT'
+        prior=folder/'IMPORT_CURRENT.json'
+        if prior.exists() and json.loads(prior.read_text(encoding='utf-8')).get('model_path')==version:
+            source=None
+            # Upgrade an existing v1 installation from its first successful pre-import backup.
+            for result_file in sorted((folder/'logs').glob('*_IMPORT/RESULT.json')):
+                result=json.loads(result_file.read_text(encoding='utf-8'))
+                if result.get('status')=='PASS_IMPORTED' and result.get('model_path')==version:
+                    backup=result_file.parent/'ZONE_BEFORE_BACKUP.json'
+                    if not backup.is_file():raise ScenarioError('ORIGINAL_2022_BACKUP_MISSING_REOPEN_2022_COPY')
+                    source=json.loads(backup.read_text(encoding='utf-8'));origin='EARLIEST_SUCCESSFUL_V1_PREIMPORT_BACKUP';break
+            if source is None:raise ScenarioError('REFERENCE_2022_MISSING_FOR_EXISTING_IMPORT_REOPEN_2022_COPY')
+        body={'schema':'R1_IMMUTABLE_SCENARIO_REFERENCE_2022_V1','model_path':version,'scenario_year':cfg['year'],
+              'zone_nos':sorted(order),'capture_basis':origin,
+              'values':{a:{str(no):number(source[a].get(no,source[a].get(str(no))),a) for no in sorted(order)} for a in RAW_ATTRS}}
+        body['content_sha256']=digest(json.dumps(body,sort_keys=True,separators=(',',':'),allow_nan=False).encode('utf-8'))
+        reference_values(body,version,cfg['year'],order)
+        write_json(path,body)
+    record=json.loads(path.read_text(encoding='utf-8'))
+    values=reference_values(record,version,cfg['year'],order)
+    return values,relative,digest(path.read_bytes()),record
+
+def resolve_zonal_fallback(target,reference,order):
+    effective={a:{} for a in RAW_ATTRS};fallback=[]
+    for a in RAW_ATTRS:
+        for no in order:
+            ref=reference[a][no];missing=no not in target[a];value=target[a].get(no)
+            use_reference=missing or (value==0 and ref>0)
+            effective[a][no]=ref if use_reference else value
+            if use_reference:
+                fallback.append({'No':no,'attribute':a,'forecast_value':'KEEP_2022' if missing else value,
+                    'reference_2022_value':ref,'kept_2022_value':ref,'effective_value':ref,
+                    'reason':'INVALID_OR_MISSING_FORECAST' if missing else 'ZERO_FORECAST_REFERENCE_POSITIVE'})
+    return effective,fallback
+
 def read_import(visum,folder,cfg):
     stamp=json.loads((Path(folder)/'IMPORT_CURRENT.json').read_text(encoding='utf-8'))
+    if stamp.get('schema')!=SCHEMA:raise ScenarioError('REIMPORT_WITH_ZERO_FALLBACK_V2_REQUIRED')
     if stamp['status']!='PASS_IMPORTED' or stamp['year']!=cfg['year'] or stamp['model_path']!=model_path(visum,cfg['year']):
         raise ScenarioError('IMPORT_RECEIPT_MODEL_MISMATCH')
     if stamp['config_sha256']!=digest((Path(folder)/'SCENARIO.json').read_bytes()):raise ScenarioError('IMPORT_CONFIG_CHANGED')
@@ -208,6 +263,10 @@ def read_import(visum,folder,cfg):
 def verify_inputs(visum,folder,cfg,stamp):
     order,keys=zone_order(visum);target,freight=input_data(folder,cfg,order)
     if order!=stamp['zone_order']:raise ScenarioError('ZONE_ORDER_CHANGED')
+    ref_path=(Path(folder)/stamp['reference_2022_file']).resolve()
+    if not ref_path.is_relative_to(Path(folder).resolve()) or digest(ref_path.read_bytes())!=stamp['reference_2022_sha256']:
+        raise ScenarioError('REFERENCE_2022_CHANGED_SINCE_IMPORT')
+    reference_values(json.loads(ref_path.read_text(encoding='utf-8')),stamp['model_path'],cfg['year'],order)
     raw=snapshot_inputs(visum,order,keys)
     expected={a:{int(k):v for k,v in rows.items()} for a,rows in stamp['zone_values'].items()}
     if raw!=expected:raise ScenarioError('ZONAL_OR_CALIBRATED_PARAMETERS_CHANGED_SINCE_IMPORT')
@@ -227,27 +286,33 @@ def run_import(visum,folder):
         if str(m.AttValue('DATASOURCETYPE')).strip().upper() not in ('DATA','DATASOURCETYPE_DATA'):
             raise ScenarioError('FREIGHT_MATRIX_NOT_DATA:'+code)
         originals[code]=values(m,len(order))
-    for a in RAW_ATTRS:expected[a].update(target[a])
     log=run_folder(folder,'IMPORT');write_json(log/'ZONE_BEFORE_BACKUP.json',before)
     np.savez_compressed(log/'FREIGHT_BEFORE_BACKUP.npz',**originals)
-    fallback=[{'No':no,'attribute':a,'kept_2022_value':before[a][no]} for a in RAW_ATTRS for no in order if no not in target[a]]
+    reference,ref_file,ref_sha,ref_record=reference_2022(folder,cfg,version,order,before)
+    effective,fallback=resolve_zonal_fallback(target,reference,order)
+    for a in RAW_ATTRS:expected[a].update(effective[a])
+    write_json(log/'REFERENCE_2022.json',ref_record)
     write_json(log/'FALLBACKS_KEPT_2022.json',fallback)
     owned=[]
     try:
         for a in RAW_ATTRS:
-            if target[a]:owned.append(('zone',a));set_zone(visum,a,target[a],keys)
+            if effective[a]!=before[a]:owned.append(('zone',a));set_zone(visum,a,effective[a],keys)
         for code,arr in freight.items():
             owned.append(('matrix',code));matrices[code].SetValues(np.array(arr,dtype=np.float64,order='C'),False)
         readback=snapshot_inputs(visum,order,keys)
         if any(readback[a]!=before[a] for a in CAL_ATTRS):raise ScenarioError('CALIBRATED_PARAMETER_CHANGED')
         if any(not math.isclose(readback[a][no],expected[a][no],rel_tol=1e-12,abs_tol=1e-7) for a in RAW_ATTRS for no in order):
             raise ScenarioError('IMPORT_ZONE_READBACK_MISMATCH')
+        if any(expected[a][no]>0 and readback[a][no]==0 for a in RAW_ATTRS for no in order):
+            raise ScenarioError('IMPORT_READBACK_ERASED_POSITIVE_EFFECTIVE_VALUE')
         for code,arr in freight.items():
             if not np.array_equal(values(matrices[code],len(order)),arr):raise ScenarioError('IMPORT_MATRIX_READBACK_MISMATCH:'+code)
         if calibrated_context(visum)!=context_before:raise ScenarioError('IMPORT_CHANGED_TD_SUPPLY_OR_OPERATIONS')
-        stamp={'status':'PASS_IMPORTED','year':cfg['year'],'import_id':uuid.uuid4().hex,'model_path':version,'zone_order':order,
+        stamp={'schema':SCHEMA,'status':'PASS_IMPORTED','year':cfg['year'],'import_id':uuid.uuid4().hex,'model_path':version,'zone_order':order,
                'config_sha256':digest((folder/'SCENARIO.json').read_bytes()),'zone_values':readback,'log_folder':str(log),
                'calibrated_context_sha256':context_before,
+               'reference_2022_file':ref_file,'reference_2022_sha256':ref_sha,'fallback_policy':FALLBACK_POLICY,
+               'zero_fallback_cells':sum(r['reason']=='ZERO_FORECAST_REFERENCE_POSITIVE' for r in fallback),
                'fallback_cells':len(fallback),'changed_zone_cells':sum(before[a][no]!=expected[a][no] for a in RAW_ATTRS for no in order),
                'freight_totals':{c:float(v.sum()) for c,v in freight.items()},'recalculation_required':True,'version_saved':False}
         write_json(log/'RESULT.json',stamp);write_json(folder/'IMPORT_CURRENT.json',stamp)
