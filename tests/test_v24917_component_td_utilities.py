@@ -498,3 +498,26 @@ def test_returned_snapshot_cannot_mutate_runtime_rollback_authority(model, tmp_p
     snapshot = u.extend_snapshot({'state_hash': 'b' * 64}, model.v)
     snapshot[u.SNAPSHOT_KEY]['matrices']['9700'] = 'CALLER_CHANGED_ITS_OWN_SNAPSHOT'
     assert u.verify(model.v) == expected
+
+
+def test_integrated_setup_accepts_live_named_enums_and_numeric_readback(model,tmp_path):
+    model.mats[9002].attrs.update(OBJECTTYPEREF='OBJECTTYPEREF_ZONE',MATRIXTYPE='MATRIXTYPE_SKIM',
+                                  DATASOURCETYPE='DATASOURCETYPE_DATA')
+    prepare(model,tmp_path)
+    assert u.verify(model.v)==u.STATE['current']
+    # Reverse the representations too: names returned by new matrix objects.
+    for no in u.UTILITY_NOS:
+        model.mats[no].attrs.update(OBJECTTYPEREF='OBJECTTYPEREF_ZONE',MATRIXTYPE='MATRIXTYPE_SKIM',
+                                    DATASOURCETYPE='DATASOURCETYPE_DATA')
+    model.mats[9002].attrs.update(OBJECTTYPEREF=2,MATRIXTYPE=4,DATASOURCETYPE=1)
+    assert u.verify(model.v)==u.STATE['current']
+
+
+@pytest.mark.parametrize('field,value', [('OBJECTTYPEREF',3),('MATRIXTYPE','MATRIXTYPE_DEMAND'),
+                                       ('DATASOURCETYPE','FORMULA'),('OBJECTTYPEREF',2.5),
+                                       ('DATASOURCETYPE',True),('MATRIXTYPE','unknown')])
+def test_unsafe_source_enums_fail_before_any_creation(model,tmp_path,field,value):
+    model.mats[9002].attrs[field]=value
+    with pytest.raises(SupplyContractError,match='INVALID_ENUM'):
+        setup.run(model.v,tmp_path)
+    assert not set(u.UTILITY_NOS)&set(model.mats)

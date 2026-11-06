@@ -31,6 +31,9 @@ def run(visum, folder, dry_run=False):
     if BASE_NO not in numbers:
         raise SupplyContractError('TD_UTILITY_BASE_M9002_MISSING')
     base_obj = visum.Net.Matrices.ItemByKey(BASE_NO)
+    object_type = utilities.enum_id(base_obj.AttValue('OBJECTTYPEREF'), 'OBJECTTYPEREF')
+    matrix_type = utilities.enum_id(base_obj.AttValue('MATRIXTYPE'), 'MATRIXTYPE')
+    utilities.enum_id(base_obj.AttValue('DATASOURCETYPE'), 'DATASOURCETYPE')
     base = utilities.array(base_obj.GetValues(), n)
     handles = utilities.utility_handles(visum)
     existing = {}
@@ -74,7 +77,7 @@ def run(visum, folder, dry_run=False):
             if no in existing:
                 continue
             created.append(no)  # AddMatrix itself may partially succeed.
-            matrix = visum.Net.AddMatrix(no, base_obj.AttValue('OBJECTTYPEREF'), base_obj.AttValue('MATRIXTYPE'))
+            matrix = visum.Net.AddMatrix(no, object_type, matrix_type)
             matrix.SetAttValue('CODE', row['utility_code'])
             matrix.SetAttValue('NAME', 'R1 TD utility ' + row['component'] + ' = M9002 + native skim correction')
             utilities.metadata(visum, row, BASE_NO)

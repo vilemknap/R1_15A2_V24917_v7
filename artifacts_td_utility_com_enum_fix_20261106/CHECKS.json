@@ -1,0 +1,33 @@
+{
+  "status": "PASS_OFFLINE",
+  "branch": "codex/td-utility-com-enum-fix-20261106",
+  "base_remote_commit": "d3cb7bf6cafa11ea5a01faa7f73ac2dfc3dda49c",
+  "tests": {
+    "targeted": 59,
+    "main": 2566,
+    "skipped": 4,
+    "diagfast": 189,
+    "audit_genfix2": 18
+  },
+  "returncodes": {
+    "targeted": 0,
+    "main": 0,
+    "diagfast": 0,
+    "audit_genfix2": 0
+  },
+  "before_fix_regression": {
+    "failed": 3,
+    "reproduced": true
+  },
+  "live_visum": "NOT_RUN",
+  "manifests": {
+    "runtime_verified": 94,
+    "release_verified": 210,
+    "protected_base_verified": 1059
+  },
+  "commands": [
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_standalone_td_utilities.py tests/test_v24917_component_td_utilities.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/refresh_v24917_manifests.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/td_utility_com_enum_fix_20261106/checks/full"
+  ]
+}

@@ -135,3 +135,14 @@ def test_inactive_group_cannot_silently_skip_selected_skims(native,tmp_path):
     e=native;e.ops[2].SetAttValue('ACTIVE',False)
     e.s.run(e.m.v,tmp_path)
     assert e.calls==['SKIMS_ONLY'] and not e.ops[2].AttValue('ACTIVE')
+
+
+@pytest.mark.parametrize('source', ['OBJECTTYPEREF_ZONE', '2', '2.0'])
+def test_live_com_text_enums_are_converted_before_addmatrix(native,tmp_path,source):
+    e=native
+    base=e.m.mats[9002]
+    base.attrs.update(OBJECTTYPEREF=source,MATRIXTYPE='MATRIXTYPE_SKIM',DATASOURCETYPE='DATASOURCETYPE_DATA')
+    rec=e.s.run(e.m.v,tmp_path)
+    assert rec['status']=='UPDATED_REQUIRES_DOWNSTREAM_RECOMPUTE'
+    assert e.m.mats[9700].attrs['OBJECTTYPEREF']==2
+    assert e.m.mats[9700].attrs['MATRIXTYPE']==4

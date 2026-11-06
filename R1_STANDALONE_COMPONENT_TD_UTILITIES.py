@@ -65,17 +65,34 @@ def ref_no(value):
         return int(match.group(1))
     return int(str(value)) if str(value).isdigit() else None
 
+def enum_id(value, field):
+    """Visum AttValue may return enum names; AddMatrix needs integer enums."""
+    expected, aliases = {
+        'OBJECTTYPEREF': (2, {'OBJECTTYPEREFZONE', 'ZONE', 'ZONES'}),
+        'MATRIXTYPE': (4, {'MATRIXTYPESKIM', 'SKIM'}),
+        'DATASOURCETYPE': (1, {'DATASOURCETYPEDATA', 'DATA'}),
+    }[field]
+    token = ''.join(c for c in str(value).upper() if c.isalnum())
+    if token in aliases:
+        return expected
+    try:
+        number = float(value)
+    except (ValueError, TypeError, OverflowError):
+        number = float('nan')
+    if isinstance(value, (bool, np.bool_)) or not np.isfinite(number) or number != expected:
+        raise SupplyContractError('TD_UTILITY_INVALID_ENUM:' + field + ':' + str(value))
+    return expected
+
+
 def metadata(visum, row, base_no):
     matrix = visum.Net.Matrices.ItemByKey(row['utility_no'])
     base = visum.Net.Matrices.ItemByKey(base_no)
     if int(matrix.AttValue('NO')) != row['utility_no'] or str(matrix.AttValue('CODE')) != row['utility_code']:
         raise SupplyContractError('TD_UTILITY_NUMBER_OR_CODE_COLLISION:%s' % row['utility_no'])
     for name in ('MATRIXTYPE', 'OBJECTTYPEREF'):
-        if str(matrix.AttValue(name)) != str(base.AttValue(name)):
+        if enum_id(matrix.AttValue(name), name) != enum_id(base.AttValue(name), name):
             raise SupplyContractError('TD_UTILITY_MATRIX_TYPE_MISMATCH:%s' % row['utility_no'])
-    source = core.norm_code(matrix.AttValue('DATASOURCETYPE'))
-    if source not in ('1', 'DATA', 'DATASOURCETYPE_DATA'):
-        raise SupplyContractError('TD_UTILITY_DATA_MATRIX_REQUIRED:%s' % row['utility_no'])
+    enum_id(matrix.AttValue('DATASOURCETYPE'), 'DATASOURCETYPE')
     return matrix
 
 def ratios(time_values, flows, n, ratio_max):
@@ -139,6 +156,9 @@ def setup_utilities(visum, folder, dry_run=False):
     if BASE_NO not in numbers:
         raise SupplyContractError('TD_UTILITY_BASE_M9002_MISSING')
     base_obj = visum.Net.Matrices.ItemByKey(BASE_NO)
+    object_type = enum_id(base_obj.AttValue('OBJECTTYPEREF'), 'OBJECTTYPEREF')
+    matrix_type = enum_id(base_obj.AttValue('MATRIXTYPE'), 'MATRIXTYPE')
+    enum_id(base_obj.AttValue('DATASOURCETYPE'), 'DATASOURCETYPE')
     base = array(base_obj.GetValues(), n)
     handles = utility_handles(visum)
     existing = {}
@@ -176,7 +196,7 @@ def setup_utilities(visum, folder, dry_run=False):
             if no in existing:
                 continue
             created.append(no)
-            matrix = visum.Net.AddMatrix(no, base_obj.AttValue('OBJECTTYPEREF'), base_obj.AttValue('MATRIXTYPE'))
+            matrix = visum.Net.AddMatrix(no, object_type, matrix_type)
             matrix.SetAttValue('CODE', row['utility_code'])
             matrix.SetAttValue('NAME', 'R1 TD utility ' + row['component'] + ' = M9002 + native skim correction')
             metadata(visum, row, BASE_NO)

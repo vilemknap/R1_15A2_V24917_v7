@@ -1,0 +1,38 @@
+Oprava COM enumů v setupu utility matic — 6. 11. 2026
+
+Výchozí GitHub commit: d3cb7bf6cafa11ea5a01faa7f73ac2dfc3dda49c.
+Větev: codex/td-utility-com-enum-fix-20261106.
+
+Příčina skutečné chyby: AttValue('OBJECTTYPEREF') v živém Visumu vrátil
+text OBJECTTYPEREF_ZONE. AddMatrix má číselné enum argumenty; předání
+textu proto selhalo v Python COM wrapperu před vlastním vytvořením matice.
+Stejná chyba hrozila i pro MATRIXTYPE_SKIM a porovnání textového/číselného
+readbacku. Předchozí mock používal pouze číselné hodnoty a tento případ minul.
+
+Oprava v R1_STANDALONE_COMPONENT_TD_UTILITIES.py, společném helperu
+r1_15a2_component_td_utilities_v24917.py a R1_CREATE_COMPONENT_TD_UTILITIES.py:
+- OBJECTTYPEREF_ZONE -> 2;
+- MATRIXTYPE_SKIM -> 4;
+- DATASOURCETYPE_DATA -> 1;
+- podporovány též číselné varianty int a řetězce 2 / 2.0 atd.;
+- normalizace proběhne před prvním AddMatrix i při kontrole typu readbacku;
+- nesprávný zónový typ, Demand/Formula místo Skim/Data, zlomkový nebo
+  neznámý enum se odmítne před vytvořením utility matice;
+- původní matice, číselná mapování 9700–9715, poměrová korekce, vyhlazení,
+  řízení nativních skimů i transakční obnova zůstávají zachovány.
+
+Pro samostatné použití nahraď jediný soubor
+R1_STANDALONE_COMPONENT_TD_UTILITIES.py novou verzí a spusť jej stejně přes
+Scripts -> Run script file mimo běžící kalibraci/Procedure Sequence.
+Po úspěchu dále platí původní pokyny k nativnímu TD/downstream přepočtu.
+Matice 9002 zůstává zachována. Logy jsou v novém uživatelském TEMP adresáři
+R1_TD_UTILITY_*, jehož cestu skript vypíše při startu.
+
+Regresní test se skutečnými textovými návratovými hodnotami před opravou
+selhal ve všech 3 variantách; po opravě prošel. Pokryto je i opačné číselné/
+textové zobrazení rodiče a nových matic a odmítání nesprávných typů.
+Konečné offline ověření: 59 cílených PASS; hlavní sada 2566 PASS / 4 SKIPPED;
+DIAGFAST 189 PASS; audit GENFIX2 18 PASS. Manifesty 94 runtime / 210 release
+souborů ověřeny; 1059 chráněných původních souborů a base manifest beze změny.
+Syntax a git diff --check PASS. LIVE_VISUM_NOT_RUN: oprava zde nebyla spuštěna
+ve skutečném Windows COM/modelu, vychází ze zaslaného tracebacku a regresních testů.

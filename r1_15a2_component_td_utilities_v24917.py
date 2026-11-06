@@ -117,17 +117,34 @@ def ref_no(value):
     return int(str(value)) if str(value).isdigit() else None
 
 
+def enum_id(value, field):
+    """Visum AttValue may return enum names; AddMatrix needs integer enums."""
+    expected, aliases = {
+        'OBJECTTYPEREF': (2, {'OBJECTTYPEREFZONE', 'ZONE', 'ZONES'}),
+        'MATRIXTYPE': (4, {'MATRIXTYPESKIM', 'SKIM'}),
+        'DATASOURCETYPE': (1, {'DATASOURCETYPEDATA', 'DATA'}),
+    }[field]
+    token = ''.join(c for c in str(value).upper() if c.isalnum())
+    if token in aliases:
+        return expected
+    try:
+        number = float(value)
+    except (ValueError, TypeError, OverflowError):
+        number = float('nan')
+    if isinstance(value, (bool, np.bool_)) or not np.isfinite(number) or number != expected:
+        raise SupplyContractError('TD_UTILITY_INVALID_ENUM:' + field + ':' + str(value))
+    return expected
+
+
 def metadata(visum, row, base_no):
     matrix = visum.Net.Matrices.ItemByKey(row['utility_no'])
     base = visum.Net.Matrices.ItemByKey(base_no)
     if int(matrix.AttValue('NO')) != row['utility_no'] or str(matrix.AttValue('CODE')) != row['utility_code']:
         raise SupplyContractError('TD_UTILITY_NUMBER_OR_CODE_COLLISION:%s' % row['utility_no'])
     for name in ('MATRIXTYPE', 'OBJECTTYPEREF'):
-        if str(matrix.AttValue(name)) != str(base.AttValue(name)):
+        if enum_id(matrix.AttValue(name), name) != enum_id(base.AttValue(name), name):
             raise SupplyContractError('TD_UTILITY_MATRIX_TYPE_MISMATCH:%s' % row['utility_no'])
-    source = core.norm_code(matrix.AttValue('DATASOURCETYPE'))
-    if source not in ('1', 'DATA', 'DATASOURCETYPE_DATA'):
-        raise SupplyContractError('TD_UTILITY_DATA_MATRIX_REQUIRED:%s' % row['utility_no'])
+    enum_id(matrix.AttValue('DATASOURCETYPE'), 'DATASOURCETYPE')
     return matrix
 
 
