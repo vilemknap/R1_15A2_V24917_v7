@@ -45,7 +45,7 @@
   "ic_mode": "RATIO",
   "ic_skim_dseg": "NATIVE_CW",
   "ic_start_model_obs_ratio": 0.8,
-  "ic_start_cycle": 0,
+  "ic_start_cycle": 1,
   "ic_lambda": 0.5,
   "ic_ratio_max": 4,
   "ic_min_rel_change": 0.002,
