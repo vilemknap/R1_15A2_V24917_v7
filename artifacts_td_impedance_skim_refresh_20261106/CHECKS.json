@@ -1,0 +1,77 @@
+{
+  "status": "PASS_OFFLINE",
+  "task": "TD_IMPEDANCE_SKIM_REFRESH_20261106",
+  "base_local_commit": "81e21ce86dfdffc8af6cb24c57e0a168acef5ac1",
+  "base_remote_commit": "f07be986db203420d9c478b918d52987e559595e",
+  "branch": "codex/td-impedance-skim-refresh-20261106",
+  "input": {
+    "file_id": "file_0000000046408210825a541a6292c0f9",
+    "filename": "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX (1).py",
+    "sha256": "ea8d4ce43add45de18090e5e8408a6743163d55ef9f6309afec10bdb828cee92",
+    "equals_baseline_one_time_setup": true
+  },
+  "tests": {
+    "targeted": {
+      "passed": 88,
+      "returncode": 0
+    },
+    "main": {
+      "passed": 2504,
+      "skipped": 4,
+      "returncode": 0
+    },
+    "diagfast": {
+      "passed": 189,
+      "returncode": 0
+    },
+    "audit_genfix2": {
+      "passed": 18,
+      "returncode": 0
+    },
+    "scenario_tools": {
+      "passed": 92,
+      "returncode": 0
+    }
+  },
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files_verified": 92,
+      "sha256": "8e48574dcf1484abb4f7b337d871644cd2de19d1c9708824cc3bc7452dd431bf"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files_verified": 205,
+      "sha256": "c1c5942a35d1bbd2fc8d32fb6da562135be4d993f6f21b3ad8304e99f43abe4e"
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files_verified": 1059,
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+    }
+  },
+  "protected_base_files_unchanged": 1059,
+  "other_run_options_unchanged": true,
+  "syntax": "PASS",
+  "git_diff_check": "PASS",
+  "scientific_scope": {
+    "refresh_policy": "EVERY_TD_STAGE",
+    "source_dseg": "NATIVE_CW",
+    "impedance_method": "EXISTING_RATIO_MSA_UNCHANGED",
+    "inner_impedance": "FROZEN_WITHIN_STAGE",
+    "family_specific_impedances_added": false,
+    "matrix_9001_written": false,
+    "long_support_or_acceptance_thresholds_changed": false
+  },
+  "live_visum": "NOT_RUN",
+  "native_com_model_available": false,
+  "commands": [
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_td_impedance_refresh.py tests/test_v24917_intrazonal_penalty.py tests/test_v24916_dynamic_assignment_skims.py tests/test_v24917_td_perf_review.py tests/test_v24917_td_numpy_perf.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/refresh_v24917_manifests.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/td_impedance_skim_refresh_20261106/checks/full",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider scenario_tools/tests"
+  ],
+  "api_sources": [
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IOperation~PrTSkimMatrixParameters.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IPrTSkimMatrixPara_attributes.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~IPrTSkimMatrixPara~SingleSkimMatrixParameters.html",
+    "https://cgi.ptvgroup.com/vision-help/VISUM_2026_COM-Help/VISUMLIB~ISingleSkimMatrixPara_attributes.html"
+  ]
+}

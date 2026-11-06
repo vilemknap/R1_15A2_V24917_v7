@@ -42,6 +42,7 @@
   "iz_max_cycle_change_min": 2.5,
   "iz_split_realization": true,
   "ic_enabled": true,
+  "ic_refresh_policy": "EVERY_TD_STAGE",
   "ic_mode": "RATIO",
   "ic_skim_dseg": "NATIVE_CW",
   "ic_start_model_obs_ratio": 0.8,

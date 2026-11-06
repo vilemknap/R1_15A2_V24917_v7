@@ -49,6 +49,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
 import numpy as np
+import r1_15a2_td_impedance_refresh_v24917 as ic_refresh
 
 RELEASE = "R1_15A2_V24917_INTRAZONAL_IMPEDANCE_V1_20261025"
 SCHEMA = "R1_15A2_V24917_IZPEN1"
@@ -70,12 +71,8 @@ class IZError(RuntimeError):
 
 # ------------------------------------------------------------------ options
 def iz_options() -> Dict[str, Any]:
-    try:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dp.load_options()
-    except Exception:
-        import r1_15a2_demand_policy_v1 as dp
-        o = dict(dp.DEFAULTS)
+    import r1_15a2_demand_policy_v1 as dp
+    o = dp.load_options()
     return {k: o[k] for k in o if str(k).startswith(("iz_", "ic_"))}
 
 
@@ -169,12 +166,16 @@ def select_zones(ws: np.ndarray, zone_order, o: Mapping[str, Any], existing: Map
 
 
 def activate(visum, options: Mapping[str, Any] = None, print_fn=print) -> Dict[str, Any]:
-    """Validate the M9002 setup and freeze the zone selection; never raises (inactive on error)."""
+    """Validate M9002; preserve the requested refresh policy on COM failure."""
+    # Policy read errors propagate. An activation error must not erase a
+    # mandatory refresh request and let the controller silently use fixed U.
+    resolved_options = dict(iz_options() if options is None else options)
     try:
-        return _activate(visum, options, print_fn)
+        return _activate(visum, resolved_options, print_fn)
     except Exception as exc:
         STATE.clear()
-        STATE.update(active=False, release=RELEASE, reason="ACTIVATION_ERROR:%r" % (exc,))
+        STATE.update(active=False, release=RELEASE, options=resolved_options,
+                     reason="ACTIVATION_ERROR:%r" % (exc,))
         return status()
 
 
@@ -638,6 +639,14 @@ def model_obs_ratio(diag) -> Optional[float]:
 
 def congestion_due(diag, outer_cycle=None) -> Dict[str, Any]:
     o = STATE.get("options", {})
+    if o.get("ic_enabled", False) and o.get("ic_refresh_policy") == "EVERY_TD_STAGE":
+        if not active():
+            raise IZError("V24917_IC_REQUIRED_BUT_INACTIVE:" + str(STATE.get("reason")))
+        if not STATE.get("ic_started"):
+            STATE["ic_started"] = True
+            STATE["ic_start"] = {"outer_cycle": outer_cycle, "model_obs_ratio": model_obs_ratio(diag),
+                                 "trigger": "EVERY_TD_STAGE"}
+        return {"due": True, "reason": "EVERY_TD_STAGE", "model_obs_ratio": model_obs_ratio(diag)}
     if not active() or not o.get("ic_enabled", False):
         return {"due": False, "reason": "OFF"}
     ratio = model_obs_ratio(diag)
@@ -724,9 +733,14 @@ def congestion_feedback(ctrl, adapter, cfg, folder, control, state, diag) -> tup
         live_dis = _get(adapter.visum, int(dis_meta["matrix_no"]))
         if matrix_values_hash(live_dis) != dis_meta.get("values_sha256"):
             raise IZError("V24917_IC_SKIM_NOT_FROM_CURRENT_ASSIGNMENT_EPOCH")
-    ttc_no = _skim_matrix_no(adapter.visum, "TTC", dseg, retry)
-    tt0_no = _skim_matrix_no(adapter.visum, "TT0", dseg, retry)
-    ttc, tt0 = _get(adapter.visum, ttc_no), _get(adapter.visum, tt0_no)
+    if o.get("ic_refresh_policy") == "EVERY_TD_STAGE":
+        ttc, tt0, proof = ic_refresh.refresh(adapter, dseg, folder / "FRESH_TIME_SKIMS")
+        ttc_no, tt0_no = proof["matrix_bindings"]["TTC"], proof["matrix_bindings"]["TT0"]
+        rec["fresh_time_skim_proof"] = proof
+    else:
+        ttc_no = _skim_matrix_no(adapter.visum, "TTC", dseg, retry)
+        tt0_no = _skim_matrix_no(adapter.visum, "TT0", dseg, retry)
+        ttc, tt0 = _get(adapter.visum, ttc_no), _get(adapter.visum, tt0_no)
     osrm, B_prev = STATE["osrm"], STATE["base"]
     tgt = congested_impedance(osrm, ttc, tt0, str(o["ic_mode"]).upper(), float(o["ic_ratio_max"]))
     lam = float(o["ic_lambda"])
@@ -1075,9 +1089,16 @@ def install(print_fn=print) -> Dict[str, Any]:
         fb = None
         due = congestion_due(diag, kwargs.get("outer_cycle"))
         if due.get("due"):
-            state, diag, fb = congestion_feedback(ctrl, adapter, cfg, Path(folder) / "V24917_CONGESTED_IMPEDANCE",
+            feedback_folder = Path(folder) / "V24917_CONGESTED_IMPEDANCE"
+            state, diag, fb = congestion_feedback(ctrl, adapter, cfg, feedback_folder,
                                                   control, state, diag)
             fb["trigger"] = due
+            fb["refresh_policy"] = STATE["options"].get("ic_refresh_policy", "LATE_PHASE")
+            _write_json(feedback_folder / "V24917_CONGESTED_IMPEDANCE.json", fb)
+            if fb["refresh_policy"] == "EVERY_TD_STAGE" and (
+                    fb.get("status") not in ("APPLIED", "CONVERGED_NO_WRITE") or
+                    fb.get("fresh_time_skim_proof", {}).get("status") != "FRESH_NATIVE_TIME_SKIMS"):
+                raise IZError("V24917_IC_REQUIRED_REFRESH_NOT_COMPLETED:" + str(fb.get("status")))
         elif active() and STATE["options"].get("ic_enabled"):
             print("R1 V24917 IC: TD impedance still M9001 (%s, model/counts %s)" % (
                 due.get("reason"), "%.3f" % due["model_obs_ratio"] if due.get("model_obs_ratio") is not None else "?"))

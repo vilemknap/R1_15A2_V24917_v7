@@ -1,0 +1,15 @@
+{
+  "baseline_commit": "81e21ce86dfdffc8af6cb24c57e0a168acef5ac1",
+  "parent_model_obs_ratio": 0.2,
+  "td_cycle": 2,
+  "before": {
+    "due": false,
+    "reason": "WAITING_FOR_LATE_PHASE",
+    "model_obs_ratio": 0.2
+  },
+  "after": {
+    "due": true,
+    "reason": "EVERY_TD_STAGE",
+    "model_obs_ratio": 0.2
+  }
+}

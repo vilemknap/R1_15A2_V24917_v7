@@ -1,0 +1,25 @@
+{
+  "algorithm": "SHA-256",
+  "files": {
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": "c1c5942a35d1bbd2fc8d32fb6da562135be4d993f6f21b3ad8304e99f43abe4e",
+    "R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py": "2d3d47e966bf4ecbc97c243dc65e2dc33ff51180162d4e22a2628091c017d7d0",
+    "R1_RUN_OPTIONS.json": "9c53c13c2b3929c98703baa1490d8d0dd781baad75c2b84254d2d0f796d4914d",
+    "V24917_RUNTIME_MANIFEST.json": "8e48574dcf1484abb4f7b337d871644cd2de19d1c9708824cc3bc7452dd431bf",
+    "artifacts_td_impedance_skim_refresh_20261106/BEFORE_AFTER_REFRESH_POLICY.json": "d2280f1ddfebc05673043ee039fb3fd89bec1322bf4a1fd32b2edbb2a635e340",
+    "artifacts_td_impedance_skim_refresh_20261106/CHECKS.json": "c702dc298b5d107c4e2732c1e521c32e584b66721acef61a9c4dc72fb77bec7d",
+    "artifacts_td_impedance_skim_refresh_20261106/FULL_SUITE_CHECKS.json": "d440e008d7bed41bff0539b9531f69d1d3547961a0bccd4cb54b33cb7bf1dcf4",
+    "artifacts_td_impedance_skim_refresh_20261106/REPORT_CZ.txt": "ef934b255a56312130c34473b798489e987a9861c1ebf03b65bba4c4e4a4634c",
+    "artifacts_td_impedance_skim_refresh_20261106/TD_IMPEDANCE_SKIM_REFRESH.patch.gz.b64": "39679cd49451df62c5db04cd719da483056fafdbe174fe2bd0ed5b35432967ee",
+    "artifacts_td_impedance_skim_refresh_20261106/audit_genfix2.log": "387865f562d7f3475f2da8f2681c5075ce5a2238a2afd234b7628c6afdd6da5a",
+    "artifacts_td_impedance_skim_refresh_20261106/diagfast.log": "761030a98136cdbb8460ac3605f4a86ba9fc09aafeeaf006406b0fbabf49ed88",
+    "artifacts_td_impedance_skim_refresh_20261106/main.log": "aa75bba3e8a754fa9f8ce48b16da3960acd29928defb6c6ee92f6b674f04ea60",
+    "artifacts_td_impedance_skim_refresh_20261106/manifests.log": "d841e7fff2b62c4cb2461b5e2a006dc7f4d8d1d67f97eee17dc45843a96ff32f",
+    "artifacts_td_impedance_skim_refresh_20261106/scenario_tools.log": "1ff46168f8ac784aa599d21090d5a800ac2242b124b63ee2c7357d65d0229a2c",
+    "artifacts_td_impedance_skim_refresh_20261106/targeted.log": "d3517bbcbfd21e6f1511ba838c350fe328668422da3e494596947a075e7ddb77",
+    "r1_15a2_demand_policy_v1.py": "a687f560dd550ea4d509fcc180b9f72e1cf6a791752d6b8821bd0ab5fbc4072c",
+    "r1_15a2_intrazonal_penalty_v24917.py": "a35070e9a0fa8cf8006c676e145922ea26b1479131289496fae289db6f48ec5f",
+    "r1_15a2_td_impedance_refresh_v24917.py": "4bdb57ceeed4d7c1c53160fde15bcdb12079897792fd3706c8868b418b64d2fb",
+    "tests/test_v24917_td_impedance_refresh.py": "b6d861be2e8887953ff0bd87f73c337b74543614d32134a11836574bacba303b",
+    "tools/refresh_v24917_manifests.py": "b3aaf75e91b87856ff90d62f98e3c3be139347a70675043df85fef332d3eaafd"
+  }
+}

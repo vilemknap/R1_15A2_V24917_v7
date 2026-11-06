@@ -99,6 +99,7 @@ DEFAULTS = {
     'iz_max_cycle_change_min': 2.5,
     'iz_split_realization': True,
     'ic_enabled': True,
+    'ic_refresh_policy': 'EVERY_TD_STAGE',
     'ic_mode': 'RATIO',
     'ic_skim_dseg': 'NATIVE_CW',
     'ic_start_model_obs_ratio': 0.80,
@@ -193,6 +194,7 @@ ENV = {
     'iz_max_cycle_change_min': 'R1_IZ_MAX_CYCLE_CHANGE_MIN',
     'iz_split_realization': 'R1_IZ_SPLIT_REALIZATION',
     'ic_enabled': 'R1_IC_ENABLED',
+    'ic_refresh_policy': 'R1_IC_REFRESH_POLICY',
     'ic_mode': 'R1_IC_MODE',
     'ic_skim_dseg': 'R1_IC_SKIM_DSEG',
     'ic_start_model_obs_ratio': 'R1_IC_START_RATIO',
@@ -455,6 +457,10 @@ def _validate_iz(out):
     v['iz_split_realization'] = _bool(out['iz_split_realization'], 'iz_split_realization')
     # ICONG1: congested TD impedance in the late phase
     v['ic_enabled'] = _bool(out['ic_enabled'], 'ic_enabled')
+    refresh = str(out['ic_refresh_policy']).strip().upper()
+    if refresh not in ('EVERY_TD_STAGE', 'LATE_PHASE'):
+        raise RuntimeError('R1_RUN_OPTION_INVALID:ic_refresh_policy')
+    v['ic_refresh_policy'] = refresh
     mode = str(out['ic_mode']).strip().upper()
     if mode not in ('RATIO', 'ABSOLUTE'):
         raise RuntimeError('R1_RUN_OPTION_INVALID:ic_mode=%r (RATIO|ABSOLUTE)' % out['ic_mode'])

@@ -1,0 +1,66 @@
+Oprava obnovy vstupni TD impedance ze skimu — 6. 11. 2026
+
+Vychozi zdroj je posledni predany commit f07be986db203420d9c478b918d52987e559595e.
+Uzivatelem dodany R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX (1).py je byte-shodny
+s puvodnim jednorazovym setupem. Ten pouze vytvori kopii M9001 do M9002 a
+prepne 16 nativnich TD vrstev. Sam o sobe zadny updater do procedure sequence
+neinstaluje. FOREIGN zustava na sve puvodni autorite.
+
+Dosavadni kalibrator umel kongescni zpetnou vazbu, ale cekal na pomer
+model/pozorovani 0,8 a casove matice TTC/TT0 pouze cetl. Cerstvy DIS hash
+samostatne nedokazoval, ze byly prave prepocitany i oba casove skimy.
+
+Nova vychozi politika ic_refresh_policy=EVERY_TD_STAGE plati pred kazdym
+skutecne spustenym TD blokem. Nenastavuje dalsi TD cykly: TD stale bezi
+podle existujici politiky kazdy druhy cyklus. LATE_PHASE zachovava explicitne
+zvoleny historicky rezim. ic_enabled=false nadale feature vypina.
+
+1. Vyzaduje aktualni assignment epochu, jeji DIS, poradi zon a jednoznacne
+   existujici DIS/TTC/TT0 reference nakonfigurovaneho DSeg NATIVE_CW.
+2. Najde jeho jedinou aktivni nativni PrT skim operaci pres dokumentovane
+   PrTSkimMatrixParameters a atribut DSeg. Docasne povoli T0/TCur Calculate,
+   vypne SaveToFile, zapne UseExistingPaths a vypne OnlyRelationsWithDemand.
+3. Spusti pouze tento skim a nezbytne aktivni skupiny. TG, TD a assignment
+   pri samotne obnove casovych skimu nespousti. Nemenene vybrane veliciny
+   teze existujici skim operace mohou byt rovnez nativne prepocitany.
+4. Obnovi vsechny vlastnene parametry a ACTIVE flagy se zpetnym ctenim,
+   overi epochu, stejne vazby matic a shodu DIS s aktualnim assignmentem.
+5. Z cerstvych TTC/TT0 obnovi M9002 existujicim RATIO postupem:
+   cil = M9001 * clip(TTC/TT0,1,4), novy zaklad = 0,5*stary + 0,5*cil.
+   Zachova diagonalni zaklad a prijate vnitrozonove penalizace. Puvodni
+   politika pro neplatne/no-path casove bunky zustava: pouzije OSRM zaklad.
+6. Zmena M9002 projde stavajicim uplnym downstream prepocetem a kontrolami;
+   pri chybe zmena parametru projde stavajicim overenym rollbackem.
+   Potom zacne puvodni hledani b/c na takto konzistentnim rodici.
+
+M9002 zustava behem vnitrniho hledani a backtrackingu pevna. Dalsi TD blok ji
+znovu obnovi z vlastniho aktualniho assignmentu. Jde stale o jednu spolecnou
+impedanci s referencnim NATIVE_CW, nikoli o nove rodinne matice ani prime
+nahrazeni casove autority absolutnim TTC. M9001, OSRM maska 9697, hranice
+koeficientu, vahy 60/40, IPF, skolni generace a LONG/FOREIGN ochrany se nemeni.
+
+Povinna obnova se nesmi tise vypnout pri aktivacni chybe. Pokud chybi
+reference, operace nebo cerstvy dukaz, TD nepokracuje se starymi casy.
+Pri selhani nativniho skim prepocitu je stara diagnosticka epocha zneplatnena.
+V rezimu EVERY_TD_STAGE se take po nezdarene obnove s overenym rollbackem
+nepokracuje do vnitrniho solveru; chyba se preda vlastnikovi behu.
+
+Pouziti: rozbal cely novy GitHub ZIP a pro dalsi beh pouzij svuj bezny
+kalibracni launcher z tohoto balicku. Ve Visumu reference stale ukazuje
+na cislo 9002; aktualizuji se jeji hodnoty. Samotne opetovne spusteni
+jednorazoveho setupu zpetnou vazbu nenahradi. Novy balik zde nebyl spusten
+v zivem Visumu. Obnova se tyka kalibracniho controlleru, nikoli libovolneho
+rucne spusteneho scenaroveho procedure sequence mimo tento controller.
+
+Doklady za behu: V24917_CONGESTED_IMPEDANCE/V24917_CONGESTED_IMPEDANCE.json
+obsahuje trigger EVERY_TD_STAGE a status APPLIED nebo CONVERGED_NO_WRITE.
+Ve FRESH_TIME_SKIMS/IC_TIME_SKIM_PROOF.json je FRESH_NATIVE_TIME_SKIMS,
+assignment epocha/token, cisla matic, kontrolni soucty TTC/TT0 a obnova kontrol.
+CONVERGED_NO_WRITE znamena, ze cerstvy cil nevyzadoval zmenu nad puvodni toleranci.
+
+Overeni: 88 cilene; hlavni sada 2504 proslo, 4 preskoceny; DIAGFAST 189;
+audit GENFIX2 18; scenarove nastroje 92. Vsechny podporovane sady byly
+spusteny v oddelenych procesech. Zadny zivy Visum/COM test nebyl proveden.
+Runtime/release manifesty byly vyvojove aktualizovany, kontrola puvodnich
+1059 chranenych zdroju zustava zachovana. Menene identity runtime balicku
+nejsou dukazem platnosti starsiho ziveho certifikatu pro tento novy balicek.
