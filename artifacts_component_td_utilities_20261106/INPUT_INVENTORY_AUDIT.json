@@ -1,0 +1,196 @@
+{
+  "input_file_id": "file_00000000bf148243ac2e3082d9e72f13",
+  "input_filename": "MATRIX-2026-11-06-13-51-26.xlsx",
+  "sha256": "ab1f754085566166f8565a98d37b4efe9660047f8e3f459d29f2fa3fdcefa05b",
+  "matrix_count": 298,
+  "chosen_utility_numbers": [
+    9700,
+    9701,
+    9702,
+    9703,
+    9704,
+    9705,
+    9706,
+    9707,
+    9708,
+    9709,
+    9710,
+    9711,
+    9712,
+    9713,
+    9714,
+    9715
+  ],
+  "all_chosen_numbers_free_in_export": true,
+  "shared_sources": [
+    {
+      "No": 9001,
+      "Code": "OSRM_FF_MIN",
+      "Name": "R1 OSRM free-flow duration [min] incl. intrazonal",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 21790648.12571932,
+      "DSegCode": null,
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9002,
+      "Code": "R1_TD_IMP_IZPEN",
+      "Name": "R1 TD impedance = M9001 + intrazonal penalty (V24917 IZ lever)",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 24433247.76834324,
+      "DSegCode": null,
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9697,
+      "Code": "R1_OSRM_DIST_KM",
+      "Name": "R1 OSRM network distance km - IDP TFlowFuzzy classification",
+      "MatrixType": "OD demand",
+      "ObjectTypeRef": "Zone",
+      "Sum": 25775789.88713092,
+      "DSegCode": null,
+      "DataSourceType": "Data",
+      "Formula": null
+    }
+  ],
+  "time_sources": [
+    {
+      "No": 9839,
+      "Code": "TT0",
+      "Name": "t0 NATIVE_CF",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1379081058.269827,
+      "DSegCode": "NATIVE_CF",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9840,
+      "Code": "TTC",
+      "Name": "tCur NATIVE_CF",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1381346078.933328,
+      "DSegCode": "NATIVE_CF",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9847,
+      "Code": "TT0",
+      "Name": "t0 NATIVE_CL",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1379081073.687835,
+      "DSegCode": "NATIVE_CL",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9848,
+      "Code": "TTC",
+      "Name": "tCur NATIVE_CL",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1381346078.525822,
+      "DSegCode": "NATIVE_CL",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9855,
+      "Code": "TT0",
+      "Name": "t0 NATIVE_CS",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1379081070.543514,
+      "DSegCode": "NATIVE_CS",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9856,
+      "Code": "TTC",
+      "Name": "tCur NATIVE_CS",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1381346077.712584,
+      "DSegCode": "NATIVE_CS",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9863,
+      "Code": "TT0",
+      "Name": "t0 NATIVE_CS_noT",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1383885527.174642,
+      "DSegCode": "NATIVE_CS_noT",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9864,
+      "Code": "TTC",
+      "Name": "tCur NATIVE_CS_noT",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1387643338.28037,
+      "DSegCode": "NATIVE_CS_noT",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9871,
+      "Code": "TT0",
+      "Name": "t0 NATIVE_CW",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1379081070.543514,
+      "DSegCode": "NATIVE_CW",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9872,
+      "Code": "TTC",
+      "Name": "tCur NATIVE_CW",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1381346077.712584,
+      "DSegCode": "NATIVE_CW",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9879,
+      "Code": "TT0",
+      "Name": "t0 NATIVE_CW_noT",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1383885527.174642,
+      "DSegCode": "NATIVE_CW_noT",
+      "DataSourceType": "Data",
+      "Formula": null
+    },
+    {
+      "No": 9880,
+      "Code": "TTC",
+      "Name": "tCur NATIVE_CW_noT",
+      "MatrixType": "Skim",
+      "ObjectTypeRef": "Zone",
+      "Sum": 1387643338.28037,
+      "DSegCode": "NATIVE_CW_noT",
+      "DataSourceType": "Data",
+      "Formula": null
+    }
+  ],
+  "live_inventory_rechecked_by_setup": true,
+  "live_model_read": false
+}

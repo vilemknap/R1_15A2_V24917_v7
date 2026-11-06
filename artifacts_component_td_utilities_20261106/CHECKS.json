@@ -1,0 +1,393 @@
+{
+  "status": "PASS_OFFLINE",
+  "task": "COMPONENT_TD_UTILITIES_20261106",
+  "base_local_commit": "aa5b878482b6f17a44294e39682bcdfb7f1a27c0",
+  "base_remote_commit": "97ab80543c63fad63d14e4612b4f846c9e54b6a2",
+  "branch": "codex/component-td-utilities-20261106",
+  "input": {
+    "input_file_id": "file_00000000bf148243ac2e3082d9e72f13",
+    "input_filename": "MATRIX-2026-11-06-13-51-26.xlsx",
+    "sha256": "ab1f754085566166f8565a98d37b4efe9660047f8e3f459d29f2fa3fdcefa05b",
+    "matrix_count": 298,
+    "chosen_utility_numbers": [
+      9700,
+      9701,
+      9702,
+      9703,
+      9704,
+      9705,
+      9706,
+      9707,
+      9708,
+      9709,
+      9710,
+      9711,
+      9712,
+      9713,
+      9714,
+      9715
+    ],
+    "all_chosen_numbers_free_in_export": true,
+    "shared_sources": [
+      {
+        "No": 9001,
+        "Code": "OSRM_FF_MIN",
+        "Name": "R1 OSRM free-flow duration [min] incl. intrazonal",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 21790648.12571932,
+        "DSegCode": null,
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9002,
+        "Code": "R1_TD_IMP_IZPEN",
+        "Name": "R1 TD impedance = M9001 + intrazonal penalty (V24917 IZ lever)",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 24433247.76834324,
+        "DSegCode": null,
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9697,
+        "Code": "R1_OSRM_DIST_KM",
+        "Name": "R1 OSRM network distance km - IDP TFlowFuzzy classification",
+        "MatrixType": "OD demand",
+        "ObjectTypeRef": "Zone",
+        "Sum": 25775789.88713092,
+        "DSegCode": null,
+        "DataSourceType": "Data",
+        "Formula": null
+      }
+    ],
+    "time_sources": [
+      {
+        "No": 9839,
+        "Code": "TT0",
+        "Name": "t0 NATIVE_CF",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1379081058.269827,
+        "DSegCode": "NATIVE_CF",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9840,
+        "Code": "TTC",
+        "Name": "tCur NATIVE_CF",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1381346078.933328,
+        "DSegCode": "NATIVE_CF",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9847,
+        "Code": "TT0",
+        "Name": "t0 NATIVE_CL",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1379081073.687835,
+        "DSegCode": "NATIVE_CL",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9848,
+        "Code": "TTC",
+        "Name": "tCur NATIVE_CL",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1381346078.525822,
+        "DSegCode": "NATIVE_CL",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9855,
+        "Code": "TT0",
+        "Name": "t0 NATIVE_CS",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1379081070.543514,
+        "DSegCode": "NATIVE_CS",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9856,
+        "Code": "TTC",
+        "Name": "tCur NATIVE_CS",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1381346077.712584,
+        "DSegCode": "NATIVE_CS",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9863,
+        "Code": "TT0",
+        "Name": "t0 NATIVE_CS_noT",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1383885527.174642,
+        "DSegCode": "NATIVE_CS_noT",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9864,
+        "Code": "TTC",
+        "Name": "tCur NATIVE_CS_noT",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1387643338.28037,
+        "DSegCode": "NATIVE_CS_noT",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9871,
+        "Code": "TT0",
+        "Name": "t0 NATIVE_CW",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1379081070.543514,
+        "DSegCode": "NATIVE_CW",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9872,
+        "Code": "TTC",
+        "Name": "tCur NATIVE_CW",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1381346077.712584,
+        "DSegCode": "NATIVE_CW",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9879,
+        "Code": "TT0",
+        "Name": "t0 NATIVE_CW_noT",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1383885527.174642,
+        "DSegCode": "NATIVE_CW_noT",
+        "DataSourceType": "Data",
+        "Formula": null
+      },
+      {
+        "No": 9880,
+        "Code": "TTC",
+        "Name": "tCur NATIVE_CW_noT",
+        "MatrixType": "Skim",
+        "ObjectTypeRef": "Zone",
+        "Sum": 1387643338.28037,
+        "DSegCode": "NATIVE_CW_noT",
+        "DataSourceType": "Data",
+        "Formula": null
+      }
+    ],
+    "live_inventory_rechecked_by_setup": true,
+    "live_model_read": false
+  },
+  "tests": {
+    "targeted": {
+      "passed": 249,
+      "returncode": 0
+    },
+    "main": {
+      "passed": 2548,
+      "skipped": 4,
+      "returncode": 0
+    },
+    "diagfast": {
+      "passed": 189,
+      "returncode": 0
+    },
+    "audit_genfix2": {
+      "passed": 18,
+      "returncode": 0
+    },
+    "scenario_tools": {
+      "passed": 92,
+      "returncode": 0
+    }
+  },
+  "manifests": {
+    "V24917_RUNTIME_MANIFEST.json": {
+      "files_verified": 94,
+      "sha256": "f0b0ffabb737c21a79d1319456c5438062f564575d0093e7b8e9987a7bad7aa4"
+    },
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": {
+      "files_verified": 208,
+      "sha256": "1b876c564ea391934e46000b867288bf7e2e8184250924bf01c25133655f66a0"
+    },
+    "DIAGFAST_V1_BASE_MANIFEST.json": {
+      "files_verified": 1059,
+      "sha256": "4c4f2d8f6f8b988931315bc71a9c1fd678db44badb79df97afe9e32132ac0691"
+    }
+  },
+  "protected_base_files_unchanged": 1059,
+  "protected_bridge_source_unchanged": true,
+  "other_run_options_unchanged": true,
+  "syntax": "PASS",
+  "git_diff_check": "PASS",
+  "live_visum": "NOT_RUN",
+  "native_com_model_available": false,
+  "mapping": [
+    {
+      "component": "WORK_E_C",
+      "utility_no": 9700,
+      "utility_code": "R1_TD_U_WORK_E_C",
+      "family": "WORK",
+      "dstrat_code": "1_WORK_E_C",
+      "person_matrix_no": 9101
+    },
+    {
+      "component": "WORK_E_noC",
+      "utility_no": 9701,
+      "utility_code": "R1_TD_U_WORK_E_noC",
+      "family": "WORK",
+      "dstrat_code": "1_WORK_E_noC",
+      "person_matrix_no": 9102
+    },
+    {
+      "component": "WORK_noE_C",
+      "utility_no": 9702,
+      "utility_code": "R1_TD_U_WORK_noE_C",
+      "family": "WORK",
+      "dstrat_code": "1_WORK_noE_C",
+      "person_matrix_no": 9103
+    },
+    {
+      "component": "WORK_noE_noC",
+      "utility_no": 9703,
+      "utility_code": "R1_TD_U_WORK_noE_noC",
+      "family": "WORK",
+      "dstrat_code": "1_WORK_noE_noC",
+      "person_matrix_no": 9104
+    },
+    {
+      "component": "WORK_stud",
+      "utility_no": 9704,
+      "utility_code": "R1_TD_U_WORK_stud",
+      "family": "WORK",
+      "dstrat_code": "1_WORK_stud",
+      "person_matrix_no": 9105
+    },
+    {
+      "component": "SERV_E_C",
+      "utility_no": 9705,
+      "utility_code": "R1_TD_U_SERV_E_C",
+      "family": "SERVICE",
+      "dstrat_code": "2_SERV_E_C",
+      "person_matrix_no": 9106
+    },
+    {
+      "component": "SERV_E_noC",
+      "utility_no": 9706,
+      "utility_code": "R1_TD_U_SERV_E_noC",
+      "family": "SERVICE",
+      "dstrat_code": "2_SERV_E_noC",
+      "person_matrix_no": 9107
+    },
+    {
+      "component": "SERV_noE_C",
+      "utility_no": 9707,
+      "utility_code": "R1_TD_U_SERV_noE_C",
+      "family": "SERVICE",
+      "dstrat_code": "2_SERV_noE_C",
+      "person_matrix_no": 9108
+    },
+    {
+      "component": "SERV_noE_noC",
+      "utility_no": 9708,
+      "utility_code": "R1_TD_U_SERV_noE_noC",
+      "family": "SERVICE",
+      "dstrat_code": "2_SERV_noE_noC",
+      "person_matrix_no": 9109
+    },
+    {
+      "component": "SERV_stud",
+      "utility_no": 9709,
+      "utility_code": "R1_TD_U_SERV_stud",
+      "family": "SERVICE",
+      "dstrat_code": "2_SERV_stud",
+      "person_matrix_no": 9110
+    },
+    {
+      "component": "LONG_E_C",
+      "utility_no": 9710,
+      "utility_code": "R1_TD_U_LONG_E_C",
+      "family": "LONG",
+      "dstrat_code": "3_LONG_E_C",
+      "person_matrix_no": 9111
+    },
+    {
+      "component": "LONG_E_noC",
+      "utility_no": 9711,
+      "utility_code": "R1_TD_U_LONG_E_noC",
+      "family": "LONG",
+      "dstrat_code": "3_LONG_E_noC",
+      "person_matrix_no": 9112
+    },
+    {
+      "component": "LONG_noE_C",
+      "utility_no": 9712,
+      "utility_code": "R1_TD_U_LONG_noE_C",
+      "family": "LONG",
+      "dstrat_code": "3_LONG_noE_C",
+      "person_matrix_no": 9113
+    },
+    {
+      "component": "LONG_noE_noC",
+      "utility_no": 9713,
+      "utility_code": "R1_TD_U_LONG_noE_noC",
+      "family": "LONG",
+      "dstrat_code": "3_LONG_noE_noC",
+      "person_matrix_no": 9114
+    },
+    {
+      "component": "LONG_stud",
+      "utility_no": 9714,
+      "utility_code": "R1_TD_U_LONG_stud",
+      "family": "LONG",
+      "dstrat_code": "3_LONG_stud",
+      "person_matrix_no": 9115
+    },
+    {
+      "component": "SCHOOL",
+      "utility_no": 9715,
+      "utility_code": "R1_TD_U_SCHOOL",
+      "family": "SCHOOL",
+      "dstrat_code": "5_SCHOOL",
+      "person_matrix_no": 9117
+    }
+  ],
+  "safety": {
+    "component_mode": "REQUIRED_SETUP_NO_SILENT_COMMON_FALLBACK",
+    "skim_refresh": "ONE_NATIVE_BATCH_FIVE_DSEGS",
+    "utility_correction": "RATIO_CLIP_1_4_MSA_LAMBDA_0_5",
+    "common_offdiagonal": "PRESERVED",
+    "diagonal": "EXISTING_SHARED_IZ_PENALTY",
+    "snapshots": "HASH_BOUND_UTILITY_VALUES_AND_REFERENCES",
+    "rollback": "EXISTING_VERIFIED_NATIVE_PARENT_CHAIN",
+    "acceptance_thresholds_changed": false
+  },
+  "commands": [
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_component_td_utilities.py tests/test_v24917_td_impedance_refresh.py tests/test_v24917_intrazonal_penalty.py tests/test_v24917_snapshot_reads_genfix1.py tests/test_v24917_generation_state_genfix1.py tests/test_v24917_genfix1_adapter.py tests/test_v24917_runtime_install.py tests/test_v24917_td_perf_review.py tests/test_v24917_td_restore_perf.py tests/test_v24916_dynamic_assignment_skims.py tests/test_v24917_td_numpy_perf.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/refresh_v24917_manifests.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/component_td_utilities_20261106/checks/full_final",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider scenario_tools/tests"
+  ]
+}

@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_v17_full_read_uses_strict_snapshot(monkeypatch):
     import r1_15a2_trial_adapter_v24917 as a17
     adapter = a17.VisumAdapter.__new__(a17.VisumAdapter)
+    adapter.visum = object()  # Optional component-input extension needs the owner identity.
     events = []
     monkeypatch.setattr(adapter, "_sync_readback_telemetry", lambda: None)
     monkeypatch.setattr(adapter, "_record_snapshot_event", lambda *a, **k: events.append((a, k)))

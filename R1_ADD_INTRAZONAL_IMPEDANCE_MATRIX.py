@@ -16,9 +16,11 @@ What it does
 M9001 is NOT changed.  M9002 = M9001 at setup, so the trip distribution result is
 identical until the calibrator writes a diagonal penalty for the selected zones.
 No procedure is executed.
-This script is setup only. The calibrator's EVERY_TD_STAGE policy refreshes
-native time skims and M9002 before each scheduled TD block; running this file
-alone does not install an updater into an arbitrary Procedure Sequence.
+This script is the historical common-base setup only. With COMPONENT utility
+mode, run R1_CREATE_COMPONENT_TD_UTILITIES.py after M9002 exists. The calibrator
+then refreshes the component inputs from native time skims before each TD block,
+keeping the M9002 off-diagonal fixed. Do not rerun this old setup after switching
+to component utilities. Neither setup installs an arbitrary procedure updater.
 """
 from __future__ import annotations
 
@@ -272,8 +274,8 @@ def main():
     for z, name, share, prod in sel:
         print("  %4d %-24s podil %.3f  produkce %9.0f" % (z, name, share, prod))
     print("HOTOVO. Ulozte verzi (File -> Save version as ...) a kalibraci spustte z ni.")
-    print("Tento skript pouze pripravil M9002. Prubezne obnovovani ze skimu zajistuje kalibrator, "
-          "ic_refresh_policy=EVERY_TD_STAGE; samotny setup skimy neprepocitava.")
+    print("Tento skript pouze pripravil M9002. Pro komponentni utility dale spustte "
+          "R1_CREATE_COMPONENT_TD_UTILITIES.py. Prubezne obnovovani ze skimu zajistuje kalibrator.")
 
 
 if globals().get("Visum") is not None or __name__ == "__main__":

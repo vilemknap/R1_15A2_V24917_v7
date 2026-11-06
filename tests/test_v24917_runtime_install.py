@@ -96,6 +96,7 @@ res.update({
   "td_numpy_metric_bound": getattr(__import__("r1_15a2_finecdf_bridge_v24916").DynamicFamilyMetrics.evaluate, "_td_perf_numpy", False),
   "td_numpy_skim_bound": getattr(__import__("r1_15a2_dynamic_skim_v24916p2c").DynamicSkimManager._read_epoch, "_td_perf_numpy", False),
   "td_restore_bound": getattr(__import__("r1_15a2_finecdf_bridge_v24916").NoDirectMatrixWriteTDAdapter.restore_state, "_td_perf_restore", False),
+  "component_utility_guard_bound": getattr(__import__("r1_15a2_finecdf_bridge_v24916").NoDirectMatrixWriteTDAdapter.guard_protected, "_component_utility_guard", False),
   "path_store_build_adapter_alias": getattr(__import__("r1_15a2_trial_adapter_v240").TwoModeRouteCollector.add_geometry, "__r1_path_store_build__", None) == __import__("r1_15a2_path_store_build_v24917").RELEASE,
   "parent_eq_preloaded": "r1_15a2_parent_equivalence_v24917" in sys.modules,
   "parent_eq_source_exact": Path(sys.modules["r1_15a2_parent_equivalence_v24917"].__file__).resolve() == (root / "r1_15a2_parent_equivalence_v24917.py").resolve(),
@@ -106,13 +107,25 @@ print(json.dumps(res))
 
 
 def test_launcher_prepare_and_install(tmp_path):
-    env = dict(os.environ, LOCALAPPDATA=str(tmp_path / "lad"))
+    # This wiring-only fake intentionally has no Net/matrices. Native component
+    # setup and required preflight have separate production integration tests.
+    env = dict(os.environ, LOCALAPPDATA=str(tmp_path / "lad"), R1_IC_UTILITY_MODE='COMMON')
     env.pop("R1_DIAGFAST_DISABLE", None)
     proc = subprocess.run([sys.executable, "-c", SCRIPT, str(ROOT), str(tmp_path)],
                           capture_output=True, text=True, env=env, cwd=str(ROOT), timeout=600)
     assert proc.returncode == 0, proc.stderr[-4000:]
     res = json.loads(proc.stdout.strip().splitlines()[-1])
     assert all(v is True or v == "PASS" for v in res.values()), res
+
+
+def test_component_launcher_refuses_missing_setup_before_runtime_install(tmp_path):
+    env = dict(os.environ, LOCALAPPDATA=str(tmp_path / 'lad'), R1_IC_UTILITY_MODE='COMPONENT')
+    proc = subprocess.run([sys.executable, '-c', SCRIPT, str(ROOT), str(tmp_path)],
+                          capture_output=True, text=True, env=env, cwd=str(ROOT), timeout=600)
+    assert proc.returncode != 0
+    assert 'V24917_COMPONENT_UTILITIES_PREFLIGHT_FAILED' in proc.stderr
+    assert 'R1_CREATE_COMPONENT_TD_UTILITIES.py' in proc.stderr
+    assert not (tmp_path / 'V24917_RUNTIME_STATUS.json').exists()
 
 
 def test_v24917_manifest_covers_all_new_runtime_files():

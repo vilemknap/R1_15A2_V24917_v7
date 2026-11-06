@@ -100,6 +100,7 @@ DEFAULTS = {
     'iz_split_realization': True,
     'ic_enabled': True,
     'ic_refresh_policy': 'EVERY_TD_STAGE',
+    'ic_utility_mode': 'COMPONENT',
     'ic_mode': 'RATIO',
     'ic_skim_dseg': 'NATIVE_CW',
     'ic_start_model_obs_ratio': 0.80,
@@ -195,6 +196,7 @@ ENV = {
     'iz_split_realization': 'R1_IZ_SPLIT_REALIZATION',
     'ic_enabled': 'R1_IC_ENABLED',
     'ic_refresh_policy': 'R1_IC_REFRESH_POLICY',
+    'ic_utility_mode': 'R1_IC_UTILITY_MODE',
     'ic_mode': 'R1_IC_MODE',
     'ic_skim_dseg': 'R1_IC_SKIM_DSEG',
     'ic_start_model_obs_ratio': 'R1_IC_START_RATIO',
@@ -461,10 +463,16 @@ def _validate_iz(out):
     if refresh not in ('EVERY_TD_STAGE', 'LATE_PHASE'):
         raise RuntimeError('R1_RUN_OPTION_INVALID:ic_refresh_policy')
     v['ic_refresh_policy'] = refresh
+    utility = str(out['ic_utility_mode']).strip().upper()
+    if utility not in ('COMMON', 'COMPONENT'):
+        raise RuntimeError('R1_RUN_OPTION_INVALID:ic_utility_mode')
+    v['ic_utility_mode'] = utility
     mode = str(out['ic_mode']).strip().upper()
     if mode not in ('RATIO', 'ABSOLUTE'):
         raise RuntimeError('R1_RUN_OPTION_INVALID:ic_mode=%r (RATIO|ABSOLUTE)' % out['ic_mode'])
     v['ic_mode'] = mode
+    if utility == 'COMPONENT' and (mode != 'RATIO' or refresh != 'EVERY_TD_STAGE' or no != 9002):
+        raise RuntimeError('R1_RUN_OPTION_INVALID:COMPONENT_REQUIRES_RATIO_EVERY_TD_STAGE_M9002')
     dseg = str(out['ic_skim_dseg']).strip().upper()
     if not dseg:
         raise RuntimeError('R1_RUN_OPTION_INVALID:ic_skim_dseg')

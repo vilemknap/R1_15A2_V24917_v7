@@ -199,10 +199,11 @@ class VisumAdapter(_V24916ActiveAdapter):
         self._sync_readback_telemetry()
         self._record_snapshot_event("LEGACY_SNAPSHOT_TOTAL")
         result = snapshot_reads.strict_snapshot(self)
+        result = izpen.component_utilities.extend_snapshot(result, self.visum)
         self.last_perf2c_snapshot_parity = {
             "status": "V24917_STRICT_FULL_SNAPSHOT",
             "state_hash": result.get("state_hash"),
-            "public_snapshot_schema_changed": False,
+            "public_snapshot_schema_changed": izpen.component_utilities.active_for(self.visum),
             "cross_call_cache": False,
             "transient_read_errors_use_defaults": False,
             "unsafe_legacy_fallback": False,

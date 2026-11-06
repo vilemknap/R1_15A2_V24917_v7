@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """V24917 IZPEN1 - intrazonal impedance lever for the large aggregated zones.
 
+COMPONENT mode keeps M9002 as the shared base. Its diagonal penalties propagate
+transactionally to the 16 independent utility inputs; congestion changes only
+those inputs. COMMON mode retains the historical implementation below.
+
 Problem: b/c of the gravity model are common to all 681 zones.  The district zones
 (611-618) and a few other large zones keep 72-99 % of their WORK+SERVICE trips
 inside the zone (diagonal impedance 9-18 min, own attraction huge), so those trips
@@ -50,6 +54,7 @@ from typing import Any, Dict, List, Mapping, Optional
 
 import numpy as np
 import r1_15a2_td_impedance_refresh_v24917 as ic_refresh
+import r1_15a2_component_td_utilities_v24917 as component_utilities
 
 RELEASE = "R1_15A2_V24917_INTRAZONAL_IMPEDANCE_V1_20261025"
 SCHEMA = "R1_15A2_V24917_IZPEN1"
@@ -170,9 +175,11 @@ def activate(visum, options: Mapping[str, Any] = None, print_fn=print) -> Dict[s
     # Policy read errors propagate. An activation error must not erase a
     # mandatory refresh request and let the controller silently use fixed U.
     resolved_options = dict(iz_options() if options is None else options)
+    component_utilities.STATE.clear()
     try:
         return _activate(visum, resolved_options, print_fn)
     except Exception as exc:
+        component_utilities.STATE.clear()
         STATE.clear()
         STATE.update(active=False, release=RELEASE, options=resolved_options,
                      reason="ACTIVATION_ERROR:%r" % (exc,))
@@ -216,7 +223,12 @@ def _activate(visum, options, print_fn):
         base_source = "M%d_OFFDIAGONAL_CONGESTED_RESTART" % no
     refs = td_utility_refs(visum)
     native = {k: v for k, v in refs.items()}
-    if not native or any(v != no for v in native.values()):
+    component_mode = o.get('ic_utility_mode', 'COMMON') == 'COMPONENT'
+    expected = ({r['component']: r['utility_no'] for r in component_utilities.MAPPING}
+                if component_mode else {k: no for k in native})
+    if not native or set(native) != set(expected) or any(v != expected[k] for k, v in native.items()):
+        if component_mode:
+            raise IZError('V24917_COMPONENT_UTILITIES_SETUP_REQUIRED_RUN_' + component_utilities.SETUP_SCRIPT)
         STATE["reason"] = ("TD_UTILITY_NOT_M%d:" % no) + ",".join(
             "%s=%s" % (k, v) for k, v in sorted(native.items()) if v != no)
         STATE["td_utility_refs"] = native
@@ -247,6 +259,8 @@ def _activate(visum, options, print_fn):
                  osrm=base.copy(), base_diag=np.diag(base).copy(), bases={sha: B.copy()},
                  base_source=base_source, ic_started=base_source != "M9001", ic_updates=0,
                  zones=zones, idx=idx, selection=rows, selection_basis=basis, td_utility_refs=native)
+    if component_mode:
+        STATE['component_utility_initial_state'] = component_utilities.activate(visum, zone_order, no)
     print_fn("R1 V24917 IZ lever ACTIVE: M%d, %d zones (%s): %s" % (
         no, len(zones), basis, ", ".join(str(z) for z in zones)))
     print_fn("R1 V24917 congested TD impedance: %s (%s)" % (
@@ -298,10 +312,26 @@ def write_penalty(visum, pen, adapter=None) -> np.ndarray:
     m[idx, idx] = STATE["base_diag"][idx] + pen
     if adapter is not None and hasattr(adapter, "invalidate_candidate_readback"):
         adapter.invalidate_candidate_readback("V24917_IZ_PENALTY_WRITE", mutation=True)
-    visum.Net.Matrices.ItemByKey(int(STATE["matrix_no"])).SetValues(m.tolist())
-    back = read_penalty(visum)
-    if float(np.max(np.abs(back - pen), initial=0.0)) > 1e-6:
-        raise IZError("V24917_IZ_PENALTY_READBACK_MISMATCH")
+    matrix = visum.Net.Matrices.ItemByKey(int(STATE['matrix_no']))
+    components = component_utilities.active_for(visum)
+    old = _get(visum, int(STATE['matrix_no'])) if components else None
+    try:
+        matrix.SetValues(m.tolist())
+        back = read_penalty(visum)
+        if float(np.max(np.abs(back - pen), initial=0.0)) > 1e-6:
+            raise IZError("V24917_IZ_PENALTY_READBACK_MISMATCH")
+        if components:
+            component_utilities.sync_diagonal(visum, adapter)
+    except BaseException as original:
+        if components:
+            try:
+                matrix.SetValues(old.tolist())
+                if not np.array_equal(_get(visum, int(STATE['matrix_no'])), old):
+                    raise RuntimeError('COMMON_BASE_READBACK')
+                component_utilities.verify(visum)
+            except BaseException as restore_error:
+                raise IZError('V24917_COMPONENT_IZ_RESTORE_UNVERIFIED:%r' % restore_error) from original
+        raise
     return back
 
 
@@ -327,6 +357,8 @@ def extend_snapshot(snapshot: Mapping[str, Any], visum) -> Dict[str, Any]:
 
 def set_base(visum, B, adapter=None) -> str:
     """Write a new off-diagonal TD impedance base into M9002, keeping the current penalties."""
+    if component_utilities.active_for(visum):
+        raise IZError('V24917_COMPONENT_COMMON_BASE_IS_FIXED')
     B = np.array(B, dtype=np.float64, copy=True)
     osrm = STATE["osrm"]
     if B.shape != osrm.shape or not np.isfinite(B).all():
@@ -363,6 +395,7 @@ def restore_from_snapshot(visum, snapshot, adapter=None) -> None:
         live = read_penalty(visum)
         if float(np.max(np.abs(live - target), initial=0.0)) > 1e-9:
             write_penalty(visum, target, adapter)
+    component_utilities.restore_from_snapshot(visum, snapshot, adapter)
 
 
 def ws_shares(mats: Mapping[int, np.ndarray]) -> np.ndarray:
@@ -717,6 +750,8 @@ def congestion_feedback(ctrl, adapter, cfg, folder, control, state, diag) -> tup
     then the TD stage that follows re-calibrates b/c (and the intrazonal penalties) on it.
     """
     o = STATE["options"]
+    if o.get('ic_utility_mode', 'COMMON') == 'COMPONENT':
+        return component_utilities.feedback(ctrl, adapter, cfg, folder, control, state, diag, o)
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     rec: Dict[str, Any] = {"schema": SCHEMA + "_ICONG1", "applied": False}
@@ -1022,6 +1057,7 @@ def install(print_fn=print) -> Dict[str, Any]:
     import r1_15a2_overnight_controller_coupled_v24915p2_force100 as ctrl
     import r1_15a2_inplace_transaction_v24915p2 as tx
     import r1_15a2_td_count_blend_v24917 as tb
+    component_guard = component_utilities.install()
 
     orig_restore = tx.restore_td_parameters
 
@@ -1114,6 +1150,7 @@ def install(print_fn=print) -> Dict[str, Any]:
         ctrl._finecdf_td_once = finecdf_td_once
 
     _INSTALLED["installed"] = {"installed": True, "release": RELEASE, "active": active(),
+                               "component_utility_guard": component_guard,
                                "inner_dispatch_patched": ["ctrl.run_finecdf_inner"] + patched_dispatch,
                                "reason": STATE.get("reason"), "zones": list(STATE.get("zones") or [])}
     return dict(_INSTALLED["installed"])

@@ -110,6 +110,57 @@ def test_recalculates_time_skims_from_current_paths_and_restores_all_controls(en
     assert_restored(env)
 
 
+@pytest.mark.parametrize('partial_setting_failure', [False, True])
+def test_five_segments_use_one_native_execution_and_restore_every_setting(env, tmp_path, monkeypatch,
+                                                                        partial_setting_failure):
+    dsegs = ('NATIVE_CW', 'NATIVE_CW_NOT', 'NATIVE_CS', 'NATIVE_CS_NOT', 'NATIVE_CL')
+    controls = [(env.params, env.singles)]
+    for index, dseg in enumerate(dsegs[1:], 1):
+        params = Attr(DSeg=dseg, UseExistingPaths=False, OnlyRelationsWithDemand=True)
+        singles = {name: Attr(Calculate=False, SaveToFile=True) for name in ('T0', 'TCur')}
+        params.SingleSkimMatrixParameters = lambda name, s=singles: s[name]
+        op = Attr(OPERATIONTYPE=fresh.com.SKIMS_PRT, ACTIVE=True)
+        op.PrTSkimMatrixParameters = params
+        env.ops.append(op)
+        controls.append((params, singles))
+        dis_no, ttc_no, tt0_no = (9100 + 3 * index + k for k in range(3))
+        env.matrices[dis_no] = Matrix([[0, 10], [12, 0]])
+        env.matrices[ttc_no] = Matrix([[0, 100], [100, 0]])
+        env.matrices[tt0_no] = Matrix([[0, 100], [100, 0]])
+        env.metadata += [dict(matrix_code_norm=code, dseg_code_norm=dseg, matrix_no_int=no)
+                         for code, no in [('DIS', dis_no), ('TTC', ttc_no), ('TT0', tt0_no)]]
+        env.epoch.matrix_meta_by_dseg[dseg] = dict(matrix_no=dis_no,
+            values_sha256=fresh.matrix_values_hash(env.matrices[dis_no].a))
+    calls = []
+    def execute(visum, folder):
+        calls.append('ONE_NATIVE_BATCH')
+        assert {r['no'] for r in env.operation_rows(visum) if r['active']} == {2, 4, 5, 6, 7, 8}
+        for params, singles in controls:
+            assert params.AttValue('UseExistingPaths') is True
+            assert params.AttValue('OnlyRelationsWithDemand') is False
+            assert all(s.AttValue('Calculate') is True and s.AttValue('SaveToFile') is False for s in singles.values())
+        for row in env.metadata:
+            if row['matrix_code_norm'] == 'TTC':
+                env.matrices[row['matrix_no_int']].a *= 2.
+    monkeypatch.setattr(fresh.rt, 'execute_procseq', execute)
+    if partial_setting_failure:
+        controls[-1][1]['TCur'].fail_once = 'Calculate'
+        with pytest.raises(RuntimeError, match='partial COM'):
+            fresh.refresh_many(env.adapter, dsegs, tmp_path)
+        assert not calls and env.manager.current is None
+        assert not (tmp_path / 'IC_TIME_SKIM_PROOF.json').exists()
+    else:
+        values, proof = fresh.refresh_many(env.adapter, dsegs, tmp_path)
+        assert calls == ['ONE_NATIVE_BATCH'] and set(values) == set(dsegs)
+        assert len(proof['matrix_bindings_by_dseg']) == 5
+        assert all(ttc[0, 1] == 200. and tt0[0, 1] == 100. for ttc, tt0 in values.values())
+    for params, singles in controls:
+        assert params.AttValue('UseExistingPaths') is False
+        assert params.AttValue('OnlyRelationsWithDemand') is True
+        assert all(s.AttValue('Calculate') is False and s.AttValue('SaveToFile') is True for s in singles.values())
+    assert all(bool(op.AttValue('ACTIVE')) for op in env.ops)
+
+
 @pytest.mark.parametrize('failure', ['missing_time', 'duplicate_time', 'stale_dis', 'wrong_zone_order', 'wrong_dseg', 'inactive_skim'])
 def test_missing_or_stale_preflight_never_executes_native_procedure(env, tmp_path, failure):
     if failure == 'missing_time':
@@ -215,7 +266,7 @@ def test_invalid_run_policy_is_not_replaced_with_defaults_on_activation(monkeypa
 def test_refresh_policy_validation(tmp_path):
     import r1_15a2_demand_policy_v1 as dp
     assert dp.load_options(tmp_path, environ={})['ic_refresh_policy'] == 'EVERY_TD_STAGE'
-    assert dp.validate({'ic_refresh_policy': 'LATE_PHASE'})['ic_refresh_policy'] == 'LATE_PHASE'
+    assert dp.validate({'ic_refresh_policy': 'LATE_PHASE', 'ic_utility_mode': 'COMMON'})['ic_refresh_policy'] == 'LATE_PHASE'
     with pytest.raises(RuntimeError, match='ic_refresh_policy'):
         dp.validate({'ic_refresh_policy': 'ANY_OLD_MATRIX'})
 

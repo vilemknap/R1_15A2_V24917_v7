@@ -85,6 +85,9 @@ def prepare(visum, com=None, print_fn=print, v16=None):
     import r1_15a2_intrazonal_penalty_v24917 as izpen
     iz_status = izpen.activate(visum, print_fn=print_fn)
     if not iz_status.get("active"):
+        if (iz_status.get('options') or {}).get('ic_utility_mode') == 'COMPONENT':
+            raise RuntimeError('V24917_COMPONENT_UTILITIES_PREFLIGHT_FAILED: ' + str(iz_status.get('reason')) +
+                               '; spustte ' + izpen.component_utilities.SETUP_SCRIPT + ' z tohoto celeho balicku.')
         print_fn("R1 V24917 IZ lever inactive: %s" % iz_status.get("reason"))
     skim_status = skim_optype.apply(visum)
     print_fn("V24917 PrT skim OPERATIONTYPE=%s (%s, V24916 constant was %s)"

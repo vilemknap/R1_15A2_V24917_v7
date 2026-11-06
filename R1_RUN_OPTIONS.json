@@ -43,6 +43,7 @@
   "iz_split_realization": true,
   "ic_enabled": true,
   "ic_refresh_policy": "EVERY_TD_STAGE",
+  "ic_utility_mode": "COMPONENT",
   "ic_mode": "RATIO",
   "ic_skim_dseg": "NATIVE_CW",
   "ic_start_model_obs_ratio": 0.8,

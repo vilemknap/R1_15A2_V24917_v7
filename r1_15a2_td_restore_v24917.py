@@ -21,10 +21,16 @@ import r1_15a2_long_composite_td_v24917 as long_td
 import r1_15a2_school_td_v24917 as school_td
 import r1_15a2_td_numpy_v24917 as kernels
 import r1_15a2_snapshot_reads_v24917 as snapshot_reads
+import r1_15a2_component_td_utilities_v24917 as component_utilities
 from r1_15a2_supply import canonical_hash, SupplyContractError
 
 RELEASE = 'R1_V24917_TD_CONSECUTIVE_RESTORE_PROOF_REVIEW1_20261030'
 _MISSING = object()
+
+
+def protected_matrix_nos(adapter):
+    extra = component_utilities.UTILITY_NOS if component_utilities.active_for(adapter.v) else ()
+    return (9001, 9002, 9697, 9116) + extra
 
 
 @contextmanager
@@ -163,7 +169,7 @@ def content(adapter, bound, requested_abc, arrays=None, *, read_skims=False, ver
                         or abs(value - float(requested_abc[no][parameter])) > tolerance):
                     raise SupplyContractError('TD_PERF_RESTORE_PARAMETER_CHANGED_M%d_%s' % (no, parameter))
         outputs = adapter.read_outputs() if arrays is None else arrays
-        protected = {no: adapter.ref.sha_array(adapter.read_matrix(no)) for no in (9001, 9002, 9697, 9116)}
+        protected = {no: adapter.ref.sha_array(adapter.read_matrix(no)) for no in protected_matrix_nos(adapter)}
     generation = {}
     if school_td.GROUP in adapter.ref.GROUPS:
         generation['SCHOOL'] = school_td.generation_snapshot(adapter)
@@ -175,7 +181,7 @@ def content(adapter, bound, requested_abc, arrays=None, *, read_skims=False, ver
         raise SupplyContractError('TD_PERF_RESTORE_DEMAND_SCOPE_CHANGED')
     sources = demand_sources(adapter, expected_codes)
     protected_sources = {}
-    for no in (9001, 9002, 9697, 9116):
+    for no in protected_matrix_nos(adapter):
         matrix = dyn._call(adapter.outer_adapter, lambda: adapter.v.Net.Matrices.ItemByKey(no),
                            'TD_RESTORE_PROTECTED_SOURCE:%d' % no)
         protected_sources[no] = matrix_source(adapter, matrix, no)

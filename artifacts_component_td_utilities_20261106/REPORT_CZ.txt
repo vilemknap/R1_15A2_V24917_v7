@@ -1,0 +1,103 @@
+Komponentní utility matice Trip Distribution — 6. 11. 2026
+
+Výchozí GitHub commit: 97ab80543c63fad63d14e4612b4f846c9e54b6a2.
+Lokální shodný zdroj: aa5b878482b6f17a44294e39682bcdfb7f1a27c0.
+Větev: codex/component-td-utilities-20261106.
+
+Schválené zadání: každá z 16 nativních komponent má vlastní utility matici,
+se společným základem M9002 a poměrovou korekcí nativních TTC/TT0. Shodné
+segmentové podklady mohou vést ke shodným hodnotám různých komponent.
+
+Mapování:
+  WORK_E_C, WORK_E_noC, WORK_noE_C, WORK_noE_noC, WORK_stud -> M9700–9704.
+  SERV_E_C, SERV_E_noC, SERV_noE_C, SERV_noE_noC, SERV_stud -> M9705–9709.
+  LONG_E_C, LONG_E_noC, LONG_noE_C, LONG_noE_noC, LONG_stud -> M9710–9714.
+  SCHOOL -> M9715.
+Kódy matic mají tvar R1_TD_U_<component>. Jednotná TD operace, její poloha,
+strata a a/b/c zůstávají zachovány; mění se jejich utility reference.
+FOREIGN není součástí této změny. Přiložený export obsahuje 298 matic;
+9700–9715 jsou v něm volné. Setup znovu kontroluje skutečný otevřený model.
+
+Matematika mimo diagonálu:
+  U_k_target = M9002 * clip(native_TTC / native_TT0, 1, 4)
+  U_k_new = (1 - lambda) * U_k_previous + lambda * U_k_target
+  lambda = 0.5, převzato z ic_lambda.
+Korekce se nevrství opakovaným násobením předchozího U_k. M9002 zůstává
+pevným společným základem mimo diagonálu. Její dosavadní hodnoty se zachovají;
+setup neodstraňuje případné dříve uložené společné kongesční korekce.
+Dosavadní společná kongesční aktualizace M9002 je v COMPONENT režimu vypnuta.
+
+Zdroje korekcí:
+  WORK a SCHOOL: NATIVE_CW + NATIVE_CW_noT, váhy podle aktuálních M9301/M9302.
+  SERVICE: NATIVE_CS + NATIVE_CS_noT, váhy podle aktuálních M9303/M9304.
+  LONG: NATIVE_CL.
+U dvojic se váží jednotlivé oříznuté poměry po OD buňkách. Skutečná vazba
+DSeg.ODMatrix musí odpovídat těmto čtyřem maticím. Nečtou se jiné poptávkové
+matice. Žádná komponenta se nepřiřazuje k noT podle označení noC.
+Při nulové aktuální poptávce se použije nejmenší dostupný platný poměr.
+Neplatné konečné nekladné časy se nezahrnou do vážených alternativ; není-li
+žádná dostupná alternativa, cílem buňky zůstane M9002. NaN/Inf nebo chybný
+rozměr zastaví výpočet. Úplné zdrojové hashe a počty platných časů jsou v auditu.
+
+Před každým skutečně plánovaným TD blokem proběhne jeden společný nativní
+přepočet T0/TCur pro pět potřebných DSeg z aktuálních uložených cest. Všechny
+vazby DIS/TTC/TT0, pořadí zón, identita assignment epochy a obsah DIS se
+ověří před/po. TG, TD ani assignment se při tomto samotném skim přepočtu
+nespouštějí. Dočasné skim parametry a ACTIVE flagy se obnoví se zpětnou kontrolou.
+Po změně utility vstupů proběhne původní úplná nativní realizace downstream,
+assignment, čerstvé skimy a diagnostika; poté začne hledání b/c.
+Mimo diagonálu se utility ve vnitřním hledání/backtrackingu nemění.
+Perioda TD zůstává každý druhý cyklus.
+
+Diagonály všech 16 utility matic přebírají M9002 včetně její současné
+vnitrozónové penalizace. Zápis této penalizace se provede společně do M9002
+a 16 diagonál. Při chybě se vrací jako jeden vlastněný zápis. Původní IZ
+návrhy, akceptace a limity se nemění. Nové snapshoty zahrnují hashe všech
+utility vstupů, jejich vazby a společný základ; tato evidence ovlivňuje i
+state_hash. CandidateReadbackBundle ji může sdílet jen ve své platné epoše.
+Nativní bridge ověřuje utility při výpočtu. Ověření opakovaného nejlepšího
+TD stavu zahrnuje všech 16 hodnot i jejich zdrojové identity. Chybný/stárnoucí
+vstup tedy nemůže ospravedlnit vynechání nativního přepočtu.
+
+Rollback uchovává vlastněné neměnné NumPy kopie, sdílí shodné komponentní
+hodnoty a drží nejvýše 8 nedávných sad. Ovládá i setter, který nejprve zapíše
+a poté vyhodí chybu. Obnova utility matic je zapojena do původního obnovení
+b/c, penalizací a plného přepočtu přijatého rodiče. Neověřený rollback je chyba.
+Veřejné snapshoty dostávají vlastní kopii metadat; nesdílejí měnitelné slovníky
+s interní rollback autoritou. Přiložený regresní důkaz chybu reprodukuje před
+opravou. Původní bridge se nemění; doplňuje jej idempotentní runtime obal.
+
+Použití ve Visumu:
+1. Rozbal celý nový GitHub ZIP do nové složky.
+2. Otevři kopii svého modelu se stávající M9002.
+3. Scripts -> Run script file -> R1_CREATE_COMPONENT_TD_UTILITIES.py.
+4. Zkontroluj výsledek CREATED_AND_BOUND a ulož kopii verze.
+5. Spusť svůj běžný kalibrační launcher z tohoto nového celého balíčku.
+Setup nevykonává postup, assignment ani SaveVersion. Vytvoří nové DATA/Skim
+matice stejného zónového typu jako M9002, ověří kopie a přepne 16 referencí.
+Při opakování zachová už existující vlastní matice včetně korekcí. Cizí číslo,
+kód, typ nebo nečekaná reference znamenají chybu před prvním zápisem.
+Při selhání obnoví vlastněné reference a odstraní jen své nově vytvořené
+matice. Pokud se reference nepodaří obnovit, nově vytvořené matice ponechá,
+aby nevznikly visící reference, a výslovně ohlásí neověřenou obnovu.
+Chybějící setup zastaví kalibrátor už při startu. Starý jednorázový
+R1_ADD_INTRAZONAL_IMPEDANCE_MATRIX.py po tomto přepojení znovu nespouštěj.
+
+Nová výchozí volba: ic_utility_mode=COMPONENT. Ostatní hodnoty R1_RUN_OPTIONS
+jsou proti výchozímu commitu shodné. Limity koeficientů, GEH/severity akceptace,
+IPF, mobility reference, LONG OSRM >=80 km bez horní meze a FOREIGN ochrany se
+nemění. Vzdálenostní FineCDF zůstává navázaná na čerstvé nativní DIS, nikoli
+na tyto časové utility. Tato obnova je součástí profilového kalibrátoru;
+libovolný samostatný ručně spuštěný scénářový postup tím updater nezískává.
+
+Offline ověření na konečném zdroji:
+  cílená sada 249 PASS;
+  hlavní sada 2548 PASS, 4 SKIPPED;
+  DIAGFAST 189 PASS;
+  audit GENFIX2 18 PASS;
+  scénářové nástroje 92 PASS.
+Runtime manifest 94 a release manifest 208 souborů ověřen. Všech 1059
+chráněných původních souborů i base manifest zůstaly beze změny.
+Syntax a git diff --check PASS. Přesné příkazy a kódy ukončení jsou v CHECKS.json.
+LIVE_VISUM_NOT_RUN: Windows COM, skutečný model ani časová úspora zde nebyly
+živě ověřeny. Nové SHA nejsou potvrzením platnosti staršího živého certifikátu.

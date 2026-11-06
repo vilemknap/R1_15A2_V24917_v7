@@ -45,6 +45,8 @@ RUNTIME = [
     "r1_15a2_tdlong1_probe_v24917.py",
     "r1_15a2_intrazonal_penalty_v24917.py",
     "r1_15a2_td_impedance_refresh_v24917.py",
+    "r1_15a2_component_td_utilities_v24917.py",
+    "R1_CREATE_COMPONENT_TD_UTILITIES.py",
     "r1_15a2_fast_trial_assignment_v24917.py",
     "r1_15a2_step_search_v24917.py",
     "r1_15a2_perf_v24917.py",
