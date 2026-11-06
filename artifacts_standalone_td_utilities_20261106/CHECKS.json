@@ -1,0 +1,37 @@
+{
+  "status": "PASS_OFFLINE",
+  "base_remote_commit": "9fb5d9d8f65a7c48c865f2da1f895685fa1a94e2",
+  "base_local_commit": "42ffe08706200fac2a7d4e84988e68ed36eca7c3",
+  "branch": "codex/standalone-td-utilities-20261106",
+  "tests": {
+    "targeted": 76,
+    "main_passed": 2556,
+    "main_skipped": 4,
+    "diagfast": 189,
+    "audit_genfix2": 18
+  },
+  "returncodes": {
+    "targeted": 0,
+    "main": 0,
+    "diagfast": 0,
+    "audit_genfix2": 0,
+    "isolated_import": 0
+  },
+  "live_visum": "NOT_RUN",
+  "standalone_dependencies": [
+    "Python standard library",
+    "NumPy"
+  ],
+  "protected_originals_verified": 1059,
+  "manifest_counts": {
+    "runtime": 94,
+    "release": 210
+  },
+  "commands": [
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_standalone_td_utilities.py tests/test_v24917_component_td_utilities.py tests/test_v24917_td_impedance_refresh.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/refresh_v24917_manifests.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/standalone_td_utilities_20261106/checks/full",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -I -c \"import runpy; x=runpy.run_path('/workspace/work/standalone_td_utilities_20261106/source/R1_STANDALONE_COMPONENT_TD_UTILITIES.py',run_name='standalone_probe'); assert len(x['MAPPING'])==16; print('ISOLATED_IMPORT_PASS_ONLY_STDLIB_AND_NUMPY')\""
+  ],
+  "app_runtime_code_unchanged": true
+}

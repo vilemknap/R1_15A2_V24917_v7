@@ -1,0 +1,53 @@
+Samostatný COM skript pro utility Trip Distribution — 6. 11. 2026
+
+Soubor R1_STANDALONE_COMPONENT_TD_UTILITIES.py lze zkopírovat samostatně.
+Nepotřebuje žádný další soubor projektu, pouze Python/NumPy dodávané ve Visumu.
+Výchozí zdroj: GitHub 9fb5d9d8f65a7c48c865f2da1f895685fa1a94e2.
+Větev: codex/standalone-td-utilities-20261106.
+
+Použití:
+1. Otevři kopii modelu s existující M9002 a dokončeným assignmentem s uloženými
+   nativními cestami. Musí existovat jednoznačné aktivní TD a skim operace.
+2. Scripts -> Run script file -> R1_STANDALONE_COMPONENT_TD_UTILITIES.py.
+3. Výsledek UPDATED_REQUIRES_DOWNSTREAM_RECOMPUTE znamená dokončenou úpravu
+   vstupů, nikoli přepočtenou či akceptovanou poptávku. Spusť svůj existující
+   TD -> LONG maska >=80 km -> 20A/20B -> assignment -> skimy postup.
+4. Ulož přepočtenou kopii modelu. Skript sám verzi neukládá.
+Při další požadované aktualizaci spusť tento soubor znovu po novém assignmentu.
+Spouštěj jej samostatně mimo právě běžící Procedure Sequence nebo kalibraci.
+Nevkládej ho jako vnořený Run script do právě vykonávané sekvence: sám spouští
+izolovaný nativní výpočet skimů. Automatické vložení takového kroku není součástí.
+
+Skript v jednom souboru provede:
+- úplný preflight obsazení čísel/kódů/typů a utility referencí;
+- jedno nativní spuštění T0/TCur pro CW, CW_noT, CS, CS_noT a CL z existujících
+  uložených assignment cest; ostatní operace se dočasně vypnou, skupiny povolí;
+- zpětnou kontrolu obnovy ACTIVE flagů a nastavení skimů;
+- kontrolu stejných DIS, vazeb zdrojů, pořadí zón a konečných časových hodnot;
+- vytvoření/přepojení 16 utility matic M9700–9715, pokud ještě nejsou připravené;
+- aktualizaci cíle B * clip(TTC/TT0,1,4) se zachováním B=M9002 a vyhlazením
+  0,5 předchozí + 0,5 cíl. Diagonála zůstává rovna M9002;
+- vážení CW/CW_noT přes M9301/9302 pro WORK/SCHOOL, CS/CS_noT přes M9303/9304
+  pro SERVICE, přímý CL poměr pro LONG. Fallback neplatných časů odpovídá
+  předchozí implementaci: dostupná platná alternativa, jinak základ B;
+- při chybě obnovu původních utility hodnot a referencí s readbackem. Nově
+  vytvořené matice odstraní pouze při ověřeném obnovení referencí. Jinak
+  hlásí STANDALONE_RESTORE_UNVERIFIED a nesmí se pokračovat jako po úspěchu.
+
+M9002 a poptávkové matice se nezapisují. Není měněna native TD definice,
+a/b/c, LONG maska, akceptace, kalibrační konfigurace ani limity. Předchozí
+korekce již uložené v M9002 se zachovají. Vlastní utility se při opakování
+znovu inicializací nemažou; pokračuje jejich vyhlazení.
+
+Audit se ukládá do nového adresáře R1_TD_UTILITY_* v uživatelově TEMP.
+Jeho cesta se vypíše na začátku. RESULT.json je autorita výsledku operace;
+TIME_SKIMS.json popisuje právě provedený nativní přepočet. Samostatný skript
+nepřebírá ani nevydává certifikát assignment epochy kalibrátoru. Správnost
+aktuálně uloženého assignmentu je vstupní podmínkou. Derived časové skimy
+se při rollbacku nevracejí; utility vstupy a reference se ověřeně obnovují.
+
+Konečné offline testy: 76 cílených PASS, hlavní sada 2556 PASS / 4 SKIPPED,
+DIAGFAST 189 PASS, audit GENFIX2 18 PASS. Samostatné načtení s python -I
+PASS, bez projektových importů. Runtime manifest 94 a release 210 ověřeny;
+všech 1059 chráněných původních souborů beze změny. Syntax/diff check PASS.
+LIVE_VISUM_NOT_RUN: skutečný Windows COM/model zde nebyl dostupný.
