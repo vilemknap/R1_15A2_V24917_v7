@@ -1,0 +1,52 @@
+{
+  "release": "GENFIX2",
+  "offline_only": true,
+  "live_visum_tested": false,
+  "suites": [
+    {
+      "suite": "main",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/td_utility_procseq_update_20261110/source/tests"
+      ],
+      "returncode": 0,
+      "seconds": 35.607
+    },
+    {
+      "suite": "diagfast",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/td_utility_procseq_update_20261110/source/diagfast_tests"
+      ],
+      "returncode": 0,
+      "seconds": 16.056
+    },
+    {
+      "suite": "audit_genfix2",
+      "command": [
+        "/workspace/.venvs/r1/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/workspace/work/td_utility_procseq_update_20261110/source/genfix2_audit_tests"
+      ],
+      "returncode": 0,
+      "seconds": 0.615
+    }
+  ],
+  "all_passed": true,
+  "output": "/workspace/work/td_utility_procseq_update_20261110/checks/full",
+  "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+}

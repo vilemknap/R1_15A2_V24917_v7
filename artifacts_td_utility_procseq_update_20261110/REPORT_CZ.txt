@@ -1,0 +1,67 @@
+Aktualizace utility jako krok Procedure Sequence — 10. 11. 2026
+
+Jediný potřebný soubor: R1_UPDATE_TD_UTILITIES_FROM_SKIMS.py.
+Výchozí GitHub commit: f59239a1803d2f404a4262b0cd3956e5acfbcce6.
+Větev: codex/td-utility-procseq-update-20261110.
+Soubor je samostatný: standardní Python a NumPy, žádné moduly projektu.
+
+Umístění v obvyklém postupu:
+  Trip Generation
+  Run script -> R1_UPDATE_TD_UTILITIES_FROM_SKIMS.py
+  Trip Distribution
+  původní postprocessing včetně LONG masky a převodů 20A/20B
+  assignment
+  Calculate PrT skim matrix: T0 a TCur pro CW, CW_noT, CS, CS_noT, CL
+Časy z posledního assignmentu jsou vstupem následující iterace. Při úplně
+prvním použití musí být časové matice již spočtené. Zachovej také další
+původně počítané veličiny, například DIS pro vzdálenostní diagnostiku.
+
+Toto je pouze aktualizační krok. Vyžaduje už připravené matice 9700–9715
+a jejich správné utility reference ze stávajícího jednorázového setupu.
+Nepřidává ani neodstraňuje matice, nepřepojuje TD, nepíše parametry postupu,
+nespouští skimy/assignment/TD, nevolá Procedures.Execute a neukládá verzi.
+Je proto určen přímo do běžící Procedure Sequence, oproti dřívějšímu
+ručnímu R1_STANDALONE_COMPONENT_TD_UTILITIES.py. Ten sem nevkládej.
+Nekombinuj více aktualizátorů v jednom průchodu ani tuto samostatnou variantu
+s již integrovanou kongesční zpětnou vazbou kalibrátoru.
+
+Po smazání assignment výsledků nejsou uložené cesty ani DIS nutné. Musí ale
+zůstat dostupné DATA matice TTC/TT0. Pokud smazání výsledků vyprázdní i je,
+krok se bezpečně zastaví; uspořádej pak aktualizaci po skim výpočtu a před
+mazáním výsledků pro následující TG/TD. Pouhá existence časové matice není
+důkazem jejího stáří: krok ověřuje zdrojový NO/CODE/DSeg, typ, rozměry, pořadí
+zón a konečné hodnoty, nikoli čas posledního nativního přepočtu. V auditu je
+proto výslovně freshness_certified=false. Za výpočet T0/TCur po správném
+assignmentu odpovídá konfigurace nativního postupu. Skript je nepřepočítává.
+Nejde o certifikát assignment epochy nebo o akceptovaný výsledek kalibrátoru.
+
+Výpočet zůstává shodný: cíl = M9002 * clip(TTC/TT0,1,4),
+nová utility = 0.5 * předchozí + 0.5 * cíl. CW/CW_noT jsou vážené aktuálními
+M9301/M9302 pro WORK a SCHOOL; CS/CS_noT přes M9303/M9304 pro SERVICE;
+LONG používá CL. M9002 zůstává zachována; diagonály utility převezmou její
+současné hodnoty. Pět LONG může mít stejnou korekci, stejně jako komponenty
+jiných společných rodin. Parametry b/c, P/A, LONG maska, FOREIGN a akceptace
+se nemění. Aktualizace nepřerozděluje ani nezapisuje žádnou poptávkovou matici.
+
+Před zápisem se načtou a ověří všechny vstupy. Chybějící/duplicitní časy,
+NaN/Inf, rozměrová chyba, neplatný typ, segment bez jediného kladného časového
+páru nebo chybná reference znamenají chybu před prvním SetValues. Po zápisu
+se ověří všechny utility, společný základ i stejné časové/OD zdroje. Částečně
+selhané setters jsou vlastněné před voláním; rollback vrací jen vlastní
+utility zápisy a ověřuje je zpětným čtením. Neověřená obnova je explicitní chyba.
+Hotové skimy ani jejich zdrojové matice se při tom nezapisují.
+
+Audit: nový uživatelský TEMP adresář R1_TD_UTILITY_STEP_*, cesta vypsaná při
+startu. RESULT.json obsahuje UPDATED_READY_FOR_FOLLOWING_TD nebo chybu,
+source requirement, stav freshness, zdrojové vazby, hashe vstupů i utility.
+Znamená to připravené vstupy pro následující TD, nikoli dokončený TD/assignment.
+
+Ověření konečného zdroje: 71 cílených PASS, hlavní sada 2578 PASS / 4 SKIPPED,
+DIAGFAST 189 PASS, audit GENFIX2 18 PASS. Samostatný import python -I PASS.
+Testy výslovně zakazují Execute, změny ACTIVE i tvorbu matic a ověřují běh
+bez DIS/cest, vadné podklady, částečný zápis a změnu zdrojů během aktualizace.
+Runtime manifest 94 a release 212 ověřeny; všech 1059 chráněných původních
+souborů i base manifest beze změny. Syntax a git diff --check PASS.
+LIVE_VISUM_NOT_RUN: skutečné provedení Run script uvnitř Windows Visumu
+zde nebylo možné ověřit. Aktualizace načítá existující podklady bez simulace
+nebo předstírání aktuálního assignmentu.
