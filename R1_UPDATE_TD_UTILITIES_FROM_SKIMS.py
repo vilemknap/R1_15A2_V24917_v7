@@ -4,6 +4,10 @@
 Reads EXISTING TTC/TT0 matrices from the previous completed assignment/skims.
 Never calls Procedures.Execute, computes skims, attaches COM or saves a version.
 Requires the 16 utility matrices/references prepared by the one-time setup.
+The Run-script entry permits one cold pass if ALL time inputs are absent/zero
+and ALL utility values equal M9002. A durable state beside the saved .ver closes
+this exception permanently for that model path, including after a restart.
+Keep the model filename/state throughout a run; use STRICT for resumed work.
 Only stdlib and NumPy required. Native T0/TCur must be computed upstream in the
 feedback loop; values/identity are checked here, temporal freshness cannot be
 certified by a matrix read alone. See RESULT.json for this explicit limitation.
@@ -12,11 +16,15 @@ from pathlib import Path
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 import re
 import tempfile
 import numpy as np
 
-RELEASE = 'R1_TD_UTILITY_PROCSEQ_UPDATE_20261110'
+RELEASE = 'R1_TD_UTILITY_PROCSEQ_COLD_START_20261110'
+# Main/Run-script entry permits ONE evidenced cold start per saved model path.
+# STRICT disables this exception. Never delete its state file to resume a run.
+START_MODE = 'COLD_START_ONCE'
 class SupplyContractError(RuntimeError):
     pass
 
@@ -259,7 +267,81 @@ def verify_refs(visum):
             raise SupplyContractError('UTILITY_SETUP_REQUIRED:' + row['component'])
 
 
-def run(visum, folder):
+def cold_time_state(visum, zone_order):
+    """Only entirely absent or entirely zero time inputs qualify as uninitialised.
+
+    Partial sources, bad metadata, NaN and unusable nonzero values must reach
+    the ordinary strict validator. They never become a bootstrap exception.
+    """
+    hits = []
+    for matrix in all_items(visum.Net.Matrices):
+        if str(matrix.AttValue('CODE')).strip().upper() not in ('TTC', 'TT0'):
+            continue
+        if str(matrix.AttValue('DSEGCODE')).strip().upper() in REQUIRED_DSEGS:
+            hits.append(matrix)
+    if not hits:
+        return 'ALL_NATIVE_TIME_MATRICES_ABSENT'
+    bindings = time_bindings(visum)  # Still reject missing/duplicate/invalid sources.
+    all_zero = True
+    n = len(zone_order)
+    for pair in bindings.values():
+        for no in pair.values():
+            a = np.array(visum.Net.Matrices.ItemByKey(no).GetValues(), dtype=float, copy=True)
+            if a.shape != (n,n) or not np.isfinite(a).all():
+                raise SupplyContractError('INVALID_TIME_SKIM:' + str(no))
+            all_zero = all_zero and bool(np.all(a == 0.))
+    return 'ALL_NATIVE_TIME_MATRICES_ZERO' if all_zero else None
+
+
+def first_pass_state(visum, zone_order, base):
+    """Bind the one-use exception to a saved model, zone order and fixed base."""
+    try:
+        raw = str(visum.IO.CurrentVersionFile).strip()
+    except Exception as exc:
+        raise_if_busy(exc)
+        raise SupplyContractError('COLD_START_SAVED_VERSION_IDENTITY_REQUIRED') from exc
+    model = Path(raw)
+    if not raw or not model.is_absolute() or model.suffix.lower() != '.ver' or not model.is_file():
+        raise SupplyContractError('COLD_START_SAVE_MODEL_VERSION_FIRST')
+    model = model.resolve()
+    state_path = model.with_name(model.name + '.R1_TD_UTILITY_FIRST_PASS.json')
+    off = np.array(base, copy=True)
+    np.fill_diagonal(off, 0.)  # Existing shared diagonal penalties may change.
+    scope = dict(schema='R1_TD_UTILITY_FIRST_PASS_V1',
+                 model_path=os.path.normcase(str(model)),
+                 zone_order_sha256=ordered_zone_hash(zone_order),
+                 base_offdiagonal_sha256=matrix_values_hash(off))
+    if not state_path.exists():
+        return state_path, scope, None
+    try:
+        saved = json.loads(state_path.read_text(encoding='utf-8'))
+        if (not isinstance(saved,dict) or any(saved.get(k) != v for k,v in scope.items())
+                or saved.get('first_entry') not in ('BOOTSTRAP_CONSUMED','TIME_DATA_SEEN')
+                or not isinstance(saved.get('utc'),str)):
+            raise ValueError('FIRST_PASS_STATE_SCOPE_OR_FORMAT')
+    except Exception as exc:
+        raise SupplyContractError('COLD_START_STATE_INVALID_OR_DIFFERENT_MODEL') from exc
+    return state_path, scope, saved
+
+
+def record_first_pass(path, scope, entry):
+    # Exclusive durable creation happens BEFORE a bootstrap return or any utility
+    # mutation. A crash/partial file cannot silently re-enable the exception.
+    payload = dict(scope, first_entry=entry, utc=datetime.now(timezone.utc).isoformat())
+    try:
+        fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError as exc:
+        raise SupplyContractError('COLD_START_STATE_ALREADY_CLAIMED_RETRY_WITH_VALID_SKIMS') from exc
+    with os.fdopen(fd,'w',encoding='utf-8') as stream:
+        json.dump(payload,stream,indent=2)
+        stream.write('\n')
+        stream.flush()
+        os.fsync(stream.fileno())
+    if json.loads(path.read_text(encoding='utf-8')) != payload:
+        raise SupplyContractError('COLD_START_STATE_READBACK_FAILED')
+
+
+def run(visum, folder, *, start_mode='STRICT'):
     folder = Path(folder); folder.mkdir(parents=True,exist_ok=True)
     report = dict(release=RELEASE, status='PREFLIGHT',
         source='EXISTING_TIME_SKIMS_PREVIOUS_ASSIGNMENT', freshness_certified=False,
@@ -269,6 +351,9 @@ def run(visum, folder):
         utc=datetime.now(timezone.utc).isoformat())
     owned, old = [], {}
     try:
+        if start_mode not in ('STRICT','COLD_START_ONCE'):
+            raise SupplyContractError('INVALID_TD_UTILITY_START_MODE')
+        report['start_mode'] = start_mode
         z = zones(visum); n = len(z)
         base_obj = visum.Net.Matrices.ItemByKey(BASE_NO)
         for field in ('OBJECTTYPEREF','MATRIXTYPE','DATASOURCETYPE'):
@@ -277,10 +362,33 @@ def run(visum, folder):
         verify_refs(visum)
         for row in MAPPING:
             old[row['utility_no']] = array(metadata(visum,row,BASE_NO).GetValues(),n)
+        state_file = state_scope = saved_state = None
+        if start_mode == 'COLD_START_ONCE':
+            state_file,state_scope,saved_state = first_pass_state(visum,z,base)
+            report['first_pass_state_file'] = str(state_file)
+            cold = cold_time_state(visum,z)
+            if cold:
+                if saved_state is not None:
+                    raise SupplyContractError('COLD_START_ALREADY_USED_COMPUTE_T0_TCUR_AFTER_ASSIGNMENT')
+                if any(not np.array_equal(a,base) for a in old.values()):
+                    raise SupplyContractError('COLD_START_REQUIRES_UNCORRECTED_M9002_COPIES')
+                # No SetValues, missing-time fabrication or reference changes.
+                record_first_pass(state_file,state_scope,'BOOTSTRAP_CONSUMED')
+                report.update(status='BOOTSTRAP_BASE_UTILITIES_READY',
+                    source='VERIFIED_COMMON_M9002_INITIAL_UTILITY', cold_time_state=cold,
+                    written_matrices=[], base_sha256=matrix_values_hash(base),
+                    utility_hashes={str(no):matrix_values_hash(a) for no,a in old.items()},
+                    next_required_step='Native TD then downstream assignment and T0/TCur skims')
+                write_json(folder/'RESULT.json',report)
+                return report
         times,weights,evidence = read_inputs(visum,z)
         wanted = targets(base,old,ratios(times,weights,n,RATIO_MAX),LAMBDA)
         report.update(input_evidence=evidence,base_sha256=matrix_values_hash(base),
                       lambda_value=LAMBDA,ratio_max=RATIO_MAX)
+        if state_file is not None and saved_state is None:
+            # Seeing valid time inputs closes the cold-start window too, even
+            # if all congestion ratios equal one and utilities stay at M9002.
+            record_first_pass(state_file,state_scope,'TIME_DATA_SEEN')
         for row in MAPPING:
             no = row['utility_no']
             if np.array_equal(old[no],wanted[no]): continue
@@ -322,9 +430,12 @@ def main():
     if visum is None:raise RuntimeError('Spustte ve Visumu jako Run script mezi TG a TD.')
     folder=Path(tempfile.mkdtemp(prefix='R1_TD_UTILITY_STEP_'))
     print('R1 TD utility step audit: '+str(folder))
-    report=run(visum,folder)
+    report=run(visum,folder,start_mode=START_MODE)
     print(report['status']+'; upraveno matic: '+str(len(report['written_matrices'])))
-    print('Pouzity existujici TTC/TT0 z predchoziho assignmentu; cerstvost neni certifikovana samotnym ctenim matic.')
+    if report['status']=='BOOTSTRAP_BASE_UTILITIES_READY':
+        print('Prvni TD pouzije zaklad M9002 bez kongescni korekce. Po assignmentu spocitejte T0/TCur; dalsi pruchod je vyzaduje.')
+    else:
+        print('Pouzity existujici TTC/TT0 z predchoziho assignmentu; cerstvost neni certifikovana samotnym ctenim matic.')
 
 
 if __name__=='__main__' or globals().get('Visum') is not None:

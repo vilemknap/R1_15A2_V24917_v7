@@ -1,0 +1,75 @@
+Studený start TD bez prvních časových skimů — 10. 11. 2026
+
+Soubor: R1_UPDATE_TD_UTILITIES_FROM_SKIMS.py (stále samostatný Python + NumPy).
+Výchozí GitHub commit: a0e5c5227b2c5075813b5260cfa4a0a07d6e9bf6.
+Větev: codex/td-utility-cold-start-20261110.
+
+První TG nepotřebuje skimy pro tento utility krok. Při skutečném studeném
+startu první TD použije původní základ M9002, bez nové kongesční korekce.
+Po TD a zachovaném downstream postupu včetně LONG masky proběhne assignment
+s výpočtem T0 a TCur pro CW, CW_noT, CS, CS_noT, CL. Od dalšího průchodu
+aktualizátor standardně počítá poměrové korekce a vyhlazení z těchto matic.
+
+Hlavní Run-script vstup má START_MODE='COLD_START_ONCE'. Umístění zůstává:
+  Trip Generation
+  Run script -> R1_UPDATE_TD_UTILITIES_FROM_SKIMS.py
+  Trip Distribution
+  původní LONG maska / downstream / assignment / T0 a TCur skimy
+Na modelech, kde už jsou platné časové podklady, normální aktualizace proběhne
+hned; žádný první krok se uměle nevynechává. Pro pokračování staršího běhu
+lze v horní části souboru zvolit START_MODE='STRICT'. Přímé programové volání
+run(visum,folder) zachovává dosavadní výchozí STRICT; main předává režim explicitně.
+
+Podmínky jediné výjimky bez skimů:
+- .ver je uložená, existuje a má úplnou cestu z Visum.IO.CurrentVersionFile;
+- všech 16 utility matic již existuje a správné native TD reference na ně míří;
+- všechny jejich hodnoty jsou přesné kopie současné M9002 včetně diagonály;
+- pro všech 5 požadovaných DSeg chybí VŠECHNY TTC/TT0, nebo VŠECH 10 časových
+  matic obsahuje pouze nuly; částečně spočtené podklady výjimku nedostanou;
+- vedle tohoto modelu ještě neexistuje záznam prvního průchodu.
+Výjimka nic do utility ani časových matic nezapisuje, neprovádí nativní operace,
+nepřepojuje TD, nevytváří umělé skimy a neukládá verzi. Jen ověří hotové kopie
+M9002 a vrátí BOOTSTRAP_BASE_UTILITIES_READY pro následující první TD.
+Setup matic je stále samostatná dřívější operace a nepotřebuje časové skimy.
+
+Vedle modelu vznikne <název>.ver.R1_TD_UTILITY_FIRST_PASS.json. Záznam je
+vytvořen exkluzivně, uzavřen s fsync a ověřen PŘED povolením prvního TD.
+Je svázán s úplnou cestou modelu, pořadím zón a obsahem M9002 mimo diagonálu.
+Dřívější společné vnitrozónové penalizace se mohou dál měnit. Pokud první
+volání už má platné časy, tento záznam vznikne také (TIME_DATA_SEEN).
+V dalším průchodu se bez časových podkladů zastaví i tehdy, když byly všechny
+poměry rovny jedné a utility pořád vypadají jako prosté kopie M9002.
+Poškozený, cizí nebo neúplně zapsaný záznam výjimku znovu nepovolí.
+Zápisový problém znamená chybu před jakýmkoliv utility zápisem.
+
+Záznam je trvalý pro konkrétní cestu .ver a zůstává použitý i po restartu
+Visumu či po chybě před prvním assignmentem. Při pokračování ho nemaž a
+zachovej identitu souboru. Save-as na novou cestu je pro toto pravidlo nový
+model; výjimka sama neprokazuje úplnou historickou minulost libovolné kopie.
+START_MODE=COLD_START_ONCE předpokládá skutečný nový začátek; při pokračování
+cizího/staršího běhu používej STRICT. Složka modelu musí umožnit vytvoření
+záznamu. Pokud první TD/assignment selže až po využití výjimky, automatické
+opakování bez skimů není povolené: připravené základní utility se nemění,
+ale zotavení samotného native TD je věc původního postupu/obsluhy.
+
+Běžná korekce i její rollback zůstávají zachovány:
+  cíl = M9002 * clip(TTC/TT0,1,4)
+  nová utility = 0.5 * předchozí + 0.5 * cíl
+Chybějící jednotlivá matice, chybný typ, NaN/Inf, chybný rozměr či neplatná
+reference jsou dál chyby. Již upravené utility se studeným startem nikdy
+nevracejí na 9002. LIMITy, a/b/c, TG koeficienty, P/A, FOREIGN, LONG >=80 km
+maska a akceptace se nemění. Stále se nevolá Procedures.Execute ani SetAttValue.
+
+Audit do uživatelova TEMP adresáře R1_TD_UTILITY_STEP_* obsahuje RESULT.json,
+režim, použitý základ, důvod studeného startu a cestu k trvalému záznamu.
+Stáří běžně načtených TTC/TT0 nelze samotným čtením prokázat; evidence dál
+uvádí freshness_certified=false. Výpočet časových skimů musí zajistit model.
+
+Konečné offline ověření: 84 cílených PASS, hlavní sada 2591 PASS / 4 SKIPPED,
+DIAGFAST 189 PASS, audit GENFIX2 18 PASS. Samostatný import python -I PASS.
+Testy zahrnují absenci/nuly prvních skimů, zamítnutí druhého prázdného průchodu,
+následnou korekci po doplnění časů, poměry 1 a následnou ztrátu dat, poškozený
+záznam, neodpovídající identitu modelu, chybu disku a zachování striktního režimu.
+Runtime manifest 94 / release 212 ověřen; všech 1059 chráněných původních
+souborů i base manifest beze změny. Syntax a git diff --check PASS.
+LIVE_VISUM_NOT_RUN: skutečný Windows COM/Run-script krok zde nebyl dostupný.

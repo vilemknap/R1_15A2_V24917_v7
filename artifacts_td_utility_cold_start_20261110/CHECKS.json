@@ -1,0 +1,33 @@
+{
+  "status": "PASS_OFFLINE",
+  "base_remote_commit": "a0e5c5227b2c5075813b5260cfa4a0a07d6e9bf6",
+  "branch": "codex/td-utility-cold-start-20261110",
+  "tests": {
+    "targeted": 84,
+    "main": 2591,
+    "skipped": 4,
+    "diagfast": 189,
+    "audit_genfix2": 18
+  },
+  "returncodes": {
+    "targeted": 0,
+    "main": 0,
+    "diagfast": 0,
+    "audit_genfix2": 0,
+    "isolated_import": 0
+  },
+  "live_visum": "NOT_RUN",
+  "bootstrap": "ONE_PER_SAVED_MODEL_PATH_WITH_UNCORRECTED_BASE_AND_ABSENT_OR_ZERO_TIME_INPUTS",
+  "freshness_certified": false,
+  "protected_originals_verified": 1059,
+  "manifest_counts": {
+    "runtime": 94,
+    "release": 212
+  },
+  "commands": [
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -m pytest -q -p no:cacheprovider tests/test_v24917_td_utility_procseq_update.py tests/test_v24917_standalone_td_utilities.py tests/test_v24917_component_td_utilities.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/refresh_v24917_manifests.py",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python tools/run_genfix2_checks.py --output /workspace/work/td_utility_cold_start_20261110/checks/full",
+    "PYTHONDONTWRITEBYTECODE=1 /workspace/.venvs/r1/bin/python -I -c \"import runpy; m=runpy.run_path('/workspace/work/td_utility_cold_start_20261110/source/R1_UPDATE_TD_UTILITIES_FROM_SKIMS.py',run_name='isolated'); assert m['START_MODE']=='COLD_START_ONCE'; print('ISOLATED_IMPORT_PASS')\""
+  ]
+}

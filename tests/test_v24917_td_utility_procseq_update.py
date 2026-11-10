@@ -99,3 +99,112 @@ def test_step_has_no_reentrant_execution_or_project_imports(step):
     imports=[n.module or '' for n in ast.walk(tree) if isinstance(n,ast.ImportFrom)]
     imports += [a.name for n in ast.walk(tree) if isinstance(n,ast.Import) for a in n.names]
     assert all(not x.lower().startswith('r1') for x in imports)
+
+
+@pytest.fixture
+def saved_step(step,tmp_path):
+    from types import SimpleNamespace
+    model=tmp_path/'cold model.ver';model.write_bytes(b'OFFLINE MODEL IDENTITY ONLY')
+    step.m.v.IO=SimpleNamespace(CurrentVersionFile=str(model))
+    step.state_file=model.with_name(model.name+'.R1_TD_UTILITY_FIRST_PASS.json')
+    return step
+
+
+def clear_times(e,how):
+    for no in list(e.m.mats):
+        matrix=e.m.mats[no]
+        if matrix.attrs['CODE'] in ('TTC','TT0'):
+            if how=='absent':del e.m.mats[no]
+            else:matrix.values[:]=0.
+
+
+@pytest.mark.parametrize('how',['absent','zero'])
+def test_first_cold_pass_uses_base_once_then_requires_real_time_data(saved_step,tmp_path,how):
+    import json
+    e=saved_step
+    time_matrices={no:matrix for no,matrix in e.m.mats.items() if matrix.attrs['CODE'] in ('TTC','TT0')}
+    original_times={no:m.values.copy() for no,m in time_matrices.items()}
+    clear_times(e,how)
+    writes=sum(matrix.writes for matrix in e.m.mats.values())
+    report=e.update.run(e.m.v,tmp_path/'first',start_mode='COLD_START_ONCE')
+    assert report['status']=='BOOTSTRAP_BASE_UTILITIES_READY' and report['written_matrices']==[]
+    assert not report['freshness_certified']
+    assert sum(matrix.writes for matrix in e.m.mats.values())==writes
+    # No synthetic time values are introduced for a missing first assignment.
+    assert json.loads(e.state_file.read_text())['first_entry']=='BOOTSTRAP_CONSUMED'
+    with pytest.raises(e.update.SupplyContractError,match='COLD_START_ALREADY_USED'):
+        e.update.run(e.m.v,tmp_path/'second',start_mode='COLD_START_ONCE')
+    for no,m in time_matrices.items():
+        m.values=original_times[no].copy();e.m.mats[no]=m
+    normal=e.update.run(e.m.v,tmp_path/'third',start_mode='COLD_START_ONCE')
+    assert normal['status']=='UPDATED_READY_FOR_FOLLOWING_TD'
+    assert e.m.mats[9700].values[0,1]==pytest.approx(12.)
+    assert json.loads(e.state_file.read_text())['first_entry']=='BOOTSTRAP_CONSUMED'
+
+
+def test_valid_times_close_bootstrap_window_even_when_utilities_never_changed(saved_step,tmp_path):
+    import json
+    e=saved_step
+    for m in e.m.mats.values():
+        if m.attrs['CODE'] in ('TTC','TT0'):m.values[:]=300.
+    e.update.run(e.m.v,tmp_path/'valid',start_mode='COLD_START_ONCE')
+    assert json.loads(e.state_file.read_text())['first_entry']=='TIME_DATA_SEEN'
+    assert all(np.array_equal(e.m.mats[no].values,e.m.base) for no in e.update.UTILITY_NOS)
+    clear_times(e,'zero')
+    with pytest.raises(e.update.SupplyContractError,match='COLD_START_ALREADY_USED'):
+        e.update.run(e.m.v,tmp_path/'lost',start_mode='COLD_START_ONCE')
+
+
+def test_cold_start_never_resets_corrected_utilities(saved_step,tmp_path):
+    e=saved_step;clear_times(e,'absent');e.m.mats[9700].values[0,1]+=1.
+    with pytest.raises(e.update.SupplyContractError,match='UNCORRECTED_M9002_COPIES'):
+        e.update.run(e.m.v,tmp_path,start_mode='COLD_START_ONCE')
+    assert e.m.mats[9700].values[0,1]==11. and not e.state_file.exists()
+
+
+@pytest.mark.parametrize('failure',['partial_sources','nan','wrong_type','partially_computed'])
+def test_broken_time_inputs_are_not_a_cold_start_exception(saved_step,tmp_path,failure):
+    e=saved_step;clear_times(e,'zero')
+    ttc=next(m for m in e.m.mats.values() if m.attrs['CODE']=='TTC')
+    if failure=='partial_sources':del e.m.mats[ttc.attrs['NO']]
+    elif failure=='nan':ttc.values[0,1]=np.nan
+    elif failure=='wrong_type':ttc.attrs['MATRIXTYPE']='MATRIXTYPE_DEMAND'
+    else:ttc.values[0,1]=1.
+    with pytest.raises(e.update.SupplyContractError):
+        e.update.run(e.m.v,tmp_path,start_mode='COLD_START_ONCE')
+    assert not e.state_file.exists()
+
+
+@pytest.mark.parametrize('failure',['corrupt','scope_changed'])
+def test_invalid_or_mismatched_marker_cannot_authorize_bootstrap(saved_step,tmp_path,failure):
+    import json
+    e=saved_step;clear_times(e,'absent')
+    e.update.run(e.m.v,tmp_path/'first',start_mode='COLD_START_ONCE')
+    if failure=='corrupt':e.state_file.write_text('{broken')
+    else:
+        payload=json.loads(e.state_file.read_text());payload['zone_order_sha256']='wrong'
+        e.state_file.write_text(json.dumps(payload))
+    with pytest.raises(e.update.SupplyContractError,match='STATE_INVALID_OR_DIFFERENT_MODEL'):
+        e.update.run(e.m.v,tmp_path/'second',start_mode='COLD_START_ONCE')
+
+
+def test_cold_start_requires_saved_model_identity_before_using_exception(step,tmp_path):
+    clear_times(step,'absent')
+    with pytest.raises(step.update.SupplyContractError,match='SAVED_VERSION_IDENTITY_REQUIRED'):
+        step.update.run(step.m.v,tmp_path,start_mode='COLD_START_ONCE')
+
+
+def test_state_file_failure_cannot_modify_utilities(saved_step,tmp_path,monkeypatch):
+    e=saved_step
+    def fail(*args):raise OSError('STATE_DISK_WRITE_REFUSED')
+    monkeypatch.setattr(e.update,'record_first_pass',fail)
+    with pytest.raises(OSError,match='STATE_DISK_WRITE_REFUSED'):
+        e.update.run(e.m.v,tmp_path,start_mode='COLD_START_ONCE')
+    assert all(np.array_equal(e.m.mats[no].values,e.m.base) for no in e.update.UTILITY_NOS)
+
+
+def test_strict_mode_keeps_missing_time_error(saved_step,tmp_path):
+    e=saved_step;clear_times(e,'absent')
+    with pytest.raises(e.update.SupplyContractError,match='MISSING_TIME_SKIMS'):
+        e.update.run(e.m.v,tmp_path,start_mode='STRICT')
+    assert not e.state_file.exists()
