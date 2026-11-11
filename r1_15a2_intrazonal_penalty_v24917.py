@@ -198,6 +198,21 @@ def _activate(visum, options, print_fn):
         STATE["reason"] = "MATRIX_SHAPE_MISMATCH"
         return status()
     off = ~np.eye(base.shape[0], dtype=bool)
+    # IZMU1 (2026-11-11): the 2022 model's TD reads one utility matrix per native
+    # stratum (M9700-M9715, built by the procedure step "TD utility update" from M9002 with
+    # the diagonal = diag(M9002)).  The penalty stays the diagonal of M9002 and is mirrored
+    # into the diagonal of every referenced utility; their off-diagonals are frozen at run
+    # start (the procedure step must be inactive during calibration) and checked on
+    # every read.  The congested TD impedance (IC) of this module writes only M9002's
+    # off-diagonal, which those utilities do not read -> IC is switched off in this mode.
+    refs_pre = td_utility_refs(visum)
+    util_nos = sorted({int(v) for v in refs_pre.values() if v is not None and int(v) != no})
+    protected = any(u in (BASE_MATRIX_NO, 9697, FOREIGN_MATRIX) or 9100 <= u <= 9299 for u in util_nos)
+    multi = (bool(util_nos) and not protected
+             and str(o.get("iz_utility_mode", "AUTO")).upper() != "SINGLE")
+    if multi and o.get("ic_enabled", False):
+        o["ic_enabled"] = False
+        STATE["ic_disabled_reason"] = "IZMU1_PER_STRATUM_TD_UTILITIES_DO_NOT_READ_M%d_OFFDIAGONAL" % no
     ic_on = bool(o.get("ic_enabled", False))
     B = base.copy()
     base_source = "M9001"
@@ -213,9 +228,28 @@ def _activate(visum, options, print_fn):
             STATE["reason"] = "M%d_OFFDIAGONAL_NOT_A_PLAUSIBLE_IMPEDANCE" % no
             return status()
         base_source = "M%d_OFFDIAGONAL_CONGESTED_RESTART" % no
-    refs = td_utility_refs(visum)
+    refs = refs_pre
     native = {k: v for k, v in refs.items()}
-    if not native or any(v != no for v in native.values()):
+    util_off = {}
+    if multi:
+        if any(v is None for v in native.values()):
+            STATE["reason"] = "TD_UTILITY_REFERENCE_UNREADABLE"
+            STATE["td_utility_refs"] = native
+            return status()
+        for u in util_nos:
+            try:
+                U = _get(visum, u)
+            except Exception:
+                STATE["reason"] = "TD_UTILITY_M%d_MISSING" % u
+                return status()
+            if U.shape != cur.shape:
+                STATE["reason"] = "TD_UTILITY_M%d_SHAPE_MISMATCH" % u
+                return status()
+            if not np.allclose(np.diag(U), np.diag(cur), rtol=0.0, atol=1e-9):
+                STATE["reason"] = "TD_UTILITY_M%d_DIAGONAL_NOT_SHARED_WITH_M%d" % (u, no)
+                return status()
+            util_off[u] = U
+    elif not native or any(v != no for v in native.values()):
         STATE["reason"] = ("TD_UTILITY_NOT_M%d:" % no) + ",".join(
             "%s=%s" % (k, v) for k, v in sorted(native.items()) if v != no)
         STATE["td_utility_refs"] = native
@@ -245,7 +279,13 @@ def _activate(visum, options, print_fn):
     STATE.update(active=True, reason="ACTIVE", matrix_no=no, zone_order=zone_order, base=B,
                  osrm=base.copy(), base_diag=np.diag(base).copy(), bases={sha: B.copy()},
                  base_source=base_source, ic_started=base_source != "M9001", ic_updates=0,
-                 zones=zones, idx=idx, selection=rows, selection_basis=basis, td_utility_refs=native)
+                 zones=zones, idx=idx, selection=rows, selection_basis=basis, td_utility_refs=native,
+                 utility_mode="IZMU1_SHARED_DIAGONAL_PER_STRATUM_UTILITIES" if multi else "SINGLE_M%d" % no,
+                 util_nos=list(util_nos) if multi else [], util_frozen=util_off)
+    if multi:
+        print_fn("R1 V24917 IZMU1: penalty mirrored into the diagonal of %d TD utilities M%s; "
+                 "their off-diagonals stay frozen (procedure step 'TD utility update' must be inactive)"
+                 % (len(util_nos), ",".join(str(u) for u in util_nos)))
     print_fn("R1 V24917 IZ lever ACTIVE: M%d, %d zones (%s): %s" % (
         no, len(zones), basis, ", ".join(str(z) for z in zones)))
     print_fn("R1 V24917 congested TD impedance: %s (%s)" % (
@@ -260,7 +300,8 @@ def base_sha(B) -> str:
 
 
 def status() -> Dict[str, Any]:
-    return {k: v for k, v in STATE.items() if k not in ("base", "base_diag", "idx", "zone_order", "osrm", "bases")}
+    return {k: v for k, v in STATE.items()
+            if k not in ("base", "base_diag", "idx", "zone_order", "osrm", "bases", "util_frozen")}
 
 
 def active() -> bool:
@@ -281,6 +322,14 @@ def read_penalty(visum) -> np.ndarray:
     mask[STATE["idx"]] = False
     if float(np.max(np.abs(d[mask]), initial=0.0)) > 1e-9:
         raise IZError("V24917_IZ_PENALTY_OUTSIDE_SELECTED_ZONES")
+    for u in STATE.get("util_nos") or []:
+        U = _get(visum, u)
+        F = STATE["util_frozen"][u]
+        offu = ~np.eye(U.shape[0], dtype=bool)
+        if float(np.max(np.abs(U[offu] - F[offu]), initial=0.0)) > 1e-9:
+            raise IZError("V24917_IZMU1_M%d_OFFDIAGONAL_CHANGED_DEACTIVATE_TD_UTILITY_UPDATE_STEP" % u)
+        if float(np.max(np.abs(np.diag(U) - np.diag(cur)), initial=0.0)) > 1e-9:
+            raise IZError("V24917_IZMU1_M%d_DIAGONAL_NOT_EQUAL_M%d" % (u, no))
     return d[STATE["idx"]].copy()
 
 
@@ -298,6 +347,10 @@ def write_penalty(visum, pen, adapter=None) -> np.ndarray:
     if adapter is not None and hasattr(adapter, "invalidate_candidate_readback"):
         adapter.invalidate_candidate_readback("V24917_IZ_PENALTY_WRITE", mutation=True)
     visum.Net.Matrices.ItemByKey(int(STATE["matrix_no"])).SetValues(m.tolist())
+    for u in STATE.get("util_nos") or []:
+        U = STATE["util_frozen"][u].copy()
+        np.fill_diagonal(U, np.diag(m))
+        visum.Net.Matrices.ItemByKey(int(u)).SetValues(U.tolist())
     back = read_penalty(visum)
     if float(np.max(np.abs(back - pen), initial=0.0)) > 1e-6:
         raise IZError("V24917_IZ_PENALTY_READBACK_MISMATCH")
@@ -326,6 +379,8 @@ def extend_snapshot(snapshot: Mapping[str, Any], visum) -> Dict[str, Any]:
 
 def set_base(visum, B, adapter=None) -> str:
     """Write a new off-diagonal TD impedance base into M9002, keeping the current penalties."""
+    if STATE.get("util_nos"):
+        raise IZError("V24917_IZMU1_CONGESTED_BASE_NOT_SUPPORTED_WITH_PER_STRATUM_UTILITIES")
     B = np.array(B, dtype=np.float64, copy=True)
     osrm = STATE["osrm"]
     if B.shape != osrm.shape or not np.isfinite(B).all():

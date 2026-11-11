@@ -791,3 +791,41 @@ def test_congestion_only_without_iz_zones(act, monkeypatch, tmp_path):
     assert rec["status"] == "APPLIED" and v.mats[9002].a[0, 3] == pytest.approx(BASE[0, 3] * 1.25)
     iz.restore_from_snapshot(v, before, ad)
     assert v.mats[9002].a[0, 3] == pytest.approx(BASE[0, 3])
+
+
+# ------------------------------------------------------------------ IZMU1: per-stratum TD utilities
+def _multi_visum():
+    v = make_visum()
+    for u, k in ((9700, 1.0), (9705, 1.3)):                # congested copies, diagonal = diag(M9002)
+        U = v.mats[9002].a * k
+        np.fill_diagonal(U, np.diag(v.mats[9002].a))
+        v.mats[u] = FakeMatrix(U)
+    return v
+
+
+def test_izmu1_mirrors_penalty_into_every_stratum_utility(act, monkeypatch):
+    v = _multi_visum()
+    off700, off705 = v.mats[9700].a.copy(), v.mats[9705].a.copy()
+    monkeypatch.setattr(iz, "td_utility_refs", lambda vv: {"WORK_E_C": 9700, "SERV_E_C": 9705})
+    st = iz.activate(v, dict(OPTS, ic_enabled=True), print_fn=lambda *a: None)
+    assert st["active"] and st["utility_mode"].startswith("IZMU1") and st["util_nos"] == [9700, 9705]
+    assert st["options"]["ic_enabled"] is False and "IZMU1" in st["ic_disabled_reason"]
+    assert iz.write_penalty(v, np.array([4.0])).tolist() == [4.0]
+    mask = ~np.eye(N, dtype=bool)
+    for u, off in ((9700, off700), (9705, off705)):
+        assert v.mats[u].a[0, 0] == pytest.approx(BASE[0, 0] + 4.0)
+        assert np.array_equal(v.mats[u].a[mask], off[mask])          # off-diagonal untouched
+    assert v.mats[9002].a[0, 0] == pytest.approx(BASE[0, 0] + 4.0)
+    v.mats[9705].a[0, 1] += 0.5                                       # forgotten procedure step
+    with pytest.raises(iz.IZError, match="IZMU1_M9705_OFFDIAGONAL_CHANGED"):
+        iz.read_penalty(v)
+    with pytest.raises(iz.IZError, match="CONGESTED_BASE_NOT_SUPPORTED"):
+        iz.set_base(v, BASE)
+
+
+def test_izmu1_refuses_unshared_diagonal_and_protected_refs(act):
+    v = _multi_visum()
+    v.mats[9705].a[2, 2] += 1.0
+    st = act(v, refs=9705)
+    assert st["active"] is False and "DIAGONAL_NOT_SHARED" in st["reason"]
+    assert "TD_UTILITY_NOT_M9002" in act(make_visum(), refs=9001)["reason"]
