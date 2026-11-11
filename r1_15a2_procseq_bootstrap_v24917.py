@@ -39,7 +39,7 @@ def _states(rows):
     return [(int(r["no"]), int(r["type"]), int(r["active"])) for r in rows]
 
 
-def _approved_scope(row, cfg):
+def _approved_scope(row, cfg, final_pos=APPROVED_OPERATION):
     approved = list((cfg.get("supply") or {}).get("assignment_operations") or [])
     _check(len(approved) == 1, "APPROVED_ASSIGNMENT_AUTHORITY_NOT_SINGLE")
     rule = approved[0]
@@ -62,7 +62,7 @@ def _approved_scope(row, cfg):
            "APPROVED_OPERATION_DSEGSET_MISMATCH")
     label = str(row.get("comment", "") or "") + " " + str(row.get("name", "") or "")
     _check("15A2" not in label.upper(), "RECURSIVE_MASTER_ASSIGNMENT")
-    return {"operation": APPROVED_OPERATION, "type": APPROVED_TYPE,
+    return {"operation": int(final_pos), "legacy_operation": APPROVED_OPERATION, "type": APPROVED_TYPE,
             "dsegset": sorted(live), "verified_dseg_count": len(live)}
 
 
@@ -104,16 +104,28 @@ def prepare_working_procseq(visum, adapter, cfg, folder, working_semantic,
                                     label="PROCSEQFIX1_PRE_REPAIR_STATE")
     rows = _inventory(visum)
     by_pos = {int(r["no"]): r for r in rows}
+    # OPMAP1: roles at their live positions.  Legacy layout: TG 5, TD 6, assignment
+    # group 16, partial assignments 17-19, final 20 (identity map).
+    import r1_15a2_procseq_roles_v24917 as roles
+    try:
+        role_map = roles.resolve(rows)
+    except roles.OpmapError as exc:
+        raise SupplyContractError("PROCSEQFIX1_" + str(exc)) from exc
+    live = role_map["legacy_to_live"]
+    final_pos, partial_pos = int(live[20]), [int(live[p]) for p in (17, 18, 19)]
+    tg_pos = 5 if role_map["mode"] == "LEGACY_IDENTITY" else int(role_map["tg_positions"][0])
+    td_pos = 6 if role_map["mode"] == "LEGACY_IDENTITY" else int(role_map["td_position"])
+    group_pos = partial_pos[0] - 1
     # No blind procedure modifications; require the known TG->TD->group->PrT layout.
-    _check(int(by_pos.get(5, {}).get("type", -1)) == com.TG and
-           int(by_pos[5]["active"]) == 1, "TG_OPERATION_UNEXPECTED")
-    _check(int(by_pos.get(6, {}).get("type", -1)) == com.TD and
-           int(by_pos[6]["active"]) == 1, "TD_OPERATION_UNEXPECTED")
-    _check(int(by_pos.get(16, {}).get("type", -1)) == com.GROUP and
-           int(by_pos[16]["active"]) == 1, "ASSIGNMENT_GROUP_UNEXPECTED")
-    row = by_pos[APPROVED_OPERATION]
+    _check(int(by_pos.get(tg_pos, {}).get("type", -1)) == com.TG and
+           int(by_pos[tg_pos]["active"]) == 1, "TG_OPERATION_UNEXPECTED")
+    _check(int(by_pos.get(td_pos, {}).get("type", -1)) == com.TD and
+           int(by_pos[td_pos]["active"]) == 1, "TD_OPERATION_UNEXPECTED")
+    _check(int(by_pos.get(group_pos, {}).get("type", -1)) == com.GROUP and
+           int(by_pos[group_pos]["active"]) == 1, "ASSIGNMENT_GROUP_UNEXPECTED")
+    row = by_pos[final_pos]
     _check(int(row["type"]) == APPROVED_TYPE, "OP20_TYPE_MISMATCH")
-    scope = _approved_scope(row, cfg)
+    scope = _approved_scope(row, cfg, final_pos)
     old_states = _states(rows)
     original_active = int(row["active"])
     proc_before = rt.audit_procseq(visum, root / "PROCSEQ_BOOTSTRAP_BEFORE", cfg)
@@ -134,11 +146,9 @@ def prepare_working_procseq(visum, adapter, cfg, folder, working_semantic,
            "UNSAFE_SOURCE_PROCSEQ:" + ",".join(proc_before.get("reasons", [])))
     _check(not any(int(r["active"]) and int(r["type"]) == APPROVED_TYPE
                    for r in rows), "OTHER_ACTIVE_ASSIGNMENT_NOT_REVIEWED")
-    _check(int(by_pos[17]["type"]) == APPROVED_TYPE and
-           int(by_pos[18]["type"]) == APPROVED_TYPE and
-           int(by_pos[19]["type"]) == APPROVED_TYPE,
+    _check(all(int(by_pos[p]["type"]) == APPROVED_TYPE for p in partial_pos),
            "PARTIAL_ASSIGNMENT_SEQUENCE_NOT_REVIEWED")
-    for pos in (17, 18, 19):
+    for pos in partial_pos:
         _check(int(by_pos[pos]["active"]) == 0, "PARTIAL_ASSIGNMENT_IS_ACTIVE")
 
     repaired_file = root / "WORKING_PROCSEQ_READY.ver"
@@ -154,11 +164,11 @@ def prepare_working_procseq(visum, adapter, cfg, folder, working_semantic,
         ready_rows = _inventory(visum)
         ready_states = _states(ready_rows)
         expected_states = [
-            (pos, typ, 1 if pos == APPROVED_OPERATION else active)
+            (pos, typ, 1 if pos == final_pos else active)
             for pos, typ, active in old_states]
         _check(ready_states == expected_states, "UNEXPECTED_OPERATION_FLAGS_CHANGED")
         after_proc = rt.audit_procseq(visum, root / "PROCSEQ_BOOTSTRAP_AFTER", cfg)
-        _check(after_proc["passes"] and after_proc["assignment_indices"] == [APPROVED_OPERATION],
+        _check(after_proc["passes"] and after_proc["assignment_indices"] == [final_pos],
                "PROCSEQ_STILL_INVALID:" + ",".join(after_proc.get("reasons", [])))
         after_snap = adapter.snapshot()
         after_sem = restart.build_authority(after_snap, origin="PROCSEQFIX1_WORKING_READY")

@@ -302,7 +302,10 @@ def execute_sequence(adapter, folder, original_execute):
     # authorities. A strict subset check against the final authority rejects
     # the approved live 09C sequence before its first baseline recomputation.
     rules = (getattr(adapter, 'cfg', {}) or {}).get('supply', {}).get('assignment_operations', [])
-    approved = {int(rule['no']) for rule in rules}
+    # OPMAP1: configured/legacy role positions (17-20) translated to the live sequence.
+    import r1_15a2_procseq_roles_v24917 as _roles
+    _tr = _roles.translator(inventory)
+    approved = {_tr(int(rule['no'])) for rule in rules}
     active_assignments = set(assignments)
     if assignments and (not approved or len(approved) != len(rules)
                         or not approved <= active_assignments
@@ -315,7 +318,13 @@ def execute_sequence(adapter, folder, original_execute):
         18: {'NATIVE_CF', 'NATIVE_CL'},
         19: {'NATIVE_CS', 'NATIVE_CS_NOT', 'NATIVE_CW', 'NATIVE_CW_NOT'},
     }
-    if partial and (approved != {20} or not partial <= set(expected_partial)):
+    final_live = _tr(20) if (approved or assignments) else 20
+    try:
+        expected_partial = {_tr(k): v for k, v in expected_partial.items()}
+    except Exception:
+        if partial:
+            raise
+    if partial and (approved != {final_live} or not partial <= set(expected_partial)):
         raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
 
     # User-approved R1 09C execution: operations 17/18/19 AND final 20 must
@@ -326,9 +335,9 @@ def execute_sequence(adapter, folder, original_execute):
     # OP20 remains the sole final 14-DSeg GAP/COUNT authority.
     scoped_partial = set()
     promoted_partial = set()
-    if approved == {20} and 20 in active_assignments:
+    if approved == {final_live} and final_live in active_assignments:
         by_no = {int(row['no']): row for row in inventory}
-        final = by_no[20]
+        final = by_no[final_live]
         for position in sorted(expected_partial):
             row = by_no.get(position)
             if (row is None or int(row['type']) != ASSIGNMENT_PRT
@@ -350,7 +359,7 @@ def execute_sequence(adapter, folder, original_execute):
                 # Legacy miniature unit-test harnesses omit DSEGSET authority;
                 # real V24917 checks it in assignment_plan() before supply.
                 continue
-            _verify_assignment_scope(by_no[int(rule['no'])], expected_final)
+            _verify_assignment_scope(by_no[_tr(int(rule['no']))], expected_final)
     if len(td) > 1:
         raise SupplyContractError('LONGMASK_EXPECTED_ONE_UNIFIED_TD_OPERATION')
     boundary = min(assignments) if assignments else None
@@ -393,7 +402,8 @@ def execute_sequence(adapter, folder, original_execute):
                  'final_assignment_authority': sorted(approved),
                  'validated_partial_assignments': sorted(scoped_partial or partial),
                  'temporarily_activated_partial_assignments': sorted(promoted_partial),
-                 'expected_final_assignment_sequence': [17, 18, 19, 20] if scoped_partial else sorted(approved),
+                 'expected_final_assignment_sequence': ([_tr(p) for p in (17, 18, 19, 20)]
+                                                        if scoped_partial else sorted(approved)),
                  'operation_definitions_unchanged': True,
                  'original_active_flags_restored_after_each_phase': True,
                  'volume_loss_accepted': True})

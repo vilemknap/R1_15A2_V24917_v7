@@ -157,6 +157,9 @@ def install_all(controller, rt, print_fn=print) -> Dict[str, Any]:
     import r1_15a2_path_store_build_v24917 as path_store_build
     import r1_15a2_targeted_generation_v24917 as tg
     status = {"release": RELEASE, "parent_equivalence_preload": parent_eq_status}
+    # OPMAP1 first: every later overlay and the sealed parents see live role positions.
+    import r1_15a2_procseq_roles_v24917 as opmap1
+    status["opmap1"] = opmap1.install(print_fn=print_fn)
     status["path_store_build"] = path_store_build.install()
     import r1_15a2_snapshot_reads_v24917 as snapshot_reads
     status["snapshot_reads"] = {

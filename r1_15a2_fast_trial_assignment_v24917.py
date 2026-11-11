@@ -88,12 +88,29 @@ def fast_plan(base_plan: Mapping[str, Any], block: str, opts: Mapping[str, Any])
     if not approved:
         reasons.append("NO_APPROVED_ASSIGNMENT")
     joint = max(approved) if approved else None
+    # OPMAP1: the legacy skip positions (resets 1/15, preloads 17/18/19) translated to the
+    # live sequence by structure (the plan inventory carries no COM objects): the two
+    # active resets before the joint assignment and the three active PrT preloads between
+    # the second reset and the joint assignment.  Anything else keeps the legacy numbers
+    # and therefore fails the checks below (fail-closed to the unchanged plan).
+    exp_types = dict(EXPECTED_TYPES)
+    if joint is not None and not all(int((by_pos.get(p) or {}).get("type", -1)) == t
+                                     for p, t in EXPECTED_TYPES.items()):
+        act = [int(r["no"]) for r in inventory if int(r.get("active", 0))]
+        resets = sorted(p for p in act if p < joint and int(by_pos[p]["type"]) == RESET_TYPE)
+        if len(resets) == 2:
+            pre = sorted(p for p in act if resets[1] < p < joint
+                         and int(by_pos[p]["type"]) == PRT_ASSIGNMENT_TYPE)
+            if len(pre) == 3:
+                legacy = {1: resets[0], 15: resets[1], 17: pre[0], 18: pre[1], 19: pre[2]}
+                skip = sorted(legacy.get(p, p) for p in skip)
+                exp_types = {legacy[p]: t for p, t in EXPECTED_TYPES.items()}
     for pos in skip:
         row = by_pos.get(pos)
         if row is None:
             reasons.append("SKIP_OPERATION_MISSING:%d" % pos)
             continue
-        exp = EXPECTED_TYPES.get(pos)
+        exp = exp_types.get(pos)
         typ = int(row.get("type", -1))
         if typ not in (RESET_TYPE, PRT_ASSIGNMENT_TYPE) or (exp is not None and typ != exp):
             reasons.append("SKIP_OPERATION_TYPE:%d:%d" % (pos, typ))

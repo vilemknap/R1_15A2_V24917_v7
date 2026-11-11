@@ -419,6 +419,15 @@ def cold_supply_plan(base_plan: Mapping[str, Any], cfg: Mapping[str, Any], reset
                     if op.get("no") is not None]
     if not approved:
         reasons.append("NO_APPROVED_ASSIGNMENT")
+    # OPMAP1: legacy reset op 15 -> the single active reset between TD and the first
+    # (live) approved assignment when the live sequence is not the legacy layout.
+    if (approved and int(reset_position) == 15
+            and int((by_pos.get(15) or {}).get("type", -1)) != RESET_TYPE):
+        td = [p for p in active if int(by_pos[p].get("type", -1)) == 46]
+        cand = [p for p in active if int(by_pos[p].get("type", -1)) == RESET_TYPE
+                and (not td or p > max(td)) and p < min(approved)]
+        if len(cand) == 1:
+            reset_position = cand[0]
     reset = by_pos.get(int(reset_position))
     if reset is None:
         reasons.append("RESET_OPERATION_MISSING:%d" % reset_position)
