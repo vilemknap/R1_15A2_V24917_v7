@@ -16,14 +16,17 @@ CFG = json.loads((ROOT/'tests/data/EFFECTIVE_CONFIG_RUN_20261025_175302.json').r
 
 
 def test_defaults_match_deployed_budget_options():
+    # 2026-11-11 user decision: the deployed TD inner search is cut back to the
+    # original 60-evaluation cap (factor 1); TG 6 / TD realization 5 stay expanded.
     o = dp.load_options(root=ROOT,environ={})
-    for key,value in [('tg_max_trials',6),('td_realization_max_trials',5),
-                      ('td_inner_max_evaluations',180),('td_inner_budget_multiplier',2.)]:
+    for key,value in [('tg_max_trials',6),('td_realization_max_trials',5)]:
         assert o[key] == dp.DEFAULTS[key] == value
+    assert (o['td_inner_max_evaluations'],o['td_inner_budget_multiplier']) == (60,1.)
+    assert (dp.DEFAULTS['td_inner_max_evaluations'],dp.DEFAULTS['td_inner_budget_multiplier']) == (180,2.)
 
 
-@pytest.mark.parametrize('cycle,evals,iters',[(1,56,8),(2,56,8),(3,120,20),(4,120,20),(5,180,35),(100,180,35)])
-def test_effective_original_schedule_is_really_expanded(cycle,evals,iters):
+@pytest.mark.parametrize('cycle,evals,iters',[(1,28,4),(2,28,4),(3,60,10),(4,60,10),(5,60,12),(100,60,12)])
+def test_effective_schedule_with_deployed_60_cap(cycle,evals,iters):
     schedule = CFG['coupled_demand']['finecdf_td']['progressive_schedule']
     original = next(s for s in schedule if cycle <= s['through_outer_cycle'])
     before = copy.deepcopy(original)
