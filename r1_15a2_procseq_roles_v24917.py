@@ -86,7 +86,10 @@ def dsegset(row) -> frozenset:
     obj = row.get("object")
     if obj is None:
         raise OpmapError("OPMAP1_ASSIGNMENT_OBJECT_UNAVAILABLE:%s" % _pos(row))
-    raw = com.object_property(obj, "PrTAssignmentParameters").AttValue("DSEGSET")
+    try:
+        raw = com.object_property(obj, "PrTAssignmentParameters").AttValue("DSEGSET")
+    except Exception as exc:
+        raise OpmapError("OPMAP1_ASSIGNMENT_DSEGSET_UNREADABLE:%s:%s" % (_pos(row), exc)) from exc
     tokens = [x.strip("\"' ") for x in re.split(r"[,;{}\s]+", str(raw)) if x.strip("\"' ")]
     return frozenset(_norm(x) for x in tokens)
 

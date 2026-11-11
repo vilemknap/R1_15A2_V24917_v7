@@ -110,7 +110,9 @@ def prepare_working_procseq(visum, adapter, cfg, folder, working_semantic,
     try:
         role_map = roles.resolve(rows)
     except roles.OpmapError as exc:
-        raise SupplyContractError("PROCSEQFIX1_" + str(exc)) from exc
+        # unresolvable: keep the legacy positions; the original PROCSEQFIX1_* checks decide
+        role_map = {"mode": "LEGACY_IDENTITY", "legacy_to_live": dict((v, v) for v in roles.LEGACY.values()),
+                    "unresolved": str(exc)}
     live = role_map["legacy_to_live"]
     final_pos, partial_pos = int(live[20]), [int(live[p]) for p in (17, 18, 19)]
     tg_pos = 5 if role_map["mode"] == "LEGACY_IDENTITY" else int(role_map["tg_positions"][0])

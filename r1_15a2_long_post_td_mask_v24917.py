@@ -304,7 +304,15 @@ def execute_sequence(adapter, folder, original_execute):
     rules = (getattr(adapter, 'cfg', {}) or {}).get('supply', {}).get('assignment_operations', [])
     # OPMAP1: configured/legacy role positions (17-20) translated to the live sequence.
     import r1_15a2_procseq_roles_v24917 as _roles
-    _tr = _roles.translator(inventory)
+    _tr_strict = _roles.translator(inventory)
+
+    def _tr(n):
+        # unresolvable reduced inventories keep the legacy numbers -> the original
+        # LONGMASK_* checks below decide (unchanged parent behaviour)
+        try:
+            return _tr_strict(n)
+        except _roles.OpmapError:
+            return int(n)
     approved = {_tr(int(rule['no'])) for rule in rules}
     active_assignments = set(assignments)
     if assignments and (not approved or len(approved) != len(rules)
@@ -318,12 +326,8 @@ def execute_sequence(adapter, folder, original_execute):
         18: {'NATIVE_CF', 'NATIVE_CL'},
         19: {'NATIVE_CS', 'NATIVE_CS_NOT', 'NATIVE_CW', 'NATIVE_CW_NOT'},
     }
-    final_live = _tr(20) if (approved or assignments) else 20
-    try:
-        expected_partial = {_tr(k): v for k, v in expected_partial.items()}
-    except Exception:
-        if partial:
-            raise
+    final_live = _tr(20)
+    expected_partial = {_tr(k): v for k, v in expected_partial.items()}
     if partial and (approved != {final_live} or not partial <= set(expected_partial)):
         raise SupplyContractError('LONGMASK_ASSIGNMENT_AUTHORITY_MISMATCH')
 
