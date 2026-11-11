@@ -1,0 +1,40 @@
+"""Offline preview only: the live importer captures the actual opened 2022 copy."""
+import argparse
+import collections
+import csv
+import json
+from pathlib import Path
+import runpy
+
+def audit(root,reference_file):
+    root=Path(root);api=runpy.run_path(str(root/'scenario_io.py'));attrs=api['RAW_ATTRS'];out=root/'validation'
+    with Path(reference_file).open(encoding='utf-8') as stream:rows={int(r['No']):r for r in csv.DictReader(stream)}
+    assert set(rows)==set(range(1,682))
+    reference={a:{no:float(r[a]) for no,r in rows.items()} for a in attrs};report=[];details=[]
+    for year in api['YEARS']:
+        folder=root/str(year);cfg=api['read_config'](folder)
+        targets,freight=api['input_data'](folder,cfg,list(range(1,682)))
+        effective,fallbacks=api['resolve_zonal_fallback'](targets,reference,list(range(1,682)))
+        assert all(effective[a][no]>0 for a in attrs for no in range(1,682) if reference[a][no]>0)
+        assert all(effective[a][no]==value for a,r in targets.items() for no,value in r.items() if value>0)
+        assert all(effective[a][no]==0 for a,r in targets.items() for no,value in r.items() if value==0 and reference[a][no]==0)
+        zero=[r for r in fallbacks if r['reason']=='ZERO_FORECAST_REFERENCE_POSITIVE']
+        errors=[r for r in fallbacks if r['reason']=='INVALID_OR_MISSING_FORECAST']
+        low=[no for no,b in reference['NUM_PM_SMEAR'].items() if b>=100 and 0<targets['NUM_PM_SMEAR'].get(no,0)<2]
+        for r in fallbacks:details.append({'Year':year,'No':r['No'],'Name':rows[r['No']]['NAME'],**{k:v for k,v in r.items() if k!='No'}})
+        report.append({'year':year,'source':cfg['zone_source']['label'],'zero_fallback_cells':len(zero),
+            'error_or_missing_fallback_cells':len(errors),'fallback_counts_by_attribute':dict(collections.Counter(r['attribute'] for r in fallbacks)),
+            'total_fallback_cells':len(fallbacks),'effective_zero_over_positive_2022_cells':0,
+            'unchanged_positive_forecast_cells':sum(v>0 for r in targets.values() for v in r.values()),
+            'remaining_low_smear_scale_candidates':len(low),'Nitra_NUM_PM_effective':effective['NUM_PM'][615],
+            'Nitra_NUM_PM_SMEAR_effective':effective['NUM_PM_SMEAR'][615],'freight_totals':{c:int(v.sum()) for c,v in freight.items()}})
+    with (out/'FALLBACK_2022_PREVIEW.csv').open('w',encoding='utf-8',newline='') as stream:
+        writer=csv.DictWriter(stream,fieldnames=['Year','No','Name','attribute','forecast_value','reference_2022_value','kept_2022_value','effective_value','reason'],delimiter=';',lineterminator='\n')
+        writer.writeheader();writer.writerows(details)
+    (out/'FALLBACK_AUDIT.json').write_text(json.dumps({'status':'PASS',
+        'preview_reference':'Earlier 2022 export 2026-10-31; actual live fallback uses immutable pre-import copy of the user model',
+        'live_visum':'NOT_RUN','source_reference_sha256':api['digest'](Path(reference_file).read_bytes()),'years':report},indent=2)+'\n')
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--scenario-root',required=True);parser.add_argument('--reference',required=True);args=parser.parse_args()
+    audit(args.scenario_root,args.reference)

@@ -1,0 +1,86 @@
+[
+  {
+    "year": 2040,
+    "file_id": "file_0000000060e481f4ac458b6406cf43b6",
+    "file_name": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2040_v4.xlsx",
+    "sha256": "e7e4e9fe6b1780b223c99444800ff56694a18b0041f853e00cfa0ce0610e6035",
+    "status": "CORRECT_VARIABLE_AND_YEAR_VERIFIED",
+    "fields": {
+      "NUM_PM_SMEAR": {
+        "formula": "=IFERROR(_xlfn.XLOOKUP(E616,'[3]PROGNOZA zde'!$E:$E,'[3]PROGNOZA zde'!$MO:$MO),0)",
+        "source_header": "NUM_PM_SMEAR_2040",
+        "external_link_part": "xl/externalLinks/externalLink3.xml",
+        "cached_header_cell": "MO2"
+      },
+      "NUM_PM": {
+        "formula": "=IFERROR(_xlfn.XLOOKUP(E616,'[3]PROGNOZA zde'!$E:$E,'[3]PROGNOZA zde'!$MV:$MV),0)",
+        "source_header": "NUM_PM_2040",
+        "external_link_part": "xl/externalLinks/externalLink3.xml",
+        "cached_header_cell": "MV2"
+      }
+    }
+  },
+  {
+    "year": 2050,
+    "file_id": "file_000000001e0081f4ad09d980480fba38",
+    "file_name": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2050_v5.xlsx",
+    "sha256": "aa974677cd8d73d50fa1274920f137d849ebb6ef395254da40d2d9d25b2f9d1e",
+    "status": "CORRECT_VARIABLE_AND_YEAR_VERIFIED",
+    "fields": {
+      "NUM_PM_SMEAR": {
+        "formula": "=IFERROR(_xlfn.XLOOKUP(E616,'[4]PROGNOZA zde'!$E:$E,'[4]PROGNOZA zde'!$MP:$MP),0)",
+        "source_header": "NUM_PM_SMEAR_2050",
+        "external_link_part": "xl/externalLinks/externalLink4.xml",
+        "cached_header_cell": "MP2"
+      },
+      "NUM_PM": {
+        "formula": "=IFERROR(_xlfn.XLOOKUP(E616,'[4]PROGNOZA zde'!$E:$E,'[4]PROGNOZA zde'!$MW:$MW),0)",
+        "source_header": "NUM_PM_2050",
+        "external_link_part": "xl/externalLinks/externalLink4.xml",
+        "cached_header_cell": "MW2"
+      }
+    }
+  },
+  {
+    "year": 2060,
+    "file_id": "file_0000000025cc81f4be2d2cadc508ecda",
+    "file_name": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2060_v4.xlsx",
+    "sha256": "d25b5d9ffe8431b9eaba37df7bcfe13e75a30960a7d43a177052d9913f877085",
+    "status": "CORRECT_VARIABLE_AND_YEAR_VERIFIED",
+    "fields": {
+      "NUM_PM_SMEAR": {
+        "formula": "=IFERROR(_xlfn.XLOOKUP(E616,'[5]PROGNOZA zde'!$E:$E,'[5]PROGNOZA zde'!$MQ:$MQ),0)",
+        "source_header": "NUM_PM_SMEAR_2060",
+        "external_link_part": "xl/externalLinks/externalLink5.xml",
+        "cached_header_cell": "MQ2"
+      },
+      "NUM_PM": {
+        "formula": "=IFERROR(_xlfn.XLOOKUP(E616,'[5]PROGNOZA zde'!$E:$E,'[5]PROGNOZA zde'!$MX:$MX),0)",
+        "source_header": "NUM_PM_2060",
+        "external_link_part": "xl/externalLinks/externalLink5.xml",
+        "cached_header_cell": "MX2"
+      }
+    }
+  },
+  {
+    "year": 2070,
+    "file_id": "file_00000000558c81f4b72aff1b3819216f",
+    "file_name": "Zony_sloucene_43_vstupy_do_gravitacniho_modelu - kopie - 2070_v4.xlsx",
+    "sha256": "6274f1b5198c9db1608dd021e2ac50eca002d7262771a0f710494095365488d3",
+    "status": "CORRECT_VARIABLE_AND_YEAR_VERIFIED",
+    "fields": {
+      "NUM_PM_SMEAR": {
+        "formula": "=IFERROR(_xlfn.XLOOKUP(E616,'[6]PROGNOZA zde'!$E:$E,'[6]PROGNOZA zde'!$MR:$MR),0)",
+        "source_header": "NUM_PM_SMEAR_2070",
+        "external_link_part": "xl/externalLinks/externalLink6.xml",
+        "cached_header_cell": "MR2"
+      },
+      "NUM_PM": {
+        "formula": "=IFERROR(_xlfn.XLOOKUP(E616,'[6]PROGNOZA zde'!$E:$E,'[6]PROGNOZA zde'!$MY:$MY),0)",
+        "source_header": "NUM_PM_2070",
+        "external_link_part": "xl/externalLinks/externalLink6.xml",
+        "cached_header_cell": "MY2"
+      }
+    }
+  }
+]

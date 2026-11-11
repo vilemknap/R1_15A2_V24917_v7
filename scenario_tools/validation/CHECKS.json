@@ -1,0 +1,130 @@
+{
+  "status": "PASS",
+  "release": "R1_SCENARIO_CORRECTED_WORKPLACES_IMMUTABLE_ZERO_FALLBACK_V2_20261101",
+  "live_visum": "NOT_RUN",
+  "scope": "SCENARIO_IMPORT_INPUTS_AND_ZERO_ERROR_FALLBACK_ONLY",
+  "base_remote_commit": "133adecd78e801028916a80cf6ebc2783d7b83d9",
+  "targeted_command": [
+    "/workspace/.venvs/r1/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "scenario_tools/tests/test_scenario_io.py"
+  ],
+  "test_totals": {
+    "targeted_tests.log": {
+      "passed": 40,
+      "skipped": 0,
+      "returncode": 0
+    },
+    "main.log": {
+      "passed": 2479,
+      "skipped": 4,
+      "returncode": 0
+    },
+    "diagfast.log": {
+      "passed": 189,
+      "skipped": 0,
+      "returncode": 0
+    },
+    "audit_genfix2.log": {
+      "passed": 18,
+      "skipped": 0,
+      "returncode": 0
+    }
+  },
+  "full_suite_run": {
+    "release": "GENFIX2",
+    "offline_only": true,
+    "live_visum_tested": false,
+    "suites": [
+      {
+        "suite": "main",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/scenario_corrected_fallback_20261101/source/tests"
+        ],
+        "returncode": 0,
+        "seconds": 44.679
+      },
+      {
+        "suite": "diagfast",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/scenario_corrected_fallback_20261101/source/diagfast_tests"
+        ],
+        "returncode": 0,
+        "seconds": 21.069
+      },
+      {
+        "suite": "audit_genfix2",
+        "command": [
+          "/workspace/.venvs/r1/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "/workspace/work/scenario_corrected_fallback_20261101/source/genfix2_audit_tests"
+        ],
+        "returncode": 0,
+        "seconds": 0.816
+      }
+    ],
+    "all_passed": true,
+    "output": "/workspace/work/scenario_corrected_fallback_20261101/checks_full",
+    "test_process_isolation": "REQUIRED_SEPARATE_CONFTEXTS"
+  },
+  "compiled_files": 18,
+  "core_manifest_files_verified": {
+    "V24917_RUNTIME_MANIFEST.json": 91,
+    "DIAGFAST_V1_RELEASE_MANIFEST.json": 180
+  },
+  "original_calibration_libraries_unchanged": true,
+  "freight_csv_byte_identity_vs_previous_release": [
+    "scenario_tools/2025/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2025/NV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2040/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2040/NV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2050/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2050/NV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2060/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2060/NV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2070/LNV_MC_MEAN_ROUNDED.csv",
+    "scenario_tools/2070/NV_MC_MEAN_ROUNDED.csv"
+  ],
+  "corrected_source_variable_year_fields_verified": 8,
+  "fallback_preview_zero_erasure_cases_remaining": 0,
+  "fallback_reference_mode": "Immutable snapshot of actual opened 2022 copy before first scenario import, with original V1 backup recovery when available",
+  "preview_reference_role": "Earlier supplied 2022 export; does not replace the live pre-import reference",
+  "input_preparation_command": [
+    "python",
+    "tools/prepare_scenario_inputs_20261101.py",
+    "--manifest",
+    "/workspace/work/scenario_corrected_fallback_20261101/INPUT_MANIFEST.json",
+    "--target",
+    "scenario_tools"
+  ],
+  "other_existing_focused_logs": "native_mask_tests.log and assignment_tests.log are inherited focused evidence; their suites are included in the fresh main run",
+  "fallback_preview_command": [
+    "python",
+    "scenario_tools/validation/audit_effective_fallback.py.txt",
+    "--scenario-root",
+    "scenario_tools",
+    "--reference",
+    "artifacts_scenario_zero_audit_20261101/REFERENCE_2022_RAW.csv"
+  ],
+  "fallback_preview_replay_byte_identical": true
+}

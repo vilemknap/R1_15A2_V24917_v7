@@ -1,0 +1,73 @@
+{
+  "schema": "R1_SCENARIO_IO_20261101_ZERO_FALLBACK_V2",
+  "year": 2025,
+  "zone_count": 681,
+  "zone_attributes": [
+    "NUM_VS",
+    "NUM_PUP",
+    "POP_ZP",
+    "E_C",
+    "E_NC",
+    "NE_C",
+    "NE_NC",
+    "PRENOC_SVK",
+    "AV_INCOME",
+    "NUM_PM",
+    "NUM_PM_SMEAR",
+    "NUM_PUP_PLACES",
+    "NUM_STUD_VS_PLACES",
+    "POP_CENTRALITY_TERM"
+  ],
+  "zone_file": "ZONE_RAW_ATTRS.csv",
+  "zone_sha256": "6097569f66576309f99018faa31fd8efd32f7d530a6a7e64b228d5c10c55d230",
+  "freight_variant": "MC_MEAN_ROUNDED_HALF_UP",
+  "zone_source": {
+    "label": "zonal2025",
+    "sheet": "List1",
+    "key": "OSRM_MATRIX_ID",
+    "fallback_policy": "IMMUTABLE_2022_NONZERO_IF_FORECAST_ZERO_OR_INVALID",
+    "income_supplement": "gravity2025:vstupy_prod_att:AV_INCOME; five absent additional attributes retain 2022"
+  },
+  "freight": {
+    "LNV": {
+      "file": "LNV_MC_MEAN_ROUNDED.csv",
+      "sha256": "5c1eb7c8398dd16a0734300cde3fd1a4f95441863fddf9d52588319bfe3c3f26",
+      "source_file": "R1_V14_LNV_OD_2025_MC_MEAN.csv",
+      "source_sha256": "4e4a04dd33663fdafcf4374293376043b50e4b8803d4a34d0e8436fa0166e6cb",
+      "source_total": "25769",
+      "rounded_total": 25769,
+      "rounded_diagonal": 163,
+      "rounded_nonzero_od": 3176,
+      "rounding_total_delta": "0",
+      "maximum_cell_rounding_delta": "0",
+      "renormalized": false
+    },
+    "NV": {
+      "file": "NV_MC_MEAN_ROUNDED.csv",
+      "sha256": "58d20e0df98b913992de40625b25cfcc414df0c3b822920e1994c74ea64e0648",
+      "source_file": "R1_V14_NV_OD_2025_MC_MEAN.csv",
+      "source_sha256": "60af1e07dcc140b08d89b37656231606f92afe45e3a0e4ca672b24b4f5f79e36",
+      "source_total": "35769",
+      "rounded_total": 35769,
+      "rounded_diagonal": 52,
+      "rounded_nonzero_od": 2438,
+      "rounding_total_delta": "0",
+      "maximum_cell_rounding_delta": "0",
+      "renormalized": false
+    }
+  },
+  "passenger_dsegs": [
+    "EXOG_EE_CF",
+    "EXOG_EE_CL",
+    "EXOG_EE_CS",
+    "EXOG_EE_CS_noT",
+    "EXOG_EE_CW",
+    "EXOG_EE_CW_noT",
+    "NATIVE_CF",
+    "NATIVE_CL",
+    "NATIVE_CS",
+    "NATIVE_CS_noT",
+    "NATIVE_CW",
+    "NATIVE_CW_noT"
+  ]
+}
