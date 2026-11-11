@@ -103,9 +103,39 @@ def _is_legacy_layout(rows) -> bool:
     return all(p in by and _type(by[p]) == t for p, t in want.items())
 
 
+_RESOLVED: Dict[Any, Dict[str, Any]] = {}
+
+
+def _layout_key(rows):
+    """Operation count + type sequence: identical while the calibrator only toggles ACTIVE."""
+    return (len(rows), tuple(_type(r) for r in rows))
+
+
 def resolve(source) -> Dict[str, Any]:
-    """Role -> live position plus the legacy -> live map (cached per row list)."""
+    """Role -> live position plus the legacy -> live map.
+
+    The roles are proven once with the ORIGINAL ACTIVE flags (preflight / first call).
+    Inside a scoped execution the calibrator temporarily deactivates operations (e.g. the
+    FineCDF bridge isolates the TD operation), which hides the assignments from the
+    signature check.  Positions cannot move while only ACTIVE flags change, so for an
+    identical operation-type sequence the last proven resolution is reused.
+    """
     rows = _rows(source)
+    try:
+        out = _resolve(rows)
+    except OpmapError as exc:
+        # only roles HIDDEN by temporarily inactive operations may reuse the proof;
+        # ambiguity (a second active candidate) is never masked
+        cached = _RESOLVED.get(_layout_key(rows)) if rows and "_FOUND_0" in str(exc) else None
+        if cached is None:
+            raise
+        return dict(cached, reused_after=str(exc))
+    if rows:
+        _RESOLVED[_layout_key(rows)] = out
+    return out
+
+
+def _resolve(rows) -> Dict[str, Any]:
     if not rows:
         raise OpmapError("OPMAP1_EMPTY_PROCEDURE_SEQUENCE")
     if _is_legacy_layout(rows):

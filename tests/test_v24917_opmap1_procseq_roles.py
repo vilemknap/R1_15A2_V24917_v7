@@ -19,6 +19,13 @@ FINAL = ("EXOG_EE_CF,EXOG_EE_CL,EXOG_EE_CS,EXOG_EE_CS_noT,EXOG_EE_CW,EXOG_EE_CW_
 CSCW = "NATIVE_CS,NATIVE_CS_noT,NATIVE_CW,NATIVE_CW_noT"
 
 
+@pytest.fixture(autouse=True)
+def _fresh_role_cache():
+    roles._RESOLVED.clear()
+    yield
+    roles._RESOLVED.clear()
+
+
 class Params:
     def __init__(self, dseg):
         self.dseg = dseg
@@ -168,3 +175,19 @@ def test_supplymix_cold_plan_reset_follows_the_live_layout():
     info = out["v24917_supplymix_plan"]
     assert info["applied"] and info["reset_position"] == 23
     assert {23, 25, 26, 27, 28} <= set(out["selected_operation_positions"])
+
+
+def test_isolated_flags_reuse_the_proven_resolution():
+    roles._RESOLVED.clear()
+    ops = new_layout()
+    assert roles.resolve(Visum(ops))["legacy_to_live"][20] == 28
+    for i, op in enumerate(ops):                     # FineCDF bridge: only the TD op stays active
+        if op.typ != 75:
+            op.active = int(i == 9)
+    r = roles.resolve(Visum(ops))
+    assert r["legacy_to_live"][20] == 28 and "ASG_FREIGHT_FOUND_0" in r["reused_after"]
+    cfg = {"supply": {"assignment_operations": [{"no": 20, "operation_type": 101}]}}
+    assert roles.live_cfg(Visum(ops), cfg)["supply"]["assignment_operations"][0]["no"] == 28
+    roles._RESOLVED.clear()
+    with pytest.raises(roles.OpmapError):              # never proven -> still fails closed
+        roles.resolve(Visum(ops))
