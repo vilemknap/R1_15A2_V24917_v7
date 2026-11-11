@@ -34,8 +34,8 @@ def valid_options():
             "long_composite_td_enabled": True,
             "td_policy": "ALWAYS", "td_every_n_cycles": 1,
             "td_during_catchup": True,
-            "mg_enabled": True, "mg_min_ratio": 0.75,
-            "mg_max_ratio": 2.5}
+            "mg_enabled": True, "mg_min_ratio": 0.25,
+            "mg_max_ratio": 3.0}
 
 
 def valid_cfg():
@@ -53,8 +53,11 @@ def runtime_status():
         "demand_policy": {"installed": True, "note": {
             "options": {"td_policy": "ALWAYS", "td_every_n_cycles": 1,
                         "td_during_catchup": True, "td_first_cycle": True,
-                        "mg_enabled": True, "mg_min_ratio": 0.75,
-                        "mg_max_ratio": 2.5}}},
+                        "mg_enabled": True, "mg_min_ratio": 0.25,
+                        "mg_max_ratio": 3.0}}},
+        "genfix2_policy_semantics": {"ws_attraction_coefficient_band": [0.5, 5.0],
+                                     "mobility_band": [0.25, 3.0],
+                                     "attraction_changes_mobility_ratio": False},
         "tdjoint1": {"installed": True, "release": "TDJOINT",
                      "options": {"enabled": True, "long_enabled": True,
                                  "school_enabled": True, "inner_mode": "DYNAMIC"}},
@@ -167,7 +170,7 @@ def test_options_file_explicitly_schedules_native_td_every_cycle():
     assert options["td_inner_mode"] == "DYNAMIC"
     assert options["td_count_weight"] == 0.6
     assert options["td_inner_max_evaluations"] == 60     # 2026-11-11: cut back from 180
-    assert options["mg_max_ratio"] == 2.5
+    assert (options["mg_min_ratio"], options["mg_max_ratio"]) == (0.25, 3.0)   # 2026-11-11
 
 
 def test_actual_demand_policy_runs_td_for_every_one_of_100_cycles_even_in_catchup(monkeypatch):
@@ -217,7 +220,7 @@ def test_environment_overrides_cannot_silently_make_this_fresh_run_sparse():
 
 
 @pytest.mark.parametrize("field,value", [
-    ("mg_max_ratio", 2.0), ("mg_min_ratio", 0.6),
+    ("mg_max_ratio", 2.5), ("mg_min_ratio", 0.75),
     ("mg_enabled", False),
 ])
 def test_fresh_start_rejects_inconsistent_ws_production_mobility_band(field, value):
@@ -231,6 +234,25 @@ def test_fresh_start_rejects_inconsistent_ws_production_mobility_band(field, val
 def test_fresh_start_rejects_old_generation_upper_bounds(role, upper):
     cfg = valid_cfg()
     cfg["v24917_targeted_generation"]["envelope"]["domestic_hard_by_role"][role][1] = upper
+    with pytest.raises(RuntimeError, match="WORK_SERVICE_PA_BOUNDS_NOT_INSTALLED"):
+        fresh.validate_fresh_config(cfg, valid_options())
+
+
+@pytest.mark.parametrize("band", [[0.75, 4.0], None])
+def test_runtime_rejects_missing_or_old_ws_attraction_band(band):
+    status = runtime_status()
+    if band is None:
+        del status["v24917"]["genfix2_policy_semantics"]
+    else:
+        status["v24917"]["genfix2_policy_semantics"]["ws_attraction_coefficient_band"] = band
+    with pytest.raises(RuntimeError, match="EFFECTIVE_WS_ATTRACTION_GUARD_NOT_INSTALLED"):
+        fresh.verify_runtime_status(status)
+
+
+@pytest.mark.parametrize("role,lower", [("PROD", 0.75), ("ATT", 0.75)])
+def test_fresh_start_rejects_old_generation_lower_bounds(role, lower):
+    cfg = valid_cfg()
+    cfg["v24917_targeted_generation"]["envelope"]["domestic_hard_by_role"][role][0] = lower
     with pytest.raises(RuntimeError, match="WORK_SERVICE_PA_BOUNDS_NOT_INSTALLED"):
         fresh.validate_fresh_config(cfg, valid_options())
 
@@ -354,8 +376,8 @@ def test_relocate_parent_lock_workspace_without_touching_source(tmp_path):
     assert installed["fresh_universal"]["fresh_contract"]["accepted_count_start"] == 0
     assert installed["fresh_universal"]["fresh_contract"]["td_skipping_allowed"] is False
     assert installed["fresh_universal"]["fresh_contract"]["td_policy"] == "ALWAYS"
-    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_prod_bounds"] == [0.75, 2.5]
-    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_att_bounds"] == [0.75, 4.0]
+    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_prod_bounds"] == [0.25, 3.0]
+    assert installed["fresh_universal"]["fresh_contract"]["generation_work_service_att_bounds"] == [0.5, 5.0]
     assert installed["fresh_universal"]["path_epoch"]["native_export_only"]
     assert (workspace / "FRESH_UNIVERSAL_BOOTSTRAP_AUTHORITY.json").exists()
     assert not (original.parent/".R1_15A2_V16.lock").exists()

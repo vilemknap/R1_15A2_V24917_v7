@@ -19,13 +19,13 @@ def test_absolute_and_relative_bands_agree_with_fixed_mobility(phase):
                                   mb._soft_multiplier_bounds, mb)
     opts = dp.load_options(environ={})
     assert opts['ls_school_envelope'] == [.75, 2.]
-    assert [opts['mg_min_ratio'], opts['mg_max_ratio']] == [.75, 2.5]
+    assert [opts['mg_min_ratio'], opts['mg_max_ratio']] == [.25, 3.]
     assert mz.SCHOOL_HARD_MAX == 2.
     assert hard('DOMESTIC', cfg, 1.)[:2] == (.75, 2.)
     assert soft('DOMESTIC', cfg, 1.) == (.75, 2.)
-    for role, upper in [('PROD', 2.5), ('ATT', 4.)]:
-        assert hard('DOMESTIC', cfg, 1., role=role)[:2] == (.75, upper)
-        assert soft('DOMESTIC', cfg, 1., role=role) == (.75, upper)
+    for role, band in [('PROD', (.25, 3.)), ('ATT', (.5, 5.))]:
+        assert hard('DOMESTIC', cfg, 1., role=role)[:2] == band
+        assert soft('DOMESTIC', cfg, 1., role=role) == band
     # Reference 1 is the normalized starting state; raw ZAHR units may differ.
     for ref in [1., 8.]:
         assert hard('ZAHR', cfg, ref, ref)[:2] == (.5*ref, 10.*ref)
@@ -33,10 +33,12 @@ def test_absolute_and_relative_bands_agree_with_fixed_mobility(phase):
     rows = [{'zone_no': 1, 'NOT_ZAHR': 1., 'ADD_PROD_W': 1.,
              **{name: 10. for name in mz.SPECS['WORK'][2]}}]
     authority = mz.capture(rows, {'lo': opts['mg_min_ratio'], 'hi': opts['mg_max_ratio']}, ['WORK'])
-    bounded = mz.bounded_step(authority['entries']['WORK|1'], math.log(3), authority)
-    assert math.exp(bounded) == pytest.approx(2.5)
-    for value, allowed in [(.749, False), (.75, True),
-                           (2., True), (2.5, True), (2.501, False)]:
+    bounded = mz.bounded_step(authority['entries']['WORK|1'], math.log(4), authority)
+    assert math.exp(bounded) == pytest.approx(3.)
+    bounded = mz.bounded_step(authority['entries']['WORK|1'], math.log(.1), authority)
+    assert math.exp(bounded) == pytest.approx(.25)
+    for value, allowed in [(.249, False), (.25, True), (.75, True),
+                           (2., True), (3., True), (3.001, False)]:
         row = {'zone_no': 1, 'attr': 'ADD_PROD_W', 'family': 'WORK',
                'role': 'PROD', 'current': 1., 'proposed': value}
         assert mz.check_candidate([row], authority)['passes'] is allowed
@@ -44,8 +46,8 @@ def test_absolute_and_relative_bands_agree_with_fixed_mobility(phase):
     assert hard('DOMESTIC', cfg, 3.)[:2] == (.75, 3.)
 
 
-def test_new_ws_mobility_prod_2_5_does_not_widen_school_or_long():
-    opts = {'enabled': True, 'lo': 0.75, 'hi': 2.5}
+def test_ws_mobility_prod_025_3_does_not_widen_school_or_long():
+    opts = {'enabled': True, 'lo': 0.25, 'hi': 3.0}
     row = {'zone_no': 1, 'NOT_ZAHR': 1.0,
            'ADD_PROD_W': 1.0, 'ADD_PROD_S': 1.0,
            'ADD_PROD_SCH': 1.0, 'FP_5_SCHOOL': 100.0}
@@ -53,12 +55,15 @@ def test_new_ws_mobility_prod_2_5_does_not_widen_school_or_long():
         for attr in mz.SPECS[fam][2]:
             row[attr] = 10.0
     authority = mz.capture([row], opts, families=('WORK', 'SERVICE', 'SCHOOL'))
-    assert authority['band'] == [0.75, 2.5]
+    assert authority['band'] == [0.25, 3.0]
     assert authority['school_band'] == [0.75, 2.0]
     assert authority['long_band'] == [0.5, 1.5]
     assert mz.check_candidate([
-        {'zone_no': 1, 'attr': 'ADD_PROD_W', 'current': 1., 'proposed': 2.5},
-        {'zone_no': 1, 'attr': 'ADD_PROD_S', 'current': 1., 'proposed': 2.5},
+        {'zone_no': 1, 'attr': 'ADD_PROD_W', 'current': 1., 'proposed': 3.0},
+        {'zone_no': 1, 'attr': 'ADD_PROD_S', 'current': 1., 'proposed': 0.25},
+    ], authority)['passes']
+    assert not mz.check_candidate([
+        {'zone_no': 1, 'attr': 'ADD_PROD_SCH', 'current': 1., 'proposed': 0.5}
     ], authority)['passes']
     assert not mz.check_candidate([
         {'zone_no': 1, 'attr': 'ADD_PROD_SCH', 'current': 1., 'proposed': 2.5}
@@ -67,11 +72,11 @@ def test_new_ws_mobility_prod_2_5_does_not_widen_school_or_long():
         {'zone_no': 1, 'attr': 'ADD_PROD_SCH', 'current': 1., 'proposed': 2.0}
     ], authority)['passes']
     candidate = [{'zone_no': 1, 'attr': 'ADD_PROD_W',
-                  'current': 1., 'proposed': 2.5},
+                  'current': 1., 'proposed': 3.0},
                  {'zone_no': 1, 'attr': 'ADD_PROD_S',
-                  'current': 1., 'proposed': 2.5}]
+                  'current': 1., 'proposed': 3.0}]
     assert mg.check_candidate(candidate, [row], opts)['passes']
-    candidate[0]['proposed'] = 2.501
+    candidate[0]['proposed'] = 3.001
     assert not mg.check_candidate(candidate, [row], opts)['passes']
 
 

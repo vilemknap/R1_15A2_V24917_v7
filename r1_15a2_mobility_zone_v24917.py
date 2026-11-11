@@ -4,7 +4,7 @@
 Raw pre-mode-choice FP productions are compared, never profile passages, vehicle
 OD or attraction weights. Reference is the existing AMDY equation evaluated at
 ADD_PROD_W/S/SCH=1 and ADD_PROD_L=0.3, NOT raw unscaled survey trip frequency.
-WORK/SERVICE production follows the configured [0.75,2.5] mobility band;
+WORK/SERVICE production follows the configured [0.25,3.0] mobility band;
 SCHOOL remains [0.75,2.0] and LONG retains its own fixed band.
 Existing out-of-band parents may improve or hold, never move further away.
 No COM writes, no LoadVersion, no changes to native TD or boundary production.
@@ -30,7 +30,8 @@ ATOL = 1e-7
 RTOL = 1e-10
 REFERENCE = "AMDY_DOMESTIC_FP_AT_CANONICAL_COEFFICIENT_NOT_RAW_SURVEY"
 LONG_BAND = (0.5, 1.5)  # ADD_PROD_L 0.3 x [0.5, 1.5] = [0.15, 0.45]
-SCHOOL_HARD_MAX = 2.0  # SCHOOL may not inherit W/S production max 2.5
+SCHOOL_HARD_MAX = 2.0  # SCHOOL may not inherit W/S production max 3.0
+SCHOOL_HARD_MIN = 0.75  # nor the W/S production min 0.25 (2026-11-11)
 
 
 def family_band(family, authority):
@@ -118,7 +119,7 @@ def capture(rows, opts, families=("WORK", "SERVICE"), unavailable=None, anchor=N
     lo, hi = limits(opts)
     # The original SCHOOL band always followed opts. Only prevent widening
     # above its former upper bound 2.0 in the new W/S-specific configuration.
-    school_band = (lo, min(hi, SCHOOL_HARD_MAX))
+    school_band = (max(lo, SCHOOL_HARD_MIN), min(hi, SCHOOL_HARD_MAX))
     if anchor is not None and tuple(anchor.get("long_band", ())) != LONG_BAND:
         raise ValueError("MOBILITYZONE1_LONG_BAND_CHANGED")
     if anchor is not None and tuple(anchor.get("school_band", school_band)) != school_band:

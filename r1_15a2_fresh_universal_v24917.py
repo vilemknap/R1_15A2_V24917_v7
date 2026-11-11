@@ -102,13 +102,13 @@ def validate_fresh_config(cfg, options):
     hard = bands.get("domestic_hard_by_role") or {}
     soft = bands.get("refine_domestic_soft_by_role") or {}
     require(gen.get("enabled") is True
-            and hard.get("PROD") == [0.75, 2.5]
-            and hard.get("ATT") == [0.75, 4.0]
-            and soft.get("PROD") == [0.75, 2.5]
-            and soft.get("ATT") == [0.75, 4.0],
+            and hard.get("PROD") == [0.25, 3.0]
+            and hard.get("ATT") == [0.5, 5.0]
+            and soft.get("PROD") == [0.25, 3.0]
+            and soft.get("ATT") == [0.5, 5.0],
             "WORK_SERVICE_PA_BOUNDS_NOT_INSTALLED")
-    require(options.get("mg_min_ratio") == 0.75
-            and options.get("mg_max_ratio") == 2.5
+    require(options.get("mg_min_ratio") == 0.25
+            and options.get("mg_max_ratio") == 3.0
             and options.get("mg_enabled") is True,
             "WORK_SERVICE_MOBILITY2_BAND_MISMATCH")
     return {"fresh_lineage": True, "accepted_count_start": 0,
@@ -116,9 +116,10 @@ def validate_fresh_config(cfg, options):
             "td_optimizations_required": True,
             "td_policy": "ALWAYS", "td_skipping_allowed": False,
             "td_catchup_included": True,
-            "generation_work_service_prod_bounds": [0.75, 2.5],
-            "generation_work_service_att_bounds": [0.75, 4.0],
-            "mobility2_ws_prod_max": 2.5,
+            "generation_work_service_prod_bounds": [0.25, 3.0],
+            "generation_work_service_att_bounds": [0.5, 5.0],
+            "mobility2_ws_prod_band": [0.25, 3.0],
+            "mobility2_ws_prod_max": 3.0,
             "salary_long_school_zahr_policy_changed": False}
 
 
@@ -143,9 +144,15 @@ def verify_runtime_status(status):
             and effective_demand.get("td_first_cycle") is True,
             "EFFECTIVE_TD_EVERY_CYCLE_POLICY_MISMATCH")
     require(effective_demand.get("mg_enabled") is True
-            and effective_demand.get("mg_min_ratio") == 0.75
-            and effective_demand.get("mg_max_ratio") == 2.5,
+            and effective_demand.get("mg_min_ratio") == 0.25
+            and effective_demand.get("mg_max_ratio") == 3.0,
             "EFFECTIVE_MOBILITY2_WS_PRODUCTION_BAND_MISMATCH")
+    # The attraction coefficient gate is independent of the FP mobility ratio.
+    semantics = optimized.get("genfix2_policy_semantics") or {}
+    require(semantics.get("ws_attraction_coefficient_band") == [0.5, 5.0]
+            and semantics.get("mobility_band") == [0.25, 3.0]
+            and semantics.get("attraction_changes_mobility_ratio") is False,
+            "EFFECTIVE_WS_ATTRACTION_GUARD_NOT_INSTALLED")
     # Runtime may apply R1_* environment overrides AFTER options JSON is read.
     # Installing the wrappers alone does not prove that joint native TD is ON.
     effective = optimized["tdjoint1"].get("options") or {}
