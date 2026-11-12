@@ -361,7 +361,7 @@ def test_real_sealed_runner_dynamic_metrics_blend_and_checkpoint(tmp_path):
     inc['variables'].append({'family':'SERVICE','origin':1,'destination':2})
     inc['incidence'].row_idx.append(0);inc['incidence'].col_idx.append(1);inc['incidence'].values.append(7.)
     seed=np.array([[20.,10.,1.],[10.,20.,1.],[1.,1.,20.]])
-    for n in ref.MUTABLE_NOS: live[n+100]=seed*.5
+    for n in ref.MUTABLE_NOS: live[n+180]=seed*.5
     live[9221]=seed*2.5;live[9222]=seed*2.5;live[9225]=seed*.5;live[9226]=seed*3
     dist=np.array([[1.,5.,40.],[10.,2.,30.],[30.,50.,3.]])
     epoch=NS(epoch=1,epoch_hash='frozen',family_distance={

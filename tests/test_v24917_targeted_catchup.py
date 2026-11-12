@@ -772,9 +772,10 @@ def _blend_fixture():
         {"no": 2, "observed": 500.0, "weight": 1.0, "edge_key": [6, 20, 21], "direction": "DIRECTIONAL", "role": "CALIBRATION"}]}
     T = np.array([[50.0, 10.0, 0.0], [10.0, 50.0, 5.0], [0.0, 5.0, 50.0]])
     mats = {9101: T.copy(), 9106: T.copy()}
-    live = {9201: 0.8 * T, 9206: 0.7 * T, 9221: 0.8 * T, 9222: 0.7 * T, 9225: np.zeros((n, n)),
-            9217: np.ones((n, n)), 9226: 0.8 * T}
-    for no in list(range(9202, 9206)) + list(range(9207, 9211)):
+    # current chain only: smart-return vehicle components M928x (old formula M920x..M9217 not present)
+    live = {9281: 0.8 * T, 9286: 0.7 * T, 9221: 0.8 * T, 9222: 0.7 * T, 9225: np.zeros((n, n)),
+            9297: np.zeros((n, n)), 9226: 0.8 * T}
+    for no in list(range(9282, 9286)) + list(range(9287, 9291)):
         live[no] = np.zeros((n, n))
     # profile 1 carries all WORK vehicles of OD (1,2) (8 veh = 0.8*10)
     variables = [{"family": "WORK", "origin": 1, "destination": 2, "dseg_code": "NATIVE_CW", "q_current": 8.0}]

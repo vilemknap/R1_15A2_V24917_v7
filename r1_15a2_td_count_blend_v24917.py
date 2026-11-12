@@ -18,8 +18,8 @@ Legacy inner search (TDJOINT1 disabled): every component c gets the residual
     r'_c = [ sqrt(w_idp / J_ref) * r_idp,c ;  sqrt(w_cnt / Q_ref) * q(M_ref + dM_c) ]
 so its objective/gradient is the component's share of F to first order.  dM_c is the
 count change caused by component c alone, from the FlowBundle path incidence of the
-current epoch (vehicles of each OD-family through each profile) and the live kappa /
-band factors of the TD -> vehicle chain:
+current epoch (vehicles of each OD-family through each profile) and the live kappa
+factor of the TD -> vehicle chain (kappa_c = sum M928x / sum M91xx, band = 1):
 
     dV_fam[o,d] = f_c * kappa_c * (dT_c[o,d] + dT_c[d,o]) / 2
     dM_p,c      = sum_v a_p,v * dV_fam[o_v,d_v] / V_fam[o_v,d_v]
@@ -236,18 +236,17 @@ class CountModel:
             if no not in sums:
                 sums[no] = float(read_matrix(no).sum())
             return sums[no]
+        # Person -> vehicle factor per component taken directly from the current chain:
+        #   M91xx (person) -> 20A band kappa -> M918x -> 20B smart return -> M928x (vehicle).
+        # kappa_c = sum(M928x) / sum(M91xx); 20B keeps the totals, so this equals the
+        # effective 20A kappa of the component. band is therefore 1 (kept for the formula).
+        # The old formula matrices M9201..M9217 are no longer read and may be deleted.
         self.kappa, self.band = {}, {}
         for no in self.T_ref:
             if 9101 <= no <= 9117 and no != 9116:
                 tot = float(self.T_ref[no].sum())
-                self.kappa[no] = s(no + 100) / tot if tot > 0 else 0.0
-        work = sum(s(n) for n in range(9201, 9206))
-        serv = sum(s(n) for n in range(9206, 9211))
-        for no in range(9101, 9106):
-            self.band[no] = s(9221) / work if work > 0 else 1.0
-        for no in range(9106, 9111):
-            self.band[no] = s(9222) / serv if serv > 0 else 1.0
-        self.band[9117] = s(9225) / s(9217) if s(9217) > 0 else 1.0
+                self.kappa[no] = s(no + 180) / tot if tot > 0 else 0.0
+                self.band[no] = 1.0
         self.V = {"WORK": read_matrix(9226), "SERVICE": read_matrix(9222)}
         self.linear = self._build_linear()
         self.Q_ref = self.Q(self.M_ref)
